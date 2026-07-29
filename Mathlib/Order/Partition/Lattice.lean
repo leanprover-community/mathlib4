@@ -59,12 +59,9 @@ lemma sUnion_nonDisjointComponents : ⋃₀ (nonDisjointComponents S : Set (Set 
   rw [nonDisjointComponents, supp_ofRel]
   ext a
   simp only [mem_ofPred, mem_sdiff, mem_singleton_iff]
-  constructor
-  · intro h
-    obtain ⟨b, hab, -⟩ := TransGen.head'_iff.mp h
-    exact ⟨hab.2.1, fun ha ↦ hab.1 (by simp [ha])⟩
-  · rintro ⟨haS, hane⟩
-    exact TransGen.single ⟨fun h ↦ hane (disjoint_self.1 h), haS, haS⟩
+  refine ⟨fun h ↦ ?_, fun ⟨haS, hane⟩ ↦ .single ⟨fun h ↦ hane (disjoint_self.1 h), haS, haS⟩⟩
+  obtain ⟨b, hab, -⟩ := TransGen.head'_iff.mp h
+  exact ⟨hab.2.1, fun ha ↦ hab.1 (by simp [ha])⟩
 
 /-- Every element of a non-disjointness component belongs to the original set. -/
 lemma mem_of_mem_nonDisjointComponents (ht : t ∈ nonDisjointComponents S) (ha : a ∈ t) : a ∈ S :=
@@ -104,25 +101,23 @@ lemma sSupIndep_iInf_image_pi (Ps : Set (Partition α)) :
   have hfg : f ≠ g := fun h ↦ hne (h ▸ rfl)
   contrapose! hfg
   ext p
-  refine (p : Partition α).eq_of_not_disjoint (hf p (mem_univ _)) (hg p (mem_univ _)) ?_
+  refine p.val.eq_of_not_disjoint (hf p (mem_univ _)) (hg p (mem_univ _)) ?_
   contrapose! hfg
   exact hfg.mono (iInf_le f p) (iInf_le g p)
 
 /-- Distinct non-disjointness components have disjoint suprema. -/
 lemma eq_of_not_disjoint_sSup_mem_nonDisjointComponents (hs : s ∈ nonDisjointComponents S)
     (ht : t ∈ nonDisjointComponents S) (h : ¬Disjoint (sSup s) (sSup t)) : s = t := by
-  have h1 : ∃ x ∈ s, ¬Disjoint x (sSup t) := by
+  obtain ⟨c, hcS, hct⟩ : ∃ x ∈ s, ¬Disjoint x (sSup t) := by
     contrapose! h
     rwa [sSup_disjoint_iff]
-  obtain ⟨c, hcS, hct⟩ := h1
-  have h2 : ∃ y ∈ t, ¬Disjoint c y := by
+  obtain ⟨d, hdT, hcd⟩ : ∃ y ∈ t, ¬Disjoint c y := by
     contrapose! hct
     rwa [disjoint_sSup_iff]
-  obtain ⟨d, hdT, hcd⟩ := h2
   have hrel : (nonDisjointComponents S).Rel c d := by
-    simpa [nonDisjointComponents, rel_ofRel_eq] using
-      TransGen.single ⟨hcd, mem_of_mem_nonDisjointComponents hs hcS,
-        mem_of_mem_nonDisjointComponents ht hdT⟩
+    rw [nonDisjointComponents, rel_ofRel_eq]
+    exact TransGen.single
+      ⟨hcd, mem_of_mem_nonDisjointComponents hs hcS, mem_of_mem_nonDisjointComponents ht hdT⟩
   exact eq_of_mem_of_mem hs ht hcS <| (Rel.forall hrel ht).mpr hdT
 
 /-- The join of a family of partitions: suprema of non-disjointness components of the union of
@@ -147,27 +142,6 @@ lemma mem_sSup_iff : a ∈ sSup Ps ↔
   change a ∈ SupSet.sSup '' (nonDisjointComponents (⋃ P ∈ Ps, (P : Set α)) : Set (Set α)) ↔ _
   simp [mem_image]
 
-/-- The constructed supremum of a family of partitions is its least upper bound. -/
-lemma isLUB_sSup (Ps : Set (Partition α)) : IsLUB Ps (sSup Ps) := by
-  refine ⟨fun P hP a haP ↦ ?_, fun P hP a ha ↦ ?_⟩
-  · have hane : a ≠ ⊥ := P.ne_bot_of_mem haP
-    have : a ∈ (⋃ Q ∈ Ps, (Q : Set α)) \ {⊥} := by
-      simp only [mem_sdiff, mem_iUnion, SetLike.mem_coe, mem_singleton_iff, hane,
-        not_false_eq_true, and_true]
-      exact ⟨P, hP, haP⟩
-    rw [← sUnion_nonDisjointComponents] at this
-    obtain ⟨s, hs, haS⟩ := this
-    exact ⟨SupSet.sSup s, mem_sSup_iff.mpr ⟨s, hs, rfl⟩, _root_.le_sSup haS⟩
-  obtain ⟨s, hs, rfl⟩ := mem_sSup_iff.mp ha
-  have hsne : s.Nonempty := nonempty_iff_ne_empty.mpr <|
-    (nonDisjointComponents _).ne_bot_of_mem hs
-  obtain ⟨x, hx⟩ := hsne
-  obtain ⟨Q, hQ, hxQ⟩ := mem_iUnion₂.mp (mem_of_mem_nonDisjointComponents hs hx)
-  obtain ⟨y, hyP, hxy⟩ := hP hQ hxQ
-  refine ⟨y, hyP, sSup_le_of_mem_nonDisjointComponents (fun z hz ↦ ?_) hs hx hyP hxy⟩
-  obtain ⟨R, hR, hzR⟩ := mem_iUnion₂.mp hz
-  exact hP hR hzR
-
 /-- When `α` is a frame, partitions form a complete lattice under refinement. -/
 instance instCompleteLattice : CompleteLattice (Partition α) where
   __ := (inferInstance : SemilatticeInf (Partition α))
@@ -188,7 +162,25 @@ instance instCompleteLattice : CompleteLattice (Partition α) where
         simpa [mem_pi] using fun (p : Ps) ↦ (hP p.property haP).choose_spec.1
       · exact ne_bot_of_le_ne_bot (P.ne_bot_of_mem haP) <|
           le_iInf fun (p : Ps) ↦ (hP p.property haP).choose_spec.2
-  __ := completeLatticeOfSup (Partition α) isLUB_sSup
+  __ := completeLatticeOfSup (Partition α) (fun Ps ↦ by
+    refine ⟨fun P hP a haP ↦ ?_, fun P hP a ha ↦ ?_⟩
+    · have hane : a ≠ ⊥ := P.ne_bot_of_mem haP
+      have : a ∈ (⋃ Q ∈ Ps, (Q : Set α)) \ {⊥} := by
+        simp only [mem_sdiff, mem_iUnion, SetLike.mem_coe, mem_singleton_iff, hane,
+          not_false_eq_true, and_true]
+        exact ⟨P, hP, haP⟩
+      rw [← sUnion_nonDisjointComponents] at this
+      obtain ⟨s, hs, haS⟩ := this
+      exact ⟨SupSet.sSup s, mem_sSup_iff.mpr ⟨s, hs, rfl⟩, _root_.le_sSup haS⟩
+    obtain ⟨s, hs, rfl⟩ := mem_sSup_iff.mp ha
+    have hsne : s.Nonempty := nonempty_iff_ne_empty.mpr <|
+      (nonDisjointComponents _).ne_bot_of_mem hs
+    obtain ⟨x, hx⟩ := hsne
+    obtain ⟨Q, hQ, hxQ⟩ := mem_iUnion₂.mp (mem_of_mem_nonDisjointComponents hs hx)
+    obtain ⟨y, hyP, hxy⟩ := hP hQ hxQ
+    refine ⟨y, hyP, sSup_le_of_mem_nonDisjointComponents (fun z hz ↦ ?_) hs hx hyP hxy⟩
+    obtain ⟨R, hR, hzR⟩ := mem_iUnion₂.mp hz
+    exact hP hR hzR)
 
 lemma mem_sup_iff : a ∈ P ⊔ Q ↔
     ∃ s ∈ nonDisjointComponents ((P : Set α) ∪ Q), SupSet.sSup s = a := by
@@ -204,19 +196,19 @@ lemma mem_iSup_iff : a ∈ ⨆ i, Pι i ↔
     ext x; simp [mem_iUnion, mem_range]]
 
 @[simp]
-lemma supp_sSup (Ps : Set (Partition α)) : (sSup Ps).supp = ⨆ P ∈ Ps, P.supp := by
+lemma supp_sSup : (sSup Ps).supp = ⨆ P ∈ Ps, P.supp := by
   change SupSet.sSup (SupSet.sSup '' _) = ⨆ P ∈ Ps, P.supp
   rw [sSup_image, ← sSup_sUnion, sUnion_nonDisjointComponents, sSup_sdiff_singleton_bot,
     ← sUnion_image, sSup_sUnion, iSup_image]
   simp only [sSup_eq]
 
 @[simp]
-lemma supp_iSup (Pι : ι → Partition α) : (⨆ i, Pι i).supp = ⨆ i, (Pι i).supp := by
+lemma supp_iSup : (⨆ i, Pι i).supp = ⨆ i, (Pι i).supp := by
   change (sSup (range Pι)).supp = _
   rw [supp_sSup, iSup_range]
 
 @[simp]
-lemma supp_sup (P Q : Partition α) : (P ⊔ Q).supp = P.supp ⊔ Q.supp := by
+lemma supp_sup : (P ⊔ Q).supp = P.supp ⊔ Q.supp := by
   change (sSup {P, Q}).supp = _
   rw [supp_sSup, iSup_pair]
 
