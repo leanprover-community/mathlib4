@@ -83,7 +83,7 @@ theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht :
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
 This is an open problem, and has no known proof of existence. -/
 proof_wanted conway_99 : ∃ (α : Type) (_ : Fintype α) (g : SimpleGraph α) (_ : DecidableRel g.Adj),
-  IsSRGWith g 99 14 1 2
+    IsSRGWith g 99 14 1 2
 
 variable [DecidableEq V]
 
