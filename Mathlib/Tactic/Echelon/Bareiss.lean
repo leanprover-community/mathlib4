@@ -7,6 +7,10 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Bareiss.Defs
 
+public meta import Mathlib.Util.Qq
+
+meta import Mathlib.LinearAlgebra.Matrix.Notation
+
 import Mathlib.Tactic.NormNum.Basic
 
 /-!
@@ -29,28 +33,17 @@ decide whether a value vanishes (`isZeroInR`).
 
 public meta section
 
-open Lean Meta Elab
+open Lean Meta Elab Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/- TODO: once `!![…]` elaborates to `Matrix.ofArray`, the following 4 conversions need a
-corresponding adaptation.
--/
-/-- Build the vector literal `![a, b, …]` with the given entries. -/
-def mkVecLit (α : Expr) (entries : Array Expr) : MetaM Expr := do
-  entries.foldrM (fun e acc => mkAppM ``Matrix.vecCons #[e, acc])
-    (← mkAppOptM ``Matrix.vecEmpty #[some α])
-
 /-- Build the matrix literal `!![…]` with the given rows of entries. -/
-def mkMatrixLit (R : Expr) (rows : Array (Array Expr)) : MetaM Expr := do
-  let m := rows.size
-  let n := (rows.getD 0 #[]).size
-  let finN ← mkAppM ``Fin #[mkNatLit n]
-  let outer ← mkVecLit (← mkArrow finN R) (← rows.mapM (mkVecLit R))
-  let finM ← mkAppM ``Fin #[mkNatLit m]
-  -- `Matrix.of` is an `Equiv`, so apply it through `DFunLike.coe`.
-  mkAppM ``DFunLike.coe #[← mkAppOptM ``Matrix.of #[some finM, some finN, some R], outer]
+def mkMatrixLit {u : Level} (R : Q(Type u)) (rows : Array (Array Expr)) : Expr :=
+  Matrix.mkLiteralQ (α := R) (m := rows.size) (n := (rows.getD 0 #[]).size)
+    (.of fun i j => show Q($R) from (rows[i.1]!)[j.1]!)
 
+/- TODO: once `!![…]` elaborates to `Matrix.ofArray`, the following parsers need a
+corresponding adaptation. -/
 /-- Parse a `![a, b, …]` vector literal into its entries. -/
 partial def parseVec? (e : Expr) : Option (Array Expr) :=
   go #[] e
@@ -73,29 +66,37 @@ def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
 def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
-  let finN ← mkAppM ``Fin #[mkNatLit n]
-  let wtopN ← mkAppM ``WithTop #[finN]
-  let top ← mkAppOptM ``Top.top #[some wtopN, none]
-  let entries ← (Array.range m).mapM fun i =>
-    if hi : i < pivots.size then do
-      mkAppM ``WithTop.some #[← mkNumeral finN pivots[i]]
+  let entries : Array Q(WithTop (Fin $n)) ← (Array.range m).mapM fun i => do
+    if hi : i < pivots.size then
+      let c ← mkNumeral q(Fin $n) pivots[i]
+      have c : Q(Fin $n) := c
+      return q(WithTop.some $c)
     else
-      pure top
-  mkVecLit wtopN entries
+      return q((⊤ : WithTop (Fin $n)))
+  return PiFin.mkLiteralQ (α := q(WithTop (Fin $n))) (n := m) fun i => entries[i.1]!
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
-  let finM ← mkAppM ``Fin #[mkNatLit m]
-  let mut acc ← mkAppM ``Equiv.refl #[finM]
+  have mE : Q(ℕ) := mkNatLit m
+  let mut acc : Q(Equiv.Perm (Fin $mE)) := q(Equiv.refl (Fin $mE))
   for (a, b) in swaps do
-    acc ← mkMul acc (← mkAppM ``Equiv.swap #[← mkNumeral finM a, ← mkNumeral finM b])
+    let aE ← mkNumeral q(Fin $mE) a
+    let bE ← mkNumeral q(Fin $mE) b
+    have aE : Q(Fin $mE) := aE
+    have bE : Q(Fin $mE) := bE
+    acc := q($acc * Equiv.swap $aE $bE)
   return acc
 
 /-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
 `i` is negative. -/
-def mkIntNumeral (R : Expr) (i : Int) : MetaM Expr := do
+def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   let n ← mkNumeral R i.natAbs
-  if i < 0 then mkAppM ``Neg.neg #[n] else return n
+  have n : Q($R) := n
+  if i < 0 then
+    let _instNeg ← synthInstanceQ q(Neg $R)
+    return q(-$n)
+  else
+    return n
 
 /-- Read the rational value of a numeral. `a / b` is read as a fraction only when division
 in the ring is field division. -/
@@ -131,12 +132,14 @@ def entryRat (isDivRing : Bool) (e : Expr) : MetaM Rat := do
 
 /-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
 `(v : R) = 0` in the kernel. The engine also checks the final certificate. -/
-def isZeroInR (R : Expr) (v : Int) : MetaM Bool := do
+def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   -- shortcircuit
   if v == 0 then return true
-  let castV ← mkAppOptM ``Int.cast #[some R, none, some (toExpr v)]
-  let eq ← mkEq castV (← mkNumeral R 0)
-  let some inst ← synthInstance? (← mkAppM ``Decidable #[eq])
+  let _instCast ← synthInstanceQ q(IntCast $R)
+  let _instZero ← synthInstanceQ q(Zero $R)
+  have vE : Q(Int) := toExpr v
+  let eq : Q(Prop) := q((Int.cast $vE : $R) = 0)
+  let some inst ← synthInstance? q(Decidable $eq)
     | throwError "equality with zero in the element type is not decidable{indentExpr R}"
   if let .ok r := Kernel.whnf (← getEnv) (← getLCtx) inst then
     if r.isAppOf ``Decidable.isTrue then return true
@@ -246,7 +249,9 @@ def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
     | throwError "expected a column count literal, got{indentExpr nE}"
   unless entries.size == m && entries.all (·.size == n) do
     throwError "the matrix literal does not match its type dimensions{indentExpr M}"
-  let isDivRing := (← synthInstance? (← mkAppM ``DivisionRing #[R])).isSome
+  let u ← getDecLevel R
+  have R : Q(Type u) := R
+  let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
   let ratRows ← entries.mapM fun row => row.mapM fun e => entryRat isDivRing e
   -- scale each row integral by its denominator lcm; the scaling is folded into `L` below
   let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
@@ -261,6 +266,8 @@ def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
     throwError "cannot verify the rank certificate: {e.toMessageData}"
   -- in a `CharZero` ring the integer values decide their own zero tests, so expensive
   -- kernel tests for zero can be avoided.
+  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
+  -- against the concrete `R` can provide, so this probe stays `mkAppM`-based.
   let charZero := (← synthInstance? (← mkAppM ``CharZero #[R])).isSome
   let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
   -- `L * (D·M).submatrix σ id = E` gives `(L·D_σ) * (M.submatrix σ id) = E`: scale column
@@ -269,7 +276,7 @@ def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
   let scaledL := d.L.map fun row =>
     row.mapIdx fun j a => a * (scales.getD (order.getD j 0) 1 : Int)
   -- constructing the main Bareiss certificate from internal raw data
-  let L ← mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
+  let L := mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
   let σ ← mkPerm m d.swaps
   let pivotE ← mkPivotLit m n d.pivot
   let rankE := mkNatLit d.pivot.size
