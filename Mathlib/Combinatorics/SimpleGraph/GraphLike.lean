@@ -42,8 +42,8 @@ def sym2Presentation (G : SimpleGraph V) : HypergraphPresentation V (V × V) (Sy
   adj_def {u v} := ⟨fun huv ↦ ⟨s(u, v), (u, v), (v, u), by simp [huv.ne], by simp [huv],
     by simp [huv.symm], by simp [huv, huv.symm]⟩, by grind⟩
 
-attribute [grind =] verts_sym2Presentation edges_sym2Presentation isIncident_sym2Presentation
-  isLink_sym2Presentation adj_sym2Presentation
+attribute [grind =] verts_sym2Presentation edges_sym2Presentation isLink_sym2Presentation
+  adj_sym2Presentation
 
 instance : GraphLike G.sym2Presentation where
   order_eq_two {e} := Sym2.inductionOn e fun u v he => by
