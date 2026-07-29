@@ -118,6 +118,12 @@ alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
   rw [modEq_iff_dvd, ← Int.natCast_dvd_natCast, Int.ofNat_sub h]
 
+theorem ModEq.dvd' (h : a ≡ b [MOD n]) : n ∣ b - a := by
+  obtain h0 | h0 : a ≤ b ∨ b ≤ a := le_total a b
+  · exact (modEq_iff_dvd' h0).mp h
+  · rw [Nat.sub_eq_zero_of_le h0]
+    exact Nat.dvd_zero n
+
 theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
   mod_mod _ _
 
