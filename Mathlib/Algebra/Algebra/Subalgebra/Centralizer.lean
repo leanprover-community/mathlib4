@@ -69,7 +69,6 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
       (Algebra.TensorProduct.includeLeft (S := R) '' S) =
     (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
       (AlgHom.id R B)).range := by
-  classical
   ext w
   constructor
   · intro hw

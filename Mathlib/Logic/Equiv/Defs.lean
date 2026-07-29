@@ -66,7 +66,7 @@ universe u v w z
 variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
-structure Equiv (α : Sort*) (β : Sort _) where
+structure Equiv (α β : Sort*) where
   /-- The forward map of an equivalence.
 
   Do NOT use directly. Use the coercion instead. -/
@@ -143,7 +143,7 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
+@[symm, implicit_reducible]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 
 /-- See Note [custom simps projection] -/

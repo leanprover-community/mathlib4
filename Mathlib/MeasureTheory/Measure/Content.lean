@@ -195,7 +195,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
     (U : Opens G) : μ.innerContent (Opens.comap f U) = μ.innerContent U := by
   refine (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff ?_
   intro hK
-  simp only [Equiv.coe_fn_mk, Compacts.equiv]
+  simp only [Compacts.equiv]
   apply h
 
 @[to_additive]
@@ -243,6 +243,7 @@ theorem outerMeasure_le (U : Opens G) (K : Compacts G) (hUK : (U : Set G) ⊆ K)
     μ.outerMeasure U ≤ μ K :=
   (μ.outerMeasure_opens U).le.trans <| μ.innerContent_le U K hUK
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K := by
   rw [Content.outerMeasure, inducedOuterMeasure_eq_iInf]
   · exact le_iInf fun U => le_iInf fun hU => le_iInf <| μ.le_innerContent K ⟨U, hU⟩
@@ -320,7 +321,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [μ.outerMeasure_of_isOpen ((U' : Set G) ∩ U) (U'.isOpen.inter hU)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
-  haveI : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
+  have : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.iSup_add]
   refine iSup_le ?_
   rintro ⟨L, hL⟩
@@ -335,7 +336,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.2 isClosed_closure)]
   simp only [innerContent, iSup_subtype']
   rw [Opens.coe_mk]
-  haveI : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
+  have : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.add_iSup]
   refine iSup_le ?_
   rintro ⟨M, hM⟩

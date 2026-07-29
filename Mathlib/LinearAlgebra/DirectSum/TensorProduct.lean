@@ -92,6 +92,7 @@ theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂)
       (DirectSum.lof S ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
   rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
     directSumLeft R S M₁ M₂' (DirectSum.lof S _ _ i x ⊗ₜ[R] y) =
@@ -104,6 +105,7 @@ theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
       DirectSum.lof S _ _ i x ⊗ₜ[R] y := by
   rw [LinearEquiv.symm_apply_eq, directSumLeft_tmul_lof]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
     directSumLeft R S M₁ M₂' (m ⊗ₜ[R] n) i = (m i) ⊗ₜ[R] n := by
@@ -116,6 +118,15 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
   · subst hj; simp
   · simp [DirectSum.component.of, hj]
 
+lemma directSumLeft_symm_of {i : ι₁} (x : (M₁ i) ⊗[R] M₂') :
+    (directSumLeft R S M₁ M₂').symm ((of (fun i ↦ M₁ i ⊗[R] M₂') i) x) =
+      rTensor M₂' (lof R ι₁ M₁ i) x := by
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y => rw [← lof_eq_of S, directSumLeft_symm_lof_tmul, rTensor_tmul, lof_eq_of, lof_eq_of]
+  | add x y h₁ h₂ => simp [h₁, h₂]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
     directSumRight R S M₁' M₂ (x ⊗ₜ[R] DirectSum.lof R _ _ i y) =
@@ -149,6 +160,7 @@ lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
 variable (S₀ : Type*) [CommSemiring S₀] [Algebra R S₀] [Algebra S₀ S]
   [Module S₀ M₁'] [IsScalarTower R S₀ M₁'] [IsScalarTower S₀ S M₁']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrictScalar_directSumRight :
     (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
   LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]
