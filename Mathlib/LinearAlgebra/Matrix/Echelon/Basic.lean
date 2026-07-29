@@ -68,7 +68,7 @@ theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
     M.IsLeadingEntry i c ↔ (∀ j < c, M i j = 0) ∧ M i c ≠ 0 := by
   simp [IsLeadingEntry]
 
-/-- A row has at most one leading position. -/
+/-- If column indices have a linear order, then there's at most one leading position per row. -/
 theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
     (h₁ : M.IsLeadingEntry i c₁) (h₂ : M.IsLeadingEntry i c₂) :
     c₁ = c₂ := by
@@ -89,8 +89,16 @@ structure IsReducedRowEchelon [LT m] [LT n] [One R] (M : Matrix m n R) : Prop wh
   isRowEchelon : M.IsRowEchelon
   eq_one_of_isLeadingEntry : ∀ ⦃i : m⦄ ⦃c : n⦄, M.IsLeadingEntry i c → M i c = 1
   eq_zero_of_lt_of_isLeadingEntry :
-  -- there's an interesting case of non-linear order here. But does that even make sense for
-  -- matrix indices?
     ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → ∀ ⦃c : n⦄, M.IsLeadingEntry i₂ c → M i₁ c = 0
+
+/-- If the row indices have a linear order, then the every entry in pivot columns vanishes
+except for the pivot. -/
+theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT n] [One R]
+    {i₁ i₂ : m} {c : n} (hM : M.IsReducedRowEchelon) (hne : i₁ ≠ i₂)
+    (hlead : M.IsLeadingEntry i₂ c) : M i₁ c = 0 := by
+  rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
+  · exact hM.eq_zero_of_lt_of_isLeadingEntry hlt hlead
+  · exact absurd heq hne
+  · exact hM.isRowEchelon hlt (isLeadingEntry_coe_iff.mp hlead).1
 
 end Matrix

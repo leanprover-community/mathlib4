@@ -56,14 +56,25 @@ theorem IsPivot.eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivot l) :
   | top => simpa using isLeadingEntry_top_iff.mp (hc ▸ hA.isLeadingEntry i)
   | coe c => simpa using fun h0 => (hA.isLeadingEntry i).2 c hc (congrFun h0 c)
 
-variable [PartialOrder m] [LinearOrder n]
+variable [LinearOrder n]
 
-theorem IsPivot.lt_of_lt_of_ne_top {i₁ i₂ : m}
+theorem IsPivot.lt_of_lt_of_ne_top [LT m] {i₁ i₂ : m}
     (hA : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
   by_contra! hle
   obtain ⟨c₂, hc₂⟩ := WithTop.ne_top_iff_exists.mp (hle.trans_lt h₁.lt_top).ne
   refine (hA.isLeadingEntry i₂).2 c₂ hc₂.symm (hA.isRowEchelon hlt fun j₁ hj₁ => ?_)
   exact (hA.isLeadingEntry i₁).1 j₁ ((WithTop.coe_lt_coe.mpr hj₁).trans_le (hc₂.le.trans hle))
+
+/-- The pivots of a matrix are unique. -/
+theorem IsPivot.unique [LT m] {l' : m → WithTop n}
+    (hl : A.IsPivot l) (hl' : A.IsPivot l') : l = l' :=
+  funext fun i => (hl.isLeadingEntry i).unique (hl'.isLeadingEntry i)
+
+theorem IsPivot.strictMonoOn [Preorder m] (hA : A.IsPivot l) :
+    StrictMonoOn l {i | l i ≠ ⊤} :=
+  fun _ h₁ _ _ hlt => hA.lt_of_lt_of_ne_top hlt h₁
+
+variable [PartialOrder m]
 
 theorem IsPivot.monotone (hA : A.IsPivot l) :
     Monotone l := by
@@ -73,16 +84,8 @@ theorem IsPivot.monotone (hA : A.IsPivot l) :
   · simp [hA.eq_top_iff.mpr (hA.isRowEchelon.row_eq_zero_of_lt hlt (hA.eq_top_iff.mp h₁))]
   · exact (hA.lt_of_lt_of_ne_top hlt h₁).le
 
-theorem IsPivot.strictMonoOn (hA : A.IsPivot l) :
-    StrictMonoOn l {i | l i ≠ ⊤} :=
-  fun _ h₁ _ _ hlt => hA.lt_of_lt_of_ne_top hlt h₁
-
-/-- The pivots of a matrix are unique. -/
-theorem IsPivot.unique {l' : m → WithTop n}
-    (hl : A.IsPivot l) (hl' : A.IsPivot l') : l = l' :=
-  funext fun i => (hl.isLeadingEntry i).unique (hl'.isLeadingEntry i)
-
-/-- The staircase characterisation of pivots. -/
+/-- The map-structural characterisation of pivots. This is useful for proving that
+a matrix is in row echelon form. -/
 theorem isPivot_iff :
     A.IsPivot l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
@@ -102,14 +105,13 @@ theorem isPivot_iff :
 end Zero
 
 theorem rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
-    [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R) (σ : Equiv.Perm m)
+    [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
-    (A * B.submatrix σ id).rank = B.rank := by
+    (A * B).rank = B.rank := by
   have hdet : A.det ≠ 0 := by
     rw [det_of_lowerTriangular A hA]
     exact prod_ne_zero_iff.mpr fun i _ => hd i
-  rw [rank_mul_eq_right_of_det_ne_zero A (B.submatrix σ id) hdet]
-  exact rank_submatrix B σ (Equiv.refl n)
+  exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 section Rank
 
@@ -145,8 +147,9 @@ theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
 theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
     {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
-    B.rank = #{i | l i ≠ ⊤} :=
-  (rank_mul_eq_right_of_lowerTriangular A B σ hA hd).symm.trans hpiv.rank_eq
+    B.rank = #{i | l i ≠ ⊤} := by
+  have hr : (B.submatrix σ id).rank = B.rank := B.rank_submatrix σ (Equiv.refl n)
+  rw [← hr, ← rank_mul_eq_right_of_lowerTriangular A _ hA hd, hpiv.rank_eq]
 
 end Rank
 

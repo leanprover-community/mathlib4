@@ -81,14 +81,13 @@ theorem IsPivot.unique {l' : m → WithTop n}
 end Zero
 
 theorem rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
-    [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R) (σ : Equiv.Perm m)
+    [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
-    (A * B.submatrix σ id).rank = B.rank := by
+    (A * B).rank = B.rank := by
   have hdet : A.det ≠ 0 := by
     rw [det_of_lowerTriangular A hA]
     exact prod_ne_zero_iff.mpr fun i _ => hd i
-  rw [rank_mul_eq_right_of_det_ne_zero A (B.submatrix σ id) hdet]
-  exact rank_submatrix B σ (Equiv.refl n)
+  exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 section Rank
 
@@ -128,7 +127,8 @@ theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
     {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
     (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
     B.rank = #{i | l i ≠ ⊤} := by
-  rw [← rank_mul_eq_right_of_lowerTriangular A B σ hA hd, hpiv.rank_eq]
+  have hr : (B.submatrix σ id).rank = B.rank := B.rank_submatrix σ (Equiv.refl n)
+  rw [← hr, ← rank_mul_eq_right_of_lowerTriangular A _ hA hd, hpiv.rank_eq]
 
 end Rank
 
