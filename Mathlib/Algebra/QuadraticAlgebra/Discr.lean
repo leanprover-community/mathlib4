@@ -17,6 +17,10 @@ convention `ω² = a + b·ω`), describes how it transforms under a change of ge
 the classification of quadratic algebras up to isomorphism together with a criterion, over a
 field, for `QuadraticAlgebra K a b` to be a field.
 
+The discriminant is the relevant invariant only when `2` is regular in `R`. In
+characteristic two it degenerates and is no longer useful; quadratic algebras are then
+classified by Artin-Schreier theory rather than by the discriminant.
+
 ## Main definitions
 
 * `QuadraticAlgebra.discr`: the discriminant `discr a b = b ^ 2 + 4 * a`.
