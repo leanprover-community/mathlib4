@@ -175,7 +175,7 @@ lemma toLinearMap_nsmul (f : E₁ →ₚ[R] E₂) (n : ℕ) :
 instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
   smul_apply _ _ _ := rfl
 
-instance : AddCommMonoid (E₁ →ₚ[R] E₂) := FunLike.addCommMonoid
+instance : AddCommMonoid (E₁ →ₚ[R] E₂) := fast_instance% FunLike.addCommMonoid
 
 end general
 

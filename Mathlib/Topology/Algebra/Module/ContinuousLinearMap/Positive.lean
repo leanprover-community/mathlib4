@@ -20,7 +20,7 @@ positive linear maps.
 
 @[expose] public section
 
-/-- A `PositiveContinuousLinearMap` is a linear map which is both and order homomorphism and
+/-- A `PositiveContinuousLinearMap` is a linear map which is both an order homomorphism and
 continuous. This comes equipped with the notation `E₁ →P[R] E₂`. -/
 structure PositiveContinuousLinearMap (R E₁ E₂ : Type*) [Semiring R]
     [AddCommMonoid E₁] [PartialOrder E₁] [TopologicalSpace E₁]
@@ -55,7 +55,8 @@ instance : ContinuousLinearMapClass (E₁ →P[R] E₂) R E₁ E₂ where
 instance : OrderHomClass (E₁ →P[R] E₂) E₁ E₂ where
   map_rel f _ _ h := f.monotone' h
 
-initialize_simps_projections PositiveContinuousLinearMap (toFun → apply)
+initialize_simps_projections PositiveContinuousLinearMap
+  (toFun → apply, as_prefix toPositiveLinearMap)
 
 @[ext]
 lemma ext {f g : E₁ →P[R] E₂} (h : ∀ x, f x = g x) : f = g :=
@@ -69,14 +70,14 @@ lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]
 -- We add the more specific lemma here purely for the aesop tag.
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 protected lemma map_nonneg (f : E₁ →P[R] E₂) {x : E₁} (hx : 0 ≤ x) : 0 ≤ f x :=
-  _root_.map_nonneg f hx
+  map_nonneg f hx
 
 section Comp
 
 variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
 
 /-- Composition of positive continuous linear maps. -/
-@[simps!]
+@[simps! apply toPositiveLinearMap]
 def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ where
   toPositiveLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
   cont := g.cont.comp f.cont
@@ -134,7 +135,7 @@ instance : IsZeroApply (E₁ →P[R] E₂) E₁ E₂ where
 
 variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
-@[simps!] protected def id : E₁ →P[R] E₁ where
+@[simps! apply toPositiveLinearMap] protected def id : E₁ →P[R] E₁ where
     toPositiveLinearMap := .id R E₁
     cont := by dsimp [PositiveLinearMap.id]; fun_prop
 
