@@ -425,7 +425,7 @@ end algebraMap
 attribute [local instance] IsUnital.toSemiring in
 /-- A unital non-unital algebra is an algebra.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
