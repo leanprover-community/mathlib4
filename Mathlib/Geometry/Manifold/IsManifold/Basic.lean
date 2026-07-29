@@ -1055,7 +1055,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 model space. *Do not use*, unless when setting up foundational properties of the tangent space:
 this definition is a technical detail related to our specific implementation of tangent spaces,
 but it has no mathematical meaning. The mathematically meaningful version of this definition
-is the derivative of the extended chart at `x`. -/
+is the derivative of the extended chart at `x`, in its `mvfderiv` version. -/
 def tangentSpaceCastModel (x : M) : TangentSpace I x ≃L[𝕜] E where
   toFun v := v
   invFun v := v
