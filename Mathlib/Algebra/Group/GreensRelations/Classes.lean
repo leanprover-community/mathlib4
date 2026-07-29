@@ -7,21 +7,19 @@ module
 
 public import Mathlib.Algebra.Group.GreensRelations.Basic
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Order.Basic
 public import Mathlib.Data.Finite.Defs
 
 /-!
-# Green's Equivalence Classes and Posets
+# Green's Equivalence Classes and Quotient API
 
-This file defines the equivalence classes corresponding to Green's relations.
-It establishes the Quotient API and proves that the relations L, R, and J
-naturally induce a Partial Order (Poset) on their respective quotient spaces.
+This file defines the equivalence classes corresponding to Green's relations
+as sets (`Set S`) and introduces their quotient types (`GreenLClass`, etc.).
 It also introduces the concepts of regular elements and regular D-classes.
 
 ## Main definitions
 
 * `IsGreenL.eqvClass` (and similar for R, H, D, J): The equivalence class as a `Set S`.
-* `GreenLClass S` (and similar for R, H, D, J): The quotient type of `S` by Green's L relation.
+* `GreenLClass S` (and similar for R, H, D, J): The quotient type of `S` by Green's relations.
 * `IsGreenRegular`: A predicate indicating that an element `a` is regular (`a * s * a = a`).
 * `IsRegularDClass`: A predicate indicating that all elements in a D-class are regular.
 
@@ -54,6 +52,12 @@ namespace IsGreenH
 
 /-- The equivalence class of `x` under Green's H relation as a `Set S`. -/
 abbrev eqvClass (x : S) : Set S := setOf (IsGreenH · x)
+
+/-- The H-class of `x` is the intersection of its L-class and R-class. -/
+lemma eqvClass_eq_inter (x : S) :
+    eqvClass x = IsGreenL.eqvClass x ∩ IsGreenR.eqvClass x := by
+  ext y
+  simp [IsGreenH, eqvClass, IsGreenL.eqvClass, IsGreenR.eqvClass]
 
 open MulOpposite in
 /-- An equivalence between the H-class of `a` and the H-class of `op a`. -/
@@ -108,35 +112,6 @@ lemma mk_eq_mk_iff {a b : S} : mk a = mk b ↔ IsGreenL a b := by
 
 instance [Inhabited S] : Inhabited (GreenLClass S) := ⟨mk default⟩
 
-/-- `IsGreenLeftDvd` is well-defined with respect to Green's L relation. -/
-lemma isGreenLeftDvd_respects (a₁ b₁ a₂ b₂ : S)
-    (h1 : IsGreenL a₁ a₂) (h2 : IsGreenL b₁ b₂) :
-    IsGreenLeftDvd a₁ b₁ = IsGreenLeftDvd a₂ b₂ :=
-  propext ⟨
-    fun h ↦ h1.right.trans (h.trans h2.left),
-    fun h ↦ h1.left.trans (h.trans h2.right)
-  ⟩
-
-/-- Green's L relation induces a natural left-multiplication order on L-classes.
-`[a] ≤ [b]` iff `a` is a left multiple of `b`. -/
-instance : LE (GreenLClass S) where
-  le := Quotient.lift₂ IsGreenLeftDvd isGreenLeftDvd_respects
-
-/-- The partial order on L-classes. -/
-instance : PartialOrder (GreenLClass S) where
-  le_refl := by
-    rintro ⟨a⟩
-    dsimp [LE.le]
-    exact IsGreenLeftDvd.refl a
-  le_trans := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ hab hbc
-    dsimp [LE.le] at hab hbc ⊢
-    exact hab.trans hbc
-  le_antisymm := by
-    rintro ⟨a⟩ ⟨b⟩ hab hba
-    dsimp [LE.le] at hab hba
-    exact mk_eq_mk_iff.mpr ⟨hab, hba⟩
-
 end GreenLClass
 
 
@@ -158,35 +133,6 @@ lemma mk_eq_mk_iff {a b : S} : mk a = mk b ↔ IsGreenR a b :=
 
 instance [Inhabited S] : Inhabited (GreenRClass S) := ⟨mk default⟩
 
-/-- `IsGreenRightDvd` is well-defined with respect to Green's R relation. -/
-lemma isGreenRightDvd_respects (a₁ b₁ a₂ b₂ : S)
-    (ha : IsGreenR a₁ a₂) (hb : IsGreenR b₁ b₂) :
-    IsGreenRightDvd a₁ b₁ = IsGreenRightDvd a₂ b₂ :=
-  propext ⟨
-    fun h ↦ IsGreenRightDvd.trans (IsGreenRightDvd.trans ha.right h) hb.left,
-    fun h ↦ IsGreenRightDvd.trans (IsGreenRightDvd.trans ha.left h) hb.right
-  ⟩
-
-/-- Green's R relation induces a natural right-multiplication order on R-classes.
-`[a] ≤ [b]` iff `a` is a right multiple of `b`. -/
-instance : LE (GreenRClass S) where
-  le := Quotient.lift₂ IsGreenRightDvd isGreenRightDvd_respects
-
-/-- The partial order on R-classes. -/
-instance : PartialOrder (GreenRClass S) where
-  le_refl := by
-    rintro ⟨a⟩
-    dsimp [LE.le]
-    exact IsGreenRightDvd.refl a
-  le_trans := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ hab hbc
-    dsimp [LE.le] at hab hbc ⊢
-    exact IsGreenRightDvd.trans hab hbc
-  le_antisymm := by
-    rintro ⟨a⟩ ⟨b⟩ hab hba
-    dsimp [LE.le] at hab hba
-    exact mk_eq_mk_iff.mpr ⟨hab, hba⟩
-
 end GreenRClass
 
 
@@ -207,35 +153,6 @@ lemma mk_eq_mk_iff {a b : S} : mk a = mk b ↔ IsGreenJ a b :=
   @Quotient.eq _ (IsGreenJ.setoid S) _ _
 
 instance [Inhabited S] : Inhabited (GreenJClass S) := ⟨mk default⟩
-
-/-- `IsGreenJRel` is well-defined with respect to Green's J relation. -/
-lemma isGreenJRel_respects (a₁ b₁ a₂ b₂ : S)
-    (ha : IsGreenJ a₁ a₂) (hb : IsGreenJ b₁ b₂) :
-    IsGreenJRel a₁ b₁ = IsGreenJRel a₂ b₂ :=
-  propext ⟨
-    fun h ↦ IsGreenJRel.trans (IsGreenJRel.trans ha.right h) hb.left,
-    fun h ↦ IsGreenJRel.trans (IsGreenJRel.trans ha.left h) hb.right
-  ⟩
-
-/-- Green's J relation induces a natural two-sided order on J-classes.
-`[a] ≤ [b]` iff `a` is a two-sided multiple of `b`. -/
-instance : LE (GreenJClass S) where
-  le := Quotient.lift₂ IsGreenJRel isGreenJRel_respects
-
-/-- The partial order on J-classes. -/
-instance : PartialOrder (GreenJClass S) where
-  le_refl := by
-    rintro ⟨a⟩
-    dsimp [LE.le]
-    exact IsGreenJRel.refl a
-  le_trans := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ hab hbc
-    dsimp [LE.le] at hab hbc ⊢
-    exact IsGreenJRel.trans hab hbc
-  le_antisymm := by
-    rintro ⟨a⟩ ⟨b⟩ hab hba
-    dsimp [LE.le] at hab hba
-    exact mk_eq_mk_iff.mpr ⟨hab, hba⟩
 
 end GreenJClass
 
@@ -259,6 +176,7 @@ lemma mk_eq_mk_iff {a b : S} : mk a = mk b ↔ IsGreenH a b :=
 instance [Inhabited S] : Inhabited (GreenHClass S) := ⟨mk default⟩
 
 end GreenHClass
+
 
 /-- The quotient type of `S` by Green's D relation. -/
 abbrev GreenDClass (S : Type*) [Semigroup S] := Quotient (IsGreenD.setoid S)

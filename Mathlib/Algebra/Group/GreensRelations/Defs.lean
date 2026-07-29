@@ -42,6 +42,9 @@ abbrev IsGreenLeftDvd (a b : S) : Prop := a = b ∨ RightDvd b a
   i.e., `a = b` or `a = b * z`. -/
 abbrev IsGreenRightDvd (a b : S) : Prop := a = b ∨ b ∣ a
 
+/-- `IsGreenHDvd a b` means `a` is both a left and a right multiple of `b`. -/
+abbrev IsGreenHDvd (a b : S) : Prop := IsGreenLeftDvd a b ∧ IsGreenRightDvd a b
+
 /-- `IsGreenJRel a b` represents the basic step of being a two-sided multiple.
   `a` is related to `b` if `a = b`, `a = u * b`, `a = b * v`, or `a = u * b * v`. -/
 inductive IsGreenJRel (a b : S) : Prop
