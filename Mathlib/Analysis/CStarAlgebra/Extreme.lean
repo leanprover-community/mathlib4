@@ -196,24 +196,62 @@ theorem CStarAlgebra.mul_ofExtremePtOne {x : A} (hx : x ∈ extremePoints ℝ (c
       Tendsto.mul_const, Tendsto.const_mul]
   simpa [h, sub_eq_zero, eq_comm (a := (0 : A)), eq_comm (a := a)] using h_tendsto
 
-@[simp]
-theorem star_mem_extremePoints_closedBall_zero_iff {A : Type*} [NonUnitalSeminormedRing A]
-    [StarRing A] [NormedStarGroup A] [Module ℝ A] [StarModule ℝ A] {x : A} (c : ℝ) :
-    star x ∈ extremePoints ℝ (closedBall 0 c) ↔ x ∈ extremePoints ℝ (closedBall 0 c) := by
-  suffices ∀ x : A, x ∈ extremePoints ℝ (closedBall 0 c) → star x ∈ extremePoints ℝ (closedBall 0 c)
-    from ⟨fun h ↦ star_star x ▸ this (star x) h, this x⟩
-  refine fun x hx ↦ ⟨by simpa using hx.1, fun y hy z hz ⟨α, β, hα, hβ, hαβ, hxyz⟩ ↦ ?_⟩
-  rw [eq_star_iff_eq_star, eq_comm] at hxyz ⊢
-  rw [mem_extremePoints_iff_left] at hx
-  apply @hx.2 _ (by simpa using hy) (star z) (by simpa using hz) ⟨star α, star β, ?_⟩
-  simp [← hxyz, hα, hβ, hαβ]
+-- TODO: move section to earlier file
+section star_balls
+variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
+  [AddCommMonoid E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
+
+open Metric Set
+
+@[simp] lemma star_segment (x y : E) :
+    star (segment 𝕜 x y) = segment 𝕜 (star x) (star y) := by
+  ext a
+  simp only [mem_star, segment, exists_and_left, mem_ofPred_eq]
+  refine ⟨?_, ?_⟩ <;> rintro ⟨h, x₁, w, x₂, h₁, h₂⟩
+    <;> use star h, by simpa, star w, by simpa, by simp [← star_add, h₁]
+  · simp [← star_add, ← star_smul, h₂]
+  · simp [← h₂]
+
+@[simp] lemma star_openSegment (x y : E) :
+    star (openSegment 𝕜 x y) = openSegment 𝕜 (star x) (star y) := by
+  ext a
+  simp only [mem_star, openSegment, exists_and_left, mem_ofPred_eq]
+  refine ⟨?_, ?_⟩ <;> rintro ⟨h, x₁, w, x₂, h₁, h₂⟩
+    <;> use star h, by simpa, star w, by simpa, by simp [← star_add, h₁]
+  · simp [← star_add, ← star_smul, h₂]
+  · simp [← h₂]
+
+@[simp] theorem star_extremePoints (s : Set E) :
+    star (extremePoints 𝕜 s) = extremePoints 𝕜 (star s) := by
+  ext
+  simp only [mem_star, mem_extremePoints_iff_left, and_congr_right_iff]
+  refine fun a ↦ ⟨?_, ?_⟩ <;> intro  h x₁ _ x₂ _ _ <;> rw [← star_inj]
+  on_goal 2 => rw [star_star]
+  all_goals apply h _ (by simpa) (star x₂) (by simpa); simpa [← star_openSegment]
+
+variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedStarGroup A]
+
+@[simp] theorem star_ball (x : A) (s : ℝ) :
+    star (ball x s) = ball (star x) s := by
+  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
+
+@[simp] theorem star_closedBall (x : A) (s : ℝ) :
+    star (closedBall x s) = closedBall (star x) s := by
+  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
+
+@[simp] theorem star_sphere (x : A) (s : ℝ) :
+    star (sphere x s) = sphere (star x) s := by
+  ext; simp [← norm_star (star _ - _)]
+
+end star_balls
 
 /-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
 then `star x * x + x * star x - x * star x * star x * x` is a left identity.
 (See also `CStarAlgebra.mul_ofExtremePtOne` for the right identity.) -/
 theorem CStarAlgebra.ofExtremePtOne_mul {x : A} (hx : x ∈ extremePoints ℝ (closedBall 0 1))
     (a : A) : (star x * x + x * star x - x * star x * (star x * x)) * a = a := by
-  simpa [add_comm] using congr(star $(mul_ofExtremePtOne (x := star x) (by simpa) (star a)))
+  simpa [add_comm] using congr(star $(mul_ofExtremePtOne (x := star x)
+    (by simpa using star_mem_star.mpr hx) (star a)))
 
 /-- A C⋆-algebra is unital iff there exists an extreme point of the closed unit ball.
 
