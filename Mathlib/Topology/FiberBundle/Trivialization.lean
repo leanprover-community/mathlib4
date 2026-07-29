@@ -132,7 +132,7 @@ theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
 
 /-- Composition of inverse and coercion from the subtype of the target. -/
 def setSymm : e.target → Z :=
-  e.target.restrict e.toPartialEquiv.symm
+  e.target.domRestrict e.toPartialEquiv.symm
 
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
@@ -223,29 +223,38 @@ theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
 
-section Zero
+section Nonempty
 
-variable [∀ x, Zero (E x)]
+variable [∀ x, Nonempty (E x)]
 
-open Classical in
+open scoped Classical in
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
-`B × F → TotalSpace F E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
+`B × F → TotalSpace F E` of `e` on `e.baseSet`. Outside of `e.baseSet` it takes on arbitrarily
+chosen junk values. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
     cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).2
-  else 0
+  else Classical.arbitrary _
 
 theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
   dif_pos hb
 
+@[deprecated "The junk values of `Pretrivialization.symm` were changed from `0` to
+`Classical.arbitrary` and should not be relied on; this lemma will be removed soon. Note that this
+change does not affect the linear versions `symmₗ` and `symmL`, which still retain `0` as the junk
+values." (since := "2026-06-23")]
 theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
-    (y : F) : e.symm b y = 0 :=
-  dif_neg hb
+    (y : F) : e.symm b y = Classical.arbitrary _ := by
+  simp [Pretrivialization.symm, hb]
 
+@[deprecated "The junk values of `Pretrivialization.symm` were changed from `0` to
+`Classical.arbitrary` and should not be relied on; this lemma will be removed soon. Note that this
+change does not affect the linear versions `symmₗ` and `symmL`, which still retain `0` as the junk
+values." (since := "2026-06-23")]
 theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
-    (e.symm b : F → E b) = 0 :=
-  funext fun _ => dif_neg hb
+    e.symm b = fun _ ↦ Classical.arbitrary _ := by
+  ext; exact symm_apply_of_notMem e hb _
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -266,7 +275,7 @@ theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.b
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
 
-end Zero
+end Nonempty
 
 /-- The restriction of a pretrivialization to a subset of the base. -/
 @[simps toFun source target baseSet]
@@ -668,12 +677,13 @@ theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈
     (e.toOpenPartialHomeomorph.symm (x, y)).1 = x :=
   e.proj_symm_apply' h
 
-section Zero
+section Nonempty
 
-variable [∀ x, Zero (E x)]
+variable [∀ x, Nonempty (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
-`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
+`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It takes on junk values chosen using
+`Classical.arbitrary` outside `e'.baseSet`. -/
 protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F) : E b :=
   e.toPretrivialization.symm b y
 
@@ -682,9 +692,13 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
       cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).2 :=
   dif_pos hb
 
+@[deprecated "The junk values of `Trivialization.symm` were changed from `0` to
+`Classical.arbitrary` and should not be relied on; this lemma will be removed soon. Note that this
+change does not affect the linear versions `symmₗ` and `symmL`, which still retain `0` as the junk
+values." (since := "2026-06-23")]
 theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
-    e.symm b y = 0 :=
-  dif_neg hb
+    e.symm b y = Classical.arbitrary _ :=
+  e.toPretrivialization.symm_apply_of_notMem hb y
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=
@@ -715,7 +729,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
   rw [← e.target_eq]
   exact e.toOpenPartialHomeomorph.continuousOn_symm
 
-end Zero
+end Nonempty
 
 /-- If `e` is a `Trivialization` of `proj : Z → B` with fiber `F` and `h` is a homeomorphism
 `F ≃ₜ F'`, then `e.trans_fiber_homeomorph h` is the trivialization of `proj` with the fiber `F'`
@@ -866,7 +880,8 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
   rw [← (e.isImage_preimage_prod s).frontier.preimage_eq, frontier_prod_univ_eq,
     (e.isImage_preimage_prod _).preimage_eq, e.source_eq, preimage_inter]
 
-open Classical in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
 `proj p ∈ e.baseSet ∩ frontier s`, `e.piecewise e' s Hs Heq` is the bundle trivialization over
@@ -914,7 +929,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     · simp [*]
     · simp [*]
 
-open Classical in
+open scoped Classical in
 /-- Given two bundle trivializations `e`, `e'` over disjoint sets, `e.disjoint_union e' H` is the
 bundle trivialization over the union of the base sets that agrees with `e` and `e'` over their
 base sets. -/

@@ -40,6 +40,13 @@ runs:
             '[.workflow_runs[] | select(.created_at <= $d and ($c == "" or .created_at >= $c))][0].id // empty' \
             2>/dev/null || true
         }
+        # True if run-id $1 actually carries a `cache-snapshot` artifact. Older runs
+        # predate the feature and artifacts expire, so a successful run is not enough.
+        # Filters server-side by name, but re-checks in jq in case `name` is ignored.
+        has_snapshot() {
+          [[ -n "$(gh api "repos/leanprover-community/mathlib4/actions/runs/$1/artifacts?name=cache-snapshot&per_page=100" \
+            --jq '.artifacts[] | select(.name == "cache-snapshot") | .id' 2>/dev/null | head -1 || true)" ]]
+        }
 
         # This PR's merge-base with master (+ its commit date), and the cutoff below which
         # snapshots have expired (retention ~14d).
@@ -56,6 +63,19 @@ runs:
           [[ -z "${run_id}" ]] && run_id=$(newest_before "${mb_date}" "${cutoff}")
         fi
         [[ -z "${run_id}" ]] && run_id=$(latest_run)
+
+        # The resolved run may carry no `cache-snapshot` artifact: an older merge-base
+        # predating the feature, or one whose artifact already expired (older-than-today
+        # runs often won't have one). Rather than let the download step hard-error on a
+        # missing artifact, confirm it's present; if not, fall back to the latest master
+        # run, and warm only if that one has it.
+        if [[ -n "${run_id}" ]] && ! has_snapshot "${run_id}"; then
+          echo "Run ${run_id} has no cache-snapshot artifact; falling back to latest master run."
+          run_id=$(latest_run)
+          if [[ -n "${run_id}" ]] && ! has_snapshot "${run_id}"; then
+            run_id=""
+          fi
+        fi
 
         echo "Resolved cache-snapshot run_id: '${run_id}' (merge-base: ${mb:-unknown})"
         echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"

@@ -146,6 +146,7 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
 def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where

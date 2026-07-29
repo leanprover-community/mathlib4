@@ -91,6 +91,7 @@ namespace Complex
 
 variable (x y : ℂ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
@@ -106,6 +107,7 @@ theorem exp_zero : exp 0 = 1 := by
       simp only [sum_range_succ, pow_succ]
       simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_add : exp (x + y) = exp x * exp y := by
   have hj : ∀ j : ℕ, (∑ m ∈ range j, (x + y) ^ m / m.factorial) =
         ∑ i ∈ range j, ∑ k ∈ range (i + 1), x ^ k / k.factorial *
@@ -477,7 +479,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma norm_exp_le_exp_norm (x : ℂ) : ‖exp x‖ ≤ Real.exp ‖x‖ := by
-  convert! norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
+  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 <;> simp
 
 lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
@@ -515,7 +517,7 @@ open Complex Finset
 nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
-  convert! exp_bound hxc hn using 2 <;>
+  convert exp_bound hxc hn <;>
   norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -692,10 +694,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-meta def evalExp : PositivityExt where eval {u α} _ pα? e := do
+meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(Real.exp_pos $a))
   | _, _, _ => throwError "not Real.exp"

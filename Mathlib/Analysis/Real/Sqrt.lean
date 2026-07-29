@@ -303,6 +303,18 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
+@[simp] lemma sqrt_le_self_iff : √x ≤ x ↔ x = 0 ∨ 1 ≤ x := by
+  rw [sqrt_le_iff, ← sub_nonneg (a := x ^ 2), sq, ← mul_sub_one]
+  grind [mul_nonneg_iff]
+
+@[simp] lemma le_sqrt_self_iff : x ≤ √x ↔ x ≤ 1 := by
+  obtain hx | hx := le_or_gt x 0
+  · simp [hx.trans]
+  · rw [le_sqrt' hx, sq, mul_le_iff_le_one_left hx]
+
+@[simp] lemma sqrt_lt_self_iff : √x < x ↔ 1 < x := by simp [← not_le]
+@[simp] lemma lt_sqrt_self_iff : x < √x ↔ x ≠ 0 ∧ x < 1 := by simp [← not_le]
+
 end Real
 
 namespace Mathlib.Meta.Positivity
@@ -312,8 +324,8 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
     assertInstancesCommute
@@ -326,8 +338,8 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     assertInstancesCommute

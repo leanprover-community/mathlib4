@@ -47,11 +47,10 @@ open Lean Elab Term Command
 /-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
-  let dat := ←
-    match dat with
-      | none => do
-        return s!"{(← Std.Time.ZonedDateTime.now).toPlainDate}"
-      | some s => return s
+  let dat ← match dat with
+    | none => do
+      pure s!"{← Std.Time.PlainDate.now}"
+    | some s => pure s
   let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 

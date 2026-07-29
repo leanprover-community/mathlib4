@@ -39,7 +39,7 @@ def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
     haveI := Classical.decEq α
     ({i | f i.1 i.2 ≠ 0} : Finset s).map (Embedding.subtype _)
   mem_support_toFun i := by
-    classical simp
+    simp
 
 theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i = f i hi :=
   @dif_pos _ (id _) hi _ _ _

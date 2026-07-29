@@ -165,6 +165,7 @@ theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
 @[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[simp] lemma not_toReal_neg {r : ℝ≥0} : ¬ r.toReal < 0 := r.coe_nonneg.not_gt
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal (.mk a ha) = a := rfl
 
@@ -331,12 +332,10 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast, gcongr] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-set_option backward.privateInPublic true in
 @[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
-set_option backward.privateInPublic true in
 @[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
@@ -1006,8 +1005,8 @@ alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
     assertInstancesCommute
@@ -1019,8 +1018,8 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
-meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
     assertInstancesCommute
@@ -1033,8 +1032,8 @@ alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
 /-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
-meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     assertInstancesCommute

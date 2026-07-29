@@ -129,9 +129,6 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
 
 variable [Field L] [Algebra K L]
 
-theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
-
 variable (K L) in
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 noncomputable abbrev algEquivEquivAlgHom [FiniteDimensional K L] :
@@ -248,6 +245,7 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     e, ← Algebra.smul_def, mul_comm, mul_smul]
   exact isIntegral_trans _ (int_s.smul _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem restrictScalars [Algebra.IsAlgebraic R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   have ⟨p, hp, eval0⟩ := h
@@ -549,8 +547,7 @@ theorem lift_rank_of_isFractionRing :
   rw [IsLocalization.rank_eq R' R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
-theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
-  simpa using! congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
+@[deprecated (since := "2026-07-13")] alias finrank_of_isFractionRing := IsFractionRing.finrank_eq
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
