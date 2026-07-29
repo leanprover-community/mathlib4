@@ -142,6 +142,7 @@ end Cardinal
 
 namespace Cardinal
 
+set_option backward.isDefEq.respectTransparency false in
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -901,7 +902,7 @@ lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := 
 
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
-  simp only [le_aleph0_iff_subtype_countable, setOf_mem_eq, Set.union_def,
+  simp only [le_aleph0_iff_subtype_countable, ofPred_mem_eq, Set.union_def,
     ← countable_union]
 
 theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = #{ x : s | t x.1 } :=

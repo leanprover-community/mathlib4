@@ -119,7 +119,7 @@ theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] [NeZero μ] (hg : C
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s)
     (hfi : Integrable f μ) (hgi : Integrable (g ∘ f) μ) :
     (⨍ x, f x ∂μ, ⨍ x, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ p.2 ≤ g p.1} := by
-  simpa only [mem_setOf_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
+  simpa only [mem_ofPred_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
     hg.neg.average_mem_epigraph hgc.neg hsc hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
@@ -166,7 +166,7 @@ theorem ConcaveOn.set_average_mem_hypograph (hg : ConcaveOn ℝ s g) (hgc : Cont
     (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞) (hfs : ∀ᵐ x ∂μ.restrict t, f x ∈ s)
     (hfi : IntegrableOn f t μ) (hgi : IntegrableOn (g ∘ f) t μ) :
     (⨍ x in t, f x ∂μ, ⨍ x in t, g (f x) ∂μ) ∈ {p : E × ℝ | p.1 ∈ s ∧ p.2 ≤ g p.1} := by
-  simpa only [mem_setOf_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
+  simpa only [mem_ofPred_eq, Pi.neg_apply, average_neg, neg_le_neg_iff] using
     hg.neg.set_average_mem_epigraph hgc.neg hsc h0 ht hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed

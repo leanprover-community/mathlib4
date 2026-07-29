@@ -38,7 +38,7 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
-open Limits Category Functor
+open Limits Category CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {H : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} H]
@@ -84,6 +84,7 @@ lemma rightDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsRightDerivabilityStructure]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X ↔
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by
@@ -120,7 +121,6 @@ instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ �
   exact ((F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂).compTwoSquare
     ((Φ.catCommSq L₁ L₂).iso).hom).isLeftKanExtension
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_iff_of_isRightDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by
   rw [← isIso_comp_right_iff (α₁.app X)

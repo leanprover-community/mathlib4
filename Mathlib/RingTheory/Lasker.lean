@@ -196,7 +196,7 @@ lemma comap_localized₀_eq_ite
     simp_rw [mem_localized₀, IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower]
     exact ⟨y • x, hy1 (Set.smul_mem_smul_set (Set.mem_univ x)), ⟨y, hy2⟩, rfl⟩
 
-open LocalizedModule IsLocalizedModule in
+open LocalizedModule Submodule.IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 lemma comap_localized₀_eq_iInf
     {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)

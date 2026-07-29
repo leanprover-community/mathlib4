@@ -555,7 +555,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     simp only [preimage_empty, measure_empty, lintegral_const, zero_mul]
   | basic s hs =>
     rcases hs with ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-    simp only [mem_setOf_eq] at ht₁ ht₂
+    simp only [mem_ofPred_eq] at ht₁ ht₂
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by

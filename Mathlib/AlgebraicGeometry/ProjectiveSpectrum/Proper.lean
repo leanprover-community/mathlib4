@@ -125,6 +125,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MC]
 instance : Scheme.IsSeparated (Proj 𝒜) :=
   (HasAffineProperty.iff_of_isAffine (P := @IsSeparated)).mp (isSeparated 𝒜)
@@ -133,6 +134,7 @@ end IsSeparated
 
 section LocallyOfFiniteType
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 𝒜) := by
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
@@ -148,6 +150,7 @@ end LocallyOfFiniteType
 
 section QuasiCompact
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
@@ -309,6 +312,7 @@ theorem valuativeCriterion_existence_aux
               Finset.univ.prod_erase_mul d (h := Finset.mem_univ _),
               mul_comm _ a, mul_right_comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[stacks 01MF]
 lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     ValuativeCriterion.Existence (Proj.toSpecZero 𝒜) := by

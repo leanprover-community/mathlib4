@@ -22,6 +22,7 @@ namespace MvPolynomial
 
 variable {σ R : Type*} [CommSemiring R] (p : ℕ) [ExpChar R p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_frobenius_expand {f : MvPolynomial σ R} :
     (f.expand p).map (frobenius R p) = f ^ p :=
   f.induction_on' fun _ _ => by simp [monomial_pow, frobenius]
