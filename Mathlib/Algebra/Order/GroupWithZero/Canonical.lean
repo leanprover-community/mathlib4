@@ -528,12 +528,10 @@ variable {G : Type*} [Preorder G] {a b : G}
 variable [AddGroup G] {x y : Gᵐ⁰}
 
 lemma log_le_iff_le_exp (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
-  rw [← toAdd_unzero_eq_log hx]
-  exact (le_ofAdd_iff hx).symm
+  rw [← toAdd_unzero_eq_log hx, ← le_ofAdd_iff hx, exp]
 
 lemma log_lt_iff_lt_exp (hx : x ≠ 0) : log x < a ↔ x < exp a := by
-  rw [← toAdd_unzero_eq_log hx]
-  exact (lt_ofAdd_iff hx).symm
+  rw [← toAdd_unzero_eq_log hx, ← lt_ofAdd_iff hx, exp]
 
 @[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
   rw [log_le_iff_le_exp hx, exp_log hy]
@@ -542,10 +540,10 @@ lemma log_lt_iff_lt_exp (hx : x ≠ 0) : log x < a ↔ x < exp a := by
   rw [log_lt_iff_lt_exp hx, exp_log hy]
 
 lemma le_log_iff_exp_le (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
-  simpa using log_le_log exp_ne_zero hx
+  rw [← log_le_log exp_ne_zero hx, log_exp]
 
 lemma lt_log_iff_exp_lt (hx : x ≠ 0) : a < log x ↔ exp a < x := by
-  simpa using log_lt_log exp_ne_zero hx
+  rw [← log_lt_log exp_ne_zero hx, log_exp]
 
 lemma le_exp_of_log_le (hxa : log x ≤ a) : x ≤ exp a := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_le_iff_le_exp, *]

@@ -423,7 +423,7 @@ lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
 
 lemma toAdd_unzero_eq_log {x : Mᵐ⁰} (hx : x ≠ 0) : (unzero hx).toAdd = log x := by
   lift x to Multiplicative M using hx
-  rfl
+  simp [log]
 
 end AddMonoid
 
