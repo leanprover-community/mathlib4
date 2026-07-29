@@ -5,6 +5,7 @@ Authors: Junyan Xu, Aristotle AI
 -/
 module
 
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 import Mathlib.LinearAlgebra.InvariantBasisNumber
