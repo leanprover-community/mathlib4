@@ -62,7 +62,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ τ : Type*} {r : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ τ : Type*} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 

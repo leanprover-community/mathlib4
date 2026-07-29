@@ -262,7 +262,7 @@ end Hom
 
 section Quotient
 
-variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
+variable {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive /-- Any quotient group of a divisible group is divisible -/]

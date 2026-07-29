@@ -558,7 +558,6 @@ end SpecialLinearGroup
 
 namespace TransvectionStruct
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommRing R]
 
 /-- Any transvection structure can be converted to a special linear matrix. -/
 def toSpecialLinearGroup (t : TransvectionStruct ι F) :

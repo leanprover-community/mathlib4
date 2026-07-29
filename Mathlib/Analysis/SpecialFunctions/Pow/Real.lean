@@ -977,7 +977,7 @@ end Complex
 
 namespace Real
 
-variable {z x y : ℝ}
+variable {x : ℝ}
 
 section Sqrt
 

@@ -1279,7 +1279,7 @@ theorem LE.le.eventuallyLE {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) : s
 
 @[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallyLE
 
-variable {α β : Type*} {F : Filter α} {G : Filter β}
+variable {α : Type*}
 
 namespace Filter
 

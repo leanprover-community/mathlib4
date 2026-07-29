@@ -229,8 +229,7 @@ namespace Submodule
 
 section DivisionRing
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=

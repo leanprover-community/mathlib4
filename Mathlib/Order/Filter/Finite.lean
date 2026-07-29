@@ -24,7 +24,7 @@ universe u v w x y
 
 namespace Filter
 
-variable {α : Type u} {f g : Filter α} {s t : Set α}
+variable {α : Type u} {f : Filter α} {s : Set α}
 
 @[simp]
 theorem biInter_mem {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Finite) :
@@ -53,7 +53,7 @@ end Filter
 
 namespace Filter
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
+variable {α : Type u} {β : Type v} {ι : Sort x}
 
 section Lattice
 

@@ -26,7 +26,7 @@ This file contains basic results on the following predicates of functions and se
 
 @[expose] public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 open Equiv Equiv.Perm Function
 
@@ -105,8 +105,8 @@ alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 
 end equality
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ} {f'
+  f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 section MapsTo
 
@@ -1262,8 +1262,8 @@ namespace Set
 
 section Prod
 
-variable {α β₁ β₂ : Type*} {s : Set α} {t₁ : Set β₁} {t₂ : Set β₂}
-  {f₁ : α → β₁} {f₂ : α → β₂} {g₁ : β₁ → α} {g₂ : β₂ → α}
+variable {α β₁ β₂ : Type*} {s : Set α} {t₁ : Set β₁} {t₂ : Set β₂} {f₁ : α → β₁} {f₂ : α → β₂} {g₁
+  : β₁ → α} {g₂ : β₂ → α}
 
 lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
   fun _ hx _ hy h => h₁ hx hy (Prod.ext_iff.1 h).1
@@ -1296,8 +1296,8 @@ end Prod
 
 section ProdMap
 
-variable {α₁ α₂ β₁ β₂ : Type*} {s₁ : Set α₁} {s₂ : Set α₂} {t₁ : Set β₁} {t₂ : Set β₂}
-  {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {g₁ : β₁ → α₁} {g₂ : β₂ → α₂}
+variable {α₁ α₂ β₁ β₂ : Type*} {s₁ : Set α₁} {s₂ : Set α₂} {t₁ : Set β₁} {t₂ : Set β₂} {f₁ : α₁ →
+  β₁} {f₂ : α₂ → β₂} {g₁ : β₁ → α₁} {g₂ : β₂ → α₂}
 
 lemma InjOn.prodMap (h₁ : s₁.InjOn f₁) (h₂ : s₂.InjOn f₂) :
     (s₁ ×ˢ s₂).InjOn fun x ↦ (f₁ x.1, f₂ x.2) :=

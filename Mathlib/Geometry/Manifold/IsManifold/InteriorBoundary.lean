@@ -485,11 +485,8 @@ end opens
 /-! Interior and boundary of the product of two manifolds. -/
 section prod
 
-variable
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type*} [TopologicalSpace H']
-  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace
+  H'] {N : Type*} [TopologicalSpace N] [ChartedSpace H' N] {J : ModelWithCorners 𝕜 E' H'}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
@@ -545,7 +542,7 @@ end prod
 /-! Interior and boundary of the disjoint union of two manifolds. -/
 section disjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 open Topology
 

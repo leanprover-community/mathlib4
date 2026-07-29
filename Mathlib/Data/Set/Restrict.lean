@@ -18,7 +18,7 @@ public import Mathlib.Data.Set.Image
 
 @[expose] public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function
 
@@ -212,8 +212,7 @@ alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
 
 end domRestrict
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {p : Set γ} {f : α → β} {g : β → γ} {a : α} {b : β}
 
 section MapsTo
 

@@ -15,7 +15,7 @@ This file contains basic results on piecewise defined functions.
 
 public section
 
-variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ δ : Type*} {ι : Sort*}
 
 open Equiv Equiv.Perm Function
 

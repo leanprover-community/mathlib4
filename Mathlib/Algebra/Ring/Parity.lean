@@ -73,7 +73,7 @@ variable [Add α] [Mul α] {a : α}
 end Distrib
 
 section Semiring
-variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
 
@@ -195,7 +195,7 @@ lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
 end Monoid
 
 section Ring
-variable [Ring α] {a b : α} {n : ℕ}
+variable [Ring α] {a b : α}
 
 lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 

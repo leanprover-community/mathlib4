@@ -228,7 +228,7 @@ def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* 
 
 section Restriction
 
-variable (s : Set α) [DecidablePred (· ∈ s)] (x y : FreeCommRing α)
+variable (s : Set α) [DecidablePred (· ∈ s)]
 
 @[simp]
 theorem restriction_of (p) : restriction s (of p) = if H : p ∈ s then of ⟨p, H⟩ else 0 :=

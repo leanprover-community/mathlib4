@@ -75,7 +75,7 @@ open scoped Pointwise
 
 universe u v w x
 
-variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
+variable {R : Type u} {S₁ : Type v} {S₂ : Type w}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
@@ -984,8 +984,8 @@ section coeffsIn
 variable {R S σ : Type*} [CommSemiring R] [CommSemiring S]
 
 section Module
-variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S}
-  {n : ℕ}
+variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S} {n
+  : ℕ}
 
 variable (σ M) in
 /-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/

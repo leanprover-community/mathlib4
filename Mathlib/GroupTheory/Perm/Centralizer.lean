@@ -596,8 +596,8 @@ section Sign
 
 open Function
 
-variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
-    (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
+variable (g : Perm α) (k : Perm (fixedPoints g)) (v : (c : g.cycleFactorsFinset) →
+  Subgroup.zpowers (c : Perm α))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sign_kerParam_apply_apply :
