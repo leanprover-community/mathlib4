@@ -106,18 +106,9 @@ section Rank
 variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
   {A : Matrix m n R} {l : m → WithTop n}
 
-<<<<<<< HEAD
-theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} := by
-  refine le_antisymm (A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by aesop)) ?_
-=======
-theorem IsPivotedBy.rank_le_card [LT m] [LT n] [DecidableEq n] [CommSemiring R]
-    [StrongRankCondition R] (hA : A.IsPivotedBy l) : A.rank ≤ #{i | l i ≠ ⊤} :=
-  A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by simpa using hi)
-
-variable [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
-
-theorem IsPivotedBy.card_le_rank (hA : A.IsPivotedBy l) : #{i | l i ≠ ⊤} ≤ A.rank := by
->>>>>>> 8a33542386 (ispivot rename)
+theorem IsPivotedBy.rank_eq (hA : A.IsPivotedBy l) : A.rank = #{i | l i ≠ ⊤} := by
+  refine le_antisymm (A.rank_le_card_of_support_subset _
+    (Function.support_subset_iff'.mpr fun i hi => hA.eq_top_iff.mp (by aesop))) ?_
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
@@ -135,12 +126,6 @@ theorem IsPivotedBy.card_le_rank (hA : A.IsPivotedBy l) : #{i | l i ≠ ⊤} ≤
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
 
-<<<<<<< HEAD
-=======
-theorem IsPivotedBy.rank_eq (hA : A.IsPivotedBy l) : A.rank = #{i | l i ≠ ⊤} :=
-  le_antisymm hA.rank_le_card hA.card_le_rank
-
->>>>>>> 8a33542386 (ispivot rename)
 end Rank
 
 /-! ## Decidability -/

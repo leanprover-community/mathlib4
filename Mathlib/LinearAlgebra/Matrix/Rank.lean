@@ -373,6 +373,7 @@ theorem rank_le_card_height [Fintype m] [CommSemiring R] [StrongRankCondition R]
 /-- The rank of a matrix is at most the size of any finset containing all its nonzero rows. -/
 theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
     (s : Finset m) (hz : Function.support A.row ⊆ s) : A.rank ≤ s.card := by
+  rw [Function.support_subset_iff'] at hz
   classical
   set B : Matrix m {x // x ∈ s} R := Matrix.of fun i a => if (a : m) = i then 1 else 0 with hBdef
   have hB : B * A.submatrix Subtype.val id = A := by
@@ -381,7 +382,8 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
     by_cases hi : i ∈ s
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
         fun a ha => by rw [if_neg fun he => ha (Subtype.ext he), zero_mul], if_pos rfl, one_mul]
-    · rw [congrFun (hz i hi) j]
+    · have h0 : A i = 0 := hz i hi
+      rw [congrFun h0 j]
       refine Finset.sum_eq_zero fun a _ => ?_
       have hne : (a : m) ≠ i := fun he => hi (he ▸ a.2)
       rw [if_neg hne, zero_mul]
