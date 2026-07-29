@@ -63,6 +63,20 @@ def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
     | _ => none
   | _ => none
 
+/-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
+entries. Commits into computation if this succeeds. -/
+def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
+  let some entries := parseMatrix? M | return none
+  let_expr Matrix finM finN R := ← inferType M | return none
+  let_expr Fin mE := finM.cleanupAnnotations | return none
+  let_expr Fin nE := finN.cleanupAnnotations | return none
+  -- the counts appear as `OfNat` numerals or as raw literals; `Expr.nat?` matches only the
+  -- former
+  let some m := mE.nat?.orElse fun _ => mE.rawNatLit? | return none
+  let some n := nE.nat?.orElse fun _ => nE.rawNatLit? | return none
+  unless entries.size == m && entries.all (·.size == n) do return none
+  return some (m, n, R, entries)
+
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
 def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
@@ -228,27 +242,13 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
       r := r + 1
   return { L, swaps, pivot := pivots }
 
-/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`: parse the
-entries' values, scale fractional rows integral, eliminate, fold the scaling back into `L`,
-and elaborate the certificate with the kernel checking its four conditions. -/
-def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
-  let M ← instantiateMVars M
-  let some entries := parseMatrix? M
-    | throwError "expected a matrix literal, got{indentExpr M}"
-  let_expr Matrix finM finN R := ← inferType M
-    | throwError "expected a matrix, got{indentExpr M}"
-  let_expr Fin mE := finM.cleanupAnnotations
-    | throwError "expected `Fin` row indices, got{indentExpr finM}"
-  let_expr Fin nE := finN.cleanupAnnotations
-    | throwError "expected `Fin` column indices, got{indentExpr finN}"
-  -- the counts appear as `OfNat` numerals or as raw literals; `Expr.nat?` matches only the
-  -- former
-  let some m := mE.nat?.orElse fun _ => mE.rawNatLit?
-    | throwError "expected a row count literal, got{indentExpr mE}"
-  let some n := nE.nat?.orElse fun _ => nE.rawNatLit?
-    | throwError "expected a column count literal, got{indentExpr nE}"
-  unless entries.size == m && entries.all (·.size == n) do
-    throwError "the matrix literal does not match its type dimensions{indentExpr M}"
+/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
+matched dimensions, element type, and entries (from `matchMatrixLit?`): parse the entries'
+values, scale fractional rows integral, eliminate, fold the scaling back into `L`, and
+elaborate the certificate with the kernel checking its four conditions. Failures here are
+refusals of a committed attempt, and throw. -/
+def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
+    (entries : Array (Array Expr)) : TermElabM Expr := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
   let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome

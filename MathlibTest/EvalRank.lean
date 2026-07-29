@@ -143,13 +143,18 @@ example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 -- 2 * 4 ≡ 1 (mod 7), det ≡ 0
 example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
 
--- only closed matrix literals are in scope
-/--
-error: expected a matrix literal, got
-  A
--/
+-- only closed matrix literals are in scope: the commitment gate skips an abstract matrix,
+-- and `eval_rank` reports that nothing was found
+/-- error: eval_rank: no closed `Matrix.rank` literal found in the goal -/
 #guard_msgs in
 example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
+
+-- graceful skip: `norm_rank` rewrites the closed literal and skips the abstract `rank`
+-- term in the same goal instead of aborting the `simp` call
+example (A : Matrix (Fin 2) (Fin 2) ℚ) (h : A.rank = 2) :
+    Matrix.rank (R := ℚ) !![1, 0; 0, 1] = A.rank := by
+  simp only [norm_rank]
+  exact h.symm
 
 /-- error: expected the element type to be a commutative ring -/
 #guard_msgs in
