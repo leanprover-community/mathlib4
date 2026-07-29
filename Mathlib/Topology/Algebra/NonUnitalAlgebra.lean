@@ -63,7 +63,6 @@ theorem topologicalClosure_mono {s t : NonUnitalSubalgebra R A} (h : s ≤ t) :
     s.topologicalClosure ≤ t.topologicalClosure :=
   closure_mono h
 
-
 instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     [IsMulCommutative s] : IsMulCommutative s.topologicalClosure :=
   s.toSubsemigroup.isMulCommutative_topologicalClosure

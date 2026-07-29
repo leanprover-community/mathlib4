@@ -745,7 +745,6 @@ def Subgroup.connectedComponentOfOne (G : Type*) [TopologicalSpace G] [Group G]
   mul_mem' hg hh := mul_mem_connectedComponent_one hg hh
   inv_mem' hg := inv_mem_connectedComponent_one hg
 
-
 /-- If a subgroup of a topological group is commutative, then so is its topological closure. -/
 @[to_additive
 /-- If a subgroup of an additive topological group is commutative, then so is its
