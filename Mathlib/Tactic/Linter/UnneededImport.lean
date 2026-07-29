@@ -18,8 +18,9 @@ imports cover every used module of its import closure. The message also reports 
 modules that removal drops from the import closure, so findings with an effect on the closure
 identify themselves.
 
-Imports that only provide syntax, tactics, or attributes are invisible to constant analysis
-and give false positives. Such imports need an ignore list, like `scripts/noshake.json`.
+Usage marking has two sources: the constants that the declarations of the file use, and the
+defining modules of the syntax node kinds of each command. The second source covers imports
+that only provide syntax, tactics, or attributes.
 -/
 
 meta section
@@ -33,6 +34,11 @@ public register_option linter.unneededImport : Bool := {
   defValue := false
   descr := "enable the unneededImport linter"
 }
+
+/-- Collects the node kinds of a syntax tree. -/
+partial def collectKinds (s : Syntax) (acc : NameSet) : NameSet :=
+  let acc := if s.isOfKind `null ∨ s.isIdent ∨ s.isAtom then acc else acc.insert s.getKind
+  s.getArgs.foldl (fun a c => collectKinds c a) acc
 
 /-- Persistent state of the `unneededImport` linter: the defining modules of all constants
 that the declarations of the file use. -/
@@ -48,6 +54,13 @@ def unneededImportPost (readPre : PreStateFn) (stx : Syntax) (self : UsedModules
     return self
   let env ← getEnv
   let mut used := self.used
+  -- The node kinds of the command name their parser constants, and each constant has a
+  -- defining module. This marks imports that only provide syntax, tactics, or attributes.
+  let mut kinds : NameSet := {}
+  for k in collectKinds stx {} do
+    if let some idx := env.getModuleIdxFor? k then
+      used := used.insert env.allImportedModuleNames[idx.toNat]!
+  let _ := kinds
   if let some p := readPre declaredNames then
     for n in p.new do
       if let some ci := env.find? n then
