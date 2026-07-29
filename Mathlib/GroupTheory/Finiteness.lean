@@ -48,6 +48,7 @@ element of the type can be written as a finite sum of elements from this finite 
 
 This generalizes and will eventually replace the four existing definitions
 `AddSubmonoid.FG`, `AddMonoid.FG`, `AddSubgroup.FG`, and `AddGroup.FG`. -/
+@[mk_iff isAddFG_def]
 class IsAddFG (M : Type*) [Add M] : Prop where
   fg_top : ∃ S : Finset M, AddSubsemigroup.closure (S : Set M) = ⊤
 
@@ -60,15 +61,11 @@ element of the type can be written as a finite product of elements from this fin
 
 This generalizes and will eventually replace the four existing definitions
 `Submonoid.FG`, `Monoid.FG`, `Subgroup.FG`, and `Group.FG`. -/
-@[to_additive existing]
+@[to_additive existing, mk_iff isMulFG_def]
 class IsMulFG : Prop where
   fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
 
 variable {M N}
-
-@[to_additive]
-theorem isMulFG_def : IsMulFG M ↔ ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤ :=
-  ⟨fun h ↦ h.fg_top, fun h ↦ ⟨h⟩⟩
 
 -- We give this instance low priority to avoid slow typeclass resolutions.
 @[to_additive]
