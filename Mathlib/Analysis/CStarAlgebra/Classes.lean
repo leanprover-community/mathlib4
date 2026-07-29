@@ -75,6 +75,16 @@ noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : 
 
 noncomputable instance : CommCStarAlgebra ℂ where
 
+namespace IsMulCommutative
+
+scoped instance (priority := 50) {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A] :
+    NonUnitalCommCStarAlgebra A where
+
+scoped instance (priority := 50) {A : Type*} [CStarAlgebra A] [IsMulCommutative A] :
+    CommCStarAlgebra A where
+
+end IsMulCommutative
+
 section Elemental
 
 variable {A : Type*}
