@@ -93,6 +93,13 @@ lean_lib Archive where
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
 
+/-- Wanted statements: `Wanted/X/Y/Z.lean` contains the `proof_wanted` statements
+corresponding to `Mathlib/X/Y/Z.lean`. These files contain only imports, context setup
+(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular they have no
+copyright headers, so the header style linter is disabled. -/
+lean_lib Wanted where
+  leanOptions := mathlibLeanOptions.push ⟨`weak.linter.style.header, false⟩
+
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
