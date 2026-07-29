@@ -56,16 +56,16 @@ theorem IsPivot.eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivot l) :
   | top => simpa using isLeadingEntry_top_iff.mp (hc ▸ hA.isLeadingEntry i)
   | coe c => simpa using fun h0 => (hA.isLeadingEntry i).2 c hc (congrFun h0 c)
 
-variable [LinearOrder n]
+variable [PartialOrder m] [LinearOrder n]
 
-theorem IsPivot.lt_of_lt_of_ne_top [LT m] {i₁ i₂ : m}
+theorem IsPivot.lt_of_lt_of_ne_top {i₁ i₂ : m}
     (hA : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
   by_contra! hle
   obtain ⟨c₂, hc₂⟩ := WithTop.ne_top_iff_exists.mp (hle.trans_lt h₁.lt_top).ne
   refine (hA.isLeadingEntry i₂).2 c₂ hc₂.symm (hA.isRowEchelon hlt fun j₁ hj₁ => ?_)
   exact (hA.isLeadingEntry i₁).1 j₁ ((WithTop.coe_lt_coe.mpr hj₁).trans_le (hc₂.le.trans hle))
 
-theorem IsPivot.monotone [PartialOrder m] (hA : A.IsPivot l) :
+theorem IsPivot.monotone (hA : A.IsPivot l) :
     Monotone l := by
   refine monotone_iff_forall_lt.mpr ?_
   intro i₁ i₂ hlt
@@ -73,17 +73,17 @@ theorem IsPivot.monotone [PartialOrder m] (hA : A.IsPivot l) :
   · simp [hA.eq_top_iff.mpr (hA.isRowEchelon.row_eq_zero_of_lt hlt (hA.eq_top_iff.mp h₁))]
   · exact (hA.lt_of_lt_of_ne_top hlt h₁).le
 
-theorem IsPivot.strictMonoOn [Preorder m] (hA : A.IsPivot l) :
+theorem IsPivot.strictMonoOn (hA : A.IsPivot l) :
     StrictMonoOn l {i | l i ≠ ⊤} :=
   fun _ h₁ _ _ hlt => hA.lt_of_lt_of_ne_top hlt h₁
 
 /-- The pivots of a matrix are unique. -/
-theorem IsPivot.unique [LT m] {l' : m → WithTop n}
+theorem IsPivot.unique {l' : m → WithTop n}
     (hl : A.IsPivot l) (hl' : A.IsPivot l') : l = l' :=
   funext fun i => (hl.isLeadingEntry i).unique (hl'.isLeadingEntry i)
 
 /-- The staircase characterisation of pivots. -/
-theorem isPivot_iff [PartialOrder m] :
+theorem isPivot_iff :
     A.IsPivot l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
   refine ⟨fun hA => ⟨hA.monotone, hA.strictMonoOn, hA.isLeadingEntry⟩, ?_⟩
