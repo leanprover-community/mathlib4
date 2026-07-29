@@ -30,7 +30,7 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 
 ## Tags
 
-matrix, echelon form, rank, pivot
+matrix, echelon form, pivot
 -/
 
 @[expose] public section
@@ -43,39 +43,40 @@ variable {m n : Type*} {R : Type*}
 
 section Zero
 
-variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
+variable [Zero R] [Preorder m] {A : Matrix m n R} {l : m → WithTop n}
 
 /-- `l i` is the leading position of each row `i` of `A`; `l` is monotone and strictly
 increasing on the nonzero rows. -/
-structure IsPivot [Preorder m] [Preorder n] (A : Matrix m n R) (l : m → WithTop n) :
+structure IsPivot [Preorder n] (A : Matrix m n R) (l : m → WithTop n) :
     Prop where
   monotone : Monotone l
   strictMonoOn : StrictMonoOn l {i | l i ≠ ⊤}
   isLeadingEntry : ∀ i : m, A.IsLeadingEntry i (l i)
 
-theorem IsPivot.lt_of_lt_of_ne_top [Preorder m] [Preorder n] {i₁ i₂ : m}
-    (h : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
+theorem IsPivot.lt_of_lt_of_ne_top [Preorder n] {i₁ i₂ : m}
+    (hA : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
   · exact h₂ ▸ WithTop.lt_top_iff_ne_top.mpr h₁
-  · exact h.strictMonoOn h₁ h₂ hlt
+  · exact hA.strictMonoOn h₁ h₂ hlt
 
-theorem IsPivot.isRowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
-    A.IsRowEchelon := by
+variable [LinearOrder n]
+
+theorem IsPivot.isRowEchelon (hA : A.IsPivot l) : A.IsRowEchelon := by
   intro i₁ i₂ hlt j₂ hz
-  refine (h.isLeadingEntry i₂).1 j₂ ?_
+  refine (hA.isLeadingEntry i₂).1 j₂ ?_
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
   · rw [h₂]
     exact WithTop.coe_lt_top j₂
-  · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ h.monotone hlt.le))
+  · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ hA.monotone hlt.le))
     obtain ⟨c₁, hc₁⟩ := WithTop.ne_top_iff_exists.mp h₁
     have hj : (j₂ : WithTop n) ≤ c₁ := WithTop.coe_le_coe.mpr <| le_of_not_gt fun hgt =>
-      (h.isLeadingEntry i₁).2 c₁ hc₁.symm (hz c₁ hgt)
-    exact lt_of_le_of_lt (hc₁ ▸ hj) (h.lt_of_lt_of_ne_top hlt h₁)
+      (hA.isLeadingEntry i₁).2 c₁ hc₁.symm (hz c₁ hgt)
+    exact lt_of_le_of_lt (hc₁ ▸ hj) (hA.lt_of_lt_of_ne_top hlt h₁)
 
 /-- The pivots of a matrix are unique. -/
-theorem IsPivot.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
-    (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
-  funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
+theorem IsPivot.unique {l' : m → WithTop n}
+    (hl : A.IsPivot l) (hl' : A.IsPivot l') : l = l' :=
+  funext fun i => (hl.isLeadingEntry i).unique (hl'.isLeadingEntry i)
 
 end Zero
 
@@ -95,23 +96,23 @@ variable [Fintype m] [Fintype n] [Preorder n] [DecidableEq n] {A : Matrix m n R}
   {l : m → WithTop n}
 
 theorem IsPivot.rank_le_card [Preorder m] [CommSemiring R] [StrongRankCondition R]
-    (h : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} := by
+    (hA : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} := by
   refine A.rank_le_card_of_row_eq_zero _ fun i hi => ?_
   have htop : l i = ⊤ := by simpa using hi
-  exact isLeadingEntry_top_iff.mp (htop ▸ h.isLeadingEntry i)
+  exact isLeadingEntry_top_iff.mp (htop ▸ hA.isLeadingEntry i)
 
 variable [LinearOrder m] [CommRing R] [IsDomain R]
 
-theorem IsPivot.card_le_rank (h : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank := by
+theorem IsPivot.card_le_rank (hA : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank := by
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
-    have hl := h.isLeadingEntry i.1
+    have hl := hA.isLeadingEntry i.1
     rw [← WithTop.coe_untop (l i.1) i.2, isLeadingEntry_coe_iff] at hl
     exact hl
   have htri : (A.submatrix Subtype.val g).BlockTriangular id := by
     intro i j hij
-    exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (h.strictMonoOn j.2 i.2 hij))
+    exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (hA.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
     rw [det_of_upperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2
@@ -120,8 +121,8 @@ theorem IsPivot.card_le_rank (h : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank :
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
 
-theorem IsPivot.rank_eq (h : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
-  le_antisymm h.rank_le_card h.card_le_rank
+theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
+  le_antisymm hA.rank_le_card hA.card_le_rank
 
 theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
     {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
