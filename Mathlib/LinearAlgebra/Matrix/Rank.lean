@@ -224,15 +224,40 @@ theorem rank_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [Fintype m] [D
     {A : Matrix m m R} (h : A.det ≠ 0) : A.rank = Fintype.card m :=
   rank_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero h)
 
+lemma rank_smul_of_mem_nonZeroDivisors {R : Type*} [CommRing R] {c : R} (B : Matrix m n R)
+    (hc : c ∈ nonZeroDivisors R) : (c • B).rank = B.rank := by
+  have hinj : Function.Injective (LinearMap.lsmul R (m → R) c) := by
+    intro x y hxy
+    funext i
+    have hi : c * x i = c * y i := congrFun hxy i
+    have hz : (x i - y i) * c = 0 := by
+      rw [sub_mul, mul_comm (x i), hi, mul_comm]
+      simp
+    aesop
+  have hcomp : (c • B).mulVecLin = (LinearMap.lsmul R (m → R) c).comp B.mulVecLin := by aesop
+  rw [rank, rank, hcomp, LinearMap.range_comp]
+  exact (Submodule.equivMapOfInjective _ hinj _).finrank_eq.symm
+
+lemma rank_mul_eq_left_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [DecidableEq n]
+    (A : Matrix n n R) (B : Matrix m n R) (hA : A.det ∈ nonZeroDivisors R) :
+    (B * A).rank = B.rank := by
+  nontriviality R
+  refine le_antisymm (rank_mul_le_left B A) ?_
+  have key : (B * A) * A.adjugate = A.det • B := by
+    rw [Matrix.mul_assoc, Matrix.mul_adjugate, Matrix.mul_smul, Matrix.mul_one]
+  calc B.rank = (A.det • B).rank := (rank_smul_of_mem_nonZeroDivisors B hA).symm
+    _ = ((B * A) * A.adjugate).rank := by rw [key]
+    _ ≤ (B * A).rank := rank_mul_le_left _ _
+
+lemma rank_mul_eq_left_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [DecidableEq n]
+    (A : Matrix n n R) (B : Matrix m n R) (h : A.det ≠ 0) : (B * A).rank = B.rank :=
+  rank_mul_eq_left_of_det_mem_nonZeroDivisors A B (mem_nonZeroDivisors_of_ne_zero h)
+
 /-- Right multiplying by an invertible matrix does not change the rank -/
 @[simp]
 lemma rank_mul_eq_left_of_isUnit_det {R : Type*} [CommRing R] [DecidableEq n] (A : Matrix n n R)
-    (B : Matrix m n R) (hA : IsUnit A.det) : (B * A).rank = B.rank := by
-  suffices Function.Surjective A.mulVecLin by
-    rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-      (LinearMap.range_eq_top.mpr this), ← rank]
-  intro v
-  exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
+    (B : Matrix m n R) (hA : IsUnit A.det) : (B * A).rank = B.rank :=
+  rank_mul_eq_left_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
 
 lemma rank_mul_eq_right_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R]
     [Fintype m] [DecidableEq m] (A : Matrix m m R) (B : Matrix m n R)
