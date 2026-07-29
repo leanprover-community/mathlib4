@@ -123,28 +123,6 @@ theorem countable_setOfPred_isolated_left [SecondCountableTopology α] :
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left := countable_setOfPred_isolated_left
 
-/-- A second-countable linear order admits a countable set `D` such that each `x` lies in the
-closure of `D ∩ Ici x`. -/
-theorem exists_countable_mem_closure_inter_Ici [SecondCountableTopology α] :
-    ∃ D : Set α, D.Countable ∧ ∀ x, x ∈ closure (D ∩ Ici x) := by
-  obtain ⟨D₀, hD₀c, hD₀⟩ := exists_countable_dense α
-  refine ⟨D₀ ∪ {x | 𝓝[>] x = ⊥}, hD₀c.union countable_setOfPred_isolated_right,
-    fun x ↦ ?_⟩
-  by_cases hx : 𝓝[>] x = ⊥
-  · exact subset_closure ⟨Or.inr hx, le_rfl⟩
-  · have : (𝓝[>] x).NeBot := neBot_iff.2 hx
-    refine mem_closure_iff.2 fun u hu hxu ↦ ?_
-    obtain ⟨d, hdD₀, hd⟩ := hD₀.exists_mem_open (hu.inter isOpen_Ioi)
-      (this.nonempty_of_mem (inter_mem (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu))
-        self_mem_nhdsWithin))
-    exact ⟨d, hd.1, Or.inl hdD₀, hd.2.le⟩
-
-/-- A second-countable linear order admits a countable set `D` such that each `x` lies in the
-closure of `D ∩ Set.Iic x`. -/
-theorem exists_countable_mem_closure_inter_Iic [SecondCountableTopology α] :
-    ∃ D : Set α, D.Countable ∧ ∀ x, x ∈ closure (D ∩ Iic x) :=
-  exists_countable_mem_closure_inter_Ici (α := αᵒᵈ)
-
 /-- The set of points in a set which are isolated on the right in this set is countable when the
 space is second-countable. -/
 theorem countable_setOfPred_isolated_right_within [SecondCountableTopology α] {s : Set α} :
