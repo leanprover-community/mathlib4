@@ -727,29 +727,17 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
   · exact hf.measurable.stronglyMeasurable
 
 /-- A function which is right continuous at every point of a second-countable linear order is
-strongly measurable.
-
-Unlike `Continuous.stronglyMeasurable`, no countability assumption is made on the target: right
-continuity forces the range of `f` to lie in the closure of the image of a countable set. -/
-theorem _root_.stronglyMeasurable_of_continuousWithinAt_Ici [MeasurableSpace α] [TopologicalSpace α]
-    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [BorelSpace α]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β}
-    (hf : ∀ x, ContinuousWithinAt f (Ici x) x) : StronglyMeasurable f := by
-  borelize β
-  obtain ⟨D, hDc, hD⟩ := exists_countable_mem_closure_inter_Ici (α := α)
-  refine stronglyMeasurable_iff_measurable_separable.2
-    ⟨measurable_of_continuousWithinAt_Ici hf, f '' D, hDc.image f, ?_⟩
-  rintro _ ⟨x, rfl⟩
-  exact closure_mono (image_mono inter_subset_left)
-    (((hf x).mono inter_subset_right).mem_closure_image (hD x))
-
-/-- A function which is left continuous at every point of a second-countable linear order is
 strongly measurable. -/
-theorem _root_.stronglyMeasurable_of_continuousWithinAt_Iic [MeasurableSpace α] [TopologicalSpace α]
+@[to_dual /-- A function which is left continuous at every point of a second-countable linear order
+is strongly measurable. -/]
+theorem _root_.stronglyMeasurable_of_continuousWithinAt_Ioi [MeasurableSpace α] [TopologicalSpace α]
     [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [BorelSpace α]
     [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β}
-    (hf : ∀ x, ContinuousWithinAt f (Iic x) x) : StronglyMeasurable f :=
-  stronglyMeasurable_of_continuousWithinAt_Ici (α := αᵒᵈ) hf
+    (hf : ∀ x, ContinuousWithinAt f (Ioi x) x) : StronglyMeasurable f := by
+  borelize β
+  let := separableSpace_range_of_continuousWithinAt_Ioi hf
+  rw [stronglyMeasurable_iff_measurable_separable]
+  exact ⟨measurable_of_continuousWithinAt_Ioi hf, IsSeparable.of_subtype _⟩
 
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
 @[to_additive /-- A continuous function whose support is contained in a compact set is strongly
