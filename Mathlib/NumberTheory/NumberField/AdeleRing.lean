@@ -53,30 +53,35 @@ deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace AdeleRing
 
+/-- `𝔸[R, K]` is notation for `NumberField.AdeleRing R K`. -/
+scoped notation:max "𝔸[" R ", " K "]" => AdeleRing R K
+/-- `𝔸[K]` is notation for `NumberField.AdeleRing (𝓞 K) K`. -/
+scoped notation:max "𝔸[" K "]" => AdeleRing (𝓞 K) K
+
 variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
-instance : Inhabited (AdeleRing R K) := ⟨0⟩
+instance : Inhabited 𝔸[R, K] := ⟨0⟩
 
 @[simp]
 theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
-    (algebraMap K (AdeleRing R K) x).1 v = x := rfl
+    (algebraMap K 𝔸[R, K] x).1 v = x := rfl
 
 theorem algebraMap_fst_def (x : K) :
-    (algebraMap K (AdeleRing R K) x).1 = algebraMap K (InfiniteAdeleRing K) x := rfl
+    (algebraMap K 𝔸[R, K] x).1 = algebraMap K K∞ x := rfl
 
 @[simp]
 theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
-    (algebraMap K (AdeleRing R K) x).2 v = x := rfl
+    (algebraMap K 𝔸[R, K] x).2 v = x := rfl
 
 theorem algebraMap_snd_def (x : K) :
-    (algebraMap K (AdeleRing R K) x).2 = algebraMap K (FiniteAdeleRing R K) x := rfl
+    (algebraMap K 𝔸[R, K] x).2 = algebraMap K 𝔸ᶠ[R, K] x := rfl
 
-theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
-  fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
+theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K 𝔸[R, K]) :=
+  fun _ _ hxy => (algebraMap K K∞).injective (Prod.ext_iff.1 hxy).1
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
-abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
+abbrev principalSubgroup : AddSubgroup 𝔸[R, K] := (algebraMap K 𝔸[R, K]).range.toAddSubgroup
 
 end AdeleRing
 
@@ -86,36 +91,35 @@ variable {K : Type*} [Field K] [NumberField K]
 
 namespace AdeleRing
 
-theorem isUnit_iff {x : AdeleRing (𝓞 K) K} :
-    IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
-      ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by
+theorem isUnit_iff {x : 𝔸[K]} : IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
+    ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by
   erw [Prod.isUnit_iff, Pi.isUnit_iff]
   rw [FiniteAdeleRing.isUnit_iff]
   simp_rw [isUnit_iff_ne_zero]
 
-instance : Norm (AdeleRing (𝓞 K) K) where norm x := ‖x.1‖ * ‖x.2‖
+instance : Norm 𝔸[K] where norm x := ‖x.1‖ * ‖x.2‖
 
-theorem norm_def (x : AdeleRing (𝓞 K) K) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
+theorem norm_def (x : 𝔸[K]) : ‖x‖ = ‖x.1‖ * ‖x.2‖ := rfl
 
-theorem norm_def_unit (x : (AdeleRing (𝓞 K) K)ˣ) :
+theorem norm_def_unit (x : 𝔸[K]ˣ) :
     ‖x.1‖ = ‖x.1.1‖ * ‖(MulEquiv.prodUnits x).2.1‖ := rfl
 
-theorem norm_apply_unit (x : (AdeleRing (𝓞 K) K)ˣ) :
+theorem norm_apply_unit (x : 𝔸[K]ˣ) :
     ‖x.1‖ = (∏ v, ‖x.1.1 v‖ ^ v.mult) * ∏ᶠ v, ‖(MulEquiv.prodUnits x).2.1 v‖ := by
   rw [norm_def_unit, FiniteAdeleRing.norm_def_unit]
   rfl
 
-theorem norm_eq_zero_of_not_isUnit {x : AdeleRing (𝓞 K) K} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
+theorem norm_eq_zero_of_not_isUnit {x : 𝔸[K]} (hx : ¬IsUnit x) : ‖x‖ = 0 := by
   rcases not_and_or.1 <| Prod.isUnit_iff.not.1 hx with hi | hf
   · simp [norm_def, InfiniteAdeleRing.norm_eq_zero_of_not_isUnit hi]
   · simp [norm_def, FiniteAdeleRing.norm_eq_zero_of_not_isUnit hf]
 
 variable (K) in
 /-- The global embedding of the units of `K` into the units of `AdeleRing (𝓞 K) K`. -/
-def unitEmbedding : Kˣ →* (AdeleRing (𝓞 K) K)ˣ := Units.map (algebraMap K (AdeleRing (𝓞 K) K))
+def unitEmbedding : Kˣ →* 𝔸[K]ˣ := Units.map (algebraMap K 𝔸[K])
 
 @[simp] theorem unitEmbedding_apply (k : Kˣ) :
-    unitEmbedding K k = algebraMap K (AdeleRing (𝓞 K) K) k := rfl
+    unitEmbedding K k = algebraMap K 𝔸[K] k := rfl
 
 theorem unitEmbedding_prodUnits_apply (k : Kˣ) :
     (MulEquiv.prodUnits (unitEmbedding K k)).2 = FiniteAdeleRing.unitEmbedding _ _ k := rfl

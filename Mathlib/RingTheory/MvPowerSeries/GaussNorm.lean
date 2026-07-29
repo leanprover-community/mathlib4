@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-
 public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!

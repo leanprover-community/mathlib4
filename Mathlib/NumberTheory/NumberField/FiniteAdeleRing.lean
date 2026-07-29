@@ -25,18 +25,27 @@ adele ring, number field
 
 namespace NumberField
 
+open IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
+
 variable {K : Type*} [Field K] [NumberField K]
+
+namespace AdeleRing
+
+/-- `𝔸ᶠ[K]` is notation for `IsDedekindDomain.FiniteAdeleRing (𝓞 K) K`. -/
+scoped notation:max "𝔸ᶠ[" K "]" => FiniteAdeleRing (𝓞 K) K
+
+end AdeleRing
 
 namespace FiniteAdeleRing
 
-open IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
+open scoped AdeleRing
 
-theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
+theorem mulSupport_finite (x : 𝔸ᶠ[K]ˣ) :
     (Function.mulSupport fun v ↦ ‖x.1 v‖).Finite := by
   simp only [Function.mulSupport, ne_eq, Valued.toNormedField.norm_eq_one_iff]
   exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
-private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
+private theorem hasProd_subset_valued_lt_one (x : 𝔸ᶠ[K]) :
     HasProd (fun v : {v | 1 < Valued.v (x v)} ↦ ‖x v‖)
       (∏ᶠ v : {v | 1 < Valued.v (x v)}, ‖x v‖) := by
   have : Fintype _ := (finite_valued_one_lt x).fintype
@@ -44,7 +53,7 @@ private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
   exact hasProd_fintype _
 
 open Filter HeightOneSpectrum Valued in
-private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x)
+private theorem hasProd_zero_subset_one_lt_valued {x : 𝔸ᶠ[K]} (hx : ¬IsUnit x)
     (hx₀ : ∀ v, x v ≠ 0) : HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 :=
   have hx := infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
   have hx_prop : {v | 1 < Valued.v (x v)}.Finite := finite_valued_one_lt x
@@ -61,7 +70,7 @@ private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) 
     exact ⟨t.subtype _, by grind [Finset.card_subtype, Finset.card_filter_eq_iff.2 ht]⟩
   (tendsto_inv_atTop_zero.comp this).congr (by simp)
 
-theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) :
+theorem hasProd_zero_of_not_isUnit {x : 𝔸ᶠ[K]} (hx : ¬IsUnit x) :
     HasProd (fun v ↦ ‖x v‖) 0 := by
   by_cases hx₀ : ∃ v, x v = 0
   · exact hasProd_zero_of_exists_eq_zero (by simpa using hx₀)
@@ -71,28 +80,27 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
   have := HasProd.mul_disjoint (by grind) (hasProd_subset_valued_lt_one x) h (f := fun v ↦ ‖x v‖)
   simpa using this.mul_isCompl ⟨by grind, fun _ _ _ ↦ by grind⟩ hT
 
-theorem tprod_norm_of_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : IsUnit x) :
+theorem tprod_norm_of_isUnit {x : 𝔸ᶠ[K]} (hx : IsUnit x) :
     ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ := by
   rw [tprod_eq_finprod]
   exact mulSupport_finite hx.unit
 
-theorem tprod_norm_of_unit (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
-    ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ :=
+theorem tprod_norm_of_unit (x : 𝔸ᶠ[K]ˣ) : ∏' v, ‖x.1 v‖ = ∏ᶠ v, ‖x.1 v‖ :=
   tprod_norm_of_isUnit x.isUnit
 
-theorem tprod_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬ IsUnit x) :
+theorem tprod_eq_zero_of_not_isUnit {x : 𝔸ᶠ[K]} (hx : ¬ IsUnit x) :
     ∏' v, ‖x.1 v‖ = 0 := by
   rw [HasProd.tprod_eq]
   exact hasProd_zero_of_not_isUnit hx
 
-noncomputable instance : Norm (FiniteAdeleRing (𝓞 K) K) where norm x := ∏' v, ‖x.1 v‖
+noncomputable instance : Norm 𝔸ᶠ[K] where norm x := ∏' v, ‖x.1 v‖
 
-theorem norm_def (x : FiniteAdeleRing (𝓞 K) K) : ‖x‖ = ∏' v, ‖x.1 v‖ := rfl
+theorem norm_def (x : 𝔸ᶠ[K]) : ‖x‖ = ∏' v, ‖x.1 v‖ := rfl
 
-theorem norm_def_unit (x : (FiniteAdeleRing (𝓞 K) K)ˣ) : ‖x.1‖ = ∏ᶠ v, ‖x.1 v‖ :=
+theorem norm_def_unit (x : 𝔸ᶠ[K]ˣ) : ‖x.1‖ = ∏ᶠ v, ‖x.1 v‖ :=
   tprod_norm_of_unit x
 
-theorem norm_eq_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
+theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[K]} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
   tprod_eq_zero_of_not_isUnit hx
 
 theorem unitEmbedding_norm_apply (x : Kˣ) :
