@@ -38,7 +38,7 @@ open Function
 assert_not_exists MonoidWithZero IsOrderedRing
 
 deriving instance Nontrivial,
-  Add, LE, LT, Bot, Zero, One, ZeroLEOneClass, NatCast,
+  Add, Sub, LE, LT, Bot, Zero, One, ZeroLEOneClass, NatCast,
   Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT
   for ENat
 
@@ -70,6 +70,12 @@ theorem natCast_add (m n : ℕ) : ↑(m + n) = (m + n : ℕ∞) :=
   rfl
 
 @[deprecated (since := "2026-07-17")] alias coe_add := natCast_add
+
+@[simp, norm_cast]
+theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
+  rfl
+
+@[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
 
 @[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 

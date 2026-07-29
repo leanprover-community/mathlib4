@@ -40,12 +40,6 @@ lemma pow_ne_top_iff {n : ℕ} : a ^ n ≠ ⊤ ↔ a ≠ ⊤ ∨ n = 0 := WithTo
 
 lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ⊤) : a = ⊤ := WithTop.eq_top_of_pow n ha
 
-@[simp, norm_cast]
-theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
-  rfl
-
-@[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
-
 /-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
   toFun := toNat
@@ -56,8 +50,6 @@ def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
 @[simp, norm_cast] lemma coe_toNatHom : toNatHom = toNat := rfl
 
 lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
-
-
 
 @[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
     lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
@@ -73,14 +65,6 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 @[simp] theorem lift_one : lift 1 (WithTop.natCast_lt_top 1) = 1 := rfl
 @[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift ofNat(n) (WithTop.natCast_lt_top n) = OfNat.ofNat n := rfl
-
-@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
-    n.toNat = m ↔ n = m := by
-  cases n
-  · simpa using NeZero.ne' m
-  · simp
-
-@[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
 
 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
@@ -131,6 +115,15 @@ theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤
 theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
 
+
+@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
+    n.toNat = m ↔ n = m := by
+  cases n
+  · simpa using NeZero.ne' m
+  · simp
+
+@[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
+
 @[deprecated (since := "2026-07-17")] alias coe_toNat_eq_self := natCast_toNat_eq_self
 
 alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
@@ -138,15 +131,6 @@ alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
 @[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
 
 
-@[deprecated Order.succ_eq_add_one (since := "2026-05-25")]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
-  Order.succ_eq_add_one m
-
-theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
-  Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
-
-theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
-  Order.add_one_le_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hn)
 
 theorem natCast_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
   add_one_le_iff <| natCast_ne_top m
