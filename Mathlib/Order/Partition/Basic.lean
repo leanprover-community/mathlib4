@@ -95,7 +95,6 @@ lemma pairwiseDisjoint : Set.PairwiseDisjoint (P : Set α) id :=
 lemma eq_or_disjoint (hx : x ∈ P) (hy : y ∈ P) : x = y ∨ Disjoint x y :=
   or_iff_not_imp_left.mpr (P.disjoint hx hy)
 
-@[grind →]
 lemma eq_of_not_disjoint (hx : x ∈ P) (hy : y ∈ P) (hxy : ¬ Disjoint x y) : x = y :=
   (P.eq_or_disjoint hx hy).resolve_right hxy
 
@@ -163,7 +162,7 @@ instance : PartialOrder (Partition α) where
   lt := _
   le_refl P x hx := ⟨x, hx, le_rfl⟩
   le_trans P Q R hPQ hQR x hxP := by grind
-  le_antisymm P Q hp hq := Partition.ext fun x ↦ by grind
+  le_antisymm P Q hp hq := Partition.ext fun x ↦ by grind [eq_of_not_disjoint]
 
 lemma le_def : P ≤ Q ↔ ∀ x ∈ P, ∃ y ∈ Q, x ≤ y := .rfl
 
