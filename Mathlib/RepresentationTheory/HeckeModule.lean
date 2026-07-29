@@ -127,15 +127,15 @@ lemma IntertwiningMap.indTo_apply_cosetVector₁_eq (H : Subgroup G) (g : G)
     IntertwiningMap.indTo H.subtype f (cosetVector₁ k H g) = ρ g⁻¹ (f 1) := by
   exact IntertwiningMap.indTo_apply_IndVMk_trivial_eq H.subtype g 1 f
 
-noncomputable def moduleHecke₁.invariant_mk (H : Subgroup G) (v : V) (h : ∀ (g : H), ρ g v = v) :
+noncomputable def moduleHecke₁.invariantMk (H : Subgroup G) (v : V) (h : ∀ (g : H), ρ g v = v) :
     moduleHecke₁ H ρ :=
   IntertwiningMap.indTo H.subtype ⟨LinearMap.toSpanSingleton k _ v, fun g => by ext; simp [h g]⟩
 
 @[simp]
-lemma moduleHecke₁.invariant_mk_apply_cosetVector₁ (H : Subgroup G) (v : V) (g : G)
+lemma moduleHecke₁.invariantMk_apply_cosetVector₁ (H : Subgroup G) (v : V) (g : G)
     (h : ∀ (g : H), ρ g v = v) :
-    moduleHecke₁.invariant_mk H v h (cosetVector₁ k H g) = ρ g⁻¹ v := by
-  simp [invariant_mk]
+    moduleHecke₁.invariantMk H v h (cosetVector₁ k H g) = ρ g⁻¹ v := by
+  simp [invariantMk]
 
 @[ext]
 lemma moduleHecke₁.ext {H : Subgroup G} (f g : moduleHecke₁ H ρ)
@@ -153,7 +153,7 @@ variable (k)
 /-- The `IntertwiningMap` sending the neutral `cosetVector₁` to the neutral `cosetVector₁`. -/
 noncomputable def canonicalIntertwiningMap (H₁ H₂ : Subgroup G) (h : H₁ ≤ H₂) :
     bimoduleHecke₁ k H₁ H₂ :=
-  moduleHecke₁.invariant_mk H₁ (cosetVector₁ k H₂ 1) (fun g ↦ by
+  moduleHecke₁.invariantMk H₁ (cosetVector₁ k H₂ 1) (fun g ↦ by
       simpa [comm] using cosetVector₁_subgroup_eq k (H := H₂) ⟨g.val, h g.prop⟩⁻¹)
 
 @[simp]
@@ -173,7 +173,7 @@ attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 `cosetVector₁ k H₁ gᵢ` where `gᵢ` runs through representatives of `⟦H₁∩H₂\H₂⟧`. -/
 noncomputable def coCanonicalIntertwiningMap (H₂ H₁ : Subgroup G) [H₁.IsFiniteRelIndex H₂] :
     bimoduleHecke₁ k H₂ H₁ :=
-  moduleHecke₁.invariant_mk H₂
+  moduleHecke₁.invariantMk H₂
     (∑ g : Quotient (QuotientGroup.rightRel (H₁.subgroupOf H₂)),
         Quotient.liftOn g (fun x => (cosetVector₁ k H₁ x)) fun _ y ⟨h, heq⟩ => by
           rw [← heq]
@@ -194,7 +194,7 @@ lemma coCanonicalIntertwiningMap_apply_cosetVector₁_eq (H₁ H₂ : Subgroup G
         rw [mul_assoc]
         exact cosetVector₁_subgroup_mul_eq k (⟨h.val, h.prop⟩ : H₁) (y * g)) := by
   rw [cosetVector₁_eq_ind_apply, IntertwiningMap.isIntertwining, coCanonicalIntertwiningMap,
-    moduleHecke₁.invariant_mk_apply_cosetVector₁, map_sum, map_sum]
+    moduleHecke₁.invariantMk_apply_cosetVector₁, map_sum, map_sum]
   exact Fintype.sum_congr _ _ (fun x => Quotient.inductionOn x (by simp))
 
 @[simp]

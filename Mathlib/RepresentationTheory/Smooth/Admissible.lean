@@ -98,7 +98,7 @@ lemma IsAdmissible.finiteDimensional_intertwiningMap_self [h : IsAdmissible ρ] 
   let H := ρ.stabilizer v
   have : FiniteDimensional k (moduleHecke₁ H ρ) :=
     h.finiteDimensional_intertwiningMap ⟨H, h_smooth.smooth v⟩
-  let f := moduleHecke₁.invariant_mk H v (ρ := ρ) (fun h ↦ by simp [mem_stabilizer.mp h.2])
+  let f := moduleHecke₁.invariantMk H v (ρ := ρ) (fun h ↦ by simp [mem_stabilizer.mp h.2])
   have hf : f ≠ 0 := by
     have hfeq : f (cosetVector₁ k H 1) = v := by
       simp [f]
