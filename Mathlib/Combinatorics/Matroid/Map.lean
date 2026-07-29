@@ -344,7 +344,7 @@ def map (M : Matroid α) (f : α → β) (hf : InjOn f M.E) : Matroid β := Matr
   (Indep := fun I ↦ ∃ I₀, M.Indep I₀ ∧ I = f '' I₀)
   (hM := by
     refine ⟨M.mapSetEmbedding ⟨_, hf.injective⟩, by simp, fun I ↦ ?_⟩
-    simp_rw [mapSetEmbedding_indep_iff', Embedding.coeFn_mk, restrict_apply,
+    simp_rw [mapSetEmbedding_indep_iff', Embedding.coeFn_mk, domRestrict_apply,
       ← image_image f Subtype.val, Subtype.exists_set_subtype (p := fun J ↦ M.Indep J ∧ I = f '' J)]
     exact ⟨fun ⟨I₀, _, hI₀⟩ ↦ ⟨I₀, hI₀⟩, fun ⟨I₀, hI₀⟩ ↦ ⟨I₀, hI₀.1.subset_ground, hI₀⟩⟩)
 

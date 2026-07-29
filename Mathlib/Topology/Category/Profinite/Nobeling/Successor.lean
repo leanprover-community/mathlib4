@@ -121,7 +121,9 @@ theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
 The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
 this set.
 -/
-def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
 
 include hC in
 theorem isClosed_C' : IsClosed (C' C ho) :=
