@@ -418,7 +418,7 @@ theorem card_support_eq {n : ℕ} :
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, ?_, ?_, ?_⟩
     · intro i j hij
       have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
-        simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_setOf_eq]
+        simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_ofPred_eq]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
       rw [Fin.strictMono_castSucc.injective.extend_apply]

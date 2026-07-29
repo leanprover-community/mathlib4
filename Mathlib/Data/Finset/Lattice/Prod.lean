@@ -90,6 +90,7 @@ theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × 
 section Prod
 variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] {s : Finset ι} {t : Finset κ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See also `Finset.sup'_prodMap`. -/
 @[to_dual /-- See also `Finset.inf'_prodMap`. -/]
 lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :

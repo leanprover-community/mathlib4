@@ -82,6 +82,9 @@ instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
 
+instance [IsEmpty X] : Subsingleton (OnePoint X) :=
+  inferInstanceAs <| Subsingleton (Option X)
+
 protected lemma «forall» {p : OnePoint X → Prop} :
     (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
   Option.forall
@@ -134,9 +137,6 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 @[simp]
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
-
-@[deprecated "Use simp" (since := "2025-11-22")]
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
 
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
