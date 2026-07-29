@@ -10,24 +10,21 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-!
-# Pivot maps of a matrix, structural formulation
+# Pivots of a matrix
 
-The pivot map of a matrix in row echelon form sends each row to its leading (leftmost
-nonzero) column, or to `⊤` for a zero row. In this packaging the staircase conditions
-(`Monotone`, `StrictMonoOn` off the `⊤`-fiber) are the structure fields and `IsRowEchelon`
-is derived; see `Pivot.lean` for the packaging with `IsRowEchelon` primitive.
+`Matrix.IsPivot A l` defines a map-based representation `l` for the pivot, stating that
+`l i` is the pivot column of each row `i` of `A`, with `⊤` for a zero row.
 
 ## Main definitions
 
-- `Matrix.IsPivot`: `l : m → WithTop n` is the pivot map of `A`.
+- `Matrix.IsPivot`: `l i : WithTop n` is the pivot column of each row `i` of `A`.
 
 ## Main results
 
-- `Matrix.IsPivot.rank_eq`: a matrix with pivot map `l` has rank the number of rows
-  with a pivot.
-- `Matrix.IsPivot.unique`: the pivot map of a matrix is unique.
-- `Matrix.IsPivot.rank_eq_of_lowerTriangular`: the rank of `B`, read off a pivot map
-  of `A * B.submatrix σ id` for `A` lower triangular with nonzero diagonal.
+- `Matrix.IsPivot.rank_eq`: the rank of a matrix is its number of pivots.
+- `Matrix.IsPivot.unique`: the pivots of a matrix are unique.
+- `Matrix.IsPivot.rank_eq_of_lowerTriangular`: the rank of `B` from the pivots of
+  `A * B.submatrix σ id`, for `A` lower triangular with nonzero diagonal.
 - `Matrix.decidableIsPivot`: `IsPivot` is decidable over a `DecidableEq` ring and
   finite linearly ordered indices.
 
@@ -48,8 +45,8 @@ section Zero
 
 variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
 
-/-- `l` is the pivot map of `A`: it sends each row to its leading position, is monotone,
-and strictly increases on the nonzero rows. -/
+/-- `l i` is the leading position of each row `i` of `A`; `l` is monotone and strictly
+increasing on the nonzero rows. -/
 structure IsPivot [Preorder m] [Preorder n] (A : Matrix m n R) (l : m → WithTop n) :
     Prop where
   monotone : Monotone l
@@ -75,7 +72,7 @@ theorem IsPivot.isRowEchelon [Preorder m] [LinearOrder n] (h : A.IsPivot l) :
       (h.isLeadingEntry i₁).2 c₁ hc₁.symm (hz c₁ hgt)
     exact lt_of_le_of_lt (hc₁ ▸ hj) (h.lt_of_lt_of_ne_top hlt h₁)
 
-/-- The pivot map of a matrix is unique. -/
+/-- The pivots of a matrix are unique. -/
 theorem IsPivot.unique [Preorder m] [LinearOrder n] {l' : m → WithTop n}
     (h : A.IsPivot l) (h' : A.IsPivot l') : l = l' :=
   funext fun i => (h.isLeadingEntry i).unique (h'.isLeadingEntry i)
@@ -135,9 +132,8 @@ theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
 end Rank
 
 /-! ## Decidability
-  This uses the automatically synthesised version as well -- same as the list-based
-  pivot def. The same consideration for a boolean version is open.
- -/
+  The instances decide the automatically synthesised staircase proposition; a hand-rolled
+  boolean checker is an open consideration. -/
 
 section Decidability
 

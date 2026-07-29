@@ -10,30 +10,24 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 
 /-!
-# An exact-division algorithm for echelon form
+# Bareiss decomposition certificates
 
-This file defines the interface of Bareiss algorithm, which derives the echelon form of a matrix
-using exact divisions to avoid exponential explosion in the sizes of intermediate elements.
-
-The certificate is constructed from verifying the final matrix multiplication instead of the
-computation trace to allow eventual optimisation using fast matrix multiplication that requires
-only O(n^2) kernel steps.
-
-The algorithm itself runs in O(n^3), with the bit-sizes of the elements growing in O(n). However,
-this is not the performance bottleneck since the computation part runs in metaprogramming.
-
+`Bareiss.Decomposition` certifies an echelon decomposition of a matrix `M`: pivots for
+`L * (M.submatrix σ id)` with `L` lower triangular with nonzero diagonal and `σ` a row
+permutation, together with the pivot count. The certificate records the decomposed form
+rather than a computation trace, so a producer is free to choose how to find it.
 
 ## Main definitions
 
+- `Bareiss.Decomposition`: the certificate structure.
 
 ## Main lemmas
 
-The lemmas in this file are unfolding equations.
+- `Bareiss.Decomposition.rank_eq`: `M.rank` is the pivot count of any certificate for `M`.
 
 ## Tags
 
 matrix, echelon form, Bareiss
-
 -/
 
 @[expose] public section
