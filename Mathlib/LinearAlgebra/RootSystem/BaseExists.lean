@@ -113,6 +113,7 @@ section Field
 variable [Field R] [CharZero R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsRootSystem] [P.IsCrystallographic]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0) :
     LinearIndepOn R P.root (baseOf P.root f) := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)

@@ -70,6 +70,7 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
@@ -523,6 +524,7 @@ theorem centerEquivRootsOfUnity_apply_of_finrank_le_one
   apply rootsOfUnity.eq_one
   rw [Nat.max_eq_right d1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem centerEquivRootsOfUnity_symm_apply
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
     (centerEquivRootsOfUnity.symm r : V →ₗ[R] V) = r • LinearMap.id := by

@@ -44,7 +44,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
 
-open Functor Limits GrothendieckTopology
+open CategoryTheory.Functor Limits GrothendieckTopology
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D) (e : C ≌ D) (G : D ⥤ C)
@@ -63,7 +63,6 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa [g] using! this
 
-set_option backward.isDefEq.respectTransparency false in
 instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
   have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
     ext
@@ -119,6 +118,7 @@ def sheafCongr.inverse : Sheaf K A ⥤ Sheaf J A :=
     (sheafToPresheaf _ _ ⋙ (Functor.whiskeringLeft _ _ _).obj e.functor.op)
     (e.functor.op_comp_isSheaf _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit iso in the equivalence of sheaf categories. -/
 @[simps!]
@@ -126,6 +126,7 @@ def sheafCongr.unitIso : 𝟭 (Sheaf J A) ≅ functor J K e A ⋙ inverse J K e 
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.unitIso F.obj))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit iso in the equivalence of sheaf categories. -/
 @[simps!]
@@ -133,6 +134,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of sheaf categories. -/
 @[simps]
@@ -152,6 +154,7 @@ noncomputable
 def transportAndSheafify : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   e.op.congrLeft.functor ⋙ presheafToSheaf _ _ ⋙ (e.sheafCongr J K A).inverse
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary definition for the sheafification adjunction. -/
 noncomputable

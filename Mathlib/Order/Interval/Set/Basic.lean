@@ -84,26 +84,8 @@ theorem left_notMem_Ioo : a ∉ Ioo a b := by simp
 @[to_dual right_notMem_Ico]
 theorem left_notMem_Ioc : a ∉ Ioc a b := by simp
 
-@[deprecated left_notMem_Ioo (since := "2025-12-26")]
-theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp
-
-@[deprecated left_notMem_Ioc (since := "2025-12-26")]
-theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp
-
 @[to_dual right_mem_Ioc] theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp
 @[to_dual right_mem_Icc] theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias left_mem_Ici := self_mem_Ici
-
-@[deprecated right_notMem_Ioo (since := "2025-12-26")]
-theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp
-
-@[deprecated right_notMem_Ico (since := "2025-12-26")]
-theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp
-
-@[deprecated (since := "2025-12-26")]
-alias right_mem_Iic := self_mem_Iic
 
 @[to_dual (attr := simp)]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=

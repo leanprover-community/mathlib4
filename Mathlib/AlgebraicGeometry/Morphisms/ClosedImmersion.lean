@@ -81,6 +81,7 @@ instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
   comp_mem f g _ _ := ⟨g.isClosedEmbedding.comp f.isClosedEmbedding⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Composition of closed immersions is a closed immersion. -/
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
     [IsClosedImmersion g] : IsClosedImmersion (f ≫ g) :=
@@ -93,6 +94,7 @@ instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
 instance {X : Scheme} (I : X.IdealSheafData) : IsClosedImmersion I.subschemeι :=
   .of_isPreimmersion _ (I.range_subschemeι ▸ I.support.isClosed)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
 closed immersion. -/
@@ -170,6 +172,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
       (f := f.toImage.base) f.toImage.isEmbedding.isInducing X.presheaf x
     exact ((ConcreteCategory.isIso_iff_bijective _).mp this).1
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of closed subschemes is contravariantly equivalent
 to the lattice of ideal sheaves. -/
@@ -214,6 +217,7 @@ lemma lift_fac {X Y Z : Scheme.{u}}
   nth_rw 2 [← f.toImage_imageι]
   simp [lift, -Scheme.Hom.toImage_imageι, g.toImage_imageι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_of_ker_eq {Z₁ Z₂ X : Scheme.{u}} (i₁ : Z₁ ⟶ X) (i₂ : Z₂ ⟶ X)
     [IsClosedImmersion i₁] [IsClosedImmersion i₂] (f : Z₁ ⟶ Z₂)
@@ -238,6 +242,7 @@ variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
 
 open IsClosedImmersion LocallyRingedSpace
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
 `f` induces an injection on global sections, then `f` is dominant. -/
 lemma isDominant_of_of_appTop_injective [CompactSpace X]
@@ -253,6 +258,7 @@ instance [CompactSpace X] : IsDominant X.toSpecΓ :=
     simpa only [Scheme.toSpecΓ_appTop] using
       (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso Γ(X, ⊤)).hom).1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
 injective if it is injective on global sections. -/
 lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
@@ -297,6 +303,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
 
 namespace IsClosedImmersion
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` is a closed immersion with affine target such that the induced map on global
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
@@ -319,6 +326,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   exact (ConcreteCategory.bijective_of_isIso _).2.comp
     ((ConcreteCategory.bijective_of_isIso _).2.comp Ideal.Quotient.mk_surjective)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
     IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec (.of <| R ⧸ I),
       f = e.hom ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) := by
@@ -345,10 +353,12 @@ end Affine
 
 variable {X Y Z : Scheme.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Being a closed immersion is local at the target. -/
 instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsClosedImmersion :=
   eq_inf ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- On morphisms with affine target, being a closed immersion is precisely having affine source
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
@@ -356,6 +366,7 @@ instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmers
   convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isClosedImmersion_iff_isAffineHom {f : X ⟶ Y} :
     IsClosedImmersion f ↔
       IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Function.Surjective (f.app U) := by
@@ -366,6 +377,7 @@ lemma Scheme.Hom.app_surjective (f : X ⟶ Y) (U : Y.Opens) (hU : IsAffineOpen U
     [IsClosedImmersion f] : Function.Surjective (f.app U) :=
   (isClosedImmersion_iff_isAffineHom.mp ‹_›).2 U hU
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Being a closed immersion is stable under base change. -/
 instance IsClosedImmersion.isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsClosedImmersion := by
@@ -376,10 +388,12 @@ instance IsClosedImmersion.isStableUnderBaseChange :
   exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_appTop _
     RingHom.surjective_respectsIso f _ hsurj⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion g] :
     IsClosedImmersion (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
     IsClosedImmersion (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ ‹_›
@@ -388,6 +402,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
     IsClosedImmersion (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Closed immersions are locally of finite type. -/
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by

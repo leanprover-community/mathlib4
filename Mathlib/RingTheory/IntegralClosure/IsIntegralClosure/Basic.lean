@@ -171,7 +171,7 @@ theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
 them. -/
 def AlgHom.mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S) :
     integralClosure R A →ₐ[R] integralClosure R S :=
-  (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
+  (f.domRestrict (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
 
 @[simp]
 theorem AlgHom.coe_mapIntegralClosure [Algebra R S] (f : A →ₐ[R] S)
@@ -574,6 +574,7 @@ theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩

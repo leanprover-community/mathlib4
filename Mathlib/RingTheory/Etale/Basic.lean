@@ -130,10 +130,6 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
     Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
   ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
-
 end Comp
 
 lemma iff_of_surjective
@@ -143,13 +139,8 @@ lemma iff_of_surjective
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
-set_option linter.dupNamespace false in
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
-
 section BaseChange
 
-open scoped TensorProduct
 
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth

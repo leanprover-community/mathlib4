@@ -39,6 +39,7 @@ section DivisionRing
 variable {G K V : Type*} [AddCommGroup V] [DivisionRing K] [Module K V]
   [Group G] [DistribMulAction G V] [SMulCommClass G K V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any group acting `K`-linearly on `V` (such as the general linear group) acts on `ℙ V`. -/
 @[simps -isSimp]
 instance : MulAction G (ℙ K V) where

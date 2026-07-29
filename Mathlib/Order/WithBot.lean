@@ -440,9 +440,6 @@ lemma unbot_le_unbot_iff (hx : x ≠ ⊥) (hy : y ≠ ⊥) : x.unbot hx ≤ y.un
 @[to_dual]
 alias ⟨_, unbot_mono⟩ := unbot_le_unbot_iff
 
-@[deprecated (since := "2025-12-05")]
-alias unbot_le_unbot := unbot_le_unbot_iff
-
 @[to_dual untopD_le_iff]
 lemma le_unbotD_iff (hx : x ≠ ⊥) : b ≤ x.unbotD a ↔ b ≤ x := by lift x to α using hx; simp
 @[to_dual le_untopD_iff]
@@ -499,9 +496,6 @@ lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to �
 
 @[to_dual (reorder := hx hy)]
 lemma unbot_lt_unbot_iff (hx hy) : unbot x hx < unbot y hy ↔ x < y := by simp
-
-@[deprecated (since := "2025-12-05")]
-alias unbot_lt_unbot := unbot_lt_unbot_iff
 
 @[to_dual untopD_lt_iff]
 lemma lt_unbotD_iff (hx : x ≠ ⊥) : b < x.unbotD a ↔ b < x := by lift x to α using hx; simp
@@ -897,32 +891,14 @@ protected def ofDual : WithBot αᵒᵈ ≃ WithTop α :=
 @[to_dual (attr := simp)]
 theorem toDual_symm : WithBot.toDual.symm = WithTop.ofDual (α := α) := rfl
 
-@[to_dual]
-theorem toDual_symm_apply (a : WithTop αᵒᵈ) : WithBot.toDual.symm a = WithTop.ofDual a := rfl
-
-attribute [deprecated toDual_symm (since := "2025-12-30")] toDual_symm_apply
-attribute [deprecated WithTop.toDual_symm (since := "2025-12-30")] WithTop.toDual_symm_apply
-
 @[to_dual (attr := simp)]
 theorem ofDual_symm : WithBot.ofDual.symm = WithTop.toDual (α := α) := rfl
-
-@[to_dual]
-theorem ofDual_symm_apply (a : WithTop α) : WithBot.ofDual.symm a = WithTop.toDual a := rfl
-
-attribute [deprecated ofDual_symm (since := "2025-12-30")] ofDual_symm_apply
-attribute [deprecated WithTop.ofDual_symm (since := "2025-12-30")] WithTop.ofDual_symm_apply
 
 @[to_dual (attr := simp)]
 theorem toDual_bot : WithBot.toDual (⊥ : WithBot α) = ⊤ := rfl
 
-@[deprecated (since := "2025-12-30")] alias toDual_apply_bot := toDual_bot
-@[deprecated (since := "2025-12-30")] alias _root_.WithTop.toDual_apply_top := WithTop.toDual_top
-
 @[to_dual (attr := simp)]
 theorem ofDual_bot : WithBot.ofDual (⊥ : WithBot αᵒᵈ) = ⊤ := rfl
-
-@[deprecated (since := "2025-12-30")] alias ofDual_apply_bot := ofDual_bot
-@[deprecated (since := "2025-12-30")] alias _root_.WithTop.ofDual_apply_top := WithTop.ofDual_top
 
 open OrderDual
 
