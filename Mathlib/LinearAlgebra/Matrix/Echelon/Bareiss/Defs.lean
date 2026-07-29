@@ -49,7 +49,7 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   L : Matrix (Fin m) (Fin m) R
   /-- The row permutation. -/
   σ : Equiv.Perm (Fin m)
-  /-- The pivot map of the final echelon form. -/
+  /-- The pivot column of each row of the final echelon form. -/
   pivot : Fin m → WithTop (Fin n)
   /-- The rank: the number of rows with a pivot. -/
   rank : ℕ
@@ -59,8 +59,9 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   L_diag_ne_zero : ∀ i, L i i ≠ 0
 
 theorem Decomposition.rank_eq (cert : Decomposition M) :
-    M.rank = cert.rank :=
-  (cert.is_pivot.rank_eq_of_lowerTriangular cert.L_lowerTriangular
-    cert.L_diag_ne_zero).trans cert.card_eq
+    M.rank = cert.rank := by
+  have hr : (M.submatrix cert.σ id).rank = M.rank := M.rank_submatrix cert.σ (Equiv.refl (Fin n))
+  rw [← hr, ← Matrix.rank_mul_eq_right_of_lowerTriangular cert.L _ cert.L_lowerTriangular
+    cert.L_diag_ne_zero, cert.is_pivot.rank_eq, cert.card_eq]
 
 end Bareiss

@@ -14,7 +14,7 @@ import Mathlib.Tactic.NormNum.Basic
 
 Given a matrix literal `M` over a commutative domain, the entry point
 `mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
-Bareiss.Decomposition M`, with the three certificate conditions checked by the kernel via
+Bareiss.Decomposition M`, with the four certificate conditions checked by the kernel via
 `decide`.
 
 The production is data-only: no proofs are constructed, and the ring is consulted only to

@@ -24,8 +24,6 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 - `Matrix.IsPivot.rank_eq`: the rank of a matrix is its number of pivots.
 - `Matrix.IsPivot.unique`: the pivot of a matrix is unique if the column indices have a linear
   order.
-- `Matrix.IsPivot.rank_eq_of_lowerTriangular`: the rank of `B` from the pivots of
-  `A * B.submatrix σ id`, for `A` lower triangular with nonzero diagonal.
 - `Matrix.decidableIsPivot`: A decidable instance for `IsPivot` over a `DecidableEq` ring and
   linearly ordered indices.
 
@@ -135,13 +133,6 @@ theorem IsPivot.card_le_rank (hA : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank 
 
 theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
   le_antisymm hA.rank_le_card hA.card_le_rank
-
-theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
-    {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
-    (hA : A.IsLowerTriangular) (hd : ∀ i, A i i ≠ 0) :
-    B.rank = #{i | l i ≠ ⊤} := by
-  have hr : (B.submatrix σ id).rank = B.rank := B.rank_submatrix σ (Equiv.refl n)
-  rw [← hr, ← rank_mul_eq_right_of_lowerTriangular A _ hA hd, hpiv.rank_eq]
 
 end Rank
 
