@@ -152,7 +152,6 @@ noncomputable def natTransPInfty : alternatingFaceMapComplex C ⟶ alternatingFa
 noncomputable def natTransPInfty_f (n : ℕ) :=
   natTransPInfty C ◫ 𝟙 (HomologicalComplex.eval _ _ n)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma natTransPInfty_f_app (n : ℕ) : (natTransPInfty_f C n).app X = PInfty.f n := by
   simp [natTransPInfty_f]

@@ -325,7 +325,7 @@ section
 variable (V c)
 
 /-- The functor picking out the `i`-th object of a complex. -/
-@[simps]
+@[implicit_reducible, simps]
 def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
@@ -350,7 +350,6 @@ just picking out the `i`-th object. -/
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
 @[simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
