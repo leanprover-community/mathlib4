@@ -99,6 +99,15 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
     simp_rw [← forall_isBounded_image_eval_iff, bddBelow_pi, bddAbove_pi, ← forall_and,
       isBounded_iff_bddBelow_bddAbove]
 
+lemma Nonempty.of_isOrderBornology : Nonempty α := Bornology.isBounded_empty.bddBelow.nonempty
+
+instance IsOrderBornology.neBot_cobounded_of_noBotOrder [NoBotOrder α] : (cobounded α).NeBot := by
+  rw [Filter.neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ, isBounded_iff_bddBelow_bddAbove]
+  exact fun h ↦ not_bddBelow_univ h.1
+
+instance IsOrderBornology.neBot_cobounded_of_noTopOrder [NoTopOrder α] : (cobounded α).NeBot :=
+  neBot_cobounded_of_noBotOrder (α := αᵒᵈ)
+
 lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology.cobounded α := by
   intro s hs
   rw [← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove] at hs
@@ -112,15 +121,6 @@ lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology
 -- See https://github.com/leanprover-community/mathlib4/pull/37738
 lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
   atTop_le_cobounded (α := αᵒᵈ)
-
-instance IsOrderBornology.neBot_cobounded_of_noBotOrder [NoBotOrder α] :
-    (cobounded α).NeBot := by
-  rw [Filter.neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ,
-    isBounded_iff_bddBelow_bddAbove]
-  exact fun h ↦ not_bddBelow_univ h.1
-
-instance IsOrderBornology.neBot_cobounded_of_noTopOrder [NoTopOrder α] :
-    (cobounded α).NeBot := neBot_cobounded_of_noBotOrder (α := αᵒᵈ)
 
 end Preorder
 
