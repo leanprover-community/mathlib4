@@ -404,6 +404,7 @@ public import Mathlib.Algebra.Group.GreensRelations.Basic
 public import Mathlib.Algebra.Group.GreensRelations.Classes
 public import Mathlib.Algebra.Group.GreensRelations.Defs
 public import Mathlib.Algebra.Group.GreensRelations.MulSeq
+public import Mathlib.Algebra.Group.GreensRelations.Order
 public import Mathlib.Algebra.Group.GreensRelations.Theorems
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Hom.CompTypeclasses
