@@ -37,27 +37,27 @@ section SetsAndRegularity
 namespace IsGreenL
 
 /-- The equivalence class of `x` under Green's L relation as a `Set S`. -/
-abbrev eqvClass (x : S) : Set S := setOf (IsGreenL · x)
+abbrev eqvClass (x : S) : Set S := { y | IsGreenL y x }
 
 end IsGreenL
 
 namespace IsGreenR
 
 /-- The equivalence class of `x` under Green's R relation as a `Set S`. -/
-abbrev eqvClass (x : S) : Set S := setOf (IsGreenR · x)
+abbrev eqvClass (x : S) : Set S := { y | IsGreenR y x }
 
 end IsGreenR
 
 namespace IsGreenH
 
 /-- The equivalence class of `x` under Green's H relation as a `Set S`. -/
-abbrev eqvClass (x : S) : Set S := setOf (IsGreenH · x)
+abbrev eqvClass (x : S) : Set S := { y | IsGreenH y x }
 
 /-- The H-class of `x` is the intersection of its L-class and R-class. -/
 lemma eqvClass_eq_inter (x : S) :
     eqvClass x = IsGreenL.eqvClass x ∩ IsGreenR.eqvClass x := by
   ext y
-  simp [IsGreenH, eqvClass, IsGreenL.eqvClass, IsGreenR.eqvClass]
+  rfl
 
 open MulOpposite in
 /-- An equivalence between the H-class of `a` and the H-class of `op a`. -/
@@ -72,14 +72,14 @@ end IsGreenH
 namespace IsGreenD
 
 /-- The equivalence class of `x` under Green's D relation as a `Set S`. -/
-abbrev eqvClass (x : S) : Set S := setOf (IsGreenD · x)
+abbrev eqvClass (x : S) : Set S := { y | IsGreenD y x }
 
 end IsGreenD
 
 namespace IsGreenJ
 
 /-- The equivalence class of `x` under Green's J relation as a `Set S`. -/
-abbrev eqvClass (x : S) : Set S := setOf (IsGreenJ · x)
+abbrev eqvClass (x : S) : Set S := { y | IsGreenJ y x }
 
 end IsGreenJ
 
