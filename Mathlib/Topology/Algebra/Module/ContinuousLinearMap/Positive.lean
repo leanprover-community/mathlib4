@@ -82,6 +82,11 @@ def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ whe
   toPositiveLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
   cont := g.cont.comp f.cont
 
+@[simp]
+lemma toContinuousLiinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
+    (g.comp f).toContinuousLinearMap = g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
+  rfl
+
 end Comp
 
 section ofClass
@@ -141,8 +146,6 @@ variable (R E₁) in
 
 @[simp] lemma toContinuousLinearMap_id :
     (PositiveContinuousLinearMap.id R E₁).toContinuousLinearMap = .id R E₁ := rfl
-@[simp] lemma toPositiveLinearMap_id :
-    (PositiveContinuousLinearMap.id R E₁).toPositiveLinearMap = .id R E₁ := rfl
 
 variable [IsOrderedAddMonoid E₂] [ContinuousAdd E₂]
 
@@ -180,7 +183,7 @@ lemma toContinuousLinearMap_nsmul (f : E₁ →P[R] E₂) (n : ℕ) :
 instance : IsSMulApply ℕ (E₁ →P[R] E₂) E₁ E₂ where
   smul_apply _ _ _ := rfl
 
-instance : AddCommMonoid (E₁ →P[R] E₂) := FunLike.addCommMonoid
+instance : AddCommMonoid (E₁ →P[R] E₂) := fast_instance% FunLike.addCommMonoid
 
 end General
 
@@ -193,6 +196,7 @@ variable {R E₁ E₂ : Type*} [Semiring R]
 
 /-- Define a positive continuous linear map from a continuous linear map that maps
 nonnegative elements to nonnegative elements -/
+@[simps toPositiveLinearMap]
 def mk₀ (f : E₁ →L[R] E₂) (hf : ∀ x, 0 ≤ x → 0 ≤ f x) : E₁ →P[R] E₂ where
   toPositiveLinearMap := .mk₀ f.toLinearMap hf
   cont := f.cont
@@ -200,6 +204,10 @@ def mk₀ (f : E₁ →L[R] E₂) (hf : ∀ x, 0 ≤ x → 0 ≤ f x) : E₁ →
 @[simp]
 lemma mk₀_apply (f : E₁ →L[R] E₂) (hf : ∀ x, 0 ≤ x → 0 ≤ f x) (x : E₁) :
     mk₀ f hf x = f x := rfl
+
+@[simp]
+lemma toContinuousLinearMap_mk₀ (f : E₁ →L[R] E₂) (hf : ∀ x, 0 ≤ x → 0 ≤ f x) :
+    (mk₀ f hf).toContinuousLinearMap = f := rfl
 
 end AddGroup
 
