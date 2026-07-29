@@ -171,55 +171,68 @@ theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : 
 
 section AddCommGroup
 
-@[simps -fullyApplied]
 instance : Zero 𝓓^{n}(Ω, F) where
   zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
 
-@[simps -fullyApplied]
+instance : IsZeroApply 𝓓^{n}(Ω, F) E F where
+  zero_apply _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_zero := FunLike.coe_zero
+
 instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
     tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsAddApply 𝓓^{n}(Ω, F) E F where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_add := FunLike.coe_add
+
 instance : Neg 𝓓^{n}(Ω, F) where
   neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsNegApply 𝓓^{n}(Ω, F) E F where
+  neg_apply _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_neg := FunLike.coe_neg
+
 instance : Sub 𝓓^{n}(Ω, F) where
   sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
     tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-@[simps -fullyApplied]
+instance : IsSubApply 𝓓^{n}(Ω, F) E F where
+  sub_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
+
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}(Ω, F) where
   smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
-instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    IsSMulApply R 𝓓^{n}(Ω, F) E F where
+  smul_apply _ _ _ := rfl
 
-variable (Ω F n) in
-/-- Coercion as an additive homomorphism. -/
-@[simps -fullyApplied]
-def coeFnAddMonoidHom : 𝓓^{n}(Ω, F) →+ E → F where
-  toFun f := f
-  map_zero' := coe_zero
-  map_add' _ _ := rfl
+@[deprecated (since := "2026-06-15")] alias coe_smul := FunLike.coe_smul
+
+instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance% FunLike.addCommGroup
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
+
+@[deprecated (since := "2026-06-15")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}(Ω, F) := fast_instance%
-  DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
+    Module R 𝓓^{n}(Ω, F) := fast_instance% FunLike.module
 
 instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
     [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
     [IsScalarTower R S F] :
-    IsScalarTower R S 𝓓^{n}(Ω, F) where
-  smul_assoc _ _ _ := by ext; simp
+    IsScalarTower R S 𝓓^{n}(Ω, F) := FunLike.isScalarTower
 
 end Module
 
@@ -244,7 +257,7 @@ limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
 Note that this has no reason to be a locally convex (or even vector space) topology. For this
 reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
 topology which is coarser than this original topology. See `TestFunction.topologicalSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
@@ -310,14 +323,10 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[deprecated (since := "2025-12-10")] alias ofSupportedInLM := ofSupportedInCLM
-
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
-
-@[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
@@ -401,6 +410,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
@@ -447,6 +457,7 @@ section Monotone
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 /-- If `n₁ ≥ n₂` and `Ω₁ ⊆ Ω₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n₁}(Ω₁, F)` inside `𝓓^{n₂}(Ω₂, F)`. Otherwise, this is the zero map.
@@ -491,6 +502,7 @@ section FDerivCLM
 
 variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 n k) in
 /-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.

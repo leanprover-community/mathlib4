@@ -67,7 +67,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
     | .ok pos => return pos
     | .error s => throwError "{s}"
   let expecteds := expecteds.map (·.getString)
-  let loc : GoalLocation := ← match hyp?, pos? with
+  let loc : GoalLocation ← match hyp?, pos? with
     | some h, some pos => pure <| .hypType h pos
     | none  , some pos => pure <| .target pos
     | some h, none     => pure <| .hyp h

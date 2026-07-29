@@ -260,16 +260,24 @@ open Lean Meta Qq Function
 
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]
-meta def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-    let _oα ← synthInstanceQ q(Field $α)
-    let _oα ← synthInstanceQ q(LinearOrder $α)
-    let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
-  | .nonnegative pa =>
+  match ← core q(inferInstance) (some q(inferInstance)) a with
+  | .positive pa => id <|
+    match pα? with
+    | none => do
+      let _oα ← synthInstanceQ q(DivisionRing $α)
+      let _cα ← synthInstanceQ q(CharZero $α)
+      assumeInstancesCommute
+      return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr ($pa).ne')
+    | some _ => do
+      let _oα ← synthInstanceQ q(Field $α)
+      let _oα ← synthInstanceQ q(LinearOrder $α)
+      let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assumeInstancesCommute
+      return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
+  | .nonnegative pa => id <|
+    match pα? with | none => pure .none | some _ => do
     let _oα ← synthInstanceQ q(Field $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)
     let _oα ← synthInstanceQ q(IsStrictOrderedRing $α)
@@ -284,9 +292,10 @@ meta def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for NNRat.cast. -/
 @[positivity NNRat.cast _]
-meta def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRatCast : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
-  match ← core q(inferInstance) q(inferInstance) a with
+  match ← core q(inferInstance) (some q(inferInstance)) a with
   | .positive pa =>
     let _oα ← synthInstanceQ q(Semifield $α)
     let _oα ← synthInstanceQ q(LinearOrder $α)

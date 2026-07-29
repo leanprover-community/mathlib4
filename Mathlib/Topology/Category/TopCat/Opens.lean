@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
 
@@ -144,11 +146,22 @@ def inclusionTopIso (X : TopCat.{u}) : (toTopCat X).obj ⊤ ≅ X where
   hom := inclusion' ⊤
   inv := TopCat.ofHom ⟨fun x => ⟨x, trivial⟩, continuous_def.2 fun _ ⟨_, hS, hSU⟩ => hSU ▸ hS⟩
 
+/-- The FrameHom sending an open in `Y` to its preimage in `X` -/
+@[simps]
+def _root_.TopCat.Hom.frameHom (f : X ⟶ Y) : FrameHom (Opens Y) (Opens X) where
+  toFun U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by ext; simp
+
 /-- `Opens.map f` gives the functor from open sets in Y to open set in X,
 given by taking preimages under f. -/
-def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
-  obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
-  map i := ⟨⟨fun _ h => i.le h⟩⟩
+def map (f : X ⟶ Y) : Opens Y ⥤ Opens X :=
+  (OrderHomClass.toOrderHom f.frameHom).toFunctor
+
+lemma map_def (f : X ⟶ Y) : map f =
+  { obj U := ⟨f ⁻¹' (U : Set Y), U.isOpen.preimage f.hom.continuous⟩
+    map i := ⟨⟨fun _ h => i.le h⟩⟩ } := rfl
 
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
@@ -341,6 +354,15 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat.{u}} {f : X �
     (hf : IsOpenEmbedding f) : Function.Injective hf.functor.obj :=
   fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
+lemma Topology.IsOpenEmbedding.functor_obj_iInf {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι] [Finite ι]
+    (g : ι → TopologicalSpace.Opens X) :
+    hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
+  ext : 1
+  simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.coe_iInf]
+  rw [Set.InjOn.image_iInter_eq]
+  exact hf.injective.injOn
+
 namespace Topology.IsInducing
 
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets
@@ -364,6 +386,7 @@ lemma mem_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) (U
   conv_rhs => rw [← hf.map_functorObj U]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_functorObj_iff {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f) {U : Opens X}
     {V : Opens Y} : V ≤ hf.functorObj U ↔ (Opens.map f).obj V ≤ U := by
   obtain ⟨U, hU⟩ := U
@@ -462,5 +485,16 @@ theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens 
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) := by
   subsingleton
+
+open Limits in
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*}
+    [Nonempty ι] [Finite ι] :
+    PreservesLimitsOfShape (Discrete ι) hf.functor := by
+  apply +allowSynthFailures preservesLimitsOfShape_of_discrete
+  intro g
+  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt, hf.functor_obj_iInf]
+  apply isGLB_iInf
 
 end TopologicalSpace.Opens

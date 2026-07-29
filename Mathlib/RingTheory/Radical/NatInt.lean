@@ -6,12 +6,10 @@ Authors: Bhavik Mehta, Arend Mellendijk, Jeremy Tan
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Radical.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # The radical in `ℕ` and `ℤ`
@@ -72,6 +70,16 @@ lemma radical_pos (n) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 
 @[simp] lemma self_lt_radical_iff : n < radical n ↔ n = 0 := by
   simpa only [not_le, not_not] using radical_le_self_iff.not
+
+theorem primeFactors_radical (n : ℕ) : (radical n).primeFactors = n.primeFactors := by
+  rw [radical_eq_prod_primeFactors, primeFactors_prod_primeFactors]
+
+theorem radical_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
+    radical n ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by
+  rw [radical_eq_prod_primeFactors, prod_primeFactors_dvd_iff hk]
+
+theorem dvd_radical_pow_self {n : ℕ} (hn : n ≠ 0) : n ∣ radical n ^ n := by
+  grw [radical_eq_prod_primeFactors, ← dvd_prod_primeFactors_pow_self hn]
 
 open Qq Lean Mathlib.Meta Finset
 

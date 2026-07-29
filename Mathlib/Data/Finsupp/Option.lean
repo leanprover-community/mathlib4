@@ -90,7 +90,7 @@ theorem some_single_some (a : α) (m : M) :
   ext; rw [some_apply]; exact embDomain_apply_self _ _ _
 
 @[simp] lemma embDomain_some_none (f : α →₀ M) : f.embDomain .some .none = 0 :=
-  embDomain_notin_range _ _ _ (by simp)
+  embDomain_of_notMem_range _ _ _ (by simp)
 
 @[simp]
 theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by

@@ -63,7 +63,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   let ⟨S, hS⟩ := h_sum
   obtain ⟨T, hT⟩ : ∃ (T : Finset β), dist (∑ b ∈ T, bound b) S < ε / 3 := by
     rw [HasSum, Metric.tendsto_nhds] at hS
-    classical exact Eventually.exists <| hS _ (by positivity)
+    exact Eventually.exists <| hS _ (by positivity)
   have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
          _ = ‖S - ∑ b ∈ T, bound b‖           := congrArg _ ?_

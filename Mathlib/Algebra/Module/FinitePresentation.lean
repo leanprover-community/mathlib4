@@ -5,13 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.LeftExact
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -92,6 +90,16 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
   · simpa [range_linearCombination] using hι₁
   · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
 
+/-- An alternative version of `Module.FinitePresentation.exists_fin` that provides a right exact
+sequence. -/
+theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
+    ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
+      Function.Surjective f ∧ Function.Exact g f := by
+  obtain ⟨n, K, e, h⟩ := exists_fin R M
+  obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
+  exact ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
+    e.symm.injective.comp_exact_iff_exact.mpr (by simp [LinearMap.exact_iff, hg'])⟩
+
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
 theorem Module.FinitePresentation.equiv_quotient [Module.FinitePresentation R M] [Small.{v} R] :
@@ -122,7 +130,6 @@ lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.
     (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
     Module.FinitePresentation R N := by
-  classical
   let b := Module.Free.chooseBasis R M
   let π : Free.ChooseBasisIndex R M → (Set.finite_range (l ∘ b)).toFinset :=
     fun i ↦ ⟨l (b i), by simp⟩
@@ -184,7 +191,6 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by
-  classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp
@@ -331,7 +337,6 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by
-  classical
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
   have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
   apply Module.finitePresentation_of_surjective (f.baseChange A)
@@ -404,6 +409,23 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   rw [← LinearMap.comp_apply, ← LinearMap.comp_apply, mul_smul, LinearMap.smul_comp, ← hi,
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
   simp
+
+/-- Let `M` be a finitely presented `R`-module, `N` be an `R`-module, `S` be a submonoid of `R`,
+`Mₚ` be the localization of `M` at `S`, `Nₚ` be the localization of `N` at `S`. Then any surjective
+linear map `ϕ : Mₚ →ₗ[R] Nₚ` lifts to a linear map `φ : M →ₗ[R] N` that is surjective after
+localization at `S`. -/
+lemma Module.exists_localizedMap_surjective_of_surjective [Module.FinitePresentation R M]
+    (S : Submonoid R) {Mₚ : Type*} [AddCommGroup Mₚ] [Module R Mₚ]
+    (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f] {Nₚ : Type*} [AddCommGroup Nₚ] [Module R Nₚ]
+    (g : N →ₗ[R] Nₚ) [IsLocalizedModule S g] {ϕ : Mₚ →ₗ[R] Nₚ} (hϕ : Function.Surjective ϕ) :
+    ∃ (φ : M →ₗ[R] N) (s : S) (_ : IsLocalizedModule.map S f g φ = s • ϕ),
+      Function.Surjective (IsLocalizedModule.map S f g φ) := by
+  obtain ⟨φ, s, hφ⟩ := FinitePresentation.exists_lift_of_isLocalizedModule S g (ϕ ∘ₗ f)
+  have hmap : IsLocalizedModule.map S f g φ = s • ϕ := by
+    apply IsLocalizedModule.linearMap_ext S f g
+    simp [IsLocalizedModule.map_comp, hφ, LinearMap.smul_comp]
+  refine ⟨φ, s, hmap, ?_⟩
+  simpa only [hmap] using! ((End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
 
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
@@ -651,5 +673,42 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
+open TensorProduct LinearMap
+
+variable (N) in
+lemma Module.isBaseChange_map_of_finite_free (S ι : Type*) [Finite ι] [CommRing S] [Algebra R S] :
+    IsBaseChange S (LinearMap.baseChangeHom R S (ι → R) N) := by
+  classical
+  have : Fintype ι := Fintype.ofFinite ι
+  let e₁ := TensorProduct.piRight R S S (fun _ : ι ↦ R)
+  let e₂ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf S S _).symm ≪≫ₗ
+    (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
+    (LinearMap.lsum S (fun _ : ι ↦ _) S) ≪≫ₗ (e₁.symm.congrLeft (S ⊗[R] N) S)
+  let e₃ := (LinearMap.lsum R (fun _ : ι ↦ R) R).symm ≪≫ₗ
+    LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf R R N)
+  refine IsBaseChange.of_equiv ((e₃.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S _) ≪≫ₗ e₂)
+    (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
+  ext i
+  simpa [e₃, e₂, e₁] using (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+
+variable (R M N) in
+theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Algebra R S]
+    [Module.Flat R S] [Module.FinitePresentation R M] :
+    IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
+  obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
+  refine IsBaseChange.of_left_exact S (f' := (f.baseChange S).lcomp S (S ⊗[R] N))
+    (g' := (g.baseChange S).lcomp S (S ⊗[R] N)) _ _ _ ?_ ?_
+    (Module.isBaseChange_map_of_finite_free N S _) (Module.isBaseChange_map_of_finite_free N S _)
+    (exact_lcomp_of_exact_of_surjective _ hfg hf) (lcomp_injective_of_surjective f hf) ?_ ?_
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · apply exact_lcomp_of_exact_of_surjective
+    · exact lTensor_exact S hfg hf
+    · exact LinearMap.lTensor_surjective S hf
+  · apply lcomp_injective_of_surjective
+    exact LinearMap.lTensor_surjective S hf
 
 end CommRing

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -31,6 +32,7 @@ see `Fintype.card_perm`.
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
+@[wikidata Q120976]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
@@ -265,6 +267,13 @@ theorem ascFactorial_of_sub {n k : ℕ} :
     (n - k) * (n - k + 1).ascFactorial k = (n - k).ascFactorial (k + 1) := by
   rw [succ_ascFactorial, ascFactorial_succ]
 
+@[gcongr]
+theorem ascFactorial_le (k : ℕ) {n m : ℕ} (h : n ≤ m) :
+    n.ascFactorial k ≤ m.ascFactorial k := by
+  induction k with
+  | zero => rfl
+  | succ k ih => exact Nat.mul_le_mul (by lia) ih
+
 theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, n ^ k ≤ n.ascFactorial k
   | 0 => by rw [ascFactorial_zero, Nat.pow_zero]
   | k + 1 => by
@@ -410,6 +419,7 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
   rw [factorial_mul_descFactorial h]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
 
+@[gcongr]
 theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
     k.descFactorial n ≤ m.descFactorial n := by
   induction n with

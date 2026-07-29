@@ -56,6 +56,7 @@ sphere `Metric.sphere c R`. We also prove that the distance to the center of the
 this inversion is given by `R ^ 2 / dist x c`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
     inversion c R x = lineMap c x ((R / dist x c) ^ 2) :=
   rfl
@@ -229,3 +230,23 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+namespace EuclideanGeometry
+
+open Filter in
+/-- The inversion of a point tends to infinity  as it approaches the center of an inversion. -/
+theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Tendsto (inversion c R) (𝓝[≠] c) (Bornology.cobounded P) := by
+  rw [← tendsto_dist_left_atTop_iff c]
+  have hdist : Tendsto (dist c) (𝓝[≠] c) (𝓝[>] (0 : ℝ)) := by
+    rw [tendsto_nhdsWithin_iff]
+    refine ⟨tendsto_nhdsWithin_of_tendsto_nhds ?_, eventually_nhdsWithin_of_forall ?_⟩
+    · rw [← dist_self c]
+      exact ContinuousAt.tendsto <| by fun_prop
+    · aesop
+  have hratio : Tendsto (fun x : P ↦ dist c (inversion c R x)) (𝓝[≠] c) atTop := by
+    simp_rw [dist_center_inversion, div_eq_mul_inv]
+    exact hdist.inv_tendsto_nhdsGT_zero.const_mul_atTop <| by rwa [sq_pos_iff]
+  simpa using hratio
+
+end EuclideanGeometry
