@@ -53,7 +53,6 @@ non-disjointness. -/
 def nonDisjointComponents (S : Set α) : Partition (Set α) :=
   ofRel (TransGen (NonDisjointOn S))
 
-@[simp]
 lemma sUnion_nonDisjointComponents : ⋃₀ (nonDisjointComponents S : Set (Set α)) = S \ {⊥} := by
   change (nonDisjointComponents S).supp = S \ {⊥}
   rw [nonDisjointComponents, supp_ofRel]
