@@ -6,7 +6,6 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 
@@ -112,14 +111,6 @@ class IsMulApplyEqComp (F : Type*) (α : outParam Type*) [FunLike F α α] [Mul 
 @[simp, grind =]
 alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
 
-@[simp, grind =]
-lemma pow_apply_eq_iterate {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F α]
-    [IsMulApplyEqComp F α] (f : F) (n : ℕ) (x : α) :
-    (f ^ n) x = f^[n] x := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
-
 end Add
 
 section Sub
@@ -207,7 +198,7 @@ section Coercion
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F α β] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one_iff [One F] [One β] [IsOneApply F α β] (f : F) : (f : α → β) = 1 ↔ f = 1 := by
   constructor
   · intro h
@@ -255,11 +246,6 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F' α] (f : F') : (f : α �
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F' α] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
 
-@[simp, norm_cast]
-lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F' α] [IsOneApplyEqSelf F' α]
-    (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  funext <| pow_apply_eq_iterate f n
-
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
 theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
@@ -273,7 +259,7 @@ theorem natCast_eq_nsmul_one [NatCast F'] [One F'] [SMul Nat α] [SMul Nat F']
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]
 theorem intCast_eq_zsmul_one [IntCast F'] [One F'] [SMul Int α] [SMul Int F']
-    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : ℤ) :
+    [IsSMulApply Int F' α α] [IsIntCastApply F' α] [IsOneApplyEqSelf F' α] (n : Int) :
   (n : F') = n • (1 : F') := by
   apply DFunLike.ext
   simp
