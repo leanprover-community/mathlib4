@@ -705,7 +705,6 @@ variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
 variable [Algebra R A] [IsSemitopologicalRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped IsMulCommutative in
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/
