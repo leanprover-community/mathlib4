@@ -182,11 +182,11 @@ theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology �
   · exact (hdc.image _).union countable_setOfPred_isolated_right_within
   refine mem_closure_iff.2 fun u hu hxu ↦ ?_
   rcases (u ∩ (s ∩ Ioi x)).eq_empty_or_nonempty with h | ⟨y, hyu, hys, hyx⟩
-  · exact ⟨x, hxu, Or.inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
+  · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
       (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
   · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
       ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
-    exact ⟨z, hz.1, Or.inl ⟨z, hzd, rfl⟩, hz.2.le⟩
+    exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
 
 @[to_dual existing]
 theorem exists_countable_subset_mem_closure_inter_Iic [SecondCountableTopology α] (s : Set α) :
