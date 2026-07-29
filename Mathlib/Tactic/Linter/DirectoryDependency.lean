@@ -151,6 +151,9 @@ end NamePrefixRel
 -- TODO: move the two remaining lists below to `scripts/forbiddenDirs.json` as well,
 -- for easier evolution over time! Until then, beware that a rule change in the JSON file
 -- may need a matching update to `overrideAllowedImportDirs` below (and vice versa).
+-- TODO: add these rules to `scripts/forbiddenDirs.json`:
+--   "Mathlib.Data": ["Mathlib.Dynamics"]
+--   "Mathlib.Topology": ["Mathlib.Algebra"]
 -- Future: enforce that allowed and forbidden keys are disjoint
 -- Future: move further directories to use this allow-list instead of the blocklist
 
@@ -275,16 +278,11 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- Remove all comment lines (starts with `//`) from `input`. -/
-def extractNonComments (input : String) : String :=
-  "\n".intercalate <| (input.splitOn "\n").filter fun l ↦ !l.trimAsciiStart.startsWith "//"
+/-- The configuration file for `forbiddenImportDirs`, relative to the mathlib root directory.
 
-/-- Read a JSON file at `path` ignoring comment lines starting with `//`. -/
-def readJsonFileWithComments (α) [FromJson α] (path : System.FilePath) : IO α := do
-  let json ← IO.ofExcept <| Json.parse <| extractNonComments (← IO.FS.readFile path)
-  IO.ofExcept <| fromJson? json
-
-/-- The configuration file for `forbiddenImportDirs`, relative to the mathlib root directory. -/
+Each key names a module prefix; modules matching that prefix may not import modules matching any
+of the prefixes in the corresponding list. Exceptions to these rules live in
+`overrideAllowedImportDirs` below. -/
 def forbiddenDirsPath : System.FilePath := "scripts" / "forbiddenDirs.json"
 
 /-- The root modules of the libraries built from the mathlib repository itself.
@@ -310,7 +308,8 @@ configuration does not require recompiling this linter (and everything importing
 def forbiddenImportDirs : IO NamePrefixRel := do
   if let some rel ← forbiddenImportDirsCache.get then
     return rel
-  let entries ← readJsonFileWithComments (Std.TreeMap String (Array String)) forbiddenDirsPath
+  let json ← IO.ofExcept <| Json.parse (← IO.FS.readFile forbiddenDirsPath)
+  let entries : Std.TreeMap String (Array String) ← IO.ofExcept <| fromJson? json
   let rel := NamePrefixRel.ofArray <|
     entries.toArray.flatMap fun (n₁, ns) ↦ ns.map fun n₂ ↦ (n₁.toName, n₂.toName)
   forbiddenImportDirsCache.set (some rel)
