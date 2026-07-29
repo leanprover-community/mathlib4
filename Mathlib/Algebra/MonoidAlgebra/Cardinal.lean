@@ -54,6 +54,14 @@ alias cardinalMk_lift_of_infinite' := cardinalMk_eq_max_lift_of_infinite'
 lemma cardinalMk_of_infinite' [Nonempty M] [Infinite R] : #R[M] = max #R #M := by simp
 
 @[to_additive]
+instance [Infinite R] [Nonempty M'] : Infinite R[M'] :=
+  ‹Nonempty M'›.elim fun m => .of_injective (single m) single_right_injective
+
+@[to_additive]
+instance [Nontrivial R] [Infinite M'] : Infinite R[M'] :=
+  (exists_ne 0).elim fun r hr => .of_injective (single · r) (single_left_injective hr)
+
+@[to_additive]
 instance [Countable R] [Countable M'] : Countable R[M'] := by
   nontriviality R
   rw [← mk_le_aleph0_iff]
