@@ -278,7 +278,7 @@ end GroupInstances
 
 section TorsionFree
 
-/-- A `FunLike` type torsion-free if `β` is torsion-free. -/
+/-- A type `F` that satisfies `FunLike F α β` is torsion-free if `β` is torsion-free. -/
 @[to_additive /-- A `FunLike` type torsion-free if `β` is torsion-free. -/]
 protected theorem isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
     [IsMulTorsionFree β] : IsMulTorsionFree F :=
