@@ -37,6 +37,8 @@ groups.
 topological space, group, topological group
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
