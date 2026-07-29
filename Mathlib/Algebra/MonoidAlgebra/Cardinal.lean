@@ -58,9 +58,27 @@ instance [Countable R] [Countable M'] : Countable R[M'] := by
   nontriviality R
   rw [← mk_le_aleph0_iff]
   cases fintypeOrInfinite M'
-  · rw [cardinalMk_eq_lift_of_fintype]
+  · rw [cardinalMk_eq_lift_of_fintype, ← power_natCast]
     apply power_le_aleph0 <;> simp
   · rw [cardinalMk_eq_max_lift_of_infinite]
     simp
+
+universe w in
+@[to_additive]
+instance [Small.{w} R] [Small.{w} M'] : Small.{w} R[M'] := by
+  nontriviality R
+  rw [small_iff_lift_mk_lt_univ]
+  cases fintypeOrInfinite M'
+  · rw [cardinalMk_eq_lift_of_fintype, ← power_natCast, lift_power,
+      lift_lift, ← mk_uLift, ← lift_natCast.{u, v}, ← mk_fintype M',
+      lift_lift, ← mk_uLift, power_def, ← lift_id'.{w + 1} (mk _),
+      ← small_iff_lift_mk_lt_univ]
+    infer_instance
+  · rw [cardinalMk_eq_max_lift_of_infinite, lift_max, max_lt_iff]
+    constructor
+    · rwa [lift_lift, ← lift_lift.{w + 1}, ← lift_univ.{w, max (w + 1) u, v},
+        lift_lt, ← small_iff_lift_mk_lt_univ]
+    · rwa [lift_lift, ← lift_lift.{w + 1}, ← lift_univ.{w, max (w + 1) v, u},
+        lift_lt, ← small_iff_lift_mk_lt_univ]
 
 end MonoidAlgebra
