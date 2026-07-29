@@ -395,6 +395,10 @@ theorem center_le_comap_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S]
     (hf : Function.Surjective f) : center R ≤ comap f (center S) :=
   NonUnitalSubsemiring.center_le_comap_center hf
 
+theorem comap_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
+    (hf : Function.Injective f) : comap f (center S) ≤ center R :=
+  NonUnitalSubsemiring.comap_center_le_center hf
+
 @[simp]
 theorem map_center_eq (f : R ≃+* S) : map f (center R) = center S :=
   SetLike.coe_injective Set.image_center_eq
