@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Clopen
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.ENat.Basic
 
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Fintype.Option
@@ -35,7 +37,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 * https://en.wikipedia.org/wiki/Inductive_dimension
 -/
 
-@[expose] public section
+public section
 
 open Set Topology TopologicalSpace
 
