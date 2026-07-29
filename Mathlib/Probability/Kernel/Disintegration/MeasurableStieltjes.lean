@@ -291,18 +291,15 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ}
 variable {f : α → ℚ → ℝ} [MeasurableSpace α] (hf : IsMeasurableRatCDF f)
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]
   refine Equiv.iInf_congr ?_ ?_
   · exact
       { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        left_inv := fun t ↦ by simp only [Subtype.coe_eta]
-        right_inv := fun t ↦ by simp only [Subtype.coe_eta] }
+        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩ }
   · intro t
-    simp only [Equiv.coe_fn_mk, Subtype.coe_mk]
+    rfl
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_nonneg (a : α) (r : ℝ) :
     0 ≤ IsMeasurableRatCDF.stieltjesFunctionAux f a r := by

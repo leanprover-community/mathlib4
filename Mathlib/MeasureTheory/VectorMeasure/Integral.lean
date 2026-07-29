@@ -191,7 +191,6 @@ instance [IsFiniteMeasure μ.variation] :
     IsFiniteMeasure (μ.transpose B).variation :=
   isFiniteMeasure_of_le _ (variation_transpose_le μ B)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
     (hB : ∀ x y, ‖B x y‖₊ = C * ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = C • μ.variation := by
@@ -205,13 +204,12 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       grw [this, smul_smul, mul_inv_cancel₀ hC, one_smul]
     apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     have : ‖μ s‖ₑ ≤ C⁻¹ • ‖(μ.transpose B) s‖ₑ := by
-      simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe]
       obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
       have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
       simp only [flip_apply, hB] at this
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
-        div_eq_inv_mul] at this
-      exact ENNReal.coe_le_coe_of_le this
+        div_eq_inv_mul, ← ENNReal.coe_le_coe] at this
+      exact this
     grw [this, enorm_measure_le_variation, Measure.smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :

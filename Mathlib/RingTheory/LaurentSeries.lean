@@ -1070,7 +1070,6 @@ theorem valuation_LaurentSeries_equal_extension :
     rfl
   · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     Tendsto (Valued.v : K⟮X⟯ → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
   have := Valued.is_topological_valuation (R := (idealX K).adicCompletion K⟮X⟯)
