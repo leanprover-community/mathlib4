@@ -1229,7 +1229,7 @@ lemma inv_strictAnti₀ (hb : 0 < b) (hba : b < a) : a⁻¹ < b⁻¹ :=
   (inv_lt_inv₀ (hb.trans hba) hb).2 hba
 
 lemma strictAntiOn_inv_pos : StrictAntiOn (fun x : G₀ ↦ x⁻¹) {r | 0 < r} :=
-  fun ⦃_⦄ ha ⦃_⦄ _ h ↦ inv_strictAnti₀ (Set.mem_setOf.mp ha) h
+  fun ⦃_⦄ ha ⦃_⦄ _ h ↦ inv_strictAnti₀ (Set.mem_ofPred.mp ha) h
 
 lemma antitoneOn_inv_pos : AntitoneOn (fun x : G₀ ↦ x⁻¹) {r | 0 < r} :=
   strictAntiOn_inv_pos.antitoneOn

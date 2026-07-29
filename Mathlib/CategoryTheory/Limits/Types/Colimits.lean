@@ -8,6 +8,7 @@ module
 public import Mathlib.Logic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Colimits in the category of types
@@ -175,9 +176,11 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   apply (colimitEquivColimitType F).symm.injective
   simp
 
--- We don’t want to add `simp` to the original lemmas here
-attribute [elementwise] colimit.w colimit.ι_desc colimit.ι_map
-attribute [simp] colimit.w_apply colimit.ι_desc_apply colimit.ι_map_apply
+-- We don’t want to add `simp` to the original lemmas here.
+-- `colimit.w_apply` and `colimit.ι_desc_apply` are generated (and tagged `simp`)
+-- in `Mathlib/CategoryTheory/ConcreteCategory/Elementwise.lean`.
+attribute [elementwise] colimit.ι_map
+attribute [simp] colimit.ι_map_apply
 
 variable {F} in
 @[deprecated colimit.w_apply (since := "2026-03-06")]

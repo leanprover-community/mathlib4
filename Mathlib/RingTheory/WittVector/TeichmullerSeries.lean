@@ -106,7 +106,7 @@ theorem dvd_sub_sum_teichmuller_iterateFrobeniusEquiv_coeff (x : 𝕎 R) (n : �
       exact teichmuller_mul_pow_coeff_of_ne _ (Ne.intro hb.2).symm
   · refine fun n ↦ ⟨fun ⟨a, _, ha⟩ ⟨b, _, hb⟩ ↦ ?_⟩
     ext
-    dsimp only [ne_eq, Set.mem_setOf_eq]
+    dsimp only [ne_eq, Set.mem_ofPred_eq]
     rw [← Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) ha]
     exact Not.imp_symm (teichmuller_mul_pow_coeff_of_ne _) hb
 

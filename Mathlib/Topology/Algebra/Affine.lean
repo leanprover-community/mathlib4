@@ -55,6 +55,7 @@ theorem isOpenMap_linear_iff {f : P →ᵃ[R] Q} : IsOpenMap f.linear ↔ IsOpen
 
 variable [TopologicalSpace R] [ContinuousSMul R V]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The line map is continuous in all arguments. -/
 @[continuity, fun_prop]
 theorem lineMap_continuous_uncurry :
@@ -73,6 +74,7 @@ section Tendsto
 
 variable {α : Type*} {l : Filter α}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Filter.Tendsto.lineMap {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
     Tendsto (fun x => AffineMap.lineMap (f₁ x) (f₂ x) (g x)) l (𝓝 <| AffineMap.lineMap p₁ p₂ c) :=
@@ -87,22 +89,26 @@ end Tendsto
 
 variable {X : Type*} [TopologicalSpace X] {f₁ f₂ : X → P} {g : X → R} {s : Set X} {x : X}
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem _root_.ContinuousWithinAt.lineMap (h₁ : ContinuousWithinAt f₁ s x)
     (h₂ : ContinuousWithinAt f₂ s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (fun x ↦ lineMap (f₁ x) (f₂ x) (g x)) s x :=
   Tendsto.lineMap h₁ h₂ hg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.ContinuousAt.lineMap (h₁ : ContinuousAt f₁ x) (h₂ : ContinuousAt f₂ x)
     (hg : ContinuousAt g x) :
     ContinuousAt (fun x ↦ lineMap (f₁ x) (f₂ x) (g x)) x := by
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.ContinuousOn.lineMap (h₁ : ContinuousOn f₁ s) (h₂ : ContinuousOn f₂ s)
     (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ lineMap (f₁ x) (f₂ x) (g x)) s := by
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Continuous.lineMap (h₁ : Continuous f₁) (h₂ : Continuous f₂)
     (hg : Continuous g) :
     Continuous (fun x ↦ lineMap (f₁ x) (f₂ x) (g x)) := by

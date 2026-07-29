@@ -400,7 +400,7 @@ lemma toShortNFOfCharThree_a₂ : (W.toShortNFOfCharThree • W).a₂ = W.b₂ :
 
 theorem toShortNFOfCharThree_spec (hb₂ : W.b₂ = 0) : (W.toShortNFOfCharThree • W).IsShortNF := by
   have h : (2 : R) * 2 = 1 := by linear_combination CharP.cast_eq_zero R 3
-  letI : Invertible (2 : R) := ⟨2, h, h⟩
+  let : Invertible (2 : R) := ⟨2, h, h⟩
   have H := W.toCharNeTwoNF_spec
   exact ⟨H.a₁, hb₂ ▸ W.toShortNFOfCharThree_a₂, H.a₃⟩
 
@@ -419,10 +419,10 @@ def toCharThreeNF : VariableChange F :=
 theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W.b₂ ≠ 0) :
     (W.toCharThreeNF • W).IsCharThreeJNeZeroNF := by
   have h : (2 : F) * 2 = 1 := by linear_combination CharP.cast_eq_zero F 3
-  letI : Invertible (2 : F) := ⟨2, h, h⟩
+  let : Invertible (2 : F) := ⟨2, h, h⟩
   rw [toCharThreeNF, mul_smul]
   set W' := W.toShortNFOfCharThree • W
-  haveI : W'.IsCharNeTwoNF := W.toCharNeTwoNF_spec
+  have : W'.IsCharNeTwoNF := W.toCharNeTwoNF_spec
   constructor
   · simp [variableChange_a₁]
   · simp [variableChange_a₃]
@@ -436,9 +436,9 @@ theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) : (W.toCharThree
 
 instance toCharThreeNF_spec : (W.toCharThreeNF • W).IsCharThreeNF := by
   by_cases hb₂ : W.b₂ = 0
-  · haveI := W.toCharThreeNF_spec_of_b₂_eq_zero hb₂
+  · have := W.toCharThreeNF_spec_of_b₂_eq_zero hb₂
     infer_instance
-  · haveI := W.toCharThreeNF_spec_of_b₂_ne_zero hb₂
+  · have := W.toCharThreeNF_spec_of_b₂_ne_zero hb₂
     infer_instance
 
 theorem exists_variableChange_isCharThreeNF : ∃ C : VariableChange F, (C • W).IsCharThreeNF :=
@@ -686,10 +686,10 @@ def toCharTwoNF [DecidableEq F] : VariableChange F :=
 instance toCharTwoNF_spec [DecidableEq F] : (W.toCharTwoNF • W).IsCharTwoNF := by
   by_cases ha₁ : W.a₁ = 0
   · rw [toCharTwoNF, dif_pos ha₁]
-    haveI := W.toCharTwoJEqZeroNF_spec ha₁
+    have := W.toCharTwoJEqZeroNF_spec ha₁
     infer_instance
   · rw [toCharTwoNF, dif_neg ha₁]
-    haveI := W.toCharTwoJNeZeroNF_spec ha₁
+    have := W.toCharTwoJNeZeroNF_spec ha₁
     infer_instance
 
 theorem exists_variableChange_isCharTwoNF : ∃ C : VariableChange F, (C • W).IsCharTwoNF := by

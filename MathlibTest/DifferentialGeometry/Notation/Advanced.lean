@@ -56,7 +56,6 @@ error: Could not find a model with corners for `TangentBundle (modelWithCornersS
 Hint: the expected type contains metavariables, maybe you need to provide an implicit argument
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 lemma contMDiff_proj : CMDiff ∞ (proj) := by
   unfold proj
   exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
@@ -378,10 +377,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
       `ContinuousLinearMap id' E'' E'''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField (ContinuousLinearMap id' E'' E''')
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap id' E'' E'''` among local instances.
@@ -419,7 +418,6 @@ error: Could not find a model with corners for `ContinuousLinearMap σ E'' E''''
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
-set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
 variable {f : M → E'' →SL[σ] E''''} in
@@ -481,17 +479,16 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
       `ContinuousLinearMap σ E'' E''''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField (ContinuousLinearMap σ E'' E'''')
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `ContinuousLinearMap σ E'' E''''` among local instances.
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo.MDiff true in
-set_option pp.mvars.anonymous false in
 #check CMDiff 2 f
 
 end
@@ -686,10 +683,10 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
       `Set.Icc x y` is not a sphere in a real normed space
 [Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
-      failed to synthesize instance of type class
+      failed to synthesize
         NontriviallyNormedField ↑(Set.Icc x y)
       ⏎
-      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 [Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `↑(Set.Icc x y)` among local instances.

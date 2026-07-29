@@ -172,7 +172,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
   defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂

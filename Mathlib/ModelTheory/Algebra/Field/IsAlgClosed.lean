@@ -52,7 +52,7 @@ namespace FirstOrder
 
 namespace Field
 
-open Ring FreeCommRing Polynomial Language
+open FirstOrder.Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
 free commutative ring in `n + 1` variables, with a variable for each
@@ -61,6 +61,7 @@ for `X`. -/
 noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
@@ -79,7 +80,9 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -175,6 +178,7 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := isAlgClosed_of_model_ACF p M
     infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
     Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by

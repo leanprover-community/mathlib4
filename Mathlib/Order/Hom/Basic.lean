@@ -94,8 +94,8 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -106,8 +106,8 @@ abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩,
-  fun ⟨iso, h⟩ ↦ ⟨iso, by rwa [forall_comm]⟩
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
+  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -285,6 +285,14 @@ def id : α →o α :=
 instance : Inhabited (α →o α) :=
   ⟨id⟩
 
+variable (α β) in
+/-- Order homomorphisms are equivalent to relation homomorphisms between `LE` relations. -/
+def equivRelHom : (α →o β) ≃ @RelHom α β (· ≤ ·) (· ≤ ·) where
+  toFun f := ⟨f, @f.monotone⟩
+  invFun f := ⟨f, @f.map_rel⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
   @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
@@ -308,6 +316,7 @@ theorem mk_le_mk {f g : α → β} {hf hg} : mk f hf ≤ mk g hg ↔ f ≤ g :=
 theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   (h₁ x).trans <| g.mono h₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curry : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
@@ -903,6 +912,7 @@ theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
     (f.trans g).trans h = f.trans (g.trans h) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -929,11 +939,58 @@ from `α` and `β` to themselves are order-isomorphic. -/
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
 
+/-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
+abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
+  RelIso.relEmbeddingCongr f g
+
+@[simp]
+theorem orderEmbeddingCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ↪o β) :
+    orderEmbeddingCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ↪o δ) :
+    (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
+abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
+  RelIso.relIsoCongr f g
+
+@[simp]
+theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
+    orderIsoCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
+    (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- A surjective order embedding is an order isomorphism. -/
+@[simps!]
+noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : α ≃o β :=
+  RelIso.ofSurjective f hf
+
+/-- Surjective order embeddings are equivalent to order isomorphisms. -/
+@[simps apply symm_apply]
+noncomputable def equivEmbeddingSurjective :
+    α ≃o β ≃ { f : α ↪o β // Function.Surjective f } where
+  toFun f := ⟨f, f.surjective⟩
+  invFun f := ofSurjective f f.prop
+  left_inv _ := by ext; rfl
+  right_inv _ := rfl
+
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
 @[simps! (attr := grind =)]
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
