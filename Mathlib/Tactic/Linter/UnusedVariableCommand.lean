@@ -27,7 +27,8 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
-/-- Enables the prototype `unusedVariableCommand` linter. -/
+/-- The `unusedVariableCommand` linter reports `variable` binders that no declaration in
+their scope uses. -/
 public register_option linter.unusedVariableCommand : Bool := {
   defValue := false
   descr := "enable the unusedVariableCommand linter"
@@ -52,27 +53,15 @@ public structure UnusedVarState where
   counts : Array Nat := #[]
   deriving Inhabited
 
-/-- Extracts the named binder idents of a `bracketedBinder`. Anonymous instance binders
-yield nothing. -/
+/-- Extracts the named binder idents of a `bracketedBinder`. Every binder kind carries its
+idents in slot 1; anonymous instance binders `[Type]` have none there and yield nothing. -/
 def binderIdents (b : Syntax) : Array Syntax :=
   let k := b.getKind
   if k == ``Lean.Parser.Term.explicitBinder || k == ``Lean.Parser.Term.implicitBinder ||
-     k == ``Lean.Parser.Term.strictImplicitBinder then
-    b[1].getArgs.filter (·.isIdent)
-  else if k == ``Lean.Parser.Term.instBinder then
-    -- `[name : Type]` has an ident in slot 1; `[Type]` does not.
+      k == ``Lean.Parser.Term.strictImplicitBinder || k == ``Lean.Parser.Term.instBinder then
     b[1].getArgs.filter (·.isIdent)
   else
     #[]
-
-/-- Collects the binder names of the leading `∀`-telescope of `e`. -/
-def leadingBinderNames (e : Expr) : NameSet :=
-  go e {}
-where
-  go : Expr → NameSet → NameSet
-    | .forallE n _ b _, acc => go b (acc.insert n.eraseMacroScopes)
-    | .lam n _ b _, acc => go b (acc.insert n.eraseMacroScopes)
-    | _, acc => acc
 
 /-- Collects the identifier names of a syntax tree. -/
 partial def collectIdents (s : Syntax) (acc : NameSet) : NameSet :=
@@ -86,7 +75,7 @@ def reportUnused (lvl : Array VarEntry) : CommandElabM Unit := do
       logLint linter.unusedVariableCommand v.stx
         m!"variable '{v.name}' is never used in this scope"
 
-@[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
+@[inherit_doc linter.unusedVariableCommand]
 def unusedVariablePost (readPre : PreStateFn) (stx : Syntax) (self : UnusedVarState) :
     CommandElabM UnusedVarState := do
   unless getLinterValue linter.unusedVariableCommand (← getLinterOptions) do
@@ -122,30 +111,34 @@ def unusedVariablePost (readPre : PreStateFn) (stx : Syntax) (self : UnusedVarSt
             lvl := lvl.push { name := key.1, stx := id }
       levels := levels.set! i lvl
       counts := counts.set! i vds.size
-  -- Mark binders used by the declarations of this command. Identifier occurrences in the
-  -- command syntax also mark binders: this covers `example` commands and notations, which add
-  -- no declaration to the environment. Binder-management commands do not count as usage.
-  let mut usedNames : NameSet := {}
-  unless #[``Lean.Parser.Command.variable, ``Lean.Parser.Command.omit,
-      ``Lean.Parser.Command.include].contains stx.getKind do
-    usedNames := collectIdents stx usedNames
-  if let some p := readPre declaredNames then
+  -- Identifier occurrences in the command syntax mark binders as used: this covers `example`
+  -- commands and notations, which add no declaration to the environment. Binder-management
+  -- commands do not count as usage.
+  let k := stx.getKind
+  let mut usedNames : NameSet :=
+    if k == ``Lean.Parser.Command.variable || k == ``Lean.Parser.Command.omit ||
+        k == ``Lean.Parser.Command.include then {}
+    else collectIdents stx {}
+  -- The leading `∀`-telescope binder names of each new declaration also mark binders as used.
+  if let some newDecls := readPre declaredNames then
     let env ← getEnv
-    for n in p.new do
+    for n in newDecls do
       if let some ci := env.find? n then
-        usedNames := leadingBinderNames ci.type |>.foldl (·.insert ·) usedNames
-  if true then
-    if !usedNames.isEmpty then
-      levels := levels.map fun lvl =>
-        lvl.map fun v => if usedNames.contains v.name then { v with used := true } else v
-  -- End of file: report every remaining level.
+        for bn in ci.type.getForallBinderNames do
+          usedNames := usedNames.insert bn.eraseMacroScopes
+  unless usedNames.isEmpty do
+    levels := levels.map fun lvl =>
+      lvl.map fun v => if usedNames.contains v.name then { v with used := true } else v
+  -- Terminal command (`#exit` or end of file): report every remaining level. Mark every
+  -- entry as used, so that a second terminal command (the end of the file after `#exit`)
+  -- does not report it again.
   if Parser.isTerminalCommand stx then
     for lvl in levels do
       reportUnused lvl
-    return {}
+    levels := levels.map fun lvl => lvl.map fun v => { v with used := true }
   return { levels, counts }
 
-@[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
+@[inherit_doc linter.unusedVariableCommand]
 public initialize unusedVariableCommand : StatefulLinter UnusedVarState Unit ←
   registerStatefulLinter {}
     (post := fun stx self _ _ readPre => unusedVariablePost readPre stx self)
