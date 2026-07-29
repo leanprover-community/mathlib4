@@ -117,7 +117,6 @@ instance hasFix : Fix (Part α) :=
 
 end Part
 
-open Sigma
 
 namespace Pi
 

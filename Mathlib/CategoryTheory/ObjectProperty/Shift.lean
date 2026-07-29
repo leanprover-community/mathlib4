@@ -21,7 +21,7 @@ implies `P (X⟦a⟧)` for all `a : A`.
 
 @[expose] public section
 
-open CategoryTheory Category
+open CategoryTheory
 
 namespace CategoryTheory
 

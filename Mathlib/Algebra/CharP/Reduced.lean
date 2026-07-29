@@ -14,7 +14,6 @@ public import Mathlib.Algebra.CharP.Frobenius
 public section
 
 
-open Finset
 
 section
 

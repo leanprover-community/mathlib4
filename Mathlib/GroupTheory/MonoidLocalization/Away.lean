@@ -23,7 +23,6 @@ commutative monoid, grothendieck group
 
 assert_not_exists MonoidWithZero
 
-open Function
 
 section CommMonoid
 

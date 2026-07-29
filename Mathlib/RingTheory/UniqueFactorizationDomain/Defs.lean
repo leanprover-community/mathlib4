@@ -44,7 +44,6 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
 
 variable [WfDvdMonoid α]
 

@@ -26,7 +26,7 @@ public section
 
 universe u v w
 
-open Topology Filter Asymptotics Set
+open Set
 open scoped Nat
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]

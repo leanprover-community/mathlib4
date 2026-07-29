@@ -129,7 +129,6 @@ end
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 
-open Polynomial
 
 variable {n : Type*} {R : Type*} [CommRing R]
 

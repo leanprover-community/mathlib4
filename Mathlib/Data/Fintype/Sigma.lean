@@ -15,9 +15,7 @@ public import Mathlib.Data.Fintype.OfMap
 public section
 
 
-open Function
 
-open Nat
 
 universe u v
 

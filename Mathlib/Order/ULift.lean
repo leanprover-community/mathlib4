@@ -18,7 +18,6 @@ public section
 
 namespace ULift
 
-open Batteries
 
 universe v u
 

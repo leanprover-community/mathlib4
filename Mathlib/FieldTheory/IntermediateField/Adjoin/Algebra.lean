@@ -19,7 +19,7 @@ This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 
 public section
 
-open Module Polynomial
+open Module
 
 namespace IntermediateField
 

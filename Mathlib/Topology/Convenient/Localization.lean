@@ -28,7 +28,7 @@ a localization functor.
 
 universe v t u
 
-open CategoryTheory MorphismProperty
+open CategoryTheory
 
 namespace TopCat
 

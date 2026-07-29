@@ -66,7 +66,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 @[expose] public section
 
-open Filter Set TopologicalSpace Function MeasureTheory Measure
+open Filter Set TopologicalSpace Function MeasureTheory
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 namespace MeasureTheory

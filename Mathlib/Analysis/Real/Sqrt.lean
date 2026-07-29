@@ -319,7 +319,7 @@ end Real
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/

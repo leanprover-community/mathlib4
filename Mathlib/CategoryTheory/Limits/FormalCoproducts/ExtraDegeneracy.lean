@@ -26,7 +26,6 @@ morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 universe w t v u
 
-open Simplicial
 
 namespace CategoryTheory.Limits.FormalCoproduct
 

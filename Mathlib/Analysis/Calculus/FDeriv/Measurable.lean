@@ -788,7 +788,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 namespace FDerivMeasurableAux
 
-open Uniformity
 
 lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by

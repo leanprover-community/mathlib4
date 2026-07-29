@@ -23,7 +23,6 @@ public section
 
 assert_not_exists Finset
 
-open Set
 
 variable {R K : Type*}
 

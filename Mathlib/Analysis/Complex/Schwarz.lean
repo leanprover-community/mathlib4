@@ -55,7 +55,7 @@ we state it for maps between any two normed spaces.
 Schwarz lemma
 -/
 
-open Metric Set Function Filter TopologicalSpace
+open Metric Set Function Filter
 
 open scoped Topology ComplexConjugate
 

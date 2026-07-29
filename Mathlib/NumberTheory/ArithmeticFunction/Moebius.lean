@@ -152,7 +152,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
   · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
 
-open UniqueFactorizationMonoid
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by

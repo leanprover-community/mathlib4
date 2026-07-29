@@ -40,7 +40,6 @@ noncomputable section
 
 namespace WittVector
 
-open Function
 
 variable {p : ℕ} {R : Type*}
 

@@ -15,7 +15,6 @@ public section
 
 namespace Submodule
 
-open LinearMap QuotientAddGroup
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 

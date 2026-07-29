@@ -25,7 +25,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 @[expose] public section
 
-open Topology
 
 variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 

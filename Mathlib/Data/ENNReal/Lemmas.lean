@@ -19,7 +19,7 @@ They are probably good targets for further cleanup or moves.
 public section
 
 
-open Function Set NNReal
+open Set NNReal
 
 variable {α : Type*}
 

@@ -169,7 +169,7 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
 section Meta
-open Lean Meta Qq
+open Lean Qq
 
 /-- Produce a term of the form `f 0 * f 1 * ... * f (n - 1)` and an application of `FinVec.prod_eq`
 that shows it is equal to `∏ i, f i`. -/

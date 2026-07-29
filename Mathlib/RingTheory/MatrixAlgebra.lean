@@ -210,7 +210,6 @@ variable [Fintype n] [DecidableEq n]
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
   AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with }
 
-open MatrixEquivTensor
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :

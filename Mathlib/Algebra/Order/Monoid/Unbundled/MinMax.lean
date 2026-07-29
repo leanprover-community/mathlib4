@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public section
 
 
-open Function
 
 variable {α β : Type*}
 

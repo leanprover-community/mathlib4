@@ -18,7 +18,7 @@ and proves some properties of it.
 
 @[expose] public section
 
-open Filter Topology
+open Filter
 
 variable {X : Type*} [TopologicalSpace X]
 

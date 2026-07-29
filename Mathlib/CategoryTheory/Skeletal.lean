@@ -32,7 +32,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Category
 
 variable (C : Type u₁) [Category.{v₁} C]
 variable (D : Type u₂) [Category.{v₂} D]
@@ -431,7 +430,6 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
 
 end ThinSkeleton
 
-open ThinSkeleton
 
 section
 

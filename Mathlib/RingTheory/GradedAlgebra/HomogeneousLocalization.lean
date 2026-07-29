@@ -77,7 +77,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 noncomputable section
 
-open DirectSum Pointwise
+open DirectSum
 
 open DirectSum SetLike
 
@@ -102,7 +102,7 @@ end
 
 namespace NumDenSameDeg
 
-open SetLike.GradedMonoid Submodule
+open SetLike.GradedMonoid
 
 @[ext]
 theorem ext {𝒜 : ι → σ} (x : Submonoid A)

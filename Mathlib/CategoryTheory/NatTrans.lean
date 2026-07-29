@@ -88,7 +88,6 @@ theorem id_app' (F : C ⥤ D) (X : C) : (NatTrans.id F).app X = 𝟙 (F.obj X) :
 
 instance (F : C ⥤ D) : Inhabited (NatTrans F F) := ⟨NatTrans.id F⟩
 
-open Category
 
 open CategoryTheory.Functor
 

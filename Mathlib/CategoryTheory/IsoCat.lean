@@ -31,7 +31,7 @@ to be preferred.
 
 namespace CategoryTheory
 
-open CategoryTheory.Functor NatIso Category
+open CategoryTheory.Functor
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 variable (F : C ⥤ D) (G : D ⥤ E)

@@ -27,7 +27,7 @@ implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 
 public section
 
-open Fin MulOpposite
+open Fin
 open List hiding tail
 open scoped Pointwise
 

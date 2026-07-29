@@ -38,7 +38,7 @@ noncomputable section
 
 universe u
 
-open UniformSpace MulOpposite CategoryTheory NormedAddGroupHom
+open UniformSpace CategoryTheory NormedAddGroupHom
 
 
 namespace SemiNormedGrp

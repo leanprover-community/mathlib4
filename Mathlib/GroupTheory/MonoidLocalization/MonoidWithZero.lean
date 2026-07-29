@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.OreLocalization.Basic
 
 @[expose] public section
 
-open Function
 
 section CommMonoidWithZero
 

@@ -721,7 +721,7 @@ end translate
 
 section SL2Z
 
-open ModularForm CuspForm OnePoint
+open ModularForm OnePoint
 
 variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 

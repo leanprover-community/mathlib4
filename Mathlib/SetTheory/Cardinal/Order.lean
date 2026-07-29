@@ -62,7 +62,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open List Function Order Set
+open Function Order Set
 
 noncomputable section
 

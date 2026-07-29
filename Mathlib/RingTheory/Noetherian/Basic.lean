@@ -58,7 +58,7 @@ public section
 
 assert_not_exists Matrix
 
-open Set Pointwise
+open Set
 
 section
 

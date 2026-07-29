@@ -39,7 +39,7 @@ open RCLike LinearMap ContinuousLinearMap InnerProductSpace
 
 open LinearMap (ker range)
 
-open RealInnerProductSpace NNReal
+open NNReal
 
 universe u
 

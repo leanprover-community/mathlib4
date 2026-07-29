@@ -20,7 +20,7 @@ Remove `Finset.biUnion` in favour of `Finset.sup`.
 
 public section
 
-open Function Multiset OrderDual
+open OrderDual
 
 variable {F α β γ ι κ : Type*}
 variable {s s₁ s₂ : Finset β} {f g : β → α} {a : α}

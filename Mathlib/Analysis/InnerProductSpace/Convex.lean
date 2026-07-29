@@ -26,7 +26,7 @@ public section
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open Real
 open LinearMap (BilinForm)
 
 variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]

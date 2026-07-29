@@ -43,7 +43,6 @@ public section
 
 namespace Convexity
 
-open ConvexSpace
 
 variable {I X : Type*}
 

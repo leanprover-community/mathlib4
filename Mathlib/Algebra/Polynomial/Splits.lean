@@ -689,7 +689,6 @@ end Field
 
 noncomputable section
 
-open Polynomial
 
 universe u v w
 
@@ -717,7 +716,6 @@ attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 
 local infixl:50 " ~ᵤ " => Associated
 
-open UniqueFactorizationMonoid Associates
 
 end UFD
 

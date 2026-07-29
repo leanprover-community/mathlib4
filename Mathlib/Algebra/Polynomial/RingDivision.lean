@@ -25,7 +25,6 @@ noncomputable section
 
 open Polynomial
 
-open Finset
 
 namespace Polynomial
 

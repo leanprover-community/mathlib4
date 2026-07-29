@@ -27,7 +27,7 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset
 
 universe u
 

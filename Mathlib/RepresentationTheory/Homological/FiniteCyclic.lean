@@ -96,7 +96,7 @@ variable (k : Type u) {G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : R
 
 namespace leftRegular
 
-open Finsupp IsCyclic Representation
+open Finsupp Representation
 
 lemma range_norm_eq_ker_applyAsHom_sub (hg : ∀ x, x ∈ Subgroup.zpowers g) :
     LinearMap.range (leftRegular k G).norm.hom.toLinearMap =

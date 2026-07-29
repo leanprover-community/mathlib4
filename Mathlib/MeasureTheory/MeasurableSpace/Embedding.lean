@@ -40,7 +40,7 @@ measurable equivalence, measurable embedding
 @[expose] public section
 
 
-open Set Function Equiv MeasureTheory
+open Set Function Equiv
 
 universe uι
 

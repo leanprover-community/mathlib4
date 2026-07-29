@@ -36,7 +36,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
-open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom PullbackCone
+open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Hom
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
@@ -187,7 +187,6 @@ end
 
 section
 
-open WalkingCospan
 
 variable (f : X ⟶ Y) [Mono f]
 
@@ -375,7 +374,6 @@ end
 
 section
 
-open WalkingSpan
 
 variable (f : X ⟶ Y) [Epi f]
 

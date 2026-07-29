@@ -18,7 +18,7 @@ public import Mathlib.Analysis.PSeries
 
 open UpperHalfPlane hiding I
 open scoped Real
-open Filter Complex MatrixGroups Asymptotics
+open Filter Complex Asymptotics
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
   {k : ℤ} (hk : 0 < k) {F : Type*} [FunLike F ℍ ℂ] (f : F) {s : ℂ}

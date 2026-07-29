@@ -19,7 +19,7 @@ be used in other files without requiring lots of group-theoretic imports.
 
 @[expose] public section
 
-open Filter Topology Uniformity
+open Filter Topology
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
 

@@ -30,7 +30,7 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 @[expose] public section
 
-open Filter Topology Set ContinuousLinearMap Bornology
+open Filter Set ContinuousLinearMap Bornology
 
 section Definition
 

@@ -50,7 +50,7 @@ given in SGA III Exp. 21 Section 6.
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 

@@ -55,7 +55,7 @@ noncomputable section
 
 universe u v w
 
-open Function Set Uniformity Topology
+open Function Set Uniformity
 
 namespace Metric
 
@@ -434,9 +434,7 @@ protected def metricSpace : MetricSpace (Σ i, E i) := by
 
 attribute [local instance] Sigma.metricSpace
 
-open Topology
 
-open Filter
 
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=

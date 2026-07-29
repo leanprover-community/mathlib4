@@ -21,7 +21,6 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 public section
 
 
-open Polynomial Submodule
 
 section Ring
 

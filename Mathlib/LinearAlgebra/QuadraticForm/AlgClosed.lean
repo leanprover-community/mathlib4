@@ -23,7 +23,6 @@ public section
 open QuadraticMap
 namespace QuadraticForm
 
-open Finset
 
 variable {ι : Type*} [Fintype ι] {K : Type*} [Field K] [IsAlgClosed K]
 

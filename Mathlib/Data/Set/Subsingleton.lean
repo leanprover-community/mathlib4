@@ -22,7 +22,6 @@ elements.
 
 assert_not_exists HeytingAlgebra RelIso
 
-open Function
 
 universe u v
 

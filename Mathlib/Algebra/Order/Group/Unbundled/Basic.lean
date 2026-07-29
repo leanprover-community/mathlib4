@@ -24,7 +24,6 @@ public section
 
 assert_not_exists IsOrderedMonoid
 
-open Function
 
 universe u
 

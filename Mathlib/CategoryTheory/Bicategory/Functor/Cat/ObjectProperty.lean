@@ -31,7 +31,6 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-open Bicategory
 
 namespace Pseudofunctor
 

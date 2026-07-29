@@ -623,7 +623,6 @@ end Localization
 
 end CommSemiring
 
-open Localization
 
 variable {R : Type*} [CommSemiring R]
 

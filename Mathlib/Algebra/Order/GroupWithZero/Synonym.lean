@@ -17,7 +17,6 @@ Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 public section
 
 
-open Function
 
 variable {α : Type*}
 

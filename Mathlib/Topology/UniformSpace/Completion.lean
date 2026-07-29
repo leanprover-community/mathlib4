@@ -555,7 +555,6 @@ section Extension₂
 
 variable (f : α → β → γ)
 
-open Function
 
 /-- Extend a two variable map to the Hausdorff completions. -/
 protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
@@ -581,7 +580,6 @@ end Extension₂
 
 section Map₂
 
-open Function
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=

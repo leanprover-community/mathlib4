@@ -34,7 +34,7 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 public section
 
-open Function Set Filter TopologicalSpace
+open Function Set TopologicalSpace
 open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]

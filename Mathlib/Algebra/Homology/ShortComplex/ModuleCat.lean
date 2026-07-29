@@ -25,7 +25,6 @@ variable {R : Type u} [Ring R]
 
 namespace CategoryTheory
 
-open Limits
 
 namespace ShortComplex
 

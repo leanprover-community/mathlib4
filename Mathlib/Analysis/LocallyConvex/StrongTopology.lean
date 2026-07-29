@@ -30,7 +30,6 @@ locally convex, bounded convergence
 public section
 
 
-open Topology UniformConvergence
 
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 

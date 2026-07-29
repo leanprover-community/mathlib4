@@ -28,7 +28,7 @@ absolute value, uniform spaces
 
 @[expose] public section
 
-open Set Function Filter Uniformity
+open Set Filter Uniformity
 
 namespace AbsoluteValue
 

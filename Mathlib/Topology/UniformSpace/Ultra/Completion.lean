@@ -23,7 +23,7 @@ public section
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 
-open Filter Set Topology Uniformity
+open Filter Set
 
 lemma IsUniformInducing.isUltraUniformity [IsUltraUniformity Y] {f : X → Y}
     (hf : IsUniformInducing f) : IsUltraUniformity X :=

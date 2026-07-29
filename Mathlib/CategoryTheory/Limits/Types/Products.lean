@@ -22,7 +22,7 @@ and the terminal object.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace CategoryTheory.Limits.Types
 

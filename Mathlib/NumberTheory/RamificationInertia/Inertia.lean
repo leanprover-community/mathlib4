@@ -48,7 +48,6 @@ local notation "f" => algebraMap R S
 
 open Module
 
-open UniqueFactorizationMonoid
 
 attribute [local instance] Ideal.Quotient.field
 

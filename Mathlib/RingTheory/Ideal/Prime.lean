@@ -26,7 +26,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {F : Type w}
 
-open Set Function
+open Set
 
 open scoped Pointwise
 

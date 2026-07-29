@@ -24,7 +24,6 @@ assert_not_exists Monoid
 
 open Function
 
-open Nat
 
 universe u v
 
@@ -112,7 +111,7 @@ namespace Fintype
 
 section Choose
 
-open Fintype Equiv
+open Fintype
 
 variable [Fintype α] (p : α → Prop) [DecidablePred p]
 

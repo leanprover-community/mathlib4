@@ -159,7 +159,6 @@ end Field
 
 section Seminormed
 
-open Filter ENNReal
 open scoped Topology NNReal
 
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]

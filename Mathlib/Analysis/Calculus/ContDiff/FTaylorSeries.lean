@@ -107,7 +107,7 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 
 noncomputable section
 
-open ENat NNReal Topology Filter Set Fin Filter Function
+open ENat Topology Filter Set Fin Filter Function
 
 /-- The type of smoothness exponents, consisting of all natural numbers and two special terms `∞`
 and `ω`.

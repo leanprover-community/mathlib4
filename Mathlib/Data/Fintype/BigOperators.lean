@@ -31,7 +31,6 @@ public section
 
 assert_not_exists MulAction
 
-open Mathlib
 
 universe u v
 

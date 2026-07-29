@@ -103,7 +103,6 @@ theorem isEmpty_iff : IsEmpty α ↔ α → False :=
 
 namespace IsEmpty
 
-open Function
 
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
 @[elab_as_elim]

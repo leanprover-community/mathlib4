@@ -437,7 +437,6 @@ theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set �
   hap ((Set.indicator_apply_eq_self.mpr (absurd ha)).symm.trans
     ((indicator_summable hf s).tsum_eq_zero_iff.1 h' a))
 
-open Finset
 
 /-- For `f : ℕ → ℝ≥0`, then `∑' k, f (k + i)` tends to zero. This does not require a summability
 assumption on `f`, as otherwise all sums are zero. -/

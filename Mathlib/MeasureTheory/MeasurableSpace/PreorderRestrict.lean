@@ -17,7 +17,6 @@ measurable.
 
 public section
 
-open MeasureTheory
 
 namespace Preorder
 

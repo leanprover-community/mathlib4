@@ -39,7 +39,7 @@ composition of partial equivs with `≫`.
 
 noncomputable section
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 variable {H : Type*}
 

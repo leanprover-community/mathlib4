@@ -95,7 +95,7 @@ singular manifold, bordism, bordism group
 public section
 
 open scoped Manifold
-open Module Set
+open Module
 
 suppress_compilation
 

@@ -44,7 +44,7 @@ assert_not_exists Monoid
 -- We want the theorems in this file to be constructive.
 set_option linter.unusedDecidableInType false
 
-open Option List Nat Function
+open Option Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
 inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `Denumerable` if you
@@ -349,7 +349,7 @@ end Prod
 
 section Subtype
 
-open Subtype Decidable
+open Subtype
 
 variable {P : α → Prop} [encA : Encodable α] [decP : DecidablePred P]
 

@@ -79,7 +79,6 @@ section MulAction
 
 variable {C : Type u} [Category.{v} C]
 
-open Opposite
 
 instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r

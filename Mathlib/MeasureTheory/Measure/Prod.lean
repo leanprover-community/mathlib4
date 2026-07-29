@@ -57,7 +57,7 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open Topology ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
+open ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
 
 open TopologicalSpace hiding generateFrom
 
@@ -851,7 +851,6 @@ lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalar
 
 end Measure
 
-open Measure
 
 namespace MeasurePreserving
 

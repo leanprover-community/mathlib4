@@ -141,7 +141,7 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
 @[deprecated (since := "2026-04-01")]
 alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {M IM IN}
 

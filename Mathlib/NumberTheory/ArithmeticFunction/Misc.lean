@@ -451,7 +451,7 @@ theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
 end Nat.Coprime
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]

@@ -41,7 +41,7 @@ topological space, frame, locale, Stone duality, adjunction, points
 
 @[expose] public section
 
-open CategoryTheory Order Set Topology TopologicalSpace
+open CategoryTheory Order Set TopologicalSpace
 
 namespace Locale
 

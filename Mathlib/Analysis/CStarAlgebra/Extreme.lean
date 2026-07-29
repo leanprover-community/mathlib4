@@ -18,7 +18,7 @@ This file contains results on the extreme points of the closed unit ball in (uni
 
 public section
 
-open Set Metric CFC CStarAlgebra Unitization
+open Set Metric CStarAlgebra Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 

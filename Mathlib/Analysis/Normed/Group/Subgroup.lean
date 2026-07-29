@@ -21,8 +21,6 @@ normed group
 public section
 
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 /-! ### Subgroups of normed groups -/
 

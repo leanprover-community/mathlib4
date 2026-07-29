@@ -50,7 +50,7 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+open Real Set Filter Bornology Uniformity NNReal ENNReal
 
 noncomputable section
 

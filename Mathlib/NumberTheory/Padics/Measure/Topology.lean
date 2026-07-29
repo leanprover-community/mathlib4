@@ -17,7 +17,7 @@ instances in order to avoid favouring one topology over the other.
 
 @[expose] public section
 
-open ContinuousMap Topology
+open ContinuousMap
 
 variable {X R E : Type*} [TopologicalSpace X]
 

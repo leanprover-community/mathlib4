@@ -44,7 +44,7 @@ Plenty of the results hold for general finitely generated modules (see
 
 universe u v v' w
 
-open Cardinal Function IsNoetherian Module Submodule
+open Cardinal Function Module Submodule
 
 variable {K : Type u} {V : Type v}
 
@@ -186,7 +186,7 @@ end ZeroRank
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 
@@ -625,7 +625,6 @@ end DivisionRing
 
 section SubalgebraRank
 
-open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 

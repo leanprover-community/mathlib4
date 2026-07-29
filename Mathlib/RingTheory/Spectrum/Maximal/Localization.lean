@@ -25,7 +25,7 @@ namespace MaximalSpectrum
 
 variable {R}
 
-open PrimeSpectrum Set
+open Set
 
 variable (R : Type*)
 variable [CommRing R] [IsDomain R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]

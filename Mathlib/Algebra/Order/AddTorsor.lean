@@ -52,7 +52,6 @@ an ordered field.
 
 public section
 
-open Function
 
 variable {G P : Type*}
 

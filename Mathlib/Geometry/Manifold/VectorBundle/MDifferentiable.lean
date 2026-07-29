@@ -17,7 +17,7 @@ import Mathlib.Geometry.Manifold.Notation
 
 public section
 
-open Bundle Set ContinuousLinearMap Pretrivialization Filter
+open Bundle Set ContinuousLinearMap Filter
 open scoped Manifold Topology
 
 section

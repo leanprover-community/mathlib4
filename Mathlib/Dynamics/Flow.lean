@@ -32,7 +32,7 @@ flow onto an invariant subset, and the time-reversal of a flow by a group.
 @[expose] public section
 
 
-open Set Function Filter
+open Set Function
 
 variable {τ α : Type*}
 

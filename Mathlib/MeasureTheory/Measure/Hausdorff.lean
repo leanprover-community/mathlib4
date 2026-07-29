@@ -114,7 +114,7 @@ Hausdorff measure, measure, metric measure
 
 open scoped NNReal ENNReal Topology
 
-open Metric EMetric Set Function Filter Encodable Module TopologicalSpace
+open Metric Set Function Filter Encodable Module TopologicalSpace
 
 noncomputable section
 
@@ -716,7 +716,6 @@ end HolderOnWith
 
 namespace LipschitzOnWith
 
-open Submodule
 
 variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 

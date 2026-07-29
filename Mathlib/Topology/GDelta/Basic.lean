@@ -50,7 +50,7 @@ assert_not_exists UniformSpace
 
 noncomputable section
 
-open Topology TopologicalSpace Filter Encodable Set
+open Topology TopologicalSpace Filter Set
 
 variable {X Y ι : Type*} {ι' : Sort*}
 

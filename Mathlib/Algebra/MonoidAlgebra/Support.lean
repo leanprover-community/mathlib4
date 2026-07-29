@@ -123,7 +123,7 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-open Finset Finsupp MulOpposite
+open Finset Finsupp
 
 variable {k : Type u₁} {G : Type u₂} [Semiring k]
 

@@ -142,7 +142,6 @@ theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
 
 section
 
-open Filter
 
 variable (𝕜 E)
 

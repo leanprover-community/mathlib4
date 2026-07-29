@@ -21,7 +21,6 @@ open List (Vector)
 
 open Finset
 
-open Fintype
 
 namespace Fin
 

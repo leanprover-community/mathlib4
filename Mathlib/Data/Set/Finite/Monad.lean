@@ -21,7 +21,7 @@ finite sets
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
-open Set Function
+open Set
 
 universe u v w x
 

@@ -305,7 +305,6 @@ theorem trivializationAt_proj_fst {x : TotalSpace F E} :
 
 variable (F)
 
-open Trivialization
 
 /-- Characterization of continuous functions (at a point, within a set) into a fiber bundle. -/
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace F E) {s : Set X} {x₀ : X} :

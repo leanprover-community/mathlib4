@@ -21,7 +21,7 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 universe v u
 

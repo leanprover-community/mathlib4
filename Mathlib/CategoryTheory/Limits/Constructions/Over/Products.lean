@@ -183,7 +183,6 @@ namespace Over
 section BinaryProduct
 variable {X : C} {Y Z : Over X}
 
-open Limits
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

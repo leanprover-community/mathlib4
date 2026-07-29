@@ -53,7 +53,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
-open Set Pointwise
+open Set
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.

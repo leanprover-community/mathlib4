@@ -45,7 +45,7 @@ The next steps are:
 
 @[expose] public section
 
-open ContinuousLinearMap Filter Function Set
+open ContinuousLinearMap Function Set
 
 variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]

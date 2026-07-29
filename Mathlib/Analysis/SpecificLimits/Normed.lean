@@ -30,7 +30,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
+open Set Function Filter Finset Metric Module Asymptotics Topology Nat
 open scoped Ring
 
 variable {α : Type*}
@@ -286,7 +286,6 @@ section HasSummableGeometricSeries
 
 variable {R : Type*} [NormedRing R]
 
-open NormedSpace
 
 /-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
 normed ring satisfies the axiom `‖1‖ = 1`. -/

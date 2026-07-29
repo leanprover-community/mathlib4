@@ -27,7 +27,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal
+open ENNReal
 
 open MeasureTheory
 

@@ -21,7 +21,6 @@ the ring hom property.
 
 public section
 
-open TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 

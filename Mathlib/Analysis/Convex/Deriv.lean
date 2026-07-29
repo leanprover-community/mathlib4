@@ -23,7 +23,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 
 public section
 
-open Metric Set Asymptotics ContinuousLinearMap Filter
+open Set Filter
 open scoped Topology NNReal
 
 /-!

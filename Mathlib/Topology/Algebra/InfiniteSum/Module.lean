@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 variable {α β γ δ : Type*}
 
-open Filter Finset Function
+open Function
 
 section ConstSMul
 

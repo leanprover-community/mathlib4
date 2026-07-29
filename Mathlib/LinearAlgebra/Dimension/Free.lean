@@ -28,7 +28,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set Module
+open Cardinal Function Set Module
 
 section Tower
 

@@ -18,7 +18,6 @@ public section
 
 noncomputable section
 
-open NNReal ENNReal
 
 namespace RCLike
 

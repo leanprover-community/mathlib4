@@ -62,7 +62,7 @@ variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
 
-open DirectSum LinearMap Function Submodule Finsupp
+open LinearMap Function Submodule Finsupp
 
 namespace TensorProduct
 

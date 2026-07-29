@@ -27,7 +27,6 @@ assert_not_exists Monoid
 
 open Function
 
-open Nat
 
 universe u v
 

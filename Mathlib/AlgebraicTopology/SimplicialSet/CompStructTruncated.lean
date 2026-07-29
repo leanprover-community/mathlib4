@@ -25,7 +25,7 @@ Given a `2`-truncated simplicial set `X`, we introduce two types:
 
 universe v u
 
-open CategoryTheory Simplicial SimplicialObject.Truncated
+open CategoryTheory SimplicialObject.Truncated
   SimplexCategory.Truncated
 
 namespace SSet.Truncated

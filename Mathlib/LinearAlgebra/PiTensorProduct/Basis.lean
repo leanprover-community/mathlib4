@@ -20,7 +20,7 @@ section PiTensorProduct
 
 attribute [local ext] PiTensorProduct.ext
 
-open LinearMap PiTensorProduct Module TensorProduct
+open PiTensorProduct Module TensorProduct
 
 variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [CommSemiring R] [∀ i, AddCommMonoid (M i)]
   [∀ i, Module R (M i)]

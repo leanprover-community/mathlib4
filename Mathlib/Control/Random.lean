@@ -85,7 +85,6 @@ end Rand
 
 namespace Random
 
-open Rand
 
 variable [Monad m]
 

@@ -25,7 +25,6 @@ comma, arrow, preadditive
 
 namespace CategoryTheory
 
-open Category
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

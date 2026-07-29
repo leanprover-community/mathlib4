@@ -22,7 +22,6 @@ universe v u
 
 namespace CategoryTheory
 
-open Bicategory
 
 section
 

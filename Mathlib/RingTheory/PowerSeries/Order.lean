@@ -30,7 +30,6 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 @[expose] public section
 noncomputable section
 
-open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 

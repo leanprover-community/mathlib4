@@ -42,7 +42,6 @@ universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
-open Category Localization
 
 variable {C₁ C₂ D₁ D₂ H : Type*}
   [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂] [Category* H]

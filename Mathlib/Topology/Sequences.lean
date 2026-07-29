@@ -65,7 +65,7 @@ sequentially closed, sequentially compact, sequential space
 public section
 
 
-open Bornology Filter Function Set TopologicalSpace Topology
+open Filter Function Set TopologicalSpace Topology
 open scoped Uniformity
 
 variable {X Y : Type*}

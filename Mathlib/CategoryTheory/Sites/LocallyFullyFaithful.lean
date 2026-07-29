@@ -72,7 +72,7 @@ lemma Functor.imageSieve_eq_imageSieve {D : Type uD} [Category.{vC} D] (G : C ‚•
     (f : G.obj U ‚ü∂ G.obj V) :
     G.imageSieve f = Presheaf.imageSieve (yonedaMap G V) f := rfl
 
-open Presieve Opposite
+open Opposite
 
 namespace Functor
 

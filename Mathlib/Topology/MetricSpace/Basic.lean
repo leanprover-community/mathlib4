@@ -151,7 +151,6 @@ end Prod
 
 section Pi
 
-open Finset
 
 variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
 
@@ -164,7 +163,6 @@ namespace Metric
 
 section SecondCountable
 
-open TopologicalSpace
 
 -- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the

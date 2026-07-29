@@ -36,7 +36,7 @@ abbrev PointedCone (R E)
 
 namespace PointedCone
 
-open Function Submodule Pointwise
+open Function Submodule
 
 open scoped Pointwise
 

@@ -39,7 +39,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Filter Metric Set TopologicalSpace Topology
+open Filter Set TopologicalSpace Topology
 
 variable {ι : Sort*} {n : ℕ}
 

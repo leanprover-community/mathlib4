@@ -99,7 +99,6 @@ instance : Unique True :=
 
 namespace Unique
 
-open Function
 
 section
 

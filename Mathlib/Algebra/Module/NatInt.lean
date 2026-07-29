@@ -31,7 +31,6 @@ semimodule, module, vector space
 
 assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
-open Function Set
 
 universe u v
 

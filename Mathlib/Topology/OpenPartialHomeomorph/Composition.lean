@@ -16,7 +16,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']

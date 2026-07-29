@@ -107,7 +107,7 @@ between the two viewpoints, since both may naturally want to reuse names like
 @[expose] public section
 
 noncomputable section
-open Set Topology
+open Set
 
 namespace SymbolicDynamics
 

@@ -1032,7 +1032,6 @@ theorem dualDual_symm_apply (a : αᵒᵈᵒᵈ) : (dualDual α).symm a = ofDual
 
 end LE
 
-open Set
 
 section LE
 

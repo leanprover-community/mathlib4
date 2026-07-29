@@ -26,7 +26,7 @@ Define the Pareto measure over the reals.
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set Filter
 
 namespace ProbabilityTheory
 variable {t r x : ℝ}
@@ -91,7 +91,6 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
       positivity [lt_of_lt_of_le htp h]
   · positivity
 
-open Measure
 
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]

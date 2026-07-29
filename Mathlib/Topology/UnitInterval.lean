@@ -23,7 +23,7 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Topology Filter Set Int Set.Icc
+open Set Int Set.Icc
 
 /-! ### The unit interval -/
 

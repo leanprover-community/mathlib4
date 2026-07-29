@@ -33,7 +33,6 @@ to `Mathlib/Algebra/Group/Even.lean`.
 
 assert_not_exists DenselyOrdered IsOrderedRing
 
-open MulOpposite
 
 variable {F α β : Type*}
 

@@ -165,7 +165,6 @@ def IsStronglyPredictable [Preorder ι] [OrderBot ι] (𝓕 : Filtration ι m) (
 
 namespace IsStronglyPredictable
 
-open Filtration
 
 variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace ι]
     [OpensMeasurableSpace ι] [OrderClosedTopology ι]

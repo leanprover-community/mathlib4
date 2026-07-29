@@ -44,7 +44,6 @@ ring_seminorm, ring_norm
 @[expose] public section
 
 
-open NNReal
 
 variable {R : Type*}
 
@@ -424,7 +423,6 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
 def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
   { normAddGroupNorm R, normRingSeminorm R with }
 
-open Int
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/

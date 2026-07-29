@@ -197,7 +197,7 @@ end MeasureTheory
 
 namespace MeasurableEmbedding
 
-open MeasureTheory Measure
+open MeasureTheory
 
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 

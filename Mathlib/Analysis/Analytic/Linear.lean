@@ -25,7 +25,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology NNReal ENNReal
-open Set Filter Asymptotics
+open Set
 
 noncomputable section
 

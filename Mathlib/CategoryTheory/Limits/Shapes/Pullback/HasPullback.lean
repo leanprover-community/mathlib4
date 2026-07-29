@@ -484,7 +484,6 @@ end
 
 section PullbackSymmetry
 
-open WalkingCospan
 
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
@@ -521,7 +520,6 @@ end PullbackSymmetry
 
 section PushoutSymmetry
 
-open WalkingCospan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 

@@ -23,7 +23,6 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 
 public section
 
-open Function
 
 variable {G : Type*}
 

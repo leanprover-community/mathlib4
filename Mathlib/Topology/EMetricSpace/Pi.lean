@@ -78,7 +78,6 @@ variable {γ : Type w} [EMetricSpace γ]
 
 section Pi
 
-open Finset
 
 variable {X : β → Type*} [Fintype β]
 

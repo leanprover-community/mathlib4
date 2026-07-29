@@ -33,7 +33,7 @@ variable {K : Type u} {V : Type v}
 
 namespace Submodule
 
-open IsNoetherian Module
+open Module
 
 section DivisionRing
 

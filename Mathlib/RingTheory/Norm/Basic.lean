@@ -171,7 +171,7 @@ end IntermediateField
 
 section EqProdEmbeddings
 
-open IntermediateField IntermediateField.AdjoinSimple Polynomial
+open IntermediateField.AdjoinSimple Polynomial
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 

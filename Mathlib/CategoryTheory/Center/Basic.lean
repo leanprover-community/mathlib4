@@ -24,7 +24,6 @@ universe v u
 
 namespace CategoryTheory
 
-open Category
 
 variable (C : Type u) [Category.{v} C]
 

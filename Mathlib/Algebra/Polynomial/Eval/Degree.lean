@@ -21,7 +21,7 @@ This file contains results on the interaction of `Polynomial.eval` and `Polynomi
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open Polynomial
 

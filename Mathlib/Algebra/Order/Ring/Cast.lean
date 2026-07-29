@@ -25,7 +25,7 @@ Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 
 public section
 
-open Function Nat
+open Nat
 
 variable {R : Type*}
 

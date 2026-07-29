@@ -179,7 +179,7 @@ end Denumerable
 
 namespace Nat.Subtype
 
-open Function Encodable
+open Function
 
 /-! ### Subsets of `ℕ` -/
 

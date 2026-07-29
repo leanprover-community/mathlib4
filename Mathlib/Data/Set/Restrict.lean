@@ -20,7 +20,7 @@ public import Mathlib.Data.Set.Image
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
-open Equiv Equiv.Perm Function
+open Equiv.Perm Function
 
 namespace Set
 

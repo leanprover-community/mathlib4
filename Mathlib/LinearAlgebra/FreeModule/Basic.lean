@@ -175,7 +175,6 @@ end Free
 
 namespace Basis
 
-open Finset
 
 variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 

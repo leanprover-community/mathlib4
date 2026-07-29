@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Monoidal.Ring
 
 @[expose] public section
 
-open CategoryTheory MonObj
+open CategoryTheory
 
 universe v u
 

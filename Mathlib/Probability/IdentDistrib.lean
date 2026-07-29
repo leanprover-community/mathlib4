@@ -54,7 +54,7 @@ so on.
 public section
 
 
-open MeasureTheory Filter Finset
+open MeasureTheory Filter
 
 noncomputable section
 
@@ -292,7 +292,6 @@ end IdentDistrib
 
 section UniformIntegrable
 
-open TopologicalSpace
 
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]

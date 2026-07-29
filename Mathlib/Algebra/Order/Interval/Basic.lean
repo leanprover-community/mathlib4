@@ -656,7 +656,7 @@ end Interval
 end Length
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]

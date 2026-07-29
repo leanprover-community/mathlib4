@@ -69,7 +69,7 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp Bornology
+open RCLike Real Filter Topology ComplexConjugate Bornology
 
 open LinearMap (BilinForm)
 

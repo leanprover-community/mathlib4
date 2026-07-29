@@ -62,7 +62,6 @@ end MonoidAlgebra
 
 namespace LaurentPolynomial
 
-open Finsupp
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 

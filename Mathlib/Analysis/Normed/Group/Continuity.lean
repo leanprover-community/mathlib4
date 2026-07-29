@@ -23,14 +23,13 @@ public section
 
 variable {α ι κ E F G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter Function Metric
+open ENNReal Filter NNReal Uniformity Topology
 
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
 
-open Finset
 
 section ContinuousENorm
 

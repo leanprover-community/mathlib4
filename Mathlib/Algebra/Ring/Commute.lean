@@ -29,7 +29,6 @@ universe u
 
 variable {R : Type u}
 
-open Function
 
 namespace Commute
 

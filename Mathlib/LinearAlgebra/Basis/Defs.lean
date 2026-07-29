@@ -216,7 +216,6 @@ end Basis
 
 section Fintype
 
-open Basis
 
 open Fintype
 

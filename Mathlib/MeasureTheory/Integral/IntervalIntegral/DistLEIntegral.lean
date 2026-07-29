@@ -22,7 +22,7 @@ the displacement (`dist (f a) (f b)`) is at most the integral of `‖deriv f‖`
 
 public section
 
-open Filter Set MeasureTheory Measure Metric
+open Filter Set MeasureTheory Metric
 open scoped Topology
 
 variable {E F : Type*}

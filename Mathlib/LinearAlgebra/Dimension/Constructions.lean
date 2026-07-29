@@ -41,7 +41,7 @@ universe u u' v v' u₁' w w'
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open Basis Cardinal DirectSum Function Module Set Submodule
+open Cardinal DirectSum Function Module Set Submodule
 
 section Quotient
 
@@ -274,7 +274,6 @@ variable [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] [∀ i, Module.F
 
 open Module.Free
 
-open LinearMap
 
 /-- The rank of a finite product of free modules is the sum of the ranks. -/
 -- this result is not true without the freeness assumption

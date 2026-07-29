@@ -22,7 +22,7 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
-open Fin Function
+open Function
 
 variable {ι κ G M : Type*} {s s₁ s₂ : Finset ι} {a : ι}
 
