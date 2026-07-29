@@ -154,6 +154,10 @@ instance [Inhabited M] : Inhabited (StdSimplex R M) where
 instance [Nonempty M] : Nonempty (StdSimplex R M) :=
   ⟨.single (Classical.arbitrary _)⟩
 
+instance [Nontrivial M] : Nontrivial (StdSimplex R M) := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne M
+  exact ⟨.single x, .single y, single_injective.ne h⟩
+
 instance [Unique M] : Unique (StdSimplex R M) where
   uniq := by subsingleton
 

@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 module
 
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpace
 public import Mathlib.Analysis.Convex.PathConnected
@@ -173,6 +174,7 @@ under the linear map sending each function `w` to `∑ x ∈ s, w x • x`.
 Since we have no sums over finite sets, we use sum over `@Finset.univ _ hs.fintype`.
 The map is defined in terms of operations on `(s → ℝ) →ₗ[ℝ] ℝ` so that later we will not need
 to prove that this map is linear. -/
+@[deprecated "no replacement" (since := "2026-07-29")]
 theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
     {s : Set E} (hs : s.Finite) : convexHull R s =
     haveI := hs.fintype
@@ -355,7 +357,7 @@ lemma map_coe (f : X → Y) (s : stdSimplex S X) :
 lemma map_id_apply (x : stdSimplex S X) : map id x = x := by
   aesop
 
-@[ deprecated StdSimplex.map_comp (since := "2026-07-29")]
+@[deprecated StdSimplex.map_comp (since := "2026-07-29")]
 lemma map_comp_apply (f : X → Y) (g : Y → Z) (x : stdSimplex S X) :
     map g (map f x) = map (g.comp f) x := by
   ext
@@ -388,16 +390,19 @@ lemma vertex_injective [Nontrivial S] [DecidableEq X] :
   by_contra!
   simp [Pi.single_eq_of_ne this] at h
 
+@[deprecated StdSimplex.instNonempty (since := "2026-07-29")]
 instance [Nonempty X] : Nonempty (stdSimplex S X) := by
   classical
   exact ⟨vertex (Classical.arbitrary _)⟩
 
+@[deprecated StdSimplex.instNontrivial (since := "2026-07-29")]
 instance [Nontrivial S] [Nontrivial X] : Nontrivial (stdSimplex S X) where
   exists_pair_ne := by
     classical
     obtain ⟨x, y, hxy⟩ := exists_pair_ne X
     exact ⟨vertex x, vertex y, fun h ↦ hxy (vertex_injective h)⟩
 
+@[deprecated StdSimplex.instSubsingleton (since := "2026-07-29")]
 instance [Subsingleton X] : Subsingleton (stdSimplex S X) where
   allEq s t := by
     ext i
@@ -407,11 +412,12 @@ instance [Subsingleton X] : Subsingleton (stdSimplex S X) where
       exact (hj (Subsingleton.elim j i)).elim
     simp [this]
 
+@[deprecated StdSimplex.instUnique (since := "2026-07-29")]
 instance [Unique X] : Unique (stdSimplex S X) where
   default := ⟨1, by simp, by simp⟩
   uniq := by subsingleton
 
-@[simp]
+@[simp, deprecated StdSimplex.weights_apply_eq_one (since := "2026-07-29")]
 lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
     s x = 1 := by
   obtain rfl : s = default := by subsingleton
@@ -427,15 +433,17 @@ variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 
 /-- The barycenter of a standard simplex is the center of mass of
 the set of vertices (equally weighted). -/
+@[deprecated StdSimplex.barycenter (since := "2026-07-29")]
 def barycenter : stdSimplex 𝕜 X :=
   ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
 
 /-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
-@[simp]
+@[simp, deprecated StdSimplex.weights_barycenter_apply (since := "2026-07-29")]
 theorem barycenter_apply (x : X) :
     (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
 
 /-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
+@[deprecated "no replacement" (since := "2026-07-29")]
 theorem barycenter_eq_centerMass [DecidableEq X] :
     (barycenter : stdSimplex 𝕜 X).val =
       Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by

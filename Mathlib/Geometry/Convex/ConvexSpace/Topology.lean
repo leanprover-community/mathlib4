@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
@@ -129,8 +128,9 @@ public lemma continuous_map {M : Type*} {N : Type v} (f : M → N) :
     refine le_trans ?_ (le_iSup _ (by assumption))
     refine le_trans ?_ (le_iSup _ g)
     rw [topologicalSpace_eq]
-  obtain ⟨ι, _, ⟨e⟩⟩ : ∃ (ι : Type v) (_ : Finite ι), Nonempty (M ≃ ι) :=
-    ⟨_, inferInstance, ⟨(Finite.equivFin M).trans Equiv.ulift.{v}.symm⟩⟩
+  obtain ⟨ι, _, ⟨e⟩⟩ : ∃ (ι : Type v) (_ : Finite ι), Nonempty (M ≃ ι) := by
+    obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin M
+    exact ⟨ULift.{v} (Fin n), inferInstance, ⟨e.trans Equiv.ulift.symm⟩⟩
   have : Continuous (map (R := R) e) := by
     rw [topologicalSpace_eq, topologicalSpace_eq]
     apply topologicalSpaceInduced.continuous_map
