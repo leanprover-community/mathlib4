@@ -354,8 +354,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
           tendsto_nhds_limUnder hx.1.1.1
         have I : ∀ᶠ b : Set α in v.filterAt x, ρ b / μ b < p := (tendsto_order.1 L).2 _ hx.1.1.2
-        apply I.frequently.mono fun a ha => ?_
-        rw [μ.smul_apply, smul_eq_mul]
+        apply I.frequently.mono fun a ha ↦ ?_
         exact (ENNReal.div_le_iff_le_mul (.inr hpq.lt_top.ne) (.inr ha.bot_lt.ne')).1 ha.le
       _ = p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
         simp only [μ.smul_apply, smul_eq_mul,
@@ -377,7 +376,6 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         have I : ∀ᶠ b : Set α in v.filterAt x, (q : ℝ≥0∞) < ρ b / μ b :=
           (tendsto_order.1 L).1 _ hx.2.1.2
         apply I.frequently.mono fun a ha ↦ ?_
-        rw [μ.smul_apply, smul_eq_mul]
         exact ENNReal.mul_le_of_le_div ha.le
       _ = ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
         conv_rhs => rw [inter_comm]
@@ -439,7 +437,6 @@ theorem measure_le_mul_of_subset_limRatioMeas_lt {p : ℝ≥0∞} {s : Set α}
   refine v.measure_le_of_frequently_le (p • μ) hρ _ fun x hx => ?_
   have I : ∀ᶠ b : Set α in v.filterAt x, ρ b / μ b < p := (tendsto_order.1 hx.2).2 _ (h hx.1)
   apply I.frequently.mono fun a ha ↦ ?_
-  rw [μ.smul_apply, smul_eq_mul]
   exact (ENNReal.div_le_iff_le_mul (.inr hp.ne) (.inr ha.bot_lt.ne')).1 ha.le
 
 /-- If, for all `x` in a set `s`, one has frequently `q < ρ a / μ a`, then `q * μ s ≤ ρ s`, as
@@ -458,9 +455,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0∞} {s : Set α}
   refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
   intro x hx
   have I : ∀ᶠ a in v.filterAt x, q < ρ a / μ a := (tendsto_order.1 hx.2).1 _ (h hx.1)
-  apply I.frequently.mono fun a ha ↦ ?_
-  rw [μ.smul_apply, smul_eq_mul]
-  exact ENNReal.mul_le_of_le_div ha.le
+  exact I.frequently.mono fun a ha ↦ ENNReal.mul_le_of_le_div ha.le
 
 /-- The points with `v.limRatioMeas hρ x = ∞` have measure `0` for `μ`. -/
 theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
@@ -550,9 +545,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
           (ENNReal.zpow_ne_top t_ne_zero ht' n)
         rw [zpow_neg_one]
         exact ENNReal.inv_lt_one.2 ht
-      _ ≤ (t ^ 2 • ρ) (s ∩ f ⁻¹' I) := by
-        rw [ρ.smul_apply, smul_eq_mul]
-        norm_cast
+      _ ≤ (t ^ 2 • ρ) (s ∩ f ⁻¹' I) := by norm_cast
   calc
     ν s =
       ν (s ∩ f ⁻¹' {0}) + ν (s ∩ f ⁻¹' {∞}) +
