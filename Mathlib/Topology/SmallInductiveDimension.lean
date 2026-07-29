@@ -101,9 +101,9 @@ theorem HasSmallInductiveDimensionLT.hasSmallInductiveDimensionLE {n : ℕ}
 instance (n : ℕ) [IsEmpty X] : HasSmallInductiveDimensionLT X n :=
   .mono zero_le <| hasSmallInductiveDimensionLT_zero_iff.2 ‹_›
 
-theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : Y → X} (hf : IsInducing f)
-    {n : ℕ} (h : HasSmallInductiveDimensionLT X n) : HasSmallInductiveDimensionLT Y n := by
-  induction h generalizing Y with
+theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsInducing f)
+    {n : ℕ} (h : HasSmallInductiveDimensionLT Y n) : HasSmallInductiveDimensionLT X n := by
+  induction h generalizing X with
   | zero =>
     have := Function.isEmpty f
     exact HasSmallInductiveDimensionLT.zero
@@ -114,13 +114,13 @@ theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : Y → X} (hf : IsI
     apply (hf.restrictPreimage <| frontier U).comp
     exact (IsEmbedding.inclusion <| hf.continuous.frontier_preimage_subset U).isInducing
 
-theorem Topology.IsInducing.hasSmallInductiveDimensionLE {f : Y → X} (hf : IsInducing f)
-    {n : ℕ} (h : HasSmallInductiveDimensionLE X n) : HasSmallInductiveDimensionLE Y n :=
+theorem Topology.IsInducing.hasSmallInductiveDimensionLE {f : X → Y} (hf : IsInducing f)
+    {n : ℕ} (h : HasSmallInductiveDimensionLE Y n) : HasSmallInductiveDimensionLE X n :=
   hf.hasSmallInductiveDimensionLT h
 
 /-- The small inductive dimension does not increase under inducing maps. -/
-theorem Topology.IsInducing.smallInductiveDimension_le {f : Y → X} (hf : IsInducing f) :
-    smallInductiveDimension Y ≤ smallInductiveDimension X := by
+theorem Topology.IsInducing.smallInductiveDimension_le {f : X → Y} (hf : IsInducing f) :
+    smallInductiveDimension X ≤ smallInductiveDimension Y := by
   apply sInf_le_sInf
   intro m hm i hi
   exact hf.hasSmallInductiveDimensionLT (hm i hi)
