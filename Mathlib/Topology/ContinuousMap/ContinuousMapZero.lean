@@ -460,8 +460,10 @@ def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ
   map_smul' r f := ext <| by simp
 
 variable (R) in
+/-- Precomposition with a homeomorphism of the domains sending `0 : X` to `0 : Y` as a star
+algebra equivalence between `C(Y, R)₀` and `C(X, R)₀`. -/
 @[simps!]
-def starAlgEquiv_precomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
+def starAlgEquivPrecomp (f : X ≃ₜ Y) (hf : f 0 = 0) :
     C(Y, R)₀ ≃⋆ₐ[R] C(X, R)₀ :=
   .ofNonUnitalStarAlgHom
     (nonUnitalStarAlgHom_precomp R ⟨f, hf⟩)

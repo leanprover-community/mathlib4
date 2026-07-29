@@ -25,6 +25,7 @@ variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
   [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
   [instCFC : ContinuousFunctionalCalculus R A p]
 
+/-- Transfer `cfcHom` across a star algebra equivalence. -/
 @[simps!]
 noncomputable def cfcHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
     (b : B) (hb : q b) : C(spectrum R b, R) →⋆ₐ[R] B :=
@@ -106,10 +107,11 @@ variable {R A B : Type*} {p : A → Prop} {q : B → Prop}
   [Module R B] [IsScalarTower R B B] [SMulCommClass R B B]
   [instCFC : NonUnitalContinuousFunctionalCalculus R A p]
 
+/-- Transfer `cfcₙHom` across a star algebra equivalence. -/
 @[simps!]
 noncomputable def cfcₙHomTransfer (e : A ≃⋆ₐ[R] B) (hpq : ∀ x, p x ↔ q (e x))
     (b : B) (hb : q b) : C(quasispectrum R b, R)₀ →⋆ₙₐ[R] B :=
-  ContinuousMapZero.starAlgEquiv_precomp R
+  ContinuousMapZero.starAlgEquivPrecomp R
     (Homeomorph.setCongr (by simp)) (by ext; simp [Homeomorph.setCongr]) |>.arrowCongr'
     e (cfcₙHom (hpq (e.symm b) |>.mpr <| by simpa))
 
@@ -145,7 +147,7 @@ theorem NonUnitalContinuousFunctionCalculus.transfer (e : A ≃⋆ₐ[R] B)
       continuous_cfcₙHomTransfer e hpq b hb he,
       cfcₙHomTransfer_injective e hpq b hb,
       cfcₙHomTransfer_id e hpq b hb,
-      fun f ↦ by simp [cfcₙHom_map_quasispectrum ha, ContinuousMapZero.starAlgEquiv_precomp],
+      fun f ↦ by simp [cfcₙHom_map_quasispectrum ha, ContinuousMapZero.starAlgEquivPrecomp],
       fun f ↦ by simp [← hpq, cfcₙHom_predicate ha]⟩
 
 lemma cfcₙHom_eq_cfcₙHomTransfer [NonUnitalContinuousFunctionalCalculus R B q]
