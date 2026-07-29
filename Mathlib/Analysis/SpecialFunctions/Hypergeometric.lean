@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
+public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 
 /-! # Generalized hypergeometric function
 
@@ -56,21 +57,6 @@ namespace Complex
 
 open scoped Nat Real
 open Topology Filter
-
-/-- The ascending Pochhammer symbol is given by the ratio of `Γ` functions. -/
-theorem Gamma_nat_add_div_Gamma_eq {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, -z ≠ k) :
-    Gamma (n + z) / Gamma z = (ascPochhammer ℂ n).eval z := by
-  induction n generalizing z with
-  | zero =>
-    simp
-    grind
-  | succ n ih =>
-    suffices h : Gamma (n + 1 + z) = Gamma (n + z) * (z + n) by
-      simp [ascPochhammer_succ_right, ← ih z hz, div_mul_eq_mul_div, h]
-    calc
-      _ = Gamma ((z + n) + 1) := by group
-      _ =  (z + n) * Gamma (z + n) := by grind
-      _ = _ := by group
 
 variable {p q : ℕ}
 
@@ -303,7 +289,40 @@ def regularizedGaussHGFunSeries (a b c : ℂ) : FormalMultilinearSeries ℂ ℂ 
 def regularizedGaussHGFun (a b c z : ℂ) : ℂ :=
   (regularizedGaussHGFunSeries a b c).sum z
 
-variable {a b c : ℂ}
+variable {a b c z : ℂ}
+
+theorem coeff_regularizedGaussHGFunSeries :
+    (a.regularizedGaussHGFunSeries b c).coeff n =
+    ((ascPochhammer ℂ n).eval a * (ascPochhammer ℂ n).eval b) / (n ! * Gamma (c + n)) := by
+  simp [regularizedGaussHGFunSeries, regularizedHGFunCoeff]
+
+-- Todo: move
+theorem const_mul_sum_apply (a : ℂ) (f : FormalMultilinearSeries ℂ ℂ ℂ) (z : ℂ) :
+    a * f.sum z = (a • f).sum z := by
+  unfold FormalMultilinearSeries.sum
+  simp [tsum_mul_left]
+
+-- Todo: move
+theorem sum_smul_left (a : ℂ) (f : FormalMultilinearSeries ℂ ℂ ℂ) :
+    a • f.sum = (a • f).sum := by
+  ext z
+  apply const_mul_sum_apply
+
+theorem Gamma_inv_mul_regularizedGaussHGFunSeries_eq (hc : ∀ k : ℕ, c ≠ -k) {n : ℕ} :
+    (a.regularizedGaussHGFunSeries b c).coeff n =
+    (Gamma c)⁻¹ * (ordinaryHypergeometricSeries ℂ a b c).coeff n := by
+  rw [coeff_regularizedGaussHGFunSeries]
+  rw [ordinaryHypergeometricSeries, FormalMultilinearSeries.coeff_ofScalars] -- needs its own lemma
+  rw [ordinaryHypergeometricCoefficient, ← Gamma_add_nat_div_Gamma_eq c hc]
+  grind
+
+theorem regularizedGaussHGFun_div_Gamma_eq (hc : ∀ k : ℕ, c ≠ -k) :
+    regularizedGaussHGFun a b c z = ordinaryHypergeometric a b c z / Gamma c := by
+  rw [regularizedGaussHGFun, ordinaryHypergeometric]
+  rw [div_eq_inv_mul, const_mul_sum_apply]
+  congr
+  ext n
+  simp [Gamma_inv_mul_regularizedGaussHGFunSeries_eq hc]
 
 variable (b c) in
 @[simp]

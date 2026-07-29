@@ -456,6 +456,18 @@ theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   contrapose! hs
   simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 
+/-- The ascending Pochhammer symbol is given by the ratio of `Γ` functions. -/
+theorem Gamma_add_nat_div_Gamma_eq {n : ℕ} (z : ℂ) (hz : ∀ k : ℕ, z ≠ -k) :
+    Gamma (z + n) / Gamma z = (ascPochhammer ℂ n).eval z := by
+  induction n generalizing z with
+  | zero =>
+    simp
+    grind
+  | succ n ih =>
+    suffices h : Gamma (z + n + 1) = Gamma (z + n) * (z + n) by
+      simp [ascPochhammer_succ_right, ← ih z hz, div_mul_eq_mul_div, h, ← add_assoc]
+    grind
+
 end Complex
 
 namespace Real
