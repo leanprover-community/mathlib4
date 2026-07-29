@@ -590,6 +590,8 @@ instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (Module
 
 instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
 
+variable {k G} in
+
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
   ⟨fun _ => (ModuleCat.epi_iff_surjective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).epi_of_epi_map ((ModuleCat.epi_iff_surjective <|
