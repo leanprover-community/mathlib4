@@ -181,27 +181,4 @@ lemma integral_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
 
 end Integral
 
-/-! ### Binomial random variables -/
-
-variable {X : Ω → ℝ}
-
-/-- **Expectation of a binomial random variable**.
-
-The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
-
-/-- **Variance of a binomial random variable**.
-
-The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
-proof_wanted variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
-    Var[X; P] = p * (1 - p) * n
-
-/-- **Conditional variance of a binomial random variable**.
-
-The conditional variance of a binomial random variable is the product of the conditional
-probabilities that it's equal to `0` and that it's equal to `1`. -/
-proof_wanted condVar_of_hasLaw_binomial {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀) {P : Measure[m₀] Ω}
-    (hX : HasLaw X Bin(ℝ, n, p) P) :
-    Var[X; P | m] =ᵐ[P] P[X | m] * P[1 - X | m]
-
 end ProbabilityTheory

@@ -91,13 +91,6 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     simp only [subgroup_smul_def, smul_smul, ← mul_assoc, ← mem_stabilizer_iff]
     exact hyp (normalClosure_normal.conj_mem g (le_normalClosure hg) h)
 
--- Wielandt claims that this is proved by the same method as above.
-proof_wanted IsPreprimitive.is_two_pretransitive'
-    (hG : IsPreprimitive G α)
-    {s : Set α} {n : ℕ} (hsn : Nat.card s = n + 1) (hsn' : n + 1 < Nat.card α)
-    (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
-    IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
-
 open MulAction.IsPreprimitive
 
 open scoped Pointwise
@@ -235,13 +228,6 @@ theorem MulAction.IsPreprimitive.is_two_preprimitive
     (hs_prim : IsPreprimitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPreprimitive G α 2 :=
   (hG.is_two_motive_of_is_motive hsn hsn').2 hs_prim
-
--- Wielandt claims that this stronger version is proved in the same way
-proof_wanted is_two_preprimitive_strong_jordan
-    (hG : IsPreprimitive G α)
-    {s : Set α} {n : ℕ} (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
-    (hs_prim : IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)) :
-    IsMultiplyPreprimitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
 /-- Jordan's multiple primitivity criterion (Wielandt, 13.3) -/
 theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
@@ -456,14 +442,6 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   apply congr_arg
   ext x
   simp [SubMulAction.mem_ofFixingSubgroup_iff]
-
-/-- A primitive subgroup of `Equiv.Perm α` that contains a cycle of prime order
-contains the alternating group. -/
-proof_wanted alternatingGroup_le_of_isPreprimitive_of_isCycle_mem
-  (hG : IsPreprimitive G α)
-  {p : ℕ} (hp : p.Prime) (hp' : p + 3 ≤ Nat.card α)
-  {g : Perm α} (hgc : g.IsCycle) (hgp : g.support.card = p)
-  (hg : g ∈ G) : alternatingGroup α ≤ G
 
 end Equiv.Perm
 
