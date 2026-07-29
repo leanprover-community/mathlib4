@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Algebra.DualNumber
 
 import Mathlib.Tactic.FieldSimp
 
@@ -429,6 +430,21 @@ def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
   right_inv _ := by ext <;> simp [mul_assoc]
 
 end map
+
+section dualNumber
+
+open scoped DualNumber
+
+/-- `QuadraticAlgebra R 0 0` is the algebra of dual numbers, with `ω` the nilpotent `ε`. -/
+def algEquivDualNumber (R : Type*) [CommRing R] :
+    QuadraticAlgebra R 0 0 ≃ₐ[R] DualNumber R :=
+  AlgEquiv.ofAlgHom (lift ⟨ε, by simp⟩)
+    (DualNumber.lift ⟨(Algebra.ofId R _, ω), by ext <;> simp,
+      fun _ ↦ Commute.all _ _⟩)
+    (by apply DualNumber.algHom_ext; simp)
+    (by apply algHom_ext; simp)
+
+end dualNumber
 
 section field
 
