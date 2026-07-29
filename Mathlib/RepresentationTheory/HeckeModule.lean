@@ -127,6 +127,7 @@ lemma IntertwiningMap.indTo_apply_cosetVector₁_eq (H : Subgroup G) (g : G)
     IntertwiningMap.indTo H.subtype f (cosetVector₁ k H g) = ρ g⁻¹ (f 1) := by
   exact IntertwiningMap.indTo_apply_IndVMk_trivial_eq H.subtype g 1 f
 
+/-- Construct an element of the Hecke module from an `H`-invariant vector. -/
 noncomputable def moduleHecke₁.invariantMk (H : Subgroup G) (v : V) (h : ∀ (g : H), ρ g v = v) :
     moduleHecke₁ H ρ :=
   IntertwiningMap.indTo H.subtype ⟨LinearMap.toSpanSingleton k _ v, fun g => by ext; simp [h g]⟩
