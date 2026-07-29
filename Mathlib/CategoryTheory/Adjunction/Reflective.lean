@@ -57,7 +57,6 @@ instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjun
 def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
   (reflectorAdjunction i).fullyFaithfulROfIsIsoCounit
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/
@@ -89,18 +88,17 @@ theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : i.essImage A) :
     IsIso ((reflectorAdjunction i).unit.app A) := by
   rwa [isIso_unit_app_iff_mem_essImage]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : i.essImage A := by
   let η : 𝟭 C ⟶ reflector i ⋙ i := (reflectorAdjunction i).unit
-  haveI : IsIso (η.app (i.obj ((reflector i).obj A))) :=
+  have : IsIso (η.app (i.obj ((reflector i).obj A))) :=
     Functor.essImage.unit_isIso ((i.obj_mem_essImage _))
   have : Epi (η.app A) := by
     refine @epi_of_epi _ _ _ _ _ (retraction (η.app A)) (η.app A) ?_
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((reflector i).obj A)))
-  haveI := isIso_of_epi_of_isSplitMono (η.app A)
+  have := isIso_of_epi_of_isSplitMono (η.app A)
   exact (reflectorAdjunction i).mem_essImage_of_unit_isIso A
 
 /-- Composition of reflective functors. -/
@@ -161,8 +159,8 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
     IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
   Functor.essImage.unit_isIso X.property
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.
 -- TODO: investigate further.
@@ -204,7 +202,6 @@ instance [Coreflective j] : (coreflector j).IsRightAdjoint := ⟨_, ⟨coreflect
 def Functor.fullyFaithfulOfCoreflective [Coreflective j] : j.FullyFaithful :=
   (coreflectorAdjunction j).fullyFaithfulLOfIsIsoUnit
 
-set_option backward.isDefEq.respectTransparency false in
 lemma counit_obj_eq_map_counit [Coreflective j] (X : D) :
     (coreflectorAdjunction j).counit.app (j.obj ((coreflector j).obj X)) =
       j.map ((coreflector j).map ((coreflectorAdjunction j).counit.app X)) := by
@@ -221,17 +218,16 @@ lemma Functor.essImage.counit_isIso [Coreflective j] {A : D} (h : j.essImage A) 
     IsIso ((coreflectorAdjunction j).counit.app A) := by
   rwa [isIso_counit_app_iff_mem_essImage]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : j.essImage A := by
   let ε : coreflector j ⋙ j ⟶ 𝟭 D := (coreflectorAdjunction j).counit
-  haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
+  have : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
     Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
   have : Mono (ε.app A) := by
     refine @mono_of_mono _ _ _ _ _ (ε.app A) (section_ (ε.app A)) ?_
     rw [show ε.app A ≫ section_ _ = _ from (ε.naturality (section_ (ε.app A))).symm]
     apply mono_comp _ (ε.app (j.obj ((coreflector j).obj A)))
-  haveI := isIso_of_mono_of_isSplitEpi (ε.app A)
+  have := isIso_of_mono_of_isSplitEpi (ε.app A)
   exact (coreflectorAdjunction j).mem_essImage_of_counit_isIso A
 
 instance Coreflective.comp (F : C ⥤ D) (G : D ⥤ E) [Coreflective F] [Coreflective G] :

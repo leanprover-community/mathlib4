@@ -63,7 +63,7 @@ lemma IsOpen.relInv [TopologicalSpace α] [TopologicalSpace β]
 
 lemma IsOpen.relImage [TopologicalSpace α] [TopologicalSpace β]
     {s : SetRel α β} (hs : IsOpen s) {t : Set α} : IsOpen (s.image t) := by
-  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  simp_rw [SetRel.image, ← exists_prop, Set.ofPred_exists]
   exact isOpen_biUnion fun _ _ => hs.preimage <| .prodMk_right _
 
 lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
@@ -76,7 +76,7 @@ lemma IsClosed.relInv [TopologicalSpace α] [TopologicalSpace β]
 
 lemma IsClosed.relImage_of_finite [TopologicalSpace α] [TopologicalSpace β]
     {s : SetRel α β} (hs : IsClosed s) {t : Set α} (ht : t.Finite) : IsClosed (s.image t) := by
-  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  simp_rw [SetRel.image, ← exists_prop, Set.ofPred_exists]
   exact ht.isClosed_biUnion fun _ _ => hs.preimage <| .prodMk_right _
 
 lemma IsClosed.relPreimage_of_finite [TopologicalSpace α] [TopologicalSpace β]
@@ -201,7 +201,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ {V | V ∈ 𝓤 α ∧ SetRel.IsSymm V}, V ○ s ○ V := by
   ext ⟨x, y⟩
   simp +contextual only
-    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_setOf_eq,
+    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred_eq,
       and_imp, mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty]
 
 theorem uniformity_hasBasis_closed :
@@ -230,8 +230,7 @@ theorem closure_eq_inter_uniformity {t : SetRel α α} : closure t = ⋂ d ∈ �
   calc
     closure t = ⋂ (V) (_ : V ∈ 𝓤 α ∧ SetRel.IsSymm V), V ○ t ○ V := closure_eq_uniformity t
     _ = ⋂ V ∈ 𝓤 α, V ○ t ○ V :=
-      Eq.symm <|
-        UniformSpace.hasBasis_symmetric.biInter_mem fun _ _ hV => by dsimp at *; gcongr
+      Eq.symm <| UniformSpace.hasBasis_symmetric.biInter_mem fun _ _ hV => by gcongr
     _ = ⋂ V ∈ 𝓤 α, V ○ (t ○ V) := by simp [SetRel.comp_assoc]
 
 theorem uniformity_eq_uniformity_interior : 𝓤 α = (𝓤 α).lift' interior :=
@@ -521,10 +520,12 @@ section
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] {f : α → β} {s t : Set α}
 
+@[fun_prop]
 theorem UniformContinuous.continuous (hf : UniformContinuous f) : Continuous f :=
   continuous_iff_le_induced.mpr <| UniformSpace.toTopologicalSpace_mono <|
     uniformContinuous_iff_le_comap.1 hf
 
+@[fun_prop]
 lemma UniformContinuous.uniformContinuousOn (hf : UniformContinuous f) :
     UniformContinuousOn f s :=
   tendsto_inf_left hf
@@ -540,6 +541,7 @@ lemma UniformContinuousOn.congr {f g : α → β} {s : Set α}
   apply EventuallyEq.filter_mono _ inf_le_right
   filter_upwards [mem_principal_self _] with ⟨a, b⟩ ⟨ha, hb⟩ using by simp [h ha, h hb]
 
+@[fun_prop]
 lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinuousOn g t)
     (hf : UniformContinuousOn f s) (hst : MapsTo f s t) : UniformContinuousOn (g ∘ f) s := by
   change Tendsto ((fun x ↦ (g x.1, g x.2)) ∘ (fun x ↦ (f x.1, f x.2))) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 γ)
@@ -548,6 +550,7 @@ lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinu
   simp only [tendsto_principal, mem_prod, eventually_principal, and_imp, Prod.forall]
   exact fun a b ha hb ↦ ⟨hst ha, hst hb⟩
 
+@[fun_prop]
 lemma UniformContinuous.comp_uniformContinuousOn {g : β → γ}
     (hg : UniformContinuous g) (hf : UniformContinuousOn f s) : UniformContinuousOn (g ∘ f) s :=
   (hg.uniformContinuousOn (s := univ)).comp hf (mapsTo_univ _ _)
@@ -623,15 +626,19 @@ open Additive Multiplicative
 instance : UniformSpace (Additive α) := ‹UniformSpace α›
 instance : UniformSpace (Multiplicative α) := ‹UniformSpace α›
 
+@[fun_prop]
 theorem uniformContinuous_ofMul : UniformContinuous (ofMul : α → Additive α) :=
   uniformContinuous_id
 
+@[fun_prop]
 theorem uniformContinuous_toMul : UniformContinuous (toMul : Additive α → α) :=
   uniformContinuous_id
 
+@[fun_prop]
 theorem uniformContinuous_ofAdd : UniformContinuous (ofAdd : α → Multiplicative α) :=
   uniformContinuous_id
 
+@[fun_prop]
 theorem uniformContinuous_toAdd : UniformContinuous (toAdd : Multiplicative α → α) :=
   uniformContinuous_id
 
@@ -656,10 +663,12 @@ theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
   rw [uniformity_setCoe, map_comap, range_prodMap, Subtype.range_val]
 
+@[fun_prop]
 theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
     UniformContinuous (Subtype.val : { a : α // p a } → α) :=
   uniformContinuous_comap
 
+@[fun_prop]
 theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [UniformSpace β] {f : β → α}
     (hf : UniformContinuous f) (h : ∀ x, p (f x)) :
     UniformContinuous (fun x => ⟨f x, h x⟩ : β → Subtype p) :=
@@ -671,7 +680,7 @@ theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : �
   (hf.comp uniformContinuous_subtype_val).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
-    UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
+    UniformContinuousOn f s ↔ UniformContinuous (s.domRestrict f) := by
   delta UniformContinuousOn UniformContinuous
   rw [← map_uniformity_set_coe, tendsto_map'_iff]; rfl
 
@@ -684,10 +693,11 @@ theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β]
   rw [(@map_nhds_subtype_coe_eq_nhds α _ (· ∈ s) a (mem_of_mem_nhds ha) ha).symm]
   exact tendsto_map' hf.continuous.continuousAt
 
+@[fun_prop]
 theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α}
     (h : UniformContinuousOn f s) : ContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict] at h
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   exact h.continuous
 
 instance [UniformSpace α] [(𝓤 α).IsCountablyGenerated] (s : Set α) : (𝓤 s).IsCountablyGenerated :=
@@ -709,11 +719,11 @@ theorem comap_uniformity_mulOpposite [UniformSpace α] :
 
 namespace MulOpposite
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem uniformContinuous_unop [UniformSpace α] : UniformContinuous (unop : αᵐᵒᵖ → α) :=
   uniformContinuous_comap
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem uniformContinuous_op [UniformSpace α] : UniformContinuous (op : α → αᵐᵒᵖ) :=
   uniformContinuous_comap' uniformContinuous_id
 
@@ -775,7 +785,7 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
 
 theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) :
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
-  ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
+  ext p; simp only [ball, entourageProd, Set.mem_ofPred_eq, Set.mem_prod, Set.mem_preimage]
 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where
@@ -819,16 +829,19 @@ theorem tendsto_prod_uniformity_snd [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.2, p.2.2)) (𝓤 (α × β)) (𝓤 β) :=
   le_trans (map_mono inf_le_right) map_comap_le
 
+@[fun_prop]
 theorem uniformContinuous_fst [UniformSpace α] [UniformSpace β] :
     UniformContinuous fun p : α × β => p.1 :=
   tendsto_prod_uniformity_fst
 
+@[fun_prop]
 theorem uniformContinuous_snd [UniformSpace α] [UniformSpace β] :
     UniformContinuous fun p : α × β => p.2 :=
   tendsto_prod_uniformity_snd
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
+@[fun_prop]
 theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
     (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
   rw [UniformContinuous, uniformity_prod]
@@ -842,10 +855,12 @@ theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinu
     UniformContinuous fun b => f (a, b) :=
   h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
 
+@[fun_prop]
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
 
+@[fun_prop]
 lemma uniformContinuous_swap :
     UniformContinuous (Prod.swap : α × β → β × α) :=
   uniformContinuous_snd.prodMk uniformContinuous_fst
@@ -888,7 +903,6 @@ theorem uniformContinuous_sInf_dom₂ {α β γ} {f : α → β → γ} {uas : S
       haveI := sInf uas; haveI := sInf ubs
       exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
   -- proof essentially copied from `continuous_sInf_dom`
-  let _ : UniformSpace (α × β) := instUniformSpaceProd
   have ha := uniformContinuous_sInf_dom ha uniformContinuous_id
   have hb := uniformContinuous_sInf_dom hb uniformContinuous_id
   have h_unif_cont_id := @UniformContinuous.prodMap _ _ _ _ (sInf uas) (sInf ubs) ua ub _ _ ha hb
@@ -905,6 +919,7 @@ variable {δ' : Type*} [UniformSpace α] [UniformSpace β] [UniformSpace γ] [Un
 local notation f " ∘₂ " g => Function.bicompr f g
 
 /-- Uniform continuity for functions of two variables. -/
+@[fun_prop]
 def UniformContinuous₂ (f : α → β → γ) :=
   UniformContinuous (uncurry f)
 
@@ -920,10 +935,12 @@ theorem uniformContinuous₂_curry (f : α × β → γ) :
     UniformContinuous₂ (Function.curry f) ↔ UniformContinuous f := by
   rw [UniformContinuous₂, uncurry_curry]
 
+@[fun_prop]
 theorem UniformContinuous₂.comp {f : α → β → γ} {g : γ → δ} (hg : UniformContinuous g)
     (hf : UniformContinuous₂ f) : UniformContinuous₂ (g ∘₂ f) :=
   hg.comp hf
 
+@[fun_prop]
 theorem UniformContinuous₂.bicompl {f : α → β → γ} {ga : δ → α} {gb : δ' → β}
     (hf : UniformContinuous₂ f) (hga : UniformContinuous ga) (hgb : UniformContinuous gb) :
     UniformContinuous₂ (bicompl f ga gb) :=
@@ -971,8 +988,8 @@ theorem union_mem_uniformity_sum {a : SetRel α α} (ha : a ∈ 𝓤 α) {b : Se
 theorem Sum.uniformity : 𝓤 (α ⊕ β) = map (Prod.map inl inl) (𝓤 α) ⊔ map (Prod.map inr inr) (𝓤 β) :=
   rfl
 
-lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
-lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
+@[fun_prop] lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
+@[fun_prop] lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
 
 instance [IsCountablyGenerated (𝓤 α)] [IsCountablyGenerated (𝓤 β)] :
     IsCountablyGenerated (𝓤 (α ⊕ β)) := by

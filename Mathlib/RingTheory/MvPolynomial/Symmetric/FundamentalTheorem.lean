@@ -142,7 +142,7 @@ lemma esymmAlgHom_apply (p : MvPolynomial (Fin n) R) :
 lemma rename_esymmAlgHom (e : σ ≃ τ) :
     (renameSymmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
   ext i : 2
-  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.coe_algHom,
+  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.coe_toAlgHom,
     renameSymmetricSubalgebra_apply_coe, rename_esymm]
 
 variable (σ) in
@@ -341,6 +341,7 @@ noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
     ⟨esymmAlgHom_injective R hn.ge, esymmAlgHom_surjective R hn.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma esymmAlgEquiv_symm_apply (hn : Fintype.card σ = n) (i : Fin n) :
     (esymmAlgEquiv σ R hn).symm ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = X i := by
   apply_fun esymmAlgHom σ R n using esymmAlgHom_injective R hn.ge

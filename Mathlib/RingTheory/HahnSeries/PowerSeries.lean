@@ -12,6 +12,7 @@ public import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `R⟦Γ⟧`.  When `R` is a semiring and `Γ = ℕ`, then
@@ -70,8 +71,8 @@ def toPowerSeries : R⟦ℕ⟧ ≃+* PowerSeries R where
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
     ext m
-    simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
-      mem_support]
+    simp only [HasAntidiagonal.mem_antidiagonal, Finset.mem_antidiagonal, and_congr_left_iff,
+      mem_filter, mem_support]
     rintro h
     rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
@@ -141,7 +142,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
   simp
 
 set_option backward.isDefEq.respectTransparency false in
--- Lemmas about converting hahn_series over fintype to and from mv_power_series
+-- Lemmas converting Hahn series over a finite index type to and from `MvPowerSeries`
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
@@ -169,8 +170,8 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : R⟦σ →₀ ℕ⟧ ≃+* MvPowe
       refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
-      simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
-        Finset.mem_antidiagonal]
+      simp only [and_congr_left_iff, Finset.mem_antidiagonal, mem_filter, mem_support,
+        HasAntidiagonal.mem_antidiagonal]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 

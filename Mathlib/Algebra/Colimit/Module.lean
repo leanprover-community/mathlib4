@@ -408,6 +408,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
@@ -424,12 +425,14 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
