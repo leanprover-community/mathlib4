@@ -71,7 +71,6 @@ lemma mem_supp_iff : x ∈ P.supp ↔ ∃ t ∈ P, x ∈ t := by
 lemma eq_of_mem_inter (ht : t ∈ P) (hs : s ∈ P) (hx : x ∈ t ∩ s) : t = s :=
   P.pairwiseDisjoint.elim ht hs fun (hdj : Disjoint t s) ↦ by simp [hdj.inter_eq] at hx
 
-@[grind →]
 lemma eq_of_mem_of_mem (ht : t ∈ P) (hus : s ∈ P) (hxt : x ∈ t) (hxs : x ∈ s) : t = s :=
   eq_of_mem_inter ht hus ⟨hxt, hxs⟩
 
@@ -131,7 +130,7 @@ lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
   exact ⟨fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hx],
     fun h ↦ by rwa [P.eq_of_mem_of_mem ht ht' h hy]⟩
 
-@[simp]
+@[simp, grind =]
 lemma rel_rfl_iff : P.Rel x x ↔ x ∈ P.supp := by
   refine ⟨fun ⟨t, ht, hxP, _⟩ ↦ subset_of_mem ht hxP, fun hx ↦ ?_⟩
   obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_supp_iff_unique.mp hx
@@ -144,19 +143,16 @@ instance (P : Partition (Set α)) : IsTrans α P.Rel where
   trans _ _ _ := fun ⟨t, ht, ha, hb⟩ ⟨t', ht', hb', hc⟩ ↦
     ⟨t, ht, ha, by rwa [eq_of_mem_of_mem ht ht' hb hb']⟩
 
-@[symm, grind →] lemma Rel.symm (h : P.Rel x y) : P.Rel y x := symm_of P.Rel h
+@[symm] lemma Rel.symm (h : P.Rel x y) : P.Rel y x := symm_of P.Rel h
 
 lemma rel_comm : P.Rel x y ↔ P.Rel y x := ⟨Rel.symm, Rel.symm⟩
 
-@[grind →]
 lemma Rel.trans (hxy : P.Rel x y) (hyz : P.Rel y z) : P.Rel x z := trans_of P.Rel hxy hyz
 
-@[grind →]
 lemma Rel.left_mem (h : P.Rel x y) : x ∈ P.supp := by
   obtain ⟨t, htP, hxt, -⟩ := h
   exact subset_of_mem htP hxt
 
-@[grind →]
 lemma Rel.right_mem (h : P.Rel x y) : y ∈ P.supp := h.symm.left_mem
 
 /-- Any element of a part is related to the representative of that part. -/
@@ -222,17 +218,15 @@ lemma partOf_subset : P.partOf x ⊆ P.supp := fun _ ⟨_, ht, _, hyt⟩ ↦ sub
 
 @[simp, grind =] lemma mem_partOf_iff : x ∈ P.partOf y ↔ P.Rel y x := Iff.rfl
 
-@[grind →]
 lemma eq_partOf_of_mem (ht : t ∈ P) (hxt : x ∈ t) : t = P.partOf x := by
   ext y
   exact ⟨(⟨t, ht, hxt, ·⟩), fun ⟨s, hsP, hxs, hys⟩ ↦ (P.eq_of_mem_of_mem ht hsP hxt hxs) ▸ hys⟩
 
-lemma mem_iff_mem_partOf_mem : x ∈ P.supp ↔ x ∈ P.partOf x ∧ P.partOf x ∈ P := by grind
+lemma mem_iff_mem_partOf_mem : x ∈ P.supp ↔ x ∈ P.partOf x ∧ P.partOf x ∈ P := by
+  grind [eq_partOf_of_mem]
 
-@[grind →]
 lemma mem_partOf (hxu : x ∈ P.supp) : x ∈ P.partOf x := (P.mem_iff_mem_partOf_mem.mp hxu).1
 
-@[grind →]
 lemma partOf_mem (hxu : x ∈ P.supp) : P.partOf x ∈ P := (P.mem_iff_mem_partOf_mem.mp hxu).2
 
 @[simp]
@@ -246,10 +240,11 @@ lemma partOf_nonempty_iff : (P.partOf x).Nonempty ↔ x ∈ P.supp := by
   refine ⟨fun ⟨y, hy⟩ ↦ hy.left_mem, fun h ↦ ?_⟩
   simpa [nonempty_iff_ne_empty] using P.ne_bot_of_mem (partOf_mem h)
 
-@[simp]
+@[simp, grind =]
 lemma partOf_eq_empty_iff : P.partOf x = ∅ ↔ x ∉ P.supp := by
   rw [← partOf_nonempty_iff, not_nonempty_iff_eq_empty]
 
+@[grind =_]
 lemma rel_iff_partOf_eq_partOf_of_mem (P : Partition (Set α)) (hx : x ∈ P.supp) (hy : y ∈ P.supp) :
     P.Rel x y ↔ P.partOf x = P.partOf y := by
   refine ⟨fun ⟨t, htP, hxt, hyt⟩ ↦ eq_partOf_of_mem (P.partOf_mem hx) ?_,
@@ -258,7 +253,7 @@ lemma rel_iff_partOf_eq_partOf_of_mem (P : Partition (Set α)) (hx : x ∈ P.sup
 
 lemma rel_iff_partOf_eq_partOf (P : Partition (Set α)) :
     P.Rel x y ↔ ∃ (_ : x ∈ P.supp) (_ : y ∈ P.supp), P.partOf x = P.partOf y := by
-  grind [rel_iff_partOf_eq_partOf_of_mem]
+  grind [rel_iff_partOf_eq_partOf_of_mem, Rel.left_mem, Rel.right_mem]
 
 end partOf
 
@@ -279,8 +274,6 @@ structure IsRepFun (P : Partition (Set α)) (f : α → α) : Prop where
   rel_apply : ∀ ⦃a⦄, a ∈ P.supp → P.Rel a (f a)
   /-- The function maps related elements to the same representative. -/
   apply_eq_apply : ∀ ⦃a b⦄, P.Rel a b → f a = f b
-
-attribute [grind →] IsRepFun.apply_of_notMem IsRepFun.rel_apply IsRepFun.apply_eq_apply
 
 namespace IsRepFun
 
@@ -303,10 +296,23 @@ lemma mapsTo_of_disjoint (hf : IsRepFun P f) (hs : Disjoint P.supp s) : Set.Maps
 lemma apply_mem_iff (hf : IsRepFun P f) (hs : P.supp ⊆ s) : f a ∈ s ↔ a ∈ s :=
   hf.mapsTo hs |>.mem_iff <| mapsTo_of_disjoint hf hs.disjoint_compl_right
 
-lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ P.supp) : f a = f b ↔ P.Rel a b :=
-  ⟨fun hab ↦ (hf.rel_apply ha).trans (by grind), (hf.apply_eq_apply ·)⟩
+lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ P.supp) : f a = f b ↔ P.Rel a b := by
+  refine ⟨fun hab ↦ ?_, (hf.apply_eq_apply ·)⟩
+  by_cases hb : b ∈ P.supp
+  · exact (hf.rel_apply ha).trans <| by simpa [hab] using (hf.rel_apply hb).symm
+  simpa [hab.trans (hf.apply_of_notMem hb)] using hf.rel_apply ha
 
-lemma apply_eq_apply_iff (hf : IsRepFun P f) : f a = f b ↔ a = b ∨ P.Rel a b := by grind
+@[grind =>]
+lemma apply_eq_apply_iff (hf : IsRepFun P f) : f a = f b ↔ a = b ∨ P.Rel a b := by
+  refine ⟨fun hab ↦ ?_, ?_⟩
+  · by_cases ha : a ∈ P.supp
+    · exact Or.inr <| hf.apply_eq_apply_iff_rel ha |>.mp hab
+    by_cases hb : b ∈ P.supp
+    · exact (ha <| hf.apply_of_notMem ha ▸ hab.symm ▸ hf.apply_mem hb).elim
+    exact Or.inl <| (hf.apply_of_notMem ha).symm.trans <| hab.trans <| hf.apply_of_notMem hb
+  rintro (rfl | hab)
+  · rfl
+  exact hf.apply_eq_apply hab
 
 lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
     (∀ (x : α), f a = f x ↔ a = x) ∨ (∀ (x : α), f a = f x ↔ P.Rel a x) := by
@@ -319,13 +325,20 @@ lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
 
 lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
     f a = f b ↔ (a = b ∧ ∀ c, f a = f c ↔ a = c) ∨ P.Rel a b := by
-  obtain h1 | h2 := hf.forall_apply_eq_apply_iff a <;> grind
+  refine ⟨fun hab ↦ by grind [hf.forall_apply_eq_apply_iff a], ?_⟩
+  rintro (⟨rfl, -⟩ | hab)
+  · rfl
+  exact hf.apply_eq_apply hab
 
 lemma idem (hf : IsRepFun P f) : f (f a) = f a := by
-  obtain (ha | ha) := em (a ∈ P.supp) <;> grind
+  by_cases ha : a ∈ P.supp
+  · exact (hf.apply_eq_apply <| hf.rel_apply ha).symm
+  simp only [hf.apply_of_notMem ha]
 
 theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
-  obtain (hx | hx) := em (x ∈ P.supp) <;> grind
+  by_cases hx : x ∈ P.supp
+  · exact (hf.apply_eq_apply <| hg.rel_apply hx).symm
+  rw [hg.apply_of_notMem hx]
 
 /-- Any partially defined representative function extends to a complete one. -/
 lemma exists_extend_partial (P : Partition (Set α)) (f₀ : t → α)
@@ -341,7 +354,12 @@ lemma exists_extend_partial (P : Partition (Set α)) (f₀ : t → α)
     push Not at h
     exact P.rep_rel (P.partOf_mem ha) (P.mem_partOf ha)
   · simp_rw [hfdef, dif_pos hab.left_mem, dif_pos hab.right_mem]
-    split_ifs with h₁ h₂ h₂ <;> grind
+    split_ifs with h₁ h₂ h₂
+    · exact h_eq _ _ <| (h₁.choose_spec.symm.trans hab).trans h₂.choose_spec
+    · exact (h₂ ⟨h₁.choose, hab.symm.trans h₁.choose_spec⟩).elim
+    · exact (h₁ ⟨h₂.choose, hab.trans h₂.choose_spec⟩).elim
+    congr 1
+    exact (P.rel_iff_partOf_eq_partOf_of_mem hab.left_mem hab.right_mem).mp hab
   obtain (ha | ha) := em (a.1 ∈ P.supp) |>.symm
   · simp [hfdef, ha, h_notMem _ ha]
   simp only [hfdef, ha, ↓reduceDIte]
