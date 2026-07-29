@@ -50,15 +50,16 @@ section Fintype
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
-      convert ha he fun h => by simpa [← h] using mem_univ x using 2
+      convert! ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, SetCoe.exists, exists_and_right,
         exists_eq_right]
@@ -71,6 +72,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · subst s'
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- First case of the inductive step: assuming that
 `∀ (s : Finset ι), s.Nonempty → s ≠ univ → #s < #(s.biUnion t)`
 and that the statement of **Hall's Marriage Theorem** is true for all
@@ -85,8 +87,8 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
             ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)) :
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
-  haveI : Nonempty ι := Fintype.card_pos_iff.mp (hn.symm ▸ Nat.succ_pos _)
-  haveI := Classical.decEq ι
+  have : Nonempty ι := Fintype.card_pos_iff.mp (hn.symm ▸ Nat.succ_pos _)
+  have := Classical.decEq ι
   -- Choose an arbitrary element `x : ι` and `y : t x`.
   let x := Classical.arbitrary ι
   have tx_ne : (t x).Nonempty := by
@@ -125,7 +127,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     #s' ≤ #(s'.biUnion fun a' => t a') := by
   classical
     rw [← card_image_of_injective s' Subtype.coe_injective]
-    convert ht (s'.image fun z => z.1) using 1
+    convert! ht (s'.image fun z => z.1) using 1
     apply congr_arg
     ext y
     simp
@@ -133,7 +135,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
 theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : #s = #(s.biUnion t)) (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t))
     (s' : Finset (sᶜ : Set ι)) : #s' ≤ #(s'.biUnion fun x' => t x' \ s.biUnion t) := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   have disj : Disjoint s (s'.image fun z => z.1) := by
     simp only [disjoint_left, not_exists, mem_image, SetCoe.exists, exists_and_right,
       exists_eq_right]
@@ -168,7 +170,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
             ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x)
     (s : Finset ι) (hs : s.Nonempty) (hns : s ≠ univ) (hus : #s = #(s.biUnion t)) :
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   -- Restrict to `s`
   rw [Nat.add_one] at hn
   have card_ι'_le : Fintype.card s ≤ n := by

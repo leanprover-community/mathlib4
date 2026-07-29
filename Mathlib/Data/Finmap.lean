@@ -80,6 +80,7 @@ def AList.toFinmap (s : AList β) : Finmap β :=
 -- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
     toFinmap s₁ = toFinmap s₂ ↔ s₁.entries ~ s₂.entries := by
   cases s₁
@@ -586,7 +587,8 @@ section
 
 variable [DecidableEq α]
 
-instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
+instance : DecidableRel (@Disjoint α β) :=
+  fun s₁ s₂ ↦ inferInstanceAs <| Decidable (∀ x ∈ s₁, x ∉ s₂)
 
 theorem disjoint_union_left (x y z : Finmap β) :
     Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z := by

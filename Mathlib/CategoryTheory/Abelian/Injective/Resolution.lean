@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -52,6 +51,7 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFZero {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 0 ⟶ I.cocomplex.X 0 :=
@@ -67,6 +67,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
   ShortComplex.exact_of_f_is_kernel _ I.isLimitKernelFork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `desc`. -/
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
@@ -95,6 +96,7 @@ def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResol
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
     fun n ⟨g, g', w⟩ => ⟨(descFSucc I J n g g' w.symm).1, (descFSucc I J n g g' w.symm).2.symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The resolution maps intertwine the descent of a morphism and that morphism. -/
 @[reassoc (attr := simp)]
 theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
@@ -238,6 +240,7 @@ def InjectiveResolution.iso {X : C} (I : InjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj I.cocomplex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
     (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -263,6 +266,7 @@ section
 
 variable [Abelian C] [EnoughInjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk f (d f) (by simp)).Exact := by
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
@@ -292,30 +296,34 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 -- The construction of the injective resolution `of` would be very, very slow
 -- if it were not broken into separate definitions and lemmas
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
     (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
-  dsimp [ofCocomplex, CochainComplex.mk', CochainComplex.mk, HomologicalComplex.sc',
-      HomologicalComplex.shortComplexFunctor']
-  simp only [CochainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofCocomplex,
+    CochainComplex.mk', CochainComplex.mk, CochainComplex.of_d]
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)
   | n + 1 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ (n + 1)).f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
@@ -343,7 +351,7 @@ end InjectiveResolution
 
 variable [Abelian C]
 
-/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
+/-- Given an injective presentation `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev InjectivePresentation.shortComplex
     {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
   ShortComplex.mk ip.f (Limits.cokernel.π ip.f) (Limits.cokernel.condition ip.f)

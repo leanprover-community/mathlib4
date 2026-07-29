@@ -339,7 +339,7 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
   simp only [max', sup'_image]
-  exact .symm <| comp_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
+  exact .symm <| apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 
 /-- A version of `Finset.max'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
@@ -352,7 +352,7 @@ lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Mon
 theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   simp only [min', inf'_image]
-  exact .symm <| comp_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
+  exact .symm <| apply_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 
 /-- A version of `Finset.min'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
@@ -438,7 +438,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
-theorem card_le_diff_of_interleaved {s t : Finset α}
+theorem card_le_sdiff_of_interleaved {s t : Finset α}
     (h :
       ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
@@ -447,6 +447,9 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
     let ⟨z, hzt, hxz, hzy⟩ := h x hx y hy hxy hs
     ⟨z, mem_sdiff.2 ⟨hzt, fun hzs => hs z hzs ⟨hxz, hzy⟩⟩, hxz, hzy⟩
 
+@[deprecated (since := "2026-06-03")]
+alias card_le_diff_of_interleaved := card_le_sdiff_of_interleaved
+
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
 
@@ -454,14 +457,15 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
 * for every `s : Finset α` and an element `a` strictly greater than all elements of `s`, `p s`
   implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
-    (step : ∀ a s, (∀ x ∈ s, x < a) → p s → p (insert a s)) : p s := by
+theorem induction_on_max
+    [DecidableEq α] {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
+    (insert : ∀ a s, (∀ x ∈ s, x < a) → motive s → motive (insert a s)) : motive s := by
   induction s using Finset.eraseInduction with | _ s ih
   rcases s.eq_empty_or_nonempty with (rfl | hne)
-  · exact h0
+  · exact empty
   · have H : s.max' hne ∈ s := max'_mem s hne
     rw [← insert_erase H]
-    exact step _ _ (fun x ↦ s.lt_max'_of_mem_erase_max' hne) (ih _ H)
+    exact insert _ _ (fun x ↦ s.lt_max'_of_mem_erase_max' hne) (ih _ H)
 
 /-- Induction principle for `Finset`s in a linearly ordered type: a predicate is true on all
 `s : Finset α` provided that:
@@ -470,9 +474,10 @@ theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset �
 * for every `s : Finset α` and an element `a` strictly less than all elements of `s`, `p s`
   implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_min [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
-    (step : ∀ a s, (∀ x ∈ s, a < x) → p s → p (insert a s)) : p s :=
-  @induction_on_max αᵒᵈ _ _ _ s h0 step
+theorem induction_on_min
+    [DecidableEq α] {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
+    (insert : ∀ a s, (∀ x ∈ s, a < x) → motive s → motive (insert a s)) : motive s :=
+  @induction_on_max αᵒᵈ _ _ _ s empty insert
 
 end MaxMin
 
@@ -487,17 +492,18 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 * for every `s : Finset α` and an element `a` such that for elements of `s` denoted by `x` we have
   `f x ≤ f a`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
+theorem induction_on_max_value
+    [DecidableEq ι] (f : ι → α) {motive : Finset ι → Prop} (s : Finset ι) (empty : motive ∅)
+    (insert : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → motive s → motive (insert a s)) : motive s := by
   induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
-    simp only [hne, h0]
+    simp only [hne, empty]
   · have H : (s.image f).max' hne ∈ s.image f := max'_mem (s.image f) hne
     simp only [mem_image] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    refine step _ _ (notMem_erase a s) (fun x hx => ?_) (ihs a has)
+    refine insert _ _ (notMem_erase a s) (fun x hx => ?_) (ihs a has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 
@@ -508,9 +514,10 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 * for every `s : Finset α` and an element `a` such that for elements of `s` denoted by `x` we have
   `f a ≤ f x`, `p s` implies `p (insert a s)`. -/
 @[elab_as_elim]
-theorem induction_on_min_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
-    (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f a ≤ f x) → p s → p (insert a s)) : p s :=
-  @induction_on_max_value αᵒᵈ ι _ _ _ _ s h0 step
+theorem induction_on_min_value
+    [DecidableEq ι] (f : ι → α) {motive : Finset ι → Prop} (s : Finset ι) (empty : motive ∅)
+    (insert : ∀ a s, a ∉ s → (∀ x ∈ s, f a ≤ f x) → motive s → motive (insert a s)) : motive s :=
+  @induction_on_max_value αᵒᵈ ι _ _ _ _ s empty insert
 
 end MaxMinInductionValue
 

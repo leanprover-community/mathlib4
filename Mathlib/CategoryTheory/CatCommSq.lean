@@ -21,11 +21,13 @@ Future work: using this notion in the development of the localization of categor
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
   [Category* C₅] [Category* C₆]
@@ -44,14 +46,14 @@ variable (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ �
 namespace CatCommSq
 
 /-- The vertical identity `CatCommSq` -/
-@[simps!]
+@[instance_reducible, simps!]
 def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
-  iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
+  iso := Functor.rightUnitor _ ≪≫ (Functor.leftUnitor _).symm
 
 /-- The horizontal identity `CatCommSq` -/
-@[simps!]
+@[simps!, instance_reducible]
 def hId : CatCommSq (𝟭 C₁) L L (𝟭 C₃) where
-  iso := (Functor.rightUnitor _) ≪≫ (Functor.leftUnitor _).symm
+  iso := Functor.leftUnitor _ ≪≫ (Functor.rightUnitor _).symm
 
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
@@ -64,7 +66,7 @@ lemma iso_inv_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
   (iso T L R B).inv.naturality f
 
 /-- Horizontal composition of 2-commutative squares -/
-@[simps!]
+@[simps!, instance_reducible]
 def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (V₂ : C₂ ⥤ C₅) (V₃ : C₃ ⥤ C₆)
     (B₁ : C₄ ⥤ C₅) (B₂ : C₅ ⥤ C₆) [CatCommSq T₁ V₁ V₂ B₁] [CatCommSq T₂ V₂ V₃ B₂] :
     CatCommSq (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) where
@@ -81,7 +83,7 @@ abbrev hComp' {T₁ : C₁ ⥤ C₂} {T₂ : C₂ ⥤ C₃} {V₁ : C₁ ⥤ C�
   hComp _ _ _ V₂ _ _ _
 
 /-- Vertical composition of 2-commutative squares -/
-@[simps!]
+@[simps!, instance_reducible]
 def vComp (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃) (H₁ : C₁ ⥤ C₄) (H₂ : C₂ ⥤ C₅) (H₃ : C₃ ⥤ C₆)
     (R₁ : C₄ ⥤ C₅) (R₂ : C₅ ⥤ C₆) [CatCommSq H₁ L₁ R₁ H₂] [CatCommSq H₂ L₂ R₂ H₃] :
     CatCommSq H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ where
@@ -102,7 +104,7 @@ section
 variable (T : C₁ ≌ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ≌ C₄)
 
 /-- Horizontal inverse of a 2-commutative square -/
-@[simps!]
+@[simps!, instance_reducible]
 def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inverse where
   iso := isoWhiskerLeft _ (L.rightUnitor.symm ≪≫ isoWhiskerLeft L B.unitIso ≪≫
       (associator _ _ _).symm ≪≫
@@ -110,6 +112,8 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by
   ext X
@@ -141,7 +145,7 @@ section
 variable (T : C₁ ⥤ C₂) (L : C₁ ≌ C₃) (R : C₂ ≌ C₄) (B : C₃ ⥤ C₄)
 
 /-- Vertical inverse of a 2-commutative square -/
-@[simps!]
+@[simps!, instance_reducible]
 def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inverse T where
   iso := isoWhiskerRight (B.leftUnitor.symm ≪≫ isoWhiskerRight L.counitIso.symm B ≪≫
       associator _ _ _ ≪≫
@@ -150,6 +154,7 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     vInv B L.symm R.symm T (vInv T L R B h) = h := by
   ext X
@@ -163,11 +168,6 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]
   rw [← B.map_comp, L.counit_app_functor, ← L.functor.map_comp, ← NatTrans.comp_app,
     Iso.inv_hom_id, NatTrans.id_app, L.functor.map_id]
-  simp only [Functor.comp_obj]
-  rw [B.map_id]
-  rw [comp_id, R.counit_app_functor,
-    ← R.functor.map_comp_assoc, ← R.functor.map_comp_assoc, assoc, ← NatTrans.comp_app,
-    Iso.hom_inv_id, NatTrans.id_app]
   simp
 
 /-- In a square of categories, when the left and right functors are part

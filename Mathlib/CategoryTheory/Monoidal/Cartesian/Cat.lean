@@ -32,6 +32,7 @@ attribute [local instance] uliftCategory in
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal.{v, u} :=
   IsTerminal.ofUniqueHom (fun C ↦ ((Functor.const C).obj ⟨⟨⟨⟩⟩⟩).toCatHom) fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The type of functors out of the chosen terminal category is equivalent to the type of objects
 in the target category. TODO: upgrade to an equivalence of categories. -/
 def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal ⥤ C ≃ C where
@@ -49,6 +50,7 @@ def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal �
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
   .mk (P := .of (C × D)) (Prod.fst _ _).toCatHom (Prod.snd _ _).toCatHom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The product cone in `Cat` is indeed a product. -/
 def isLimitProdCone (X Y : Cat) : IsLimit (prodCone X Y) := BinaryFan.isLimitMk
   (fun S => (S.fst.toFunctor.prod' S.snd.toFunctor).toCatHom) (fun _ => rfl)

@@ -122,8 +122,10 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
-theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+theorem Convex.setOfPred_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]
+
+@[deprecated (since := "2026-07-09")] alias Convex.setOf_const_imp := Convex.setOfPred_const_imp
 
 end SMul
 
@@ -169,7 +171,7 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
-/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+/-- See `Convex.semilinear_image` for a version for semilinear maps, but requiring that `𝕜` be a
   linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
@@ -335,23 +337,24 @@ variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1) (Convex.combo_le_max x y ha hb hab)).trans
-      (max_rec' { x | f x ≤ r } hx.2 hy.2)⟩
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
+      (Convex.combo_le_max x y ha hb hab)).trans
+      (max_rec' (f · ≤ r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
           (Convex.combo_le_max x y ha hb hab)).trans_lt
-      (max_rec' { x | f x < r } hx.2 hy.2)⟩
+      (max_rec' (f · < r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
-  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual (by exact hs) r
 
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual (by exact hs) r
 
 theorem AntitoneOn.convex_le (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
@@ -413,7 +416,7 @@ theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun
 
 theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :
     Convex 𝕜 ((fun x => z + c • x) '' s) := by
-  simpa only [← image_smul, ← image_vadd, image_image] using (hs.smul c).vadd z
+  simpa only [← image_smul, ← image_vadd, image_image] using! (hs.smul c).vadd z
 
 end AddCommMonoid
 
@@ -446,7 +449,7 @@ theorem convex_vadd (a : E) : Convex 𝕜 (a +ᵥ s) ↔ Convex 𝕜 s :=
 
 /-- Affine subspaces are convex. -/
 theorem AffineSubspace.convex (Q : AffineSubspace 𝕜 E) : Convex 𝕜 (Q : Set E) :=
-  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using Q.2 _ hy hx hx
+  fun x hx y hy a b _ _ hab ↦ by simpa [Convex.combo_eq_smul_sub_add hab] using! Q.2 _ hy hx hx
 
 /-- The preimage of a convex set under an affine map is convex. -/
 theorem Convex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Convex 𝕜 s) : Convex 𝕜 (f ⁻¹' s) :=
@@ -476,10 +479,12 @@ theorem Convex.smul_mem_of_zero_mem (hs : Convex 𝕜 s) {x : E} (zero_mem : (0 
     {t : 𝕜} (ht : t ∈ Icc (0 : 𝕜) 1) : t • x ∈ s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.mapsTo_lineMap (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) :
     MapsTo (AffineMap.lineMap x y) (Icc (0 : 𝕜) 1) s := by
   simpa only [mapsTo_iff_image_subset, segment_eq_image_lineMap] using h.segment_subset hx hy
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Convex.lineMap_mem (h : Convex 𝕜 s) {x y : E} (hx : x ∈ s) (hy : y ∈ s) {t : 𝕜}
     (ht : t ∈ Icc 0 1) : AffineMap.lineMap x y t ∈ s :=
   h.mapsTo_lineMap hx hy ht
@@ -569,6 +574,11 @@ protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 
+theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
+  rw [← h_conv.add_smul (by norm_num) (by norm_num)]
+  ring_nf
+  rw [one_smul]
+
 end AddCommGroup
 
 end LinearOrderedField
@@ -637,7 +647,7 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   intro u hu v hv a b ha hb hab
   obtain ⟨c, hc1, hc2⟩ := halg ha
   obtain ⟨d, hd1, hd2⟩ := halg hb
-  convert hs hu hv hc1 hd1 _ using 2
+  convert hs hu hv hc1 hd1 _
   · rw [← hc2, algebraMap_smul]
   · rw [← hd2, algebraMap_smul]
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab

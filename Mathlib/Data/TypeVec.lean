@@ -453,6 +453,7 @@ def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (�
 end
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
@@ -460,6 +461,7 @@ theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
   | fz => simp_all only [prod.fst, prod.mk]
   | fs _ i_ih => apply i_ih
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
@@ -555,11 +557,12 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
     TypeVec.subtypeVal ps = nilFun :=
   funext <| by rintro ⟨⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction i with
-  | fz => simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
+  | fz => simp only [comp, subtypeVal, diagSub, prod.diag]
   | fs _ i_ih => apply @i_ih (drop α)
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by
@@ -641,8 +644,7 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
 @[simp]
 theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := prod_id
 
-@[deprecated (since := "2025-08-14")] alias subtypeVal_diagSub := diag_sub_val
-
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     toSubtype p ⊚ ofSubtype p = id := by
@@ -650,6 +652,7 @@ theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
   induction i <;> simp only [id, toSubtype, comp, ofSubtype] at *
   simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     subtypeVal p ⊚ toSubtype p = fun _ => Subtype.val := by
@@ -657,12 +660,14 @@ theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
   induction i <;> simp only [toSubtype, comp, subtypeVal] at *
   simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubtype_of_subtype_assoc
     {α β : TypeVec n} (p : α ⟹ «repeat» n Prop) (f : β ⟹ Subtype_ p) :
     @toSubtype n _ p ⊚ ofSubtype _ ⊚ f = f := by
   rw [← comp_assoc, toSubtype_of_subtype]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     toSubtype' r ⊚ ofSubtype' r = id := by
@@ -671,6 +676,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
   <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x

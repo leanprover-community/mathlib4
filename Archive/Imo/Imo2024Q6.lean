@@ -55,10 +55,9 @@ lemma Aquaesulian.injective : Function.Injective f := by
   · exact (h.eq_of_apply_eq_inl he.symm hc).symm
   · exact h.eq_of_apply_eq_inl he hc
 
-@[simp]
 lemma Aquaesulian.apply_zero : f 0 = 0 := by
   refine h.injective ?_
-  convert h.apply_apply_add 0 using 1 <;> simp
+  convert h.apply_apply_add 0 <;> simp
 
 @[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
@@ -68,13 +67,12 @@ lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
   · rw [add_neg_cancel, h.apply_zero] at hc
     exact hc.symm
 
-@[simp]
 lemma Aquaesulian.apply_neg_apply (x : G) : f (-(f x)) = -x := by
   rw [← add_eq_zero_iff_eq_neg]
   exact h.apply_neg_apply_add x
 
 lemma Aquaesulian.apply_neg_apply_neg (x : G) : f (-(f (-x))) = x := by
-  simp [h]
+  simp [h.apply_neg_apply]
 
 lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f (-x₂) = -x₁ := by
   rw [← hx]
@@ -97,14 +95,14 @@ lemma Aquaesulian.g_two {x y u v : G} (huv : u ≠ v) (hx : f x + f (-x) = u)
     f (x + y) = -(f (-x)) + -(f (-y)) + v ∨ f (x + y) = -(f (-x)) + -(f (-y)) + u := by
   refine h.pair_lemma ?_ ?_ ?_
   · simp [huv]
-  · convert h x (-(f (-y))) using 2
+  · convert! h x (-(f (-y))) using 2
     · rw [h.apply_neg_apply_neg, add_comm]
     · rw [← hx]
       abel
     · rw [← hx]
       abel_nf
     · rw [h.apply_neg_apply_neg, add_comm]
-  · convert h y (-(f (-x))) using 2
+  · convert! h y (-(f (-x))) using 2
     · rw [h.apply_neg_apply_neg]
     · rw [← hy]
       abel

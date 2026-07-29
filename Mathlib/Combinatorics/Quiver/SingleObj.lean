@@ -28,7 +28,7 @@ itself using `pathEquivList`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def SingleObj (_ : Type*) : Type :=
   Unit
 deriving Unique
@@ -102,6 +102,7 @@ def listToPath : List α → Path (star α) (star α)
   | [] => Path.nil
   | a :: l => (listToPath l).cons a
 
+set_option backward.isDefEq.respectTransparency false in
 theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
     listToPath (pathToList p) = p.cast rfl ext := by
   induction p with

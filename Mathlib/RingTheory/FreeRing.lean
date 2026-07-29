@@ -53,16 +53,7 @@ with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeRing (α : Type u) : Type u :=
   FreeAbelianGroup <| FreeMonoid α
-
-instance (α : Type u) : Ring (FreeRing α) :=
-  FreeAbelianGroup.ring _
-
-instance (α : Type u) : Inhabited (FreeRing α) := by
-  dsimp only [FreeRing]
-  infer_instance
-
-instance (α : Type u) : Nontrivial (FreeRing α) :=
-  inferInstanceAs <| Nontrivial (FreeAbelianGroup _)
+deriving Ring, Inhabited, Nontrivial
 
 namespace FreeRing
 

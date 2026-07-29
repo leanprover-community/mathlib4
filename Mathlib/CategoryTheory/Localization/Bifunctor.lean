@@ -33,7 +33,7 @@ which lifts `F`.
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category* C₁] [Category* C₂]
   [Category* D₁] [Category* D₂] [Category* E] [Category* E']
@@ -67,10 +67,9 @@ class Lifting₂ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (W₁ : MorphismP
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F F']
 
-@[deprecated (since := "2025-08-22")] alias Lifting₂.iso' := Lifting.iso
-
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
+@[instance_reducible]
 noncomputable def Lifting₂.fst (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁)) where
   iso := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
@@ -80,11 +79,12 @@ noncomputable instance Lifting₂.flip : Lifting₂ L₂ L₁ W₂ W₁ F.flip F
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then
 `Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂))` holds for any `X₂ : C₂`. -/
+@[instance_reducible]
 noncomputable def Lifting₂.snd (X₂ : C₂) :
     Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂)) :=
   Lifting₂.fst L₂ L₁ W₂ W₁ F.flip F'.flip X₂
 
-noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
+noncomputable instance Lifting₂.uncurry :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
   iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
@@ -164,6 +164,8 @@ noncomputable def lift₂NatTrans (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
     (liftNatTrans (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F₁)
       (uncurry.obj F₂) (uncurry.obj F₁') (uncurry.obj F₂') (uncurry.map τ))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem lift₂NatTrans_app_app (τ : F₁ ⟶ F₂) (X₁ : C₁) (X₂ : C₂) :
     ((lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' τ).app (L₁.obj X₁)).app (L₂.obj X₂) =
@@ -180,6 +182,8 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
       (τ'.app (L₁.obj X₁)).app (L₂.obj X₂)) : τ = τ' :=
   uncurry.map_injective (natTrans_ext (L₁.prod L₂) (W₁.prod W₂) (fun _ ↦ h _ _))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/

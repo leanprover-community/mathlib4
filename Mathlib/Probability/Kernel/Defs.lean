@@ -75,7 +75,7 @@ namespace Kernel
 
 instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
@@ -91,16 +91,25 @@ noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + �
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
-@[simp, norm_cast] lemma coe_zero : ⇑(0 : Kernel α β) = 0 := rfl
-@[simp, norm_cast] lemma coe_add (κ η : Kernel α β) : ⇑(κ + η) = κ + η := rfl
-@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (κ : Kernel α β) : ⇑(n • κ) = n • κ := rfl
+instance : IsZeroApply (Kernel α β) α (Measure β) where
+  zero_apply _ := rfl
 
-@[simp] lemma zero_apply (a : α) : (0 : Kernel α β) a = 0 := rfl
-@[simp] lemma add_apply (κ η : Kernel α β) (a : α) : (κ + η) a = κ a + η a := rfl
-@[simp] lemma nsmul_apply (n : ℕ) (κ : Kernel α β) (a : α) : (n • κ) a = n • κ a := rfl
+instance : IsAddApply (Kernel α β) α (Measure β) where
+  add_apply _ _ _ := rfl
+
+instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
+  smul_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-06-30")] alias coe_zero := FunLike.coe_zero
+@[deprecated (since := "2026-06-30")] alias coe_add := FunLike.coe_add
+@[deprecated (since := "2026-06-30")] alias coe_nsmul := FunLike.coe_smul
+
+@[deprecated (since := "2026-06-30")] protected alias zero_apply := zero_apply
+@[deprecated (since := "2026-06-30")] protected alias add_apply := add_apply
+@[deprecated (since := "2026-06-30")] protected alias nsmul_apply := smul_apply
 
 noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (by intros; rfl)
+  fast_instance% FunLike.addCommMonoid
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 
@@ -112,28 +121,24 @@ noncomputable
 instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     OrderBot (Kernel α β) where
   bot := 0
-  bot_le κ a := by simp only [coe_zero, Pi.zero_apply, Measure.zero_le]
+  bot_le κ a := by simp only [zero_apply, Measure.zero_le]
 
-/-- Coercion to a function as an additive monoid homomorphism. -/
-noncomputable def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
-    Kernel α β →+ α → Measure β where
-  toFun := (⇑)
-  map_zero' := coe_zero
-  map_add' := coe_add
+@[deprecated (since := "2026-06-30")] alias coeAddHom := FunLike.coe_coeAddMonoidHom
 
-@[simp]
-theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
-    coeAddHom α β κ = ⇑κ := rfl
+@[deprecated (since := "2026-06-30")] alias coeAddHom_apply := FunLike.coeAddMonoidHom_apply
 
-@[simp]
-theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
-  map_sum (coeAddHom α β) _ _
+@[deprecated (since := "2026-06-30")] alias coe_finsetSum := FunLike.coe_sum
 
-theorem finset_sum_apply (I : Finset ι) (κ : ι → Kernel α β) (a : α) :
-    (∑ i ∈ I, κ i) a = ∑ i ∈ I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
+@[deprecated (since := "2026-04-08")] alias coe_finset_sum := FunLike.coe_sum
 
-theorem finset_sum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
-    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
+@[deprecated (since := "2026-06-30")] alias finsetSum_apply := sum_apply
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_apply := sum_apply
+
+theorem finsetSum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
+    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [sum_apply, Measure.finsetSum_apply]
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_apply' := finsetSum_apply'
 
 end Kernel
 
@@ -160,8 +165,6 @@ theorem eq_zero_or_isMarkovKernel
 noncomputable def Kernel.bound (κ : Kernel α β) : ℝ≥0∞ :=
   ⨆ a, κ a Set.univ
 
-@[deprecated (since := "2025-09-13")] alias IsFiniteKernel.bound := Kernel.bound
-
 namespace Kernel
 
 theorem bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] : κ.bound < ∞ := by
@@ -169,14 +172,8 @@ theorem bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] : κ.bound < �
   refine lt_of_le_of_lt ?_ hC
   simp [bound, hle]
 
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsFiniteKernel.bound_lt_top :=
-  bound_lt_top
-
 theorem bound_ne_top (κ : Kernel α β) [IsFiniteKernel κ] :
     κ.bound ≠ ∞ := κ.bound_lt_top.ne
-
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsFiniteKernel.bound_ne_top :=
-  bound_ne_top
 
 theorem measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
     κ a s ≤ κ.bound :=
@@ -186,22 +183,13 @@ theorem measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
 lemma bound_eq_zero_of_isEmpty [IsEmpty α] (κ : Kernel α β) :
     κ.bound = 0 := by simp [bound]
 
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_eq_zero_of_isEmpty := bound_eq_zero_of_isEmpty
-
 @[simp]
 lemma bound_eq_zero_of_isEmpty' [IsEmpty β] (κ : Kernel α β) :
     κ.bound = 0 := by simp [bound, Subsingleton.elim _ (0 : Measure β)]
 
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_eq_zero_of_isEmpty' := bound_eq_zero_of_isEmpty'
-
 @[simp]
 lemma bound_zero : bound (0 : Kernel α β) = 0 := by
   simp [bound]
-
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_zero := bound_zero
 
 end Kernel
 
@@ -232,7 +220,7 @@ instance (priority := 100) IsMarkovKernel.IsZeroOrMarkovKernel [h : IsMarkovKern
 instance (priority := 100) IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure
     [IsZeroOrMarkovKernel κ] (a : α) : IsZeroOrProbabilityMeasure (κ a) := by
   rcases eq_zero_or_isMarkovKernel κ with rfl | h'
-  · simp only [Kernel.zero_apply]
+  · simp only [zero_apply]
     infer_instance
   · infer_instance
 
@@ -251,18 +239,12 @@ namespace Kernel
 lemma bound_eq_one [Nonempty α] (κ : Kernel α β) [IsMarkovKernel κ] :
     κ.bound = 1 := by simp [bound]
 
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsMarkovKernel.bound_eq_one :=
-  bound_eq_one
-
 @[simp]
 lemma bound_le_one (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
     κ.bound ≤ 1 := by
   rcases isEmpty_or_nonempty α
   · simp
   · rcases eq_zero_or_isMarkovKernel κ with rfl | _ <;> simp
-
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsZeroOrMarkovKernel.bound_le_one := bound_le_one
 
 @[ext]
 theorem ext (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
@@ -311,12 +293,10 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
-@[nontriviality]
 lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
   ext a
   exact h.elim a
 
-@[nontriviality]
 lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
   ext a
   simp [Measure.eq_zero_of_isEmpty (κ a)]
@@ -329,7 +309,7 @@ protected noncomputable def sum [Countable ι] (κ : ι → Kernel α β) : Kern
   measurable' := by
     refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     simp_rw [Measure.sum_apply _ hs]
-    exact Measurable.ennreal_tsum fun n => Kernel.measurable_coe (κ n) hs
+    exact Measurable.tsum fun n => Kernel.measurable_coe (κ n) hs
 
 theorem sum_apply [Countable ι] (κ : ι → Kernel α β) (a : α) :
     Kernel.sum κ a = Measure.sum fun n => κ n a :=
@@ -351,12 +331,12 @@ theorem sum_comm [Countable ι] (κ : ι → ι → Kernel α β) :
 @[simp]
 theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = ∑ i, κ i := by
   ext a s hs
-  simp only [sum_apply' κ a hs, finset_sum_apply' _ κ a s, tsum_fintype]
+  simp only [sum_apply' κ a hs, finsetSum_apply' _ κ a s, tsum_fintype]
 
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
-  simp only [coe_add, Pi.add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
+  simp only [add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
     Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
 
 end Sum
@@ -403,17 +383,19 @@ instance IsSFiniteKernel.add (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
   refine ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, ?_⟩⟩
   rw [sum_add, kernel_sum_seq κ, kernel_sum_seq η]
 
-theorem IsSFiniteKernel.finset_sum {κs : ι → Kernel α β} (I : Finset ι)
+theorem IsSFiniteKernel.finsetSum {κs : ι → Kernel α β} (I : Finset ι)
     (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i ∈ I, κs i) := by
   classical
   induction I using Finset.induction with
   | empty => rw [Finset.sum_empty]; infer_instance
   | insert i I hi_notMem_I h_ind =>
     rw [Finset.sum_insert hi_notMem_I]
-    haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
+    have : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
     have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
+
+@[deprecated (since := "2026-04-08")] alias IsSFiniteKernel.finset_sum := IsSFiniteKernel.finsetSum
 
 theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
@@ -432,7 +414,7 @@ instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
     [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
-    exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i
+    exact IsSFiniteKernel.finsetSum Finset.univ fun i _ => hκs i
   cases nonempty_denumerable ι
   exact isSFiniteKernel_sum_of_denumerable hκs
 

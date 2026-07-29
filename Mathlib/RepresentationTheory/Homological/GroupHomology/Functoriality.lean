@@ -44,10 +44,10 @@ namespace groupHomology
 open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
-  {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ (Action.res _ f).obj B) (n : ℕ)
+  {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
 
-theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ (Action.res _ f₁).obj B} {T : Type*}
-    (F : (f : G →* H) → (φ : A ⟶ (Action.res _ f).obj B) → T) :
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ res f₁ B} {T : Type*}
+    (F : (f : G →* H) → (φ : A ⟶ res f B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
@@ -57,17 +57,22 @@ this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)�
 @[simps! -isSimp f f_hom]
 noncomputable def chainsMap :
     inhomogeneousChains A ⟶ inhomogeneousChains B where
-  f i := ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (f ∘ ·)
+  f i := ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ lmapDomain A k (f ∘ ·)
   comm' i j (hij : _ = _) := by
     subst hij
     ext
-    simpa [Fin.comp_contractNth, map_add, inhomogeneousChains.d]
-      using congr(single _ $((hom_comm_apply φ (_)⁻¹ _).symm))
+    simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ]
+    rfl
+
+lemma chainsMap_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) :
+    chainsMap f φ = chainsMap g ψ := by
+  subst hfg; congr; ext; simp [hφψ]
 
 @[reassoc (attr := simp)]
 lemma lsingle_comp_chainsMap_f (n : ℕ) (x : Fin n → G) :
     ModuleCat.ofHom (lsingle x) ≫ (chainsMap f φ).f n =
-      φ.hom ≫ ModuleCat.ofHom (lsingle (f ∘ x)) := by
+      ModuleCat.ofHom (lsingle (f ∘ x) ∘ₗ φ.hom.toLinearMap) := by
   ext
   simp [chainsMap_f]
 
@@ -83,14 +88,14 @@ lemma chainsMap_id :
 
 @[simp]
 lemma chainsMap_id_f_hom_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
-    ((chainsMap (MonoidHom.id G) φ).f i).hom = mapRange.linearMap φ.hom.hom := by
+    ((chainsMap (MonoidHom.id G) φ).f i).hom = mapRange.linearMap φ.hom.toLinearMap := by
   refine lhom_ext fun _ _ => ?_
   simp [chainsMap_f, MonoidHom.coe_id]
 
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K}
-    (f : G →* H) (g : H →* K) (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
-    chainsMap (g.comp f) (φ ≫ (Action.res _ f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
+    (f : G →* H) (g : H →* K) (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
+    chainsMap (g.comp f) (φ ≫ (resFunctor f).map ψ) = chainsMap f φ ≫ chainsMap g ψ := by
   ext
   simp [chainsMap_f, Function.comp_assoc]
 
@@ -100,12 +105,12 @@ lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
   chainsMap_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
 @[simp]
-lemma chainsMap_zero : chainsMap f (0 : A ⟶ (Action.res _ f).obj B) = 0 := by
+lemma chainsMap_zero : chainsMap f (0 : A ⟶ res f B) = 0 := by
   ext; simp [chainsMap_f, LinearMap.zero_apply (M₂ := B)]
 
 lemma chainsMap_f_map_mono (hf : Function.Injective f) [Mono φ] (i : ℕ) :
     Mono ((chainsMap f φ).f i) := by
-  simpa [ModuleCat.mono_iff_injective] using
+  simpa [ModuleCat.mono_iff_injective] using!
     (mapRange_injective φ.hom (map_zero _) <| (Rep.mono_iff_injective φ).1
     inferInstance).comp (mapDomain_injective hf.comp_left)
 
@@ -115,7 +120,7 @@ instance chainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : �
 
 lemma chainsMap_f_map_epi (hf : Function.Surjective f) [Epi φ] (i : ℕ) :
     Epi ((chainsMap f φ).f i) := by
-  simpa [ModuleCat.epi_iff_surjective] using
+  simpa [ModuleCat.epi_iff_surjective] using!
     (mapRange_surjective φ.hom (map_zero _) ((Rep.epi_iff_surjective φ).1 inferInstance)).comp
     (mapDomain_surjective hf.comp_left)
 
@@ -137,8 +142,8 @@ lemma cyclesMap_id : cyclesMap (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
 @[reassoc]
 lemma cyclesMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) (n : ℕ) :
-    cyclesMap (g.comp f) (φ ≫ (Action.res _ f).map ψ) n = cyclesMap f φ n ≫ cyclesMap g ψ n := by
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) (n : ℕ) :
+    cyclesMap (g.comp f) (φ ≫ (resFunctor f).map ψ) n = cyclesMap f φ n ≫ cyclesMap g ψ n := by
   simp [cyclesMap, ← HomologicalComplex.cyclesMap_comp, ← chainsMap_comp]
 
 theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
@@ -153,6 +158,12 @@ noncomputable abbrev map (n : ℕ) :
     groupHomology A n ⟶ groupHomology B n :=
   HomologicalComplex.homologyMap (chainsMap f φ) n
 
+lemma map_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg : f = g)
+    (hφψ : φ.hom.toLinearMap = ψ.hom.toLinearMap) (n : ℕ) :
+    map f φ n = map g ψ n := by
+  subst hfg; congr; ext; simp [hφψ]
+
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem π_map (n : ℕ) :
     π A n ≫ map f φ n = cyclesMap f φ n ≫ π B n := by
@@ -162,39 +173,59 @@ theorem π_map (n : ℕ) :
 lemma map_id : map (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
   simp [map, groupHomology]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) (n : ℕ) :
-    map (g.comp f) (φ ≫ (Action.res _ f).map ψ) n = map f φ n ≫ map g ψ n := by
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) (n : ℕ) :
+    map (g.comp f) (φ ≫ (resFunctor f).map ψ) n = map f φ n ≫ map g ψ n := by
   simp [map, ← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, chainsMap_id_comp, HomologicalComplex.homologyMap_comp]
 
+/-- The isomorphism between homology groups induced by a group isomorphism `e : G ≃* H` and a
+isomorphism between representations (restricted by `e`). -/
+@[simps]
+noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
+    (he : ∀ g, e' ∘ₗ A.ρ g = B.ρ (e g) ∘ₗ e') (n : ℕ) :
+    groupHomology A n ≅ groupHomology B n where
+  hom := groupHomology.map (A := A) e (ofHom ⟨e', by simp [he]⟩) n
+  inv := groupHomology.map (A := B) e.symm (ofHom ⟨e'.symm, fun h ↦ by
+    rw [LinearEquiv.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc]
+    simp [he, LinearMap.comp_assoc]⟩) n
+  hom_inv_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    exact groupHomology.map_congr e.coe_monoidHom_symm_comp_coe_monoidHom e'.symm_comp n
+  inv_hom_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    exact groupHomology.map_congr e.coe_monoidHom_comp_coe_monoidHom_symm e'.comp_symm n
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/
 noncomputable abbrev chainsMap₁ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (H →₀ B) :=
-  ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k f
+  ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ lmapDomain A k f
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂) : G × G →₀ A` to
 `∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂)) : H × H →₀ B`. -/
 noncomputable abbrev chainsMap₂ : ModuleCat.of k (G × G →₀ A) ⟶ ModuleCat.of k (H × H →₀ B) :=
-  ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f f)
+  ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ lmapDomain A k (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·(gᵢ₁, gᵢ₂, gᵢ₃) : G × G × G →₀ A` to
 `∑ φ(aᵢ)·(f(gᵢ₁), f(gᵢ₂), f(gᵢ₃)) : H × H × H →₀ B`. -/
 noncomputable abbrev chainsMap₃ :
     ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
-  ModuleCat.ofHom <| mapRange.linearMap φ.hom.hom ∘ₗ lmapDomain A k (Prod.map f (Prod.map f f))
+  ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ
+    lmapDomain A k (Prod.map f (Prod.map f f))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_0_comp_chainsIso₀ :
-    (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.hom := by
+    (chainsMap f φ).f 0 ≫ (chainsIso₀ B).hom = (chainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext
   simp [chainsMap_f, Unique.eq_default (α := Fin 0 → G), Unique.eq_default (α := Fin 0 → H),
     chainsIso₀]
@@ -223,19 +254,22 @@ section H0
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cyclesMap_comp_cyclesIso₀_hom :
-    cyclesMap f φ 0 ≫ (cyclesIso₀ B).hom = (cyclesIso₀ A).hom ≫ φ.hom := by
+    cyclesMap f φ 0 ≫ (cyclesIso₀ B).hom = (cyclesIso₀ A).hom ≫ φ.toModuleCatHom := by
   simp [cyclesIso₀]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cyclesIso₀_inv_comp_cyclesMap :
-    (cyclesIso₀ A).inv ≫ cyclesMap f φ 0 = φ.hom ≫ (cyclesIso₀ B).inv :=
+    (cyclesIso₀ A).inv ≫ cyclesMap f φ 0 = φ.toModuleCatHom ≫ (cyclesIso₀ B).inv :=
   (CommSq.vert_inv ⟨cyclesMap_comp_cyclesIso₀_hom f φ⟩).w.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H0π_comp_map :
-    H0π A ≫ map f φ 0 = φ.hom ≫ H0π B := by
+    H0π A ≫ map f φ 0 = φ.toModuleCatHom ≫ H0π B := by
   simp [H0π]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =
@@ -262,7 +296,7 @@ noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
   τ₁ := chainsMap₂ f φ
   τ₂ := chainsMap₁ f φ
-  τ₃ := φ.hom
+  τ₃ := φ.toModuleCatHom
   comm₁₂ := by
     simp only [shortComplexH1]
     ext : 3
@@ -272,6 +306,7 @@ noncomputable def mapShortComplexH1 :
     ext : 3
     simpa [← map_inv, d₁₀] using (hom_comm_apply φ _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapShortComplexH1_zero :
     mapShortComplexH1 (A := A) (B := B) f 0 = 0 := by
@@ -283,19 +318,19 @@ theorem mapShortComplexH1_zero :
 
 @[simp]
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
-  simp only [shortComplexH1]
-  ext <;> simp
+  ext <;> simp [shortComplexH1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
-    mapShortComplexH1 (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
+    mapShortComplexH1 (g.comp f) (φ ≫ (resFunctor f).map ψ) =
       (mapShortComplexH1 f φ) ≫ (mapShortComplexH1 g ψ) := by
   refine ShortComplex.hom_ext _ _ ?_ ?_ rfl
   all_goals
   { simp only [shortComplexH1]
     ext
-    simp [Prod.map] }
+    simp [Prod.map]}
 
 theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
@@ -309,16 +344,18 @@ noncomputable abbrev mapCycles₁ :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapCycles₁_hom :
     (mapCycles₁ f φ).hom = (chainsMap₁ f φ).hom.restrict (fun x _ => by
       have := congr($((mapShortComplexH1 f φ).comm₂₃) x); simp_all [cycles₁, shortComplexH1]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₁_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
-    mapCycles₁ (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
+    mapCycles₁ (g.comp f) (φ ≫ (resFunctor f).map ψ) =
       mapCycles₁ f φ ≫ mapCycles₁ g ψ := by
   rw [← cyclesMap'_comp, ← mapShortComplexH1_comp]
 
@@ -328,6 +365,7 @@ theorem mapCycles₁_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
       mapCycles₁ (MonoidHom.id G) φ ≫ mapCycles₁ (MonoidHom.id G) ψ :=
   mapCycles₁_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₁_comp_i :
     mapCycles₁ f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
@@ -338,19 +376,21 @@ lemma mapCycles₁_comp_i :
 lemma coe_mapCycles₁ (x) :
     (mapCycles₁ f φ x).1 = chainsMap₁ f φ x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₁_hom :
     cyclesMap f φ 1 ≫ (isoCycles₁ B).hom = (isoCycles₁ A).hom ≫ mapCycles₁ f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapShortComplexH1,
     chainsMap_f_1_comp_chainsIso₁ f]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapCycles₁ f φ ≫ H1π B := by
   simp [H1π, Iso.inv_comp_eq, ← cyclesMap_comp_isoCycles₁_hom_assoc]
 
 @[simp]
-lemma map₁_one (φ : A ⟶ (Action.res _ (1 : G →* H)).obj B) :
+lemma map₁_one (φ : A ⟶ res (1 : G →* H) B) :
     map (1 : G →* H) φ 1 = 0 := by
   simp only [← cancel_epi (H1π A), H1π_comp_map, Limits.comp_zero]
   ext x
@@ -384,6 +424,7 @@ section OfTrivial
 
 variable [IsTrivial (A.ρ.comp S.subtype)]
 
+set_option backward.isDefEq.respectTransparency false in
 instance mapCycles₁_quotientGroupMk'_epi :
     Epi (mapCycles₁ (QuotientGroup.mk' S) (resOfQuotientIso A S).inv) := by
   rw [ModuleCat.epi_iff_surjective]
@@ -391,7 +432,7 @@ instance mapCycles₁_quotientGroupMk'_epi :
   choose! s hs using QuotientGroup.mk_surjective (s := S)
   have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁]⟩
+    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁, res, Rep.hom_id (of _)]⟩
   simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
@@ -403,7 +444,7 @@ degree 1 corestriction-coinflation sequence when `A` is `S`-trivial.) -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinfOfTrivial :
     ShortComplex (ModuleCat k) where
-  X₁ := H1 ((Action.res _ S.subtype).obj A)
+  X₁ := H1 (res S.subtype A)
   X₂ := H1 A
   X₃ := H1 (ofQuotient A S)
   f := map S.subtype (𝟙 _) 1
@@ -412,7 +453,7 @@ noncomputable def H1CoresCoinfOfTrivial :
 
 instance map₁_quotientGroupMk'_epi :
     Epi (map (QuotientGroup.mk' S) (resOfQuotientIso A S).inv 1) := by
-  convert epi_of_epi (H1π A) _
+  convert! epi_of_epi (H1π A) _
   rw [H1π_comp_map]
   exact @epi_comp _ _ _ _ _ _ (mapCycles₁_quotientGroupMk'_epi A S) (H1π _) inferInstance
 
@@ -422,6 +463,8 @@ instance H1CoresCoinfOfTrivial_g_epi :
     Epi (H1CoresCoinfOfTrivial A S).g :=
   inferInstanceAs <| Epi (map _ _ 1)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially, the short
 complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)` is exact. -/
 theorem H1CoresCoinfOfTrivial_exact :
@@ -443,16 +486,18 @@ theorem H1CoresCoinfOfTrivial_exact :
 /- Let `z := ∑ y(σ, τ)·(s(σ), s(τ))`. -/
   let z : G × G →₀ A := lmapDomain _ k (Prod.map s s) y
 /- We have that `C₂(π)(z) = y`. -/
-  have hz : lmapDomain _ k (QuotientGroup.mk' S) (d₂₁ A z) = d₂₁ (A.ofQuotient S) y := by
+  have hz : lmapDomain _ k (QuotientGroup.mk' S) ((d₂₁ A).hom z) =
+      (d₂₁ (A.ofQuotient S)).hom y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (resOfQuotientIso A S).inv).comm₁₂.symm) z)
-    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map]
-  let v := x - d₂₁ _ z
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map, Rep.hom_id (res _ _)]
+  let v := x - (d₂₁ _).hom z
 /- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
 previous assumptions. -/
   have hv : mapDomain (s ∘ QuotientGroup.mk) v = 0 := by
     rw [mapDomain_comp]
-    simp_all [v, mapDomain, sum_sub_index, coe_mapCycles₁ _ _ ⟨x, hxc⟩]
+    simp only [QuotientGroup.coe_mk', lmapDomain_apply, mapDomain_sub, v] at hz ⊢
+    simp [hz, hy, coe_mapCycles₁ (QuotientGroup.mk' S), Rep.hom_id (of _)]
   let e : G → G × G := fun (g : G) => (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
   have he : e.Injective := fun x y hxy => by
     obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
@@ -493,19 +538,21 @@ previous assumptions. -/
 
 end OfTrivial
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)`. The first map is the
 "corestriction" map induced by the inclusion `ι : S →* G` and the identity on `Res(ι)(A)`, and the
 second map is the "coinflation" map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinf :
     ShortComplex (ModuleCat k) where
-  X₁ := H1 ((Action.res _ S.subtype).obj A)
+  X₁ := H1 (res S.subtype A)
   X₂ := H1 A
   X₃ := H1 (quotientToCoinvariants A S)
   f := map S.subtype (𝟙 _) 1
-  g := map (QuotientGroup.mk' S) (toCoinvariantsMkQ A S) 1
+  g := map (QuotientGroup.mk' S) (Rep.toCoinvariantsMkQ A S) 1
   zero := by rw [← map_comp, congr (QuotientGroup.mk'_comp_subtype S) (map (n := 1)), map₁_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, let `I(S)A` denote the submodule
 of `A` spanned by elements of the form `ρ(s)(a) - a` for `s : S, a : A`. Then the image of
 `C₁(G, I(S)A)` in `C₁(G, A)⧸B₁(G, A)` is contained in the image of `C₁(S, A)`. -/
@@ -516,7 +563,7 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
   rw [eq_top_iff]
   intro x _
   rcases mapRange_surjective _ (map_zero _) (chains₁ToCoinvariantsKer_surjective
-    ((Action.res _ S.subtype).obj A)) x with ⟨(X : G →₀ S →₀ A), hX⟩
+    (res S.subtype A)) x with ⟨(X : G →₀ S →₀ A), hX⟩
   let Y : S →₀ A := X.sum fun g f =>
     mapRange.linearMap (A.ρ g⁻¹) (lmapDomain _ k (fun s => MulAut.conjNormal g⁻¹ s) f) - f
   let Z : G × G →₀ A := X.sum fun g f =>
@@ -530,6 +577,8 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the map
 `H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S` is an
 epimorphism. -/
@@ -552,20 +601,22 @@ instance : Epi (H1CoresCoinf A S).g := by
   /- Thus we can pick a representation of `d(Y)` as a sum `∑ ρ(sᵢ⁻¹)(aᵢ) - aᵢ`, `sᵢ ∈ S, aᵢ ∈ A`,
 and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
   rcases chains₁ToCoinvariantsKer_surjective
-    ((Action.res _ S.subtype).obj A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
+    (res S.subtype A) ⟨d₁₀ A Y, this⟩ with ⟨(Z : S →₀ A), hZ⟩
   have H : d₁₀ A (Y - mapDomain S.subtype Z) = 0 := by
-    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, - LinearMap.sub_apply, d₁₀,
-      sum_mapDomain_index_inj] using Subtype.ext_iff.1 hZ.symm
+    simpa [map_sub, sub_eq_zero, chains₁ToCoinvariantsKer, -LinearMap.sub_apply, d₁₀,
+      sum_mapDomain_index_inj] using! Subtype.ext_iff.1 hZ.symm
   use H1π A ⟨Y - mapDomain S.subtype Z, H⟩
   simp only [H1CoresCoinf_X₃, H1CoresCoinf_X₂, H1CoresCoinf_g,
     Subgroup.coe_subtype, H1π_comp_map_apply]
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
   refine (H1π_eq_iff _ _).2 ?_
-  simpa [← hy, mapCycles₁_hom, map_sub, mapRange_sub, hY, ← mapDomain_comp, ← mapDomain_mapRange,
-    Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2 (Subtype.prop _)]
-    using Submodule.finsuppSum_mem _ _ _ _ fun _ _ => single_one_mem_boundaries₁ _
+  simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (res _ _), ← mapDomain_comp,
+    ← mapDomain_mapRange, hY, Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2
+    (Subtype.prop _)] using! Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the degree 1
 corestriction-coinflation sequence `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` is exact. `simp`s
 squeezed for performance. -/
@@ -585,10 +636,10 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
 `Z₁(π, Id)(π)` in `H₁(G, A_S)`. -/
   rcases @(ShortComplex.moduleCat_exact_iff_ker_sub_range _).1
     (H1CoresCoinfOfTrivial_exact (toCoinvariants A S) S)
-    (H1π _ <| mapCycles₁ (MonoidHom.id G) (toCoinvariantsMkQ A S) x) (by
+    (H1π _ <| mapCycles₁ (MonoidHom.id G) (Rep.toCoinvariantsMkQ A S) x) (by
     simpa only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₃, H1CoresCoinfOfTrivial_g,
       Iso.refl_inv, LinearMap.mem_ker, H1π_comp_map_apply (QuotientGroup.mk' S),
-      ← mapCycles₁_comp_apply (x := x)] using hx) with ⟨z, hz⟩
+      ← mapCycles₁_comp_apply (x := x)] using! hx) with ⟨z, hz⟩
   induction z using H1_induction_on with | @h z =>
   simp only [H1CoresCoinfOfTrivial_X₂, H1CoresCoinfOfTrivial_X₁, H1CoresCoinfOfTrivial_f] at hz
   rw [H1π_comp_map_apply] at hz
@@ -609,17 +660,13 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
       have := Finsupp.ext_iff.1 (congr($((mapShortComplexH1 (B := toCoinvariants A S)
         (MonoidHom.id G) (toCoinvariantsMkQ A S)).comm₁₂.symm) W)) g
       simp only [shortComplexH1, mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, MonoidHom.coe_id,
-        lmapDomain_id, ModuleCat.ofHom_id, Action.res_obj_V, toCoinvariantsMkQ_hom,
-        Category.id_comp, mapShortComplexH1_τ₁, Prod.map_id, ModuleCat.hom_comp,
-        ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
-        mapRange_apply, hW, hzw, mapCycles₁_hom, Subgroup.coe_subtype, Action.id_hom,
-        ModuleCat.hom_id, mapRange.linearMap_id, Category.comp_id, LinearMap.restrict_coe_apply,
-        lmapDomain_apply, coe_sub, Pi.sub_apply, eq_sub_iff_add_eq'] at this
+        lmapDomain_id, ModuleCat.ofHom_id, res_obj_ρ, hom_ofHom, Category.id_comp,
+        mapShortComplexH1_τ₁, Prod.map_id, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+        LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply, mapRange_apply] at this
       simp only [← mapRange_apply (f := Coinvariants.mk <| A.ρ.comp S.subtype)
         (hf := map_zero _) (a := g), ← mapRange.linearMap_apply (R := k)]
-      simp only [mapRange.linearMap_apply, mapRange_apply, coe_add, Pi.add_apply, map_add, this,
-        Subgroup.coe_subtype, lmapDomain_apply, implies_true, ← mapDomain_mapRange, hZ,
-        Action.res_obj_V]
+      simp [← mapDomain_mapRange, hZ, this, hW, hzw, coe_mapCycles₁ S.subtype,
+        coe_mapCycles₁ (MonoidHom.id G)]
 /- Let `β` be `b` considered as an element of `C₁(G, I(S)(A))`, so that `C₁(Id, i)(β) = b`. -/
   let β : G →₀ Coinvariants.ker (A.ρ.comp S.subtype) :=
     mapRange (Function.invFun <| (Coinvariants.ker (A.ρ.comp S.subtype)).subtype)
@@ -635,23 +682,15 @@ equals `Z₁(π, π)(x) : Z₁(G ⧸ S, A_S)`. -/
   rcases (moduleCat_pOpcycles_eq_iff _ _ _).1 hα with ⟨(δ : G × G →₀ A), hβ⟩
 /- Then, by assumption, `d(W + δ) = C₁(i, Id)(α + Z) - x`. -/
   have hαZ : d₂₁ A (W + δ) = mapDomain Subtype.val (α + Z) - x := by
-    simp_all only [shortComplexH1, Finsupp.coe_sub, ModuleCat.hom_ofHom, Action.res_obj_V,
-      Subgroup.coe_subtype, lmapDomain_apply, Finsupp.coe_add, Pi.sub_apply, Pi.add_apply,
-      mapShortComplexH1_τ₂, ModuleCat.ofHom_comp, Action.id_hom, ModuleCat.hom_id,
-      mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id, LinearMap.coe_comp,
-      Function.comp_apply, coinvariantsShortComplex_X₁, Submodule.coe_subtype,
-      coinvariantsShortComplex_f, MonoidHom.coe_id, lmapDomain_id, subtype_hom, Category.id_comp,
-      mapRange.linearMap_apply, map_sub, map_add, ← sub_add, ← sub_sub, sub_add_eq_add_sub,
-      add_sub_cancel, mapDomain_add, b]
+    simp_all [shortComplexH1, coinvariantsShortComplex_X₁,
+      ← sub_add, ← sub_sub, sub_add_eq_add_sub, mapDomain_add, b]
 /- So we claim that `α + Z` is an element of `Z₁(S, A)` which differs from `x` by a boundary in
 `Z₁(G, A)`. -/
   use H1π _ ⟨α + Z, ?_⟩
 /- Indeed, by `hαZ`, `d(W + δ)` is the desired boundary: -/
   · simp only [H1CoresCoinf_X₂, H1CoresCoinf_X₁, H1CoresCoinf_f, H1π_comp_map_apply]
     refine (H1π_eq_iff _ _).2 ⟨W + δ, ?_⟩
-    simp only [hαZ, Action.res_obj_V, mapCycles₁_hom, ModuleCat.ofHom_comp, Subgroup.coe_subtype,
-      Action.id_hom, ModuleCat.hom_id, mapRange.linearMap_id, ModuleCat.ofHom_id, Category.comp_id,
-      ModuleCat.hom_ofHom, LinearMap.restrict_coe_apply, lmapDomain_apply]
+    simp [hαZ, mapCycles₁_hom]
 /- And `α + Z` is a cycle, since `d(W + δ) + x` is. -/
   · rw [mem_cycles₁_iff]
     have : x + d₂₁ A (W + δ) ∈ cycles₁ A := Submodule.add_mem _ x.2 (d₂₁_apply_mem_cycles₁ _)
@@ -685,6 +724,7 @@ noncomputable def mapShortComplexH2 :
     simpa [d₂₁, map_add, map_sub, ← map_inv]
       using congr(Finsupp.single _ $((hom_comm_apply φ _ _).symm))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapShortComplexH2_zero :
     mapShortComplexH2 (A := A) (B := B) f 0 = 0 := by
@@ -702,10 +742,11 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     ext
     simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
-    mapShortComplexH2 (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
+    mapShortComplexH2 (g.comp f) (φ ≫ (resFunctor f).map ψ) =
       (mapShortComplexH2 f φ) ≫ (mapShortComplexH2 g ψ) := by
   refine ShortComplex.hom_ext _ _ ?_ ?_ ?_
   all_goals
@@ -725,16 +766,18 @@ noncomputable abbrev mapCycles₂ :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapCycles₂_hom :
     (mapCycles₂ f φ).hom = (chainsMap₂ f φ).hom.restrict (fun x _ => by
       have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [cycles₂, shortComplexH2]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₂_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
-    (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
-    mapCycles₂ (g.comp f) (φ ≫ (Action.res _ f).map ψ) =
+    (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
+    mapCycles₂ (g.comp f) (φ ≫ (resFunctor f).map ψ) =
       mapCycles₂ f φ ≫ mapCycles₂ g ψ := by
   rw [← cyclesMap'_comp, ← mapShortComplexH2_comp]
 
@@ -744,6 +787,7 @@ theorem mapCycles₂_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
       mapCycles₂ (MonoidHom.id G) φ ≫ mapCycles₂ (MonoidHom.id G) ψ :=
   mapCycles₂_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₂_comp_i :
     mapCycles₂ f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
@@ -754,12 +798,14 @@ lemma mapCycles₂_comp_i :
 lemma coe_mapCycles₂ (x) :
     (mapCycles₂ f φ x).1 = chainsMap₂ f φ x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₂_hom :
     cyclesMap f φ 2 ≫ (isoCycles₂ B).hom = (isoCycles₂ A).hom ≫ mapCycles₂ f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapShortComplexH2,
     chainsMap_f_2_comp_chainsIso₂ f]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapCycles₂ f φ ≫ H2π B := by
@@ -779,7 +825,9 @@ noncomputable def chainsFunctor :
   map_comp φ ψ := chainsMap_comp (MonoidHom.id G) (MonoidHom.id G) φ ψ
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := chainsMap_zero (MonoidHom.id G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
 @[simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
@@ -790,29 +838,34 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
     simp only [← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` this sends `A : Rep k H` to the `n`th
 "corestriction" map `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity
 map on `Res(f)(A)`. -/
 @[simps]
 noncomputable def coresNatTrans (n : ℕ) :
-    Action.res (ModuleCat k) f ⋙ functor k G n ⟶ functor k H n where
+    resFunctor f ⋙ functor k G n ⟶ functor k H n where
   app X := map f (𝟙 _) n
-  naturality {X Y} φ := by simp [← cancel_epi (groupHomology.π _ n),
-    ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp, congr (MonoidHom.id_comp _)
-    chainsMap, congr (MonoidHom.comp_id _) chainsMap, Category.id_comp
-    (X := (Action.res _ _).obj _)]
+  naturality {X Y} φ := by
+    simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
+      functor_map, HomologicalComplex.homologyπ_naturality_assoc,
+      HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
+      ← chainsMap_comp, Category.id_comp]
+    rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this sends `A : Rep k G` to the `n`th "coinflation" map
 `Hₙ(G, A) ⟶ Hₙ(G ⧸ S, A_S)` induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
 @[simps]
 noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
     functor k G n ⟶ quotientToCoinvariantsFunctor k S ⋙ functor k (G ⧸ S) n where
-  app A := map (QuotientGroup.mk' S) (mkQ _ _ <| Coinvariants.le_comap_ker A.ρ S) n
+  app A := map (QuotientGroup.mk' S) (Rep.toCoinvariantsMkQ _ _) n
   naturality {X Y} φ := by
     simp only [Functor.comp_map, functor_map, ← cancel_epi (groupHomology.π _ n),
       HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,

@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.Unramified
+public import Mathlib.RingTheory.Smooth.Fiber
+public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 # Étale ring homomorphisms
@@ -47,9 +48,16 @@ lemma Etale.eq_formallyUnramified_and_smooth :
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
 
+lemma Etale.formallyUnramified (hf : f.Etale) : f.FormallyUnramified := by
+  rw [etale_iff_formallyUnramified_and_smooth] at hf
+  exact hf.1
+
 lemma Etale.of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Etale := by
   rw [etale_iff_formallyUnramified_and_smooth]
   exact ⟨.of_surjective hf.2, .of_bijective hf⟩
+
+lemma Etale.containsIdentities : ContainsIdentities Etale :=
+  fun _ _ ↦ .of_bijective Function.bijective_id
 
 lemma Etale.isStableUnderBaseChange : IsStableUnderBaseChange Etale := by
   rw [eq_formallyUnramified_and_smooth]
@@ -71,5 +79,13 @@ lemma Etale.ofLocalizationSpan : OfLocalizationSpan Etale :=
 lemma Etale.stableUnderComposition : StableUnderComposition Etale := by
   rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.stableUnderComposition.and Smooth.stableUnderComposition
+
+lemma Etale.iff_flat_and_formallyUnramified {f : R →+* S} :
+    f.Etale ↔ f.Flat ∧ f.FormallyUnramified ∧ f.FinitePresentation := by
+  algebraize [f]
+  simp_rw [← f.algebraMap_toAlgebra, RingHom.etale_algebraMap, RingHom.flat_algebraMap_iff,
+    RingHom.formallyUnramified_algebraMap, RingHom.finitePresentation_algebraMap]
+  refine ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
+    fun ⟨_, _, _⟩ ↦ .of_formallyUnramified_of_flat⟩
 
 end RingHom

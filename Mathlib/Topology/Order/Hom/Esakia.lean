@@ -55,7 +55,7 @@ section
 You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam Type*)
     [Preorder α] [Preorder β] [FunLike F α β] : Prop
-    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+    extends OrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
@@ -112,7 +112,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
 instance instFunLike : FunLike (PseudoEpimorphism α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
@@ -133,7 +133,7 @@ theorem ext {f g : PseudoEpimorphism α β} (h : ∀ a, f a = g a) : f = g :=
 /-- Copy of a `PseudoEpimorphism` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : PseudoEpimorphism α β :=
-  ⟨f.toOrderHom.copy f' h, by simpa only [h.symm, toFun_eq_coe] using f.exists_map_eq_of_map_le'⟩
+  ⟨f.toOrderHom.copy f' h, by simpa only [h.symm, toFun_eq_coe] using! f.exists_map_eq_of_map_le'⟩
 
 @[simp]
 theorem coe_copy (f : PseudoEpimorphism α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl
@@ -217,7 +217,7 @@ def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
 
 instance instFunLike : FunLike (EsakiaHom α β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -241,7 +241,7 @@ theorem ext {f g : EsakiaHom α β} (h : ∀ a, f a = g a) : f = g :=
 equalities. -/
 protected def copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : EsakiaHom α β :=
   ⟨f.toContinuousOrderHom.copy f' h, by
-    simpa only [h.symm, toFun_eq_coe] using f.exists_map_eq_of_map_le'⟩
+    simpa only [h.symm, toFun_eq_coe] using! f.exists_map_eq_of_map_le'⟩
 
 @[simp]
 theorem coe_copy (f : EsakiaHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' := rfl

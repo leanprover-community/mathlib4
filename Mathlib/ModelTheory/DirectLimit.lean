@@ -64,8 +64,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   induction k with
   | zero => simp [natLERec, Nat.leRecOn_self]
   | succ k ih =>
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
+    rw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
@@ -100,6 +99,7 @@ def unify {α : Type*} (x : α → Σˣ f) (i : ι) (h : i ∈ upperBounds (rang
 
 variable [DirectedSystem G fun i j h => f i j h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
     (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
@@ -122,6 +122,7 @@ variable (G)
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
+@[instance_reducible]
 def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
@@ -135,6 +136,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
 -/
+@[instance_reducible]
 noncomputable def sigmaStructure [IsDirectedOrder ι] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
@@ -225,7 +227,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
 noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient (DirectLimit.setoid G f))
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
@@ -244,6 +246,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
   rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i (fun _ ⟨_, hj⟩ => le_of_eq hj.symm)]
   rw [unify_sigma_mk_self]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
     ∃ (i : ι) (y : α → G i), x = fun a => ⟦.mk f i (y a)⟧ := by
   obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a => (x a).out.1
@@ -260,6 +263,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
 
 variable (L ι)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from a component to the direct limit. -/
 noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
   toFun := fun a => ⟦.mk f i a⟧
@@ -283,6 +287,7 @@ variable {L ι G f}
 theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦.mk f i x⟧ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is not a simp-lemma because it is not in simp-normal form,
 -- but the simp-normal version of this theorem would not be useful.
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
@@ -290,6 +295,7 @@ theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) 
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩
   simp only [DirectedSystem.map_self]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
@@ -305,6 +311,7 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every finitely generated substructure of the direct limit corresponds to some
 substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
@@ -316,10 +323,11 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   rw [Substructure.map_closure]
   simp only [Embedding.coe_toHom, of_apply]
   rw [← image_univ, image_image, image_univ, ← eq_y,
-    Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem, A_closure]
 
 variable {P : Type u₁} [L.Structure P]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (L ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
@@ -328,7 +336,6 @@ noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j
     DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
-      simp only
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
       exact congr_arg _ ((equiv_iff ..).1 xy)
@@ -400,6 +407,7 @@ theorem equiv_lift_of {i : ι} (x : G i) :
 
 variable {L ι G f}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The direct limit of countably many countably generated structures is countably generated. -/
 theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
@@ -446,6 +454,7 @@ theorem liftInclusion_of {i : ι} (x : S i) :
     (liftInclusion S) (of L ι _ (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) i x)
     = Substructure.subtype (S i) x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma rangeLiftInclusion : (liftInclusion S).toHom.range = ⨆ i, S i := by
   simp_rw [liftInclusion, range_lift, Substructure.range_subtype]
 

@@ -20,7 +20,7 @@ multiplication. This allows downstream files to write general results about `IsB
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}
@@ -43,7 +43,7 @@ lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
-  simpa only [dist_eq_norm, sub_zero] using dist_smul_pair s x y
+  simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
 
 theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s‖₊ * nndist x y :=
   dist_smul_le s x y
@@ -66,9 +66,9 @@ instance NonUnitalSeminormedRing.isBoundedSMul [NonUnitalSeminormedRing α] :
 instance NonUnitalSeminormedRing.isBoundedSMulOpposite [NonUnitalSeminormedRing α] :
     IsBoundedSMul αᵐᵒᵖ α where
   dist_smul_pair' x y₁ y₂ := by
-    simpa [sub_mul, dist_eq_norm, mul_comm] using norm_mul_le (y₁ - y₂) x.unop
+    simpa [sub_mul, dist_eq_norm, mul_comm] using! norm_mul_le (y₁ - y₂) x.unop
   dist_pair_smul' x₁ x₂ y := by
-    simpa [mul_sub, dist_eq_norm, mul_comm] using norm_mul_le y (x₁ - x₂).unop
+    simpa [mul_sub, dist_eq_norm, mul_comm] using! norm_mul_le y (x₁ - x₂).unop
 
 section SeminormedRing
 
@@ -81,7 +81,7 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
 
 theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
     IsBoundedSMul α β :=
-  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h)
+  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
 
 theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
@@ -131,8 +131,8 @@ instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
-    [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
-    [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
+    [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
+    NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 
@@ -183,3 +183,37 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
       _ = ‖r • x‖ := by rw [norm_inv, ← mul_assoc, mul_inv_cancel₀ (mt norm_eq_zero.1 h), one_mul]
 
 end NormedDivisionRing
+
+section NormedDivisionRingModule
+variable [NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
+
+theorem Metric.smul_image_ball {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
+    (s • ·) '' ball x ε = ball (s • x) (‖s‖ * ε) := by
+  ext p
+  simp_rw [Set.mem_image, mem_ball]
+  constructor
+  · rintro ⟨y, h1, rfl⟩
+    simpa [dist_smul₀] using mul_lt_mul_of_pos_left h1 (norm_pos_iff.mpr hs)
+  · refine fun h ↦ ⟨s⁻¹ • p, ?_, by simp [smul_smul, hs]⟩
+    refine lt_of_mul_lt_mul_of_nonneg_left ?_ (norm_nonneg s)
+    rw [← dist_smul₀]
+    simpa [smul_smul, hs] using h
+
+theorem Metric.smul_image_closedBall {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
+    (s • ·) '' closedBall x ε = closedBall (s • x) (‖s‖ * ε) := by
+  ext p
+  simp_rw [Set.mem_image, mem_closedBall]
+  constructor
+  · rintro ⟨y, h1, rfl⟩
+    simpa [dist_smul₀] using mul_le_mul_of_nonneg_left h1 (norm_nonneg s)
+  · refine fun h ↦ ⟨s⁻¹ • p, ?_, by simp [smul_smul, hs]⟩
+    refine le_of_mul_le_mul_of_pos_left ?_ (norm_pos_iff.mpr hs)
+    rw [← dist_smul₀]
+    simpa [smul_smul, hs] using h
+
+theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
+    (s • ·) '' sphere x ε = sphere (s • x) (‖s‖ * ε) := by
+  simp_rw [← Metric.closedBall_sdiff_ball, Set.image_sdiff (smul_right_injective β hs),
+    smul_image_ball hs, smul_image_closedBall hs]
+
+end NormedDivisionRingModule

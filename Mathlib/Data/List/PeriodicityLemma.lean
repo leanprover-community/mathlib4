@@ -6,7 +6,7 @@ Authors: Štěpán Holub
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-! # Periods of words (Lists)
@@ -193,7 +193,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   rcases Nat.eq_zero_or_pos p with rfl | p_pos
   · simp_all [HasPeriod]
   rcases Nat.eq_zero_or_pos q with rfl | q_pos
-  · simp_all [HasPeriod]
+  · simp_all
   cases hyp : compare p q with
   | lt => -- if `p` is less than `q`, switch the two periods
       have p_lt_q := Nat.compare_eq_lt.mp hyp

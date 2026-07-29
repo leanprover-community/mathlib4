@@ -3,6 +3,7 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
+module
 import Mathlib.CategoryTheory.MarkovCategory.Basic
 import Mathlib.CategoryTheory.CopyDiscardCategory.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Types.Basic

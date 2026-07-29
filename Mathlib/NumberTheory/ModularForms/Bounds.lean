@@ -23,6 +23,7 @@ bounds for its q-expansion coefficients. The main results are
 * `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
+
 public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
@@ -119,7 +120,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont γ : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp only [sl_moeb, Quotient.lift_mk, f']
+    simp only [sl_moeb, f']
     fun_prop
   have hf'_inv τ (g : SL(2, ℤ)) γ : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
@@ -152,8 +153,8 @@ lemma exists_bound_of_invariant
     {f : ℍ → E} (hf_cont : Continuous f) (hf_infinity : IsBoundedAtImInfty f)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  simpa using exists_bound_of_invariant_of_isBigO hf_cont le_rfl
-    (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
+  simpa using! exists_bound_of_invariant_of_isBigO hf_cont le_rfl
+    (by simpa only [Real.rpow_zero] using! hf_infinity) hf_inv
 
 /-- A function on `ℍ` which is invariant under an arithmetic subgroup and bounded at all cusps,
 is uniformly bounded. -/
@@ -161,8 +162,8 @@ lemma exists_bound_of_subgroup_invariant {f : ℍ → E} (hf_cont : Continuous f
     (hf_infinity : ∀ (g : SL(2, ℤ)), IsBoundedAtImInfty fun τ ↦ f (g • τ))
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C := by
-  simpa using exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO hf_cont le_rfl
-    (by simpa only [Real.rpow_zero] using hf_infinity) hf_inv
+  simpa using! exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO hf_cont le_rfl
+    (by simpa only [Real.rpow_zero] using! hf_infinity) hf_inv
 
 end ModularGroup
 
@@ -195,7 +196,7 @@ lemma CuspFormClass.petersson_bounded_left
   simp_rw [← UpperHalfPlane.petersson_slash_SL]
   have : ((toConjAct (g : GL (Fin 2) ℝ)⁻¹) • Γ).IsArithmetic := by
     simpa [(show Rat.castHom ℝ = algebraMap ℚ ℝ by rfl), map_inv, map_mapGL]
-      using Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
+      using! Subgroup.IsArithmetic.conj Γ (mapGL ℚ g)⁻¹
   exact (zero_at_infty <| CuspForm.translate f g).petersson_isZeroAtImInfty_left k _
     (ModularForm.translate f' g)
 
@@ -264,7 +265,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
   filter_upwards [eventually_gt_atTop 0,
     (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop).eventually hC] with n hn hn'
-  rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
+  rw [ModularFormClass.qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
   simp only [ofReal_div, ofReal_one, ofReal_natCast]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
@@ -311,7 +312,7 @@ This is not optimal -- the optimal exponent is `(k - 1) / 2 + ε` for any `0 < �
 congruence levels -- but is much easier to prove than the optimal result. -/
 lemma CuspFormClass.qExpansion_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
-    (fun n ↦ (ModularFormClass.qExpansion Γ.strictWidthInfty f).coeff n)
+    (fun n ↦ (UpperHalfPlane.qExpansion Γ.strictWidthInfty f).coeff n)
       =O[atTop] fun n ↦ (n : ℝ) ^ ((k : ℝ) / 2) := by
   apply qExpansion_coeff_isBigO_of_norm_isBigO
   obtain ⟨C, hC⟩ := exists_bound f

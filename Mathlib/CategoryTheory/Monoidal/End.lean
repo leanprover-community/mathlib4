@@ -19,6 +19,8 @@ Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C
 I suspect this is harder than is usually made out.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -30,6 +32,7 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 variable (C : Type u) [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
@@ -38,6 +41,7 @@ Note: due to the fact that composition of functors in mathlib is reversed compar
 one usually found in the literature, this monoidal structure is in fact the monoidal
 opposite of the one usually considered in the literature.
 -/
+@[instance_reducible]
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
   whiskerLeft X _ _ F := Functor.whiskerLeft X F
@@ -98,6 +102,8 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 instance : (tensoringRight C).Monoidal :=
@@ -106,15 +112,19 @@ instance : (tensoringRight C).Monoidal :=
       μIso := fun X Y => (Functor.isoWhiskerRight (curriedAssociatorNatIso C)
       ((evaluation C (C ⥤ C)).obj X ⋙ (evaluation C C).obj Y)) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_ε :
     ε (tensoringRight C) = (rightUnitorNatIso C).inv := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_η :
     η (tensoringRight C) = (rightUnitorNatIso C).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_μ (X Y : C) (Z : C) :
     (μ (tensoringRight C) X Y).app Z = (α_ Z X Y).hom := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma tensoringRight_δ (X Y : C) (Z : C) :
     (δ (tensoringRight C) X Y).app Z = (α_ Z X Y).inv := rfl
 
@@ -236,6 +246,7 @@ theorem η_app_obj (n : M) (X : C) [F.Monoidal] :
   dsimp
   simp only [Category.comp_id, μ_δ_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc]
 theorem associativity_app (m₁ m₂ m₃ : M) (X : C) [F.LaxMonoidal] :
     (F.obj m₃).map ((μ F m₁ m₂).app X) ≫

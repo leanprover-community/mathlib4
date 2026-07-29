@@ -9,6 +9,7 @@ public import Mathlib.Data.List.TakeDrop
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Basic
+public import Mathlib.Data.List.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -30,7 +31,7 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
@@ -115,7 +116,7 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
-  convert List.take_append_drop (x.length + 1) y using 2
+  convert! List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :
@@ -167,6 +168,18 @@ theorem infix_singleton_iff (xs : List α) (x : α) :
 lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :
     l₁ = l₂ :=
   h₁.sublist.antisymm h₂.sublist
+
+protected theorem IsPrefix.nodup {l₁ l₂ : List α} (h : l₁ <+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsInfix.nodup {l₁ l₂ : List α} (h : l₁ <:+: l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
+
+protected theorem IsSuffix.nodup {l₁ l₂ : List α} (h : l₁ <:+ l₂) (hn : l₂.Nodup) :
+    l₁.Nodup :=
+  hn.sublist h.sublist
 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl
@@ -310,7 +323,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take] <;> omega)
+  apply ext_getElem <;> (simp [take_take] <;> grind)
 
 end InitsTails
 

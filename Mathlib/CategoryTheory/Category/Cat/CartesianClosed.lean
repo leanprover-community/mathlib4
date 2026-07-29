@@ -30,7 +30,7 @@ universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor Cat
+open CategoryTheory.Functor Cat
 
 namespace Cat
 
@@ -50,6 +50,7 @@ section
 variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism of categories of bifunctors given by currying. -/
 @[simps!]
 def curryingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (C × D ⥤ E) :=

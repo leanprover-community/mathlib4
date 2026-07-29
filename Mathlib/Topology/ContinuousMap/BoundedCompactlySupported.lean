@@ -21,7 +21,7 @@ open Set BoundedContinuousFunction
 section CompactlySupported
 
 /-- The two-sided ideal of compactly supported functions. -/
-def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
+noncomputable def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
   .mk' {z | HasCompactSupport z} .zero .add .neg .mul_left .mul_right
 

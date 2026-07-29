@@ -35,7 +35,7 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
@@ -64,7 +64,7 @@ theorem toDerivation_injective :
 
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
@@ -101,6 +101,7 @@ protected theorem map_neg : X (-f) = -X f := by simp
 
 protected theorem map_sub : X (f - f') = X f - X f' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem map_smul : X (r • f) = r • X f := by simp
 
 @[simp]
@@ -201,6 +202,7 @@ theorem evalAt_coe : Derivation.evalAt g ↑X = evalAt g X :=
 theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = evalAt g X :=
   X.left_invariant'' g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
   rw [← left_invariant, hfdifferential_apply, hfdifferential_apply, L_mul, fdifferential_comp,
@@ -213,6 +215,7 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, hfdifferential_apply,
     fdifferential_apply, evalAt_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
@@ -251,6 +254,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
     simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1

@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public meta import Lean.Elab.ConfigEval
 public meta import Mathlib.Control.Basic
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 public import Mathlib.Tactic.Linarith.Preprocessing
@@ -152,7 +153,8 @@ section
 
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
-  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero.
+  In a tactic configuration, set using `(discharger := by ...)` notation. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
   discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
@@ -265,7 +267,7 @@ def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId)
     (ls : List (Expr × List (Expr × Nat))) : MetaM (Expr × List Nat) :=
   try
     ls.firstM (fun ⟨α, L⟩ =>
-      withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") do
+      withTraceNode `linarith (fun _ => return m!" running on type {α}") do
         let (pf, idxs) ←
           proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (L.map Prod.fst)
         let idxs := idxs.map fun i => L[i]!.2
@@ -300,7 +302,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
           let (i, vs) ← hyp_set.find t
           hyp_set := hyp_set.eraseIdxIfInBounds i
           pure <|
-            withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") do
+            withTraceNode `linarith (fun _ => return m!" running on preferred type {t}") do
               let (pf, idxs) ←
                 proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (vs.map Prod.fst)
               let idxs := idxs.map fun j => vs[j]!.2
@@ -352,9 +354,9 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
     if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
-      let h₁ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≥") <|
+      let h₁ ← withTraceNode `linarith (fun _ => return m!" proving ≥") <|
         linarithUsedHyps only_on hyps cfg g₁
-      let h₂ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≤") <|
+      let h₂ ← withTraceNode `linarith (fun _ => return m!" proving ≤") <|
         linarithUsedHyps only_on hyps cfg g₂
       return h₁ ++ h₂
 
@@ -504,10 +506,25 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[tactic_alt nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
+section
+open scoped Lean.Elab.ConfigEval
+-- Enable using Meta.evalExpr' for `(config := ...)`
+private local derive_eval_expr_instance_using_meta_eval Linarith.LinarithConfig
+-- Enable using Meta.evalExpr' for `(oracle := ...)` option
+private local derive_eval_expr_instance_using_meta_eval Linarith.CertificateOracle
+-- Enable using Meta.evalExpr' for `(preprocessors := ...)` option
+private local derive_eval_expr_instance_using_meta_eval Linarith.GlobalBranchingPreprocessor
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
-declare_config_elab elabLinarithConfig Linarith.LinarithConfig
+declare_config_elab elabLinarithConfig Linarith.LinarithConfig where
+  option discharger := fun cfg item => do
+    let discharger ← withRef item.value do
+      match item.value with
+      | `(by $tacs:tacticSeq) => pure (evalTactic (← `(tactic| ($tacs:tacticSeq))))
+      | _ => throwError "expecting `by ...` tactic for discharger"
+    return { cfg with discharger }
+end
 
 elab_rules : tactic
   | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do

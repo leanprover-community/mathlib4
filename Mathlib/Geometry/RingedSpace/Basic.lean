@@ -38,8 +38,9 @@ open TopCat.Presheaf
 
 namespace AlgebraicGeometry
 
+-- The universes appear together in the type, but separately in the value.
+set_option linter.checkUnivs false in
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
 abbrev RingedSpace : Type max (u + 1) (v + 1) :=
   SheafedSpace.{v + 1, v, u} CommRingCat.{v}
 
@@ -68,6 +69,7 @@ lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U
   use V, i, hv
   simpa using hv4
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If the germ of a section `f` is a unit in the stalk at `x`, then `f` must be a unit on some small
 neighborhood around `x`.
@@ -76,7 +78,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
     (h : IsUnit (X.presheaf.germ U x hx f)) :
     ∃ (V : Opens X) (i : V ⟶ U) (_ : x ∈ V), IsUnit (X.presheaf.map i.op f) := by
   obtain ⟨g', heq⟩ := h.exists_right_inv
-  obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x g'
+  obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.exists_germ_eq g'
   let W := U ⊓ V
   have hxW : x ∈ W := ⟨hx, hxV⟩
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
@@ -88,6 +90,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using .of_mul_eq_one _ heq'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by
@@ -99,7 +102,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     tauto
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
-  have ic : IsCompatible (sheaf X).val V g := by
+  have ic : IsCompatible (sheaf X).obj V g := by
     intro x y
     apply section_ext X.sheaf (V x ⊓ V y)
     rintro z ⟨hzVx, hzVy⟩
@@ -114,11 +117,11 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
     -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
-    ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
+    ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).obj.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
   -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
-  change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
+  change ((sheaf X).obj.map (iVU i).op).hom (f * gl) = ((sheaf X).obj.map (iVU i).op) 1
   rw [map_one, map_mul, gl_spec]
   exact hg i
 
@@ -135,7 +138,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     refine ⟨?_, V.2, hxV⟩
     intro y hy
     use i.le hy
-    convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
+    convert! RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :
@@ -161,7 +164,7 @@ theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
     IsUnit (X.presheaf.map (@homOfLE (Opens X) _ _ _ (X.basicOpen_le f)).op f) := by
   apply isUnit_of_isUnit_germ
   rintro x ⟨hxU, hx⟩
-  convert hx
+  convert! hx
   exact X.presheaf.germ_res_apply _ _ _ _
 
 @[simp]

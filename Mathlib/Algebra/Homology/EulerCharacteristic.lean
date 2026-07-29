@@ -79,11 +79,13 @@ instance eulerCharSignsDownInt : (down ℤ).EulerCharSigns where
   χ := Int.negOnePow
   χ_next := by rintro _ _ rfl; simp [Int.negOnePow_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance eulerCharSignsUpNat : (up ℕ).EulerCharSigns where
   χ n := (-1) ^ n
   χ_next := by rintro _ _ rfl; simp [pow_add]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance eulerCharSignsDownNat : (down ℕ).EulerCharSigns where
   χ n := (-1) ^ n
@@ -101,7 +103,9 @@ variable (c : ComplexShape ι) [c.EulerCharSigns]
 
 /-- The support of a graded object with respect to finite rank:
 the set of indices where the rank is nonzero. -/
-def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def finrankSupport (X : CategoryTheory.GradedObject ι (ModuleCat R)) : Set ι :=
   Function.support (fun i => Module.finrank R (X i))
 
 /-- The finite rank support is contained in a set if and only if

@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
+import Mathlib.Data.Finset.Max
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -62,8 +65,7 @@ lemma partialSups_apply (f : ι → α) (i : ι) :
 lemma partialSups_iff_forall {f : ι → α} (p : α → Prop)
     (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) {i : ι} :
     p (partialSups f i) ↔ ∀ j ≤ i, p (f j) := by
-  classical
-  rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
+  rw [partialSups_apply, apply_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
   · change (Iic i).inf (p ∘ f) ↔ _
     simp [Finset.inf_eq_iInf]
   · intro x y
@@ -116,10 +118,10 @@ lemma partialSups_monotone (f : ι → α) :
 def partialSups.gi :
     GaloisInsertion (partialSups : (ι → α) → ι →o α) (↑) where
   choice f h :=
-    ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
+    ⟨f, by convert! (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
     refine ⟨(le_partialSups f).trans, fun h ↦ ?_⟩
-    convert partialSups_mono h
+    convert! partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
@@ -129,6 +131,7 @@ protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, Se
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : ι → α) (g : F) :
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
@@ -220,7 +223,7 @@ theorem partialSups_eq_ciSup_Iic [ConditionallyCompleteLattice α] (f : ι → �
     partialSups f i = ⨆ i : Set.Iic i, f i := by
   simp only [partialSups_apply]
   apply le_antisymm
-  · exact sup'_le _ _ fun j hj ↦ le_ciSup_of_le (Set.finite_range _).bddAbove
+  · exact sup'_le _ _ fun j hj ↦ Finite.le_ciSup_of_le
       ⟨j, by simpa only [Set.mem_Iic, mem_Iic] using hj⟩ le_rfl
   · exact ciSup_le fun ⟨j, hj⟩ ↦ le_sup' f (by simpa only [mem_Iic, Set.mem_Iic] using hj)
 
@@ -259,7 +262,7 @@ theorem iSup_partialSups_eq (f : ι → α) :
 
 theorem partialSups_eq_biSup (f : ι → α) (i : ι) :
     partialSups f i = ⨆ j ≤ i, f j := by
-  simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f i
+  simpa only [iSup_subtype] using! partialSups_eq_ciSup_Iic f i
 
 theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ι → α}
     (h : partialSups f ≤ partialSups g) : ⨆ i, f i ≤ ⨆ i, g i := by
@@ -277,7 +280,7 @@ section Set
 ### Functions into `Set α`
 -/
 
-lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+lemma partialSups_eq_sUnion_image (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
@@ -286,3 +289,22 @@ lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 end Set
+
+section LinearOrder
+/-!
+### Functions taking values on some `LinearOrder`.
+-/
+
+variable [Preorder ι] [LocallyFiniteOrderBot ι] [LinearOrder α]
+
+theorem exists_partialSups_eq (f : ι → α) (i : ι) :
+    ∃ j ≤ i, partialSups f i = f j := by
+  obtain ⟨j, hj_mem, hj_le⟩ : ∃ j ∈ Finset.Iic i, ∀ k ∈ Finset.Iic i, f k ≤ f j :=
+    Finset.exists_max_image _ _ ⟨i, Finset.mem_Iic.mpr le_rfl⟩
+  simp only [Finset.mem_Iic] at hj_mem hj_le
+  use j, hj_mem
+  apply le_antisymm
+  · exact partialSups_le _ _ _ fun k hk => hj_le k hk
+  · exact le_partialSups_of_le f hj_mem
+
+end LinearOrder

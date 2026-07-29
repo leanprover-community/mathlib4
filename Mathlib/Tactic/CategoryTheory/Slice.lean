@@ -17,6 +17,7 @@ of `Category.comp`.
 
 public meta section
 
+namespace Mathlib.Tactic.Slice
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
@@ -35,7 +36,7 @@ syntax (name := slice) "slice " num ppSpace num : conv
 `evalSlice`
 - rewrites the target expression using `Category.assoc`.
 - uses `congr` to split off the first `a-1` terms and rotates to `a`-th (last) term
-- counts the number `k` of rewrites as it uses `←Category.assoc` to bring the target to
+- counts the number `k` of rewrites as it uses `← Category.assoc` to bring the target to
   left associated form; from the first step this is the total number of remaining terms from `C`
 - it now splits off `b-a` terms from target using `congr` leaving the desired subterm
 - finally, it rewrites it once more using `Category.assoc` to bring it to right-associated
@@ -82,3 +83,4 @@ macro_rules
 --     declNames := [`tactic.interactive.sliceLHS, `tactic.interactive.sliceRHS]
 --     tags := ["category theory"] }
 --
+end Mathlib.Tactic.Slice

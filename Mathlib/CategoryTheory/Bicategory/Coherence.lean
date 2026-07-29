@@ -72,6 +72,7 @@ bicategory.
 def inclusionPath (a b : B) : Discrete (Path.{v} a b) ⥤ Hom a b :=
   Discrete.functor inclusionPathAux
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion from the locally discrete bicategory on the path category into the free bicategory
 as a prelax functor. This will be promoted to a pseudofunctor after proving the coherence theorem.
 See `inclusion`.
@@ -86,6 +87,7 @@ def preinclusion (B : Type u) [Quiver.{v} B] :
 theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) :=
@@ -121,6 +123,7 @@ example {a b c : B} (p : Path a b) (f : Hom b c) :
   case comp _ _ _ _ _ ihf ihg => rw [normalizeAux, ihf, ihg]; apply comp_assoc
 ```
 -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A 2-isomorphism between a partially-normalized 1-morphism in the free bicategory to the
 fully-normalized 1-morphism.
 -/
@@ -132,6 +135,31 @@ def normalizeIso {a : B} :
   | _, _, _, Hom.id b => ρ_ _
   | _, _, p, Hom.comp f g =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫ normalizeIso (normalizeAux p f) g
+
+-- Equation lemmas for `normalizeIso`/`normalizeAux` matching `≫`/`𝟙`
+-- (i.e., `CategoryStruct.comp`/`CategoryStruct.id` for `FreeBicategory`) instead of
+-- `Hom.comp`/`Hom.id`. Needed because after leanprover/lean4#13363, `canUnfoldAtMatcher`
+-- no longer unfolds class projections in match discriminants.
+@[simp] theorem normalizeAux_comp {a : B} {b c d : FreeBicategory B}
+    (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
+    normalizeAux p (f ≫ g) = normalizeAux (normalizeAux p f) g := rfl
+
+@[simp] theorem normalizeAux_id {a : B} {b : FreeBicategory B} (p : Path a b) :
+    normalizeAux p (𝟙 b) = p := rfl
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp] theorem normalizeIso_comp {a : B} {b c d : FreeBicategory B}
+    (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
+    normalizeIso p (f ≫ g) =
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫
+        normalizeIso (normalizeAux p f) g := rfl
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp] theorem normalizeIso_id {a : B} {b : FreeBicategory B} (p : Path a b) :
+    normalizeIso p (𝟙 b) = ρ_ _ := rfl
+
+@[simp] theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
+    (η : Hom₂ g h) : Quot.mk Rel (Hom₂.whisker_left f η) = f ◁ (Quot.mk Rel η) := rfl
 
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality
 `normalizeAux p f = normalizeAux p g`.
@@ -147,6 +175,8 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   | _ => funext; rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
@@ -189,6 +219,7 @@ def normalize (B : Type u) [Quiver.{v} B] :
   mapId _ := eqToIso <| Discrete.ext rfl
   mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :
     𝟭 (a ⟶ b) ≅ (normalize B).mapFunctor a b ⋙ @inclusionPath B _ a b :=
@@ -199,6 +230,7 @@ def normalizeUnitIso (a b : FreeBicategory B) :
       congr 1
       exact normalize_naturality nil η)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Normalization as an equivalence of categories. -/
 def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
@@ -212,11 +244,13 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v} a b) :=
         conv_rhs => rw [← ih]
         rfl))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The coherence theorem for bicategories. -/
 instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
   ⟨fun _ _ =>
     (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `inclusion`. -/
 def inclusionMapCompAux {a b : B} :
     ∀ {c : B} (f : Path a b) (g : Path b c),
@@ -224,6 +258,7 @@ def inclusionMapCompAux {a b : B} :
   | _, f, nil => (ρ_ ((preinclusion _).map ⟨f⟩)).symm
   | _, f, cons g₁ g₂ => whiskerRightIso (inclusionMapCompAux f g₁) (Hom.of g₂) ≪≫ α_ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion pseudofunctor from the locally discrete bicategory on the path category into the
 free bicategory.
 -/

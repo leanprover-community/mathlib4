@@ -55,12 +55,6 @@ instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
     have ⟨ms, eq⟩ := f.surj 0
     rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 
-@[deprecated (since := "2025-08-15")]
-alias LocalizationMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
-@[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
-@[deprecated (since := "2025-08-01")]
-alias LocalizationWithZeroMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
-
 end Submonoid
 
 namespace Localization
@@ -108,7 +102,7 @@ lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, I
     ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
 
 lemma lift₀_apply (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) (x) :
-    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec x).2)⁻¹ := rfl
+    f.lift₀ g hg x = g (f.sec x).1 * (IsUnit.liftRight (g.domRestrict S) hg (f.sec x).2)⁻¹ := rfl
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
@@ -152,18 +146,6 @@ theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivi
     (eq ▸ f.map_nonZeroDivisors_le ⟨_, mem_nonZeroDivisors_of_ne_zero hs, rfl⟩)
 
 end LocalizationMap
-
-namespace LocalizationWithZeroMap
-
-@[deprecated (since := "2025-08-01")]
-alias isLeftRegular_of_le_isCancelMulZero := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")]
-alias leftCancelMulZero_of_le_isLeftRegular := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")] alias lift := LocalizationMap.lift₀
-@[deprecated (since := "2025-08-01")] alias lift_def := LocalizationMap.lift₀_def
-@[deprecated (since := "2025-08-01")] alias lift_apply := LocalizationMap.lift₀_apply
-
-end LocalizationWithZeroMap
 
 end Submonoid
 

@@ -14,11 +14,11 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 # AB axioms in module categories
 
 This file proves that the category of modules over a ring satisfies Grothendieck's axioms AB5, AB4,
-and AB4*. Further, it proves that `R` is a separator in the category of modules over `R`, and
+and AB4\*. Further, it proves that `R` is a separator in the category of modules over `R`, and
 concludes that this category is Grothendieck abelian.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

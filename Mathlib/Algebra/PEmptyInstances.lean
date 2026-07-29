@@ -14,7 +14,7 @@ This file collects facts about algebraic structures on the (universe-polymorphic
 that it is a semigroup.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

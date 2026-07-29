@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
@@ -92,10 +92,18 @@ theorem comm_trans_lid :
     TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
 
+@[simp] lemma lid_comm (x) :
+    TensorProduct.lid R M (TensorProduct.comm R M R x) = TensorProduct.rid R M x :=
+  congr($comm_trans_lid _)
+
 @[simp]
 theorem comm_trans_rid :
     TensorProduct.comm R R M ≪≫ₗ TensorProduct.rid R M = TensorProduct.lid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
+
+@[simp] lemma rid_comm (x) :
+    TensorProduct.rid R M (TensorProduct.comm R R M x) = TensorProduct.lid R M x :=
+  congr($comm_trans_rid _)
 
 variable (R) in
 theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
@@ -110,9 +118,18 @@ variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
 def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
-  (equivOfCompatibleSMul R A A M).symm ≪≫ₗ TensorProduct.lid _ _
+  (equivOfCompatibleSMul R A A A M).symm ≪≫ₗ TensorProduct.lid _ _
 
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
+
+variable {R} in
+lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [CommSemiring A] [Algebra R A]
+    [Module A M] [IsScalarTower R A M] [Module A N] [IsScalarTower R A N]
+    (h : Function.Surjective (algebraMap R A)) :
+    CompatibleSMul R A M N where
+  smul_tmul a m n := by
+    obtain ⟨r, rfl⟩ := h a
+    simp [smul_tmul]
 
 end CompatibleSMul
 

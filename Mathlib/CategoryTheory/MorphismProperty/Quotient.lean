@@ -59,6 +59,7 @@ def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
 
 variable [W.HasQuotient homRel]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotient_iff {X Y : C} (f : X ⟶ Y) :
     W.quotient homRel ((Quotient.functor homRel).map f) ↔ W f := by
   refine ⟨fun ⟨f', hf', h⟩ ↦ ?_, fun hf ↦ ⟨f, hf, rfl⟩⟩

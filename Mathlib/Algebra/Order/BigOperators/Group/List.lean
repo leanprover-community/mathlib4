@@ -47,7 +47,7 @@ lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
   | cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  | cons₂ a _ ih' =>
+  | cons_cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     grw [ih' h₁.2]
 
@@ -143,7 +143,7 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
   · apply min_le_left
   · apply min_le_right
 
-variable [PartialOrder M] [CanonicallyOrderedMul M]
+variable [Preorder M] [CanonicallyOrderedMul M]
 
 @[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
@@ -168,7 +168,7 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
 end Monoid
 
 section
-variable {α β : Type*} [Monoid α] [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β]
+variable {α β : Type*} [Monoid α] [CommMonoid β] [Preorder β] [IsOrderedMonoid β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
@@ -221,7 +221,7 @@ lemma sum_le_foldr_max [AddZeroClass M] [Zero N] [LinearOrder N] (f : M → N) (
     exact (hadd _ _).trans (max_le_max le_rfl IH)
 
 @[to_additive sum_pos]
-lemma one_lt_prod_of_one_lt [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] :
+lemma one_lt_prod_of_one_lt [CommMonoid M] [Preorder M] [IsOrderedMonoid M] :
     ∀ l : List M, (∀ x ∈ l, (1 : M) < x) → l ≠ [] → 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
@@ -234,7 +234,7 @@ lemma one_lt_prod_of_one_lt [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] 
 
 /-- See also `List.le_prod_of_mem`. -/
 @[to_additive /-- See also `List.le_sum_of_mem`. -/]
-lemma single_le_prod [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+lemma single_le_prod [CommMonoid M] [Preorder M] [IsOrderedMonoid M]
     {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
@@ -251,7 +251,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrd
 
 @[to_additive] lemma prod_eq_one_iff [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
      [CanonicallyOrderedMul M] {l : List M} : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
+  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le, fun h => by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩

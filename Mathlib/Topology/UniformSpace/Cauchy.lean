@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
@@ -56,7 +57,7 @@ lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
 
 theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
     Cauchy (@Ultrafilter.of _ l h.1 : Filter α) := by
-  haveI := h.1
+  have := h.1
   have := Ultrafilter.of_le l
   exact ⟨Ultrafilter.neBot _, (Filter.prod_mono this this).trans h.2⟩
 
@@ -112,7 +113,7 @@ lemma cauchy_comap_uniformSpace {u : UniformSpace β} {α} {f : α → β} {l : 
 
 lemma cauchy_prod_iff [UniformSpace β] {F : Filter (α × β)} :
     Cauchy F ↔ Cauchy (map Prod.fst F) ∧ Cauchy (map Prod.snd F) := by
-  simp_rw [instUniformSpaceProd, ← cauchy_comap_uniformSpace, ← cauchy_inf_uniformSpace]
+  simp_rw +instances [instUniformSpaceProd, ← cauchy_comap_uniformSpace, ← cauchy_inf_uniformSpace]
 
 theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauchy f) (hg : Cauchy g) :
     Cauchy (f ×ˢ g) := by
@@ -149,7 +150,7 @@ theorem le_nhds_iff_adhp_of_cauchy {f : Filter α} {x : α} (hf : Cauchy f) :
     f ≤ 𝓝 x ↔ ClusterPt x f :=
   ⟨fun h => ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
 
-nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
     (hm : UniformContinuous m) : Cauchy (map m f) :=
   ⟨hf.1.map _,
     calc
@@ -157,7 +158,7 @@ nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf 
       _ ≤ Filter.map (Prod.map m m) (𝓤 α) := map_mono hf.right
       _ ≤ 𝓤 β := hm⟩
 
-nonrec theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
     (hm : comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) [NeBot (comap m f)] :
     Cauchy (comap m f) :=
   ⟨‹_›,
@@ -170,6 +171,14 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
     (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α)
     (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
+
+lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f) {s : Set α}
+    (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
+    Cauchy (map m f) := by
+  suffices Cauchy (comap (Subtype.val : s → α) f) by
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
+      subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
+  exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
@@ -186,7 +195,7 @@ theorem CauchySeq.nonempty [Preorder β] {u : β → α} (hu : CauchySeq u) : No
 
 theorem CauchySeq.mem_entourage {β : Type*} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
     {V : SetRel α α} (hV : V ∈ 𝓤 α) : ∃ k₀, ∀ i j, k₀ ≤ i → k₀ ≤ j → (u i, u j) ∈ V := by
-  haveI := h.nonempty
+  have := h.nonempty
   have := h.tendsto_uniformity; rw [← prod_atTop_atTop_eq] at this
   simpa [MapsTo] using atTop_basis.prod_self.tendsto_left_iff.1 this V hV
 
@@ -279,7 +288,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
+    convert! h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
@@ -288,7 +297,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
   simp only [true_and, Prod.forall, mem_prod_eq,
-    mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
+    mem_Ici, and_imp, Prod.map, @forall_comm (_ ≤ _) β]
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
     {p : γ → Prop} {s : γ → SetRel α α} (H : (𝓤 α).HasBasis p s) :
@@ -320,7 +329,7 @@ theorem isComplete_iff_clusterPt {s : Set α} :
 theorem isComplete_iff_ultrafilter {s : Set α} :
     IsComplete s ↔ ∀ l : Ultrafilter α, Cauchy (l : Filter α) → ↑l ≤ 𝓟 s → ∃ x ∈ s, ↑l ≤ 𝓝 x := by
   refine ⟨fun h l => h l, fun H => isComplete_iff_clusterPt.2 fun l hl hls => ?_⟩
-  haveI := hl.1
+  have := hl.1
   rcases H (Ultrafilter.of l) hl.ultrafilter_of ((Ultrafilter.of_le l).trans hls) with ⟨x, hxs, hxl⟩
   exact ⟨x, hxs, (ClusterPt.of_le_nhds hxl).mono (Ultrafilter.of_le l)⟩
 
@@ -357,6 +366,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
 
 /-- A complete space is defined here using uniformities. A uniform space
   is complete if every Cauchy filter converges. -/
+@[wikidata Q848569]
 class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
@@ -495,7 +505,7 @@ theorem Filter.TotallyBounded.exists_subset_of_mem {f : Filter α} (hf : f.Total
   choose g hgs hgr using fun x : u => x.coe_prop.2
   refine ⟨range g, ?_, ?_, ?_⟩
   · exact range_subset_iff.2 hgs
-  · haveI : Fintype u := (fk.inter_of_left _).fintype
+  · have : Fintype u := (fk.inter_of_left _).fintype
     exact finite_range g
   · filter_upwards [hs, ks] with x xs ⟨y, hy, xy⟩
     simp_rw [SetRel.preimage, exists_range_iff]
@@ -529,7 +539,7 @@ theorem totallyBounded_of_forall_isSymm {s : Set α}
     (h : ∀ V ∈ 𝓤 α, SetRel.IsSymm V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
     TotallyBounded s :=
   UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V ⟨_, _⟩ => by
-    simpa only [ball_eq_of_symmetry] using h V ‹_› ‹_›
+    simpa only [ball_eq_of_symmetry] using! h V ‹_› ‹_›
 
 theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
     TotallyBounded s₁ := fun d hd =>
@@ -540,7 +550,8 @@ theorem Filter.TotallyBounded.mono {f g : Filter α} (h : f ≤ g) (hg : g.Total
     f.TotallyBounded :=
   fun U hU => (hg U hU).imp fun _ => And.imp_right (@h _)
 
-theorem Filter.TotallyBounded.totallyBounded_setOf_clusterPt {f : Filter α} (h : f.TotallyBounded) :
+theorem Filter.TotallyBounded.totallyBounded_setOfPred_clusterPt {f : Filter α}
+    (h : f.TotallyBounded) :
     TotallyBounded {x | ClusterPt x f} := by
   refine uniformity_hasBasis_closed.totallyBounded_iff.2 fun V hV => ?_
   obtain ⟨t, htf, hst⟩ := h V hV.1
@@ -548,10 +559,14 @@ theorem Filter.TotallyBounded.totallyBounded_setOf_clusterPt {f : Filter α} (h 
   rw [← SetRel.preimage_eq_biUnion, id, ← (hV.2.relPreimage_of_finite htf).closure_eq]
   exact hx.mem_closure_of_mem _ hst
 
+@[deprecated (since := "2026-07-09")]
+alias Filter.TotallyBounded.totallyBounded_setOf_clusterPt :=
+  Filter.TotallyBounded.totallyBounded_setOfPred_clusterPt
+
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) := by
   rw [closure_eq_cluster_pts]
-  exact (Filter.totallyBounded_principal_iff.mpr h).totallyBounded_setOf_clusterPt
+  exact (Filter.totallyBounded_principal_iff.mpr h).totallyBounded_setOfPred_clusterPt
 
 @[simp]
 lemma totallyBounded_closure {s : Set α} : TotallyBounded (closure s) ↔ TotallyBounded s :=
@@ -739,12 +754,13 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
     (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
 
-@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
-    TotallyBounded.isCompact_of_isClosed
-
-theorem Filter.TotallyBounded.isCompact_setOf_clusterPt
+theorem Filter.TotallyBounded.isCompact_setOfPred_clusterPt
     [CompleteSpace α] {f : Filter α} (hf : f.TotallyBounded) : IsCompact {x | ClusterPt x f} :=
-  hf.totallyBounded_setOf_clusterPt.isCompact_of_isClosed isClosed_setOf_clusterPt
+  hf.totallyBounded_setOfPred_clusterPt.isCompact_of_isClosed isClosed_setOfPred_clusterPt
+
+@[deprecated (since := "2026-07-09")]
+alias Filter.TotallyBounded.isCompact_setOf_clusterPt :=
+  Filter.TotallyBounded.isCompact_setOfPred_clusterPt
 
 theorem Filter.TotallyBounded.exists_clusterPt
     [CompleteSpace α] {f : Filter α} [f.NeBot] (hf : f.TotallyBounded) : ∃ x, ClusterPt x f := by
@@ -800,8 +816,8 @@ theorem isCompact_closure_interUnionBalls {p : ℕ → Prop} {U : ℕ → SetRel
 
 In this section we prove that a uniform space is complete provided that it is sequentially complete
 (i.e., any Cauchy sequence converges) and its uniformity filter admits a countable generating set.
-In particular, this applies to (e)metric spaces, see the files `Topology/MetricSpace/EMetricSpace`
-and `Topology/MetricSpace/Basic`.
+In particular, this applies to (e)metric spaces, see the files
+`Mathlib/Topology/EMetricSpace/Basic.lean` and `Mathlib/Topology/MetricSpace/Basic.lean`.
 
 More precisely, we assume that there is a sequence of entourages `U_n` such that any other
 entourage includes one of `U_n`. Then any Cauchy filter `f` generates a decreasing sequence of

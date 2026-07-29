@@ -13,10 +13,10 @@ public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 This file contains general results about the topological entropy of various subsets of the same
 dynamical system `(X, T)`. We prove that:
 - the topological entropy `CoverEntropy T F` of `F` is monotone in `F`: the larger the subset,
-the larger its entropy.
+  the larger its entropy.
 - the topological entropy of a subset equals the entropy of its closure.
 - the entropy of the union of two sets is the maximum of their entropies. We generalize
-the latter property to finite unions.
+  the latter property to finite unions.
 
 ## Implementation notes
 
@@ -157,7 +157,7 @@ lemma coverMincard_union_le (T : X → X) (F G : Set X) (U : SetRel X X) (n : �
   · rw [hG, add_top]; exact le_top
   obtain ⟨s, s_cover, s_coverMincard⟩ := (coverMincard_finite_iff T F U n).1 hF
   obtain ⟨t, t_cover, t_coverMincard⟩ := (coverMincard_finite_iff T G U n).1 hG
-  rw [← s_coverMincard, ← t_coverMincard, ← ENat.coe_add]
+  rw [← s_coverMincard, ← t_coverMincard, ← ENat.natCast_add]
   apply (IsDynCoverOf.coverMincard_le_card _).trans (WithTop.coe_mono (s.card_union_le t))
   rw [s.coe_union t]
   exact s_cover.union t_cover

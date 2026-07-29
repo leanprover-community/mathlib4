@@ -59,13 +59,36 @@ namespace PresheafOfModules
 attribute [simp] map_id map_comp
 attribute [reassoc] map_comp
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
+This is required for `Algebra.Category.ModuleCat.Differentials.Presheaf` -/
+instance {R : Cᵒᵖ ⥤ CommRingCat.{u}} (X : Cᵒᵖ) (M : PresheafOfModules.{v} (R ⋙ forget₂ _ _)) :
+    Module (R.obj X) (M.obj X) := (M.obj X).isModule
+
 variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
     M.map f (r • m) = R.map f r • M.map f m := by simp
 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
     M.map f m = M.map g m := by rw [h]
+
+lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
+    M.map (i ≫ j) x = M.map j (M.map i x) := by
+  rw [M.map_comp]; rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The restriction map `M.map f` of a presheaf of modules `M`, bundled as a semilinear map
+along the ring map `R.map f`. -/
+noncomputable def restrictₛₗ {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    M.obj X →ₛₗ[(R.map f).hom] M.obj Y where
+  toFun m := M.map f m
+  map_add' := map_add (M.map f).hom
+  map_smul' r m := M.map_smul f r m
+
+@[simp]
+lemma restrictₛₗ_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : M.obj X) :
+    M.restrictₛₗ f m = M.map f m := rfl
 
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
@@ -116,6 +139,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
         rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
           Category.comp_id, Iso.hom_inv_id_assoc] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
@@ -128,6 +152,13 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 @[simp]
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f).hom x = M.map f x := rfl
+
+@[reassoc]
+lemma smul_map {U V : Cᵒᵖ} (f : U ⟶ V) (r : R.obj U) :
+    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+  ext x
+  exact (M.map f).hom.map_smul r x
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
@@ -153,7 +184,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
+    exact ConcreteCategory.congr_hom (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 
@@ -161,6 +192,7 @@ variable (M : Cᵒᵖ ⥤ Ab.{v}) [∀ X, Module (R.obj X) (M.obj X)]
   (map_smul : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r : R.obj X) (m : M.obj X),
     M.map f (r • m) = R.map f r • M.map f m)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The object in `PresheafOfModules R` that is obtained from `M : Cᵒᵖ ⥤ Ab.{v}` such
 that for all `X : Cᵒᵖ`, `M.obj X` is a `R.obj X` module, in such a way that the
 restriction maps are semilinear. (This constructor should be used only in cases
@@ -181,6 +213,7 @@ lemma ofPresheaf_presheaf : (ofPresheaf M map_smul).presheaf = M := rfl
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism of presheaves of modules `M₁ ⟶ M₂` given by a morphism
 of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
 which satisfy a suitable linearity condition. -/
@@ -190,7 +223,7 @@ noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     M₁ ⟶ M₂ where
   app X := ModuleCat.ofHom
     { toFun := φ.app X
-      map_add' := by simp
+      map_add' := by simp +instances
       map_smul' := hφ X }
   naturality := fun f ↦ by
     ext x
@@ -258,6 +291,7 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 
 instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 @[simps]
@@ -265,6 +299,7 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f).hom where
   app M := M.map f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The obvious free presheaf of modules of rank `1`. -/
 noncomputable def unit : PresheafOfModules R where
   obj X := ModuleCat.of _ (R.obj X)
@@ -304,6 +339,7 @@ lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
     (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
   Subtype.ext (by ext; apply h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of presheaves of modules. -/
 @[simps!]
 def sectionsMap {M N : PresheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
@@ -318,6 +354,8 @@ lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N �
 lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
     sectionsMap (𝟙 M) s = s := rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]
 noncomputable def unitHomEquiv (M : PresheafOfModules R) :
@@ -363,6 +401,7 @@ noncomputable abbrev forgetToPresheafModuleCatObjObj (Y : Cᵒᵖ) : ModuleCat (
 lemma forgetToPresheafModuleCatObjObj_coe (Y : Cᵒᵖ) :
     (forgetToPresheafModuleCatObjObj X hX M Y : Type _) = M.obj Y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `forgetToPresheafModuleCatObj`. -/
 noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
     forgetToPresheafModuleCatObjObj X hX M Y ⟶
@@ -381,6 +420,7 @@ noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) 
 lemma forgetToPresheafModuleCatObjMap_apply {Y Z : Cᵒᵖ} (f : Y ⟶ Z) (m : M.obj Y) :
     (forgetToPresheafModuleCatObjMap X hX M f).hom m = M.map f m := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
 when `X` is initial.
@@ -398,6 +438,7 @@ noncomputable def forgetToPresheafModuleCatObj
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
 when `X` is initial.
@@ -419,6 +460,7 @@ noncomputable def forgetToPresheafModuleCatMap
     ext x
     exact naturality_apply f g x
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The forgetful functor from presheaves of modules over a presheaf of rings `R` to presheaves of
 `R(X)`-modules where `X` is an initial object.

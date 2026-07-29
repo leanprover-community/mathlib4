@@ -20,7 +20,7 @@ As corollaries, an isomorphism `α : X ≅ Y` defines
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
 - a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
-which can be found in  `CategoryTheory.Conj`.
+  which can be found in  `CategoryTheory.Conj`.
 -/
 
 @[expose] public section
@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
 there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `Equiv.arrowCongr`. -/
-@[simps]
+@[simps apply]
 def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y) ≃ (X₁ ⟶ Y₁) where
   toFun f := α.inv ≫ f ≫ β.hom
   invFun f := α.hom ≫ f ≫ β.inv

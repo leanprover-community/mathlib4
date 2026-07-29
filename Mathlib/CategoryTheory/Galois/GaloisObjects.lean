@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
@@ -147,7 +147,7 @@ lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : A
     simp
   · intro τ hτ
     apply evaluation_aut_injective_of_isConnected F B (F.map f a)
-    simpa using DFunLike.congr_fun (F.congr_map hτ) a
+    simpa using ConcreteCategory.congr_hom (F.congr_map hτ) a
 
 /-- A morphism from a connected object to a Galois object induces a map on automorphism
 groups. This is a group homomorphism (see `autMapHom`). -/
@@ -164,7 +164,7 @@ lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut
 lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
     (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
     F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
-  simpa [-comp_autMap] using DFunLike.congr_fun (F.congr_map (comp_autMap f σ)) a
+  simpa [-comp_autMap] using ConcreteCategory.congr_hom (F.congr_map (comp_autMap f σ)) a
 
 /-- `autMap` is uniquely characterized by making the canonical diagram commute. -/
 lemma autMap_unique {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)
@@ -195,6 +195,7 @@ lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A �
   apply evaluation_aut_injective_of_isConnected F B (F.map f a)
   simp [hτ, ha']
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMap_apply_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ τ : Aut A) :
     autMap f (σ * τ) = autMap f σ * autMap f τ := by

@@ -63,7 +63,6 @@ lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
 /-- Auxiliary lemma for `measure_univ_eq`. -/
 lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ I) :
     P I univ = P J univ := by
-  classical
   have : (univ : Set (∀ i : I, α i)) =
       Finset.restrict₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
     rw [preimage_univ]
@@ -86,12 +85,7 @@ lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     suffices ∀ I, P I univ = 0 by
       simp only [Measure.measure_univ_eq_zero] at this
       simp [this]
-    intro I
-    simp only [isEmpty_pi] at h
-    obtain ⟨i, hi_empty⟩ := h
-    rw [measure_univ_eq hP I {i}]
-    have : (univ : Set ((j : {x // x ∈ ({i} : Finset ι)}) → α j)) = ∅ := by simp [hi_empty]
-    simp [this]
+    simpa using eq_zero_of_isEmpty hP
   | inr h =>
     have : S = Finset.restrict₂ hJI ⁻¹' T :=
       eq_of_cylinder_eq_of_subset h_eq hJI
@@ -156,7 +150,7 @@ lemma measure_univ_unique (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimi
 theorem unique [∀ i, IsFiniteMeasure (P i)]
     (hμ : IsProjectiveLimit μ P) (hν : IsProjectiveLimit ν P) :
     μ = ν := by
-  haveI : IsFiniteMeasure μ := hμ.isFiniteMeasure
+  have : IsFiniteMeasure μ := hμ.isFiniteMeasure
   refine ext_of_generate_finite (measurableCylinders α) generateFrom_measurableCylinders.symm
     isPiSystem_measurableCylinders (fun s hs ↦ ?_) (hμ.measure_univ_unique hν)
   obtain ⟨I, S, hS, rfl⟩ := (mem_measurableCylinders _).mp hs

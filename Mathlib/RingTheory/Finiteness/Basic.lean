@@ -19,7 +19,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
@@ -93,6 +93,7 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   rw [LinearMap.range_eq_map]
   exact Module.Finite.fg_top.map f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
@@ -127,18 +128,29 @@ protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
-theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
-    (P : Submodule R M → Prop) (h₁ : ∀ x, P (Submodule.span R {x}))
-    (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
-  classical
-    obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction with
-    | empty =>
-      rw [Finset.coe_empty, span_empty, ← span_zero_singleton]
-      exact h₁ _
-    | insert _ _ _ ih =>
-      rw [Finset.coe_insert, span_insert]
-      exact h₂ _ _ (h₁ _) ih
+theorem fg_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (singleton : ∀ x : M, motive (R ∙ x) (fg_span_singleton _))
+    (sup : ∀ (N₁ N₂ : Submodule R M) (hN₁ : N₁.FG) (hN₂ : N₂.FG),
+      motive N₁ hN₁ → motive N₂ hN₂ → motive (N₁ ⊔ N₂) (hN₁.sup hN₂))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simpa using singleton 0
+  | insert x s hxs ih =>
+    simpa [span_insert, sup_comm] using
+      sup (span R s) (R ∙ x) _ (fg_span_singleton _) ih (singleton x)
+
+theorem fg_sup_span_induction {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {motive : ∀ N : Submodule R M, N.FG → Prop}
+    (bot : motive ⊥ fg_bot)
+    (sup : ∀ (N : Submodule R M) (x : M) (hN : N.FG),
+      motive N hN → motive (N ⊔ (R ∙ x)) (hN.sup <| fg_span_singleton x))
+    (N : Submodule R M) (hN : N.FG) : motive N hN := by classical
+  obtain ⟨s, rfl⟩ := hN
+  induction s using Finset.induction with
+  | empty => simp [bot]
+  | insert x s hxs ih => simpa [span_insert, sup_comm] using sup (span R s) x (by use s) ih
 
 section RestrictScalars
 
@@ -181,31 +193,30 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
-  classical
-    -- Introduce shorthand for span of an element
-    let sp : M → Submodule R M := fun a => span R {a}
-    -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
-    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
-    constructor
-    · rintro ⟨t, rfl⟩
-      rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← t.sup_eq_iSup sp]
-      apply CompleteLattice.isCompactElement_finsetSup
-      exact fun n _ => singleton_span_isCompactElement n
-    · intro h
-      rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
-      -- s is the Sup of the spans of its elements.
-      have sSup' : s = sSup (sp '' ↑s) := by
-        rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
-      -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
-      obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
-      have ssup : s = u.sup id := by
-        suffices u.sup id ≤ s from le_antisymm husup this
-        rw [sSup', Finset.sup_id_eq_sSup]
-        exact sSup_le_sSup huspan
-      obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
-      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw,
-        ← span_eq_iSup_of_singleton_spans, eq_comm] at ssup
-      exact ⟨t, ssup⟩
+  -- Introduce shorthand for span of an element
+  let sp : M → Submodule R M := fun a => span R {a}
+  -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
+  have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
+  constructor
+  · rintro ⟨t, rfl⟩
+    rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← t.sup_eq_iSup sp]
+    apply CompleteLattice.isCompactElement_finsetSup
+    exact fun n _ => singleton_span_isCompactElement n
+  · intro h
+    rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
+    -- s is the Sup of the spans of its elements.
+    have sSup' : s = sSup (sp '' ↑s) := by
+      rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
+    -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
+    obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
+    have ssup : s = u.sup id := by
+      suffices u.sup id ≤ s from le_antisymm husup this
+      rw [sSup', Finset.sup_id_eq_sSup]
+      exact sSup_le_sSup huspan
+    obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
+    rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw,
+      ← span_eq_iSup_of_singleton_spans, eq_comm] at ssup
+    exact ⟨t, ssup⟩
 
 end Submodule
 
@@ -233,19 +244,18 @@ instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
 
 section
 
-variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
-  {σ : R →+* S} [RingHomSurjective σ]
+variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
 
--- TODO: remove RingHomSurjective
 @[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
-    Module.Finite S P :=
-  ⟨by
-    rw [← LinearMap.range_eq_top.mpr hf, ← Submodule.map_top]
-    exact hM.fg_top.map f⟩
+    Module.Finite S P := by
+  rw [Module.finite_def, Submodule.fg_def] at hM ⊢
+  obtain ⟨s, hsfin, hs⟩ := hM
+  refine ⟨f '' s, hsfin.image f, eq_top_iff.mpr fun p _ ↦ ?_⟩
+  exact image_span_subset_span f s (by simpa [hs] using hf p)
 
-theorem _root_.LinearMap.finite_iff_of_bijective (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) :
-    Module.Finite R M ↔ Module.Finite S P :=
+theorem _root_.LinearMap.finite_iff_of_bijective [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) : Module.Finite R M ↔ Module.Finite S P :=
   ⟨fun _ ↦ of_surjective f hf.surjective, fun _ ↦ ⟨fg_of_fg_map_injective f hf.injective <| by
     rwa [Submodule.map_top, LinearMap.range_eq_top.mpr hf.surjective, ← Module.finite_def]⟩⟩
 
@@ -310,8 +320,11 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+set_option linter.dupNamespace false in
+@[deprecated (since := "2026-04-18")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
@@ -328,6 +341,12 @@ variable (R M)
 instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
 instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
+
+instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
+  have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=
+    RingHomSurjective.instToRingHomRingEquiv Subsemiring.topEquiv.symm
+  of_surjective (σ := (Subsemiring.topEquiv (R := R)).symm.toRingHom)
+      ⟨⟨id, fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩ Function.surjective_id
 
 variable {M}
 
@@ -356,20 +375,21 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
         Finite.image2 _ s.finite_toSet t.finite_toSet,
         by rw [image2_smul, span_smul_of_span_eq_top hs (↑t : Set M), ht, restrictScalars_top]⟩⟩
 
+/-- See also `Module.Finite.of_surjective` and `LinearMap.finite_iff_of_bijective`. -/
 lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
     [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
     (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
-  letI := e₁.toRingHom.toAlgebra
-  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
-  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
+  let := e₁.toRingHom.toAlgebra
+  let := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
+  have : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun r ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  haveI := of_restrictScalars_finite A₁ A₂ B₁
+  have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv
 
 end Algebra
@@ -411,6 +431,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
 variable {S : Submodule A M}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
   rw [← Module.Finite.iff_fg] at *
   exact Module.Finite.trans A S
@@ -445,6 +466,9 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
 
 lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
   .of_surjective _ e.surjective
+
+instance (h : A ≃+* B) : letI := h.toRingHom.toAlgebra; Module.Finite A B :=
+  h.finite
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]

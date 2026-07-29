@@ -21,7 +21,7 @@ This file provides `Applicative` instances for concrete functors:
 * `Functor.add_const`
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -40,6 +40,7 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   simp [functor_norm]
 
+set_option linter.overlappingInstances false in
 theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →
@@ -119,6 +120,7 @@ theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
 
 open CommApplicative
 
+set_option backward.isDefEq.respectTransparency false in
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) where
   commutative_prod _ _ := by
@@ -151,6 +153,7 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Porting note: `(· <*> ·)` needed to change to `Seq.seq` in the `simp`.
 -- Also, `simp` didn't close `refl` goals.
 
+set_option backward.isDefEq.respectTransparency false in
 instance {α} [Monoid α] : LawfulApplicative (Const α) where
   map_pure _ _ := rfl
   seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, mul_one]
@@ -163,6 +166,7 @@ instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) where
   map_pure _ _ := rfl
   seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, add_zero]

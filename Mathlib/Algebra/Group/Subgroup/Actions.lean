@@ -29,7 +29,7 @@ variable [MulAction G α] {S : Subgroup G}
 
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive
-/-- The additive action by an add_subgroup is the action by the underlying `AddGroup`. -/]
+/-- The additive action by an `AddSubgroup` is the action by the underlying `AddGroup`. -/]
 instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
@@ -76,3 +76,8 @@ instance center.smulCommClass_right : SMulCommClass G (center G) G :=
   Submonoid.center.smulCommClass_right
 
 end Subgroup
+
+open MonoidHom in
+lemma MonoidWithZeroHom.comap_mker {M N P : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
+    [MulZeroOneClass P] (g : N →*₀ P) (f : M →*₀ N) :
+    Submonoid.comap f (mker g) = mker (g.comp f) := rfl

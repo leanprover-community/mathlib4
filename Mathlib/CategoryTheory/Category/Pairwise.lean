@@ -16,7 +16,7 @@ public import Mathlib.Data.Fintype.Sum
 /-!
 # The category of "pairwise intersections".
 
-Given `ι : Type v`, we build the diagram category `Pairwise ι`
+Given `ι : Type v`, we build the diagram category `CategoryTheory.Pairwise ι`
 with objects `single i` and `pair i j`, for `i j : ι`,
 whose only non-identity morphisms are
 `left : pair i j ⟶ single i` and `right : pair i j ⟶ single j`.
@@ -24,7 +24,7 @@ whose only non-identity morphisms are
 We use this later in describing (one formulation of) the sheaf condition.
 
 Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(Opens X)ᵒᵖ`),
-we produce a functor `Pairwise ι ⥤ α` in the obvious way,
+we produce a functor `CategoryTheory.Pairwise ι ⥤ α` in the obvious way,
 and show that `iSup U` provides a colimit cocone over this functor.
 -/
 
@@ -56,7 +56,7 @@ namespace Pairwise
 instance pairwiseInhabited [Inhabited ι] : Inhabited (Pairwise ι) :=
   ⟨single default⟩
 
-/-- Morphisms in the category `Pairwise ι`. The only non-identity morphisms are
+/-- Morphisms in the category `CategoryTheory.Pairwise ι`. The only non-identity morphisms are
 `left i j : single i ⟶ pair i j` and `right i j : single j ⟶ pair i j`.
 -/
 inductive Hom : Pairwise ι → Pairwise ι → Type v
@@ -74,13 +74,13 @@ open Hom
 instance homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) :=
   ⟨id_single default⟩
 
-/-- The identity morphism in `Pairwise ι`.
+/-- The identity morphism in `CategoryTheory.Pairwise ι`.
 -/
 def id : ∀ o : Pairwise ι, Hom o o
   | single i => id_single i
   | pair i j => id_pair i j
 
-/-- Composition of morphisms in `Pairwise ι`. -/
+/-- Composition of morphisms in `CategoryTheory.Pairwise ι`. -/
 def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ o₃), Hom o₁ o₃
   | _, _, _, id_single _, g => g
   | _, _, _, id_pair _ _, g => g
@@ -95,8 +95,8 @@ instance : CategoryStruct (Pairwise ι) where
 section
 
 open Lean Elab Tactic in
-/-- A helper tactic for `cat_disch` and `Pairwise`. -/
-def pairwiseCases : TacticM Unit := do
+/-- A helper tactic for `cat_disch` and `CategoryTheory.Pairwise`. -/
+meta def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
@@ -138,7 +138,8 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
   | _, _, left _ _ => homOfLE inf_le_left
   | _, _, right _ _ => homOfLE inf_le_right
 
-/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `Pairwise ι ⥤ α`,
+/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor
+`CategoryTheory.Pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
@@ -174,7 +175,7 @@ def cocone : Cocone (diagram U) where
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.sSup_le
+      apply sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 

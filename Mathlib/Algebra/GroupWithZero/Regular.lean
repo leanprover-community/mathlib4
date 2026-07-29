@@ -38,7 +38,7 @@ theorem isLeftRegular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingl
 /-- In a non-trivial `MulZeroClass`, the `0` element is not left-regular. -/
 theorem not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isLeftRegular_zero_iff_subsingleton, subsingleton_iff]
-  push_neg
+  push Not
   exact Iff.rfl
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
@@ -48,7 +48,7 @@ theorem isRightRegular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsin
 /-- In a non-trivial `MulZeroClass`, the `0` element is not right-regular. -/
 theorem not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R := by
   rw [nontrivial_iff, not_iff_comm, isRightRegular_zero_iff_subsingleton, subsingleton_iff]
-  push_neg
+  push Not
   exact Iff.rfl
 
 /-- The element `0` is regular if and only if `R` is trivial. -/

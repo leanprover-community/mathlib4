@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Essentially of finite type algebras
@@ -162,7 +162,7 @@ lemma essFiniteType_iff_exists_subalgebra : EssFiniteType R S ↔
     ∃ (S₀ : Subalgebra R S) (M : Submonoid S₀), FiniteType R S₀ ∧ IsLocalization M S := by
   refine ⟨fun h ↦ ⟨subalgebra R S, submonoid R S, inferInstance, inferInstance⟩, ?_⟩
   rintro ⟨S₀, M, _, _⟩
-  letI := of_isLocalization S M
+  let := of_isLocalization S M
   exact comp R S₀ S
 
 instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T ⊗[R] S) := by
@@ -199,7 +199,6 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
 
 lemma EssFiniteType.of_comp [h : EssFiniteType R T] : EssFiniteType S T := by
   rw [essFiniteType_iff] at h ⊢
-  classical
   obtain ⟨σ, hσ⟩ := h
   use σ
   intro x
@@ -244,6 +243,11 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
+
+instance EssFiniteType.quotient_map [EssFiniteType R S] (p : Ideal R) :
+    EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) :=
+  .of_surjective (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.toAlgHom
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.surjective
 
 end Algebra
 

@@ -33,7 +33,8 @@ variable {α β : Type*} [Fintype β]
 
 @[simp]
 lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by simp [dens, sum_div]
+    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by
+  simp [dens, sum_div]
 
 variable {s : Finset α} {t : α → Finset β}
 

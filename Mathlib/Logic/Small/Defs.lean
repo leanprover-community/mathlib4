@@ -29,7 +29,11 @@ universe u w v v'
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
-@[mk_iff, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423: `v` is a true output (determined by `α`),
+-- but we need the attribute to prevent `w` from also being treated as output.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params v, mk_iff, pp_with_univ]
 class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
@@ -41,12 +45,13 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 
 /-- An arbitrarily chosen model in `Type w` for a `w`-small type.
 -/
-@[pp_with_univ]
+@[pp_with_univ, no_expose]
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
 /-- The noncomputable equivalence between a `w`-small type and a model.
 -/
+@[no_expose]
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
@@ -113,6 +118,7 @@ instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (
   ⟨⟨Σ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
     @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by

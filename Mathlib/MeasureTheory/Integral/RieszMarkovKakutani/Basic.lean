@@ -51,12 +51,6 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   rw [← hg]
   simp
 
-/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
-@[deprecated PositiveLinearMap.mk₀ (since := "2025-08-08")]
-lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
-    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ :=
-  (PositiveLinearMap.mk₀ Λ hΛ).monotone
-
 end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
@@ -284,8 +278,9 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
   sup_le' := rieszContentAux_sup_le Λ
 
 lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
-  simp [rieszContent, ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
+  simp [rieszContent, ne_eq, not_false_eq_true]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe, Content.mk_apply]
@@ -302,7 +297,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   lift ε to ℝ≥0 using hε.le
   obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
   rw [rieszContentAux, Real.toNNReal_of_nonneg hε.le, ← NNReal.coe_lt_coe] at hfle
-  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
+  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (a := Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
   rw [mul_comm, ← smul_eq_mul, ← map_smul]
   set K' := f ⁻¹' Ici α⁻¹
   have hKK' : ↑K ⊆ interior K' :=
@@ -327,6 +322,7 @@ promoted to a measure. It will be later shown that
 `∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = Λ f` for all `f : C_c(X, ℝ≥0)`. -/
 def rieszMeasure := (rieszContent Λ).measure
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
     {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
@@ -343,7 +339,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   by_cases hx : x ∈ tsupport f
   · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
   · rw [image_eq_zero_of_notMem_tsupport hx]
-    exact zero_le (g x)
+    exact zero_le
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
     (h : tsupport f ⊆ V) : .ofNNReal (Λ f) ≤ rieszMeasure Λ V := by

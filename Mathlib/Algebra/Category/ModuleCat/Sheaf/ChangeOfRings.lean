@@ -36,9 +36,9 @@ induced by a morphism of sheaves of rings `R ⟶ R'`. -/
 noncomputable def restrictScalars :
     SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R where
   obj M' :=
-    { val := (PresheafOfModules.restrictScalars α.val).obj M'.val
+    { val := (PresheafOfModules.restrictScalars α.hom).obj M'.val
       isSheaf := M'.isSheaf }
-  map φ := { val := (PresheafOfModules.restrictScalars α.val).map φ.val }
+  map φ := { val := (PresheafOfModules.restrictScalars α.hom).map φ.val }
 
 instance : (restrictScalars.{v} α).Additive where
 
@@ -49,6 +49,7 @@ namespace PresheafOfModules
 variable {R R' : Cᵒᵖ ⥤ RingCat.{u}} (α : R ⟶ R')
   {M₁ M₂ : PresheafOfModules.{v} R'}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `PresheafOfModules.restrictScalars α` induces bijections on
 morphisms if `α` is locally surjective and the target presheaf is a sheaf. -/
 noncomputable def restrictHomEquivOfIsLocallySurjective

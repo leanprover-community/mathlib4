@@ -60,7 +60,8 @@ variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by left cosets
+@[to_additive (attr := instance_reducible)
+  /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
@@ -99,8 +100,9 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by right cosets
-of a subgroup. -/]
+@[to_additive (attr := instance_reducible)
+  /-- The equivalence relation corresponding to the partition of a group by right cosets
+  of a subgroup. -/]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
@@ -204,10 +206,10 @@ theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
 
 variable (s)
 
-/- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
-  `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
-  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
-@[to_additive QuotientAddGroup.mk_out_eq_mul]
+/-- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
+`simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
+stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
+@[to_additive]
 theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
   ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
@@ -246,6 +248,9 @@ theorem preimage_mk_one (N : Subgroup α) :
   simp
 
 end QuotientGroup
+
+@[deprecated (since := "2026-07-12")]
+alias QuotientAddGroup.mk_out_eq_mul := QuotientAddGroup.mk_out_eq_add
 
 namespace Subgroup
 

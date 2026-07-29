@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Convex combinations
@@ -221,7 +223,7 @@ that `z i ∈ s` whenever `w i ≠ 0`, then the sum `∑ᶠ i, w i • z i` belo
 theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E} (hs : Convex R s)
     (h₀ : ∀ i, 0 ≤ w i) (h₁ : ∑ᶠ i, w i = 1) (hz : ∀ i, w i ≠ 0 → z i ∈ s) :
     (∑ᶠ i, w i • z i) ∈ s := by
-  have hfin_w : (support (w ∘ PLift.down)).Finite := by
+  have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
     rw [finsum, dif_neg H] at h₁
     exact zero_ne_one h₁
@@ -240,7 +242,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   by_cases h_cases : x = y
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
-  · convert h {x, y} (fun z => if z = y then b else a) _ _ _
+  · convert! h { x, y } (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
     · grind
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
@@ -377,7 +379,7 @@ lemma mem_convexHull_iff_exists_fintype {s : Set E} {x : E} :
     x ∈ convexHull R s ↔ ∃ (ι : Type) (_ : Fintype ι) (w : ι → R) (z : ι → E), (∀ i, 0 ≤ w i) ∧
       ∑ i, w i = 1 ∧ (∀ i, z i ∈ s) ∧ ∑ i, w i • z i = x := by
   constructor
-  · simp only [convexHull_eq, mem_setOf_eq]
+  · simp only [convexHull_eq, mem_ofPred_eq]
     rintro ⟨ι, t, w, z, h⟩
     refine ⟨t, inferInstance, w ∘ (↑), z ∘ (↑), ?_⟩
     simpa [← sum_attach t, centerMass_eq_of_sum_1 _ _ h.2.1] using h
@@ -407,7 +409,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
 
 theorem Finset.mem_convexHull {s : Finset E} {x : E} : x ∈ convexHull R (s : Set E) ↔
     ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y ∈ s, w y = 1 ∧ s.centerMass w id = x := by
-  rw [Finset.convexHull_eq, Set.mem_setOf_eq]
+  rw [Finset.convexHull_eq, Set.mem_ofPred_eq]
 
 /-- This is a version of `Finset.mem_convexHull` stated without `Finset.centerMass`. -/
 lemma Finset.mem_convexHull' {s : Finset E} {x : E} :
@@ -607,3 +609,30 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
     fun _ _ ↦ convex_convexHull _ _) fun _ ↦ mem_convexHull_pi
 
 end pi
+
+namespace Affine.Simplex
+
+/-- The closed interior of a simplex is the convex hull of all vertices. -/
+@[simp] theorem convexHull_eq_closedInterior {𝕜 V : Type*} [Field 𝕜] [LinearOrder 𝕜]
+    [IsOrderedRing 𝕜] [AddCommGroup V] [Module 𝕜 V] {n : ℕ} (s : Simplex 𝕜 V n) :
+    convexHull 𝕜 (Set.range s.points) = s.closedInterior := by
+  ext p
+  rw [convexHull_range_eq_exists_affineCombination, Set.mem_ofPred]
+  constructor <;> intro h
+  · obtain ⟨u, w, hw, hw1, rfl⟩ := h
+    have hw' : ∀ i ∈ u, w i ≤ 1 := by
+      intro i hi
+      rw [← hw1]
+      apply Finset.single_le_sum (fun j hj ↦ hw j hj) hi
+    have hw1' : ∑ i, (u : Set (Fin (n + 1))).indicator w i = 1 := by
+      simpa [Finset.sum_indicator_subset _ u.subset_univ] using hw1
+    rw [Finset.affineCombination_indicator_subset _ _ u.subset_univ,
+      affineCombination_mem_closedInterior_iff hw1']
+    intro i
+    by_cases hi : i ∈ (u : Set (Fin (n + 1))) <;> aesop
+  · obtain ⟨w, hw1, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
+      Set.mem_of_mem_of_subset h s.closedInterior_subset_affineSpan
+    rw [affineCombination_mem_closedInterior_iff hw1] at h
+    exact ⟨Finset.univ, w, fun i _ ↦ (h i).1, hw1, rfl⟩
+
+end Affine.Simplex

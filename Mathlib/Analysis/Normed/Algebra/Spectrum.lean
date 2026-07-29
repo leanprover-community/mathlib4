@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
@@ -20,7 +20,7 @@ public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
 Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
- `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
+`Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
 
@@ -116,11 +116,11 @@ protected theorem isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 
 theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 : A)‖ < ‖k‖) : k ∈ ρ a := by
-  rw [resolventSet, Set.mem_setOf_eq, Algebra.algebraMap_eq_smul_one]
+  rw [resolventSet, Set.mem_ofPred_eq, Algebra.algebraMap_eq_smul_one]
   nontriviality A
   have hk : k ≠ 0 :=
     ne_zero_of_norm_ne_zero ((mul_nonneg (norm_nonneg _) (norm_nonneg _)).trans_lt h).ne'
-  letI ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
+  let ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
   rw [← inv_inv ‖(1 : A)‖,
     mul_inv_lt_iff₀' (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
   have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
@@ -254,7 +254,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
-  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
+  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le
   all_goals dsimp
   · rw [one_div, pow_rpow_inv_natCast]
     positivity
@@ -331,22 +331,22 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
         le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       rcases n with - | n
-      · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
+      · simp
       · grw [nnnorm_pow_le' a n.succ_pos, ← le_max_left]
         by_cases h : ‖a‖₊ = 0
         · simp [h, pow_succ']
         · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
-          simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
+          simpa only [← mul_pow, mul_comm] using! pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
     hasSum := fun {y} hy => by
       have norm_lt : ‖y • a‖ < 1 := by
         by_cases h : ‖a‖₊ = 0
         · simp only [nnnorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
         · have nnnorm_lt : ‖y‖₊ < ‖a‖₊⁻¹ := by
-            simpa only [← coe_inv h, mem_ball_zero_iff, Metric.eball_coe] using hy
+            simpa only [← coe_inv h, mem_ball_zero_iff, Metric.eball_coe] using! hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using!
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 
 theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖₊ < (spectralRadius 𝕜 a)⁻¹) :
@@ -389,7 +389,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum 𝕜]
-    convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
+    convert! (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
@@ -419,7 +419,7 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
 def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
-  { φ.toLinearMap with cont := map_continuous φ }
+  { φ.toLinearMap with }
 
 @[simp]
 theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
@@ -460,7 +460,7 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
-def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
+noncomputable def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   toFun := toAlgHom
   invFun f :=
     { val := f.toContinuousLinearMap
@@ -491,6 +491,7 @@ section NormedField
 variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
 variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 open SubalgebraClass in
 include instSMulMem in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If `a : S` is invertible in `A`,
@@ -522,7 +523,7 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x 
   intro μ hμ
   by_contra h
   rw [spectrum.notMem_iff] at h
-  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, mem_diff] at hμ
+  rw [← frontier_compl, (spectrum.isClosed _).isOpen_compl.frontier_eq, Set.mem_sdiff] at hμ
   obtain ⟨hμ₁, hμ₂⟩ := hμ
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
@@ -555,19 +556,19 @@ is the spectrum of `↑x : A` along with the connected components of the complem
 lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
     σ 𝕜 x = σ 𝕜 (x : A) ∪ (⋃ z ∈ (σ 𝕜 x \ σ 𝕜 (x : A)), connectedComponentIn (σ 𝕜 (x : A))ᶜ z) := by
   suffices IsClopen ((σ 𝕜 (x : A))ᶜ ↓∩ (σ 𝕜 x \ σ 𝕜 (x : A))) by
-    rw [← this.biUnion_connectedComponentIn (diff_subset_compl _ _),
-      union_diff_cancel (spectrum.subset_subalgebra x)]
+    rw [← this.biUnion_connectedComponentIn (sdiff_subset_compl _ _),
+      union_sdiff_cancel (spectrum.subset_subalgebra x)]
   have : CompleteSpace S := hS.completeSpace_coe
   have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
     rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
-      union_diff_distrib, diff_eq_empty.mpr (frontier_spectrum S x),
-      diff_eq_compl_inter, union_empty]
+      union_sdiff_distrib, sdiff_eq_empty.mpr (frontier_spectrum S x),
+      sdiff_eq_compl_inter, union_empty]
     exact (spectrum.isClosed _).isOpen_compl.inter isOpen_interior
   apply isClopen_preimage_val h_open
   suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
-  rw [diff_eq_compl_inter]
+  rw [sdiff_eq_compl_inter]
   apply (frontier_inter_subset _ _).trans
   rw [frontier_compl]
   apply union_subset <| inter_subset_left
@@ -584,7 +585,7 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
   · have : CompleteSpace S := hS.completeSpace_coe
     suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
     rw [spectrum_sUnion_connectedComponentIn S]
-    exact subset_biUnion_of_mem (mem_diff_of_mem hz hz') |>.trans subset_union_right
+    exact subset_biUnion_of_mem (mem_sdiff_of_mem hz hz') |>.trans subset_union_right
 
 end NormedField
 
@@ -599,7 +600,7 @@ lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ �
     rw [spectrum_sUnion_connectedComponentIn, this]
     simp
   refine eq_empty_of_forall_notMem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
-  obtain ⟨hz, hz'⟩ := mem_diff _ |>.mp hz
+  obtain ⟨hz, hz'⟩ := mem_sdiff _ |>.mp hz
   have := (spectrum.isBounded (x : A)).union <|
     h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
   simpa
@@ -658,7 +659,7 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
   have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
-  convert hx₁
+  convert! hx₁
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
@@ -724,7 +725,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
 open WithLp in
@@ -733,8 +734,9 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
-  convert upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
-    unitization_isometry_inr.continuous
+  convert!
+    upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
+      unitization_isometry_inr.continuous
   ext1 a
   rw [Unitization.quasispectrum_eq_spectrum_inr,
     ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
@@ -744,7 +746,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
-  obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
+  obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
 

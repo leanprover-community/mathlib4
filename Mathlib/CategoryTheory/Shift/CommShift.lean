@@ -28,6 +28,8 @@ shift functors.)
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -153,10 +155,6 @@ variable {A}
 
 export CommShift (commShiftIso commShiftIso_zero commShiftIso_add)
 
-@[deprecated (since := "2025-11-11")] alias CommShift.iso := commShiftIso
-@[deprecated (since := "2025-11-11")] alias CommShift.zero := commShiftIso_zero
-@[deprecated (since := "2025-11-11")] alias CommShift.add := commShiftIso_add
-
 section
 
 variable [F.CommShift A]
@@ -168,13 +166,13 @@ variable [F.CommShift A]
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+    dsimp% F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+    dsimp% (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 
@@ -400,7 +398,7 @@ instance of_iso_symm [NatTrans.CommShift e.hom A] : NatTrans.CommShift e.symm.ho
 
 lemma of_isIso [IsIso τ] [NatTrans.CommShift τ A] :
     NatTrans.CommShift (inv τ) A := by
-  haveI : NatTrans.CommShift (asIso τ).hom A := by assumption
+  have : NatTrans.CommShift (asIso τ).hom A := by assumption
   change NatTrans.CommShift (asIso τ).inv A
   infer_instance
 
@@ -445,7 +443,7 @@ variable {C D E : Type*} [Category* C] [Category* D]
 
 /-- If `e : F ≅ G` is an isomorphism of functors and if `F` commutes with the
 shift, then `G` also commutes with the shift. -/
-@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
+@[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app, instance_reducible]
 def ofIso : G.CommShift A where
   commShiftIso a := isoWhiskerLeft _ e.symm ≪≫ F.commShiftIso a ≪≫ isoWhiskerRight e _
   commShiftIso_zero := by
@@ -463,7 +461,7 @@ def ofIso : G.CommShift A where
 lemma ofIso_compatibility :
     letI := ofIso e A
     NatTrans.CommShift e.hom A := by
-  letI := ofIso e A
+  let := ofIso e A
   exact ⟨fun a => by ext; simp [ofIso_commShiftIso_hom_app]⟩
 
 end CommShift
@@ -482,9 +480,11 @@ variable [AddMonoid A] [HasShift D A]
 
 namespace CommShift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a fully faithful functor which is used
 to construct a shift by `A` on `C` from a shift on `D`,
 then the functor `F` itself commutes with the shift by `A`. -/
+@[instance_reducible]
 def ofHasShiftOfFullyFaithful :
     letI := hF.hasShift s i; F.CommShift A := by
   letI := hF.hasShift s i
@@ -514,17 +514,8 @@ lemma map_shiftFunctorComm
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
-      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
-  have := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
-  simp only [comp_obj, CommShift.isoAdd_hom_app,
-    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at this
-  simp only [shiftFunctorComm_eq D a b _ rfl]
-  dsimp
-  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
-    ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
-  simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
-    ← Functor.map_comp_assoc]
+      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) :=
+  map_shiftFunctorComm_hom_app _ _ _ _
 
 namespace CommShift
 
@@ -568,6 +559,7 @@ end OfComp
 
 /-- Given an isomorphism `e : F ⋙ G ≅ H` where `G` is fully faithful,
 the functor `F` commutes with shifts by `A` if `G` and `H` do. -/
+@[instance_reducible]
 noncomputable def ofComp : F.CommShift A where
   commShiftIso := OfComp.iso e
   commShiftIso_zero := by
@@ -588,7 +580,7 @@ noncomputable def ofComp : F.CommShift A where
 lemma ofComp_compatibility :
     letI := ofComp e
     NatTrans.CommShift e.hom A := by
-  letI := ofComp e
+  let := ofComp e
   refine ⟨fun a ↦ ?_⟩
   ext X
   simp [commShiftIso_comp_hom_app, show F.commShiftIso a = OfComp.iso e a from rfl,

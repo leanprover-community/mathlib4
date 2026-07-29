@@ -53,7 +53,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace Manifold
 
@@ -102,6 +102,17 @@ def LiftSourceTargetPropertyAt (f : M → N) (x : M)
     (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop :=
   Nonempty (LocalPresentationAt I J n f x P)
 
+namespace LocalPresentationAt
+
+variable {f g : M → N} {x : M}
+  {P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop}
+
+lemma mapsto_domChart_source_codChart_source (h : LocalPresentationAt I J n f x P) :
+    MapsTo f h.domChart.source h.codChart.source :=
+  h.source_subset_preimage_source
+
+end LocalPresentationAt
+
 namespace LiftSourceTargetPropertyAt
 
 variable {f g : M → N} {x : M}
@@ -142,8 +153,7 @@ lemma codChart_mem_maximalAtlas (h : LiftSourceTargetPropertyAt I J n f x P) :
     h.codChart ∈ IsManifold.maximalAtlas J n N :=
   h.localPresentationAt.codChart_mem_maximalAtlas
 
-lemma source_subset_preimage_source
- (h : LiftSourceTargetPropertyAt I J n f x P) :
+lemma source_subset_preimage_source (h : LiftSourceTargetPropertyAt I J n f x P) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
   h.localPresentationAt.source_subset_preimage_source
 
@@ -228,7 +238,7 @@ lemma prodMap [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsMani
       (domChart_mem_maximalAtlas hf) (domChart_mem_maximalAtlas hg)
   · apply IsManifold.mem_maximalAtlas_prod
       (codChart_mem_maximalAtlas hf) (codChart_mem_maximalAtlas hg)
-  · simp only [OpenPartialHomeomorph.prod_toPartialEquiv, PartialEquiv.prod_source,
+  · simp only [OpenPartialHomeomorph.prod_toPartialHomeomorph, PartialEquiv.prod_source,
       preimage_prod_map_prod]
     exact prod_mono hf.source_subset_preimage_source hg.source_subset_preimage_source
   · exact h hf.property hg.property
