@@ -37,10 +37,10 @@ namespace Representation
 lemma finiteDimensional_intertwiningMap.le_subgroup {H1 H2 : Subgroup G} (h : H1 ≤ H2)
     [FiniteDimensional k ((ind H1.subtype (trivial k H1 k)).IntertwiningMap ρ)] :
     FiniteDimensional k ((ind H2.subtype (trivial k H2 k)).IntertwiningMap ρ) := by
-  let f := bimoduleHecke₁.canonicalIntertwiningMap k h
+  let f := bimoduleHecke₁.canonicalIntertwiningMap k H1 H2 h
   have h_sur : Function.Surjective f := by
-    apply IntertwiningMap.surjective_cosetVector_one
-    use cosetVector k H1 1
+    apply IntertwiningMap.surjective_cosetVector₁_one
+    use cosetVector₁ k H1 1
     simp [f]
   have : Function.Injective ((IntertwiningMap.llcomp
       (ind H1.subtype (trivial k H1 k)) (ind H2.subtype (trivial k H2 k)) ρ).flip f) := by
@@ -60,7 +60,7 @@ section admissible
 `K`-invariants is finite dimensional. -/
 @[mk_iff] class IsAdmissible : Prop where
   finiteDimensional_intertwiningMap : ∀ (H : OpenSubgroup G),
-      FiniteDimensional k ((ind H.subtype (trivial k H k)).IntertwiningMap ρ)
+      FiniteDimensional k (moduleHecke₁ H ρ)
 
 variable {ρ σ}
 
@@ -68,7 +68,7 @@ lemma isAdmissible_injective [h : IsAdmissible ρ] {f : IntertwiningMap σ ρ}
     (h_inj : Function.Injective f) : IsAdmissible σ := by
   rw [isAdmissible_iff]
   intro H
-  have : FiniteDimensional k ((ind H.subtype (trivial k H k)).IntertwiningMap ρ) :=
+  have : FiniteDimensional k (moduleHecke₁ H ρ) :=
     h.finiteDimensional_intertwiningMap H
   have : Function.Injective (IntertwiningMap.llcomp (ind H.subtype (trivial k H k)) σ ρ f) := by
     intro _ _ h_eq
@@ -96,15 +96,12 @@ lemma IsAdmissible.finiteDimensional_intertwiningMap_self [h : IsAdmissible ρ] 
   have : Nontrivial V := IsSimpleModule.nontrivial k[G] ρ.asModule
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   let H := ρ.stabilizer v
-  have : FiniteDimensional k (IntertwiningMap (ind H.subtype (trivial k H k)) ρ) :=
+  have : FiniteDimensional k (moduleHecke₁ H ρ) :=
     h.finiteDimensional_intertwiningMap ⟨H, h_smooth.smooth v⟩
-  let f' : IntertwiningMap (trivial k H k) (ρ.comp H.subtype) :=
-    ⟨LinearMap.toSpanSingleton k V v, fun h ↦ by ext; simp [mem_stabilizer.mp h.2]⟩
-  let f := IntertwiningMap.resToInd H.subtype f'
+  let f := moduleHecke₁.invariant_mk H v (ρ := ρ) (fun h ↦ by simp [mem_stabilizer.mp h.2])
   have hf : f ≠ 0 := by
-    have hfeq : f (cosetVector k H 1) = v := by
-      simp only [f, IntertwiningMap.resToInd_apply_cosetVector_eq]
-      simp [f']
+    have hfeq : f (cosetVector₁ k H 1) = v := by
+      simp [f]
     by_contra
     have : v = 0 := by
       rw [← hfeq, this, IntertwiningMap.coe_zero, Pi.zero_apply]
