@@ -20,8 +20,6 @@ matrices built out of blocks.
 
 * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
   if the rows and columns are ordered according to some order `b : o → α`
-* `Matrix.IsUpperTriangular` and `Matrix.IsLowerTriangular`: the special cases where each
-  entry is its own block
 
 ## Main results
 
