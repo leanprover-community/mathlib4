@@ -5864,7 +5864,10 @@ public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.MulChar.Lemmas
 public import Mathlib.NumberTheory.Multiplicity
-public import Mathlib.NumberTheory.NewtonPolygon
+public import Mathlib.NumberTheory.NewtonPolygon.Basic
+public import Mathlib.NumberTheory.NewtonPolygon.Construction
+public import Mathlib.NumberTheory.NewtonPolygon.Heights
+public import Mathlib.NumberTheory.NewtonPolygon.PowerSeries
 public import Mathlib.NumberTheory.Niven
 public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.NumberTheory.NumberField.Basic
