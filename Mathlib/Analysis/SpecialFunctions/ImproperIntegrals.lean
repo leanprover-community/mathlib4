@@ -168,10 +168,9 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
 
 theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
     ¬IntegrableOn (fun (x : ℝ) ↦ x ^ s) (Ioi a) volume := by
-  have hpos : (0 : ℝ) < max a 1 := by simp
   refine fun h ↦ not_lt.mpr hs ?_
-  rw [← integrableOn_Ioi_rpow_iff hpos]
-  exact h.mono_set (Ioi_subset_Ioi (le_max_left a 1))
+  rw [← integrableAtFilter_rpow_atTop_iff]
+  exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
 
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
