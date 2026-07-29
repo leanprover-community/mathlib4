@@ -280,7 +280,7 @@ section TorsionFree
 
 /-- A `FunLike` type torsion-free if `β` is torsion-free. -/
 @[to_additive /-- A `FunLike` type torsion-free if `β` is torsion-free. -/]
-protected abbrev isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
+protected theorem isMulTorsionFree [Monoid β] [Monoid F] [IsOneApply F α β] [IsMulApply F α β]
     [IsMulTorsionFree β] : IsMulTorsionFree F :=
   DFunLike.coe_injective.isMulTorsionFree (coeMonoidHom F α β)
 
