@@ -89,6 +89,11 @@ theorem center_le_comap_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F
     (hf : Function.Surjective f) : center M ≤ comap f (center N) :=
   map_le_iff_le_comap.mp (map_center_le_center hf)
 
+@[to_additive]
+theorem comap_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
+    (hf : Function.Injective f) : comap f (center N) ≤ center M :=
+  Set.preimage_center_subset hf
+
 @[to_additive (attr := simp)]
 theorem map_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) :
     map f (center M) = center N :=

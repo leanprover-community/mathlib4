@@ -293,6 +293,11 @@ theorem center_le_comap_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
     center R ≤ comap f (center S) :=
   map_le_iff_le_comap.mp (map_center_le_center hf)
 
+theorem comap_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
+    [NonUnitalRingHomClass F R S] {f : F} (hf : Function.Injective f) :
+    comap f (center S) ≤ center R :=
+  Set.preimage_center_subset hf
+
 @[simp]
 theorem map_center_eq [NonUnitalNonAssocSemiring S] (f : R ≃+* S) :
     map f (center R) = center S :=

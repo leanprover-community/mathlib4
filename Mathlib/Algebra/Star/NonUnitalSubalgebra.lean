@@ -1180,6 +1180,11 @@ theorem center_le_comap_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [
     center R A ≤ comap f (center R B) :=
   NonUnitalSubsemiring.center_le_comap_center hf
 
+theorem comap_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B]
+    [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] {f : F} (hf : Function.Injective f) :
+    comap f (center R B) ≤ center R A :=
+  NonUnitalSubsemiring.comap_center_le_center hf
+
 @[simp]
 theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] {f : A ≃⋆ₐ[R] B} :
     map f (center R A) = center R B :=
