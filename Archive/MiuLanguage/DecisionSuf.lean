@@ -3,8 +3,8 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Archive.MiuLanguage.DecisionNec
-import Mathlib.Tactic.Linarith
+public import Archive.MiuLanguage.DecisionNec
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Decision procedure - sufficient condition and decidability

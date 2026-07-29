@@ -3,8 +3,8 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Data.NNReal.Basic
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Data.NNReal.Basic
 
 /-!
 # IMO 1982 Q3

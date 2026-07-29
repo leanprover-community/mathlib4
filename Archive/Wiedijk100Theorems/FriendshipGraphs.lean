@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 
 /-!
 # The Friendship Theorem

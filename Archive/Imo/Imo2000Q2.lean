@@ -3,7 +3,7 @@ Copyright (c) 2026 Aditya Menon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aditya Menon
 -/
-import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # IMO 2000 Q2

@@ -3,11 +3,11 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2005 Q3

@@ -3,8 +3,8 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.Closure
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Closure
 
 /-!
 # The Kuratowski closure-complement theorem
