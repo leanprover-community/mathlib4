@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
@@ -250,6 +251,14 @@ lemma rank_mul_eq_right_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R]
 lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [CommRing R] [Fintype m] [DecidableEq m]
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) : (A * B).rank = B.rank :=
   rank_mul_eq_right_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
+
+lemma rank_mul_eq_right_of_lowerTriangular {R : Type*} [CommRing R] [IsDomain R]
+    [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
+    (hA : A.IsLowerTriangular) (hd : ∀ i, A i i ≠ 0) : (A * B).rank = B.rank := by
+  have hdet : A.det ≠ 0 := by
+    rw [det_of_lowerTriangular A hA]
+    exact Finset.prod_ne_zero_iff.mpr fun i _ => hd i
+  exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
 theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
