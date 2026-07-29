@@ -88,6 +88,7 @@ lemma hom_ext_iff' {X Y : FormalCoproduct.{w} C} (f g : X ⟶ Y) :
     f = g ↔ ∀ i : X.I, ∃ h₁ : f.f i = g.f i, f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i :=
   ⟨(· ▸ by simp), fun h ↦ hom_ext (funext fun i ↦ (h i).fst) fun i ↦ (h i).snd⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A way to create isomorphisms in the category of formal coproducts, by creating an `Equiv`
 between the indexing sets, and then correspondingly isomorphisms of each component. -/
 @[simps!] def isoOfComponents {X Y : FormalCoproduct.{w} C} (e : X.I ≃ Y.I)
@@ -231,6 +232,7 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
     ∐ X.toFun ≅ X :=
   coproductIsoCofanPt _ _ ≪≫ cofanPtIsoSelf X
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
     Sigma.ι _ i ≫ (coproductIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) := by
   simp [coproductIsoSelf]
@@ -238,6 +240,31 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
 @[reassoc (attr := simp)] lemma fromIncl_comp_coproductIsoSelf_inv (i : X.I) :
     Hom.fromIncl i (𝟙 (X.obj i)) ≫ (coproductIsoSelf X).inv = Sigma.ι X.toFun i :=
   (Iso.comp_inv_eq _).2 (ι_comp_coproductIsoSelf_hom _ _).symm
+
+/-- Given an object `X : FormalCoproduct C` and an equality of indices `i = j`, this is
+the induced isomorphism `Xᵢ ≅ Xⱼ`. -/
+def objIsoOfEq (X : FormalCoproduct.{w} C) {i j : X.I} (hij : i = j) :
+    X.obj i ≅ X.obj j :=
+  eqToIso (by rw [hij])
+
+@[simp]
+lemma objIsoOfEq_rfl (X : FormalCoproduct.{w} C) (i : X.I) :
+    X.objIsoOfEq (rfl : i = i) = Iso.refl _ :=
+  rfl
+
+@[simp]
+lemma objIsoOfEq_trans (X : FormalCoproduct.{w} C) {i j k : X.I}
+    (hij : i = j) (hjk : j = k) :
+    X.objIsoOfEq hij ≪≫ X.objIsoOfEq hjk = X.objIsoOfEq (hij.trans hjk) := by
+  subst hij hjk
+  simp
+
+@[simp]
+lemma objIsoOfEq_symm (X : FormalCoproduct.{w} C) {i j : X.I}
+    (hij : i = j) :
+    (X.objIsoOfEq hij).symm = X.objIsoOfEq hij.symm := by
+  subst hij
+  simp
 
 end Coproduct
 
@@ -262,6 +289,7 @@ variable {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
   (hpb : ∀ i, IsLimit (pb i))
   (T : FormalCoproduct.{w} C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, given pullback in `C` over each component,
 construct the pullback in `FormalCategory.{w} C`. -/
 def pullbackCone : PullbackCone f g :=
@@ -296,7 +324,7 @@ universal property of pullbacks. -/
     fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
-    simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
+    simp only [eqToHom_refl, Category.comp_id]
     exact (hpb _).hom_ext ((pb _).equalizer_ext (by aesop) (by aesop)))
   right_inv s := by ext <;> simp
 
@@ -337,6 +365,7 @@ noncomputable section HasCoproducts
 
 variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A copresheaf valued in a category `A` with arbitrary coproducts, can be extended to the category
 of formal coproducts. -/
@@ -347,6 +376,7 @@ of formal coproducts. -/
       map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_desc]) }
   map α := { app f := Sigma.map fun i ↦ α.app (f.obj i) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `eval(F)` restricted to the original category (via `incl`) is the original copresheaf `F`. -/
 @[simps!] def evalCompInclIsoId :
@@ -371,12 +401,29 @@ instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
 instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
   preservesColimitsOfShape_of_discrete _
 
+/-- The yoneda embedding of `FormalCoproduct.{v} C` into `v`-presheaves. -/
+protected noncomputable abbrev yoneda :
+    FormalCoproduct.{v} C ⥤ Cᵒᵖ ⥤ Type v :=
+  (eval _ _).obj yoneda
+
+/-- The yoneda embedding of `FormalCoproduct.{w} C` into `max w v`-presheaves. -/
+protected noncomputable abbrev uliftYoneda :
+    FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type (max w v) :=
+  (eval _ _).obj uliftYoneda
+
+/-- The yoneda embedding of `FormalCoproduct.{w} C` into `w`-presheaves for a locally
+`w`-small category. -/
+protected noncomputable abbrev shrinkYoneda [LocallySmall.{w} C] :
+    FormalCoproduct.{w} C ⥤ Cᵒᵖ ⥤ Type w :=
+  (eval _ _).obj shrinkYoneda
+
 end HasCoproducts
 
 noncomputable section HasProducts
 
 variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf valued in a category `A` with arbitrary products can be extended to the category of
 formal coproducts. -/
@@ -386,6 +433,7 @@ formal coproducts. -/
       map f := Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ F.map (f.unop.φ i).op }
   map α := { app f := Pi.map fun i ↦ α.app (op (f.unop.obj i)) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` restricted to the original category (via `incl`) is the original presheaf `F`. -/
 @[simps!] def evalOpCompInlIsoId :
@@ -395,6 +443,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 variable {C A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` preserves arbitrary products. -/
 def isLimitEvalMapConeCofanOp : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where

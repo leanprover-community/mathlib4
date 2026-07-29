@@ -471,7 +471,7 @@ theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).In
   fun _ _ ↦ by simp [algebraMap_eq]
 
 instance : IsTorsionFree R ℍ[R,c₁,c₂,c₃] :=
- (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
+  (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
 
 section
 
@@ -723,11 +723,14 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance instRing : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
+instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
+
+instance instRing : Ring ℍ[R] where
+  nsmul := letI := Quaternion.instSMul (S := ℕ) (R := R); (· • ·)
+  zsmul := letI := Quaternion.instSMul (S := ℤ) (R := R); (· • ·)
+  __ : Ring ℍ[R] := inferInstanceAs <| Ring ℍ[R,-1,0,-1]
 
 instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,0,-1]
-
-instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
 
 instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
   inferInstanceAs <| IsScalarTower S T ℍ[R,-1,0,-1]
@@ -749,6 +752,7 @@ protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
 
 instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
 instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]
@@ -985,19 +989,19 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
 
 theorem self_add_star' : a + star a = ↑(2 * a.re) := by
-  simpa using QuaternionAlgebra.self_add_star' a
+  simpa using! QuaternionAlgebra.self_add_star' a
 
 theorem self_add_star : a + star a = 2 * a.re := by
-  simpa using QuaternionAlgebra.self_add_star a
+  simpa using! QuaternionAlgebra.self_add_star a
 
 theorem star_add_self' : star a + a = ↑(2 * a.re) := by
-  simpa using QuaternionAlgebra.star_add_self' a
+  simpa using! QuaternionAlgebra.star_add_self' a
 
 theorem star_add_self : star a + a = 2 * a.re := by
-  simpa using QuaternionAlgebra.star_add_self a
+  simpa using! QuaternionAlgebra.star_add_self a
 
 theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
-  simpa using QuaternionAlgebra.star_eq_two_re_sub a
+  simpa using! QuaternionAlgebra.star_eq_two_re_sub a
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=

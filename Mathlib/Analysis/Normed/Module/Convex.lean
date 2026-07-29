@@ -54,7 +54,7 @@ theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 
 theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
-  simpa [dist_eq_norm, preimage_preimage] using
+  simpa [dist_eq_norm, preimage_preimage] using!
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
@@ -169,16 +169,22 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
   IsTopologicalAddGroup.pathConnectedSpace
 
 /-- The set of vectors in the same ray as `x` is connected. -/
-theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
+theorem isConnected_setOfPred_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
   exact isConnected_Ici.image _ (by fun_prop)
 
+@[deprecated (since := "2026-07-09")]
+alias isConnected_setOf_sameRay := isConnected_setOfPred_sameRay
+
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
-theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
+theorem isConnected_setOfPred_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isConnected_setOf_sameRay_and_ne_zero := isConnected_setOfPred_sameRay_and_ne_zero
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by

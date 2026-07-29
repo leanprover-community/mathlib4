@@ -149,6 +149,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
     coeffMonoidHom M p n ((powMonoidHom p)^[m] f) = coeffMonoidHom M p (n - m) f := by
   rw [← coeffMonoidHom_iterate_powMonoidHom f (n - m) m, Nat.sub_add_cancel hmn]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps! symm_apply]
@@ -169,10 +170,12 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma coeffMonoidHom_zero_liftMonoidHom
     (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
     coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
 def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
@@ -809,8 +812,8 @@ include hv
 
 theorem isDomain : IsDomain (PreTilt O p) := by
   have hp : Nat.Prime p := Fact.out
-  haveI : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
-  haveI : NoZeroDivisors (PreTilt O p) :=
+  have : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
+  have : NoZeroDivisors (PreTilt O p) :=
     ⟨fun hfg => by
       simp_rw [← map_eq_zero hv] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
       exact mul_ne_zero hfg.1 hfg.2⟩
@@ -828,9 +831,11 @@ def Tilt [Fact p.Prime] [hvp : Fact (v p ≠ 1)] :=
 namespace Tilt
 
 noncomputable instance [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
-  haveI := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
+  #adaptation_note /-- This type ascription was not needed prior to nightly-2026-05-17. -/
+  haveI : Fact ¬IsUnit (p : O) :=
+    Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
   haveI := PreTilt.isDomain K v O hv p
-  inferInstanceAs <| Field (FractionRing _)
+  inferInstanceAs <| Field (FractionRing (PreTilt O p))
 
 end Tilt
 

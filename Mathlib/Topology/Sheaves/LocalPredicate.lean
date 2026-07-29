@@ -100,6 +100,7 @@ structure LocalPredicate extends PrelocalPredicate T where
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V ↦ f (i x : U)), pred f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=
@@ -294,6 +295,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) :
     (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
   colimit.desc _ (P.cocone x)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma stalkToFiber_ι (P : LocalPredicate T) (x : X) (U : (OpenNhds x)ᵒᵖ)
     (fU : {f //  P.pred f}) :
@@ -318,6 +320,7 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.

@@ -139,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.id, coe_id', smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -226,6 +226,7 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -333,7 +334,7 @@ lemma integral_nonneg {f : α →ₛ F} (hf : 0 ≤ᵐ[μ] f) :
   · suffices μ (f ⁻¹' {f y}) = 0 by simp [this, measureReal_def]
     rw [← nonpos_iff_eq_zero]
     refine le_of_le_of_eq (measure_mono fun x hx ↦ ?_) (ae_iff.mp hf)
-    simp only [Set.mem_preimage, mem_singleton_iff, mem_setOf_eq] at hx ⊢
+    simp only [Set.mem_preimage, mem_singleton_iff, mem_ofPred_eq] at hx ⊢
     exact hx ▸ hy
 
 lemma integral_mono {f g : α →ₛ F} (h : f ≤ᵐ[μ] g) (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -510,7 +511,7 @@ end SimpleFuncIntegral
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 local notation "Integral" => @integralCLM α E _ _ _ _ _ μ _
 

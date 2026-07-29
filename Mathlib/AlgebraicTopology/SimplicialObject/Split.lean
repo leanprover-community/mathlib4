@@ -74,6 +74,7 @@ instance : Epi A.e :=
 
 theorem ext' : A = ⟨A.1, ⟨A.e, A.2.2⟩⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e ≫ eqToHom (by rw [h₁]) = A₂.e) :
     A₁ = A₂ := by
   rcases A₁ with ⟨Δ₁, ⟨α₁, hα₁⟩⟩
@@ -179,6 +180,9 @@ of `θ.unop ≫ A.e`. -/
 def pull : IndexSet Δ' :=
   mk (factorThruImage (θ.unop ≫ A.e))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem fac_pull : (A.pull θ).e ≫ image.ι (θ.unop ≫ A.e) = θ.unop ≫ A.e :=
   image.fac _
@@ -221,6 +225,7 @@ namespace Splitting
 variable {X Y : SimplicialObject C} (s : Splitting X)
 
 /-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object. -/
+@[implicit_reducible]
 def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
 
@@ -231,6 +236,7 @@ def isColimit (Δ : SimplexCategoryᵒᵖ) : IsColimit (s.cofan Δ) := s.isColim
 theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) = s.ι n := by
   simp [IndexSet.id, IndexSet.e, cofan_inj_eq]
 
@@ -272,6 +278,8 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
     (A : IndexSet Δ) : (s.cofan Δ).inj A ≫ s.desc Δ F = F A := by
   apply Cofan.IsColimit.fac
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A simplicial object that is isomorphic to a split simplicial object is split. -/
 @[simps]
 def ofIso (e : X ≅ Y) : Splitting Y where
@@ -280,6 +288,8 @@ def ofIso (e : X ≅ Y) : Splitting Y where
   isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
     [Epi p.unop] : (s.cofan Δ₁).inj A ≫ X.map p = (s.cofan Δ₂).inj (A.epiComp p) := by
@@ -287,6 +297,7 @@ theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : Inde
   rw [assoc, ← X.map_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of a splitting of simplicial object by a functor which preserves
 finite coproducts -/
 @[simps]

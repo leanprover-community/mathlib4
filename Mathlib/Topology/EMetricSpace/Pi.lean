@@ -67,10 +67,10 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
-      preimage_setOf_eq, comap_principal, edist_pi_def]
+      preimage_ofPred_eq, comap_principal, edist_pi_def]
     rw [iInf_comm]; congr; funext ε
     rw [iInf_comm]; congr; funext εpos
-    simp [setOf_forall, εpos]
+    simp [ofPred_forall, εpos]
 
 end Pi
 

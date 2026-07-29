@@ -183,7 +183,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n + a = 0 then 0 else rexp (-π * (n + a) ^ 2 * t))
     (evenKernel a t - if (a : UnitAddCircle) = 0 then 1 else 0) := by
-  haveI := Classical.propDecidable -- speed up instance search for `if / then / else`
+  have := Classical.propDecidable -- speed up instance search for `if / then / else`
   simp_rw [AddCircle.coe_eq_zero_iff, zsmul_one]
   split_ifs with h
   · obtain ⟨k, rfl⟩ := h
@@ -621,7 +621,7 @@ lemma differentiableAt_hurwitzZetaEven (a : UnitAddCircle) {s : ℂ} (hs' : s �
 lemma hurwitzZetaEven_residue_one (a : UnitAddCircle) :
     Tendsto (fun s ↦ (s - 1) * hurwitzZetaEven a s) (𝓝[≠] 1) (𝓝 1) := by
   have : Tendsto (fun s ↦ (s - 1) * completedHurwitzZetaEven a s / Gammaℝ s) (𝓝[≠] 1) (𝓝 1) := by
-    simpa only [Gammaℝ_one, inv_one, mul_one] using (completedHurwitzZetaEven_residue_one a).mul
+    simpa only [Gammaℝ_one, inv_one, mul_one] using! (completedHurwitzZetaEven_residue_one a).mul
       <| (differentiable_Gammaℝ_inv.continuous.tendsto _).mono_left nhdsWithin_le_nhds
   refine this.congr' ?_
   filter_upwards [eventually_ne_nhdsWithin one_ne_zero] with s hs

@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.Module
 
 /-!
@@ -139,6 +139,7 @@ theorem ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c
   · rw [univBall, dif_neg hr]
     exact subset_univ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
   unfold univBall; split_ifs <;> simp

@@ -71,6 +71,7 @@ def PreZeroHypercover.isLimitSigmaOfIsColimitEquiv (E : PreZeroHypercover.{w} S)
   · intro ⟨⟩ ⟨⟩ k
     exact Cofan.IsColimit.hom_ext hc' _ _ fun a ↦ by simp; simp [c']
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open PreZeroHypercover in
 /--
@@ -85,7 +86,8 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
     [∀ i, HasPullback (f i) (Cofan.IsColimit.desc hc f)]
     (F : Cᵒᵖ ⥤ Type*)
     [PreservesLimit (Discrete.functor <| fun i ↦ op (X i)) F]
-    [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦ op (pullback (f ij.1) (f ij.2))) F] :
+    [PreservesLimit (Discrete.functor fun (ij : ι × ι) ↦
+      op (Limits.pullback (f ij.1) (f ij.2))) F] :
     Presieve.IsSheafFor F (.singleton <| Cofan.IsColimit.desc hc f) ↔
       Presieve.IsSheafFor F (.ofArrows X f) := by
   let E := PreZeroHypercover.mk _ _ f
@@ -97,7 +99,8 @@ lemma Presieve.isSheafFor_sigmaDesc_iff {ι : Type*} {X : ι → C} (f : ∀ i, 
     dsimp [E]; infer_instance
   have : PreservesLimit (Discrete.functor fun i ↦ op (E.toPreOneHypercover.Y' i)) F := by
     convert! Functor.Initial.preservesLimit_of_comp (Discrete.equivalence <| .sigmaPUnit _).inverse
-    assumption
+    · infer_instance
+    · assumption
   let equiv := (E.isLimitSigmaOfIsColimitEquiv hc hc' F).nonempty_congr
   rwa [isLimit_toPreOneHypercover_type_iff, isLimit_toPreOneHypercover_type_iff,
     presieve₀_sigmaOfIsColimit] at equiv

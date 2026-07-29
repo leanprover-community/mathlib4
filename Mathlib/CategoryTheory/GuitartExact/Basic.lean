@@ -48,6 +48,8 @@ derived functors.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -112,6 +114,7 @@ abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b =
     w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
 abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
     w.CostructuredArrowDownwards g :=
@@ -120,6 +123,7 @@ abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b 
 
 variable {w g}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma StructuredArrowRightwards.mk_surjective
     (f : w.StructuredArrowRightwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
@@ -129,6 +133,7 @@ lemma StructuredArrowRightwards.mk_surjective
   obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
   exact ⟨X₁, a, b, by simpa using ha, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma CostructuredArrowDownwards.mk_surjective
     (f : w.CostructuredArrowDownwards g) :
     ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
@@ -142,6 +147,7 @@ end
 
 namespace EquivalenceJ
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g`. -/
 @[simps]
@@ -155,6 +161,7 @@ def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g w
   map_id _ := rfl
   map_comp _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious functor `w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g`. -/
 @[simps]
@@ -170,6 +177,7 @@ def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g w
 
 end EquivalenceJ
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
@@ -188,6 +196,7 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
 by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
 @[simps]
@@ -241,6 +250,7 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma costructuredArrowRightwards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
     (w.costructuredArrowRightwards X₃).Final ↔
       (w.costructuredArrowRightwards X₃').Final := by
@@ -258,6 +268,7 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
   rw [guitartExact_iff_final] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma structuredArrowDownwards_initial_iff_of_iso {X₂ X₂' : C₂} (e : X₂ ≅ X₂') :
     (w.structuredArrowDownwards X₂).Initial ↔
       (w.structuredArrowDownwards X₂').Initial := by
@@ -301,7 +312,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
   have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
     StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
-      (by simpa using CostructuredArrow.w X.hom))
+      (by simpa using! CostructuredArrow.w X.hom))
   have : Nonempty Z := ⟨X₀⟩
   apply zigzag_isConnected
   intro X Y

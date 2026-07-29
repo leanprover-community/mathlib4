@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-! # Instances of `ContinuousSqrt`

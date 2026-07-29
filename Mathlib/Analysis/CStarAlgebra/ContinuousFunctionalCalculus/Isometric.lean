@@ -152,19 +152,19 @@ namespace IsometricContinuousFunctionalCalculus
 
 lemma isGreatest_norm_spectrum [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
     IsGreatest ((‖·‖) '' spectrum 𝕜 a) ‖a‖ := by
-  simpa only [cfc_id 𝕜 a] using IsGreatest.norm_cfc (id : 𝕜 → 𝕜) a
+  simpa only [cfc_id 𝕜 a] using! IsGreatest.norm_cfc (id : 𝕜 → 𝕜) a
 
 lemma norm_spectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a) (ha : p a := by cfc_tac) :
     ‖x‖ ≤ ‖a‖ := by
-  simpa only [cfc_id 𝕜 a] using norm_apply_le_norm_cfc (id : 𝕜 → 𝕜) a hx
+  simpa only [cfc_id 𝕜 a] using! norm_apply_le_norm_cfc (id : 𝕜 → 𝕜) a hx
 
 lemma isGreatest_nnnorm_spectrum [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
     IsGreatest ((‖·‖₊) '' spectrum 𝕜 a) ‖a‖₊ := by
-  simpa only [cfc_id 𝕜 a] using IsGreatest.nnnorm_cfc (id : 𝕜 → 𝕜) a
+  simpa only [cfc_id 𝕜 a] using! IsGreatest.nnnorm_cfc (id : 𝕜 → 𝕜) a
 
 lemma nnnorm_spectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a) (ha : p a := by cfc_tac) :
     ‖x‖₊ ≤ ‖a‖₊ := by
-  simpa only [cfc_id 𝕜 a] using nnnorm_apply_le_nnnorm_cfc (id : 𝕜 → 𝕜) a hx
+  simpa only [cfc_id 𝕜 a] using! nnnorm_apply_le_nnnorm_cfc (id : 𝕜 → 𝕜) a hx
 
 end IsometricContinuousFunctionalCalculus
 
@@ -180,6 +180,7 @@ variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [Con
 variable [MetricSpace A] [IsometricContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R] [ContinuousMap.UniqueHom R A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped ContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) :
@@ -257,6 +258,7 @@ lemma nnnorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cf
     ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=
   Subtype.ext <| norm_cfcₙHom a f ha
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : IsGreatest ((fun x ↦ ‖f x‖) '' σₙ 𝕜 a) ‖cfcₙ f a‖ := by
@@ -338,19 +340,19 @@ namespace NonUnitalIsometricContinuousFunctionalCalculus
 
 lemma isGreatest_norm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
     IsGreatest ((‖·‖) '' σₙ 𝕜 a) ‖a‖ := by
-  simpa only [cfcₙ_id 𝕜 a] using IsGreatest.norm_cfcₙ (id : 𝕜 → 𝕜) a
+  simpa only [cfcₙ_id 𝕜 a] using! IsGreatest.norm_cfcₙ (id : 𝕜 → 𝕜) a
 
 lemma norm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha : p a := by cfc_tac) :
     ‖x‖ ≤ ‖a‖ := by
-  simpa only [cfcₙ_id 𝕜 a] using norm_apply_le_norm_cfcₙ (id : 𝕜 → 𝕜) a hx
+  simpa only [cfcₙ_id 𝕜 a] using! norm_apply_le_norm_cfcₙ (id : 𝕜 → 𝕜) a hx
 
 lemma isGreatest_nnnorm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
     IsGreatest ((‖·‖₊) '' σₙ 𝕜 a) ‖a‖₊ := by
-  simpa only [cfcₙ_id 𝕜 a] using IsGreatest.nnnorm_cfcₙ (id : 𝕜 → 𝕜) a
+  simpa only [cfcₙ_id 𝕜 a] using! IsGreatest.nnnorm_cfcₙ (id : 𝕜 → 𝕜) a
 
 lemma nnnorm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha : p a := by cfc_tac) :
     ‖x‖₊ ≤ ‖a‖₊ := by
-  simpa only [cfcₙ_id 𝕜 a] using nnnorm_apply_le_nnnorm_cfcₙ (id : 𝕜 → 𝕜) a hx
+  simpa only [cfcₙ_id 𝕜 a] using! nnnorm_apply_le_nnnorm_cfcₙ (id : 𝕜 → 𝕜) a hx
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 
@@ -370,6 +372,7 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 variable [MetricSpace A] [NonUnitalIsometricContinuousFunctionalCalculus S A q]
 variable [CompleteSpace R] [ContinuousMapZero.UniqueHom R A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) :
@@ -384,10 +387,10 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     simp only [nonUnitalStarAlgHom_apply, isometry_cfcₙHom a ha' |>.dist_eq]
     refine le_antisymm ?_ ?_
     all_goals refine ContinuousMap.dist_le dist_nonneg |>.mpr fun x ↦ ?_
-    · simpa [halg.dist_eq] using ContinuousMap.dist_apply_le_dist _
+    · simpa [halg.dist_eq] using! ContinuousMap.dist_apply_le_dist _
     · let x' : σₙ S a := Subtype.map (algebraMap R S) (fun _ ↦ quasispectrum.algebraMap_mem S) x
       apply le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist x'
-      simp only [ContinuousMap.coe_coe, ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
+      simp only [ContinuousMapZero.comp_apply, ContinuousMapZero.coe_mk,
         ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.dist_eq, x']
       congr! 2
       all_goals ext; exact haf.left_inv _ |>.symm

@@ -48,6 +48,8 @@ complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. 
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
 @[simps!]
@@ -487,6 +489,7 @@ noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex 
   obj K := K.opcycles i
   map f := opcyclesMap f i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.homologyπ i : K.cycles i ⟶ K.homology i`
 for all `K : HomologicalComplex C c`. -/
 @[simps]
@@ -494,6 +497,7 @@ noncomputable def natTransHomologyπ [CategoryWithHomology C] :
     cyclesFunctor C c i ⟶ homologyFunctor C c i where
   app K := K.homologyπ i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.homologyι i : K.homology i ⟶ K.opcycles i`
 for all `K : HomologicalComplex C c`. -/
 @[simps]
@@ -844,6 +848,7 @@ by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def cyclesIsoSc' : K.cycles j ≅ (K.sc' i j k).cycles :=
   ShortComplex.cyclesMapIso (K.isoSc' i j k hi hk)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_hom_iCycles :
@@ -853,6 +858,7 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
@@ -871,6 +877,7 @@ by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=
   ShortComplex.opcyclesMapIso (K.isoSc' i j k hi hk)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_inv :
@@ -880,6 +887,7 @@ lemma pOpcycles_opcyclesIsoSc'_inv :
     natIsoSc'_inv_app_τ₂, id_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_hom :
@@ -903,6 +911,7 @@ noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
 lemma homology_sc'_eq_homology [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
     (K.sc' (c.prev j) j (c.next j)).homology = K.homology j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homologyIsoSc'_eq_refl
     [(K.sc' (c.prev j) j (c.next j)).HasHomology] :

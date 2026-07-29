@@ -59,7 +59,7 @@ def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
   (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-    AddCon.addConGen_le fun x y hxy =>
+    AddCon.addConGen_le.2 fun x y hxy =>
       match x, y, hxy with
       | _, _, .of_zero_left n =>
         (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
@@ -92,6 +92,7 @@ variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
@@ -307,6 +308,7 @@ variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
 and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
 canonical S-linear map from `M ⊗[A] N` to `M ⊗[R] N`,
@@ -392,7 +394,6 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) where
   neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
-  zsmul := (· • ·)
   zsmul_zero' := by simp
   zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
   zsmul_neg' := fun n x => by

@@ -5,6 +5,7 @@ Authors: Kim Morrison, Simon Hudon
 -/
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
@@ -131,7 +132,7 @@ open MonoidalCategory
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding

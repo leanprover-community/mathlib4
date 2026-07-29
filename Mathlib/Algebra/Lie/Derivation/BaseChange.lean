@@ -30,6 +30,7 @@ open TensorProduct
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable {L : Type*} [LieRing L] [LieAlgebra R L]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (L) in
 /-- A derivation of an associative `R`-algebra `A`, induces a Lie derivation of `A ⊗[R] L` for any

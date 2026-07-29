@@ -54,7 +54,6 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 
 end General
 
-set_option linter.deprecated false in
 @[deprecated ProbabilityTheory.integral_bernoulliMeasure (since := "2026-04-07")]
 theorem bernoulli_expectation {p : ℝ≥0} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by

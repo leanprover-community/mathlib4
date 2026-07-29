@@ -151,6 +151,10 @@ theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
     Mᵀᴴ = M.map star :=
   rfl
 
+theorem conjTranspose_transpose_eq_transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = Mᴴᵀ :=
+  rfl
+
 theorem conjTranspose_injective [InvolutiveStar α] :
     Function.Injective (conjTranspose : Matrix m n α → Matrix n m α) :=
   (map_injective star_injective).comp transpose_injective

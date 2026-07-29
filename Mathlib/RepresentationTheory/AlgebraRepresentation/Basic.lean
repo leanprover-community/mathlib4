@@ -44,7 +44,7 @@ theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
     smul_mem' a w hw := by
       have ⟨t, ht⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).2
         (Module.toModuleEnd A V a)
-      simpa only [← show _ = a • w from congr($ht w)] using (k ∙ v).smul_mem t hw }
+      simpa only [← show _ = a • w from congr($ht w)] using! (k ∙ v).smul_mem t hw }
   obtain hU | hU := eq_bot_or_eq_top U
   · exact (v_nz <| hU.le <| Submodule.mem_span_singleton_self v).elim
   · rw [finrank_eq_one_iff_of_nonzero v v_nz]

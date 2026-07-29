@@ -53,7 +53,7 @@ over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A
 
 When you extend this structure,
 make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
-@[to_additive /-- The type of continuous additive monoid homomorphisms from `A` to `B`. -/]
+@[to_additive]
 structure ContinuousMonoidHom extends A →* B, C(A, B)
 
 /-- Reinterpret a `ContinuousMonoidHom` as a `MonoidHom`. -/
@@ -80,7 +80,7 @@ variable {A B C D E}
 @[to_additive]
 instance instFunLike : FunLike (A →ₜ* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
@@ -306,8 +306,7 @@ structure ContinuousAddEquiv [Add G] [Add H] extends G ≃+ H, G ≃ₜ H
 
 /-- The structure of two-sided continuous isomorphisms between groups.
 Note that both the map and its inverse have to be continuous. -/
-@[to_additive /-- The structure of two-sided continuous isomorphisms between additive groups.
-Note that both the map and its inverse have to be continuous. -/]
+@[to_additive]
 structure ContinuousMulEquiv [Mul G] [Mul H] extends G ≃* H, G ≃ₜ H
 
 /-- The homeomorphism induced from a two-sided continuous isomorphism of groups. -/

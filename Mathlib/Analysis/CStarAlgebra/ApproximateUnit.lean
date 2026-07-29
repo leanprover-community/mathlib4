@@ -158,6 +158,17 @@ lemma eventually_star_eq {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, star x = x :=
   hl.eventually_isSelfAdjoint.mp <| .of_forall fun _ ↦ IsSelfAdjoint.star_eq
 
+omit [StarOrderedRing A] in
+lemma closedBall_mem {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
+    Metric.closedBall 0 1 ∈ l := by
+  simpa [Metric.closedBall] using! hl.eventually_norm
+
+lemma pure_one (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :
+    (pure 1 : Filter A).IsIncreasingApproximateUnit where
+  toIsApproximateUnit := .pure_one A
+  eventually_nonneg := by simp
+  eventually_norm := by nontriviality A; simp
+
 end Filter.IsIncreasingApproximateUnit
 
 namespace CStarAlgebra
@@ -168,9 +179,8 @@ open Submodule in
 lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
-  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
-    simp [span_nonneg_inter_unitBall]
+  have : m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1) := by simp [span_nonneg_inter_unitBall]
+  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp this
   simp_rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
@@ -320,6 +330,8 @@ lemma increasingApproximateUnit :
   eventually_norm := .filter_mono inf_le_right <| by simp
   neBot := hasBasis_approximateUnit A |>.neBot_iff.mpr
     fun hx ↦ ⟨_, ⟨le_rfl, by simpa using hx.2.le⟩⟩
+
+instance : (approximateUnit A).NeBot := (increasingApproximateUnit A).neBot
 
 end CStarAlgebra
 
