@@ -20,6 +20,8 @@ matrices built out of blocks.
 
 * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
   if the rows and columns are ordered according to some order `b : o → α`
+* `Matrix.IsUpperTriangular` and `Matrix.IsLowerTriangular`: the special cases where each
+  entry is its own block
 
 ## Main results
 
@@ -61,6 +63,14 @@ variable [Zero R]
 def BlockTriangular (M : Matrix m m R) (b : m → α) : Prop :=
   ∀ ⦃i j⦄, b j < b i → M i j = 0
 
+/-- `M` is upper triangular: entries below the diagonal vanish. -/
+abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop :=
+  M.BlockTriangular id
+
+/-- `M` is lower triangular: entries above the diagonal vanish. -/
+abbrev IsLowerTriangular [LT m] (M : Matrix m m R) : Prop :=
+  M.BlockTriangular toDual
+
 @[simp]
 protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular b) :
     (M.submatrix f f).BlockTriangular (b ∘ f) := fun _ _ hij => h hij
@@ -84,6 +94,11 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
 
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
+
+instance decidableBlockTriangular [DecidableEq R] [Fintype m] [DecidableLT α] :
+    Decidable (M.BlockTriangular b) :=
+  decidable_of_iff (∀ ij : m × m, b ij.2 < b ij.1 → M ij.1 ij.2 = 0)
+    ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
 
 end Zero
 
@@ -321,12 +336,12 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 
-theorem det_of_upperTriangular [LinearOrder m] (h : M.BlockTriangular id) :
+theorem det_of_upperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
   have : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
-theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTriangular toDual) :
+theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLowerTriangular) :
     M.det = ∏ i : m, M i i := by
   rw [← det_transpose]
   exact det_of_upperTriangular h.transpose
