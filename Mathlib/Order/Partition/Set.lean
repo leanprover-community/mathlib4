@@ -19,6 +19,7 @@ support is the set of all `x` for which `r x x`.
 ## Main declarations
 
 * `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
+* `Partition.ofRel`: Reconstruct a partition from a transitive, symmetric relation.
 * `Partition.partOf`: The part of a partition containing a given element.
 * `Partition.IsRepFun`: A predicate characterizing a representative function for a partition.
 
@@ -160,6 +161,54 @@ lemma Rel.right_mem (h : P.Rel x y) : y ∈ P.supp := h.symm.left_mem
 
 /-- Any element of a part is related to the representative of that part. -/
 lemma rep_rel (ht : t ∈ P) (hx : x ∈ t) : P.Rel x (P.rep ht) := ⟨t, ht, hx, P.rep_mem ht⟩
+
+/-- The relation induced by a partition determines the partition. -/
+lemma rel_injective : Function.Injective (Rel : Partition (Set α) → α → α → Prop) :=
+  fun _ _ h ↦ le_antisymm (rel_le_iff_le.1 h.le) (rel_le_iff_le.1 h.ge)
+
+@[simp]
+lemma rel_inj : P.Rel = Q.Rel ↔ P = Q := rel_injective.eq_iff
+
+/-- A transitive, symmetric relation induces a partition of its self-related elements.
+Parts are the sets `{y | r y x}` for each `x` satisfying `r x x`. -/
+def ofRel (r : α → α → Prop) [IsTrans α r] [Std.Symm r] : Partition (Set α) :=
+  removeBot ((fun x ↦ {y | r y x}) '' {x | r x x}) <| PairwiseDisjoint.sSupIndep <| by
+    rintro _ ⟨x, -, rfl⟩ _ ⟨y, -, rfl⟩ hne
+    rw [Function.onFun, disjoint_iff_inter_eq_empty]
+    ext z
+    simp only [id_eq, mem_inter_iff, mem_ofPred_eq, mem_empty_iff_false, iff_false, not_and]
+    intro hzx hzy
+    refine hne <| Set.ext fun w ↦ ?_
+    have hxy : r x y := trans_of r (symm_of r hzx) hzy
+    exact ⟨fun hwx ↦ trans_of r hwx hxy, fun hwy ↦ trans_of r hwy (symm_of r hxy)⟩
+
+@[simp]
+lemma mem_ofRel_iff (r : α → α → Prop) [IsTrans α r] [Std.Symm r] : s ∈ ofRel r ↔
+    ∃ x, r x x ∧ s = {y | r y x} := by
+  simp only [ofRel, mem_removeBot, mem_image, mem_ofPred, ne_eq, bot_eq_empty]
+  constructor
+  · rintro ⟨⟨x, hxx, rfl⟩, -⟩
+    exact ⟨x, hxx, rfl⟩
+  · rintro ⟨x, hxx, rfl⟩
+    exact ⟨⟨x, hxx, rfl⟩, nonempty_iff_ne_empty.mp ⟨x, hxx⟩⟩
+
+@[simp]
+lemma rel_ofRel_eq (r : α → α → Prop) [IsTrans α r] [Std.Symm r] : (ofRel r).Rel = r := by
+  ext a b
+  refine ⟨fun ⟨s, hs, ha, hb⟩ ↦ ?_, fun hab ↦ ⟨{y | r y b}, (mem_ofRel_iff r).mpr ⟨b,
+    trans_of r (symm_of r hab) hab, rfl⟩, hab, trans_of r (symm_of r hab) hab⟩⟩
+  obtain ⟨x, -, rfl, -⟩ := (mem_ofRel_iff r).1 hs
+  exact trans_of r ha (symm_of r hb)
+
+@[simp]
+lemma supp_ofRel (r : α → α → Prop) [IsTrans α r] [Std.Symm r] : (ofRel r).supp = {a | r a a} := by
+  ext a
+  rw [← rel_rfl_iff, rel_ofRel_eq]
+  rfl
+
+@[simp]
+lemma ofRel_rel_eq (P : Partition (Set α)) : ofRel P.Rel = P :=
+  rel_injective (by simp)
 
 end Rel
 

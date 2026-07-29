@@ -32,10 +32,11 @@ of `Q`.
 * `Partition.instSemilatticeInf`: `Partition α` has finite meets `P ⊓ Q` when `α` is a frame,
   given by binding `P` with the induced partitions of `Q` on each part of `P`.
 
+See `Mathlib.Order.Partition.Lattice` for the complete lattice structure when `α` is a frame.
+
 ## TODO
 
 * Link this to `Finpartition`.
-* Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
 
 -/
 
