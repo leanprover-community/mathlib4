@@ -53,4 +53,14 @@ alias cardinalMk_lift_of_infinite' := cardinalMk_eq_max_lift_of_infinite'
 @[to_additive]
 lemma cardinalMk_of_infinite' [Nonempty M] [Infinite R] : #R[M] = max #R #M := by simp
 
+@[to_additive]
+instance [Countable R] [Countable M'] : Countable R[M'] := by
+  nontriviality R
+  rw [← mk_le_aleph0_iff]
+  cases fintypeOrInfinite M'
+  · rw [cardinalMk_eq_lift_of_fintype]
+    apply power_le_aleph0 <;> simp
+  · rw [cardinalMk_eq_max_lift_of_infinite]
+    simp
+
 end MonoidAlgebra
