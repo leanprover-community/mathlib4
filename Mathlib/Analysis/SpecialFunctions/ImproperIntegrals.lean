@@ -166,6 +166,12 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
 
+theorem not_integrableOn_Ioi_rpow' {a s : ℝ} (ha : 0 ≤ a) (hs : -1 ≤ s) :
+    ¬IntegrableOn (fun (x : ℝ) ↦ x ^ s) (Ioi a) volume := by
+  rcases ha.eq_or_lt with rfl | ha
+  · exact not_integrableOn_Ioi_rpow s
+  · rwa [integrableOn_Ioi_rpow_iff ha, not_lt]
+
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
