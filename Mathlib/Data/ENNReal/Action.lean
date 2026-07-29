@@ -22,7 +22,7 @@ open Set NNReal ENNReal
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r : ℝ≥0}
 
 -- TODO: generalize some of these to `WithTop α`
 section Actions

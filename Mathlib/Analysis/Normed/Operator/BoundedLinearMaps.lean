@@ -308,7 +308,7 @@ theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedL
 
 namespace IsBoundedLinearMap
 
-variable {f g : E → F}
+variable {f : E → F}
 
 /-- A map between normed spaces is linear and continuous if and only if it is bounded. -/
 theorem isLinearMap_and_continuous_iff_isBoundedLinearMap (f : E → F) :

@@ -55,7 +55,7 @@ open Function MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {F α β : Type*}
 
 namespace Finset
 
@@ -312,8 +312,8 @@ open scoped Pointwise
 
 section Mul
 
-variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
-  (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
+variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β] (f : F) {s s₁ s₂ t t₁
+  t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
 in scope `Pointwise`. -/
@@ -1251,8 +1251,7 @@ end Group
 end Finset
 
 namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-  [∀ i, DecidableEq (α i)]
+variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 @[to_additive]
 lemma piFinset_mul [∀ i, Mul (α i)] (s t : ∀ i, Finset (α i)) :

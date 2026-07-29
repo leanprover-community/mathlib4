@@ -471,7 +471,6 @@ instance : CompleteSpace α where
     obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
     exact ⟨x, pure_le_nhds x⟩
 
-variable {X}
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
 noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=

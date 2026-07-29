@@ -19,7 +19,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 section Profinite
 

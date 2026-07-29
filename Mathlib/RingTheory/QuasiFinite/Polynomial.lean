@@ -12,8 +12,7 @@ public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 @[expose] public section
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-  [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 namespace Polynomial
 

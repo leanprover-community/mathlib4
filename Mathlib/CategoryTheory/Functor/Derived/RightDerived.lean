@@ -42,11 +42,9 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
-  [Category* D] [Category* D'] [Category* H] [Category* H']
-  (RF RF' RF'' : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
-  (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙ RF'') (α'₂ : F ⟶ L ⋙ RF')
-  (W : MorphismProperty C)
+variable {C D H : Type _} [Category* C] [Category* D] [Category* H] (RF RF' RF'' : D ⥤ H) {F F'
+  F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D} (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙
+  RF'') (α'₂ : F ⟶ L ⋙ RF') (W : MorphismProperty C)
 
 /-- A functor `RF : D ⥤ H` is a right derived functor of `F : C ⥤ H`
 if it is equipped with a natural transformation `α : F ⟶ L ⋙ RF`

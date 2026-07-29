@@ -29,7 +29,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -39,7 +39,7 @@ section SymmDiff
 
 open scoped symmDiff
 
-variable [DecidableEq α] {s t : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
   simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]

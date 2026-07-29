@@ -20,7 +20,7 @@ public section
 
 universe u v ua ub uc ud
 
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
+variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
 
 section Compact
 

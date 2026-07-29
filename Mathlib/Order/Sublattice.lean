@@ -302,7 +302,7 @@ lemma map_top (f : LatticeHom α β) (h : Surjective f) : Sublattice.map f ⊤ =
 end Sublattice
 
 namespace Sublattice
-variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a : α}
+variable {L M : Sublattice α} {f : LatticeHom α β} {s : Set α} {a : α}
 
 /-- Binary product of sublattices as a sublattice. -/
 @[simps]

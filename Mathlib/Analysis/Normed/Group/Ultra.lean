@@ -41,7 +41,7 @@ namespace IsUltrametricDist
 
 section Group
 
-variable {S S' ι : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
+variable {S S' : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametricDist S]
 
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :

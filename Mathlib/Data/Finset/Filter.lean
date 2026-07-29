@@ -32,7 +32,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -43,7 +43,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Filter
 
-variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset α}
+variable (p : α → Prop) [DecidablePred p] {s t : Finset α}
 
 /-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
 

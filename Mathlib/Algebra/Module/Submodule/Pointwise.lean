@@ -316,7 +316,7 @@ protected def pointwiseSetSMul : SMul (Set S) (Submodule R M) where
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetSMul
 
-variable (sR : Set R) (s : Set S) (N : Submodule R M)
+variable (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔

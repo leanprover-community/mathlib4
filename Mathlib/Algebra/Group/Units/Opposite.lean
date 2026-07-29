@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-variable {α : Type*}
 
 open MulOpposite
 

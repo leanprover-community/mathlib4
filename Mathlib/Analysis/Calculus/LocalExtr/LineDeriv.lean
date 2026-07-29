@@ -89,9 +89,8 @@ theorem IsMaxOn.lineDerivWithin_eq_zero (h : IsMaxOn f s a)
   h.isExtr.lineDerivWithin_eq_zero h'
 end Module
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E]
-  [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-  {f : E → ℝ} {s : Set E} {a b : E} {f' : ℝ}
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E]
+  [ContinuousSMul ℝ E] {f : E → ℝ} {a b : E} {f' : ℝ}
 
 theorem IsLocalExtr.hasLineDerivAt_eq_zero (h : IsLocalExtr f a) (hd : HasLineDerivAt ℝ f f' a b) :
     f' = 0 :=

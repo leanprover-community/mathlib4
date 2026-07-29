@@ -47,9 +47,8 @@ open Polynomial
 
 section zero_ne_one
 
-variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
-variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
-variable [IsScalarTower R S A]
+variable {R : Type u} {A : Type v} [CommRing R]
+variable [Ring A] [Algebra R A]
 
 /-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
@@ -141,7 +140,7 @@ end
 
 variable {R S A : Type*} [CommRing R] [CommRing S] [Ring A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable {z : A} {z' : S}
+variable {z : A}
 
 namespace IsAlgebraic
 
@@ -534,13 +533,13 @@ instance : IsPushout R S R' S' := .symm inferInstance
 
 end IsFractionRing
 
-variable (R) (R' : Type*) (S : Type u) [CommRing R'] [CommRing S] [Algebra R S]
-  [Algebra R R'] [IsFractionRing R R'] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
+variable (R) (R' : Type*) (S : Type u) [CommRing R'] [CommRing S] [Algebra R S] [Algebra R R']
+  [IsFractionRing R R'] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
 
 section
 
-variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra S S'] [Module R' S']
-  [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
+variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra S S'] [Module R'
+  S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
 
 theorem lift_rank_of_isFractionRing :
     Cardinal.lift.{u} (Module.rank R' S') = Cardinal.lift.{v} (Module.rank R S) := by
@@ -596,8 +595,8 @@ instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S
     have := (FaithfulSMul.algebraMap_injective R R').nontrivial
     p.induction_on isAlgebraic_zero (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
 
-variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
-  [IsScalarTower R R' S'] [IsScalarTower R S S']
+variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S'] [IsScalarTower R
+  R' S'] [IsScalarTower R S S']
 
 theorem Algebra.IsPushout.isAlgebraic' [IsPushout R R' S S'] : Algebra.IsAlgebraic R' S' :=
   (equiv R R' S S').isAlgebraic

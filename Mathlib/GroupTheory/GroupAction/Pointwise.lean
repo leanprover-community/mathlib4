@@ -78,9 +78,8 @@ end SMul
 
 section Monoid
 
-variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
-  [MulAction M α] [MulAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β]
-  {f : F} {s : Set α} {t : Set β} {c : M}
+variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N] [MulAction M α]
+  [MulAction N β] [FunLike F α β] [MulActionSemiHomClass F σ α β] {f : F} {t : Set β} {c : M}
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
 @[to_additive]

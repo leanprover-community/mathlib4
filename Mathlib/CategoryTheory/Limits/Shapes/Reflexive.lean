@@ -286,7 +286,6 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
   map_comp := by
     intro _ _ _ f g; cases f <;> cases g <;> rfl
 
-variable {C : Type u} [Category.{v} C]
 
 instance (X : WalkingReflexivePair) :
     Nonempty (StructuredArrow X inclusionWalkingReflexivePair) := by

@@ -24,21 +24,18 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
+variable {R R₂ R₃ R' : Type*}
+variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
+variable {P₂ P₃ : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
+variable [AddCommMonoid P₂]
+variable [AddCommMonoid P₃]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
+variable [Module R₂ P₂]
+variable [Module R₃ P₃]
 
 variable (M N)
 
@@ -303,10 +300,9 @@ end
 
 section CompatibleSMul
 
-variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
-  [Module R N] [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
-  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
-  [CompatibleSMul R A M N]
+variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+  [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M] [CommSemiring S] [Module S M]
+  [SMulCommClass R S M] [SMulCommClass A S M] [CompatibleSMul R A M N]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,
@@ -361,9 +357,9 @@ end Semiring
 section Ring
 
 variable {R : Type*} [CommSemiring R]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
-variable [Module R M] [Module R N] [Module R P] [Module R Q]
+variable {M : Type*} {N : Type*} {P : Type*} {S : Type*}
+variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P]
+variable [Module R M] [Module R N] [Module R P]
 
 namespace TensorProduct
 

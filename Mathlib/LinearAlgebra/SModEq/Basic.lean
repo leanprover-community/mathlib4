@@ -26,8 +26,8 @@ variable {R : Type*} [Ring R]
 variable {S : Type*} [Ring S]
 variable {A : Type*} [CommRing A]
 variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
-variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
-variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
+variable {x x₁ x₂ y y₁ y₂ z : M}
+variable {N : Type*} [AddCommGroup N] [Module R N] (V : Submodule R N)
 
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=

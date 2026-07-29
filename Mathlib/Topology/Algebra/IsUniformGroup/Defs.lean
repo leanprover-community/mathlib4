@@ -56,7 +56,7 @@ section LeftRight
 
 open Filter Set
 
-variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
+variable {G Gₗ Gᵣ : Type*}
 
 /-- A **right-uniform additive group** is a topological additive group endowed with the associated
 right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
@@ -110,10 +110,7 @@ attribute [instance 10] IsLeftUniformAddGroup.toIsTopologicalAddGroup
 attribute [instance 10] IsLeftUniformGroup.toIsTopologicalGroup
 
 variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
-variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
 variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
-variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
-variable [UniformSpace X]
 
 variable (Gₗ Gᵣ)
 

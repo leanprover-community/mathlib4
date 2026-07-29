@@ -19,7 +19,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
@@ -33,8 +33,8 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 section DComp
 
-variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
-    (g : ∀ i, β i) (i : ι)
+variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y) (g : ∀ i,
+  β i) (i : ι)
 
 theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
 
@@ -167,7 +167,7 @@ end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂}
+variable {α : Type u₁}
 
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x

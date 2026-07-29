@@ -34,9 +34,8 @@ open Filter Topology Set ContinuousLinearMap Bornology
 
 section Definition
 
-variable {𝕜 E F : Type*}
-variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
-  [TopologicalSpace E]
+variable {𝕜 E : Type*}
+variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E] [TopologicalSpace E]
 
 /-- A Montel space is a topological vector space that has the Heine-Borel property: every closed and
 (von Neumann) bounded set is compact.
@@ -62,7 +61,7 @@ section Normed
 
 namespace MontelSpace
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 

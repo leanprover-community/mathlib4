@@ -224,7 +224,7 @@ theorem bind_def {α β} (f : Filter α) (m : α → Filter β) : f >>= m = bind
 
 section Map
 
-variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {m' : β → γ} {s : Set α} {t : Set β}
+variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {s : Set α} {t : Set β}
 
 @[simp] theorem mem_comap : s ∈ comap m g ↔ ∃ t ∈ g, m ⁻¹' t ⊆ s := Iff.rfl
 

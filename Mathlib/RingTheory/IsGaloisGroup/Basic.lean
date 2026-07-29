@@ -27,8 +27,7 @@ open Module
 
 section CommRing
 
-variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
-  [MulSemiringAction G B]
+variable (G B : Type*) [Group G] [Semiring B] [MulSemiringAction G B]
 
 variable {C : Type*} [CommSemiring C] [Algebra C B]
 

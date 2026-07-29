@@ -129,7 +129,7 @@ def id : P →ᴬ[R] P := { AffineMap.id R P with cont := continuous_id }
 @[simp, norm_cast]
 theorem coe_id : ⇑(id R P) = _root_.id := rfl
 
-variable {R P} {W₂ Q₂ W₃ Q₃ : Type*}
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of continuous affine maps as a continuous affine map -/
@@ -392,11 +392,10 @@ end
 
 section Prod
 
-variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
-  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
-  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
-  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
-  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
+variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁] [AddTorsor
+  V₁ P₁] [TopologicalSpace P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace
+  P₂] [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃] [AddCommGroup V₄]
+  [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
 
 /-- The product of two continuous affine maps is a continuous affine map. -/
 @[simps toAffineMap]
@@ -424,11 +423,9 @@ theorem coe_prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : ⇑(f.
 theorem prodMap_apply (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) (x) : f.prodMap g x = (f x.1, g x.2) :=
   rfl
 
-variable
-  [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁]
-  [TopologicalSpace V₂] [IsTopologicalAddTorsor P₂]
-  [TopologicalSpace V₃] [IsTopologicalAddTorsor P₃]
-  [TopologicalSpace V₄] [IsTopologicalAddTorsor P₄]
+variable [TopologicalSpace V₁] [IsTopologicalAddTorsor P₁] [TopologicalSpace V₂]
+  [IsTopologicalAddTorsor P₂] [TopologicalSpace V₃] [IsTopologicalAddTorsor P₃] [TopologicalSpace
+  V₄] [IsTopologicalAddTorsor P₄]
 
 @[simp]
 theorem prod_contLinear (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) :

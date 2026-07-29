@@ -29,12 +29,12 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Topology Interval Filter ENNReal MeasureTheory
 
-variable {α β ε ε' E F : Type*} {mα : MeasurableSpace α}
+variable {α β ε ε' E : Type*} {mα : MeasurableSpace α}
 
 section
 
-variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
-  {l l' : Filter α} {f g : α → β} {μ ν : Measure α}
+variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε] {l l' : Filter α} {f : α → β} {μ :
+  Measure α}
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
@@ -78,8 +78,8 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
 
-variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
-  [TopologicalSpace ε] [ContinuousENorm ε]
+variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α} [TopologicalSpace ε]
+  [ContinuousENorm ε]
 
 theorem HasFiniteIntegral.restrict_of_bounded_enorm {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness)
     (hs : μ s ≠ ∞ := by finiteness) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
@@ -856,9 +856,8 @@ the unprimed ones use `[NullSingletonClass μ]`.
 
 section PartialOrder
 
-variable [PartialOrder α] [MeasurableSingletonClass α]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε'] [PseudoMetrizableSpace ε']
-  {f : α → ε'} {μ : Measure α} {a b : α}
+variable [PartialOrder α] [MeasurableSingletonClass α] [TopologicalSpace ε'] [ESeminormedAddMonoid
+  ε'] [PseudoMetrizableSpace ε'] {f : α → ε'} {μ : Measure α} {a b : α}
 
 theorem integrableOn_Icc_iff_integrableOn_Ioc'
     (ha : μ {a} ≠ ∞ := by finiteness) (ha' : ‖f a‖ₑ ≠ ∞ := by finiteness) :

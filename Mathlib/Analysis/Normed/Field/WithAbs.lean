@@ -87,8 +87,6 @@ end CommRing
 ### The completion of a field at an absolute value.
 -/
 
-variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormedField L]
-  {f : WithAbs v →+* L}
 
 end WithAbs
 

@@ -22,13 +22,13 @@ indicator, characteristic, filter
 
 public section
 
-variable {α β M E : Type*}
+variable {α β M : Type*}
 
 open Set Filter
 
 section One
 
-variable [One M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
+variable [One M] {s t : Set α} {f g : α → M} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] t) :
@@ -42,7 +42,7 @@ end One
 
 section Monoid
 
-variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
+variable [Monoid M] {s t : Set α} {f : α → M} {a : α} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
@@ -53,7 +53,7 @@ end Monoid
 
 section Order
 
-variable [One β] [Preorder β] {s t : Set α} {f g : α → β} {a : α} {l : Filter α}
+variable [One β] [Preorder β] {s : Set α} {f g : α → β} {l : Filter α}
 
 @[to_additive]
 theorem mulIndicator_eventuallyLE_mulIndicator (h : f ≤ᶠ[l ⊓ 𝓟 s] g) :

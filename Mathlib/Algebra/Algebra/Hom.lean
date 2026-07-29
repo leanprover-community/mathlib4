@@ -522,7 +522,7 @@ end Algebra
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {M : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
 /-- Each element of the monoid defines an algebra homomorphism.

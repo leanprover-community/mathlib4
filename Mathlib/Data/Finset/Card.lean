@@ -35,7 +35,7 @@ assert_not_exists Monoid
 
 open Function Multiset Nat
 
-variable {α β R : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

@@ -33,7 +33,7 @@ open MeasureTheory Real Set Finset
 
 open scoped NNReal ENNReal ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ ν : Measure Ω} {X : Ω → ℝ} {t u : ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {t : ℝ}
 
 namespace ProbabilityTheory
 

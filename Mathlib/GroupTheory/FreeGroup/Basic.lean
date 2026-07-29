@@ -473,7 +473,7 @@ def FreeGroup (α : Type u) : Type u :=
 
 namespace FreeGroup
 
-variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
+variable {L L₁ L₂ L₃ : List (α × Bool)}
 
 /-- The canonical map from `List (α × Bool)` to the free group on `α`. -/
 @[to_additive /-- The canonical map from `List (α × Bool)` to the free additive group on `α`. -/]
@@ -657,7 +657,7 @@ theorem of_injective : Function.Injective (@of α) := fun _ _ H => by
 
 section lift
 
-variable {β : Type v} [Group β] (f : α → β) {x y : FreeGroup α}
+variable {β : Type v} [Group β] (f : α → β) {x : FreeGroup α}
 
 /-- Given `f : α → β` with `β` a group, the canonical map `List (α × Bool) → β` -/
 @[to_additive /-- Given `f : α → β` with `β` an additive group, the canonical map
@@ -850,7 +850,7 @@ end Map
 
 section Prod
 
-variable [Group α] (x y : FreeGroup α)
+variable [Group α] (x : FreeGroup α)
 
 /-- If `α` is a group, then any function from `α` to `α` extends uniquely to a homomorphism from the
 free group over `α` to `α`. This is the multiplicative version of `FreeGroup.sum`. -/

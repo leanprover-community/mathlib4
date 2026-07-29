@@ -949,7 +949,6 @@ section AffineSpace'
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-variable {ι : Type*}
 
 open AffineSubspace
 

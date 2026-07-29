@@ -22,7 +22,7 @@ public import Mathlib.Tactic.Positivity.Core
 
 open Function OrderDual
 
-variable {ι α β : Type*}
+variable {α β : Type*}
 
 section PartialOrderedSemifield
 
@@ -283,7 +283,7 @@ end PartialOrderedSemifield
 
 section LinearOrderedSemifield
 
-variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α}
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c : α}
 
 theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
   have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
@@ -305,8 +305,7 @@ end LinearOrderedSemifield
 
 section PartialOrderedField
 
-variable [Field α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
-  {a b c d : α} {n : ℤ}
+variable [Field α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α] {a b c d : α}
 
 attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 

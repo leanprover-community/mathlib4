@@ -17,13 +17,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
-variable {R'' : Type*} [Semiring R'']
 variable {A M N P Q S T : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
 variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
 variable [Module R M] [Module R N] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
-variable [Module R'' M]
 variable (M N)
 
 namespace TensorProduct
@@ -111,9 +109,8 @@ theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
 
 section CompatibleSMul
 
-variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
-  [CompatibleSMul R A M N] [Module R A] [SMulCommClass R A A] [CompatibleSMul R A A M]
-  [CompatibleSMul A R A M]
+variable (R A M N) [CommSemiring A] [Module A M] [Module A N] [CompatibleSMul R A M N] [Module R
+  A] [SMulCommClass R A A] [CompatibleSMul R A A M] [CompatibleSMul A R A M]
 
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
@@ -211,9 +208,6 @@ lemma lid_tensor :
 
 section
 
-variable {P' Q' : Type*}
-variable [AddCommMonoid P'] [Module R P']
-variable [AddCommMonoid Q'] [Module R Q']
 
 variable (R M N P Q)
 

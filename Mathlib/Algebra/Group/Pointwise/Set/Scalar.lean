@@ -57,7 +57,7 @@ assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
 open Function MulOpposite
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
@@ -83,8 +83,7 @@ scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 open scoped Pointwise
 
 section SMul
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
-  {b : β}
+variable [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α} {b : β}
 
 @[to_additive (attr := simp)] lemma image2_smul : image2 (· • ·) s t = s • t := rfl
 
@@ -150,7 +149,7 @@ lemma smul_set_subset_smul {s : Set α} : a ∈ s → a • t ⊆ s • t := ima
 end SMul
 
 section SMulSet
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
+variable [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
 
 @[to_additive] lemma image_smul : (fun x ↦ a • x) '' t = a • t := rfl
 
@@ -206,7 +205,7 @@ theorem smul_set_univ_pi (c : M) (s : ∀ i, Set (π i)) : c • univ.pi s = uni
 
 end Pi
 
-variable {s : Set α} {t : Set β} {a : α} {b : β}
+variable {a : α} {b : β}
 
 @[to_additive]
 lemma range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
@@ -224,8 +223,7 @@ lemma smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
 end SMul
 
 section SDiv
-variable {ι : Sort*} {κ : ι → Sort*} [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
-  {b c : β}
+variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α} {b c : β}
 
 @[to_additive]
 instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)

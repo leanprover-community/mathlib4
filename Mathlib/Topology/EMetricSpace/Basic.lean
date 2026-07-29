@@ -152,7 +152,7 @@ open Metric
 
 namespace EMetric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+variable {x y : α} {ε : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]

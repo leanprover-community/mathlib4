@@ -95,9 +95,8 @@ theorem support_smulAntidiagonal_subset_smul {s : Set G}
     { a | (SMulAntidiagonal a (hst a)).Nonempty } ⊆ (s • t) := by
   grind [mem_smul, mem_smulAntidiagonal]
 
-variable [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
-    {hv : v.IsPWO} {x : G × P}
+variable [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs :
+  s.IsPWO) (ht : t.IsPWO) (a : P)
 
 @[to_additive]
 theorem isPWO_support_smulAntidiagonal :

@@ -26,7 +26,7 @@ assert_not_exists Fintype
 
 open Function
 
-variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
+variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G : Type*}
 
 variable [EquivLike F α β]
 
@@ -88,8 +88,8 @@ def arrowCongr {M N P Q : Type*} [Mul P] [Mul Q] (f : M ≃ N) (g : P ≃* Q) :
   map_mul' h k := by ext; simp
 
 section monoidHomCongrEquiv
-variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃]
-  [Monoid N] [Monoid N₁] [Monoid N₂] [Monoid N₃]
+variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃] [Monoid N] [Monoid N₁]
+  [Monoid N₂] [Monoid N₃]
 
 /-- The equivalence `(M₁ →* N) ≃ (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/
@@ -140,8 +140,8 @@ lemma monoidHomCongrRightEquiv_trans (e₁₂ : N₁ ≃* N₂) (e₂₃ : N₂ 
 end monoidHomCongrEquiv
 
 section monoidHomCongr
-variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃]
-  [CommMonoid N] [CommMonoid N₁] [CommMonoid N₂] [CommMonoid N₃]
+variable [MulOneClass M] [MulOneClass M₁] [MulOneClass M₂] [MulOneClass M₃] [CommMonoid N]
+  [CommMonoid N₁] [CommMonoid N₂] [CommMonoid N₃]
 
 /-- The isomorphism `(M₁ →* N) ≃* (M₂ →* N)` obtained by postcomposition with
 a multiplicative equivalence `e : M₁ ≃* M₂`. -/

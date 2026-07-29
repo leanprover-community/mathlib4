@@ -36,7 +36,7 @@ section Ring
 
 namespace Submodule
 
-variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
 variable (p p' p'' : Submodule R M)
 
 open LinearMap QuotientAddGroup
@@ -104,7 +104,6 @@ noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintyp
 
 section
 
-variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
 
 theorem strictMono_comap_prod_map :
     StrictMono fun m : Submodule R M ↦ (m.comap p.subtype, m.map p.mkQ) :=
@@ -321,10 +320,10 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 
-variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
-  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N]
-  (P : Submodule R M) (Q : Submodule R₂ N)
+variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
+  [RingHomInvPair σ₂₁ σ₁₂]
+variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N] (P : Submodule
+  R M) (Q : Submodule R₂ N)
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
@@ -374,8 +373,8 @@ variable {R M R₂ M₂ R₃ M₃ : Type*}
 variable [Ring R] [Ring R₂] [Ring R₃]
 variable [AddCommMonoid M] [AddCommGroup M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
+variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃}
+variable [RingHomSurjective τ₁₂]
 
 theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
@@ -399,8 +398,8 @@ open LinearMap
 
 namespace Submodule
 
-variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-variable (p p' : Submodule R M)
+variable {R M : Type*} {x : M} [Ring R] [AddCommGroup M] [Module R M]
+variable (p : Submodule R M)
 
 /-- If `p = ⊥`, then `M / p ≃ₗ[R] M`. -/
 def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
@@ -434,8 +433,8 @@ end Ring
 
 section CommRing
 
-variable {R M M₂ : Type*} {r : R} {x y : M} [CommRing R] [AddCommGroup M] [Module R M]
-  [AddCommGroup M₂] [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
+variable {R M M₂ : Type*} {x y : M} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₂]
+  [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
 
 namespace Submodule
 

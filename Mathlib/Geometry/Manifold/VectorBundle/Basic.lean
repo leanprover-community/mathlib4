@@ -71,7 +71,7 @@ open Filter
 
 open scoped Manifold Bundle Topology ContDiff
 
-variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -125,12 +125,11 @@ end
 
 section
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  {IB : ModelWithCorners 𝕜 EB HB} (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
-  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace
+  (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddCommGroup EB]
+  [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} (E' : B →
+  Type*) [∀ x, Zero (E' x)] {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*}
+  [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
@@ -291,12 +290,11 @@ end
 /-! ### `C^n` vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
-  {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
-  [ChartedSpace HB B] {EM : Type*} [NormedAddCommGroup EM]
-  [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
-  [TopologicalSpace M] [ChartedSpace HM M]
-  [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB :
+  Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B] [ChartedSpace
+  HB B] {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M] [∀ x, AddCommMonoid (E
+  x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section WithTopology
 
@@ -489,7 +487,7 @@ instance Bundle.TotalSpace.isManifold :
 section
 
 variable {F E}
-variable {e e' : Trivialization F (π F E)} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
+variable {e : Trivialization F (π F E)} [MemTrivializationAtlas e]
 
 namespace Bundle.Trivialization
 
@@ -634,8 +632,8 @@ variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ 
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]
-  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂]
-  [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] [ContMDiffVectorBundle n F₁ E₁
+  IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
 variable [IsManifold IB n B]
 

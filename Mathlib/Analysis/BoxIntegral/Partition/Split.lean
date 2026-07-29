@@ -45,7 +45,7 @@ open Function Set Filter
 
 namespace BoxIntegral
 
-variable {ι M : Type*} {n : ℕ}
+variable {ι M : Type*}
 
 namespace Box
 

@@ -43,7 +43,7 @@ reals, conditionally complete, ordered field, uniqueness
 
 @[expose] public section
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 noncomputable section
 
@@ -108,8 +108,8 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
-  {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β] {a : α} {b
+  : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
@@ -155,9 +155,9 @@ open LinearOrderedField
 
 section InducedMap
 
-variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [Field β] [ConditionallyCompleteLinearOrder β] [IsStrictOrderedRing β]
-  [Field γ] [ConditionallyCompleteLinearOrder γ] [IsStrictOrderedRing γ]
+variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Field β]
+  [ConditionallyCompleteLinearOrder β] [IsStrictOrderedRing β] [Field γ]
+  [ConditionallyCompleteLinearOrder γ] [IsStrictOrderedRing γ]
 
 /-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the

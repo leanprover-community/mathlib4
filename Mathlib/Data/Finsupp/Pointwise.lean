@@ -27,7 +27,7 @@ open Finset
 
 universe u₁ u₂ u₃ u₄ u₅
 
-variable {α : Type u₁} {β : Type u₂} {γ : Type u₃} {δ : Type u₄} {ι : Type u₅}
+variable {α : Type u₁} {β : Type u₂} {γ : Type u₃}
 
 namespace Finsupp
 

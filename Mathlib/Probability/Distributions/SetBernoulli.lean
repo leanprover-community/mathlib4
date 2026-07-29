@@ -33,8 +33,8 @@ open MeasureTheory Measure unitInterval
 open scoped ENNReal Finset
 
 namespace ProbabilityTheory
-variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s u : Set ι} {i j : ι} {p q : I}
-  {P : Measure Ω}
+variable {ι Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → Set ι} {s u : Set ι} {i : ι} {p : I} {P
+  : Measure Ω}
 
 variable (u p) in
 /-- The product of bernoulli distributions with parameter `p` on the set `u : Set V` is the measure

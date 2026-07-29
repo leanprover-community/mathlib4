@@ -31,8 +31,8 @@ public section
 
 universe uM
 
-variable {R N N' : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-variable [Module R N] [AddCommGroup N'] [Module R N'] (S : Submonoid R)
+variable {R N : Type*} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable [Module R N] (S : Submonoid R)
 
 theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
@@ -145,18 +145,13 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
   obtain ⟨g, hg⟩ := LinearMap.split_surjective_of_localization_maximal _ this
   exact Module.Projective.of_split _ _ hg
 
-variable
-  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
-  (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommGroup (Mₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
-  (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
-  [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+variable (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*) [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ
+  P)] [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)] [∀ (P : Ideal R) [P.IsMaximal],
+  IsLocalization.AtPrime (Rₚ P) P] (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*) [∀ (P : Ideal R)
+  [P.IsMaximal], AddCommGroup (Mₚ P)] [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)] [∀ (P :
+  Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)] [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R
+  (Rₚ P) (Mₚ P)] (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P) [inst : ∀ (P : Ideal R)
+  [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -264,7 +264,7 @@ section AdjoinRank
 
 open Module Module
 
-variable {K L : IntermediateField F E}
+variable {K : IntermediateField F E}
 
 @[simp]
 theorem rank_eq_one_iff : Module.rank F K = 1 ↔ K = ⊥ := by

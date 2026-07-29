@@ -413,7 +413,7 @@ end
 
 /-! ### Decidability instances for sets -/
 
-variable (s t : Set α) (a b : α)
+variable (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))

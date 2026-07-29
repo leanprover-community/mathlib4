@@ -536,7 +536,7 @@ section
 
 open Subgroup Matrix Matrix.SpecialLinearGroup
 
-variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)

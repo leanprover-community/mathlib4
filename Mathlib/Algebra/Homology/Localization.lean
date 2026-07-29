@@ -307,7 +307,7 @@ end ChainComplex
 
 section CochainComplex
 
-variable (C : Type*) [Category* C] {ι : Type*} [Preadditive C] [HasBinaryBiproducts C]
+variable (C : Type*) [Category* C] [Preadditive C] [HasBinaryBiproducts C]
 
 instance : (HomotopyCategory.quotient C (ComplexShape.up ℤ)).IsLocalization
     (HomologicalComplex.homotopyEquivalences _ _) :=

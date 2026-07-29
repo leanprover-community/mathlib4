@@ -153,9 +153,8 @@ lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → IntertwiningMap ρ σ) 
 
 section group
 
-variable {V W P : Type*} [AddCommMonoid V] [AddCommGroup W]
-  [AddCommGroup P] [Module A V] [Module A W] [Module A P] (ρ : Representation A G V)
-  (σ : Representation A G W) (τ : Representation A G P) (f : V →ₗ[A] W)
+variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W] [Module A V] [Module A W] (ρ :
+  Representation A G V) (σ : Representation A G W) (f : V →ₗ[A] W)
 
 instance : Neg (IntertwiningMap ρ σ) :=
   ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.2]⟩⟩

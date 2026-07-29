@@ -312,7 +312,7 @@ end
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x : ℝ}
 
 theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
   (Complex.hasStrictDerivAt_sin x).real_of_complex

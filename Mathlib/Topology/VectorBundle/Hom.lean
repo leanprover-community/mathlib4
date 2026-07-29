@@ -311,13 +311,11 @@ Also a third space `M`, which will be the source of all our maps.
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
-  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
-  [TopologicalSpace B₁] [TopologicalSpace B₂] [TopologicalSpace M]
-  {n : WithTop ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
-  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
-  {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
-  {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
+  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [TopologicalSpace (TotalSpace
+  F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)] [TopologicalSpace B₁] [TopologicalSpace B₂]
+  [TopologicalSpace M] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁] [FiberBundle F₂ E₂]
+  [VectorBundle 𝕜 F₂ E₂] {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M} {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂
+  (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
 /-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending

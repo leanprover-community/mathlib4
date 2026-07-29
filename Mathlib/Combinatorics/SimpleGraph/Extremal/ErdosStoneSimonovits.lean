@@ -26,7 +26,6 @@ open Filter Finset Fintype Real Topology
 namespace SimpleGraph
 
 variable {n : ℕ} {G : SimpleGraph (Fin n)} [DecidableRel G.Adj]
-  {W : Type*} [Fintype W] {H : SimpleGraph W}
 
 section ErdosStone
 

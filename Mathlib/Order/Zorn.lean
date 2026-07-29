@@ -65,7 +65,7 @@ public section
 
 open Set
 
-variable {α β : Type*} {r : α → α → Prop} {c : Set α}
+variable {α : Type*} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r

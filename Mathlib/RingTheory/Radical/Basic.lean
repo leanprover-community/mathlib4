@@ -360,8 +360,7 @@ open UniqueFactorizationMonoid
 /-! Theorems for UFDs -/
 namespace UniqueFactorizationDomain
 
-variable {R : Type*} [CommRing R] [NormalizationMonoid R]
-  [UniqueFactorizationMonoid R] {a b : R}
+variable {R : Type*} [CommRing R] [NormalizationMonoid R] [UniqueFactorizationMonoid R] {a : R}
 
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=

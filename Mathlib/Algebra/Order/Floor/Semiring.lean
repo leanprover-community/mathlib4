@@ -28,7 +28,7 @@ assert_not_exists Finset
 
 open Set
 
-variable {R K : Type*}
+variable {R : Type*}
 
 namespace Nat
 

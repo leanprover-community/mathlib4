@@ -23,15 +23,15 @@ normed group
 @[expose] public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
 open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a a₁ a₂ b c d :
+  E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_inv_mul (a b : E) : dist a b = ‖a⁻¹ * b‖ :=

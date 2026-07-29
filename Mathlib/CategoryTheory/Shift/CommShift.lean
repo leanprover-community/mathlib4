@@ -436,10 +436,8 @@ namespace Functor
 
 namespace CommShift
 
-variable {C D E : Type*} [Category* C] [Category* D]
-  {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
-  (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
-  [F.CommShift A]
+variable {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G) (A : Type*)
+  [AddMonoid A] [HasShift C A] [HasShift D A] [F.CommShift A]
 
 /-- If `e : F ≅ G` is an isomorphism of functors and if `F` commutes with the
 shift, then `G` also commutes with the shift. -/

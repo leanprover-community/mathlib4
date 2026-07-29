@@ -38,8 +38,7 @@ open scoped Pointwise
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [Algebra R A]
-  {s t : Set A}
+variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A] {s t : Set A}
 
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
     (adjoin R (s ∪ t)).toSubmodule.FG := by
@@ -193,8 +192,8 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} {A : Type v} {B : Type w}
-variable [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {R : Type u} {A : Type v}
+variable [CommRing R] [CommRing A] [Algebra R A]
 
 theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing R] :
     IsNoetherianRing S :=

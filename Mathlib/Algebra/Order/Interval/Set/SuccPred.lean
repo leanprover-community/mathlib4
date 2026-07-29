@@ -30,7 +30,7 @@ public section
 
 open Function Order OrderDual
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace Set
 variable [LinearOrder α] [One α]
@@ -217,7 +217,7 @@ lemma Iio_add_one_eq_Iic (b : α) : Iio (b + 1) = Iic b := by
 end SuccAddOrder
 
 section PredSubOrder
-variable [Sub α] [PredSubOrder α] {a b : α}
+variable [Sub α] [PredSubOrder α] {b : α}
 
 lemma Iic_sub_one_eq_Iio_of_not_isMin (hb : ¬ IsMin b) : Iic (b - 1) = Iio b := by
   simpa [pred_eq_sub_one] using Iic_pred_eq_Iio_of_not_isMin hb

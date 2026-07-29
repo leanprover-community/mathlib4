@@ -189,8 +189,7 @@ lemma homologySequenceδ_naturality
 variable (T)
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A] [F.IsHomological]
-variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+variable [F.ShiftSequence ℤ] (T : Triangle C) (hT : T ∈ distTriang C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 section
 include hT

@@ -16,7 +16,7 @@ public import Mathlib.Data.Nat.Factorization.Defs
 open Nat Finset List Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-! ## Definitions -/
 

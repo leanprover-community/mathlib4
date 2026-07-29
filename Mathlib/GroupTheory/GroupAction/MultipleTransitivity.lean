@@ -96,7 +96,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
 
-variable (hf' : Function.Bijective f)
 
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :

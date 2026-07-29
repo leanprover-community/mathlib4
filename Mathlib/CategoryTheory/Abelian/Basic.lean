@@ -616,7 +616,7 @@ end PullbackToBiproductIsKernel
 
 namespace BiproductToPushoutIsCokernel
 
-variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+variable [Limits.HasPushouts C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
 abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=

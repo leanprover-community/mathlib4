@@ -40,7 +40,7 @@ This was not done as part of the port in order to stay as close as possible to t
 
 assert_not_exists MonoidWithZero
 
-variable {M N P E α β : Type*}
+variable {M N P α β : Type*}
 
 namespace Prod
 

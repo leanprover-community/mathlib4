@@ -25,7 +25,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists Field
 
-variable {R R₂ K M M₂ V S : Type*}
+variable {R M M₂ V S : Type*}
 
 namespace Submodule
 
@@ -37,9 +37,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 variable {x : M} (p p' : Submodule R M)
-variable [Semiring R₂] {σ₁₂ : R →+* R₂}
-variable [AddCommMonoid M₂] [Module R₂ M₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+variable [AddCommMonoid M₂]
 
 section
 
@@ -700,8 +698,8 @@ section NonUnitalAlgebra
 
 open Submodule
 
-variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
-  [IsScalarTower R A A] [SMulCommClass R A A]
+variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A
+  A] [SMulCommClass R A A]
 
 /-- In a non-unital algebra, if every element of a set `s` commutes with `x`, then every element of
 `Submodule.span R s` commutes with `x`. -/

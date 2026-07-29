@@ -30,7 +30,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u} {F : Type w}
 
 open Set Function
 
@@ -40,7 +40,7 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable [Semiring α] (I : Ideal α) {a : α}
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
 @[wikidata Q1203540]

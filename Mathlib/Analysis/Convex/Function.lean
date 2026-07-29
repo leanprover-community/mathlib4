@@ -32,7 +32,7 @@ a convex set.
 
 open LinearMap Set Convex Pointwise
 
-variable {𝕜 E F α β ι : Type*}
+variable {𝕜 E F α β : Type*}
 
 section OrderedSemiring
 
@@ -603,9 +603,8 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β]
-  [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E}
-  {f g : E → β}
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β]
+  [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
 
 /-- The pointwise maximum of convex functions is convex. -/
 theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f ⊔ g) := by
@@ -706,7 +705,7 @@ variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
 
 section PosSMulStrictMono
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
+variable [SMul 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f : E → β}
 
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
@@ -756,7 +755,7 @@ end PosSMulStrictMono
 
 section Module
 
-variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f g : E → β}
+variable [Module 𝕜 E] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β] {s : Set E} {f : E → β}
 
 /-! The following lemmas don't require `Module 𝕜 E` if you add the hypothesis `x ≠ y`. At the time
 of the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them.
@@ -812,8 +811,8 @@ end LinearOrderedCancelAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β]
-  {s : Set E} {f g : E → β}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] {s : Set
+  E} {f g : E → β}
 
 /-- A function `-f` is convex iff `f` is concave. -/
 @[simp]
@@ -897,9 +896,8 @@ end AddCommMonoid
 
 section AddCancelCommMonoid
 
-variable [AddCancelCommMonoid E] [AddCommMonoid β] [PartialOrder β] [Module 𝕜 E] [SMul 𝕜 β]
-  {s : Set E}
-  {f : E → β}
+variable [AddCancelCommMonoid E] [AddCommMonoid β] [PartialOrder β] [Module 𝕜 E] [SMul 𝕜 β] {s :
+  Set E} {f : E → β}
 
 /-- Right translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
@@ -1045,8 +1043,7 @@ end LinearOrderedField
 
 section OrderIso
 
-variable [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
   [AddCommMonoid β] [PartialOrder β] [SMul 𝕜 β]
 
 theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
@@ -1094,9 +1091,8 @@ section LinearOrderedField
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
-  {f : E → β} {s : Set E} {x y : E}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [AddCommMonoid E] [SMul 𝕜 E]
+  [Module 𝕜 β] [PosSMulMono 𝕜 β] {f : E → β} {s : Set E} {x y : E}
 
 /-- A strictly convex function admits at most one global minimum. -/
 lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn f s x)
@@ -1118,9 +1114,8 @@ lemma StrictConcaveOn.eq_of_isMaxOn (hf : StrictConcaveOn 𝕜 s f) (hfx : IsMax
 end OrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
-  {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module 𝕜 β]
+  [PosSMulStrictMono 𝕜 β] {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)
     (hyz : y ≤ z) (h : f x ≤ f y) : f y ≤ f z :=

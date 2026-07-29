@@ -522,7 +522,7 @@ section HomogeneousComponent
 
 open Finset Finsupp
 
-variable (n : ℕ) (φ ψ : MvPolynomial σ R)
+variable (n : ℕ) (φ : MvPolynomial σ R)
 
 theorem homogeneousComponent_mem :
     homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=

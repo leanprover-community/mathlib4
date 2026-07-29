@@ -155,8 +155,8 @@ end
 
 open DirectSum
 
-variable {ιA ιM R A M σ σ' : Type*}
-variable [AddMonoid ιA] [AddAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
+variable {ιA ιM A M σ σ' : Type*}
+variable [AddMonoid ιA] [AddAction ιA ιM] [Semiring A]
 variable (𝓐 : ιA → σ') [SetLike σ' A]
 variable (𝓜 : ιM → σ)
 
@@ -176,8 +176,8 @@ instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     smul_add := fun _a _b _c => Subtype.ext <| smul_add _ _ _
     smul_zero := fun _a => Subtype.ext <| smul_zero _ }
 
-variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
-  [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
+variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A] [AddSubmonoidClass
+  σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
 
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
@@ -191,9 +191,8 @@ end SetLike
 
 namespace GradedModule
 
-variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
-  [AddSubmonoidClass σ M] [SetLike.GradedSMul 𝓐 𝓜]
-  [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐]
+variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A] [AddSubmonoidClass
+  σ M] [SetLike.GradedSMul 𝓐 𝓜] [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐]
 
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module

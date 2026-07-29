@@ -261,12 +261,12 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
-variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (S : Sieve X)
 
 open Presieve
 
 variable {B : C} {I : Type t} [Small.{w} I] (X : I → C) (π : (i : I) → X i ⟶ B)
-    [(Presieve.ofArrows X π).HasPairwisePullbacks]
+  [(Presieve.ofArrows X π).HasPairwisePullbacks]
 
 /--
 The middle object of the fork diagram of the Stacks entry.

@@ -38,7 +38,7 @@ namespace GradedObject
 
 section
 
-variable (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
+variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `mapTrifunctor`. -/
@@ -546,7 +546,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
   rw [comp_id, id_comp]
   rfl
 
-variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
+variable {X₁ X₂ X₃}
 
 include ρ₂₃ in
 lemma HasGoodTrifunctor₂₃Obj.hasMap :
@@ -603,9 +603,8 @@ lemma mapBifunctorBifunctor₂₃MapObj_ext
 
 section
 
-variable
-  (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
-    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
+variable (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j), (F.obj (X₁ i₁)).obj
+  ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
 
 /-- Constructor for morphisms from
 `mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j`. -/

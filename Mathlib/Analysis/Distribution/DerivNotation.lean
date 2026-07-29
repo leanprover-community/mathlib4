@@ -29,7 +29,7 @@ function spaces).
 
 universe u' u v w
 
-variable {ι ι' 𝕜 R V E F V₁ V₂ V₃ : Type*}
+variable {ι R V E F V₁ V₂ V₃ : Type*}
 
 /-! ## Line derivative -/
 
@@ -176,9 +176,9 @@ end lineDerivOp
 
 section lineDerivOpCLM
 
-variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
-  [TopologicalSpace E] [TopologicalSpace F] [AddCommGroup V]
-  [LineDeriv V E F] [LineDerivAdd V E F] [LineDerivSMul R V E F] [ContinuousLineDeriv V E F]
+variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F] [TopologicalSpace E]
+  [TopologicalSpace F] [AddCommGroup V] [LineDeriv V E F] [LineDerivAdd V E F] [LineDerivSMul R V
+  E F] [ContinuousLineDeriv V E F]
 
 variable (R E) in
 /-- The line derivative as a continuous linear map. -/
@@ -244,8 +244,8 @@ theorem continuous_iteratedLineDerivOp [ContinuousLineDeriv V E E] {n : ℕ} (m 
   | succ n IH =>
     exact (continuous_lineDerivOp _).comp (IH _)
 
-variable [Ring R] [AddCommGroup V] [AddCommGroup E] [Module R E]
-  [LineDerivAdd V E E] [LineDerivSMul R V E E] [ContinuousLineDeriv V E E]
+variable [Ring R] [AddCommGroup V] [AddCommGroup E] [Module R E] [LineDerivAdd V E E]
+  [LineDerivSMul R V E E] [ContinuousLineDeriv V E E]
 
 variable (R E) in
 /-- The iterated line derivative as a continuous linear map. -/
@@ -279,17 +279,16 @@ end Laplacian
 
 namespace LineDeriv
 
-variable [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃]
-  [AddCommGroup V₁] [AddCommGroup V₂] [AddCommGroup V₃]
+variable [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃] [AddCommGroup V₁] [AddCommGroup V₂] [AddCommGroup
+  V₃]
 
 /-! ## Laplacian of `LineDeriv` -/
 
 section TensorProduct
 
-variable [CommRing R] [AddCommGroup E] [Module R E]
-  [Module R V₂] [Module R V₃]
-  [LineDerivAdd E V₂ V₃] [LineDerivAdd E V₁ V₂]
-  [LineDerivSMul R E V₂ V₃] [LineDerivLeftSMul R E V₁ V₂] [LineDerivLeftSMul R E V₂ V₃]
+variable [CommRing R] [AddCommGroup E] [Module R E] [Module R V₂] [Module R V₃] [LineDerivAdd E V₂
+  V₃] [LineDerivAdd E V₁ V₂] [LineDerivSMul R E V₂ V₃] [LineDerivLeftSMul R E V₁ V₂]
+  [LineDerivLeftSMul R E V₂ V₃]
 
 open InnerProductSpace TensorProduct
 
@@ -320,9 +319,8 @@ variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 
 section LinearMap
 
-variable [Module ℝ V₂] [Module ℝ V₃]
-  [LineDerivAdd E V₁ V₂] [LineDerivAdd E V₂ V₃]
-  [LineDerivSMul ℝ E V₂ V₃] [LineDerivLeftSMul ℝ E V₁ V₂] [LineDerivLeftSMul ℝ E V₂ V₃]
+variable [Module ℝ V₂] [Module ℝ V₃] [LineDerivAdd E V₁ V₂] [LineDerivAdd E V₂ V₃] [LineDerivSMul
+  ℝ E V₂ V₃] [LineDerivLeftSMul ℝ E V₁ V₂] [LineDerivLeftSMul ℝ E V₂ V₃]
 
 open TensorProduct InnerProductSpace
 
@@ -337,11 +335,10 @@ section ContinuousLinearMap
 
 section definition
 
-variable [CommRing R]
-  [Module R V₁] [Module R V₂] [Module R V₃]
-  [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
-  [LineDerivAdd E V₁ V₂] [LineDerivSMul R E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul R E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
+variable [CommRing R] [Module R V₁] [Module R V₂] [Module R V₃] [TopologicalSpace V₁]
+  [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃] [LineDerivAdd E V₁ V₂]
+  [LineDerivSMul R E V₁ V₂] [ContinuousLineDeriv E V₁ V₂] [LineDerivAdd E V₂ V₃] [LineDerivSMul R
+  E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
 
 variable (R E V₁) in
 /-- The Laplacian defined by iterated `lineDerivOp` as a continuous linear map. -/
@@ -351,11 +348,10 @@ def laplacianCLM : V₁ →L[R] V₃ :=
 
 end definition
 
-variable [Module ℝ V₁] [Module ℝ V₂] [Module ℝ V₃]
-  [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
-  [LineDerivAdd E V₁ V₂] [LineDerivSMul ℝ E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul ℝ E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
-  [LineDerivLeftSMul ℝ E V₁ V₂] [LineDerivLeftSMul ℝ E V₂ V₃]
+variable [Module ℝ V₁] [Module ℝ V₂] [Module ℝ V₃] [TopologicalSpace V₁] [TopologicalSpace V₂]
+  [TopologicalSpace V₃] [IsTopologicalAddGroup V₃] [LineDerivAdd E V₁ V₂] [LineDerivSMul ℝ E V₁
+  V₂] [ContinuousLineDeriv E V₁ V₂] [LineDerivAdd E V₂ V₃] [LineDerivSMul ℝ E V₂ V₃]
+  [ContinuousLineDeriv E V₂ V₃] [LineDerivLeftSMul ℝ E V₁ V₂] [LineDerivLeftSMul ℝ E V₂ V₃]
 
 theorem laplacianCLM_eq_sum [Fintype ι] (v : OrthonormalBasis ι ℝ E) (f : V₁) :
     laplacianCLM ℝ E V₁ f = ∑ i, ∂_{v i} (∂_{v i} f) := by

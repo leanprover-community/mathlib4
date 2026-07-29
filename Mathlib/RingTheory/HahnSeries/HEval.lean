@@ -33,7 +33,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R V α β σ : Type*}
+variable {Γ R V α β : Type*}
 
 namespace HahnSeries
 
@@ -158,8 +158,7 @@ namespace PowerSeries
 
 open HahnSeries SummableFamily
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-  [CommRing R] (x : R⟦Γ⟧)
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] (x : R⟦Γ⟧)
 
 /-- The `R`-algebra homomorphism from `R⟦X⟧` to `R⟦Γ⟧` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/

@@ -24,12 +24,11 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ E F Fₗ : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+variable {𝕜 𝕜₂ E F : Type*}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
-  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F)
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E] [NormedSpace
+  𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F)
 
 namespace ContinuousLinearMap
 

@@ -49,7 +49,7 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 
 open Encodable Primrec Nat.Partrec Part
 
-variable {α β γ σ : Type*}
+variable {α β σ : Type*}
 
 namespace Nat
 
@@ -179,7 +179,7 @@ protected theorem ComputableIn₂.recursiveIn₂ [Primcodable α] [Primcodable �
     {f : α → β → σ} {O} (hf : ComputableIn₂ O f) :
     RecursiveIn₂ O fun a => (f a : β →. σ) := hf
 
-variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
 variable {f : α →. σ} {O : Set (ℕ →. ℕ)}
 
 namespace RecursiveIn

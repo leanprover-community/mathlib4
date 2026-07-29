@@ -33,9 +33,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
-  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
-  [TopologicalSpace Z] [TopologicalSpace Z']
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace OpenPartialHomeomorph
 
@@ -380,7 +378,7 @@ end OpenPartialHomeomorph
 
 namespace Homeomorph
 
-variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
+variable (e : X ≃ₜ Y)
 
 /- Register as simp lemmas that the fields of an open partial homeomorphism built from a
 homeomorphism correspond to the fields of the original homeomorphism. -/

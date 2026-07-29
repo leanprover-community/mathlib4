@@ -20,7 +20,7 @@ assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
-variable {F α β γ ι κ : Type*}
+variable {α β γ ι κ : Type*}
 
 namespace Finset
 
@@ -42,8 +42,8 @@ theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) 
   rw [sup_product_left, Finset.sup_comm]
 
 section Prod
-variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] [OrderBot α] [OrderBot β]
-  {s : Finset ι} {t : Finset κ}
+variable {ι κ α β : Type*} [SemilatticeSup α] [SemilatticeSup β] [OrderBot α] [OrderBot β] {s :
+  Finset ι} {t : Finset κ}
 
 @[to_dual (attr := simp)]
 lemma sup_prodMap (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : κ → β) :
@@ -62,7 +62,7 @@ section DistribLattice
 
 variable [DistribLattice α]
 
-variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
+variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α}
 
 @[to_dual]
 theorem sup_inf_sup (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
@@ -113,8 +113,8 @@ end Prod
 end Sup'
 
 section DistribLattice
-variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
-  {f : ι → α} {g : κ → α} {a : α}
+variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty) {f :
+  ι → α} {g : κ → α}
 
 @[to_dual]
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :

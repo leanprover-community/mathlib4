@@ -27,7 +27,7 @@ lattice or set operations behave when indexed by a finset.
 
 open Function Multiset OrderDual
 
-variable {F α β γ ι κ : Type*}
+variable {F α β γ ι : Type*}
 
 namespace Finset
 
@@ -346,7 +346,7 @@ variable [DistribLattice α]
 
 section OrderBot
 
-variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
+variable [OrderBot α] {s : Finset ι} {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
@@ -702,8 +702,7 @@ theorem ofDual_sup' [SemilatticeInf α] {s : Finset ι} (hs : s.Nonempty) (f : �
   rfl
 
 section DistribLattice
-variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (ht : t.Nonempty)
-  {f : ι → α} {g : κ → α} {a : α}
+variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty) {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :

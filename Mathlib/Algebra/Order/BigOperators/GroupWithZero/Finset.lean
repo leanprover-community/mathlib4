@@ -18,7 +18,7 @@ zero, where order is involved.
 
 public section
 
-variable {ι R S : Type*}
+variable {ι R : Type*}
 
 namespace Finset
 
@@ -129,8 +129,8 @@ theorem prod_anti_set_of_le_one (hf0 : ∀ (x : ι), 0 ≤ f x) (hf : ∀ (x : �
 end PosMulMono
 
 section PosMulStrictMono
-variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [Nontrivial R] {f g : ι → R}
-  {s t : Finset ι}
+variable [PartialOrder R] [ZeroLEOneClass R] [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s
+  : Finset ι}
 
 lemma prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i ∈ s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0

@@ -70,8 +70,8 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*}
+variable {M : Type*} {M' M'' : Type*}
 
 namespace Module
 
@@ -99,7 +99,7 @@ namespace Basis
 instance : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M) (i : ι) (c : R) (x : M)
 
 section repr
 
@@ -179,7 +179,6 @@ end Map
 
 section Reindex
 
-variable (b' : Basis ι' R M')
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
@@ -716,8 +715,6 @@ theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   simp only [coe_sumCoords, repr_reindex]
   exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
 
-variable (S : Type*) [Semiring S] [Module S M']
-variable [SMulCommClass R S M']
 
 theorem coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=

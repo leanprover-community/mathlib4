@@ -37,7 +37,7 @@ open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
-variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort y} {s u : Set α}
 
 namespace Real
 
@@ -480,7 +480,7 @@ instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable
 
 section MeasurableMul
 
-variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))

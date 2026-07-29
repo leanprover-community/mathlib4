@@ -84,7 +84,6 @@ recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
 recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 recommended_spelling "sdiv" for "/ₛ" in [SDiv.sdiv, «term_/ₛ_»]
 
-variable {G : Type*}
 
 section Star
 

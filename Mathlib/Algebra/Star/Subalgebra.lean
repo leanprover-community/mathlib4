@@ -34,7 +34,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
+variable {R A B C : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 variable [Semiring B] [StarRing B] [Algebra R B] [StarModule R B]
 variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
@@ -342,9 +342,8 @@ namespace Subalgebra
 
 open scoped Pointwise
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 /-- The pointwise `star` of a subalgebra is a subalgebra. -/
 instance involutiveStar : InvolutiveStar (Subalgebra R A) where
@@ -424,9 +423,8 @@ namespace StarAlgebra
 
 open StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 variable (R)
 
 /-- The minimal star subalgebra that contains `s`. -/
@@ -659,7 +657,7 @@ end StarAlgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable {R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 

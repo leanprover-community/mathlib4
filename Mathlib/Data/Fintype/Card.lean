@@ -30,7 +30,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 
@@ -90,7 +90,7 @@ end Fintype
 
 namespace Set
 
-variable {s t : Set α}
+variable {s : Set α}
 
 -- We use an arbitrary `[Fintype s]` instance here,
 -- not necessarily coming from a `[Fintype α]`.

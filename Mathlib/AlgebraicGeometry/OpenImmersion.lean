@@ -30,7 +30,6 @@ namespace AlgebraicGeometry
 
 universe v v₁ v₂ u
 
-variable {C : Type u} [Category.{v} C]
 
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces

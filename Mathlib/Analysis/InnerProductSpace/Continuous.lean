@@ -26,7 +26,7 @@ noncomputable section
 open RCLike Real Filter Topology ComplexConjugate Finsupp
 open LinearMap renaming BilinForm → BilinForm
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 
 
 section Continuous
@@ -94,10 +94,10 @@ end Continuous
 
 open Submodule
 
-variable {E F ι : Type*}
+variable {E ι : Type*}
 variable (𝕜 : Type*) [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
+variable [NormedAddCommGroup E]
+variable [InnerProductSpace 𝕜 E]
 variable {x y : E} {S : Set E} {f : ι → E}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y

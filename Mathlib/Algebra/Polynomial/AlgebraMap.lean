@@ -49,7 +49,7 @@ variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b
 section CommSemiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable {p q r : R[X]}
+variable {p r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
 instance algebraOfAlgebra : Algebra R A[X] where

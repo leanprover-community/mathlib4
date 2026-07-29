@@ -31,11 +31,11 @@ reduce imports.
 
 open Finsupp Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
-variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
-  {n : μ}
+variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι} {n :
+  μ}
 
 set_option backward.isDefEq.respectTransparency false in
 variable (s n) in

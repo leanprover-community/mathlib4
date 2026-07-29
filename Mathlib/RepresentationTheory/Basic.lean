@@ -470,8 +470,7 @@ section Group
 
 section
 
-variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
-  (ρ : Representation k G V)
+variable {k G : Type*} [Semiring k] [Group G]
 @[simp]
 theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H) :
     (ofMulAction k G H g f).coeff h = f.coeff (g⁻¹ • h) := by
@@ -702,9 +701,8 @@ end LinearHom
 
 section
 
-variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
-  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
-  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*} [AddCommMonoid A] [Module k A] (ρ
+  : Representation k G A)
 
 open Finsupp
 

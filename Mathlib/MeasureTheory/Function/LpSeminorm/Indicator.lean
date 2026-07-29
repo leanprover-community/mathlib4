@@ -20,8 +20,8 @@ open TopologicalSpace MeasureTheory Filter
 
 open scoped NNReal ENNReal Topology ComplexConjugate
 
-variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+variable {α ε ε' E F : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+  [NormedAddCommGroup E] [NormedAddCommGroup F] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 
@@ -31,9 +31,8 @@ variable {f : α → F}
 
 section Indicator
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
-  {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
-  {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] {c : ε} {hf :
+  AEStronglyMeasurable f μ} {s : Set α} {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
 lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by

@@ -892,9 +892,8 @@ open CommRing Pic
 
 section Ideal
 
-variable (R M N : Type*) [CommRing R]
+variable (R M : Type*) [CommRing R]
 variable [AddCommGroup M] [Module R M] [Module.Invertible R M]
-variable [AddCommGroup N] [Module R N] [Module.Invertible R N]
 
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/

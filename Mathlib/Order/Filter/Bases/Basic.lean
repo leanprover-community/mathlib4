@@ -76,7 +76,7 @@ assert_not_exists Finset
 
 open Set Filter
 
-variable {α β γ : Type*} {ι ι' : Sort*}
+variable {α β : Type*} {ι ι' : Sort*}
 
 /-- A filter basis `B` on a type `α` is a nonempty collection of sets of `α`
 such that the intersection of two elements of this collection contains some element
@@ -212,8 +212,8 @@ structure HasBasis (l : Filter α) (p : ι → Prop) (s : ι → Set α) : Prop 
 
 section SameType
 
-variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {i : ι} {p' : ι' → Prop}
-  {s' : ι' → Set α} {i' : ι'}
+variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {i : ι} {p' : ι' → Prop} {s'
+  : ι' → Set α} {i' : ι'}
 
 /-- Definition of `HasBasis` unfolded with implicit set argument. -/
 theorem HasBasis.mem_iff (hl : l.HasBasis p s) : t ∈ l ↔ ∃ i, p i ∧ s i ⊆ t :=
@@ -654,8 +654,8 @@ end SameType
 
 section TwoTypes
 
-variable {la : Filter α} {pa : ι → Prop} {sa : ι → Set α} {lb : Filter β} {pb : ι' → Prop}
-  {sb : ι' → Set β} {f : α → β}
+variable {la : Filter α} {pa : ι → Prop} {sa : ι → Set α} {lb : Filter β} {pb : ι' → Prop} {sb :
+  ι' → Set β} {f : α → β}
 
 theorem HasBasis.tendsto_left_iff (hla : la.HasBasis pa sa) :
     Tendsto f la lb ↔ ∀ t ∈ lb, ∃ i, pa i ∧ MapsTo f (sa i) t := by

@@ -52,7 +52,7 @@ open Function Set Submodule
 universe u' u
 
 variable {ι : Type u'} {ι' : Type*} {R : Type*} {K : Type*} {s : Set ι}
-variable {M : Type*} {M' : Type*} {V : Type u}
+variable {M : Type*} {M' : Type*}
 
 section Semiring
 
@@ -562,8 +562,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 end Module
 
 section IsDomain
-variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
-  {v : ι → M} {i : ι}
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M] {v : ι →
+  M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
   refine ⟨?_, .of_subsingleton _⟩

@@ -31,7 +31,7 @@ public section
 
 open Set LinearMap
 
-variable {𝕜 E F G : Type*}
+variable {E F G : Type*}
 
 /-!
 ### M. Riesz extension theorem

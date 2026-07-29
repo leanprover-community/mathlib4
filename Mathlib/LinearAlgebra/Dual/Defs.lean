@@ -54,7 +54,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
@@ -197,8 +197,6 @@ end DualMap
 
 namespace Module
 
-variable {K V : Type*}
-variable [CommSemiring K] [AddCommMonoid V] [Module K V]
 
 open Module Module.Dual Submodule LinearMap Module
 

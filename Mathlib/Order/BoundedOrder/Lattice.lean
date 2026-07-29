@@ -26,7 +26,7 @@ public section
 
 open Function OrderDual
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-! ### Top, bottom element -/
 

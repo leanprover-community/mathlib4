@@ -91,8 +91,8 @@ lemma Antivary.div_left (h₁ : Antivary f₁ g) (h₂ : Monovary f₂ g) : Anti
 end
 
 section
-variable [PartialOrder α] [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
+variable [PartialOrder α] [CommGroup β] [PartialOrder β] [IsOrderedMonoid β] {s : Set ι} {f : ι →
+  α} {g : ι → β}
 
 @[to_additive (attr := simp)]
 lemma monovaryOn_inv_right : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s := by
@@ -110,9 +110,8 @@ lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
 end
 
 section
-variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
-  [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] [CommGroup β] [PartialOrder β]
+  [IsOrderedMonoid β] {s : Set ι} {f : ι → α} {g : ι → β}
 
 @[to_additive] lemma monovaryOn_inv : MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by simp
 @[to_additive] lemma antivaryOn_inv : AntivaryOn f⁻¹ g⁻¹ s ↔ AntivaryOn f g s := by simp
@@ -256,8 +255,8 @@ end LinearOrderedSemiring
 section LinearOrderedSemifield
 
 section
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [LinearOrder β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [LinearOrder β] {s : Set ι} {f f₁
+  f₂ : ι → α} {g : ι → β}
 
 @[simp]
 lemma monovaryOn_inv_left₀ (hf : ∀ i ∈ s, 0 < f i) : MonovaryOn f⁻¹ g s ↔ AntivaryOn f g s :=
@@ -292,8 +291,8 @@ lemma Antivary.div_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : StrongLT 0 f₂) (h₁ 
 end
 
 section
-variable [LinearOrder α] [Semifield β] [LinearOrder β] [IsStrictOrderedRing β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [LinearOrder α] [Semifield β] [LinearOrder β] [IsStrictOrderedRing β] {s : Set ι} {f : ι
+  → α} {g g₁ g₂ : ι → β}
 
 @[simp]
 lemma monovaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s :=
@@ -326,9 +325,8 @@ lemma Antivary.div_right₀ (hg₁ : 0 ≤ g₁) (hg₂ : StrongLT 0 g₂) (h₁
 end
 
 section
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
-  [Semifield β] [LinearOrder β] [IsStrictOrderedRing β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [Semifield β] [LinearOrder β]
+  [IsStrictOrderedRing β] {s : Set ι} {f : ι → α} {g : ι → β}
 
 lemma monovaryOn_inv₀ (hf : ∀ i ∈ s, 0 < f i) (hg : ∀ i ∈ s, 0 < g i) :
     MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by

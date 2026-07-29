@@ -34,10 +34,10 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {f' f₁' : E →L[𝕜] F}
 variable (e : E →L[𝕜] F)
 variable {x : E}
-variable {s t : Set E}
+variable {s : Set E}
 variable {L : Filter (E × E)}
 
 section CartesianProduct
@@ -301,7 +301,7 @@ end Snd
 
 section prodMap
 
-variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
+variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} (p : E × G)
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
@@ -345,9 +345,8 @@ theorem:
 -/
 
 
-variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
-  [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
-  {Φ' : E →L[𝕜] ∀ i, F' i}
+variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
+  {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i} {Φ' : E →L[𝕜] ∀ i, F' i}
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :

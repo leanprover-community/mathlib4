@@ -39,7 +39,6 @@ arithmetic functions, totient
 
 open Nat Monoid
 
-variable {R : Type*}
 
 namespace ArithmeticFunction
 

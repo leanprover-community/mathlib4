@@ -40,7 +40,7 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
+variable {ι 𝕜 D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
@@ -259,8 +259,7 @@ theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)
 
 end one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedAddCommGroup D] [NormedSpace ℝ D]
   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
 
 open scoped LineDeriv
@@ -310,10 +309,8 @@ open MeasureTheory Laplacian LineDeriv
 
 /-! ### Integration by parts -/
 
-variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedAddCommGroup F₁] [NormedSpace ℝ
+  F₁] [NormedAddCommGroup F₂] [NormedSpace ℝ F₂] [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
   [MeasurableSpace E] {μ : Measure E} [BorelSpace E] [μ.IsAddHaarMeasure]
 
 /-- Integration by parts of Schwartz functions for the Laplacian.

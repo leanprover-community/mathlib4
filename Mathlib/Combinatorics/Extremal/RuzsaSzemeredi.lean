@@ -39,7 +39,7 @@ variable {α β : Type*}
 /-! ### The Ruzsa-Szemerédi number -/
 
 section ruzsaSzemerediNumber
-variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G H : SimpleGraph α}
+variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G : SimpleGraph α}
 
 variable (α) in
 /-- The **Ruzsa-Szemerédi number** of a fintype is the maximum number of edges a locally linear
@@ -65,7 +65,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by

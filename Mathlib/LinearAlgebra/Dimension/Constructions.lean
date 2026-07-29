@@ -39,7 +39,7 @@ noncomputable section
 universe u u' v v' u₁' w w'
 
 variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
-variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
+variable {ι : Type w} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
 
@@ -564,9 +564,8 @@ section Extend
 
 namespace Module.Basis
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
-    {W : Submodule R V} {m n : Type*}
-    (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] {W : Submodule R V} {m n :
+  Type*} (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
 
 /-- Given a basis `bW` of a submodule of an `R`-module `V`,
 and a basis `bQ` of the quotient `V ⧸ W`,

@@ -608,7 +608,7 @@ end LinearOrderedField
 
 namespace Nonneg
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y : 𝕜}
 
 protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
     Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by

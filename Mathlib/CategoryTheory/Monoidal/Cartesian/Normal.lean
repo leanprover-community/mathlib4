@@ -49,7 +49,7 @@ attribute [instance] IsAddMonHom.Normal.mono IsAddMonHom.Normal.isAddMonHom
 
 namespace IsMonHom
 
-variable {G H K : C} [GrpObj G] [GrpObj H] [GrpObj K] {φ : H ⟶ G}
+variable {G H : C} [GrpObj G] [GrpObj H] {φ : H ⟶ G}
 
 /-- A morphism `φ : H ⟶ G` of group objects is a normal monoid homomorphism if it is a
 monoid homomorphism that is mono and such that the conjugation map `(g, h) ↦ g * h * g⁻¹`

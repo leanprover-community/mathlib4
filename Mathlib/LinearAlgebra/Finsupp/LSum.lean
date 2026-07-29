@@ -58,11 +58,10 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 

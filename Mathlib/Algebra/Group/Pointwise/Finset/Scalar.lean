@@ -51,7 +51,7 @@ open Function MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α β γ : Type*}
 
 namespace Finset
 

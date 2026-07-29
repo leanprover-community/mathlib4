@@ -195,10 +195,8 @@ end Restrict
 
 section
 
-variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
-  {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
-  {M₁ M₂ : Type*}
-  [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ R₂ : Type*} [Ring R₁] [Ring R₂] {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair
+  σ₁₂ σ₂₁] {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]
   [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
 
 /-- Given a right inverse `f₂ : M₂ →L[R] M₁` to `f₁ : M₁ →L[R] M₂`,

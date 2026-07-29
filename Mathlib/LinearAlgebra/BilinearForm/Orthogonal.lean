@@ -188,8 +188,6 @@ theorem isCompl_span_singleton_orthogonal {B : BilinForm K V} {x : V} (hx : B x 
 
 end Orthogonal
 
-variable {M₂' : Type*}
-variable [AddCommMonoid M₂'] [Module R M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `Disjoint W (B.orthogonal W)`. -/

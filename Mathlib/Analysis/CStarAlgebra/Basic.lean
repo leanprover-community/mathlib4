@@ -46,7 +46,7 @@ local postfix:max "⋆" => star
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 

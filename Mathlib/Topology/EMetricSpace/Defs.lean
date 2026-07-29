@@ -57,7 +57,7 @@ export EDist (edist)
 
 section
 
-variable {x y z : α} {ε : ℝ≥0∞} [EDist α]
+variable {x y : α} {ε : ℝ≥0∞} [EDist α]
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
 def Metric.eball (x : α) (ε : ℝ≥0∞) : Set α :=
@@ -401,7 +401,7 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
+variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set α}
 
 theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
@@ -605,7 +605,7 @@ end
 end EMetric
 
 namespace Metric
-variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
+variable {x : α} {ε : ℝ≥0∞}
 
 @[simp] theorem isOpen_eball : IsOpen (eball x ε) :=
   EMetric.isOpen_iff.2 fun _ => exists_eball_subset_eball

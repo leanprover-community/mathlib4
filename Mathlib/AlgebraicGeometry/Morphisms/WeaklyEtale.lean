@@ -37,7 +37,7 @@ universe u
 
 namespace AlgebraicGeometry
 
-variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is weakly étale if it is flat and the diagonal map is flat. -/
 @[mk_iff, stacks 094P]

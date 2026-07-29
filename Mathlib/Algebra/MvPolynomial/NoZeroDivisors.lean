@@ -26,7 +26,7 @@ variable {R : Type*}
 
 namespace MvPolynomial
 
-variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' : R} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
@@ -134,7 +134,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R] [NoZeroDivisors R] {p q r : MvPolynomial σ R}
+variable [CommRing R] [NoZeroDivisors R] {p r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by

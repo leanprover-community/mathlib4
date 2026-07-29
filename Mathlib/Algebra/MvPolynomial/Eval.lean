@@ -742,8 +742,8 @@ end Aeval
 
 section AevalTower
 
-variable {S A B : Type*} [CommSemiring S] [CommSemiring A] [CommSemiring B]
-variable [Algebra S R] [Algebra S A] [Algebra S B]
+variable {S A : Type*} [CommSemiring S] [CommSemiring A]
+variable [Algebra S R] [Algebra S A]
 
 /-- Version of `aeval` for defining algebra homs out of `MvPolynomial σ R` over a smaller base ring
   than `R`. -/

@@ -62,21 +62,18 @@ open Set Topology Filter NNReal
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {G'' : Type*} {E''' : Type*}
-  {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*} {F' : Type*} {G'
+  : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*} {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
-  [SeminormedAddGroup E''']
-  [SeminormedRing R']
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R] [SeminormedAddGroup E''']
 
 variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
+variable {f'' : α → E''} {g'' : α → F''}
 variable {l l' : Filter α}
 
 section Defs
