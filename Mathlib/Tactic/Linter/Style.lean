@@ -647,7 +647,7 @@ def elabShow (newType : Term) : TacticM Unit := do
         readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
         instead for these purposes."
 
--- `(priority := high)` ensures we avoid producing choice nodes, and thereby avoid unexpected 
+-- `(priority := high)` ensures we avoid producing choice nodes, and thereby avoid unexpected
 -- behavior arising from choice node elaboration
 @[tactic_alt Tactic.show]
 elab (name := «show») (priority := high) "show " newType:term : tactic => elabShow newType
