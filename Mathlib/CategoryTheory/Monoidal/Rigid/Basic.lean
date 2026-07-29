@@ -785,8 +785,7 @@ theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.
 
 lemma rightDualIso_hom_trans {X Y₁ Y₂ Y₃ : C}
     (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) (p₃ : ExactPairing X Y₃) :
-    (rightDualIso p₁ p₂).hom ≫ (rightDualIso p₂ p₃).hom =
-      (rightDualIso p₁ p₃).hom := by
+    (rightDualIso p₁ p₂).hom ≫ (rightDualIso p₂ p₃).hom = (rightDualIso p₁ p₃).hom := by
   simp [rightDualIso, ← @comp_rightAdjointMate]
 
 lemma rightDualIso_tensor {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C}

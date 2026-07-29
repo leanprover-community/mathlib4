@@ -101,9 +101,8 @@ lemma rightMate_swap_rightMate {X X' Y Y' : C}
     (exactPairing_swap Y Y').rightMate (exactPairing_swap X X') (pX.rightMate pY f) = f := by
   apply (exactPairing_swap Y Y').rightHom_ext
   rw [rightMate_comp_evaluation]
-  erw [braiding_naturality_right_assoc, rightMate_comp_evaluation,
-    ← braiding_naturality_left_assoc]
-  rfl
+  simp only [exactPairingSwap_evaluation, braiding_naturality_right_assoc,
+    rightMate_comp_evaluation, ← braiding_naturality_left_assoc]
 
 end CategoryTheory.ExactPairing
 
