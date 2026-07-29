@@ -65,6 +65,8 @@ This generalizes and will eventually replace the four existing definitions
 class IsMulFG : Prop where
   fg_top : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
 
+attribute [to_additive existing] isMulFG_def
+
 variable {M N}
 
 -- We give this instance low priority to avoid slow typeclass resolutions.
@@ -101,9 +103,8 @@ theorem isMulFG_iff : IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG M ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = ⊤ ∧ S.Finite :=
-  isMulFG_iff.trans
-    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+    IsMulFG M ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = ⊤ ∧ S.Finite := by
+  rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive]
 instance [IsMulFG M] : IsMulFG (MonoidHom.mrange f) :=
@@ -127,9 +128,8 @@ theorem isMulFG_iff : IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG P ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = P ∧ S.Finite :=
-  isMulFG_iff.trans
-    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+    IsMulFG P ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = P ∧ S.Finite := by
+  rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive (attr := simp)]
 theorem isMulFG_top_iff : IsMulFG (⊤ : Submonoid M) ↔ IsMulFG M :=
@@ -156,9 +156,9 @@ theorem isMulFG_iff : IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set 
     fun ⟨S, hS⟩ ↦ ⟨S ∪ S⁻¹, by simp [← Subgroup.closure_toSubmonoid, hS]⟩⟩
 
 @[to_additive]
-theorem isMulFG_iff_finite : IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite :=
-  isMulFG_iff.trans
-    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+theorem isMulFG_iff_finite :
+    IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite := by
+  rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive]
 instance [IsMulFG G] : IsMulFG f.range :=
@@ -181,9 +181,9 @@ theorem isMulFG_iff : IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set 
   simpa [Set.image_preimage_eq_of_subset h]
 
 @[to_additive]
-theorem isMulFG_iff_finite : IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite :=
-  isMulFG_iff.trans
-    ⟨fun ⟨S, hS⟩ ↦ ⟨S, hS, S.finite_toSet⟩, fun ⟨S, hS, hf⟩ ↦ ⟨hf.toFinset, by simpa⟩⟩
+theorem isMulFG_iff_finite :
+    IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite := by
+  rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive (attr := simp)]
 theorem isMulFG_top_iff : IsMulFG (⊤ : Subgroup G) ↔ IsMulFG G :=
