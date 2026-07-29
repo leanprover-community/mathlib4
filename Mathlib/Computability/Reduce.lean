@@ -279,7 +279,9 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
 
 /-! ### Many-one completeness of the halting problem
 
-The halting problem is complete for recursively enumerable predicates under many-one reducibility.
+The halting problem is complete for recursively enumerable predicates under many-one reducibility;
+see `ComputablePred.halting_problem_re` and `ComputablePred.halting_problem` for the other basic
+facts.
 -/
 
 section HaltingProblem
