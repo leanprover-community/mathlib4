@@ -91,7 +91,7 @@ protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMul
     (hf : Function.Surjective f) : IsMulCentral (f a) := by
   refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
   · obtain ⟨_, rfl⟩ := hf a
-    rw [commute_iff_eq, ← map_mul, ← map_mul, h.1]
+    rw [commute_iff_eq, ← map_mul, ← map_mul, h.comm]
   all_goals
     obtain ⟨_, rfl⟩ := hf a
     obtain ⟨_, rfl⟩ := hf b
@@ -145,8 +145,7 @@ theorem image_center_eq {F} [EquivLike F M N] [MulEquivClass F M N] {f : F} :
     f '' (Set.center M) = Set.center N := by
   refine le_antisymm (image_center_subset <| EquivLike.surjective f) fun x hx ↦ ?_
   obtain ⟨a, rfl⟩ := EquivLike.surjective f x
-  refine ⟨a, ?_, rfl⟩
-  simpa using image_center_subset (f : M ≃* N).symm.surjective (mem_image_of_mem _ hx)
+  exact ⟨a, by simpa using image_center_subset (f : M ≃* N).symm.surjective (mem_image_of_mem _ hx)⟩
 
 @[to_additive]
 theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N] [MulEquivClass F M N]
