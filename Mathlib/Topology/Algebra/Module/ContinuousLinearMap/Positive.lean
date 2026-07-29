@@ -119,7 +119,7 @@ lemma toContinuousLinearMap_injective :
     Function.Injective ((↑) : (E₁ →P[R] E₂) → (E₁ →L[R] E₂)) :=
   fun _ _ h ↦ by ext x; congrm($h x)
 
-@[simp]
+-- not marked `@[simp]` because `simp` can already prove it.
 lemma toContinuousLinearMap_inj (f g : E₁ →P[R] E₂) :
     f.toContinuousLinearMap = g.toContinuousLinearMap ↔ f = g :=
   toContinuousLinearMap_injective.eq_iff
