@@ -89,12 +89,10 @@ theorem isPivot_iff :
     A.IsPivot l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
   refine ⟨fun hA => ⟨hA.monotone, hA.strictMonoOn, hA.isLeadingEntry⟩, ?_⟩
-  rintro ⟨hmono, hstrict, hlead⟩
-  refine ⟨?_, hlead⟩
-  intro i₁ i₂ hlt j₂ hz
-  refine (hlead i₂).1 j₂ ?_
+  refine fun ⟨hmono, hstrict, hlead⟩ ↦ ⟨fun i₁ i₂ hlt j₂ hz ↦ (hlead i₂).1 j₂ ?_, hlead⟩
   rcases eq_or_ne (l i₂) ⊤ with h₂ | h₂
-  · exact h₂ ▸ WithTop.coe_lt_top j₂
+  · rw [h₂]
+    exact WithTop.coe_lt_top j₂
   · have h₁ : l i₁ ≠ ⊤ := fun ht => h₂ (top_le_iff.mp (ht ▸ hmono hlt.le))
     obtain ⟨c₁, hc₁⟩ := WithTop.ne_top_iff_exists.mp h₁
     have hj : (j₂ : WithTop n) ≤ c₁ :=
@@ -105,15 +103,11 @@ end Zero
 
 section Rank
 
-variable [Fintype m] [Fintype n] {A : Matrix m n R} {l : m → WithTop n}
+variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
+  {A : Matrix m n R} {l : m → WithTop n}
 
-theorem IsPivot.rank_le_card [LT m] [LT n] [DecidableEq n] [CommSemiring R]
-    [StrongRankCondition R] (hA : A.IsPivot l) : A.rank ≤ #{i | l i ≠ ⊤} :=
-  A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by simpa using hi)
-
-variable [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
-
-theorem IsPivot.card_le_rank (hA : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank := by
+theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} := by
+  refine le_antisymm (A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by aesop)) ?_
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
@@ -130,9 +124,6 @@ theorem IsPivot.card_le_rank (hA : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank 
       = (A.submatrix Subtype.val g).rank := by
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
-
-theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
-  le_antisymm hA.rank_le_card hA.card_le_rank
 
 end Rank
 

@@ -214,7 +214,7 @@ theorem rank_of_isUnit [DecidableEq n] [CommSemiring R] [StrongRankCondition R] 
   obtain ⟨A, rfl⟩ := h
   exact rank_unit A
 
-theorem rank_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [StrongRankCondition R]
+theorem rank_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [Nontrivial R]
     [Fintype m] [DecidableEq m] {A : Matrix m m R} (hA : A.det ∈ nonZeroDivisors R) :
     A.rank = Fintype.card m := by
   rw [rank, LinearMap.finrank_range_of_inj (mulVec_injective_of_det_mem_nonZeroDivisors hA),
@@ -252,12 +252,10 @@ lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [CommRing R] [Fintype m] [Deci
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) : (A * B).rank = B.rank :=
   rank_mul_eq_right_of_det_mem_nonZeroDivisors A B hA.mem_nonZeroDivisors
 
-lemma rank_mul_eq_right_of_lowerTriangular {R : Type*} [CommRing R] [IsDomain R]
+lemma rank_mul_eq_right_of_isLowerTriangular {R : Type*} [CommRing R] [IsDomain R]
     [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
-    (hA : A.IsLowerTriangular) (hd : ∀ i, A i i ≠ 0) : (A * B).rank = B.rank := by
-  have hdet : A.det ≠ 0 := by
-    rw [det_of_lowerTriangular A hA]
-    exact Finset.prod_ne_zero_iff.mpr fun i _ => hd i
+    (hA : A.IsLowerTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
+  have hdet : A.det ≠ 0 := by simpa [det_of_lowerTriangular A hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 /-- Taking a subset of the rows and columns reduces the rank. -/
@@ -348,8 +346,8 @@ theorem rank_le_card_height [Fintype m] [CommSemiring R] [StrongRankCondition R]
   (Submodule.finrank_le _).trans (finrank_pi R).le
 
 /-- The rank of a matrix is at most the size of any finset containing all its nonzero rows. -/
-theorem rank_le_card_of_row_eq_zero [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
-    (s : Finset m) (hz : ∀ i ∉ s, A i = 0) : A.rank ≤ s.card := by
+theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R)
+    (s : Finset m) (hz : Function.support A.row ⊆ s) : A.rank ≤ s.card := by
   classical
   set B : Matrix m {x // x ∈ s} R := Matrix.of fun i a => if (a : m) = i then 1 else 0 with hBdef
   have hB : B * A.submatrix Subtype.val id = A := by
