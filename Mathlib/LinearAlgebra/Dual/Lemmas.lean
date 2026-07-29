@@ -881,8 +881,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
--- TODO: generalize to `Sort`
-theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
+theorem dualAnnihilator_iInf_eq_type {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
   revert ι
   apply Finite.induction_empty_option
@@ -892,6 +891,11 @@ theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K 
     rw [iSup_of_empty', iInf_of_isEmpty, sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
     rw [iInf_option, iSup_option, dualAnnihilator_inf_eq, h]
+
+theorem dualAnnihilator_iInf_eq {ι : Sort*} [Finite ι] (W : ι → Subspace K V₁) :
+    (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
+  rw [← iInf_plift_down W, ← iSup_plift_down fun i ↦ (W i).dualAnnihilator]
+  exact dualAnnihilator_iInf_eq_type fun i : PLift ι ↦ W i.down
 
 /-- For vector spaces, dual annihilators carry direct sum decompositions
 to direct sum decompositions. -/
