@@ -167,7 +167,7 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     exact hs.not_gt this
 
 theorem not_integrableOn_Ioi_rpow_of_neg_one_le {a s : ℝ} (hs : -1 ≤ s) :
-    ¬IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
+    ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi a) := by
   refine fun h ↦ not_lt.mpr hs ?_
   rw [← integrableAtFilter_rpow_atTop_iff]
   exact ⟨Ioi a, Ioi_mem_atTop a, h⟩
