@@ -89,45 +89,39 @@ instance : Unique (ℤ ≃+o ℤ) where
 
 namespace WithZero
 
-private noncomputable def logMapAddEquiv (e : ℤᵐ⁰ ≃*o ℤᵐ⁰) : ℤ ≃+ ℤ := by
-  let f : ℤ →+ ℤ :=
-    { toFun := fun z ↦ log (e (exp z))
-      map_zero' := by simp
-      map_add' := by
-        intro x y
-        rw [exp_add, map_mul, log_mul
-          ((map_ne_zero e).mpr exp_ne_zero) ((map_ne_zero e).mpr exp_ne_zero)] }
-  refine AddEquiv.ofBijective f ?_
-  constructor
-  · intro x y h
-    apply exp_injective
-    apply e.injective
-    simpa [f] using congrArg exp h
-  · intro y
-    refine ⟨log (e.symm (exp y)), ?_⟩
-    dsimp [f]
-    rw [exp_log ((map_ne_zero e.symm).mpr exp_ne_zero)]
-    simp
+/-- A multiplicative automorphism of `ℤᵐ⁰` restricts to an additive automorphism of `ℤ`.
+The order plays no role here; it is only used in `orderMonoidIso_int_eq_refl` to rule out
+the automorphism induced by negation. -/
+private def logMapAddEquiv (e : ℤᵐ⁰ ≃* ℤᵐ⁰) : ℤ ≃+ ℤ :=
+  AddEquiv.toMultiplicative.symm e.unzero
+
+private lemma exp_logMapAddEquiv (e : ℤᵐ⁰ ≃* ℤᵐ⁰) (z : ℤ) :
+    exp (logMapAddEquiv e z) = e (exp z) := by
+  simp [logMapAddEquiv, exp_eq_coe_ofAdd]
+
+private lemma logMapAddEquiv_apply (e : ℤᵐ⁰ ≃* ℤᵐ⁰) (z : ℤ) :
+    logMapAddEquiv e z = log (e (exp z)) := by
+  rw [← exp_logMapAddEquiv, log_exp]
 
 /-- The only order-preserving multiplicative automorphism of `ℤᵐ⁰` is the identity. -/
 theorem orderMonoidIso_int_eq_refl (e : ℤᵐ⁰ ≃*o ℤᵐ⁰) :
     e = OrderMonoidIso.refl ℤᵐ⁰ := by
-  have hmono : Monotone (logMapAddEquiv e) := by
+  have hmono : Monotone (logMapAddEquiv e.toMulEquiv) := by
     intro x y hxy
-    dsimp [logMapAddEquiv]
+    simp only [logMapAddEquiv_apply]
     change log (e (exp x)) ≤ log (e (exp y))
     apply exp_le_exp.mp
     rw [exp_log ((map_ne_zero e).mpr exp_ne_zero),
       exp_log ((map_ne_zero e).mpr exp_ne_zero)]
     exact e.toOrderIso.monotone (exp_le_exp.mpr hxy)
-  rcases Int.addEquiv_eq_refl_or_neg (logMapAddEquiv e) with h | h
+  rcases Int.addEquiv_eq_refl_or_neg (logMapAddEquiv e.toMulEquiv) with h | h
   · ext x
     by_cases hx : x = 0
     · simp [hx]
     · rw [← exp_log hx]
-      apply exp_injective
       have ht := congrArg exp (DFunLike.congr_fun h (log x))
-      simpa [logMapAddEquiv] using ht
+      rw [exp_logMapAddEquiv] at ht
+      simpa using ht
   · have hle := hmono (show (0 : ℤ) ≤ 1 by omega)
     rw [h] at hle
     norm_num at hle
