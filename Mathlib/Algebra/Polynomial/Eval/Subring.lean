@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.Algebra.Ring.Subring.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Evaluation of polynomials in subrings
@@ -16,6 +18,8 @@ import Mathlib.Algebra.Ring.Subring.Basic
   polynomials with coefficients in the range of `f`
 
 -/
+
+public section
 
 namespace Polynomial
 
@@ -39,8 +43,15 @@ theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coe
     use C c * X ^ i
     rw [coe_mapRingHom, Polynomial.map_mul, map_C, hc, Polynomial.map_pow, map_X]
 
+theorem notMem_map_rangeS {p : S[X]} : p ∉ (mapRingHom f).rangeS ↔ ∃ n, p.coeff n ∉ f.rangeS :=
+  (mem_map_rangeS f (p := p)).not.trans not_forall
+
 theorem mem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]} :
     p ∈ (mapRingHom f).range ↔ ∀ n, p.coeff n ∈ f.range :=
   mem_map_rangeS f
+
+theorem notMem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]} :
+    p ∉ (mapRingHom f).range ↔ ∃ n, p.coeff n ∉ f.range :=
+  notMem_map_rangeS f
 
 end Polynomial

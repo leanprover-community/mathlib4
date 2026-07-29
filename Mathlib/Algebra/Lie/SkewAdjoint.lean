@@ -3,9 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -30,6 +32,8 @@ results for the Lie algebra of square matrices.
 lie algebra, skew-adjoint, bilinear form
 -/
 
+@[expose] public section
+
 
 universe u v w w₁
 
@@ -49,6 +53,8 @@ theorem LinearMap.BilinForm.isSkewAdjoint_bracket {f g : Module.End R M}
   change IsAdjointPair B B (f * g - g * f) (-(f * g - g * f)); rw [neg_sub]
   exact hfg.sub hgf
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- Given an `R`-module `M`, equipped with a bilinear form, the skew-adjoint endomorphisms form a
 Lie subalgebra of the Lie algebra of endomorphisms. -/
 def skewAdjointLieSubalgebra : LieSubalgebra R (Module.End R M) :=
@@ -63,8 +69,7 @@ def skewAdjointLieSubalgebraEquiv :
     skewAdjointLieSubalgebra (B.compl₁₂ (e : N →ₗ[R] M) e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
-  simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-    LinearEquiv.coe_coe]
+  simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
   exact (LinearMap.isPairSelfAdjoint_equiv (B := -B) (F := B) e f).symm
 
 @[simp]
@@ -84,11 +89,13 @@ section SkewAdjointMatrices
 
 open scoped Matrix
 
-variable {R : Type u} {n : Type w} [CommRing R] [DecidableEq n] [Fintype n]
+variable {R : Type u} {n : Type w} [CommRing R] [Fintype n]
 variable (J : Matrix n n R)
 
 theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, Aᵀ⁆ :=
   show (A * B - B * A)ᵀ = Bᵀ * Aᵀ - Aᵀ * Bᵀ by simp
+
+variable [DecidableEq n]
 
 theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjointMatricesSubmodule J)
     (hB : B ∈ skewAdjointMatricesSubmodule J) : ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
@@ -100,6 +107,8 @@ theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjoin
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc,
     ← mul_assoc, hA, hB]
   noncomm_ring
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Lie subalgebra of skew-adjoint square matrices corresponding to a square matrix `J`. -/
 def skewAdjointMatricesLieSubalgebra : LieSubalgebra R (Matrix n n R) :=
@@ -119,8 +128,7 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
     ext A
     suffices P.lieConj h A ∈ skewAdjointMatricesSubmodule J ↔
         A ∈ skewAdjointMatricesSubmodule (Pᵀ * J * P) by
-      simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-        LinearEquiv.coe_coe]
+      simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 
@@ -137,7 +145,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
+      simpa [-LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 

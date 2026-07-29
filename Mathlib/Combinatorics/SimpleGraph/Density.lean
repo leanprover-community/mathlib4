@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
 
 /-!
 # Edge density
@@ -26,6 +28,8 @@ Between two finsets of vertices,
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
 
+@[expose] public section
+
 open Finset
 
 variable {𝕜 ι κ α β : Type*}
@@ -37,7 +41,8 @@ namespace Rel
 
 section Asymmetric
 
-variable [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
   {t t₁ t₂ : Finset β} {a : α} {b : β} {δ : 𝕜}
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
@@ -68,7 +73,7 @@ variable (r)
 theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β) :
     #(interedges r s t) + #(interedges (fun x y ↦ ¬r x y) s t) = #s * #t := by
   classical
-  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_neg_eq]
+  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_not_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 
 theorem interedges_disjoint_left {s s' : Finset α} (hs : Disjoint s s') (t : Finset β) :
@@ -127,7 +132,7 @@ theorem edgeDensity_le_one (s : Finset α) (t : Finset β) : edgeDensity r s t �
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) :
     edgeDensity r s t + edgeDensity (fun x y ↦ ¬r x y) s t = 1 := by
-  rw [edgeDensity, edgeDensity, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity, edgeDensity, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl r s t
   · exact mod_cast (mul_pos hs.card_pos ht.card_pos).ne'
 
@@ -196,7 +201,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
     gcongr
-    exact hδ₁.le.trans (by norm_num)
+    exact hδ₁.le.trans (by simp)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂
@@ -223,7 +228,7 @@ densities is at most `2 * δ`. -/
 theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hδ : 0 ≤ δ)
     (hscard : (1 - δ) * #s₁ ≤ #s₂) (htcard : (1 - δ) * #t₁ ≤ #t₂) :
     |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ := by
-  rcases lt_or_le δ 1 with h | h
+  rcases lt_or_ge δ 1 with h | h
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]
@@ -239,24 +244,24 @@ section Symmetric
 variable {r : α → α → Prop} [DecidableRel r] {s t : Finset α} {a b : α}
 
 @[simp]
-theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
+theorem swap_mem_interedges_iff [Std.Symm r] {x : α × α} :
     x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
-  rw [mem_interedges_iff, mem_interedges_iff, hr.iff]
+  rw [mem_interedges_iff, mem_interedges_iff, Std.Symm.iff (r := r)]
   exact and_left_comm
 
-theorem mk_mem_interedges_comm (hr : Symmetric r) :
+theorem mk_mem_interedges_comm [Std.Symm r] :
     (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
-  @swap_mem_interedges_iff _ _ _ _ _ hr (b, a)
+  swap_mem_interedges_iff (x := (b, a))
 
-theorem card_interedges_comm (hr : Symmetric r) (s t : Finset α) :
+theorem card_interedges_comm [Std.Symm r] (s t : Finset α) :
     #(interedges r s t) = #(interedges r t s) :=
-  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
+  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ swap_mem_interedges_iff.mpr)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
-    ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩
+    ⟨x.swap, swap_mem_interedges_iff.mpr h, x.swap_swap⟩
 
-theorem edgeDensity_comm (hr : Symmetric r) (s t : Finset α) :
+theorem edgeDensity_comm [Std.Symm r] (s t : Finset α) :
     edgeDensity r s t = edgeDensity r t s := by
-  rw [edgeDensity, mul_comm, card_interedges_comm hr, edgeDensity]
+  rw [edgeDensity, mul_comm, card_interedges_comm, edgeDensity]
 
 end Symmetric
 
@@ -332,12 +337,12 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     refine filter_congr fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
-  rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]
+  rw [this, ← card_union_of_disjoint, filter_union_filter_not_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h : Disjoint s t) :
     G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
-  rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity_def, edgeDensity_def, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl _ h
   · positivity
 
@@ -362,13 +367,16 @@ theorem edgeDensity_empty_right (s : Finset α) : G.edgeDensity s ∅ = 0 :=
 
 @[simp]
 theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ G.interedges s t ↔ x ∈ G.interedges t s :=
-  Rel.swap_mem_interedges_iff G.symm
+  have := G.symm
+  Rel.swap_mem_interedges_iff
 
 theorem mk_mem_interedges_comm : (a, b) ∈ G.interedges s t ↔ (b, a) ∈ G.interedges t s :=
-  Rel.mk_mem_interedges_comm G.symm
+  have := G.symm
+  Rel.mk_mem_interedges_comm
 
 theorem edgeDensity_comm (s t : Finset α) : G.edgeDensity s t = G.edgeDensity t s :=
-  Rel.edgeDensity_comm G.symm s t
+  have := G.symm
+  Rel.edgeDensity_comm s t
 
 end SimpleGraph
 

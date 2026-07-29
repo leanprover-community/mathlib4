@@ -1,3 +1,4 @@
+module
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 set_option autoImplicit true

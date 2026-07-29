@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases for the product of modules
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -22,13 +26,10 @@ open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
-section Module
+namespace Module.Basis
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
-namespace Basis
-
-variable (b : Basis ι R M)
+  (b : Basis ι R M)
 
 section Prod
 
@@ -38,7 +39,7 @@ variable (b' : Basis ι' R M')
 to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
 protected def prod : Basis (ι ⊕ ι') R (M × M') :=
-  ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
+  ofRepr ((b.repr.prodCongr b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
 
 @[simp]
 theorem prod_repr_inl (x) (i) : (b.prod b').repr x (Sum.inl i) = b.repr x.1 i :=
@@ -51,35 +52,35 @@ theorem prod_repr_inr (x) (i) : (b.prod b').repr x (Sum.inr i) = b'.repr x.2 i :
 theorem prod_apply_inl_fst (i) : (b.prod b' (Sum.inl i)).1 = b i :=
   b.repr.injective <| by
     ext j
-    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply, LinearEquiv.prod_symm,
-      LinearEquiv.prod_apply, b.repr.apply_symm_apply, LinearEquiv.symm_symm, repr_self,
-      Equiv.toFun_as_coe, Finsupp.fst_sumFinsuppLEquivProdFinsupp]
+    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
+      LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
+      LinearEquiv.symm_symm, repr_self, Finsupp.fst_sumFinsuppLEquivProdFinsupp]
     apply Finsupp.single_apply_left Sum.inl_injective
 
 theorem prod_apply_inr_fst (i) : (b.prod b' (Sum.inr i)).1 = 0 :=
   b.repr.injective <| by
     ext i
-    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply, LinearEquiv.prod_symm,
-      LinearEquiv.prod_apply, b.repr.apply_symm_apply, LinearEquiv.symm_symm, repr_self,
-      Equiv.toFun_as_coe, Finsupp.fst_sumFinsuppLEquivProdFinsupp, LinearEquiv.map_zero,
-      Finsupp.zero_apply]
-    apply Finsupp.single_eq_of_ne Sum.inr_ne_inl
+    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
+      LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b.repr.apply_symm_apply,
+      LinearEquiv.symm_symm, Finsupp.fst_sumFinsuppLEquivProdFinsupp,
+      map_zero, Finsupp.zero_apply]
+    apply Finsupp.single_eq_of_ne Sum.inl_ne_inr
 
 theorem prod_apply_inl_snd (i) : (b.prod b' (Sum.inl i)).2 = 0 :=
   b'.repr.injective <| by
     ext j
-    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply, LinearEquiv.prod_symm,
-      LinearEquiv.prod_apply, b'.repr.apply_symm_apply, LinearEquiv.symm_symm, repr_self,
-      Equiv.toFun_as_coe, Finsupp.snd_sumFinsuppLEquivProdFinsupp, LinearEquiv.map_zero,
-      Finsupp.zero_apply]
-    apply Finsupp.single_eq_of_ne Sum.inl_ne_inr
+    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
+      LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
+      LinearEquiv.symm_symm, Finsupp.snd_sumFinsuppLEquivProdFinsupp,
+      map_zero, Finsupp.zero_apply]
+    apply Finsupp.single_eq_of_ne Sum.inr_ne_inl
 
 theorem prod_apply_inr_snd (i) : (b.prod b' (Sum.inr i)).2 = b' i :=
   b'.repr.injective <| by
     ext i
-    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply, LinearEquiv.prod_symm,
-      LinearEquiv.prod_apply, b'.repr.apply_symm_apply, LinearEquiv.symm_symm, repr_self,
-      Equiv.toFun_as_coe, Finsupp.snd_sumFinsuppLEquivProdFinsupp]
+    simp only [Basis.prod, Basis.coe_ofRepr, LinearEquiv.symm_trans_apply,
+      LinearEquiv.prodCongr_symm, LinearEquiv.prodCongr_apply, b'.repr.apply_symm_apply,
+      LinearEquiv.symm_symm, repr_self, Finsupp.snd_sumFinsuppLEquivProdFinsupp]
     apply Finsupp.single_apply_left Sum.inr_injective
 
 @[simp]

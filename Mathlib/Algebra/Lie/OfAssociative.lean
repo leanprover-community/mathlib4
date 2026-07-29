@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.Algebra.Lie.Submodule
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -20,17 +22,19 @@ make such a definition in this file.
 
 ## Main definitions
 
- * `LieAlgebra.ofAssociativeAlgebra`
- * `LieAlgebra.ofAssociativeAlgebraHom`
- * `LieModule.toEnd`
- * `LieAlgebra.ad`
- * `LinearEquiv.lieConj`
- * `AlgEquiv.toLieEquiv`
+* `LieAlgebra.ofAssociativeAlgebra`
+* `LieAlgebra.ofAssociativeAlgebraHom`
+* `LieModule.toEnd`
+* `LieAlgebra.ad`
+* `LinearEquiv.lieConj`
+* `AlgEquiv.toLieEquiv`
 
 ## Tags
 
 lie algebra, ring commutator, adjoint action
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -42,7 +46,8 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
+@[instance_reducible]
+def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
@@ -58,18 +63,21 @@ theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a
 
 end LieRing
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 section AssociativeModule
 
 variable {M : Type w} [AddCommGroup M] [Module A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
 bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -89,6 +97,7 @@ section LieAlgebra
 
 variable {R : Type u} [CommRing R] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
 instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A where
@@ -119,6 +128,14 @@ instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
+-- TODO: fix this
+/-- Unfortunately we now have two brackets which are not equal at reducible transparency, even
+though they are equal at default transparency. We can use this lemma on rare occasions when this
+matters. -/
+theorem Module.End.instLieRingModule_eq :
+    LinearMap.instLieRingModule (L := Module.End R M) (M := M) (N := M) = lieRingSelfModule :=
+  rfl
+
 end AssociativeRepresentation
 
 namespace AlgHom
@@ -126,6 +143,7 @@ namespace AlgHom
 variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
 functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
@@ -158,6 +176,8 @@ end AlgHom
 end LieAlgebra
 
 end OfAssociative
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AdjointAction
 
@@ -220,10 +240,12 @@ lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ 
     x = y :=
   (toEnd_eq_iff R L M).mp <| LinearMap.ext h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
     toEnd R L M x = 0 ↔ x = 0 := by
-  simp [- LieHom.map_zero, ← (toEnd R L M).map_zero]
+  rw [← (toEnd R L M).toLinearMap.map_zero]
+  exact toEnd_eq_iff R L M
 
 lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ = 0) → x = 0 := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
@@ -232,6 +254,14 @@ lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ =
   · rw [← sub_eq_zero]
     refine h _ fun m ↦ ?_
     rw [sub_lie, sub_eq_zero, ← toEnd_apply_apply R, ← toEnd_apply_apply R, hxy]
+
+instance [IsFaithful R L M] {L' : LieSubalgebra R L} :
+    IsFaithful R L' M := by
+  refine ⟨(?_ : Injective (toEnd R L M ∘ ((↑) : L' → L)))⟩
+  exact IsFaithful.injective_toEnd.comp Subtype.val_injective
+
+instance : IsFaithful R (Module.End R M) M where
+  injective_toEnd := by simpa using injective_id
 
 end LieModule
 
@@ -249,7 +279,7 @@ lemma LieSubmodule.coe_toEnd_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : �
     ((toEnd R L N x ^ n) y : M) = (toEnd R L M x ^ n) y := by
   induction n generalizing y with
   | zero => rfl
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEnd]
+  | succ n ih => simp only [pow_succ', Module.End.mul_apply, ih, LieSubmodule.coe_toEnd]
 
 lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
@@ -279,7 +309,7 @@ lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
+    simp only [pow_succ', Module.End.mul_apply, ih, map_sum, map_nsmul,
       toEnd_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
@@ -303,7 +333,7 @@ variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L
 
 lemma toEnd_pow_comp_lieHom :
     (toEnd R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEnd R L M x ^ k := by
-  apply LinearMap.commute_pow_left_of_commute
+  apply Module.End.commute_pow_left_of_commute
   ext
   simp
 
@@ -333,20 +363,18 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext
-  simp only [LinearMap.restrict_coe_apply, toEnd_apply_apply, ← coe_bracket,
-    SetLike.coe_eq_coe]
   rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
     MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
-  rw [LinearMap.coe_pow]
+  rw [Module.End.coe_pow]
   exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
 
 open LieAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
@@ -359,6 +387,7 @@ theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
 
 end AdjointAction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
 def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
@@ -381,7 +410,7 @@ def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
     map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
-        simp only [LieRing.of_associative_ring_bracket, LinearMap.mul_eq_comp, e.conj_comp,
+        simp only [LieRing.of_associative_ring_bracket, Module.End.mul_eq_comp, e.conj_comp,
           map_sub] }
 
 @[simp]
@@ -400,6 +429,7 @@ variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
 variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
 variable (e : A₁ ≃ₐ[R] A₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/
 def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
   { e.toLinearEquiv with
@@ -429,7 +459,7 @@ open LieEquiv
 /-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and an element `x : L`, the conjugate
 of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`. -/
 @[simp]
-lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
+lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : e.toLinearEquiv.conj (ad R L x) = ad R L' (e x) := by
   ext y'
   rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
     ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]

@@ -3,7 +3,9 @@ Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
-import Mathlib.Topology.Category.Locale
+module
+
+public import Mathlib.Topology.Category.Locale
 
 /-!
 # Adjunction between Locales and Topological Spaces
@@ -14,7 +16,7 @@ and proves that it is right adjoint to the forgetful functor from topological sp
 ## Main declarations
 
 * `Locale.pt`: the *points* functor from the category of locales to the category of topological
-spaces.
+  spaces.
 
 * `Locale.adjunctionTopToLocalePT`: the adjunction between the functors `topToLocale` and `pt`.
 
@@ -37,6 +39,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 topological space, frame, locale, Stone duality, adjunction, points
 -/
 
+@[expose] public section
+
 open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
@@ -55,7 +59,7 @@ points of `L`. -/
 @[simps]
 def openOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
-  map_inf' a b := by simp [Set.setOf_and]
+  map_inf' a b := by simp [Set.ofPred_and]
   map_top' := by simp
   map_sSup' S := by ext; simp [Prop.exists_iff]
 
@@ -69,7 +73,7 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
   isOpen_sUnion S hS := by
     choose f hf using hS
     use ⨆ t, ⨆ ht, f t ht
-    simp_rw [map_iSup, iSup_Prop_eq, setOf_exists, hf, sUnion_eq_biUnion]
+    simp_rw [map_iSup, iSup_Prop_eq, ofPred_exists, hf, sUnion_eq_biUnion]
 
 /-- Characterization of when a subset of the space of points is open. -/
 lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
@@ -110,7 +114,7 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
   unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
-        by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
+        by rintro _ ⟨u, rfl⟩; simpa using! u.2⟩ }
   counit := { app := fun L ↦ ⟨Frm.ofHom (counitAppCont L)⟩ }
 
 end locale_top_adjunction

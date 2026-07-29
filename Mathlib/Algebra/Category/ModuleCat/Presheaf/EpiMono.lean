@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 
 /-!
 # Epimorphisms and monomorphisms in the category of presheaves of modules
@@ -14,6 +15,8 @@ In this file, we give characterizations of epimorphisms and monomorphisms
 in the category of presheaves of modules.
 
 -/
+
+public section
 
 universe v v₁ u₁ u
 
@@ -28,12 +31,12 @@ lemma epi_of_surjective (hf : ∀ ⦃X : Cᵒᵖ⦄, Function.Surjective (f.app 
   left_cancellation g₁ g₂ hg := by
     ext X m₂
     obtain ⟨m₁, rfl⟩ := hf m₂
-    exact congr_fun ((evaluation R X ⋙ forget _).congr_map hg) m₁
+    exact ConcreteCategory.congr_hom ((evaluation R X ⋙ forget _).congr_map hg) m₁
 
 lemma mono_of_injective (hf : ∀ ⦃X : Cᵒᵖ⦄, Function.Injective (f.app X)) : Mono f where
   right_cancellation {M} g₁ g₂ hg := by
     ext X m
-    exact hf (congr_fun ((evaluation R X ⋙ forget _).congr_map hg) m)
+    exact hf (ConcreteCategory.congr_hom ((evaluation R X ⋙ forget _).congr_map hg) m)
 
 variable (f)
 

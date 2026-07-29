@@ -3,14 +3,18 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.Attr
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.Attr
 
 /-!
 # `@[reduce_mod_char]` attribute
 
 This file registers `@[reduce_mod_char]` as a `simp` attribute.
 -/
+
+public meta section
 
 open Lean Meta
 

@@ -3,12 +3,16 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Gabriel Ebner, Yuyang Zhao
 -/
-import Lean.Meta.Tactic.Delta
-import Mathlib.Lean.Expr.Basic
+module
+
+public meta import Lean.Meta.Tactic.Delta
+public import Mathlib.Init
 
 /-!
 # Term elaborators for reduction
 -/
+
+public meta section
 
 namespace Mathlib.Util.TermReduce
 
@@ -52,7 +56,7 @@ def elabDelta : TermElab := fun stx expectedType? =>
       elabTerm t expectedType?
     synthesizeSyntheticMVars
     let t ← instantiateMVars t
-    let some t ← delta? t | throwError "cannot delta reduce {t}"
+    let some t ← withoutExporting do delta? t | throwError "cannot delta reduce {t}"
     pure t
   | _ => throwUnsupportedSyntax
 

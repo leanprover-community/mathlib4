@@ -3,10 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Order.Archimedean.IndicatorCard
-import Mathlib.Probability.Martingale.Centering
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Martingale.OptionalStopping
+module
+
+public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+public import Mathlib.Probability.Martingale.Centering
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
 
@@ -14,7 +16,7 @@ import Mathlib.Probability.Martingale.OptionalStopping
 
 This file proves Lévy's generalized Borel-Cantelli lemma which is a generalization of the
 Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel-Cantelli lemmas
-by choosing appropriate filtrations. This file also contains the one sided martingale bound which
+by choosing appropriate filtrations. This file also contains the one-sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
 **Note**: the usual Borel-Cantelli lemmas are not in this file.
@@ -23,7 +25,7 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 
 ## Main results
 
-- `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one sided martingale bound: given
+- `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one-sided martingale bound: given
   a submartingale `f` with uniformly bounded differences, the set for which `f` converges is almost
   everywhere equal to the set for which it is bounded.
 - `MeasureTheory.ae_mem_limsup_atTop_iff`: Lévy's generalized Borel-Cantelli:
@@ -32,6 +34,8 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 
 -/
 
+@[expose] public section
+
 
 open Filter
 
@@ -39,128 +43,96 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
-variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-
+variable {ι Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 /-!
-### One sided martingale bound
+### One-sided martingale bound
 -/
 
+/-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
+noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
+  hittingAfter f (Set.Ici r) ⊥
 
--- TODO: `leastGE` should be defined taking values in `WithTop ℕ` once the `stoppedProcess`
--- refactor is complete
-/-- `leastGE f r n` is the stopping time corresponding to the first time `f ≥ r`. -/
-noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ) (n : ℕ) :=
-  hitting f (Set.Ici r) 0 n
+theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
+    {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
+    [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β]
+    {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
+    IsStoppingTime ℱ (leastGE f r) :=
+  hf.adapted.isStoppingTime_hittingAfter measurableSet_Ici
 
-theorem Adapted.isStoppingTime_leastGE (r : ℝ) (n : ℕ) (hf : Adapted ℱ f) :
-    IsStoppingTime ℱ (leastGE f r n) :=
-  hitting_isStoppingTime hf measurableSet_Ici
+/-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
+(the first time `f` passes above `r`), and then is constant afterwards. -/
+noncomputable def stoppedAbove [LinearOrder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : ι → Ω → β :=
+  stoppedProcess f (leastGE f r)
 
-theorem leastGE_le {i : ℕ} {r : ℝ} (ω : Ω) : leastGE f r i ω ≤ i :=
-  hitting_le ω
+variable {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
 
--- The following four lemmas shows `leastGE` behaves like a stopped process. Ideally we should
--- define `leastGE` as a stopping time and take its stopped process. However, we can't do that
--- with our current definition since a stopping time takes only finite indices. An upcoming
--- refactor should hopefully make it possible to have stopping times taking infinity as a value
-theorem leastGE_mono {n m : ℕ} (hnm : n ≤ m) (r : ℝ) (ω : Ω) : leastGE f r n ω ≤ leastGE f r m ω :=
-  hitting_mono hnm
-
-theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : ∀ ω, π ω ≤ n) :
-    leastGE f r (π ω) ω = min (π ω) (leastGE f r n ω) := by
-  classical
-  refine le_antisymm (le_min (leastGE_le _) (leastGE_mono (hπn ω) r ω)) ?_
-  by_cases hle : π ω ≤ leastGE f r n ω
-  · rw [min_eq_left hle, leastGE]
-    by_cases h : ∃ j ∈ Set.Icc 0 (π ω), f j ω ∈ Set.Ici r
-    · refine hle.trans (Eq.le ?_)
-      rw [leastGE, ← hitting_eq_hitting_of_exists (hπn ω) h]
-    · simp only [hitting, if_neg h, le_rfl]
-  · rw [min_eq_right (not_le.1 hle).le, leastGE, leastGE, ←
-      hitting_eq_hitting_of_exists (hπn ω) _]
-    rw [not_le, leastGE, hitting_lt_iff _ (hπn ω)] at hle
-    exact
-      let ⟨j, hj₁, hj₂⟩ := hle
-      ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
-
-theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → ℕ) (r : ℝ) {n : ℕ}
-    (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
-      stoppedValue (stoppedProcess f (leastGE f r n)) π := by
-  ext1 ω
-  simp (config := { unfoldPartialApp := true }) only [stoppedProcess, stoppedValue]
-  rw [leastGE_eq_min _ _ _ hπn]
-
-theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
-    Submartingale (fun i => stoppedValue f (leastGE f r i)) ℱ μ := by
-  rw [submartingale_iff_expected_stoppedValue_mono]
-  · intro σ π hσ hπ hσ_le_π hπ_bdd
-    obtain ⟨n, hπ_le_n⟩ := hπ_bdd
-    simp_rw [stoppedValue_stoppedValue_leastGE f σ r fun i => (hσ_le_π i).trans (hπ_le_n i)]
-    simp_rw [stoppedValue_stoppedValue_leastGE f π r hπ_le_n]
-    refine hf.expected_stoppedValue_mono ?_ ?_ ?_ fun ω => (min_le_left _ _).trans (hπ_le_n ω)
-    · exact hσ.min (hf.adapted.isStoppingTime_leastGE _ _)
-    · exact hπ.min (hf.adapted.isStoppingTime_leastGE _ _)
-    · exact fun ω => min_le_min (hσ_le_π ω) le_rfl
-  · exact fun i => stronglyMeasurable_stoppedValue_of_le hf.adapted.progMeasurable_of_discrete
-      (hf.adapted.isStoppingTime_leastGE _ _) leastGE_le
-  · exact fun i => integrable_stoppedValue _ (hf.adapted.isStoppingTime_leastGE _ _) hf.integrable
-      leastGE_le
+protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
+    Submartingale (stoppedAbove f r) ℱ μ :=
+  hf.stoppedProcess (hf.stronglyAdapted.isStoppingTime_leastGE r)
 
 variable {r : ℝ} {R : ℝ≥0}
 
-theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
+set_option backward.isDefEq.respectTransparency false in
+theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    ∀ᵐ ω ∂μ, stoppedValue f (leastGE f r i) ω ≤ r + R := by
+    ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
-  change f (leastGE f r i ω) ω ≤ r + R
-  by_cases heq : leastGE f r i ω = 0
-  · rw [heq, hf0, Pi.zero_apply]
-    exact add_nonneg hr R.coe_nonneg
-  · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
-    rw [hk, add_comm, ← sub_le_iff_le_add]
-    have := not_mem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
-    simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
+  rw [stoppedAbove, stoppedProcess, ENat.some_eq_natCast]
+  by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).untopA = 0
+  · simp only [h_zero, hf0, Pi.zero_apply]
+    positivity
+  obtain ⟨k, hk⟩ := Nat.exists_eq_add_one_of_ne_zero h_zero
+  rw [hk, add_comm r, ← sub_le_iff_le_add]
+  have := notMem_of_lt_hittingAfter (?_ : k < leastGE f r ω)
+  · simp only [bot_eq_zero, zero_le, Set.mem_Ici, not_le, forall_const] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
+  · suffices (k : ℕ∞) < min (i : ℕ∞) (leastGE f r ω) from this.trans_le (min_le_right _ _)
+    have h_top : min (i : ℕ∞) (leastGE f r ω) ≠ ⊤ :=
+      ne_top_of_le_ne_top (by simp) (min_le_left _ _)
+    lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
+    simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
+    lia
 
-theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
+theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    eLpNorm (stoppedValue f (leastGE f r i)) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
-  refine eLpNorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) ?_
-    (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
+    eLpNorm (stoppedAbove f r i) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
+  refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
+    (stoppedAbove_le hr hf0 hbdd i)
   rw [← setIntegral_univ]
-  refine le_trans ?_ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
-  simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
+  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le zero_le MeasurableSet.univ)
+  simp [stoppedAbove, stoppedProcess, hf0]
 
-theorem Submartingale.stoppedValue_leastGE_eLpNorm_le' [IsFiniteMeasure μ]
+theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    eLpNorm (stoppedValue f (leastGE f r i)) 1 μ ≤
-      ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
-  refine (hf.stoppedValue_leastGE_eLpNorm_le hr hf0 hbdd i).trans ?_
+    eLpNorm (stoppedAbove f r i) 1 μ
+      ≤ ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
+  refine (hf.eLpNorm_stoppedAbove_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
 theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) → ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
-  have ht :
-    ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => stoppedValue f (leastGE f i n) ω) atTop (𝓝 c) := by
+  have ht : ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => stoppedAbove f i n ω) atTop (𝓝 c) := by
     rw [ae_all_iff]
-    exact fun i => Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedValue_leastGE i)
-      (hf.stoppedValue_leastGE_eLpNorm_le' i.cast_nonneg hf0 hbdd)
+    exact fun i ↦ Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedAbove i)
+      (hf.eLpNorm_stoppedAbove_le' i.cast_nonneg hf0 hbdd)
   filter_upwards [ht] with ω hω hωb
   rw [BddAbove] at hωb
   obtain ⟨i, hi⟩ := exists_nat_gt hωb.some
   have hib : ∀ n, f n ω < i := by
     intro n
     exact lt_of_le_of_lt ((mem_upperBounds.1 hωb.some_mem) _ ⟨n, rfl⟩) hi
-  have heq : ∀ n, stoppedValue f (leastGE f i n) ω = f n ω := by
+  have heq : ∀ n, stoppedAbove f i n ω = f n ω := by
     intro n
-    rw [leastGE]; unfold hitting; rw [stoppedValue]
-    rw [if_neg]
-    simp only [Set.mem_Icc, Set.mem_union, Set.mem_Ici]
-    push_neg
-    exact fun j _ => hib j
+    rw [stoppedAbove, stoppedProcess, leastGE, hittingAfter_eq_top_iff.mpr]
+    · simp only [le_top, inf_of_le_left]
+      congr
+    · simp [hib]
   simp only [← heq, hω i]
 
 theorem Submartingale.bddAbove_iff_exists_tendsto_aux [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -169,21 +141,21 @@ theorem Submartingale.bddAbove_iff_exists_tendsto_aux [IsFiniteMeasure μ] (hf :
   filter_upwards [hf.exists_tendsto_of_abs_bddAbove_aux hf0 hbdd] with ω hω using
     ⟨hω, fun ⟨c, hc⟩ => hc.bddAbove_range⟩
 
-/-- One sided martingale bound: If `f` is a submartingale which has uniformly bounded differences,
+/-- One-sided martingale bound: If `f` is a submartingale which has uniformly bounded differences,
 then for almost every `ω`, `f n ω` is bounded above (in `n`) if and only if it converges. -/
 theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   set g : ℕ → Ω → ℝ := fun n ω => f n ω - f 0 ω
   have hg : Submartingale g ℱ μ :=
-    hf.sub_martingale (martingale_const_fun _ _ (hf.adapted 0) (hf.integrable 0))
+    hf.sub_martingale (martingale_const_fun _ _ (hf.stronglyAdapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
     ext ω
     simp only [g, sub_self, Pi.zero_apply]
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert hω using 1
+  convert! hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]
@@ -203,12 +175,12 @@ filtration $(\mathcal{F}_n)$, and a sequence of sets $(s_n)$ such that for all
 $n$, $s_n \in \mathcal{F}_n$, $limsup_n s_n$ is almost everywhere equal to the set for which
 $\sum_n \mathbb{P}[s_n \mid \mathcal{F}_n] = \infty$.
 
-The proof strategy follows by constructing a martingale satisfying the one sided martingale bound.
+The proof strategy follows by constructing a martingale satisfying the one-sided martingale bound.
 In particular, we define
 $$
-  f_n := \sum_{k < n} \mathbf{1}_{s_{n + 1}} - \mathbb{P}[s_{n + 1} \mid \mathcal{F}_n].
+  f_n := \sum_{k < n} \big(\mathbf{1}_{s_{k + 1}} - \mathbb{P}[s_{k + 1} \mid \mathcal{F}_k]\big).
 $$
-Then, as a martingale is both a sub and a super-martingale, the set for which it is unbounded from
+Then, as a martingale is both a sub- and a super-martingale, the set for which it is unbounded from
 above must agree with the set for which it is unbounded from below almost everywhere. Thus, it
 can only converge to $\pm \infty$ with probability 0. Thus, by considering
 $$
@@ -223,8 +195,8 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun n => f n ω) := by
   have hbdd' : ∀ᵐ ω ∂μ, ∀ i, |(-f) (i + 1) ω - (-f) i ω| ≤ R := by
     filter_upwards [hbdd] with ω hω i
-    erw [← abs_neg, neg_sub, sub_neg_eq_add, neg_add_eq_sub]
-    exact hω i
+    simp only [Pi.neg_apply]
+    grind
   have hup := hf.submartingale.bddAbove_iff_exists_tendsto hbdd
   have hdown := hf.neg.submartingale.bddAbove_iff_exists_tendsto hbdd'
   filter_upwards [hup, hdown] with ω hω₁ hω₂
@@ -233,7 +205,7 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     constructor <;> rintro ⟨c, hc⟩
     · exact ⟨-c, hc.neg⟩
     · refine ⟨-c, ?_⟩
-      convert hc.neg
+      convert! hc.neg
       simp only [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
   constructor <;> rintro ⟨c, hc⟩ <;> refine ⟨-c, fun ω hω => ?_⟩
@@ -249,13 +221,13 @@ theorem Martingale.ae_not_tendsto_atTop_atTop [IsFiniteMeasure μ] (hf : Marting
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atTop := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
+    not_bddAbove_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
 
 theorem Martingale.ae_not_tendsto_atTop_atBot [IsFiniteMeasure μ] (hf : Martingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atBot := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
+    not_bddBelow_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
 
 namespace BorelCantelli
 
@@ -268,20 +240,21 @@ variable {s : ℕ → Set Ω}
 
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 
-theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hk =>
+theorem stronglyAdapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) :
+    StronglyAdapted ℱ (process s) :=
+  fun _ => Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
-      ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
+      ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1 | ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
   refine Finset.sum_congr rfl fun k _ => ?_
   simp only [process, Finset.sum_range_succ_sub_sum]
 
 theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =
-    ∑ k ∈ Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
+    ∑ k ∈ Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k] := by
   have := martingalePart_process_ae_eq ℱ μ s n
   simp_rw [martingalePart, process, Finset.sum_sub_distrib] at this
   exact sub_right_injective this
@@ -296,25 +269,26 @@ theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
 
 theorem integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
     (n : ℕ) : Integrable (process s n) μ :=
-  integrable_finset_sum' _ fun _ _ =>
+  integrable_finsetSum' _ fun _ _ =>
     IntegrableOn.integrable_indicator (integrable_const 1) <| ℱ.le _ _ <| hs _
 
 end BorelCantelli
 
 open BorelCantelli
 
-/-- An a.e. monotone adapted process `f` with uniformly bounded differences converges to `+∞` if
-and only if its predictable part also converges to `+∞`. -/
+/-- An a.e. monotone strongly adapted process `f` with uniformly bounded differences converges to
+`+∞` if and only if its predictable part also converges to `+∞`. -/
 theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
-    (hfmono : ∀ᵐ ω ∂μ, ∀ n, f n ω ≤ f (n + 1) ω) (hf : Adapted ℱ f) (hint : ∀ n, Integrable (f n) μ)
-    (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
+    (hfmono : ∀ᵐ ω ∂μ, ∀ n, f n ω ≤ f (n + 1) ω) (hf : StronglyAdapted ℱ f)
+    (hint : ∀ n, Integrable (f n) μ) (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop atTop ↔
       Tendsto (fun n => predictablePart f ℱ μ n ω) atTop atTop := by
-  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop
-    (martingalePart_bdd_difference ℱ hbdd)
-  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
-    (martingalePart_bdd_difference ℱ hbdd)
-  have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n|ℱ n]) ω := by
+  simp only [← Real.norm_eq_abs] at hbdd
+  have h₀ := martingalePart_bdd_difference ℱ hbdd
+  simp only [Real.norm_eq_abs, ← NNReal.coe_ofNat, ← NNReal.coe_mul 2 R] at h₀
+  have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop h₀
+  have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot h₀
+  have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n | ℱ n]) ω := by
     refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω
   filter_upwards [h₁, h₂, h₃, hfmono] with ω hω₁ hω₂ hω₃ hω₄
@@ -340,9 +314,10 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k]) ω) atTop atTop := by
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_)
+    (stronglyAdapted_process hs) (integrable_process μ hs)
+    (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]
@@ -356,7 +331,7 @@ everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
 theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k]) ω) atTop atTop := by
   rw [← limsup_nat_add s 1,
     Set.limsup_eq_tendsto_sum_indicator_atTop (zero_lt_one (α := ℝ)) (fun n ↦ s (n + 1))]
   exact tendsto_sum_indicator_atTop_iff' hs

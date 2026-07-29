@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.Defs
-import Mathlib.RingTheory.Ideal.Nonunits
+module
+
+public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.Nonunits
 We prove basic properties of local rings.
 
 -/
+
+public section
 
 variable {R S : Type*}
 
@@ -31,6 +35,27 @@ theorem of_nonunits_add [Nontrivial R]
     (h : ∀ a b : R, a ∈ nonunits R → b ∈ nonunits R → a + b ∈ nonunits R) : IsLocalRing R where
   isUnit_or_isUnit_of_add_one {a b} hab :=
     or_iff_not_and_not.2 fun H => h a b H.1 H.2 <| hab.symm ▸ isUnit_one
+
+variable [IsLocalRing R]
+
+theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
+  rcases h with ⟨u, hu⟩
+  rw [← Units.inv_mul_eq_one, mul_add] at hu
+  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact (u⁻¹.isUnit_units_mul _).mp
+
+theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
+  fun H ↦ not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
+
+variable (R) in
+/-- The nonunits of a local semiring form an additive submonoid. -/
+@[expose] def nonunitsAddSubmonoid : AddSubmonoid R where
+  carrier := nonunits R
+  zero_mem' := by simp
+  add_mem' := nonunits_add
+
+theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
+    (h : IsUnit (∑ i ∈ s, f i)) : ∃ i ∈ s, IsUnit (f i) := by
+  contrapose! h; exact (nonunitsAddSubmonoid R).sum_mem h
 
 end Semiring
 
@@ -61,34 +86,6 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
-
-variable [IsLocalRing R]
-
-theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a ∨ IsUnit b := by
-  rcases h with ⟨u, hu⟩
-  rw [← Units.inv_mul_eq_one, mul_add] at hu
-  apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
-
-theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_isUnit_or_isUnit_of_isUnit_add := IsLocalRing.of_isUnit_or_isUnit_of_isUnit_add
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_nonunits_add := IsLocalRing.of_nonunits_add
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_unique_max_ideal := IsLocalRing.of_unique_max_ideal
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_unique_nonzero_prime := IsLocalRing.of_unique_nonzero_prime
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isUnit_or_isUnit_of_isUnit_add := IsLocalRing.isUnit_or_isUnit_of_isUnit_add
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.nonunits_add := IsLocalRing.nonunits_add
 
 end CommSemiring
 
@@ -123,23 +120,6 @@ theorem of_surjective' [Ring S] [Nontrivial S] (f : R →+* S) (hf : Function.Su
     apply (isUnit_or_isUnit_one_sub_self a).imp <| RingHom.isUnit_map _
     rw [← f.map_one, ← f.map_sub]
     apply f.isUnit_map)
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_isUnit_or_isUnit_one_sub_self := IsLocalRing.of_isUnit_or_isUnit_one_sub_self
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isUnit_or_isUnit_one_sub_self := IsLocalRing.isUnit_or_isUnit_one_sub_self
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isUnit_of_mem_nonunits_one_sub_self :=
-  IsLocalRing.isUnit_of_mem_nonunits_one_sub_self
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isUnit_one_sub_self_of_mem_nonunits :=
-  IsLocalRing.isUnit_one_sub_self_of_mem_nonunits
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.of_surjective' := IsLocalRing.of_surjective'
 
 end CommRing
 

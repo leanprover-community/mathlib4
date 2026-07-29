@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Homology of preadditive categories
@@ -15,11 +17,13 @@ In this file, it is shown that if `C` is a preadditive category, then
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace ShortComplex
 
@@ -168,10 +172,9 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 end
 
 instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (leftHomologyFunctor C).Additive where
+    (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (cyclesFunctor C).Additive where
+instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor C).Additive where
 
 end LeftHomology
 
@@ -279,10 +282,10 @@ lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ
 end
 
 instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (rightHomologyFunctor C).Additive where
+    (rightHomologyFunctor C).Additive where
 
 instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (opcyclesFunctor C).Additive where
+    (opcyclesFunctor C).Additive where
 
 end RightHomology
 
@@ -347,8 +350,7 @@ lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ
 
 end
 
-instance homologyFunctor_additive [CategoryWithHomology C] :
-  (homologyFunctor C).Additive where
+instance homologyFunctor_additive [CategoryWithHomology C] : (homologyFunctor C).Additive where
 
 end Homology
 
@@ -363,17 +365,17 @@ in homology. -/
 structure Homotopy where
   /-- a morphism `S₁.X₁ ⟶ S₂.X₁` -/
   h₀ : S₁.X₁ ⟶ S₂.X₁
-  h₀_f : h₀ ≫ S₂.f = 0 := by aesop_cat
+  h₀_f : h₀ ≫ S₂.f = 0 := by cat_disch
   /-- a morphism `S₁.X₂ ⟶ S₂.X₁` -/
   h₁ : S₁.X₂ ⟶ S₂.X₁
   /-- a morphism `S₁.X₃ ⟶ S₂.X₂` -/
   h₂ : S₁.X₃ ⟶ S₂.X₂
   /-- a morphism `S₁.X₃ ⟶ S₂.X₃` -/
   h₃ : S₁.X₃ ⟶ S₂.X₃
-  g_h₃ : S₁.g ≫ h₃ = 0 := by aesop_cat
-  comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by aesop_cat
-  comm₂ : φ₁.τ₂ = S₁.g ≫ h₂ + h₁ ≫ S₂.f + φ₂.τ₂ := by aesop_cat
-  comm₃ : φ₁.τ₃ = h₃ + h₂ ≫ S₂.g + φ₂.τ₃ := by aesop_cat
+  g_h₃ : S₁.g ≫ h₃ = 0 := by cat_disch
+  comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by cat_disch
+  comm₂ : φ₁.τ₂ = S₁.g ≫ h₂ + h₁ ≫ S₂.f + φ₂.τ₂ := by cat_disch
+  comm₃ : φ₁.τ₃ = h₃ + h₂ ≫ S₂.g + φ₂.τ₃ := by cat_disch
 
 attribute [reassoc (attr := simp)] Homotopy.h₀_f Homotopy.g_h₃
 
@@ -491,6 +493,8 @@ def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy
     Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
   (h.compRight ψ₁).trans (h'.compLeft φ₂)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
 between morphisms in `ShortComplex C`. -/
 @[simps]
@@ -505,6 +509,8 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
   comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
@@ -529,11 +535,12 @@ def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
   toFun h := (h.sub (refl φ₂)).trans (ofEq (sub_self φ₂))
   invFun h := ((ofEq (sub_add_cancel φ₁ φ₂).symm).trans
     (h.add (refl φ₂))).trans (ofEq (zero_add φ₂))
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 variable {φ₁ φ₂}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
@@ -547,7 +554,7 @@ variable (S₁ S₂)
 @[simps]
 def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-  Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
+    Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
   h₀ := h₀
   h₁ := h₁
   h₂ := h₂
@@ -670,7 +677,7 @@ lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
 
 end Homotopy
 
-/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+/-- A homotopy equivalence between two short complexes `S₁` and `S₂` consists
 of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
 `hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
 @[ext]
@@ -723,6 +730,23 @@ def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
 end HomotopyEquiv
 
 end Homotopy
+
+section
+
+variable (S : ShortComplex C) [S.HasLeftHomology] {A : C}
+    (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+
+lemma add_liftCycles :
+    S.liftCycles k hk + S.liftCycles k' hk' =
+      S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+
+lemma sub_liftCycles :
+    S.liftCycles k hk - S.liftCycles k' hk' =
+      S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
+
+end
 
 end ShortComplex
 

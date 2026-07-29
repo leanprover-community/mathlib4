@@ -3,14 +3,18 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.List.Defs
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.List.Defs
 
 /-!
 # Lemmas about `List`s and `Set.range`
 
 In this file we prove lemmas about range of some operations on lists.
 -/
+
+public section
 
 
 open List
@@ -26,8 +30,8 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   | nil => exact ⟨[], rfl⟩
   | cons a l ihl =>
     rcases ihl fun x hx => hl x <| subset_cons_self _ _ hx with ⟨l, rfl⟩
-    rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
-    exact ⟨a :: l, map_cons _ _ _⟩
+    rcases hl a mem_cons_self with ⟨a, rfl⟩
+    exact ⟨a :: l, map_cons⟩
 
 theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]
@@ -35,18 +39,16 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 @[simp]
 theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
-  rw [mem_setOf_eq, mem_iff_get, mem_range]
+  rw [mem_ofPred_eq, mem_iff_get, mem_range]
 
 theorem range_list_getElem? :
     range (l[·]? : ℕ → Option α) = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
   refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
-  · exact (le_or_lt l.length n).imp getElem?_eq_none_iff.mpr
+  · exact (le_or_gt l.length n).imp getElem?_eq_none_iff.mpr
       (fun hlt => ⟨⟨_, hlt⟩, (getElem?_eq_getElem hlt).symm⟩)
   · exact ⟨_, getElem?_eq_none_iff.mpr le_rfl⟩
   · exact range_subset_iff.2 fun k => ⟨_, getElem?_eq_getElem _⟩
-
-@[deprecated (since := "2025-02-15")] alias range_list_get? := range_list_getElem?
 
 @[simp]
 theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=

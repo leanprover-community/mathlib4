@@ -3,15 +3,19 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Ring.PUnit
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.Algebra.Ring.PUnit
 
 /-!
 # Instances on PUnit
 
 This file collects facts about module structures on the one-element type
 -/
+
+public section
 
 namespace PUnit
 
@@ -79,17 +83,17 @@ lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
 instance [SMul R S] : IsScalarTower PUnit R S := ⟨by simp⟩
 
 instance : MulAction PUnit R where
-  __ := inferInstanceAs (SMul PUnit R)
+  __ := (inferInstance : SMul PUnit R)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
 instance [Zero R] : SMulZeroClass PUnit R where
-  __ := inferInstanceAs (SMul PUnit R)
+  __ := (inferInstance : SMul PUnit R)
   smul_zero _ := rfl
 
 instance [AddMonoid R] : DistribMulAction PUnit R where
-  __ := inferInstanceAs (MulAction PUnit R)
-  __ := inferInstanceAs (SMulZeroClass PUnit R)
+  __ := (inferInstance : MulAction PUnit R)
+  __ := (inferInstance : SMulZeroClass PUnit R)
   smul_add _ _ _ := rfl
 
 end PUnit

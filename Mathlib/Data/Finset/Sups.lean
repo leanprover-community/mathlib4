@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Set.Sups
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Set.Sups
 
 /-!
 # Set family operations
@@ -23,7 +25,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Notation
 
-We define the following notation in locale `FinsetFamily`:
+We define the following notation in scope `FinsetFamily`:
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
@@ -34,6 +36,8 @@ We define the following notation in locale `FinsetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+@[expose] public section
 
 open Function
 
@@ -49,6 +53,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊻ t` is the finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasSups : HasSups (Finset α) :=
   ⟨image₂ (· ⊔ ·)⟩
 
@@ -193,6 +198,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊼ t` is the finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasInfs : HasInfs (Finset α) :=
   ⟨image₂ (· ⊓ ·)⟩
 
@@ -358,7 +364,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
-  simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
+  simp only [mem_sups, mem_powerset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -366,7 +372,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
-  simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
+  simp only [mem_infs, mem_powerset, inf_eq_inter]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← inter_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -395,8 +401,6 @@ def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab 
 
 @[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
-
-open FinsetFamily
 
 variable {s t u} {a b c : α}
 
@@ -473,8 +477,6 @@ instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 
 end DisjSups
 
-open FinsetFamily
-
 section DistribLattice
 
 variable [DecidableEq α]
@@ -482,7 +484,7 @@ variable [DistribLattice α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine (associative_of_commutative_of_le inferInstance ?_).assoc
-  simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
+  simp only [disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
@@ -509,8 +511,6 @@ def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
 scoped[FinsetFamily] infixl:74 " \\\\ " => Finset.diffs
   -- This notation is meant to have higher precedence than `\` and `⊓`, but still within the
   -- realm of other binary notation
-
-open FinsetFamily
 
 variable {s t} {a b c : α}
 
@@ -552,9 +552,11 @@ protected lemma Nonempty.diffs : s.Nonempty → t.Nonempty → (s \\ t).Nonempty
 lemma Nonempty.of_diffs_left : (s \\ t).Nonempty → s.Nonempty := Nonempty.of_image₂_left
 lemma Nonempty.of_diffs_right : (s \\ t).Nonempty → t.Nonempty := Nonempty.of_image₂_right
 
-@[simp] lemma empty_diffs : ∅ \\ t = ∅ := image₂_empty_left
+@[simp] lemma empty_sdiffs : ∅ \\ t = ∅ := image₂_empty_left
 @[simp] lemma diffs_empty : s \\ ∅ = ∅ := image₂_empty_right
 @[simp] lemma diffs_eq_empty : s \\ t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
+
+@[deprecated (since := "2026-06-03")] alias empty_diffs := empty_sdiffs
 
 @[simp] lemma singleton_diffs : {a} \\ t = t.image (a \ ·) := image₂_singleton_left
 @[simp] lemma diffs_singleton : s \\ {b} = s.image (· \ b) := image₂_singleton_right
@@ -591,8 +593,6 @@ def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
 scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
-
-open FinsetFamily
 
 variable {s t} {a : α}
 

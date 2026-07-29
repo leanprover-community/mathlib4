@@ -3,8 +3,10 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
-import Mathlib.Data.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Coxeter matrices
@@ -59,6 +61,8 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 -/
 
+@[expose] public section
+
 /-- A *Coxeter matrix* is a symmetric matrix of natural numbers whose diagonal entries are equal to
 1 and whose off-diagonal entries are not equal to 1. -/
 @[ext]
@@ -100,13 +104,15 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Aₙ : CoxeterMatrix (Fin n) where
+protected def A : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Aₙ := CoxeterMatrix.A
 
 /-- The Coxeter matrix of type Bₙ.
 
@@ -116,7 +122,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Bₙ : CoxeterMatrix (Fin n) where
+protected def B : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
@@ -124,6 +130,8 @@ def Bₙ : CoxeterMatrix (Fin n) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Bₙ := CoxeterMatrix.B
 
 /-- The Coxeter matrix of type Dₙ.
 
@@ -136,7 +144,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-def Dₙ : CoxeterMatrix (Fin n) where
+protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
@@ -144,6 +152,8 @@ def Dₙ : CoxeterMatrix (Fin n) where
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by aesop
+
+@[deprecated (since := "2026-03-25")] alias Dₙ := CoxeterMatrix.D
 
 /-- The Coxeter matrix of type I₂(m).
 
@@ -153,12 +163,15 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def I₂ₘ (m : ℕ) : CoxeterMatrix (Fin 2) where
+protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   M := Matrix.of fun i j => if i = j then 1 else m + 2
   isSymm := by unfold Matrix.IsSymm; aesop
   diagonal := by simp
   off_diagonal := by simp
 
+@[deprecated (since := "2026-03-25")] alias I₂ₙ := CoxeterMatrix.I
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₆.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -176,6 +189,7 @@ def E₆ : CoxeterMatrix (Fin 6) where
           2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₇.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -194,6 +208,7 @@ def E₇ : CoxeterMatrix (Fin 7) where
           2, 2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type E₈.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -213,6 +228,7 @@ def E₈ : CoxeterMatrix (Fin 8) where
           2, 2, 2, 2, 2, 3, 1, 3;
           2, 2, 2, 2, 2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type F₄.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -227,6 +243,7 @@ def F₄ : CoxeterMatrix (Fin 4) where
           2, 4, 1, 3;
           2, 2, 3, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type G₂.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -239,6 +256,7 @@ def G₂ : CoxeterMatrix (Fin 2) where
   M := !![1, 6;
           6, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type H₃.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -252,6 +270,7 @@ def H₃ : CoxeterMatrix (Fin 3) where
           3, 1, 5;
           2, 5, 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Coxeter matrix of type H₄.
 
 The corresponding Coxeter-Dynkin diagram is:

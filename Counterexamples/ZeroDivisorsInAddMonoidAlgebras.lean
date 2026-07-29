@@ -3,9 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
@@ -59,7 +59,7 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
-  · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
+  · simpa [sub_ne_zero, single_inj]
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
       sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
 
@@ -67,6 +67,7 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
@@ -80,24 +81,19 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
   refine
     ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, ?_, ?_,
       ?_⟩
-  · apply_fun fun x : R[A] => x 0
+  · apply_fun fun x : R[A] => x.coeff 0
     refine ne_of_eq_of_ne (?_ : (_ : R) = 1) one_ne_zero
-    dsimp only; rw [Finset.sum_apply']
+    simp only [single_pow, one_pow, coeff_sum, coeff_single, Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
-      rw [single_pow, one_pow, single_eq_of_ne]
+      rw [Finsupp.single_eq_of_ne']
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
-    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
-        false_imp_iff]
-    · rw [single_pow, one_pow, zero_smul, single_eq_same]
-  · apply_fun fun x : R[A] => x 0
-    refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
-    · have a0 : a ≠ 0 :=
-        ne_of_eq_of_ne (one_nsmul a).symm
-          (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne, Ne, not_false_iff]
-    · simpa only [single_eq_same] using zero_ne_one
-  · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
+    · grind
+    · simp
+  · apply_fun fun x : R[A] => x.coeff 0
+    have a0 : a ≠ 0 := by rintro rfl; simp at o2
+    simp [a0]
+  · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a)
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]
@@ -138,8 +134,8 @@ elab "guard_decl" na:ident mod:ident : command => do
   let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
-  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
-  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  let some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
@@ -176,7 +172,6 @@ instance : Add F where
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
   add_assoc := by boom
-  zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
@@ -218,6 +213,7 @@ theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
 theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
 enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/
@@ -226,8 +222,7 @@ example : ¬AddLeftMono (Lex (F →₀ F)) := by
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, coe_add, Pi.add_apply, forall_eq,
-      f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
+  · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
@@ -235,7 +230,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
       ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero]⟩
 
 end F
 

@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centers of subgroups
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Multiset
 
@@ -21,12 +25,11 @@ variable (G)
 
 /-- The center of a group `G` is the set of elements that commute with everything in `G` -/
 @[to_additive
-      "The center of an additive group `G` is the set of elements that commute with
-      everything in `G`"]
-def center : Subgroup G :=
-  { Submonoid.center G with
-    carrier := Set.center G
-    inv_mem' := Set.inv_mem_center }
+      /-- The center of an additive group `G` is the set of elements that commute with
+      everything in `G` -/]
+def center : Subgroup G where
+  __ := Submonoid.center G
+  inv_mem' := Set.inv_mem_center
 
 @[to_additive]
 theorem coe_center : ↑(center G) = Set.center G :=
@@ -36,17 +39,17 @@ theorem coe_center : ↑(center G) = Set.center G :=
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
-instance center.isCommutative : (center G).IsCommutative :=
+instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
-@[to_additive (attr := simps!) "The center of isomorphic additive groups are isomorphic."]
+@[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
 def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
-"The center of an additive group is isomorphic to the center of its opposite."]
+/-- The center of an additive group is isomorphic to the center of its opposite. -/]
 def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
 
 variable {G}
@@ -67,6 +70,7 @@ instance centerCharacteristic : (center G).Characteristic := by
   rw [← ϕ.injective.eq_iff, map_mul, map_mul]
   exact (hg.comm (ϕ h)).symm
 
+@[to_additive]
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
   intro x
@@ -74,7 +78,17 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   intro y
   exact mul_comm y x
 
-/-- A group is commutative if the center is the whole group -/
+@[to_additive]
+theorem center_eq_top_iff : center G = ⊤ ↔ IsMulCommutative G := by
+  simp [eq_top_iff', isMulCommutative_iff, mem_center_iff, eq_comm]
+
+@[to_additive]
+theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
+    center_eq_top_iff.mpr hG
+
+/-- A group is commutative if the center is the whole group. -/
+@[to_additive /-- An additive group is commutative if the center is the whole group. -/,
+  instance_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
@@ -84,13 +98,27 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       exact h y
   }
 
+@[to_additive]
+protected theorem center_prod {H : Type*} [Group H] : center (G × H) = prod (center G) (center H) :=
+  SetLike.coe_injective Set.center_prod
+
+@[to_additive]
+protected theorem center_pi {η : Type*} {G : η → Type*} [Π i, Group (G i)] :
+    center (Π i, G i) = pi .univ fun i ↦ center (G i) :=
+  SetLike.coe_injective Set.center_pi
+
 variable {H : Subgroup G}
 
 section Normalizer
 
 @[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
-  simp [← mem_center_iff.mp hx y, mul_assoc]
+instance instNormalCenter : (center G).Normal :=
+  ⟨fun a ha b ↦ by simpa [mem_center_iff.mp ha b]⟩
+
+@[to_additive]
+theorem center_le_normalizer (s : Set G) : center G ≤ normalizer s := by
+  intro x hx y
+  simp [← mem_center_iff.mp hx y]
 
 end Normalizer
 
@@ -110,10 +138,11 @@ end IsConj
 
 namespace ConjClasses
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
-  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
+  · simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff]
     intro x hx y hy
     simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
     rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
@@ -121,7 +150,7 @@ theorem mk_bijOn (G : Type*) [Group G] :
     exact H.eq_of_left_mem_center hx
   · rintro ⟨g⟩ hg
     refine ⟨g, ?_, rfl⟩
-    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff] at hg
     rw [SetLike.mem_coe, Subgroup.mem_center_iff]
     intro h
     rw [← mul_inv_eq_iff_eq_mul]

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Dini's Theorem
 
@@ -18,7 +20,7 @@ This theorem is true in a different generality as well: when `G` is a linearly o
 group with the order topology. This weakens the norm assumption, in exchange for strengthening to
 a linear order. This separate generality is not included in this file, but that generality was
 included in initial drafts of the original
-[PR #19068](https://github.com/leanprover-community/mathlib4/pull/19068) and can be recovered if
+https://github.com/leanprover-community/mathlib4/pull/19068 and can be recovered if
 necessary.
 
 The key idea of the proof is to use a particular basis of `𝓝 0` which consists of open sets that
@@ -30,9 +32,12 @@ is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity cr
 corresponds to `HasSolidNorm`.
 -/
 
+public section
+
 open Filter Topology
 
-variable {ι α G : Type*} [Preorder ι] [TopologicalSpace α] [NormedLatticeAddCommGroup G]
+variable {ι α G : Type*} [Preorder ι] [TopologicalSpace α]
+  [NormedAddCommGroup G] [Lattice G] [HasSolidNorm G] [IsOrderedAddMonoid G]
 
 section Unbundled
 
@@ -51,7 +56,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
   refine (atTop : Filter ι).eq_or_neBot.elim (fun h ↦ ?eq_bot) (fun _ ↦ ?_)
   case eq_bot => simp [h, tendstoLocallyUniformly_iff_forall_tendsto]
   have F_le_f (x : α) (n : ι) : F n x ≤ f x := by
-    refine ge_of_tendsto (h_tendsto x) ?_
+    refine _root_.ge_of_tendsto (h_tendsto x) ?_
     filter_upwards [Ici_mem_atTop n] with m hnm
     exact hF_mono hnm x
   simp_rw [Metric.tendstoLocallyUniformly_iff, dist_eq_norm']
@@ -72,8 +77,8 @@ lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     (hf : ContinuousOn f s) (h_tendsto : ∀ x ∈ s, Tendsto (F · x) atTop (𝓝 (f x))) :
     TendstoLocallyUniformlyOn F f atTop s := by
   rw [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe]
-  exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.restrict)
-    (fun _ _ h x ↦ hF_mono _ x.2 h) hf.restrict (fun x ↦ h_tendsto x x.2)
+  exact tendstoLocallyUniformly_of_forall_tendsto (hF_cont · |>.domRestrict)
+    (fun _ _ h x ↦ hF_mono _ x.2 h) hf.domRestrict (fun x ↦ h_tendsto x x.2)
 
 /-- **Dini's theorem**: if `F n` is a monotone increasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly to

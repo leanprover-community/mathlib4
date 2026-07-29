@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Count
-import Mathlib.Data.List.Count
+module
+
+public import Mathlib.Data.Multiset.Count
+public import Mathlib.Data.List.Count
 
 /-!
 # Sum and difference of multisets
@@ -23,6 +25,8 @@ This file defines the following operations on multisets:
   occurrences of `a` in `s` and `t`.
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -105,7 +109,7 @@ theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) 
 theorem add_cons (a : α) (s t : Multiset α) : s + a ::ₘ t = a ::ₘ (s + t) := by
   rw [Multiset.add_comm, cons_add, Multiset.add_comm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_add {a : α} {s t : Multiset α} : a ∈ s + t ↔ a ∈ s ∨ a ∈ t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => mem_append
 
@@ -113,7 +117,7 @@ variable (p : α → Prop) [DecidablePred p]
 
 @[simp]
 theorem countP_add (s t) : countP p (s + t) = countP p s + countP p t :=
-  Quotient.inductionOn₂ s t (countP_append _)
+  Quotient.inductionOn₂ s t fun _ _ => countP_append
 
 variable [DecidableEq α] in
 @[simp]
@@ -126,7 +130,7 @@ protected lemma add_right_inj : s + t = s + u ↔ t = u := by classical simp [Mu
 
 @[simp]
 theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
-  Quotient.inductionOn₂ s t length_append
+  Quotient.inductionOn₂ s t fun _ _ => length_append
 
 end add
 
@@ -162,7 +166,7 @@ theorem erase_singleton (a : α) : ({a} : Multiset α).erase a = 0 :=
   erase_cons_head a 0
 
 @[simp]
-theorem erase_of_not_mem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
+theorem erase_of_notMem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s :=
   Quot.inductionOn s fun _l h => congr_arg _ <| List.erase_of_not_mem h
 
 @[simp]
@@ -177,7 +181,7 @@ theorem erase_cons_tail_of_mem (h : a ∈ s) :
 
 theorem le_cons_erase (s : Multiset α) (a : α) : s ≤ a ::ₘ s.erase a :=
   if h : a ∈ s then le_of_eq (cons_erase h).symm
-  else by rw [erase_of_not_mem h]; apply le_cons_self
+  else by rw [erase_of_notMem h]; apply le_cons_self
 
 theorem add_singleton_eq_iff {s t : Multiset α} {a : α} : s + {a} = t ↔ a ∈ t ∧ s = t.erase a := by
   rw [Multiset.add_comm, singleton_add]
@@ -201,11 +205,11 @@ theorem erase_add_left_neg {a : α} (s) (h : a ∉ t) : (s + t).erase a = s.eras
   rw [Multiset.add_comm, erase_add_right_neg s h, Multiset.add_comm]
 
 theorem erase_le (a : α) (s : Multiset α) : s.erase a ≤ s :=
-  Quot.inductionOn s fun l => (erase_sublist a l).subperm
+  Quot.inductionOn s fun _ => erase_sublist.subperm
 
 @[simp]
 theorem erase_lt {a : α} {s : Multiset α} : s.erase a < s ↔ a ∈ s :=
-  ⟨fun h => not_imp_comm.1 erase_of_not_mem (ne_of_lt h), fun h => by
+  ⟨fun h => not_imp_comm.1 erase_of_notMem (ne_of_lt h), fun h => by
     simpa [h] using lt_cons_self (s.erase a) a⟩
 
 theorem erase_subset (a : α) (s : Multiset α) : s.erase a ⊆ s :=
@@ -229,13 +233,13 @@ theorem erase_le_erase {s t : Multiset α} (a : α) (h : s ≤ t) : s.erase a �
 theorem erase_le_iff_le_cons {s t : Multiset α} {a : α} : s.erase a ≤ t ↔ s ≤ a ::ₘ t :=
   ⟨fun h => le_trans (le_cons_erase _ _) (cons_le_cons _ h), fun h =>
     if m : a ∈ s then by rw [← cons_erase m] at h; exact (cons_le_cons_iff _).1 h
-    else le_trans (erase_le _ _) ((le_cons_of_not_mem m).1 h)⟩
+    else le_trans (erase_le _ _) ((le_cons_of_notMem m).1 h)⟩
 
 @[simp]
 theorem card_erase_of_mem {a : α} {s : Multiset α} : a ∈ s → card (s.erase a) = pred (card s) :=
   Quot.inductionOn s fun _l => length_erase_of_mem
 
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem card_erase_add_one {a : α} {s : Multiset α} : a ∈ s → card (s.erase a) + 1 = card s :=
   Quot.inductionOn s fun _l => length_erase_add_one
 
@@ -249,18 +253,18 @@ theorem card_erase_eq_ite {a : α} {s : Multiset α} :
     card (s.erase a) = if a ∈ s then pred (card s) else card s := by
   by_cases h : a ∈ s
   · rwa [card_erase_of_mem h, if_pos]
-  · rwa [erase_of_not_mem h, if_neg]
+  · rwa [erase_of_notMem h, if_neg]
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_self a l <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_of_ne ab l <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
 
 end Erase
 

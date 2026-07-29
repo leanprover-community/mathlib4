@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Preservation of finite (co)limits.
@@ -14,12 +16,14 @@ involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
 * `CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts` :
-  see `CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`. Also provides
-  the dual version.
+  see `Mathlib/CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`.
+  Also provides the dual version.
 * `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
-  see `CategoryTheory/Functor/Flat.lean`.
+  see `Mathlib/CategoryTheory/Functor/Flat.lean`.
 
 -/
+
+public section
 
 
 open CategoryTheory
@@ -55,7 +59,7 @@ instance (priority := 100) preservesLimitsOfShapeOfPreservesFiniteLimits (F : C 
 lemma PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimitsOfSize.{w, w₂} F] : PreservesFiniteLimits F where
   preservesFiniteLimits J (sJ : SmallCategory J) fJ := by
-    haveI := preservesSmallestLimits_of_preservesLimits F
+    have := preservesSmallestLimits_of_preservesLimits F
     exact preservesLimitsOfShape_of_equiv (FinCategory.equivAsType J) F
 
 -- Added as a specialization of the dangerous instance above, for limits indexed in Type 0.
@@ -68,6 +72,7 @@ instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
   PreservesLimitsOfSize.preservesFiniteLimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -75,7 +80,7 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesLimitsOfShape J F) :
     PreservesFiniteLimits F where
       preservesFiniteLimits J (_ : SmallCategory J) _ := by
-        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+        have := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesLimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two left exact functors is left exact. -/
@@ -138,7 +143,7 @@ instance (priority := 100) (F : C ⥤ D) [ReflectsFiniteProducts F] (J : Type u)
 lemma ReflectsLimitsOfSize.reflectsFiniteLimits
     (F : C ⥤ D) [ReflectsLimitsOfSize.{w, w₂} F] : ReflectsFiniteLimits F where
   reflects J (sJ : SmallCategory J) fJ := by
-    haveI := reflectsSmallestLimits_of_reflectsLimits F
+    have := reflectsSmallestLimits_of_reflectsLimits F
     exact reflectsLimitsOfShape_of_equiv (FinCategory.equivAsType J) F
 
 -- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
@@ -209,7 +214,7 @@ instance (priority := 100) preservesColimitsOfShapeOfPreservesFiniteColimits
 lemma PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
-    haveI := preservesSmallestColimits_of_preservesColimits F
+    have := preservesSmallestColimits_of_preservesColimits F
     exact preservesColimitsOfShape_of_equiv (FinCategory.equivAsType J) F
 
 -- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
@@ -222,6 +227,7 @@ instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ 
     [PreservesColimits F] : PreservesFiniteColimits F :=
   PreservesColimitsOfSize.preservesFiniteColimits F
 
+attribute [local instance] uliftCategory in
 /-- We can always derive `PreservesFiniteColimits C`
 by showing that we are preserving colimits at an arbitrary universe. -/
 lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
@@ -229,8 +235,8 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
     PreservesFiniteColimits F where
       preservesFiniteColimits J (_ : SmallCategory J) _ := by
-        letI : Category (ULiftHom (ULift J)) := ULiftHom.category
-        haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
+        let : Category (ULiftHom (ULift J)) := ULiftHom.category
+        have := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two right exact functors is right exact. -/
@@ -278,7 +284,7 @@ attribute [instance] ReflectsFiniteColimits.reflects
 lemma ReflectsColimitsOfSize.reflectsFiniteColimits
     (F : C ⥤ D) [ReflectsColimitsOfSize.{w, w₂} F] : ReflectsFiniteColimits F where
   reflects J (sJ : SmallCategory J) fJ := by
-    haveI := reflectsSmallestColimits_of_reflectsColimits F
+    have := reflectsSmallestColimits_of_reflectsColimits F
     exact reflectsColimitsOfShape_of_equiv (FinCategory.equivAsType J) F
 
 -- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.

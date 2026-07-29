@@ -3,8 +3,10 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.GradedMulAction
 
 /-!
 # Homogeneous submodules of a graded module
@@ -22,16 +24,18 @@ For any `p : Submodule A M`:
 ## Implementation notes
 
 The **notion** of homogeneous submodule does not rely on a graded ring, only a decomposition of the
-the module. However, most interesting properties of homogeneous submodules do rely on the base ring
+module. However, most interesting properties of homogeneous submodules do rely on the base ring
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
-synthesation order.
+synthesization order.
 
 ## Tags
 
 graded algebra, homogeneous
 -/
+
+@[expose] public section
 
 open SetLike DirectSum Pointwise Set
 
@@ -71,9 +75,11 @@ variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
 instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe X := X.toSubmodule
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
     simpa using h
+
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
 
 instance : AddSubmonoidClass (HomogeneousSubmodule 𝒜 ℳ) M where
   zero_mem p := p.toSubmodule.zero_mem
@@ -96,7 +102,9 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
-  coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+  coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
 
 @[ext]
 theorem HomogeneousSubmodule.ext

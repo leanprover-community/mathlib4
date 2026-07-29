@@ -3,7 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Set.Restrict
+module
+
+public import Mathlib.Data.Set.Restrict
+public import Mathlib.Util.Delaborators
 
 /-!
 # Functions depending only on some variables
@@ -18,7 +21,7 @@ On the other hand one wants to be able for example to describe some function as 
 with respect to some variables, and be able to deduce this when applying transformations
 mentioned above. This is why we introduce the predicate `DependsOn f s`, which states that
 if `x` and `y` coincide over the set `s`, then `f x = f y`.
-This is equivalent to `Function.FactorsThrough f s.restrict`.
+This is equivalent to `Function.FactorsThrough f s.domRestrict`.
 
 ## Main definition
 
@@ -27,7 +30,7 @@ This is equivalent to `Function.FactorsThrough f s.restrict`.
 ## Main statement
 
 * `dependsOn_iff_factorsThrough`: A function `f` depends on `s` if and only if it factors
-  through `s.restrict`.
+  through `s.domRestrict`.
 
 ## Implementation notes
 
@@ -46,6 +49,8 @@ with `DependsOn` because writing mathematically "independent of variables in `s`
 depends on
 -/
 
+@[expose] public section
+
 open Function Set
 
 variable {ι : Type*} {α : ι → Type*} {β : Type*}
@@ -60,12 +65,12 @@ def DependsOn (f : (Π i, α i) → β) (s : Set ι) : Prop :=
   ∀ ⦃x y⦄, (∀ i ∈ s, x i = y i) → f x = f y
 
 lemma dependsOn_iff_factorsThrough {f : (Π i, α i) → β} {s : Set ι} :
-    DependsOn f s ↔ FactorsThrough f s.restrict := by
+    DependsOn f s ↔ FactorsThrough f s.domRestrict := by
   rw [DependsOn, FactorsThrough]
   simp [funext_iff]
 
 lemma dependsOn_iff_exists_comp [Nonempty β] {f : (Π i, α i) → β} {s : Set ι} :
-    DependsOn f s ↔ ∃ g : (Π i : s, α i) → β, f = g ∘ s.restrict := by
+    DependsOn f s ↔ ∃ g : (Π i : s, α i) → β, f = g ∘ s.domRestrict := by
   rw [dependsOn_iff_factorsThrough, factorsThrough_iff]
 
 lemma dependsOn_univ (f : (Π i, α i) → β) : DependsOn f univ :=
@@ -82,5 +87,7 @@ lemma DependsOn.mono {s t : Set ι} (hst : s ⊆ t) (hf : DependsOn f s) : Depen
 /-- A function which depends on the empty set is constant. -/
 lemma DependsOn.empty (hf : DependsOn f ∅) (x y : Π i, α i) : f x = f y := hf (by simp)
 
-lemma Set.dependsOn_restrict (s : Set ι) : DependsOn (s.restrict (π := α)) s :=
+lemma Set.dependsOn_domRestrict (s : Set ι) : DependsOn (s.domRestrict (π := α)) s :=
   fun _ _ h ↦ funext fun i ↦ h i.1 i.2
+
+@[deprecated (since := "2026-07-19")] alias Set.dependsOn_restrict := Set.dependsOn_domRestrict

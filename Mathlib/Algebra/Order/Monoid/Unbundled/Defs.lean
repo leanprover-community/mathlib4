@@ -3,9 +3,11 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Order.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 
@@ -27,9 +29,9 @@ Since `Co(ntra)variantClass` takes as input the operation (typically `(+)` or `(
 relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I have used.
 
 The general approach is to formulate the lemma that you are interested in and prove it, with the
-`Ordered[...]` typeclass of your liking.  After that, you convert the single typeclass,
-say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
-`[CancelMonoid M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
+`IsOrdered[...]` typeclass of your liking.  After that, you convert the typeclass,
+say `[IsOrderedCancelMonoid M]`, into whichever typeclasses, e.g.
+`[CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
@@ -45,14 +47,19 @@ the most common usage. In the opposite direction, the implication
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
-# Formalization notes
+## Formalization notes
 
 We stick to the convention of using `Function.swap (*)` (or `Function.swap (+)`), for the
 typeclass assumptions, since `Function.swap` is slightly better behaved than `flip`.
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
+## TODO
+
+This is unergonomic. Inline in `MulLeftMono` and friends.
 -/
+
+@[expose] public section
 
 
 -- TODO: convert `ExistsMulOfLE`, `ExistsAddOfLE`?
@@ -87,7 +94,7 @@ def Contravariant : Prop :=
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 class MulLeftMono [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `mul_le_mul_left'` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a * b₁ ≤ a * b₂
@@ -96,7 +103,7 @@ class MulLeftMono [Mul M] [LE M] : Prop where
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 class MulRightMono [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `mul_le_mul_right'` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ * b ≤ a₂ * b
@@ -105,7 +112,7 @@ class MulRightMono [Mul M] [LE M] : Prop where
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 class AddLeftMono [Add M] [LE M] : Prop where
   /-- Do not use this. Use `add_le_add_left` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a + b₁ ≤ a + b₂
@@ -114,7 +121,7 @@ class AddLeftMono [Add M] [LE M] : Prop where
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 class AddRightMono [Add M] [LE M] : Prop where
   /-- Do not use this. Use `add_le_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ + b ≤ a₂ + b
@@ -125,7 +132,7 @@ attribute [to_additive] MulLeftMono MulRightMono
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedMonoid`. -/
 class MulLeftStrictMono [Mul M] [LT M] : Prop where
   /-- Do not use this. Use `mul_lt_mul_left'` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a * b₁ < a * b₂
@@ -134,7 +141,7 @@ class MulLeftStrictMono [Mul M] [LT M] : Prop where
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 class MulRightStrictMono [Mul M] [LT M] : Prop where
   /-- Do not use this. Use `mul_lt_mul_right'` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ * b < a₂ * b
@@ -143,7 +150,7 @@ class MulRightStrictMono [Mul M] [LT M] : Prop where
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 class AddLeftStrictMono [Add M] [LT M] : Prop where
   /-- Do not use this. Use `add_lt_add_left` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a + b₁ < a + b₂
@@ -152,7 +159,7 @@ class AddLeftStrictMono [Add M] [LT M] : Prop where
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 class AddRightStrictMono [Add M] [LT M] : Prop where
   /-- Do not use this. Use `add_lt_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ + b < a₂ + b
@@ -163,7 +170,7 @@ attribute [to_additive] MulLeftStrictMono MulRightStrictMono
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 class MulLeftReflectLT [Mul M] [LT M] : Prop where
   /-- Do not use this. Use `lt_of_mul_lt_mul_left'` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ < a * b₂) : b₁ < b₂
@@ -172,7 +179,7 @@ class MulLeftReflectLT [Mul M] [LT M] : Prop where
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 class MulRightReflectLT [Mul M] [LT M] : Prop where
   /-- Do not use this. Use `lt_of_mul_lt_mul_right'` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b < a₂ * b) : a₁ < a₂
@@ -181,7 +188,7 @@ class MulRightReflectLT [Mul M] [LT M] : Prop where
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 class AddLeftReflectLT [Add M] [LT M] : Prop where
   /-- Do not use this. Use `lt_of_add_lt_add_left` instead. -/
   protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ < a + b₂) : b₁ < b₂
@@ -190,7 +197,7 @@ class AddLeftReflectLT [Add M] [LT M] : Prop where
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 class AddRightReflectLT [Add M] [LT M] : Prop where
   /-- Do not use this. Use `lt_of_add_lt_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b < a₂ + b) : a₁ < a₂
@@ -201,37 +208,37 @@ attribute [to_additive] MulLeftReflectLT MulRightReflectLT
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelCommMonoid`. -/
+`IsOrderedCancelMonoid`. -/
 class MulLeftReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_left'` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ ≤ a * b₂) : b₁ ≤ b₂
+  protected le_of_mul_le_mul_left' (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ ≤ a * b₂) : b₁ ≤ b₂
 
 /-- Typeclass for reverse monotonicity of multiplication on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelCommMonoid`. -/
+`IsOrderedCancelMonoid`. -/
 class MulRightReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_right'` instead. -/
-  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b ≤ a₂ * b) : a₁ ≤ a₂
+  protected le_of_mul_le_mul_right' (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b ≤ a₂ * b) : a₁ ≤ a₂
 
 /-- Typeclass for reverse monotonicity of addition on the left,
 namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelAddCommMonoid`. -/
+`IsOrderedCancelAddMonoid`. -/
 class AddLeftReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_left` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ ≤ a + b₂) : b₁ ≤ b₂
+  protected le_of_add_le_add_left (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ ≤ a + b₂) : b₁ ≤ b₂
 
 /-- Typeclass for reverse monotonicity of addition on the right,
 namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelAddCommMonoid`. -/
+`IsOrderedCancelAddMonoid`. -/
 class AddRightReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_right` instead. -/
-  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b ≤ a₂ + b) : a₁ ≤ a₂
+  protected le_of_add_le_add_right (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b ≤ a₂ + b) : a₁ ≤ a₂
 
 attribute [to_additive] MulLeftReflectLE MulRightReflectLE
 
@@ -296,12 +303,12 @@ theorem contravariant_swap_mul_lt [Mul M] [LT M] [MulRightReflectLT M] :
 @[to_additive]
 theorem contravariant_mul_le [Mul M] [LE M] [MulLeftReflectLE M] :
     Contravariant M M (· * ·) (· ≤ ·) :=
-  MulLeftReflectLE.elim
+  MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
 theorem contravariant_swap_mul_le [Mul M] [LE M] [MulRightReflectLE M] :
     Contravariant M M (swap (· * ·)) (· ≤ ·) :=
-  MulRightReflectLE.elim
+  MulRightReflectLE.le_of_mul_le_mul_right'
 
 @[to_additive]
 theorem covariant_smul_le [SMul M N] [LE N] [SMulLeftMono M N] :
@@ -354,13 +361,13 @@ theorem lt_of_mul_lt_mul_right' [Mul M] [LT M] [MulRightReflectLT M] {a b c : M}
 theorem le_of_mul_le_mul_left' [Mul M] [LE M] [MulLeftReflectLE M] {a b c : M}
     (bc : a * b ≤ a * c) :
     b ≤ c :=
-  MulLeftReflectLE.elim a bc
+  MulLeftReflectLE.le_of_mul_le_mul_left' a bc
 
 @[to_additive le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [Mul M] [LE M] [MulRightReflectLE M] {a b c : M}
     (bc : b * a ≤ c * a) :
     b ≤ c :=
-  MulRightReflectLE.elim a bc
+  MulRightReflectLE.le_of_mul_le_mul_right' a bc
 
 @[to_additive (attr := gcongr)]
 theorem smul_le_smul_left [SMul M N] [LE N] [SMulLeftMono M N]
@@ -405,9 +412,9 @@ theorem Group.covariant_iff_contravariant [Group N] :
     exact h a⁻¹ bc
 
 @[to_additive]
-instance (priority := 100) Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N]
-    [MulLeftMono N] : MulLeftReflectLE N :=
-  ⟨Group.covariant_iff_contravariant.mp MulLeftMono.elim⟩
+instance (priority := 100) Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N] [MulLeftMono N] :
+    MulLeftReflectLE N where
+  le_of_mul_le_mul_left' := Group.covariant_iff_contravariant.mp MulLeftMono.elim
 
 @[to_additive]
 instance (priority := 100) Group.mulLeftReflectLT_of_mulLeftStrictMono [Group N] [LT N]
@@ -425,8 +432,8 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
 
 @[to_additive]
 instance (priority := 100) Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
-    [MulRightMono N] : MulRightReflectLE N :=
-  ⟨Group.covariant_swap_iff_contravariant_swap.mp MulRightMono.elim⟩
+    [MulRightMono N] : MulRightReflectLE N where
+  le_of_mul_le_mul_right' := Group.covariant_swap_iff_contravariant_swap.mp MulRightMono.elim
 
 @[to_additive]
 instance (priority := 100) Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
@@ -549,13 +556,13 @@ theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
-  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k),
-   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k),
+   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k)⟩
 
 theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
     Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
-  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k),
-   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k),
+   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k)⟩
 
 variable {mu : N → N → N}
 
@@ -588,12 +595,12 @@ instance mulRightMono_of_mulRightReflectLT [Mul N] [LinearOrder N] [MulRightRefl
 @[to_additive]
 instance mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
     MulLeftStrictMono N where
-  elim := covariant_lt_iff_contravariant_le.mpr MulLeftReflectLE.elim
+  elim := covariant_lt_iff_contravariant_le.mpr MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
 instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
     MulRightStrictMono N where
-  elim := covariant_lt_iff_contravariant_le.mpr MulRightReflectLE.elim
+  elim := covariant_lt_iff_contravariant_le.mpr MulRightReflectLE.le_of_mul_le_mul_right'
 
 @[to_additive]
 instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
@@ -608,7 +615,7 @@ instance mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLe
 @[to_additive]
 instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
     MulRightReflectLE N where
-  elim := contravariant_flip_iff.mpr MulLeftReflectLE.elim
+  le_of_mul_le_mul_right' := contravariant_flip_iff.mpr MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
 instance mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
@@ -646,14 +653,14 @@ instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
 instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftReflectLT N] :
     MulLeftReflectLE N where
-  elim := contravariant_le_iff_contravariant_lt_and_eq.mpr
+  le_of_mul_le_mul_left' := contravariant_le_iff_contravariant_lt_and_eq.mpr
     ⟨MulLeftReflectLT.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
 instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
     MulRightReflectLE N where
-  elim := contravariant_le_iff_contravariant_lt_and_eq.mpr
+  le_of_mul_le_mul_right' := contravariant_le_iff_contravariant_lt_and_eq.mpr
     ⟨MulRightReflectLT.elim, fun _ ↦ mul_right_cancel⟩
 
 end Variants

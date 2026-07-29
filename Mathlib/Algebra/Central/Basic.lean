@@ -3,8 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 -/
+module
 
-import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.Defs
+
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Central Algebras
@@ -15,9 +18,11 @@ In this file, we prove some basic results about central algebras over a commutat
 
 - `Algebra.IsCentral.center_eq_bot`: the center of a central algebra over `K` is equal to `K`.
 - `Algebra.IsCentral.self`: a commutative ring is a central algebra over itself.
-- `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` is a tower of scalars where
+- `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
+
+public section
 
 universe u v
 
@@ -42,11 +47,11 @@ lemma baseField_essentially_unique
     [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
     [IsCentral k D] :
     Function.Bijective (algebraMap k K) := by
-  haveI : IsCentral K D :=
+  have : IsCentral K D :=
   { out := fun x ↦ show x ∈ Subalgebra.center k D → _ by
       simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
       rintro x rfl
-      exact  ⟨algebraMap k K x, by simp [algebraMap_eq_smul_one, smul_assoc]⟩ }
+      exact ⟨algebraMap k K x, by simp [algebraMap_eq_smul_one, smul_assoc]⟩ }
   refine ⟨FaithfulSMul.algebraMap_injective k K, fun x => ?_⟩
   have H : algebraMap K D x ∈ (Subalgebra.center K D : Set D) := Subalgebra.algebraMap_mem _ _
   rw [show (Subalgebra.center K D : Set D) = Subalgebra.center k D by rfl] at H
@@ -54,6 +59,7 @@ lemma baseField_essentially_unique
   obtain ⟨x', H⟩ := H
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx :=
     have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
@@ -63,7 +69,7 @@ open MulOpposite in
 /-- Opposite algebra of a central algebra is central. This instance combined with the coming
   `IsSimpleRing` instance for the opposite of central simple algebra will be an
   inverse for an element in `BrauerGroup`, find out more about this in
-  `Mathlib.Algebra.BrauerGroup.Basic`. -/
+  `Mathlib/Algebra/BrauerGroup/Defs.lean`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz :=
     have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)

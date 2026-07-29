@@ -3,8 +3,10 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Constructions involving sets of sets.
@@ -21,6 +23,8 @@ set of subsets of `α` which is closed under finite intersections.
 `finiteInterClosure_finiteInter`.
 
 -/
+
+public section
 
 
 variable {α : Type*} (S : Set (Set α))
@@ -48,14 +52,13 @@ variable {S}
 
 theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
-  classical
-    refine Finset.induction_on F (fun _ => ?_) ?_
-    · simp [cond.univ_mem]
-    · intro a s _ h1 h2
-      suffices a ∩ ⋂₀ ↑s ∈ S by simpa
-      exact
-        cond.inter_mem (h2 (Finset.mem_insert_self a s))
-          (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
+  refine Finset.induction_on F (fun _ => ?_) ?_
+  · simp [cond.univ_mem]
+  · intro a s _ h1 h2
+    suffices a ∩ ⋂₀ ↑s ∈ S by simpa
+    exact
+      cond.inter_mem (h2 (Finset.mem_insert_self a s))
+        (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
@@ -85,3 +88,9 @@ theorem mk₂ (h : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈
   inter_mem s hs t ht := by aesop
 
 end FiniteInter
+
+/-- This is a hybrid of `Set.biUnion_empty` and `Finset.biUnion_empty` (the index set on the LHS is
+the empty finset, but `s` is a family of sets, not finsets). -/
+theorem Set.biUnion_empty_finset {ι X : Type*} {s : ι → Set X} :
+    ⋃ i ∈ (∅ : Finset ι), s i = ∅ := by
+  simp

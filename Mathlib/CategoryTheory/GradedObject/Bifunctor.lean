@@ -3,13 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 /-!
 # The action of bifunctors on graded objects
 
 Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, we construct an obvious functor
 `mapBifunctor F I J : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`.
-When we have a map `p : I × J → K` and that suitable coproducts exists, we also get
+When we have a map `p : I × J → K` and that suitable coproducts exist, we also get
 a functor
 `mapBifunctorMap F p : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃`.
 
@@ -19,24 +21,29 @@ on `GradedObject I C` (TODO @joelriou).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
 @[simps]
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
+    set_option backward.isDefEq.respectTransparency.types false in
     { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
       map := fun φ ij => (F.obj (X ij.1)).map (φ ij.2) }
   map φ :=
+    set_option backward.isDefEq.respectTransparency.types false in
     { app := fun Y ij => (F.map (φ ij.1)).app (Y ij.2) }
 
 section
@@ -44,11 +51,11 @@ section
 variable {I J K : Type*} (p : I × J → K)
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
- `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
+`Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
-  [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
-    (((mapBifunctor F I J).obj X).obj Y).mapObj p
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
+  (((mapBifunctor F I J).obj X).obj Y).mapObj p
 
 /-- The inclusion of `(F.obj (X i)).obj (Y j)` in `mapBifunctorMapObj F p X Y k`
 when `i + j = k`. -/
@@ -69,6 +76,7 @@ noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁
   GradedObject.mapMap (((mapBifunctor F I J).map f).app Y₁ ≫
     ((mapBifunctor F I J).obj X₂).map g) p
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
@@ -114,6 +122,7 @@ variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
     [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂`
 induced by isomorphisms `X₁ ≅ X₂` and `Y₁ ≅ Y₂`. -/
 @[simps]
@@ -126,12 +135,13 @@ noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂)
 
 instance (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [IsIso f] [IsIso g] :
     IsIso (mapBifunctorMapMap F p f g) :=
-  (inferInstance : IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom)
+  inferInstanceAs <| IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom
 
 end
 
 attribute [local simp] mapBifunctorMapMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` sending
 `X : GradedObject I C₁` and `Y : GradedObject J C₂` to the `K`-graded object sending

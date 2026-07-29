@@ -3,13 +3,14 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Bornology.Hom
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
+module
+
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Topology.Bornology.Hom
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Lipschitz continuous functions
@@ -31,7 +32,9 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-assert_not_exists Basis Ideal
+@[expose] public section
+
+assert_not_exists Module.Basis Ideal ContinuousMul
 
 universe u v w x
 
@@ -105,7 +108,7 @@ theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
 
 theorem dist_lt_mul_of_lt (hf : LipschitzWith K f) (hK : K ≠ 0) (hr : dist x y < r) :
     dist (f x) (f y) < K * r :=
-  (hf.dist_le_mul x y).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 hK.bot_lt).2 hr
+  (hf.dist_le_mul x y).trans_lt <| by gcongr
 
 theorem mapsTo_ball (hf : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ) :
     MapsTo f (Metric.ball x r) (Metric.ball (f x) (K * r)) := fun _y hy =>
@@ -150,7 +153,7 @@ protected theorem dist : LipschitzWith 2 (Function.uncurry <| @dist α _) := by
 theorem dist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
     dist (f^[n] x) (f^[n + 1] x) ≤ dist x (f x) * (K : ℝ) ^ n := by
   rw [iterate_succ, mul_comm]
-  simpa only [NNReal.coe_pow] using (hf.iterate n).dist_le_mul x (f x)
+  simpa only [NNReal.coe_pow] using! (hf.iterate n).dist_le_mul x (f x)
 
 theorem _root_.lipschitzWith_max : LipschitzWith 1 fun p : ℝ × ℝ => max p.1 p.2 :=
   LipschitzWith.of_le_add fun _ _ => sub_le_iff_le_add'.1 <|
@@ -162,17 +165,13 @@ theorem _root_.lipschitzWith_min : LipschitzWith 1 fun p : ℝ × ℝ => min p.1
 
 lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
-  simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
+  simpa only [NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using!
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
-lemma cauchySeq_comp (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
-    CauchySeq (f ∘ u) := by
-  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
-  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
-  · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
-  · rw [← mul_zero (K : ℝ)]
-    exact blim.const_mul _
+/-- The set of functions which are 1-Lipschitz on a metric space separates points. -/
+theorem _root_.Set.separatesPoints_lipschitzWith_one (E : Type*) [MetricSpace E] :
+    { f : E → ℝ | LipschitzWith 1 f }.SeparatesPoints :=
+  fun _ y _ ↦ ⟨(dist · y), by simp [LipschitzWith.dist_left], by simpa⟩
 
 end Metric
 
@@ -182,20 +181,20 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prodMk hg)
+  simpa only [(· ∘ ·), one_mul] using! lipschitzWith_max.comp (hf.prodMk hg)
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
+  simpa only [(· ∘ ·), one_mul] using! lipschitzWith_min.comp (hf.prodMk hg)
 
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
-  simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
+  simpa using hf.max (LipschitzWith.const a)
 
 theorem const_max (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max a (f x) := by
   simpa only [max_comm] using hf.max_const a
 
 theorem min_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min (f x) a := by
-  simpa only [max_eq_left (zero_le Kf)] using hf.min (LipschitzWith.const a)
+  simpa using hf.min (LipschitzWith.const a)
 
 theorem const_min (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => min a (f x) := by
   simpa only [min_comm] using hf.min_const a
@@ -213,12 +212,6 @@ lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
     {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
   ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
     Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
-
-namespace Metric
-
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
-
-end Metric
 
 namespace LipschitzOnWith
 
@@ -274,19 +267,6 @@ theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set �
           ENNReal.mul_ne_top ENNReal.coe_ne_top ht.ediam_ne_top⟩)
       (ediam_image2_le _ _ _ hf₁ hf₂)
 
-lemma cauchySeq_comp (hf : LipschitzOnWith K f s)
-    {u : ℕ → α} (hu : CauchySeq u) (h'u : range u ⊆ s) :
-    CauchySeq (f ∘ u) := by
-  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
-  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
-  · intro n m N hn hm
-    have A n : u n ∈ s := h'u (mem_range_self _)
-    apply (hf.dist_le_mul _ (A n) _ (A m)).trans
-    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.2
-  · rw [← mul_zero (K : ℝ)]
-    exact blim.const_mul _
-
 end Metric
 
 end LipschitzOnWith
@@ -326,26 +306,16 @@ open Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 
-/-- If a function is locally Lipschitz around a point, then it is continuous at this point. -/
-theorem continuousAt_of_locally_lipschitz {x : α} {r : ℝ} (hr : 0 < r) (K : ℝ)
-    (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) : ContinuousAt f x := by
-  -- We use `h` to squeeze `dist (f y) (f x)` between `0` and `K * dist y x`
-  refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (Eventually.of_forall fun _ => dist_nonneg)
-    (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
-  -- Then show that `K * dist y x` tends to zero as `y → x`
-  refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ ?_
-  simp
-
 /-- A function `f : α → ℝ` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz extension
 to the whole space. -/
 theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
     ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   /- An extension is given by `g y = Inf {f x + K * dist y x | x ∈ s}`. Taking `x = y`, one has
     `g y ≤ f y` for `y ∈ s`, and the other inequality holds because `f` is `K`-Lipschitz, so that it
-    can not counterbalance the growth of `K * dist y x`. One readily checks from the formula that
+    cannot counterbalance the growth of `K * dist y x`. One readily checks from the formula that
     the extended function is also `K`-Lipschitz. -/
   rcases eq_empty_or_nonempty s with (rfl | hs)
-  · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken (zero_le _), eqOn_empty _ _⟩
+  · exact ⟨fun _ => 0, (LipschitzWith.const _).weaken zero_le, eqOn_empty _ _⟩
   have : Nonempty s := by simp only [hs, nonempty_coe_sort]
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by

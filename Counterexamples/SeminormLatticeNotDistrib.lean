@@ -18,7 +18,6 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 * https://en.wikipedia.org/wiki/Seminorm#Examples
 -/
 
-
 open Seminorm
 
 open scoped NNReal
@@ -42,7 +41,7 @@ noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
 theorem eq_one : (p ⊔ q1 ⊓ q2) (1, 1) = 1 := by
   suffices ⨅ x : ℝ × ℝ, q1 x + q2 (1 - x) ≤ 1 by simpa
   apply ciInf_le_of_le bddBelow_range_add ((0, 1) : ℝ × ℝ); dsimp [q1, q2]
-  simp only [abs_zero, smul_zero, sub_self, add_zero, zero_le_one]
+  simp
 
 /-- This is a counterexample to the distributivity of the lattice `Seminorm ℝ (ℝ × ℝ)`. -/
 theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
@@ -51,8 +50,8 @@ theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
   apply c; nth_rw 1 [← eq_one]
   apply le_trans _ (le_sup_inf _)
   apply le_ciInf; intro x
-  rcases le_or_lt x.fst (1 / 3) with h1 | h1
-  · rcases le_or_lt x.snd (2 / 3) with h2 | h2
+  rcases le_or_gt x.fst (1 / 3) with h1 | h1
+  · rcases le_or_gt x.snd (2 / 3) with h2 | h2
     · calc
         4 / 3 = 4 * (1 - 2 / 3) := by norm_num
         _ ≤ 4 * (1 - x.snd) := by gcongr

@@ -3,8 +3,10 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm
@@ -16,6 +18,8 @@ an inner product space and for a real number `p > 1`.
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/
+
+public section
 
 section ContDiffNormPow
 
@@ -30,7 +34,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
   by_cases hx : x = 0
   · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
-    rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
+    refine .of_isLittleO ?_
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)
         = (fun x : E ↦ ‖x‖ ^ p) := by simp [zero_lt_one.trans hp |>.ne']
       _ = (fun x : E ↦ ‖x‖ * ‖x‖ ^ (p - 1)) := by
@@ -38,17 +42,15 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
           rw [← rpow_one_add' (norm_nonneg x) (by positivity)]
           ring_nf
       _ =o[𝓝 0] (fun x : E ↦ ‖x‖ * 1) := by
-        refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by norm_num).mpr ?_
-        convert continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
+        refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by simp).mpr ?_
+        convert! continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
         simp [h2p.ne']
       _ =O[𝓝 0] (fun (x : E) ↦ x - 0) := by
         simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), sub_zero, isBigO_refl]
   · apply HasStrictFDerivAt.hasFDerivAt
-    convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
+    convert! (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
     simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), ← Nat.cast_smul_eq_nsmul ℝ, smul_smul]
-    ring_nf -- doesn't close the goal?
-    congr! 2
-    ring
+    ring_nf
 
 theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
@@ -56,7 +58,7 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
 
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
-  convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp
+  convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt; simp
 
 theorem hasDerivAt_abs_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ |x| ^ p) (p * |x| ^ (p - 2) * x) x := by
@@ -113,7 +115,7 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
     rw [tendsto_zero_iff_norm_tendsto_zero]
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
       (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le)
-    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0  by
+    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0 by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this
     fun_prop (discharger := simp [hp.le])
   · simp_rw [funext fun x ↦ fderiv_norm_rpow (E := E) (x := x) hp]
@@ -125,6 +127,6 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
 
 theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
-  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+  contDiff_norm_rpow hp |>.differentiable one_ne_zero |>.comp hf
 
 end ContDiffNormPow

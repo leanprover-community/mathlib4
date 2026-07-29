@@ -3,15 +3,19 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.UniformSpace.Ascoli
+module
+
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
 # The compact-open topology on continuous monoid morphisms.
 -/
+
+@[expose] public section
 
 open Function Topology
 open scoped Pointwise
@@ -30,15 +34,10 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 theorem isInducing_toContinuousMap :
     IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
-
 @[to_additive]
 theorem isEmbedding_toContinuousMap :
     IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
@@ -62,14 +61,11 @@ theorem isClosedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
     IsClosedEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) where
   toIsEmbedding := isEmbedding_toContinuousMap A B
   isClosed_range := by
-    simp only [range_toContinuousMap, Set.setOf_and, Set.setOf_forall]
+    simp only [range_toContinuousMap, Set.ofPred_and, Set.ofPred_forall]
     refine .inter (isClosed_singleton.preimage (continuous_eval_const 1)) <|
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ ?_
     exact isClosed_eq (continuous_eval_const (x * y)) <|
       .mul (continuous_eval_const x) (continuous_eval_const y)
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 variable {A B C D E}
 
@@ -110,10 +106,9 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
   (isInducing_toContinuousMap A C).continuous_iff.2 <|
     f.toContinuousMap.continuous_postcomp.comp (isInducing_toContinuousMap A B).continuous
 
-variable (E)
-
+variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom _ f` is a functor. -/]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
@@ -121,10 +116,9 @@ def compLeft (f : ContinuousMonoidHom A B) :
   map_mul' _g _h := rfl
   continuous_toFun := f.continuous_comp_left
 
-variable (A) {E}
-
+variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
 def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
@@ -132,6 +126,19 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
   map_one' := ext fun _a => map_one f
   map_mul' g h := ext fun a => map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
+
+section DiscreteTopology
+variable [DiscreteTopology A] [ContinuousMul B] [T2Space B]
+
+@[to_additive]
+lemma isClosedEmbedding_coe : IsClosedEmbedding ((⇑) : (A →ₜ* B) → A → B) :=
+  ContinuousMap.isHomeomorph_coe.isClosedEmbedding.comp <| isClosedEmbedding_toContinuousMap ..
+
+@[to_additive]
+instance [CompactSpace B] : CompactSpace (A →ₜ* B) :=
+  ContinuousMonoidHom.isClosedEmbedding_coe.compactSpace
+
+end DiscreteTopology
 
 section LocallyCompact
 
@@ -162,7 +169,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     rw [equicontinuous_iff_range, ← Set.image_eq_range] at h ⊢
     rwa [← hS4] at h
   replace hS4 : S4 = Set.pi U (fun _ ↦ W) ∩ Set.range ((↑) : (X →* Y) → (X → Y)) := by
-    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_setOf_eq]
+    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_ofPred_eq]
     exact fun f ↦ ⟨fun ⟨g, hg, hf⟩ ↦ hf ▸ ⟨hg, g, rfl⟩, fun ⟨hg, g, hf⟩ ↦ ⟨g, hf ▸ hg, hf⟩⟩
   replace hS4 : IsClosed S4 :=
     hS4.symm ▸ (isClosed_set_pi (fun _ _ ↦ hWc.isClosed)).inter (MonoidHom.isClosed_range_coe X Y)
@@ -170,7 +177,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     let T : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U (interior W)}
     have h1 : T.Nonempty := ⟨1, fun _ _ ↦ mem_interior_iff_mem_nhds.mpr hWo⟩
     have h2 : T ⊆ S2 := fun f hf ↦ hf.mono_right interior_subset
-    have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
+    have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOfPred_mapsTo hU isOpen_interior)
     exact h1.mono (interior_maximal h2 h3)
   exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
     ⟨⟨S2, (isInducing_toContinuousMap X Y).isCompact_iff.mpr
@@ -202,7 +209,7 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
   apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
   rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
   refine fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ ?_⟩
-  rw [Set.mem_setOf_eq, map_one, div_one]
+  rw [Set.mem_ofPred_eq, map_one, div_one]
   exact hU4 f hf n hx
 
 end LocallyCompact

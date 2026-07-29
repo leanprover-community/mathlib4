@@ -3,12 +3,16 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 This file defines a few basic properties of groupoids.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -20,7 +24,7 @@ section Thin
 
 theorem isThin_iff : Quiver.IsThin C ↔ ∀ c : C, Subsingleton (c ⟶ c) := by
   refine ⟨fun h c => h c c, fun h c d => Subsingleton.intro fun f g => ?_⟩
-  haveI := h d
+  have := h d
   calc
     f = f ≫ inv g ≫ g := by simp only [inv_eq_inv, IsIso.inv_hom_id, Category.comp_id]
     _ = f ≫ inv f ≫ g := by congr 1
