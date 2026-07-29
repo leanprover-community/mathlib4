@@ -115,7 +115,7 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
 
 /-- `hcomp α β` is the horizontal composition of natural transformations.
 
-There are two possible definitions that are equivalent and dual to eachother.
+There are two possible definitions that are equivalent and dual to each other.
 This is inconvenient for `to_dual`, so we `no_expose` the definition,
 and instead rely on `hcomp_app` or `hcomp_app'` to unfold it. -/
 @[no_expose, to_dual self]
