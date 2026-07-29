@@ -203,11 +203,11 @@ theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 
 @[simp]
-theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
-  (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
-    (by
-      rw [foldr_ι, foldr_ι]
-      exact mul_one _)
+theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ := by
+  rw [CliffordAlgebra.even.lift.aux_apply]
+  refine (congr_arg Prod.fst (foldr_mul Q (fFold f) _ _ _ _)).trans ?_
+  rw [foldr_ι, foldr_ι]
+  exact mul_one _
 
 @[simp]
 theorem aux_algebraMap (r) :
@@ -224,7 +224,7 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   induction x, x_property using even_induction Q with
   | algebraMap r =>
     generalize_proofs at ⊢
-    simpa using Algebra.smul_def r _
+    simpa using! Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
     rw [map_add, Prod.fst_add]
     simp [ihx, ihy, ← add_mul, ← map_add]

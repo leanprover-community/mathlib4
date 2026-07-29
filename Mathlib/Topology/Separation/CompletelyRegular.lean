@@ -11,6 +11,8 @@ public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Analysis.Real.Cardinality
 
+import Mathlib.Topology.Algebra.Indicator
+
 /-!
 # Completely regular topological spaces.
 
@@ -52,7 +54,7 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -128,7 +130,7 @@ lemma completelyRegularSpace_induced
 
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
-  letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
+  let := (⨅ i, t i) -- register this as default topological space to reduce `@`s
   rw [completelyRegularSpace_iff_isOpen]
   intro x K hK hxK
   simp_rw [← hK.mem_nhds_iff, nhds_iInf, mem_iInf, exists_finite_iff_finset,
@@ -192,6 +194,15 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
     CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
+
+theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
+    (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
+    CompletelyRegularSpace X where
+  completely_regular x K hK hx := by
+    obtain ⟨s, hs, hx, hsK⟩ := h.exists_subset_of_mem_open hx hK.isOpen_compl
+    refine ⟨sᶜ.indicator 1, ?_, by simpa, fun x hx ↦ indicator_of_mem ?_ _⟩
+    · exact hs.compl.continuous_indicator continuous_const
+    · exact (mem_compl_iff s x).mpr fun hs ↦ hsK hs hx
 
 open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum

@@ -17,7 +17,7 @@ closure properties of object properties.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

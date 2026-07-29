@@ -69,6 +69,7 @@ lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
@@ -139,8 +140,8 @@ def expHom : ℝ →+ Additive Circle where
 
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
-lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n := expHom.map_nsmul x n
-lemma exp_zsmul (x : ℝ) (z : ℤ) : exp (z • x) = exp x ^ z := expHom.map_zsmul x z
+lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n := expHom.map_nsmul n x
+lemma exp_zsmul (x : ℝ) (z : ℤ) : exp (z • x) = exp x ^ z := expHom.map_zsmul z x
 @[simp] lemma exp_natCast_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n := by
   rw [← nsmul_eq_mul, exp_nsmul]
 @[simp] lemma exp_intCast_mul (x : ℝ) (z : ℤ) : exp (z * x) = exp x ^ z := by
@@ -154,6 +155,7 @@ lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
 
 variable {e : AddChar ℝ Circle}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
@@ -192,6 +194,7 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
     ContinuousSMul Circle α :=
   inferInstanceAs <| ContinuousSMul (Submonoid.unitSphere _) α
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
@@ -245,6 +248,6 @@ theorem continuous_probChar : Continuous probChar := map_continuous Circle.exp
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]
   use Real.pi
-  simpa only [probChar_apply'] using Circle.exp_pi_ne_one
+  simpa only [probChar_apply'] using! Circle.exp_pi_ne_one
 
 end Real

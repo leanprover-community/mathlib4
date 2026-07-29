@@ -54,7 +54,7 @@ local notation "q" => Fintype.card K
 
 theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     (h : f.totalDegree < (q - 1) * Fintype.card σ) : ∑ x, eval x f = 0 := by
-  haveI : DecidableEq K := Classical.decEq K
+  have : DecidableEq K := Classical.decEq K
   calc
     ∑ x, eval x f = ∑ x : σ → K, ∑ d ∈ f.support, f.coeff d * ∏ i, x i ^ d i := by
       simp only [eval_eq']
@@ -81,7 +81,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
   let e' : { j // j = i } ⊕ { j // j ≠ i } ≃ σ := Equiv.sumCompl _
-  letI : Unique { j // j = i } :=
+  let : Unique { j // j = i } :=
     { default := ⟨i, rfl⟩
       uniq := fun ⟨j, h⟩ => Subtype.val_injective h }
   calc
@@ -145,7 +145,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   -- It remains to verify the crucial assumption of this machine
   show F.totalDegree < (q - 1) * Fintype.card σ
   calc
-    F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
+    F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finsetProd s _
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
     _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
@@ -178,7 +178,7 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  convert char_dvd_card_solutions_of_sum_lt p this
+  convert! char_dvd_card_solutions_of_sum_lt p this
   aesop
 
 /-- The **Chevalley–Warning theorem**, binary version.
@@ -191,6 +191,6 @@ theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
     p ∣ Fintype.card { x : σ → K // eval x f₁ = 0 ∧ eval x f₂ = 0 } := by
   let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
-  simpa only [Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
+  simpa only [Bool.forall_bool] using! char_dvd_card_solutions_of_fintype_sum_lt p this
 
 end FiniteField

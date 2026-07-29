@@ -41,6 +41,7 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra R Aᵐᵒᵖ where
   algebraMap := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
@@ -64,9 +65,7 @@ def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
   commutes' _ := rfl
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
+@[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
 end AlgEquiv
 
@@ -135,6 +134,9 @@ end AlgHom
 
 namespace AlgEquiv
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
@@ -164,6 +166,9 @@ theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
     (AlgEquiv.unop f).toRingEquiv = RingEquiv.unop f.toRingEquiv :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Swap the `ᵐᵒᵖ` on an algebra isomorphism to the opposite side. -/
 @[simps!]
 def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=
@@ -198,9 +203,7 @@ def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
   __ := RingEquiv.toOpposite A
   commutes' _r := rfl
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
+@[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
 @[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl
 
 end AlgEquiv

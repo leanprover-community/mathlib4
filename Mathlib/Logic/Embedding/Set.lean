@@ -30,7 +30,7 @@ variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :
-    Set.range e.asEmbedding = setOf p :=
+    Set.range e.asEmbedding = Set.ofPred p :=
   Set.ext fun x ↦ ⟨fun ⟨y, h⟩ ↦ h ▸ Subtype.coe_prop (e y), fun hs ↦ ⟨e.symm ⟨x, hs⟩, by simp⟩⟩
 
 end Equiv
@@ -45,6 +45,7 @@ namespace Embedding
 def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option α ↪ β :=
   ⟨Option.elim' x f, Option.injective_iff.2 ⟨f.2, h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
@@ -139,11 +140,11 @@ variable {α ι : Type*} {s t r : Set α}
     (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl
 
 @[simp] theorem Function.Embedding.sumSet_preimage_inl (h : Disjoint s t) :
-    .inl ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ s := by
+    .inl ⁻¹' Function.Embedding.sumSet h ⁻¹' r = r ∩ s := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sumSet_preimage_inr (h : Disjoint s t) :
-    .inr ⁻¹' (Function.Embedding.sumSet h ⁻¹' r) = r ∩ t := by
+    .inr ⁻¹' Function.Embedding.sumSet h ⁻¹' r = r ∩ t := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
@@ -162,12 +163,13 @@ the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
     obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
     rfl
 
+set_option warning.simp.otherHead false in
 @[norm_cast] lemma Function.Embedding.coe_sigmaSet {s : ι → Set α} (h) :
     (Function.Embedding.sigmaSet h : ((i : ι) × s i) → α) = fun x ↦ x.2.1 := rfl
 
 @[simp] theorem Function.Embedding.sigmaSet_preimage {s : ι → Set α}
     (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
-    Sigma.mk i ⁻¹' (Function.Embedding.sigmaSet h ⁻¹' r) = r ∩ s i := by
+    Sigma.mk i ⁻¹' Function.Embedding.sigmaSet h ⁻¹' r = r ∩ s i := by
   simp [Set.ext_iff]
 
 @[simp] theorem Function.Embedding.sigmaSet_range {s : ι → Set α}

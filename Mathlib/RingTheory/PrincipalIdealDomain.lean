@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
-public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
@@ -94,7 +94,7 @@ theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
 @[simp]
 theorem generator_mem (S : Submodule R M) [S.IsPrincipal] : generator S ∈ S := by
   have : generator S ∈ span R {generator S} := subset_span (mem_singleton _)
-  convert this
+  convert! this
   exact span_singleton_generator S |>.symm
 
 theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
@@ -103,6 +103,10 @@ theorem mem_iff_eq_smul_generator (S : Submodule R M) [S.IsPrincipal] {x : M} :
 
 theorem eq_bot_iff_generator_eq_zero (S : Submodule R M) [S.IsPrincipal] :
     S = ⊥ ↔ generator S = 0 := by rw [← @span_singleton_eq_bot R M, span_singleton_generator]
+
+@[simp]
+theorem generator_bot : generator (⊥ : Submodule R M) = 0 :=
+  (eq_bot_iff_generator_eq_zero ⊥).mp rfl
 
 protected lemma fg {S : Submodule R M} (h : S.IsPrincipal) : S.FG :=
   ⟨{h.generator}, by simp only [Finset.coe_singleton, span_singleton_generator]⟩
@@ -213,17 +217,34 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
-@[implicit_reducible]
-noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
+@[instance_reducible]
+noncomputable def toGCDDomain [IsBezout R] [IsCancelMulZero R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
-instance nonemptyGCDMonoid [IsBezout R] [IsDomain R] : Nonempty (GCDMonoid R) := by
+instance [IsBezout R] [IsCancelMulZero R] : IsGCDMonoid R := by
   classical exact ⟨toGCDDomain R⟩
 
 theorem associated_gcd_gcd [GCDMonoid R] : Associated (IsBezout.gcd x y) (GCDMonoid.gcd x y) :=
   gcd_greatest_associated (gcd_dvd_left _ _) (gcd_dvd_right _ _) (fun _ => dvd_gcd)
 
 end IsBezout
+
+/-- A version of Bézout's lemma for greatest common divisors over arbitrary `Finset`s. -/
+lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGCDMonoid R]
+    (s : Finset α) (f : α → R) :
+    ∃ g : α → R, s.gcd f = ∑ a ∈ s, f a * g a := by classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih =>
+    obtain ⟨x, y, hxy⟩ := IsBezout.gcd_eq_sum (f a) (s.gcd f)
+    obtain ⟨u, hu⟩ := IsBezout.associated_gcd_gcd R (x := f a) (y := s.gcd f)
+    rw [← hxy, add_mul, mul_comm x, mul_comm y] at hu
+    obtain ⟨g, hg⟩ := ih
+    refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
+    rw [gcd_insert, sum_insert ha, ← hu, hg]
+    simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+      (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
 
 namespace IsPrime
 
@@ -278,7 +299,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
                     { x : R | x ∈ S ∧ x ≠ 0 } :=
                   fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
-                  simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
+                  simp only [not_and_or, Set.mem_ofPred_eq, not_ne_iff] at this
                   exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
                 simp [*]),
               fun hx =>
@@ -461,7 +482,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (hp : Prime p) : IsCoprime p n ↔ �
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a := by
   classical
-  letI := IsBezout.toGCDDomain R
+  let := IsBezout.toGCDDomain R
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 
 theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}
@@ -523,44 +544,6 @@ end Ideal
 
 end PrincipalOfPrime
 
-section PrincipalOfPrime_old
-
-variable (R) [CommRing R]
-
-/-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
-@[deprecated Ideal.nonPrincipals (since := "2025-09-30")]
-def nonPrincipals :=
-  { I : Ideal R | ¬I.IsPrincipal }
-
-@[deprecated "Not necessary anymore since Ideal.nonPrincipals is an abrev." (since := "2025-09-30")]
-theorem nonPrincipals_def {I : Ideal R} : I ∈ { I : Ideal R | ¬I.IsPrincipal } ↔ ¬I.IsPrincipal :=
-  Iff.rfl
-
-variable {R}
-
-@[deprecated Ideal.nonPrincipals_eq_empty_iff (since := "2025-09-30")]
-theorem nonPrincipals_eq_empty_iff :
-    { I : Ideal R | ¬I.IsPrincipal } = ∅ ↔ IsPrincipalIdealRing R := by
-  simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
-
-/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
-(Namely, the union of the chain is such an upper bound.)
--/
-@[deprecated Ideal.nonPrincipals_zorn (since := "2025-09-30")]
-theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ { I : Ideal R | ¬I.IsPrincipal })
-    (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
-    ∃ I ∈ { I : Ideal R | ¬I.IsPrincipal }, ∀ J ∈ c, J ≤ I := by
-  refine ⟨sSup c, ?_, fun J hJ => le_sSup hJ⟩
-  rintro ⟨x, hx⟩
-  have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
-  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
-  have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
-  specialize hs hJc
-  rw [← hsSupJ, hx] at hs
-  exact hs ⟨⟨x, rfl⟩⟩
-
-end PrincipalOfPrime_old
-
 open Ideal in
 lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :
     span {n} ⊓ span {m} = span {lcm n m} := by
@@ -569,3 +552,10 @@ lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m :
   rw [Ideal.mem_inf]
   simp only [Ideal.mem_span_singleton]
   exact lcm_dvd_iff.symm
+
+lemma Ideal.exists_normalized_span_of_isPrincipal {R : Type*} [CommSemiring R]
+    [NormalizationMonoid R] (I : Ideal R) [I.IsPrincipal] :
+    ∃ x, normalize x = x ∧ I = Ideal.span {x} := by
+  obtain ⟨x, rfl⟩ := ‹I.IsPrincipal›
+  refine ⟨normalize x, normalize_idem x, le_antisymm ?_ ?_⟩ <;>
+  simp [Ideal.mem_span_singleton]

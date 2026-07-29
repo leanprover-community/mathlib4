@@ -29,7 +29,7 @@ uniform ideal filters in terms of ring filter bases.
 
 ## References
 
-* [nLab: Uniform filter](<https://ncatlab.org/nlab/show/uniform+filter>)
+* [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
 
 ## Tags
 
@@ -43,7 +43,7 @@ open scoped Pointwise Topology
 namespace IdealFilter
 
 /-- The additive-group filter basis whose sets are the ideals belonging to the ideal filter `F`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilterBasis A where
   sets := {(I : Set A) | I ∈ F}
   nonempty := ⟨_, ⟨_, F.nonempty.choose_spec, rfl⟩⟩
@@ -56,7 +56,7 @@ def addGroupFilterBasis {A : Type*} [Ring A] (F : IdealFilter A) : AddGroupFilte
   conj' := by aesop
 
 /-- Under `[F.IsUniform]`, the ring filter basis obtained from `addGroupFilterBasis`. -/
-@[simps! -isSimp sets, implicit_reducible]
+@[simps! -isSimp sets, instance_reducible]
 def ringFilterBasis {A : Type*} [Ring A] {F : IdealFilter A} [F.IsUniform] :
     RingFilterBasis A where
   __ := F.addGroupFilterBasis

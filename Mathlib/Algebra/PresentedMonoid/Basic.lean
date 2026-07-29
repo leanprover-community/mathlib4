@@ -37,16 +37,15 @@ generators `x : α` and relations `rels` as a quotient of a congruence structure
 @[to_additive /-- Given a set of relations, `rels`, over a type `α`, `PresentedAddMonoid` constructs
 the monoid with generators `x : α` and relations `rels` as a quotient of an AddCon structure over
 rels -/]
-def PresentedMonoid (rel : FreeMonoid α → FreeMonoid α → Prop) := (conGen rel).Quotient
+def PresentedMonoid (rels : FreeMonoid α → FreeMonoid α → Prop) := (conGen rels).Quotient
 
 namespace PresentedMonoid
 
 open Set Submonoid
 
-
 @[to_additive]
 instance {rels : FreeMonoid α → FreeMonoid α → Prop} : Monoid (PresentedMonoid rels) :=
-  Con.monoid (conGen rels)
+  inferInstanceAs <| Monoid (conGen rels).Quotient
 
 /-- The quotient map from the free monoid on `α` to the presented monoid with the same generators
 and the given relations `rels`. -/
@@ -126,12 +125,12 @@ from `PresentedMonoid rels → M`. -/
 @[to_additive /-- The extension of a map `f : α → M` that satisfies the given relations to an
 additive-monoid homomorphism from `PresentedAddMonoid rels → M` -/]
 def lift : PresentedMonoid rels →* M :=
-  Con.lift _ (FreeMonoid.lift f) (Con.conGen_le h)
+  Con.lift _ (FreeMonoid.lift f) (Con.conGen_le.2 h)
 
 @[to_additive]
 theorem toMonoid.unique (g : MonoidHom (conGen rels).Quotient M)
     (hg : ∀ a : α, g (of rels a) = f a) : g = lift f h :=
-  Con.lift_unique (Con.conGen_le h) g (FreeMonoid.hom_eq hg)
+  Con.lift_unique (Con.conGen_le.2 h) g (FreeMonoid.hom_eq hg)
 
 @[to_additive (attr := simp)]
 theorem lift_of {x : α} : lift f h (of rels x) = f x := rfl

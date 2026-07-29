@@ -117,6 +117,7 @@ lemma hasSum_arctan_aux {z : ℂ} (hz : ‖z‖ < 1) :
   rw [show π / 2 + π / 2 = π by ring] at c₂
   exact ⟨c₁, c₂.le⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The power series expansion of `Complex.arctan`, valid on the open unit disc. -/
 theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ (-1) ^ n * z ^ (2 * n + 1) / ↑(2 * n + 1)) (arctan z) := by
@@ -128,7 +129,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
   dsimp only
-  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
+  convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
     neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
     show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),

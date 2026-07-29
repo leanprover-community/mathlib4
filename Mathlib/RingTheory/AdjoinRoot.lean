@@ -68,7 +68,18 @@ section CommRing
 
 variable [CommRing R] (f g : R[X])
 
-deriving instance CommRing, Inhabited for AdjoinRoot
+deriving instance Inhabited for AdjoinRoot
+
+instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+  inferInstanceAs <| SMul S (_ ⧸ _)
+
+instance : CommRing (AdjoinRoot f) where
+  nsmul := letI := instSMulAdjoinRoot (S := ℕ) (R := R); (· • ·)
+  zsmul := letI := instSMulAdjoinRoot (S := ℤ) (R := R); (· • ·)
+  __ : CommRing (AdjoinRoot f) := inferInstanceAs <| CommRing (_ ⧸ _)
+
+instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
+  inferInstanceAs <| DistribSMul S (_ ⧸ _)
 
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
@@ -91,12 +102,6 @@ theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p 
 /-- Embedding of the original ring `R` into `AdjoinRoot f`. -/
 def of : R →+* AdjoinRoot f :=
   (mk f).comp C
-
-instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  inferInstanceAs <| SMul S (_ ⧸ _)
-
-instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  inferInstanceAs <| DistribSMul S (_ ⧸ _)
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -177,7 +182,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
   ext x
-  · simpa using congr($(hAlg) x)
+  · simpa using! congr($(hAlg) x)
   · simpa
 
 @[ext high] -- This should have higher precedence than `AlgHom.ext`.
@@ -326,51 +331,18 @@ end
 section deprecated
 variable (f) [Algebra R S]
 
-/-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
-a root of `f` in `S`. -/
-@[deprecated liftAlgHom (since := "2025-10-10")]
-def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
-  liftAlgHom _ _ x hfx
-
-set_option linter.deprecated false in
-@[deprecated toRingHom_liftAlgHom (since := "2025-10-10")]
-theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
-    (liftHom f x hfx : AdjoinRoot f →+* S) = lift (algebraMap R S) x hfx :=
-  rfl
-
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
   have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
   rw [aeval_def, ← h, ← map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
   ext
   simp
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_eq_algHom (since := "2025-10-10")]
-theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
-    liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := liftAlgHom_eq_algHom ..
-
-variable (hfx : aeval a f = 0)
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_mk (since := "2025-10-10")]
-theorem liftHom_mk {g : R[X]} : liftAlgHom f _ a hfx (mk f g) = aeval a g :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_root (since := "2025-10-10")]
-theorem liftHom_root : liftHom f a hfx (root f) = a :=
-  lift_root hfx
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_of (since := "2025-10-10")]
-theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
-  lift_of hfx
 
 end deprecated
 
@@ -378,7 +350,7 @@ section AdjoinInv
 
 @[simp]
 theorem root_isInv (r : R) : of _ r * root (C r * X - 1) = 1 := by
-  convert sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
+  convert! sub_eq_zero.1 ((eval₂_sub _).symm.trans <| eval₂_root <| C r * X - 1) <;>
     simp only [eval₂_mul, eval₂_C, eval₂_X, eval₂_one]
 
 theorem algHom_subsingleton {S : Type*} [CommRing S] [Algebra R S] {r : R} :
@@ -453,9 +425,10 @@ lemma mapAlgHom_comp_mapAlghom (f : S →ₐ[R] T) (g : T →ₐ[R] U) (p : S[X]
     (hf hg) :
     (mapAlgHom g q r hg).comp (mapAlgHom f p q hf) =
       mapAlgHom (g.comp f) p r
-        (hg.trans <| by simpa [Polynomial.map_map] using Polynomial.map_dvd g.toRingHom hf) := by
+        (hg.trans <| by simpa [Polynomial.map_map] using! Polynomial.map_dvd g.toRingHom hf) := by
   aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `AdjoinRoot.map` as an `AlgEquiv`. -/
 def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map f) q) :
     AdjoinRoot p ≃ₐ[R] AdjoinRoot q :=
@@ -465,7 +438,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
+      simpa [Polynomial.map_map, -RingEquiv.symm_mk, this] using! map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
 @[simp] lemma coe_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
@@ -476,7 +449,8 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
       -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
       have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
         .id S := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
+      simpa [Polynomial.map_map, -RingEquiv.symm_mk, this]
+        using! associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
 /-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
@@ -531,11 +505,6 @@ lemma algEquivOfEq_toAlgHom (f g : S[X]) (hfg) :
 /-- `algEquivOfEq` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
 lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = root g := by
   rw [coe_algEquivOfEq, algHomOfDvd_root]
-
-@[deprecated (since := "2025-10-10")] alias algHomOfDvd_apply_root := algHomOfDvd_root
-@[deprecated (since := "2025-10-10")] alias algEquivOfEq_apply_root := algEquivOfEq_root
-@[deprecated (since := "2025-10-10")]
-alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
 
 end CommRing
 
@@ -638,7 +607,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         funext fun i => by
           nontriviality R
           simp only [modByMonicHom_mk]
-          rw [(modByMonic_eq_self_iff hg).mpr, finset_sum_coeff]
+          rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
           · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree <| hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
@@ -657,6 +626,7 @@ theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : 
     (powerBasisAux' hg).repr f i = (modByMonicHom hg f).coeff ↑i :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The power basis `1, root g, ..., root g ^ (d - 1)` for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 @[simps]
@@ -696,6 +666,7 @@ variable [Field K] {f : K[X]}
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
   (isAlgebraic_root hf).isIntegral
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine (minpoly.unique K _ f'_monic ?_ ?_).symm
@@ -802,6 +773,7 @@ section Equiv'
 variable [CommRing R] [CommRing S] [Algebra R S]
 variable (g : R[X]) (pb : PowerBasis R S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
 such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `AdjoinRoot g`.
 
@@ -822,11 +794,13 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
     rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk, Polynomial.aeval_def, Algebra.toRingHom_ofId]
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     (equiv' g pb h₁ h₂).toAlgHom = AdjoinRoot.liftAlgHom g _ pb.gen h₂ :=
   rfl
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem equiv'_symm_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0)
     (h₂ : aeval pb.gen g = 0) : (equiv' g pb h₁ h₂).symm.toAlgHom = pb.lift (root g) h₁ :=
   rfl
@@ -861,6 +835,7 @@ open Ideal DoubleQuot Polynomial
 
 variable [CommRing R] (I : Ideal R) (f : R[X])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
 `f : R[X]` and `I : Ideal R`.
 
@@ -871,9 +846,11 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated (since := "2026-03-02")]
 alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
@@ -883,6 +860,7 @@ theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
 alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
     (quotMapOfEquivQuotMapCMapMk I f).symm
         (Ideal.Quotient.mk ((I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span {f}))) x) =
@@ -961,6 +939,7 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
       ((Ideal.quotEquivOfEq (by rw [map_span, Set.image_singleton])).trans
         (Polynomial.quotQuotEquivComm I f).symm))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =
@@ -995,7 +974,6 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
       simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
 
-@[simp]
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
@@ -1011,6 +989,42 @@ theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
 
 end
 
+section TensorProduct
+variable {R S T U : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+  [CommRing U] [Algebra R U] {p : Polynomial S}
+
+open Algebra TensorProduct
+
+variable (p) in
+/-- Adjoining a root is preserved under base change. -/
+def tensorAlgEquiv (p : S[X]) (q : (T ⊗[R] S)[X]) (h : p.map includeRight.toRingHom = q) :
+    T ⊗[R] AdjoinRoot p ≃ₐ[T] AdjoinRoot q := by
+  refine .ofAlgHom
+    (Algebra.TensorProduct.lift (algHom T T _)
+      (mapAlgHom includeRight p q <| by exact h.symm.dvd) fun _ _ ↦ .all ..)
+    (liftAlgHom _ (Algebra.TensorProduct.map (AlgHom.id T T)
+      (((Algebra.ofId S (AdjoinRoot p))).restrictScalars R)) (1 ⊗ₜ root _) ?_) ?_ ?_
+  · simp only [← h, AlgHom.toRingHom_eq_coe]
+    rw [Polynomial.eval₂_map]
+    change Polynomial.eval₂ ((Algebra.TensorProduct.map (AlgHom.id R T) _).comp _).toRingHom _ _ = _
+    simp only [map_comp_includeRight, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
+      AlgHom.coe_restrictScalars, ← Polynomial.eval₂_map]
+    change Polynomial.eval₂ _ ((RingHomClass.toRingHom includeRight) (root p)) (p.map (of _)) = _
+    rw [Polynomial.eval₂_hom]
+    simp [Polynomial.eval_map]
+  · ext
+    · simp [Algebra.ofId_apply]
+    simp
+  · ext : 3 <;> simp
+
+@[simp] lemma tensorAlgEquiv_root (p : S[X]) (q : Polynomial (T ⊗[R] S)) (h) :
+    tensorAlgEquiv p q h (1 ⊗ₜ root p) = root q := by simp [tensorAlgEquiv]
+
+@[simp] lemma tensorAlgEquiv_of (p : S[X]) (q : Polynomial (T ⊗[R] S)) (h) {x : S} :
+    tensorAlgEquiv p q h (1 ⊗ₜ of p x) = of q (1 ⊗ₜ x):= by simp [tensorAlgEquiv]
+
+end TensorProduct
+
 end AdjoinRoot
 
 namespace PowerBasis
@@ -1019,6 +1033,7 @@ open AdjoinRoot AlgEquiv
 
 variable [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `α` have minimal polynomial `f` over `R` and `I` be an ideal of `R`,
 then `R[α] / (I) = (R[x] / (f)) / pS = (R/p)[x] / (f mod p)`. -/
 @[simps!]
@@ -1048,10 +1063,11 @@ theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Idea
         (Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
           (g.map (Ideal.Quotient.mk I)) := by
   rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofRingEquiv_apply,
-    quotientEquiv_mk, AlgEquiv.coe_ringEquiv', AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
+    quotientEquiv_mk, AlgEquiv.coe_ringEquiv, AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
     AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 
 -- This lemma should have the simp tag but this causes a lint issue.
+set_option backward.isDefEq.respectTransparency.types false in
 theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I : Ideal R)
     (g : R[X]) :
     (pb.quotientEquivQuotientMinpolyMap I).symm (Ideal.Quotient.mk (Ideal.span
@@ -1067,7 +1083,7 @@ polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
     [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
-  haveI := Fact.mk hf
+  have := Fact.mk hf
   have h := hf.ne_zero
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)

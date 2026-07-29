@@ -9,6 +9,7 @@ public import Mathlib.Tactic.FBinop
 
 /-!
 # Set Product Notation
+
 This file provides notation for a product of sets, and other similar types.
 
 ## Main Definitions
@@ -22,7 +23,7 @@ notation is desirable but this notation is defined in core for `Prod` so replaci
 `x × y` seems difficult.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

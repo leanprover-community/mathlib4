@@ -40,7 +40,7 @@ required to add and maintain the infimum version is minimal.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {α : Type*}
 

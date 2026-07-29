@@ -27,7 +27,7 @@ locally convex.
 locally convex, bounded convergence
 -/
 
-@[expose] public section
+public section
 
 
 open Topology UniformConvergence

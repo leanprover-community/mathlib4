@@ -5,10 +5,8 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 public import Mathlib.Tactic.Ring.Common
-meta import Mathlib.Tactic.Ring.Common
+public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat` instance
 
 /-!
 # `ring` tactic
@@ -233,7 +231,7 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result 
 -/
 partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ a) : AtomM (Result (ExSum sα) q($a)) := do
   assumeInstancesCommute
-  match va with
+  match (dependent := true) va with
   | .zero => pure ⟨_, .zero, q(natCast_zero (R := $α))⟩
   | .add va₁ va₂ => do
     let ⟨_, vb₁, pb₁⟩ ← ExProd.evalNatCast va₁
@@ -357,8 +355,7 @@ theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) 
   subst_vars
   simp only [nsmul_eq_mul]
 
-omit [CommSemiring R] in
-theorem Int.smul_eq_mul {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
+theorem Int.smul_eq_mul {R} {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]
@@ -381,14 +378,13 @@ partial def add {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a b : Q($α)} (za : RatCoeff a) (zb : RatCoeff b) :
     MetaM (Result RatCoeff q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
-  let isZero : MetaM (Option Q(IsNat ($a + $b) 0)) ← match res with
-  | Result.isNat inst lit pf => do
-    if lit.natLit! == 0 then
-      have : $lit =Q 0 := ⟨⟩
-      pure <| some q($pf)
-    else
-      pure none
-  | _ => pure none
+  let isZero ← match res with
+    | Result.isNat _inst lit pf =>
+      if lit.natLit! == 0 then
+        pure <| some (pf : Q(IsNat ($a + $b) 0))
+      else
+        pure none
+    | _ => pure none
   let r ← RatCoeff.ofResult res
   return ⟨r, isZero⟩
 
@@ -465,7 +461,7 @@ partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
     return some ⟨_, vc, q($pc)⟩
   | none => return none
 
-/-- Try to evaluate an expression as a rational constant using norm_num. -/
+/-- Try to evaluate an expression as a rational constant using `norm_num`. -/
 partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
     MetaM (Result (Common.ExSum RatCoeff sα) q($x)) := do
   let res ← NormNum.derive x

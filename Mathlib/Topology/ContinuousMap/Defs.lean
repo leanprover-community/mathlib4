@@ -61,7 +61,7 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+@[coe, reducible] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
 instance : CoeTC F C(X, Y) := ⟨toContinuousMap⟩
 
@@ -76,7 +76,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 instance instFunLike : FunLike C(X, Y) X Y where
   coe := ContinuousMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance instContinuousMapClass : ContinuousMapClass C(X, Y) X Y where
   map_continuous := ContinuousMap.continuous_toFun

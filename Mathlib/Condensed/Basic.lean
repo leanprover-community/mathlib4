@@ -30,7 +30,7 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
@@ -49,7 +49,7 @@ abbrev Condensed (C : Type w) [Category.{v} C] :=
 Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u + 1))
+abbrev CondensedSet := Condensed.{u} <| Type (u + 1)
 
 namespace Condensed
 
@@ -75,11 +75,9 @@ end Condensed
 
 namespace CondensedSet
 
--- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
--- However, it doesn't seem to see through the abbreviation `CondensedSet`
-@[simp]
+@[deprecated NatTrans.naturality_apply (since := "2026-03-19")]
 lemma hom_naturality_apply {X Y : CondensedSet.{u}} (f : X ⟶ Y) {S T : CompHausᵒᵖ} (g : S ⟶ T)
-    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
-  NatTrans.naturality_apply f.hom g x
+    (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) := by
+  simp
 
 end CondensedSet

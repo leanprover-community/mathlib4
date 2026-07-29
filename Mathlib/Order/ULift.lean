@@ -14,7 +14,7 @@ Once these basic instances are setup, the instances of more complex typeclasses 
 the corresponding `Prod` instances.
 -/
 
-@[expose] public section
+public section
 
 namespace ULift
 

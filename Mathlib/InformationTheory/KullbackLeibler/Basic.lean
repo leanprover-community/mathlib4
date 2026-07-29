@@ -52,7 +52,7 @@ namespace InformationTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
-open Classical in
+open scoped Classical in
 /-- Kullback-Leibler divergence between two measures. -/
 noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
@@ -84,7 +84,7 @@ lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
 
 @[simp]
 lemma klDiv_zero_left [IsFiniteMeasure ν] : klDiv 0 ν = ν univ := by
-  convert klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
+  convert! klDiv_of_ac_of_integrable (Measure.AbsolutelyContinuous.zero _) integrable_zero_measure
   simp
 
 @[simp]
@@ -107,7 +107,7 @@ section AlternativeFormulas
 
 variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
@@ -115,7 +115,7 @@ lemma klDiv_eq_integral_klFun :
   rw [klDiv_def]
   exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_lintegral_klFun :
     klDiv μ ν = if μ ≪ ν then ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν else ∞ := by
   rw [klDiv_eq_integral_klFun]
@@ -333,7 +333,7 @@ lemma integral_llr_add_mul_log_nonneg (hμν : μ ≪ ν) (h_int : Integrable (l
     exact h_int.sub (integrable_const _)
   rw [integral_congr_ae (llr_smul_right hμν (ν univ)⁻¹ (by simp) (by simp [hν])),
     integral_sub h_int (integrable_const _), integral_const, smul_eq_mul] at h
-  simpa using h
+  simpa using! h
 
 lemma mul_klFun_le_toReal_klDiv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ν.real univ * klFun (μ.real univ / ν.real univ) ≤ (klDiv μ ν).toReal := by

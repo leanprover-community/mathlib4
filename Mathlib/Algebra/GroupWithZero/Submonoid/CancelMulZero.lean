@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 # Submagmas with zero inherit cancellations
 -/
 
-@[expose] public section
+public section
 
 namespace MulZeroMemClass
 

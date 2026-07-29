@@ -33,7 +33,7 @@ infixr:25 " ↪ " => Embedding
 
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  coe_injective' f g h := by { cases f; cases g; congr }
+  coe_injective f g h := by { cases f; cases g; congr }
 
 instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   injective' := Embedding.inj'
@@ -135,6 +135,18 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 @[norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
+@[simp]
+theorem refl_trans {α β : Type*} (f : α ↪ β) : .trans (.refl α) f = f :=
+  rfl
+
+@[simp]
+theorem trans_refl {α β : Type*} (f : α ↪ β) : .trans f (.refl β) = f :=
+  rfl
+
+theorem trans_assoc {α β γ δ : Type*} (f : α ↪ β) (g : β ↪ γ) (h : γ ↪ δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
+
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp] lemma mk_id {α} : mk id injective_id = .refl α := rfl
@@ -163,6 +175,15 @@ protected noncomputable def ofSurjective {α β} (f : β → α) (hf : Surjectiv
 /-- Convert a surjective `Embedding` to an `Equiv` -/
 protected noncomputable def equivOfSurjective {α β} (f : α ↪ β) (hf : Surjective f) : α ≃ β :=
   Equiv.ofBijective f ⟨f.injective, hf⟩
+
+/-- Surjective embeddings are equivalent to equivalences. -/
+@[simps]
+noncomputable def _root_.Equiv.embeddingSurjectiveEquiv {α β} :
+    { f : α ↪ β // Surjective f } ≃ (α ≃ β) where
+  toFun f := f.val.equivOfSurjective f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 /-- There is always an embedding from an empty type. -/
 protected def ofIsEmpty {α β} [IsEmpty α] : α ↪ β :=

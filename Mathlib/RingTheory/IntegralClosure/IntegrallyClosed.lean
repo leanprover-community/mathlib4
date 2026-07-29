@@ -54,7 +54,7 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 `IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial
@@ -83,7 +83,7 @@ theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective
     IsIntegrallyClosedIn R B → IsIntegrallyClosedIn R A := by
   rintro ⟨inj, cl⟩
   refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx => ?_, ?_⟩
-  · convert inj
+  · convert! inj
     aesop
   · obtain ⟨y, fx_eq⟩ := cl.mp ((isIntegral_algHom_iff f hf).mpr hx)
     aesop
@@ -282,7 +282,7 @@ lemma of_isIntegrallyClosedIn
     (FaithfulSMul.algebraMap_injective R K)
   rw [isIntegrallyClosed_iff (K := FractionRing R)]
   intro x hx
-  convert (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
+  convert! (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
@@ -375,11 +375,12 @@ section localization
 
 variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
     (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
   let K := FractionRing R
   let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
-  letI := g.toAlgebra
+  let := g.toAlgebra
   have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K

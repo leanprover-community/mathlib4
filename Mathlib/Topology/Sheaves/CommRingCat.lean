@@ -57,7 +57,7 @@ open AlgebraicGeometry in
 Although unification hints help with applying `TopCat.Presheaf.restrictOpenCommRingCat`,
 so it can be safely de-specialized, this lemma needs to be kept to ensure rewrites go right.
 -/
-lemma restrictOpenCommRingCat_apply {X : TopCat}
+lemma restrictOpenCommRingCat_apply {X : TopCat.{w}}
     {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
     (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
     f |_ U = F.map (homOfLE e).op f :=
@@ -277,7 +277,7 @@ instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U
   (F.germ U x.1 x.2).hom.toAlgebra
 
 @[simp]
-theorem stalk_open_algebraMap {X : TopCat} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+theorem stalk_open_algebraMap {X : TopCat.{v}} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     algebraMap (F.obj <| op U) (F.stalk x) = (F.germ U x.1 x.2).hom :=
   rfl
 
@@ -298,7 +298,7 @@ variable (F : X.Sheaf C) (U V : Opens X)
 open CategoryTheory.Limits
 
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
-def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
+def objSupIsoProdEqLocus {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X) :
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
     -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
@@ -308,28 +308,32 @@ def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) 
         (RingHom.snd (F.obj.obj <| op U) (F.obj.obj <| op V))) :=
   (F.isLimitPullbackCone U V).conePointUniqueUpToIso (CommRingCat.pullbackConeIsLimit _ _)
 
-theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+theorem objSupIsoProdEqLocus_hom_fst {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
+    (x) :
     ((F.objSupIsoProdEqLocus U V).hom x).1.fst = F.1.map (homOfLE le_sup_left).op x :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
     x
 
-theorem objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+theorem objSupIsoProdEqLocus_hom_snd {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
+    (x) :
     ((F.objSupIsoProdEqLocus U V).hom x).1.snd = F.1.map (homOfLE le_sup_right).op x :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
     x
 
-theorem objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+theorem objSupIsoProdEqLocus_inv_fst {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
+    (x) :
     F.1.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.1 :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
     x
 
-theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
+theorem objSupIsoProdEqLocus_inv_snd {X : TopCat.{w}} (F : X.Sheaf CommRingCat) (U V : Opens X)
+    (x) :
     F.1.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.2 :=
   ConcreteCategory.congr_hom
     ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp

@@ -16,7 +16,7 @@ the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special ca
 `LightProfinite`.
 -/
 
-@[expose] public section
+public section
 
 namespace LightProfinite
 

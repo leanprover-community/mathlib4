@@ -16,7 +16,7 @@ is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -83,6 +83,7 @@ theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
   ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- see Note [lower instance priority]
 /-- A complete normed field is complete as a metric space, as Cauchy sequences converge by
 assumption and this suffices to characterize completeness. -/

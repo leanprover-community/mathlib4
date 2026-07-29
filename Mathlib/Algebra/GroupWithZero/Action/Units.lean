@@ -88,7 +88,7 @@ lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower 
     (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y :=
   SemiconjBy.smul_left_iff₀ ha
 
-/-- Right scalar multiplication as an order isomorphism. -/
+/-- Right scalar multiplication as a bijection. -/
 @[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
   toFun b := a • b
   invFun b := a⁻¹ • b

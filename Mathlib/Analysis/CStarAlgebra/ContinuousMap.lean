@@ -15,7 +15,7 @@ We place these here because, for reasons related to the import hierarchy, they c
 earlier files.
 -/
 
-@[expose] public section
+public section
 
 variable {α A : Type*}
 noncomputable section

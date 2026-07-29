@@ -21,7 +21,7 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -63,7 +63,7 @@ namespace Finite.Set
 
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
   classical
-  haveI := Fintype.ofFinite (PLift ι)
+  have := Fintype.ofFinite (PLift ι)
   infer_instance
 
 instance finite_replacement [Finite α] (f : α → β) :

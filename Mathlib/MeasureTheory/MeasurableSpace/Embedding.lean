@@ -106,9 +106,9 @@ theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
     (hg' : Measurable g') : Measurable (extend f g g') := by
   refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
-  · rw [restrict_extend_range]
-    simpa only [rangeSplitting] using hg.comp hf.measurable_rangeSplitting
-  · rw [restrict_extend_compl_range]
+  · rw [domRestrict_extend_range]
+    simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
+  · rw [domRestrict_extend_compl_range]
     exact hg'.comp measurable_subtype_coe
 
 theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (hg : Measurable g)
@@ -142,15 +142,16 @@ variable {α₁ α₂ α₃ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
 lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
     (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
-  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
+  convert! (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
     (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hs₁ : MeasurableSet (i₁ ⁻¹' s))
     (hs₂ : MeasurableSet (i₂ ⁻¹' s)) (hs₃ : MeasurableSet (i₃ ⁻¹' s)) : MeasurableSet s := by
-  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
-    (hi₃.measurableSet_image' hs₃)
+  convert!
+    (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
+      (hi₃.measurableSet_image' hs₃)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma Measurable.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
@@ -292,6 +293,12 @@ theorem self_trans_symm (e : α ≃ᵐ β) : e.trans e.symm = refl α :=
 theorem trans_symm (e₁ : α ≃ᵐ β) (e₂ : β ≃ᵐ γ) : (e₁.trans e₂).symm = e₂.symm.trans (e₁.symm) :=
   rfl
 
+theorem symm_apply_eq (e : α ≃ᵐ β) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃ᵐ β) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
 protected theorem surjective (e : α ≃ᵐ β) : Surjective e :=
   e.toEquiv.surjective
 
@@ -302,7 +309,7 @@ protected theorem injective (e : α ≃ᵐ β) : Injective e :=
   e.toEquiv.injective
 
 @[simp]
-theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.toEquiv.symm_preimage_preimage s
 
 theorem image_eq_preimage_symm (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
@@ -318,11 +325,11 @@ lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
   rw [← coe_toEquiv, Equiv.eq_image_iff_symm_image_eq, coe_toEquiv_symm]
 
 @[simp]
-lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' (e ⁻¹' s) = s := by
+lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' e ⁻¹' s = s := by
   rw [← coe_toEquiv, Equiv.image_preimage]
 
 @[simp]
-lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := by
+lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' e '' s = s := by
   rw [← coe_toEquiv, Equiv.preimage_image]
 
 @[simp]
@@ -375,6 +382,7 @@ def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ
 def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
@@ -499,6 +507,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
@@ -563,7 +572,7 @@ def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpac
   measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j => by simpa using! (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -574,6 +583,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
     (∀ i, π i) ≃ᵐ (∀ i : Subtype p, π i) × ∀ i : { i // ¬p i }, π i where
   toEquiv := .piEquivPiSubtypeProd p π
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
@@ -635,13 +645,27 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
-/-- `setOf` as a `MeasurableEquiv`. -/
+set_option backward.isDefEq.respectTransparency.types false in
+/-- `Set.ofPred` as a `MeasurableEquiv`. -/
 @[simps]
-protected def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
+protected def setOfPred {α : Type*} : (α → Prop) ≃ᵐ Set α where
   toFun p := {a | p a}
   invFun s a := a ∈ s
 
-@[simp, norm_cast] lemma coe_setOf {α : Type*} : ⇑MeasurableEquiv.setOf = setOf (α := α) := rfl
+@[deprecated (since := "2026-07-09")]
+protected alias setOf := MeasurableEquiv.setOfPred
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_apply := MeasurableEquiv.setOfPred_apply
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_symm_apply := MeasurableEquiv.setOfPred_symm_apply
+
+@[simp, norm_cast] lemma coe_setOfPred {α : Type*} :
+    ⇑MeasurableEquiv.setOfPred = Set.ofPred (α := α) := rfl
+
+@[deprecated (since := "2026-07-09")]
+alias coe_setOf := coe_setOfPred
 
 end MeasurableEquiv
 
@@ -744,6 +768,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   apply hx
   exact ⟨y, h, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
@@ -759,13 +784,13 @@ lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
 /-- The left-inverse of a `MeasurableEmbedding` -/
 protected noncomputable
 def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
-  open Classical in
+  open scoped Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
 @[fun_prop]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
-  open Classical in
+  open scoped Classical in
   Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
 
 lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by

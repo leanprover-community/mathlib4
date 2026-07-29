@@ -93,6 +93,13 @@ theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
       ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
   congr_app (NatTrans.naturality_app α X₂ f) X₃
 
+@[reassoc]
+lemma naturality_inv {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)]
+    [IsIso (α.app Y)] :
+    inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
+  rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
+  exact α.naturality f
+
 /-- A natural transformation is an epimorphism if each component is. -/
 @[to_dual /-- A natural transformation is a monomorphism if each component is. -/]
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
@@ -113,16 +120,19 @@ def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I wh
 
 -- Horizontal composition has two possible definitions that are dual to each other,
 -- and we need to prove to `to_dual` that these are equivalent.
+set_option linter.auxLemma false in
 attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
 to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 
@@ -140,7 +150,7 @@ end NatTrans
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
-@[simps (attr := grind =) obj_obj obj_map]
+@[implicit_reducible, simps (attr := grind =) obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
     { obj := fun j => (F.obj j).obj k,
@@ -154,7 +164,7 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def leftUnitor (F : C ⥤ D) :
     𝟭 C ⋙ F ≅ F where
   hom := { app := fun X => 𝟙 (F.obj X) }
@@ -162,7 +172,7 @@ def leftUnitor (F : C ⥤ D) :
 
 /-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def rightUnitor (F : C ⥤ D) :
     F ⋙ 𝟭 D ≅ F where
   hom := { app := fun X => 𝟙 (F.obj X) }
@@ -173,7 +183,7 @@ def rightUnitor (F : C ⥤ D) :
 (In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
 and it's usually best to insert explicit associators.)
 -/
-@[simps]
+@[implicit_reducible, simps]
 def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
   hom := { app := fun _ => 𝟙 _ }
@@ -186,7 +196,7 @@ end Functor
 
 variable (C D E) in
 /-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
-@[simps]
+@[implicit_reducible, simps]
 def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
@@ -209,7 +219,6 @@ end Iso
 
 /-- The natural transformation `G.flip.obj Y ⟶ G'.flip.obj Y` induced by
 a natural transformation `τ : G ⟶ G'` between bifunctors. -/
-@[simps!]
 abbrev NatTrans.flipApp {G G' : C ⥤ D ⥤ E} (τ : G ⟶ G') (Y : D) :
     G.flip.obj Y ⟶ G'.flip.obj Y :=
   ((flipFunctor _ _ _).map τ).app Y

@@ -17,7 +17,7 @@ This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and acti
 type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
-provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+provide the `NSMul.nsmul` and `ZSMul.zsmul` fields.
 
 ## Notation
 
@@ -29,7 +29,7 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

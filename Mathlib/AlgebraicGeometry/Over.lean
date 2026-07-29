@@ -20,7 +20,7 @@ We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace AlgebraicGeometry.Scheme
 

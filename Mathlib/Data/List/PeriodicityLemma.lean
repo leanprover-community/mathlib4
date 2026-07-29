@@ -6,7 +6,7 @@ Authors: Štěpán Holub
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-! # Periods of words (Lists)

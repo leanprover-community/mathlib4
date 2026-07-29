@@ -55,9 +55,9 @@ change the induced topology.
 
 * [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
 * [Bo Stenström, *Rings of Quotients*][stenstrom1975]
-* [nLab: Uniform filter](<https://ncatlab.org/nlab/show/uniform+filter>)
-* [nLab: Gabriel filter](<https://ncatlab.org/nlab/show/Gabriel+filter>)
-* [nLab: Gabriel composition](<https://ncatlab.org/nlab/show/Gabriel+composition+of+filters>)
+* [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
+* [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter)
+* [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters)
 
 ## Tags
 
@@ -157,7 +157,7 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     exact ⟨K, hK, hIK.mono_left hIJ⟩
 
 /-- The Gabriel composition of ideal filters `F` and `G`.
-See [nLab: Gabriel composition](<https://ncatlab.org/nlab/show/Gabriel+composition+of+filters>). -/
+See [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters). -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
   (isPFilter_gabrielComposition F G).toPFilter
 
@@ -165,7 +165,7 @@ def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
 scoped infixl:70 " • " => gabrielComposition
 
 /-- An ideal filter is Gabriel if it satisfies `IsUniform` and axiom T4.
-See [nLab: Gabriel filter](<https://ncatlab.org/nlab/show/Gabriel+filter>). -/
+See [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter). -/
 class IsGabriel (F : IdealFilter A) extends F.IsUniform where
   /-- **Axiom T4.** See [stenstrom1975]. -/
   gabriel_closed (I : Ideal A) (h : ∃ J ∈ F, ∀ x ∈ J, I.colon {x} ∈ F) : I ∈ F

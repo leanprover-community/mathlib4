@@ -17,30 +17,43 @@ as `scoped` instances. These are scoped because they create non-defeq instance d
 `K = L`.
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField.LiesOver
 
-open UniformSpace.Completion InfinitePlace
+open InfinitePlace InfinitePlace.Completion
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L}
-variable [w.1.LiesOver v.1]
+variable [w.LiesOver v]
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
+lies over `v`. -/
+noncomputable def completionMap : v.Completion →+* w.Completion :=
+  ((Completion.equiv w).symm.toRingHom.comp
+    (LiesOver.isometry_algebraMap w v).mapRingHom).comp (Completion.equiv v).toRingHom
+
+theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) :=
+  (continuous_ofCompletion w).comp <|
+    UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
+
+theorem completionMap_coe (x : WithAbs v.1) :
+    completionMap (x : v.Completion) = ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) :
+      w.Completion) :=
+  Completion.ext <| (LiesOver.isometry_algebraMap w v).mapRingHom_coe x
+
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
-noncomputable scoped instance : Algebra v.Completion w.Completion :=
-  (LiesOver.isometry_algebraMap w v).mapRingHom.toAlgebra
+noncomputable scoped instance : Algebra v.Completion w.Completion := completionMap.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 scoped instance : IsScalarTower K v.Completion w.Completion :=
   .of_algebraMap_eq fun x ↦ by
-    simp_rw [RingHom.algebraMap_toAlgebra, UniformSpace.Completion.algebraMap_def,
-      Isometry.mapRingHom_coe]
+    have h : algebraMap K v.Completion x = ((WithAbs.toAbs v.1 x : WithAbs v.1) : v.Completion) :=
+      rfl
+    rw [RingHom.algebraMap_toAlgebra, h, completionMap_coe]
+    apply Completion.ext
+    rw [Completion.algebraMap_toCompletion, UniformSpace.Completion.algebraMap_def]
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 scoped instance : ContinuousSMul v.Completion w.Completion where
-  continuous_smul := (UniformSpace.Completion.continuous_map.comp continuous_fst).mul
-    (Continuous.comp continuous_id continuous_snd)
+  continuous_smul := (continuous_completionMap.comp continuous_fst).mul continuous_snd
 
 end NumberField.LiesOver

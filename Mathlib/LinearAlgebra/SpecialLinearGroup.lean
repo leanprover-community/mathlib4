@@ -70,6 +70,7 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
@@ -226,6 +227,20 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
     exact v.prop
   · intro hu
     refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+
+/-- The natural action of `SpecialLinearGroup R V` on `V`. -/
+instance : DistribMulAction (SpecialLinearGroup R V) V :=
+  DistribMulAction.compHom  _ (SpecialLinearGroup.toLinearEquiv)
+
+theorem _root_.SpecialLinearGroup.smul_def (g : SpecialLinearGroup R V) (v : V) :
+    g • v = g.toLinearEquiv • v := rfl
+
+theorem _root_.SpecialLinearGroup.toLinearEquiv_eq_coe (g : SpecialLinearGroup R V) :
+    g.toLinearEquiv = (g : V ≃ₗ[R] V) := rfl
+
+instance : SMulCommClass (SpecialLinearGroup R V) R V where
+  smul_comm g a v := by
+    simp [SpecialLinearGroup.smul_def]
 
 section baseChange
 
@@ -405,7 +420,7 @@ noncomputable def centerEquivRootsOfUnity_invFun
       simpa [← Subtype.val_inj, ← Units.val_inj]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 /-- The isomorphism between the roots of unity and the center of the special linear group. -/
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*
@@ -509,6 +524,7 @@ theorem centerEquivRootsOfUnity_apply_of_finrank_le_one
   apply rootsOfUnity.eq_one
   rw [Nat.max_eq_right d1]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem centerEquivRootsOfUnity_symm_apply
     (r : rootsOfUnity (max (Module.finrank R V) 1) R) :
     (centerEquivRootsOfUnity.symm r : V →ₗ[R] V) = r • LinearMap.id := by
@@ -532,7 +548,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   nontriviality R
   by_cases hV : Subsingleton V
-  · convert Eq.refl (1 : Rˣ) <;>
+  · convert! Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simp only [hV, sup_eq_right, zero_le_one, ← Module.finrank_eq_card_basis b]
@@ -556,7 +572,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
-    simp only [smul_def, Units.smul_def] at this
+    simp only [Subgroup.smul_def, Units.smul_def] at this
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,
