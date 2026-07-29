@@ -803,6 +803,37 @@ info: ContMDiff ((modelWithCornersEuclideanHalfSpace 2).prod (modelWithCornersEu
 
 end EuclideanSpace
 
+/-! Inferring a model with corners when the model is a variable in the local context, but
+a specific model: basic versions (such as `𝓘(𝕜, E)`) are tested in `Basic.lean`; this also works
+for Euclidean space, half-space or quadrants.
+-/
+section
+
+variable {X Y : Type*} {n : ℕ} [NeZero n] [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+
+variable [ChartedSpace (EuclideanHalfSpace n) X] [ChartedSpace ℝ Y] in
+/--
+info: MDifferentiable (modelWithCornersEuclideanHalfSpace n) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
+variable [ChartedSpace (EuclideanHalfSpace n) X] [ChartedSpace (EuclideanQuadrant n) Y] in
+/--
+info: MDifferentiable (modelWithCornersEuclideanHalfSpace n) (modelWithCornersEuclideanQuadrant n) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
+variable [ChartedSpace ℝ X] [ChartedSpace (EuclideanQuadrant n) Y] in
+/--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersEuclideanQuadrant n) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
+end
+
 -- See `NotationSphere.lean` for tests for the elaborators for spheres.
 
 section UpperHalfPlane
