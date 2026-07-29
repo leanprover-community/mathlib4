@@ -82,6 +82,7 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (hf : PreErgodic f μ) (c : R) : PreErgodic f (c • μ) where
   aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zero_measure (f : α → α) : @PreErgodic α m f 0 where
   aeconst_set _ _ _ := by simp
 
@@ -97,9 +98,6 @@ theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf 
     rw [← hg.aeconst_preimage hs₀.nullMeasurableSet]
     apply hf.aeconst_set (hg.measurable hs₀)
     rw [← preimage_comp, h_comm.comp_eq, preimage_comp, hs₁]
-
-@[deprecated (since := "2025-11-19")]
-alias preErgodic_of_preErgodic_conjugate := preErgodic_of_preErgodic_semiconj
 
 theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
     {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
@@ -179,7 +177,7 @@ theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : NullMeasur
 theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurableSet s μ)
     (hs' : f '' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace hs' : s ≤ᵐ[μ] f ⁻¹' s :=
-    (HasSubset.Subset.eventuallyLE (subset_preimage_image f s)).trans
+    (LE.le.eventuallyLE (subset_preimage_image f s)).trans
       (hf.quasiMeasurePreserving.preimage_mono_ae hs')
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
 

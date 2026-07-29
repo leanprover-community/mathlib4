@@ -54,6 +54,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
     rw [Scheme.Hom.stalkMap_comp]
     exact (f.stalkMap_surjective x).comp (g.stalkMap_surjective (f x))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
     [SurjectiveOnStalks g] : SurjectiveOnStalks (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance

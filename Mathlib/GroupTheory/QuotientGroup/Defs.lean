@@ -278,6 +278,12 @@ theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
   rw [← congrArg MonoidHom.ker (lift_comp_mk' N φ HN), ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (mk'_surjective N)]
 
+@[to_additive]
+lemma injective_lift_iff (φ : G →* M) (HN : N ≤ φ.ker) :
+    Function.Injective (QuotientGroup.lift N φ HN) ↔ N = φ.ker := by
+  rw [← MonoidHom.ker_eq_bot_iff, QuotientGroup.ker_lift, Subgroup.map_eq_bot_iff]
+  grind [QuotientGroup.ker_mk']
+
 /-- A surjective group homomorphism `φ : G →* H` with `N = ker(φ)` descends (i.e. `lift`s) to a
 group isomorphism `G/N ≃* H`. -/
 @[to_additive /-- A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends
