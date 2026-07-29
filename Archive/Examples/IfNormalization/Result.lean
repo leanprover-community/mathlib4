@@ -3,6 +3,8 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
+
 public import Archive.Examples.IfNormalization.Statement
 public import Mathlib.Data.List.AList
 public import Mathlib.Tactic.Recall
@@ -12,6 +14,8 @@ public import Mathlib.Tactic.Recall
 
 See `Statement.lean` for background.
 -/
+
+@[expose] public section
 
 local macro "◾" : tactic => `(tactic| aesop)
 local macro "◾" : term => `(term| by aesop)
