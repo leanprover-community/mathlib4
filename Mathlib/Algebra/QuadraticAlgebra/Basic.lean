@@ -357,6 +357,16 @@ theorem algebraMap_trace_eq_add_star (z : QuadraticAlgebra R a b) :
   simp only [trace_apply, algebraMap_re, algebraMap_im, re_add, im_add, re_star, im_star] <;>
   ring
 
+/-- The conjugate of `z` is `trace z - z`. -/
+theorem star_eq (z : QuadraticAlgebra R a b) :
+    star z = algebraMap R (QuadraticAlgebra R a b) (trace z) - z := by
+  rw [algebraMap_trace_eq_add_star]; ring
+
+/-- `z - star z` is a multiple of the different `ω - star ω`. -/
+theorem sub_star (z : QuadraticAlgebra R a b) :
+    z - star z = z.im • (ω - star ω) := by
+  ext <;> simp <;> ring
+
 /-- Every element of a quadratic algebra satisfies its characteristic equation. -/
 theorem sq_sub_trace_smul_add_norm_eq_zero (z : QuadraticAlgebra R a b) :
     z ^ 2 - trace z • z + algebraMap R _ (norm z) = 0 := by

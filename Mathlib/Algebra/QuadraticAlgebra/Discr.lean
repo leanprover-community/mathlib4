@@ -59,6 +59,11 @@ theorem discr_map [CommRing R] (a b u k : R) :
     discr (u ^ 2 * a - u * b * k - k ^ 2) (u * b + 2 * k) = u ^ 2 * discr a b := by
   rw [discr_def, discr_def]; ring
 
+/-- The discriminant is the square of the different `ω - star ω`. -/
+theorem algebraMap_discr [CommRing R] (a b : R) :
+    algebraMap R (QuadraticAlgebra R a b) (discr a b) = (ω - star ω) ^ 2 := by
+  rw [discr_def]; ext <;> simp [sq] <;> ring
+
 -- The `a = 1` case of `Mathlib.Algebra.QuadraticDiscriminant`, reproved to avoid its heavy
 -- transitive import of `Mathlib.Order.Filter.AtTopBot.Field`.
 /-- If `2` is invertible, the polynomial `X ^ 2 - b * X - a` has a root if and only if the
@@ -93,6 +98,28 @@ theorem norm_map_omega (h : IsRegular (f ω).im) :
     norm (f ω) = -a' := by
   simpa [trace_map_omega f h, ← Algebra.algebraMap_eq_smul_one, add_eq_zero_iff_eq_neg,
     ← map_neg] using (smul_omega_sub_eq f).symm
+
+/-- If `(f ω).im` is regular, an algebra map commutes with conjugation. -/
+theorem map_star (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
+    f (star x) = star (f x) := by
+  have hs : ∀ {c d : R} (r : R) (y : QuadraticAlgebra R c d), star (r • y) = r • star y := by
+    intro c d r y; ext <;> simp only [re_star, im_star, re_smul, im_smul, smul_eq_mul] <;> ring
+  have ha : ∀ {c d : R} (r : R),
+      star (algebraMap R (QuadraticAlgebra R c d) r) = algebraMap R _ r := by
+    intro c d r; ext <;> simp
+  have homega : f (star ω) = star (f ω) := by
+    rw [star_eq, map_sub, AlgHom.commutes, star_eq (f ω), trace_map_omega f h, trace_omega]
+  rw [← mk_eta x, mk_eq_add_smul_omega]
+  simp only [star_add, ha, hs, map_add, map_smul, AlgHom.commutes, homega]
+
+/-- If `(f ω).im` is regular, an algebra map preserves traces. -/
+theorem trace_map (h : IsRegular (f ω).im) (x : QuadraticAlgebra R a' b') :
+    trace (f x) = trace x := by
+  have key : algebraMap R (QuadraticAlgebra R a b) (trace (f x)) =
+      algebraMap R (QuadraticAlgebra R a b) (trace x) := by
+    rw [algebraMap_trace_eq_add_star, ← AlgHom.commutes f (trace x),
+      algebraMap_trace_eq_add_star, map_add, map_star f h]
+  simpa using congr_arg re key
 
 /-- The transformation law in the case when `(f ω).im` is regular. -/
 theorem discr_eq_im_sq_mul_discr (h : IsRegular (f ω).im) :
