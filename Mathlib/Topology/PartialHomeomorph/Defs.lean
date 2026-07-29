@@ -45,8 +45,8 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {X X' : Type*} {Y Y' : Type*} [TopologicalSpace X] [TopologicalSpace X']
-  [TopologicalSpace Y] [TopologicalSpace Y']
+variable {X X' : Type*} {Y Y' : Type*}
+  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
 
 /-- Partial homeomorphisms, defined on subsets of the space -/
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]

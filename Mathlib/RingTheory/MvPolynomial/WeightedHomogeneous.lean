@@ -624,7 +624,8 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M] {w : σ → M}
+variable [AddCommMonoid M] [LinearOrder M] [OrderBot M] [CanonicallyOrderedAdd M]
+  {w : σ → M}
 
 /-- A multivariate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/

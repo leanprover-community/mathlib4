@@ -702,7 +702,8 @@ theorem ofDual_sup' [SemilatticeInf α] {s : Finset ι} (hs : s.Nonempty) (f : �
   rfl
 
 section DistribLattice
-variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty) {f : ι → α} {a : α}
+variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty)
+  {f : ι → α} {a : α}
 
 @[to_dual]
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :

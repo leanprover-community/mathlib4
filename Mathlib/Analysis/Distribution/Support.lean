@@ -261,9 +261,11 @@ end TemperedDistribution
 
 open TopologicalSpace Distributions
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E} {F : Type*}
-  [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul ℝ
-  F] {n : ℕ∞}
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+  {n : ℕ∞}
 
 variable {f : 𝓓'(Ω, F)} {s : Set E}
 

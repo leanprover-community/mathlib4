@@ -28,8 +28,9 @@ open MeasureTheory ProbabilityTheory
 
 open scoped ENNReal
 
-variable {X Y Z T : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y} {mZ : MeasurableSpace
-  Z} {mT : MeasurableSpace T} {κ : Kernel X Y} {η : Kernel Z T}
+variable {X Y Z T : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
+  {mZ : MeasurableSpace Z} {mT : MeasurableSpace T}
+  {κ : Kernel X Y} {η : Kernel Z T}
 
 namespace ProbabilityTheory.Kernel
 
@@ -73,8 +74,8 @@ lemma swap_parallelComp : swap Y T ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ s
 
 section ParallelComp
 
-variable {X' Y' Z' : Type*} {mX' : MeasurableSpace X'} {mY' : MeasurableSpace Y'} {mZ' :
-  MeasurableSpace Z'}
+variable {X' Y' Z' : Type*} {mX' : MeasurableSpace X'} {mY' : MeasurableSpace Y'}
+  {mZ' : MeasurableSpace Z'}
 
 lemma parallelComp_id_left_comp_parallelComp
     {η : Kernel X' Z} [IsSFiniteKernel η] {ξ : Kernel Z T} [IsSFiniteKernel ξ] :

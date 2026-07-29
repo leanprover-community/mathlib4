@@ -75,10 +75,12 @@ end
 
 section
 
-variable {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l) {i' j' k' l' : ι} (f₁' : i' ⟶ j')
-  (f₂' : j' ⟶ k') (f₃' : k' ⟶ l') {i'' j'' k'' l'' : ι} (f₁'' : i'' ⟶ j'') (f₂'' : j'' ⟶ k'')
-  (f₃'' : k'' ⟶ l'') (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₃ f₁' f₂' f₃' ⟶ mk₃ f₁'' f₂''
-  f₃'') (n₀ n₁ n₂ : ℤ)
+variable {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
+  {i' j' k' l' : ι} (f₁' : i' ⟶ j') (f₂' : j' ⟶ k') (f₃' : k' ⟶ l')
+  {i'' j'' k'' l'' : ι} (f₁'' : i'' ⟶ j'') (f₂'' : j'' ⟶ k'') (f₃'' : k'' ⟶ l'')
+  (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃')
+  (β : mk₃ f₁' f₂' f₃' ⟶ mk₃ f₁'' f₂'' f₃'')
+  (n₀ n₁ n₂ : ℤ)
 
 /-- The functoriality of `shortComplex` with respect to morphisms
 in `ComposableArrows ι 3`. -/

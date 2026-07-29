@@ -30,13 +30,15 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι ι' : Type*} [Category* C] [Abelian C] [Category* ι] [Preorder ι'] (X :
-  SpectralObject C ι) (X' : SpectralObject C ι')
+variable {C ι ι' : Type*} [Category* C] [Abelian C] [Category* ι] [Preorder ι']
+  (X : SpectralObject C ι) (X' : SpectralObject C ι')
 
 section
 
-variable {i₀' i₀ i₁ i₂ i₃ i₃' : ι} (f₁ : i₀ ⟶ i₁) (f₁' : i₀' ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
-  (f₃' : i₂ ⟶ i₃') (n₀ n₁ n₂ n₃ : ℤ)
+variable
+  {i₀' i₀ i₁ i₂ i₃ i₃' : ι} (f₁ : i₀ ⟶ i₁)
+  (f₁' : i₀' ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃) (f₃' : i₂ ⟶ i₃')
+  (n₀ n₁ n₂ n₃ : ℤ)
 
 lemma epi_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃') (n₀ n₁ n₂ n₃ : ℤ)
     (hα₀ : α.app 0 = 𝟙 _ := by cat_disch) (hα₁ : α.app 1 = 𝟙 _ := by cat_disch)
@@ -59,9 +61,11 @@ end
 
 section
 
-variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃) (f₄ : i₃ ⟶ i₄) (f₅ :
-  i₄ ⟶ i₅) (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃) (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄) (n₀ n₁ n₂
-  n₃ : ℤ)
+variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
+  (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
+  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
+  (n₀ n₁ n₂ n₃ : ℤ)
 
 @[reassoc (attr := simp)]
 lemma d_map_fourδ₄Toδ₃ (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)
@@ -130,8 +134,8 @@ end
 
 section
 
-variable (i₀ i₁ i₂ i₃ i₄ i₅ : ι') (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤
-  i₄) (hi₄₅ : i₄ ≤ i₅)
+variable (i₀ i₁ i₂ i₃ i₄ i₅ : ι') (hi₀₁ : i₀ ≤ i₁)
+  (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
 /-- For a spectral object indexed by a preorder, this is the map
 `E^{n₁}(i₀ ≤ i₂ ≤ i₃ ≤ i₄) ⟶ E^{n₁}(i₁ ≤ i₂ ≤ i₃ ≤ i₄)`. -/
@@ -239,7 +243,8 @@ end
 
 section
 
-variable (i₀ i₁ i₂ i₃ i₄ : ι') (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄)
+variable (i₀ i₁ i₂ i₃ i₄ : ι') (hi₀₁ : i₀ ≤ i₁)
+  (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄)
 
 /-- For a spectral object indexed by a preorder, this is the map
 `E^{n₁}(i₀ ≤ i₁ ≤ i₃ ≤ i₄) ⟶ E^{n₁}(i₀ ≤ i₂ ≤ i₃ ≤ i₄)`. -/

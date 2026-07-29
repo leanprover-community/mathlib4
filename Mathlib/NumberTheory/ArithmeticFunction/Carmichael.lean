@@ -39,7 +39,6 @@ arithmetic functions, totient
 
 open Nat Monoid
 
-
 namespace ArithmeticFunction
 
 /-- `λ` is the Carmichael function, also known as the reduced totient function,

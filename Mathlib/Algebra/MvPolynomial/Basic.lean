@@ -984,8 +984,8 @@ section coeffsIn
 variable {R S σ : Type*} [CommSemiring R] [CommSemiring S]
 
 section Module
-variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S} {n
-  : ℕ}
+variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i : σ →₀ ℕ} {x : S}
+  {n : ℕ}
 
 variable (σ M) in
 /-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/

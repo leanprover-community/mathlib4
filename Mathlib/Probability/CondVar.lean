@@ -28,8 +28,8 @@ open MeasureTheory Filter
 open scoped ENNReal
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω} {s
-  : Set Ω}
+variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
+  {s : Set Ω}
 
 variable (m X μ) in
 /-- Conditional variance of a real-valued random variable. It is defined as `0` if any one of the

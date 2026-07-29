@@ -701,8 +701,8 @@ end LinearHom
 
 section
 
-variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*} [AddCommMonoid A] [Module k A] (ρ
-  : Representation k G A)
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A : Type*}
+  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
 
 open Finsupp
 

@@ -35,8 +35,8 @@ namespace extend
 
 section HomologyData
 
-variable {i j k : ι} {i' j' k' : ι'} (hj' : e.f j = j') (hi : c.prev j = i) (hi' : c'.prev j' =
-  i') (hk : c.next j = k) (hk' : c'.next j' = k')
+variable {i j k : ι} {i' j' k' : ι'} (hj' : e.f j = j')
+  (hi : c.prev j = i) (hi' : c'.prev j' = i') (hk : c.next j = k) (hk' : c'.next j' = k')
 
 include hk hk' in
 lemma comp_d_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ K.X j) :
@@ -306,8 +306,8 @@ lemma extend_exactAt (j' : ι') (hj' : ∀ j, e.f j ≠ j') :
 
 section
 
-variable {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] [L.HasHomology j] [(K.extend
-  e).HasHomology j'] [(L.extend e).HasHomology j']
+variable {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] [L.HasHomology j]
+  [(K.extend e).HasHomology j'] [(L.extend e).HasHomology j']
 
 /-- The isomorphism `(K.extend e).cycles j' ≅ K.cycles j` when `e.f j = j'`. -/
 noncomputable def extendCyclesIso :

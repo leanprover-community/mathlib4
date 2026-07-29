@@ -35,7 +35,6 @@ section Equiv
 
 open Finset
 
-
 section SigmaCurry
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type v}

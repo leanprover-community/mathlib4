@@ -29,8 +29,8 @@ open Fin Function Finset Set
 
 universe uR uS uι uι' v v' v₁ v₂ v₃
 
-variable {R : Type uR} {ι : Type uι} {ι' : Type uι'} {n : ℕ} {M : Fin n.succ → Type v} {M₁ : ι →
-  Type v₁} {M₂ : Type v₂} {M' : Type v'}
+variable {R : Type uR} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
+  {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M' : Type v'}
 
 /-!
 ### Currying
@@ -49,8 +49,8 @@ We also register linear equiv versions of these correspondences, in
 
 open MultilinearMap
 
-variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂] [∀ i,
-  Module R (M i)] [Module R M'] [Module R M₂]
+variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂]
+  [∀ i, Module R (M i)] [Module R M'] [Module R M₂]
 
 /-! #### Left currying -/
 
@@ -229,7 +229,8 @@ def MultilinearMap.curryMidLinearEquiv (p : Fin (n + 1)) :
 
 namespace MultilinearMap
 
-variable {R M₂} {N : (ι ⊕ ι') → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+variable {R M₂} {N : (ι ⊕ ι') → Type*}
+  [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map
 on `(fun _ : ι ⊕ ι' => M')` induces a multilinear map on

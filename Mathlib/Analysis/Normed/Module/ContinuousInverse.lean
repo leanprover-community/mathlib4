@@ -198,7 +198,8 @@ end NontriviallyNormedField
 section Ring
 
 -- The next lemmas assume we are working over a ring.
-variable {R E F : Type*} [Ring R] [TopologicalSpace E] [AddCommGroup E] [Module R E]
+variable {R E F : Type*} [Ring R]
+  [TopologicalSpace E] [AddCommGroup E] [Module R E]
   [TopologicalSpace F] [AddCommGroup F] [Module R F] {f : E →L[R] F}
 
 set_option backward.isDefEq.respectTransparency false in

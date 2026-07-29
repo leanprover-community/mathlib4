@@ -373,7 +373,8 @@ theorem HasSubst.comp
     HasSubst (substAlgHom hb a) :=
   MvPowerSeries.IsNilpotent_substAlgHom hb.const ha
 
-variable {a : PowerSeries S} {b : MvPowerSeries υ T} [IsScalarTower R S T]
+variable {a : PowerSeries S} {b : MvPowerSeries υ T}
+  [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
@@ -601,8 +602,8 @@ section
 
 attribute [local instance] DiscreteTopology.instContinuousSMul
 
-variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S} [UniformSpace R] [DiscreteUniformity R]
-  [UniformSpace S] [DiscreteUniformity S]
+variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
+  [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
 
 lemma subst_tsum (hx : Summable x) (ha : HasSubst a) :
     (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by

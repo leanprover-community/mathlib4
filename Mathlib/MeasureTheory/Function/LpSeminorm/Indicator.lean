@@ -31,8 +31,9 @@ variable {f : α → F}
 
 section Indicator
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] {c : ε} {hf :
-  AEStronglyMeasurable f μ} {s : Set α} {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+  {c : ε} {hf : AEStronglyMeasurable f μ} {s : Set α}
+  {ε' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
 
 lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : MeasurableSet s) :
     eLpNorm (s.indicator f) p μ = eLpNorm f p (μ.restrict s) := by

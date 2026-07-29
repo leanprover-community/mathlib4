@@ -20,10 +20,14 @@ namespace HomogeneousIdeal
 
 section arbitrary_grading
 
-variable {A B C σ τ ω ι : Type*} [Semiring A] [Semiring B] [Semiring C] [SetLike σ A] [SetLike τ
-  B] [SetLike ω C] [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
-  [DecidableEq ι] [AddMonoid ι] {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω} [GradedRing 𝒜] [GradedRing ℬ]
-  [GradedRing 𝒞] (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞)
+variable {A B C σ τ ω ι : Type*}
+  [Semiring A] [Semiring B] [Semiring C]
+  [SetLike σ A] [SetLike τ B] [SetLike ω C]
+  [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
+  [DecidableEq ι] [AddMonoid ι]
+  {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
+  [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
+  (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞)
 
 /-- Map a homogeneous ideal along a graded ring homomorphism. The underlying ideal is
 (definitionally) equal to `Ideal.map`. -/
@@ -51,7 +55,8 @@ def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
     rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
     exact I.2 _ ha
 
-variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ} {K : HomogeneousIdeal 𝒞}
+variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ}
+  {K : HomogeneousIdeal 𝒞}
 
 lemma map_le_iff_le_comap : I.map f ≤ J ↔ I ≤ J.comap f := Ideal.map_le_iff_le_comap
 
@@ -87,10 +92,14 @@ end arbitrary_grading
 
 section canonical_grading
 
-variable {A B C σ τ ω ι : Type*} [Semiring A] [Semiring B] [Semiring C] [SetLike σ A] [SetLike τ
-  B] [SetLike ω C] [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
-  [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] {𝒜 : ι → σ} {ℬ : ι
-  → τ} {𝒞 : ι → ω} [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞] {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+variable {A B C σ τ ω ι : Type*}
+  [Semiring A] [Semiring B] [Semiring C]
+  [SetLike σ A] [SetLike τ B] [SetLike ω C]
+  [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
+  [DecidableEq ι] [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
+  [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
+  {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
 
 theorem irrelevant_le_map_comp
     (hf : ℬ₊ ≤ 𝒜₊.map f) (hg : 𝒞₊ ≤ ℬ₊.map g) : 𝒞₊ ≤ 𝒜₊.map (g.comp f) := by

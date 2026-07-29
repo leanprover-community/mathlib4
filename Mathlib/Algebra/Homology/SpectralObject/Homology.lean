@@ -39,9 +39,11 @@ variable (X : SpectralObject C ι)
 
 section ExactSequences
 
-variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃) (f₄ : i₃ ⟶ i₄) (f₅ :
-  i₄ ⟶ i₅) (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃) (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄) (n₀ n₁ n₂
-  n₃ : ℤ)
+variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
+  (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
+  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
+  (n₀ n₁ n₂ n₃ : ℤ)
 
 /-- The exact sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
 of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/

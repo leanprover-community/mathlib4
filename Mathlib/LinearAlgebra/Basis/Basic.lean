@@ -39,8 +39,8 @@ variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M'] (b : Basis ι
-  R M)
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+  (b : Basis ι R M)
 
 section Properties
 

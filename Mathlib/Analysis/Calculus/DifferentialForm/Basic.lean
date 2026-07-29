@@ -50,9 +50,13 @@ where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeri
 open Filter ContinuousAlternatingMap Set
 open scoped Topology
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {n m : ℕ} {r :
-  WithTop ℕ∞} {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
+variable {𝕜 E F G : Type*}
+  [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {n m : ℕ} {r : WithTop ℕ∞}
+  {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
 /-- Exterior derivative of a differential form.
 

@@ -23,8 +23,8 @@ as `BoundedContinuousFunction.toLp`.
 open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
 
-variable {α E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [TopologicalSpace α]
-  [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
+variable {α E : Type*} {m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+  [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
 
 variable (E p μ) in
 /-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a
@@ -132,7 +132,8 @@ end BoundedContinuousFunction
 namespace ContinuousMap
 
 variable [CompactSpace α] [IsFiniteMeasure μ]
-variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
+  [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- The bounded linear map of considering a continuous function on a compact finite-measure
 space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred

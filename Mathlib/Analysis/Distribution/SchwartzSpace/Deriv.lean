@@ -259,7 +259,8 @@ theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)
 
 end one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+  [NormedAddCommGroup D] [NormedSpace ℝ D]
   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
 
 open scoped LineDeriv
@@ -309,8 +310,10 @@ open MeasureTheory Laplacian LineDeriv
 
 /-! ### Integration by parts -/
 
-variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedAddCommGroup F₁] [NormedSpace ℝ
-  F₁] [NormedAddCommGroup F₂] [NormedSpace ℝ F₂] [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
+  [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
   [MeasurableSpace E] {μ : Measure E} [BorelSpace E] [μ.IsAddHaarMeasure]
 
 /-- Integration by parts of Schwartz functions for the Laplacian.

@@ -38,8 +38,10 @@ Fin 2) ↦ E) F`, a bilinear map `E →ₗ[𝕜] E →ₗ[𝕜] F`, or a linear 
 F`. This section provides convenience API to convert between these notions.
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜
-  E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜) in
 /--

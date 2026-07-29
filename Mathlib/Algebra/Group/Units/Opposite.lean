@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-
 open MulOpposite
 
 /-- The units of the opposites are equivalent to the opposites of the units. -/

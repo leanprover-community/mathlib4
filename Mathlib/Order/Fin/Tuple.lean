@@ -22,8 +22,8 @@ assert_not_exists Monoid
 open Function Set
 
 namespace Fin
-variable {n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ) (i
-  : Fin n) (y : α i.succ)
+variable {n : ℕ} {α : Fin (n + 1) → Type*} (x : α 0) (q : ∀ i, α i) (p : ∀ i : Fin n, α i.succ)
+  (i : Fin n) (y : α i.succ)
 
 lemma pi_lex_lt_cons_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ}
     (s : ∀ {i : Fin n.succ}, α i → α i → Prop) :

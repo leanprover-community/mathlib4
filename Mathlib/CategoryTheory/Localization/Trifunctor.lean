@@ -153,16 +153,21 @@ end
 
 section
 
-variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L₂₃ : C₂₃ ⥤ D₂₃) (L : C ⥤
-  D) (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃) (W₁₂ :
-  MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃) [W₁.ContainsIdentities]
-  [W₂.ContainsIdentities] [W₃.ContainsIdentities] [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
-  [L₃.IsLocalization W₃] (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C) (F : C₁ ⥤ C₂₃ ⥤ C) (G₂₃ : C₂ ⥤
-  C₃ ⥤ C₂₃) (iso : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃) (F₁₂' : D₁ ⥤ D₂ ⥤ D₁₂) (G' : D₁₂
-  ⥤ D₃ ⥤ D) (F' : D₁ ⥤ D₂₃ ⥤ D) (G₂₃' : D₂ ⥤ D₃ ⥤ D₂₃) [Lifting₂ L₁ L₂ W₁ W₂ (F₁₂ ⋙
-  (whiskeringRight _ _ _).obj L₁₂) F₁₂'] [Lifting₂ L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj
-  L) G'] [Lifting₂ L₁ L₂₃ W₁ W₂₃ (F ⋙ (whiskeringRight _ _ _).obj L) F'] [Lifting₂ L₂ L₃ W₂ W₃
-  (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃']
+variable
+  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L₂₃ : C₂₃ ⥤ D₂₃) (L : C ⥤ D)
+  (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
+  (W₁₂ : MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃)
+  [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
+  (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C)
+  (F : C₁ ⥤ C₂₃ ⥤ C) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
+  (iso : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
+  (F₁₂' : D₁ ⥤ D₂ ⥤ D₁₂) (G' : D₁₂ ⥤ D₃ ⥤ D)
+  (F' : D₁ ⥤ D₂₃ ⥤ D) (G₂₃' : D₂ ⥤ D₃ ⥤ D₂₃)
+  [Lifting₂ L₁ L₂ W₁ W₂ (F₁₂ ⋙ (whiskeringRight _ _ _).obj L₁₂) F₁₂']
+  [Lifting₂ L₁₂ L₃ W₁₂ W₃ (G ⋙ (whiskeringRight _ _ _).obj L) G']
+  [Lifting₂ L₁ L₂₃ W₁ W₂₃ (F ⋙ (whiskeringRight _ _ _).obj L) F']
+  [Lifting₂ L₂ L₃ W₂ W₃ (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃']
 
 /-- The construction `bifunctorComp₁₂` of a trifunctor by composition of bifunctors
 is compatible with localization. -/

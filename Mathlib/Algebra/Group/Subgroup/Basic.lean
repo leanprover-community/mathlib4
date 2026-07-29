@@ -78,7 +78,6 @@ variable (H K : Subgroup G)
 protected theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
   div_mem_comm_iff
 
-
 open Set
 
 variable {N : Type*} [Group N]
@@ -772,7 +771,6 @@ open Subgroup
 
 section Ker
 
-
 @[to_additive prodMap_comap_prod]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
     (g : G' →* N') (S : Subgroup N) (S' : Subgroup N') :
@@ -1156,7 +1154,8 @@ end ConjClasses
 
 namespace AddSubgroup
 
-variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*) [Group G] [MulAction G M]
+variable {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
+    [Group G] [MulAction G M]
 
 /-- Suppose `G` acts on `M` and `I` is a subgroup of `M`.
 The inertia subgroup of `I` is the subgroup of `G` whose action is trivial mod `I`. -/

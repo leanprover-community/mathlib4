@@ -223,8 +223,11 @@ namespace HomologyData
 
 namespace ofEpiMonoFactorisation
 
-variable {kf : KernelFork S.g} {cc : CokernelCofork S.f} (hkf : IsLimit kf) (hcc : IsColimit cc)
-  {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt} (fac : kf.ι ≫ cc.π = π ≫ ι) [Epi π] [Mono ι]
+variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
+  (hkf : IsLimit kf) (hcc : IsColimit cc)
+  {H : C} {π : kf.pt ⟶ H} {ι : H ⟶ cc.pt}
+  (fac : kf.ι ≫ cc.π = π ≫ ι)
+  [Epi π] [Mono ι]
 
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.

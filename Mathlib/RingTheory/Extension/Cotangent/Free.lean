@@ -38,7 +38,8 @@ namespace Algebra
 
 namespace Generators
 
-variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u) {v : κ → ι}
+variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u)
+  {v : κ → ι}
 
 /--
 If `H¹(L_{S/R}) = 0` and `R[xᵢ] → S` are generators indexed by `σ ⊕ κ` such that the images

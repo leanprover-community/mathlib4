@@ -106,8 +106,9 @@ open scoped NNReal Topology ContDiff
 universe u uE uF uG uX
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {s s₁ t u : Set E} {f
-  f₁ : E → F} {x : E} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
+  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {s s₁ t u : Set E} {f f₁ : E → F} {x : E} {m n : ℕ∞ω}
+  {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Smooth functions within a set around a point -/
 

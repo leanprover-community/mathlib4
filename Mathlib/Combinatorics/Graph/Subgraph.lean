@@ -45,8 +45,8 @@ graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph
 
 public section
 
-variable {α β : Type*} {x y u v : α} {e : β} {G G₁ G₂ H H₁ H₂ K : Graph α β} {F₁ F₂ : Set β} {X :
-  Set α}
+variable {α β : Type*} {x y u v : α} {e : β} {G G₁ G₂ H H₁ H₂ K : Graph α β} {F₁ F₂ : Set β}
+  {X : Set α}
 
 open Set
 

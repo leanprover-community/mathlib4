@@ -109,8 +109,9 @@ theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
 
 section CompatibleSMul
 
-variable (R A M N) [CommSemiring A] [Module A M] [Module A N] [CompatibleSMul R A M N] [Module R
-  A] [SMulCommClass R A A] [CompatibleSMul R A A M] [CompatibleSMul A R A M]
+variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
+  [CompatibleSMul R A M N] [Module R A] [SMulCommClass R A A] [CompatibleSMul R A A M]
+  [CompatibleSMul A R A M]
 
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
@@ -207,7 +208,6 @@ lemma lid_tensor :
   LinearEquiv.toLinearMap_inj.mp <| ext_threefold' fun _ _ => congrFun rfl
 
 section
-
 
 variable (R M N P Q)
 

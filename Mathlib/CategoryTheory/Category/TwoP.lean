@@ -27,7 +27,6 @@ open CategoryTheory Option
 universe u
 
 
-
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where
   /-- The underlying type of a two-pointed type. -/

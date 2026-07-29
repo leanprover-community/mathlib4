@@ -389,7 +389,6 @@ lemma range_succAboveOrderEmb {n : ℕ} (i : Fin (n + 1)) :
 
 /-! ### Uniqueness of order isomorphisms -/
 
-
 /-- If `e` is an `orderIso` between `Fin n` and `Fin m`, then `n = m` and `e` is the identity
 map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i : ℕ)`. -/
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by

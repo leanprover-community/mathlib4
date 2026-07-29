@@ -22,9 +22,11 @@ namespace AlgebraicGeometry
 
 section universe_polymorphic
 
-variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A] [CommRing B]
-  [SetLike τ B] [AddSubgroupClass τ B] [CommRing C] {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜]
-  [GradedRing ℬ] (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
+variable {A B C σ τ : Type*} [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+  [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
+  [CommRing C]
+  {𝒜 : ℕ → σ} {ℬ : ℕ → τ} [GradedRing 𝒜] [GradedRing ℬ]
+  (f : 𝒜 →+*ᵍ ℬ) (hf : ℬ₊ ≤ 𝒜₊.map f)
 
 namespace ProjectiveSpectrum
 
@@ -47,8 +49,8 @@ namespace Proj
 
 open StructureSheaf
 
-variable (U : Opens (ProjectiveSpectrum 𝒜)) (V : Opens (ProjectiveSpectrum ℬ)) (hUV : V.1 ⊆
-  ProjectiveSpectrum.comap f hf ⁻¹' U.1)
+variable (U : Opens (ProjectiveSpectrum 𝒜)) (V : Opens (ProjectiveSpectrum ℬ))
+  (hUV : V.1 ⊆ ProjectiveSpectrum.comap f hf ⁻¹' U.1)
 
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheafFun

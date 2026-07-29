@@ -300,9 +300,10 @@ end
 
 section CompatibleSMul
 
-variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
-  [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M] [CommSemiring S] [Module S M]
-  [SMulCommClass R S M] [SMulCommClass A S M] [CompatibleSMul R A M N]
+variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+  [Module R N] [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
+  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
+  [CompatibleSMul R A M N]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If M and N are both R- and A-modules and their actions on them commute,

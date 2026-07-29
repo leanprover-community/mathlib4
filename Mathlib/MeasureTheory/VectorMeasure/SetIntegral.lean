@@ -24,9 +24,9 @@ assert_not_exists InnerProductSpace
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology ContinuousLinearMap
 open scoped ENNReal NNReal Finset
 
-variable {ι X E F G H : Type*} {mX : MeasurableSpace X} [NormedAddCommGroup E] [NormedAddCommGroup
-  F] [NormedAddCommGroup G] [NormedAddCommGroup H] {μ : VectorMeasure X F} {f g : X → E} {s t :
-  Set X}
+variable {ι X E F G H : Type*} {mX : MeasurableSpace X}
+  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] [NormedAddCommGroup H]
+  {μ : VectorMeasure X F} {f g : X → E} {s t : Set X}
 
 namespace MeasureTheory.VectorMeasure
 
@@ -87,8 +87,8 @@ theorem IntegrableOn.integrable_indicator (h : μ.IntegrableOn f s) (hs : Measur
     μ.Integrable (indicator s f) :=
   (integrable_indicator_iff hs).2 h
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G] [NormedSpace ℝ H] {B : E →L[ℝ] F
-  →L[ℝ] G}
+variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace ℝ G] [NormedSpace ℝ H]
+  {B : E →L[ℝ] F →L[ℝ] G}
 
 theorem setIntegral_eq_zero_of_not_measurableSet (hs : ¬MeasurableSet s) :
     ∫ᵛ x in s, f x ∂[B; μ] = 0 := by

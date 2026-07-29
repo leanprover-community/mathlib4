@@ -201,8 +201,8 @@ section OrderedRing
 
 section Ring
 
-variable {R S : Type*} [Ring R] [Ring S] [PartialOrder S] [IsOrderedRing S] (abv : AbsoluteValue R
-  S)
+variable {R S : Type*} [Ring R] [Ring S] [PartialOrder S] [IsOrderedRing S]
+  (abv : AbsoluteValue R S)
 
 @[bound]
 protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
@@ -214,8 +214,8 @@ end OrderedRing
 
 section OrderedCommRing
 
-variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R] (abv : AbsoluteValue R S)
-  [NoZeroDivisors S]
+variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
+  (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
@@ -280,8 +280,8 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] (abv :
-  AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  (abv : AbsoluteValue R S)
 
 @[bound]
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
@@ -362,8 +362,8 @@ end OrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [ExistsAddOfLE S] {v :
-  AbsoluteValue R S}
+variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [ExistsAddOfLE S]
+  {v : AbsoluteValue R S}
 
 lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
@@ -499,8 +499,8 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [NoZeroDivisors S] [Ring R] (abv : R → S)
-  [IsAbsoluteValue abv]
+variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [NoZeroDivisors S] [Ring R]
+  (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_neg (a : R) : abv (-a) = abv a :=
   (toAbsoluteValue abv).map_neg a

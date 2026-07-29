@@ -22,8 +22,8 @@ open Function OrderDual
 variable {α : Type*}
 
 namespace Finset
-variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [ExistsAddOfLE α]
-  [LocallyFiniteOrder α]
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+  [ExistsAddOfLE α] [LocallyFiniteOrder α]
 
 @[simp] lemma map_add_left_Icc (a b c : α) :
     (Icc a b).map (addLeftEmbedding c) = Icc (c + a) (c + b) := by

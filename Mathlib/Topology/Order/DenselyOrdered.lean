@@ -21,8 +21,8 @@ variable {α : Type*}
 
 section DenselyOrdered
 
-variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α] {a b : α} {s :
-  Set α}
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α] {a b : α}
+  {s : Set α}
 
 /-- The closure of the interval `(a, +∞)` is the closed interval `[a, +∞)`, unless `a` is a top
 element. -/

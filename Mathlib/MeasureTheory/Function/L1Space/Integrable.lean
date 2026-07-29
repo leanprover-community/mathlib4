@@ -45,8 +45,8 @@ open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 open scoped Topology
 
 variable {α β γ δ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ContinuousENorm ε']
+variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
+  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
 
 namespace MeasureTheory
 
@@ -957,7 +957,8 @@ end PosPart
 
 section IsBoundedSMul
 
-variable {𝕜 : Type*} {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {𝕜 : Type*}
+  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[to_fun (attr := fun_prop)]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
@@ -1146,7 +1147,8 @@ end Trim
 
 section SigmaFinite
 
-variable {m0 : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+variable {m0 : MeasurableSpace α}
+  {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)
@@ -1178,11 +1180,12 @@ section ContinuousLinearMap
 
 open MeasureTheory
 
-variable {E H : Type*} [NormedAddCommGroup E] [NormedAddCommGroup H] {𝕜 𝕜' : Type*}
-  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
+variable {E H : Type*} [NormedAddCommGroup E] [NormedAddCommGroup H]
+  {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
 
-variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ'] [RingHomInvPair
-  σ σ'] [RingHomInvPair σ' σ]
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ']
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 @[fun_prop]
 theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →SL[σ] E) (φ_int : Integrable φ μ) :
@@ -1210,8 +1213,8 @@ end ContinuousLinearMap
 
 namespace MeasureTheory
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 @[fun_prop]
 lemma Integrable.fst {f : α → E × F} (hf : Integrable f μ) : Integrable (fun x ↦ (f x).1) μ :=

@@ -38,7 +38,8 @@ open scoped Pointwise
 
 namespace Algebra
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A] {s t : Set A}
+variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
+  {s t : Set A}
 
 theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t).toSubmodule.FG) :
     (adjoin R (s ∪ t)).toSubmodule.FG := by

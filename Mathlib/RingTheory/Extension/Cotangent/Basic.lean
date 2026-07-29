@@ -493,7 +493,6 @@ variable {P P'}
 
 universe w'' u'' v''
 
-
 open Extension
 
 set_option backward.isDefEq.respectTransparency false in

@@ -84,7 +84,6 @@ end Complex
 
 namespace Real
 
-
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
   Complex.continuous_re.comp (Complex.continuous_sin.comp Complex.continuous_ofReal)

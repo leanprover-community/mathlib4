@@ -67,7 +67,6 @@ def trivial : CommComon C := mk (𝟙_ C)
 instance : Inhabited (CommComon C) :=
   ⟨trivial C⟩
 
-
 instance : Category (CommComon C) :=
   inferInstanceAs (Category (InducedCategory _ CommComon.toComon))
 

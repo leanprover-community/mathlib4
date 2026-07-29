@@ -212,7 +212,8 @@ alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
 
 end domRestrict
 
-variable {s : Set α} {t : Set β} {p : Set γ} {f : α → β} {g : β → γ} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {p : Set γ} {f : α → β} {g : β → γ}
+  {a : α} {b : β}
 
 section MapsTo
 

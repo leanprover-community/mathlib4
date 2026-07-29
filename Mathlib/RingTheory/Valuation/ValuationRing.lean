@@ -317,7 +317,6 @@ theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
 
-
 theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   (PreValuationRing.iff_dvd_total.mp h).total x y
 

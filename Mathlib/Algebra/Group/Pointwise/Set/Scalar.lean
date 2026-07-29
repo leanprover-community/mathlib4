@@ -83,7 +83,8 @@ scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 open scoped Pointwise
 
 section SMul
-variable [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α} {b : β}
+variable [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
+  {b : β}
 
 @[to_additive (attr := simp)] lemma image2_smul : image2 (· • ·) s t = s • t := rfl
 
@@ -223,7 +224,8 @@ lemma smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
 end SMul
 
 section SDiv
-variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α} {b c : β}
+variable [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
+  {b c : β}
 
 @[to_additive]
 instance sdiv : SDiv (Set α) (Set β) where sdiv := image2 (· /ₛ ·)

@@ -305,7 +305,8 @@ end LinearOrderedSemifield
 
 section PartialOrderedField
 
-variable [Field α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α] {a b c d : α}
+variable [Field α] [PartialOrder α] [PosMulReflectLT α] [IsStrictOrderedRing α]
+  {a b c d : α}
 
 attribute [local instance] PosMulReflectLT.toMulPosReflectLT
 

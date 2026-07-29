@@ -175,7 +175,8 @@ end
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y Z : C}
+variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
+  {X Y Z : C}
 
 /-- The bijection `SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m`
 for all `m : M`, and `X` and `Y` in `C` when `L : C ⥤ D` is a localization functor for

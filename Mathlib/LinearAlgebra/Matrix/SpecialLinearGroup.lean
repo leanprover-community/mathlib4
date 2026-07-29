@@ -558,7 +558,6 @@ end SpecialLinearGroup
 
 namespace TransvectionStruct
 
-
 /-- Any transvection structure can be converted to a special linear matrix. -/
 def toSpecialLinearGroup (t : TransvectionStruct ι F) :
     SpecialLinearGroup ι F :=

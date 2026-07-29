@@ -544,8 +544,8 @@ section Basis
 
 open Algebra
 
-variable [FiniteDimensional K L] [Algebra.IsSeparable K L] [Finite ι] [DecidableEq ι] (b : Basis ι
-  K L)
+variable [FiniteDimensional K L] [Algebra.IsSeparable K L] [Finite ι] [DecidableEq ι]
+  (b : Basis ι K L)
 
 /--
 The dual basis of a basis under the trace form in a finite separable extension.

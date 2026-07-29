@@ -24,8 +24,9 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace
-  𝓨} {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
+variable {Θ 𝓧 𝓨 : Type*} {mΘ : MeasurableSpace Θ}
+  {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
+  {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
 lemma avgRisk_countable [Countable Θ] [MeasurableSingletonClass Θ] :
     avgRisk ℓ P κ π = ∑' θ, (∫⁻ y, ℓ θ y ∂((κ ∘ₖ P) θ)) * π {θ} := by

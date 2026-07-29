@@ -129,8 +129,3 @@ theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
     iterateFrobenius R S p n x = x ^ p ^ n := rfl
 
 end CommSemiring
-
-section CommRing
-
-
-end CommRing

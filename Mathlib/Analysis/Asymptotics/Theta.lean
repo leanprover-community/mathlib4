@@ -25,8 +25,9 @@ open Topology
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*} {F' : Type*} {G'
-  : Type*} {E'' : Type*} {F'' : Type*} {𝕜 : Type*} {𝕜' : Type*}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}
+  {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']

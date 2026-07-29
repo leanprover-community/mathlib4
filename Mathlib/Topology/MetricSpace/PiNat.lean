@@ -1141,7 +1141,6 @@ lemma injective_distDenseSeq (x y : X) (hxy : x ≠ y) :
   obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
   exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
 
-
 lemma continuous_distDenseSeq_inv :
     Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by
   refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_

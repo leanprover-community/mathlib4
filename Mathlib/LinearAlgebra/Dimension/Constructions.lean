@@ -564,8 +564,9 @@ section Extend
 
 namespace Module.Basis
 
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] {W : Submodule R V} {m n :
-  Type*} (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+    {W : Submodule R V} {m n : Type*}
+    (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
 
 /-- Given a basis `bW` of a submodule of an `R`-module `V`,
 and a basis `bQ` of the quotient `V ⧸ W`,

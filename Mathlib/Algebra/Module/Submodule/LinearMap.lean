@@ -41,8 +41,8 @@ variable {R : Type u} {M : Type v} {ι : Type w}
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M] [AddSubmonoidClass
-  A M] [SMulMemClass A R M] (S' : A)
+variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
+  [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where
@@ -182,8 +182,8 @@ theorem domRestrict_comp_codRestrict (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M 
 
 section
 
-variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (p : M₂' →ₗ[R₂] M₂) (hp : Injective p)
-  (h : ∀ c, f c ∈ range p)
+variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
+  (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map

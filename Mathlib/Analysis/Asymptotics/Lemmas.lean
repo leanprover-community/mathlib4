@@ -23,12 +23,14 @@ open Set Topology Filter NNReal
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*} {F' : Type*} {G'
-  : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*} {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
+variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
+  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
+  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R] [SeminormedAddGroup E''']
+  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
+  [SeminormedAddGroup E''']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
@@ -435,8 +437,8 @@ theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
 
 section div_tendsto_infty
 
-variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {l
-  : Filter α} {f g : α → 𝕜}
+variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
+  {l : Filter α} {f g : α → 𝕜}
 
 theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
   apply Asymptotics.isLittleO_of_tendsto'

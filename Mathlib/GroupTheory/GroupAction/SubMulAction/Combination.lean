@@ -45,7 +45,8 @@ open scoped Pointwise
 
 open MulAction Finset Set Equiv Equiv.Perm
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α] {n : ℕ} {s : powersetCard α n}
+variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+  {n : ℕ} {s : powersetCard α n}
 
 section
 

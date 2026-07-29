@@ -23,7 +23,8 @@ public section
 
 open Function Set Filter Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} {Y : Type*} {Z : Type*}
+  [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z]
 
 namespace OpenPartialHomeomorph

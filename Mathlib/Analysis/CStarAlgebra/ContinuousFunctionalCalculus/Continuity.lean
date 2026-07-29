@@ -151,8 +151,8 @@ end Generic
 section Isometric
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [MetricSpace A] [Algebra R A]
-  [IsometricContinuousFunctionalCalculus R A p]
+    [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [MetricSpace A] [Algebra R A] [IsometricContinuousFunctionalCalculus R A p]
 
 variable (R) in
 open UniformOnFun in
@@ -689,9 +689,9 @@ end Generic
 section Isometric
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R] [Nontrivial R]
-  [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A]
-  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-  [NonUnitalIsometricContinuousFunctionalCalculus R A p]
+    [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 
 variable (R) in
 open UniformOnFun in

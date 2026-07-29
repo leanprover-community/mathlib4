@@ -48,8 +48,8 @@ namespace LinearMap
 
 universe i
 
-variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃] {φ : ι →
-  Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
+  {φ : ι → Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
@@ -535,8 +535,8 @@ def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) �
     map_add' := by simp [funext_iff]
     map_smul' := by simp [funext_iff] }
 
-variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M] [Module R M]
-  [Module S M] [SMulCommClass R S M]
+variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
+  [Module R M] [Module S M] [SMulCommClass R S M]
 
 /-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
 are represented as `ι → R` and `ι → M`, respectively, where `ι` is a finite type.

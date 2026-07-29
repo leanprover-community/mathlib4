@@ -25,7 +25,6 @@ variable {α : Type*}
 
 namespace UniqueFactorizationMonoid
 
-
 section Multiplicative
 
 variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]

@@ -23,7 +23,8 @@ open Set Topology
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} [TopologicalSpace α] {s t : Set α}
+variable {α : Type u} {β : Type v} {ι : Type*} [TopologicalSpace α]
+  {s t : Set α}
 
 section LocallyConnectedSpace
 

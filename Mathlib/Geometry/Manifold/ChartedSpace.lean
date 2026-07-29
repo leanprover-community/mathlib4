@@ -494,8 +494,8 @@ end Products
 
 section sum
 
-variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M'] [cm : ChartedSpace H M]
-  [cm' : ChartedSpace H M']
+variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M']
 
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/

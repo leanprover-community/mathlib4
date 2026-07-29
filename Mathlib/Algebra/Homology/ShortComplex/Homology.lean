@@ -40,8 +40,8 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C) {S₁ S₂ S₃ :
-  ShortComplex C}
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C)
+  {S₁ S₂ S₃ : ShortComplex C}
 
 namespace ShortComplex
 
@@ -438,7 +438,8 @@ noncomputable def homologyMap (φ : S₁ ⟶ S₂) [HasHomology S₁] [HasHomolo
 
 namespace HomologyMapData
 
-variable {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData} (γ : HomologyMapData φ h₁ h₂)
+variable {φ : S₁ ⟶ S₂} {h₁ : S₁.HomologyData} {h₂ : S₂.HomologyData}
+  (γ : HomologyMapData φ h₁ h₂)
 
 lemma homologyMap'_eq : homologyMap' φ h₁ h₂ = γ.left.φH :=
   LeftHomologyMapData.congr_φH (Subsingleton.elim _ _)
@@ -453,8 +454,8 @@ end HomologyMapData
 
 namespace LeftHomologyMapData
 
-variable {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData} (γ : LeftHomologyMapData φ h₁ h₂)
-  [S₁.HasHomology] [S₂.HasHomology]
+variable {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
+  (γ : LeftHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -472,8 +473,8 @@ end LeftHomologyMapData
 
 namespace RightHomologyMapData
 
-variable {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData} (γ : RightHomologyMapData φ h₁
-  h₂) [S₁.HasHomology] [S₂.HasHomology]
+variable {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
+  (γ : RightHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

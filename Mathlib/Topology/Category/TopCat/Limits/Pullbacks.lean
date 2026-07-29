@@ -25,7 +25,6 @@ noncomputable section
 
 namespace TopCat
 
-
 section Pullback
 
 variable {X Y Z : TopCat.{u}}

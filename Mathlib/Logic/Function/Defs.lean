@@ -33,8 +33,8 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 section DComp
 
-variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y) (g : ∀ i,
-  β i) (i : ι)
+variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
+    (g : ∀ i, β i) (i : ι)
 
 theorem dcomp_def : @f ∘' g = fun i => f (g i) := rfl
 

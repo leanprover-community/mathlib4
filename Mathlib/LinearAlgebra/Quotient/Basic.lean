@@ -104,7 +104,6 @@ noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintyp
 
 section
 
-
 theorem strictMono_comap_prod_map :
     StrictMono fun m : Submodule R M ↦ (m.comap p.subtype, m.map p.mkQ) :=
   fun m₁ m₂ ↦ QuotientAddGroup.strictMono_comap_prod_map
@@ -320,10 +319,10 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 
-variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂]
-variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N] (P : Submodule
-  R M) (Q : Submodule R₂ N)
+variable {R₂ : Type*} [Ring R₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R₂ N]
+  (P : Submodule R M) (Q : Submodule R₂ N)
 
 /-- If `P` is a submodule of `M` and `Q` a submodule of `N`,
 and `f : M ≃ₛₗ[σ] N` maps `P` to `Q`, then `M ⧸ P` is equivalent to `N ⧸ Q`. -/
@@ -433,8 +432,8 @@ end Ring
 
 section CommRing
 
-variable {R M M₂ : Type*} {x y : M} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₂]
-  [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
+variable {R M M₂ : Type*} {x y : M} [CommRing R] [AddCommGroup M] [Module R M]
+  [AddCommGroup M₂] [Module R M₂] (p : Submodule R M) (q : Submodule R M₂)
 
 namespace Submodule
 

@@ -556,9 +556,10 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real u
 section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F} [NormedAddCommGroup G]
-  [NormedSpace ℝ G] {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure
-  ν] {L : E × F →L[ℝ] G}
+  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+  {L : E × F →L[ℝ] G}
 
 lemma integrable_continuousLinearMap_prod'
     (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :

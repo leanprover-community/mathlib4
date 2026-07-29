@@ -74,7 +74,6 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
 
 end Pi
 
-
 section Pi
 
 open Finset

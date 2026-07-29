@@ -689,8 +689,8 @@ end Sup
 
 section CompleteLattice
 
-variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C] [HasImages C]
-  [HasCoproducts.{w} C] [InitialMonoClass C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C]
+  [HasImages C] [HasCoproducts.{w} C] [InitialMonoClass C]
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 

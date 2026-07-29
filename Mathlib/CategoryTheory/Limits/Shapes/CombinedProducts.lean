@@ -31,8 +31,9 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace Fan
 
-variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C} (c₁ : Fan f₁) (c₂ : Fan f₂) (bc : BinaryFan
-  c₁.pt c₂.pt) (h₁ : IsLimit c₁) (h₂ : IsLimit c₂) (h : IsLimit bc)
+variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
+    (c₁ : Fan f₁) (c₂ : Fan f₂) (bc : BinaryFan c₁.pt c₂.pt)
+    (h₁ : IsLimit c₁) (h₂ : IsLimit c₂) (h : IsLimit bc)
 
 /-- For fans on maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C` and a binary fan on their
 cone points, construct one family of morphisms indexed by `ι₁ ⊕ ι₂` -/
@@ -66,8 +67,9 @@ end Fan
 
 namespace Cofan
 
-variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C} (c₁ : Cofan f₁) (c₂ : Cofan f₂) (bc :
-  BinaryCofan c₁.pt c₂.pt) (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (h : IsColimit bc)
+variable {ι₁ ι₂ : Type*} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
+    (c₁ : Cofan f₁) (c₂ : Cofan f₂) (bc : BinaryCofan c₁.pt c₂.pt)
+    (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (h : IsColimit bc)
 
 /-- For cofans on maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C` and a binary cofan on their
 cocone points, construct one family of morphisms indexed by `ι₁ ⊕ ι₂` -/

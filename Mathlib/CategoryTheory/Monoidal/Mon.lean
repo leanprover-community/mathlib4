@@ -145,8 +145,8 @@ end MonObj
 open scoped MonObj
 
 namespace Mathlib.Tactic.MonTauto
-variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] {M W X X₁ X₂ Y Y₁ Y₂ Z Z₁ Z₂ : C}
-  [MonObj M]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
+  {M W X X₁ X₂ Y Y₁ Y₂ Z Z₁ Z₂ : C} [MonObj M]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ

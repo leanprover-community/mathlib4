@@ -28,8 +28,8 @@ variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M'] (b : Basis ι
-  R M)
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+  (b : Basis ι R M)
 
 section Prod
 

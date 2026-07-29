@@ -97,8 +97,8 @@ equivalent to the initial value problem defined by `f`.
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E → E} {α : ℝ → E} {s : Set
-  ℝ} {u : Set E} {t₀ : ℝ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ : ℝ}
 
 /-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
 interval containing `t₀`, then `α` is a solution to `f` with `α t₀ = x₀` on this interval. -/

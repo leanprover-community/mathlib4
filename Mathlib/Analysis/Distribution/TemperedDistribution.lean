@@ -44,7 +44,8 @@ variable {ι 𝕜 E F : Type*}
 
 section definition
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace F] [AddCommGroup F] [Module ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [TopologicalSpace F] [AddCommGroup F] [Module ℂ F]
 
 variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
@@ -65,12 +66,13 @@ end definition
 
 section Embeddings
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 namespace MeasureTheory.Measure
 
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] (μ : Measure E := by
-  volume_tac) [hμ : μ.HasTemperateGrowth]
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
 set_option backward.privateInPublic true in
 /-- Every temperate growth measure defines a tempered distribution. -/
@@ -87,8 +89,8 @@ end MeasureTheory.Measure
 
 namespace Function.HasTemperateGrowth
 
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] (μ : Measure E := by
-  volume_tac) [hμ : μ.HasTemperateGrowth]
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
 set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
@@ -131,8 +133,8 @@ end MeasurableSpace
 
 section MeasureSpace
 
-variable [MeasureSpace E] [BorelSpace E] [SecondCountableTopology E] [(volume (α :=
-  E)).HasTemperateGrowth]
+variable [MeasureSpace E] [BorelSpace E] [SecondCountableTopology E]
+  [(volume (α := E)).HasTemperateGrowth]
 
 instance instCoeToTemperedDistribution :
     Coe 𝓢(E, F) 𝓢'(E, F) where
@@ -298,8 +300,8 @@ end TVS
 
 open ENNReal MeasureTheory
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F] [MeasurableSpace E]
-  [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+variable [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
+  [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
 multiplication if the left factor is a function of temperate growth. -/
@@ -395,8 +397,9 @@ instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
     ext u
     simp [lineDerivOp_left_smul, map_smul_of_tower f]
 
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E] {μ
-  : Measure E} [μ.IsAddHaarMeasure]
+variable
+  [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
+  {μ : Measure E} [μ.IsAddHaarMeasure]
 
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
     ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
@@ -455,8 +458,8 @@ section Fourier
 
 open FourierTransform
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace
-  E] [BorelSpace E]
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
 section TVS
 

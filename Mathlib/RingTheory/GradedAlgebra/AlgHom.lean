@@ -38,9 +38,11 @@ notation:25 𝒜 " →ₐᵍ[" R "] " ℬ => GradedAlgHom R 𝒜 ℬ
 
 namespace GradedAlgHom
 
-variable {R A B C D ι : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring
-  D] [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D] [DecidableEq ι] [AddMonoid ι] {𝒜 : ι
-  → Submodule R A} {ℬ : ι → Submodule R B} {𝒞 : ι → Submodule R C} {𝒟 : ι → Submodule R D}
+variable {R A B C D ι : Type*}
+  [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+  [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
+  [DecidableEq ι] [AddMonoid ι]
+  {𝒜 : ι → Submodule R A} {ℬ : ι → Submodule R B} {𝒞 : ι → Submodule R C} {𝒟 : ι → Submodule R D}
   [GradedAlgebra 𝒜] [GradedAlgebra ℬ] [GradedAlgebra 𝒞] [GradedAlgebra 𝒟]
 
 section ofClass
@@ -252,8 +254,9 @@ section restrictScalars
     (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
   { f.toAlgHom.restrictScalars R₀, f with }
 
-variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [Algebra R₀ B]
-  [IsScalarTower R₀ R A] [IsScalarTower R₀ R B] (f : 𝒜 →ₐᵍ[R] ℬ)
+variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+    [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
+    (f : 𝒜 →ₐᵍ[R] ℬ)
 
 @[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 

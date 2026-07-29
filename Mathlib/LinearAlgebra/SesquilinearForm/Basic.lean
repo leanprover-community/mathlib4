@@ -96,7 +96,8 @@ end CommRing
 section Field
 
 variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁] [Module K₁ V₁]
-  [Field K₂] [AddCommGroup V₂] [Module K₂ V₂] {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K}
+  [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
+  {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K}
 
 @[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
 theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
@@ -564,8 +565,8 @@ section Nondegenerate
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
-  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {I₁ : R₁ →+* R} {I₂ : R₂ →+*
-  R}
+  [Module R₁ M₁] [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+  {I₁ : R₁ →+* R} {I₂ : R₂ →+* R}
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,

@@ -25,9 +25,12 @@ open Similar NNReal Affine
 
 namespace EuclideanGeometry
 
-variable {V₁ V₂ P₁ P₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] [InnerProductSpace
-  ℝ V₁] [InnerProductSpace ℝ V₂] [MetricSpace P₁] [MetricSpace P₂] [NormedAddTorsor V₁ P₁]
-  [NormedAddTorsor V₂ P₂] {a b c : P₁} {a' b' c' : P₂}
+variable {V₁ V₂ P₁ P₂ : Type*}
+  [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+  [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
+  [MetricSpace P₁] [MetricSpace P₂]
+  [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
+  {a b c : P₁} {a' b' c' : P₂}
 
 /-- If two triangles have two pairs equal angles, then the triangles are similar. -/
 theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : ∠ a b c = ∠ a' b' c')

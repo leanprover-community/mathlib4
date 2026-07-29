@@ -18,7 +18,8 @@ public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 open Function Set Filter Topology
 
-variable {X : Type*} {Y : Type*} {Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type*} {Y : Type*} {Z Z' : Type*}
+  [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace OpenPartialHomeomorph

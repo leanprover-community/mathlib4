@@ -151,8 +151,8 @@ lemma finsetCongr_piAntidiag_eq_antidiag (n : μ) :
 end AddCommMonoid
 
 section AddCancelCommMonoid
-variable [DecidableEq ι] [AddCancelCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {i : ι} {s :
-  Finset ι}
+variable [DecidableEq ι] [AddCancelCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {i : ι}
+  {s : Finset ι}
 
 lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) :
     (antidiagonal n : Set (μ × μ)).PairwiseDisjoint fun p ↦
@@ -186,8 +186,8 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ] [CanonicallyOrderedAdd μ]
-  [HasAntidiagonal μ] [DecidableEq μ]
+variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
+  [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
   ext; simp [funext_iff, not_imp_comm, ← forall_and]

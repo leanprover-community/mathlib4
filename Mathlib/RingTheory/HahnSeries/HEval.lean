@@ -158,7 +158,8 @@ namespace PowerSeries
 
 open HahnSeries SummableFamily
 
-variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R] (x : R⟦Γ⟧)
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+  [CommRing R] (x : R⟦Γ⟧)
 
 /-- The `R`-algebra homomorphism from `R⟦X⟧` to `R⟦Γ⟧` given by sending the power series
 variable `X` to a positive order element `x` and extending to infinite sums. -/

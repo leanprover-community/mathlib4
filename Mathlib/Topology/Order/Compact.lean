@@ -142,7 +142,8 @@ end openIntervals
 
 section LinearOrder
 
-variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α]
+  [TopologicalSpace β]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
@@ -350,8 +351,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [TopologicalSpace
-  β]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+  [TopologicalSpace β]
 
 theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → α} {K : Set β}
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :

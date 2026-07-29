@@ -363,7 +363,8 @@ end LinearOrder
 
 section LinearOrderedCommGroup
 
-variable [TopologicalSpace α] [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] [OrderTopology α]
+variable [TopologicalSpace α] [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+  [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
 @[to_additive]

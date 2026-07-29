@@ -197,7 +197,6 @@ end DualMap
 
 namespace Module
 
-
 open Module Module.Dual Submodule LinearMap Module
 
 section IsReflexive

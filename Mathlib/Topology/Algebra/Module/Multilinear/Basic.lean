@@ -464,8 +464,8 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)] [Module R
-  M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] (f : ContinuousMultilinearMap R M₁ M₂)
+variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Module R (M₁ i)] [Module R M₂]
+  [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] (f : ContinuousMultilinearMap R M₁ M₂)
 
 @[simp]
 theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
@@ -540,9 +540,9 @@ end CommSemiring
 
 section DistribMulAction
 
-variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀
-  i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [∀ i, Module A (M₁ i)] [Module A M₂]
-  [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
+variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i)]
+  [AddCommMonoid M₂] [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] [∀ i, Module A (M₁ i)]
+  [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
 
 instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
   fast_instance%

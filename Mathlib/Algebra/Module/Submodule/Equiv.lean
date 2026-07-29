@@ -246,12 +246,13 @@ end Submodule
 
 namespace LinearMap
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid
-  M₃] [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+  [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 section
 
-variable (f : M₁ →ₗ[R] M₂) (i : M₃ →ₗ[R] M₂) (hi : Injective i) (hf : ∀ x, f x ∈ LinearMap.range i)
+variable (f : M₁ →ₗ[R] M₂) (i : M₃ →ₗ[R] M₂) (hi : Injective i)
+  (hf : ∀ x, f x ∈ LinearMap.range i)
 
 /-- The restriction of a linear map on the target to a submodule of the target given by
 an inclusion. -/
@@ -271,8 +272,8 @@ lemma codRestrictOfInjective_comp :
 
 end
 
-variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Injective i) (hf : ∀ x y, f x y ∈
-  LinearMap.range i)
+variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Injective i)
+  (hf : ∀ x y, f x y ∈ LinearMap.range i)
 
 /-- The restriction of a bilinear map to a submodule in which it takes values. -/
 noncomputable def codRestrict₂ :

@@ -693,11 +693,9 @@ open Polynomial
 
 universe u v w
 
-
 section Splits
 
 section CommRing
-
 
 variable {i}
 
@@ -716,7 +714,6 @@ local infixl:50 " ~ᵤ " => Associated
 open UniqueFactorizationMonoid Associates
 
 end UFD
-
 
 end Splits
 

@@ -53,8 +53,9 @@ section TensorProduct
 
 open scoped TensorProduct
 
-variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
-  [Module.Flat R M] {r : R} (h : IsSMulRegular M' r)
+variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M']
+    [Module R M] [Module R M'] [Module.Flat R M] {r : R}
+    (h : IsSMulRegular M' r)
 include h
 
 lemma IsSMulRegular.lTensor : IsSMulRegular (M ⊗[R] M') r :=
@@ -69,8 +70,9 @@ end TensorProduct
 
 section Ring
 
-variable [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M'] [AddCommGroup M'']
-  [Module R M''] (N : Submodule R M) (r : R)
+variable [Ring R] [AddCommGroup M] [Module R M]
+    [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
+    (N : Submodule R M) (r : R)
 
 lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
@@ -114,8 +116,9 @@ section CommRing
 
 open Submodule Pointwise
 
-variable (M) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
-  [AddCommGroup M''] [Module R M''] (N : Submodule R M) (r : R)
+variable (M) [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
+    (N : Submodule R M) (r : R)
 
 variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :

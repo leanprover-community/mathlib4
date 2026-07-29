@@ -240,7 +240,6 @@ theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddB
     (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
   ⟨iInf f, tendsto_atTop_ciInf h_ant h_bdd⟩
 
-
 /-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
 @[deprecated tendsto_atTop_ciInf (since := "2026-01-14")]
 theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :

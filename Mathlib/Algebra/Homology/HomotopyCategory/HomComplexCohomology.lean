@@ -109,7 +109,8 @@ def mkAddMonoidHom : Cocycle K L n →+ CohomologyClass K L n where
 
 section
 
-variable {G : Type*} [AddCommGroup G] (f : Cocycle K L n →+ G) (hf : coboundaries K L n ≤ f.ker)
+variable {G : Type*} [AddCommGroup G]
+  (f : Cocycle K L n →+ G) (hf : coboundaries K L n ≤ f.ker)
 
 /-- Constructor for additive morphisms from `CohomologyClass K L n`. -/
 def descAddMonoidHom :

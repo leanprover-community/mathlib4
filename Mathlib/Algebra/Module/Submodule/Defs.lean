@@ -169,8 +169,8 @@ end Submodule
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M] [AddSubmonoidClass
-  A M] [SMulMemClass A R M] (S' : A)
+variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
+  [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`. -/

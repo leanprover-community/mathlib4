@@ -129,8 +129,9 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
-variable {S : Type*} [CommSemiring S] [PartialOrder S] [Algebra S R] [Module S M] [SMulPosMono S
-  R] [IsScalarTower S R M] {a : S}
+variable {S : Type*} [CommSemiring S] [PartialOrder S]
+  [Algebra S R] [Module S M] [SMulPosMono S R]
+  [IsScalarTower S R M] {a : S}
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by

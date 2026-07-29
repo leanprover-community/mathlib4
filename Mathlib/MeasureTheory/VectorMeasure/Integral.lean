@@ -73,9 +73,10 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap Filter Topology
 open scoped ENNReal NNReal
 
-variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y] [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ
-  G]
+variable {ι X Y E F G : Type*} {mX : MeasurableSpace X} [MeasurableSpace Y]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 namespace MeasureTheory
 
@@ -134,8 +135,8 @@ end cbmApplyMeasure
 
 namespace VectorMeasure
 
-variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {C : E →L[ℝ] F →L[ℝ] G} {f g : X → E}
-  {φ : X → Y}
+variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {C : E →L[ℝ] F →L[ℝ] G}
+  {f g : X → E} {φ : X → Y}
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma transpose_zero : (0 : VectorMeasure X F).transpose B = 0 := by

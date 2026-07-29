@@ -603,8 +603,9 @@ lemma mapBifunctorBifunctor₂₃MapObj_ext
 
 section
 
-variable (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j), (F.obj (X₁ i₁)).obj
-  ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
+variable
+  (f : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (_ : r ⟨i₁, i₂, i₃⟩ = j),
+    (F.obj (X₁ i₁)).obj ((G₂₃.obj (X₂ i₂)).obj (X₃ i₃)) ⟶ A)
 
 /-- Constructor for morphisms from
 `mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) j`. -/

@@ -96,7 +96,8 @@ section Characterizations
 
 section
 
-variable {M₁ M₂ : Type*} [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂]
+variable {M₁ M₂ : Type*}
+  [TopologicalSpace M₁] [AddCommMonoid M₁] [TopologicalSpace M₂]
 
 theorem isCompactOperator_iff_exists_mem_nhds_image_subset_compact (f : M₁ → M₂) :
     IsCompactOperator f ↔ ∃ V ∈ (𝓝 0 : Filter M₁), ∃ K : Set M₂, IsCompact K ∧ f '' V ⊆ K :=
@@ -319,8 +320,10 @@ end CodRestrict
 
 section Restrict
 
-variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {M₁ M₂ : Type*} [TopologicalSpace M₁]
-  [UniformSpace M₂] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁] [Module R₂ M₂]
+variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
+  {M₁ M₂ : Type*} [TopologicalSpace M₁] [UniformSpace M₂]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁]
+  [Module R₂ M₂]
 
 /-- If a compact operator preserves a closed submodule, its restriction to that submodule is
 compact.

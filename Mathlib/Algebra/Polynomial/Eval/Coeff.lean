@@ -52,7 +52,6 @@ end
 
 section Eval
 
-
 theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
   calc
     coeff p 0 = coeff p 0 * 0 ^ 0 := by simp

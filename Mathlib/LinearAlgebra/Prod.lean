@@ -913,8 +913,11 @@ section LineTest
 
 open Set Function
 
-variable {R S G H I : Type*} [Semiring R] [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
-  [AddCommMonoid G] [Module R G] [AddCommMonoid H] [Module S H] [AddCommMonoid I] [Module S I]
+variable {R S G H I : Type*}
+  [Semiring R] [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+  [AddCommMonoid G] [Module R G]
+  [AddCommMonoid H] [Module S H]
+  [AddCommMonoid I] [Module S I]
 
 /-- **Vertical line test** for linear maps.
 

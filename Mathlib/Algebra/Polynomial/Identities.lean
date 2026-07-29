@@ -24,7 +24,8 @@ namespace Polynomial
 
 universe u v w x y z
 
-variable {R : Type u} {ι : Type x} {k : Type y} {A : Type z} {a : R} {n : ℕ}
+variable {R : Type u} {ι : Type x} {k : Type y} {A : Type z} {a : R}
+  {n : ℕ}
 
 section Identities
 

@@ -42,11 +42,14 @@ model with corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, 
 the basepoint.
 -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] {H' : Type*} [TopologicalSpace H'] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
-  [TopologicalSpace M'] [ChartedSpace H' M'] {f : M → M'} {s t : Set M} {x x₀ : M}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {f : M → M'} {s t : Set M} {x x₀ : M}
 
 namespace VectorField
 

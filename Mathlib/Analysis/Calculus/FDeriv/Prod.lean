@@ -345,8 +345,9 @@ theorem:
 -/
 
 
-variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
-  {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i} {Φ' : E →L[𝕜] ∀ i, F' i}
+variable {ι : Type*} {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
+  [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
+  {Φ' : E →L[𝕜] ∀ i, F' i}
 
 @[simp]
 theorem hasFDerivAtFilter_pi' :

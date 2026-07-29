@@ -59,8 +59,9 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {Ω 𝓧 𝓨 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace
-  𝓨} {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
+variable {Ω 𝓧 𝓨 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧}
+    {m𝓨 : MeasurableSpace 𝓨}
+    {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
 
 variable [StandardBorelSpace Ω] [Nonempty Ω]
 

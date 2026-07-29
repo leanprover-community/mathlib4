@@ -59,8 +59,8 @@ theorem _root_.LowerSemicontinuousOn.isClosed_re_epigraph (hsc : IsClosed s)
 
 section RCLike
 
-variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup
-  E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
+variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
+  [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- Let `φ : E → ℝ` be a convex and lower-semicontinuous function on a closed convex subset `s`. For
 any point `x ∈ s` and `a < φ x`, there exists a continuous affine linear function `f` in `E` such

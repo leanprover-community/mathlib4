@@ -312,7 +312,8 @@ end Preorder
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f g : α → β} {a : α} {s : Set α}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.add (hf : IsLocalMin f a) (hg : IsLocalMin g a) :
     IsLocalMin (fun x => f x + g x) a :=
@@ -337,7 +338,8 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] {f g : α → β} {a : α} {s : Set α}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α}
 
 nonrec theorem IsLocalMin.neg (hf : IsLocalMin f a) : IsLocalMax (fun x => -f x) a :=
   hf.neg

@@ -18,8 +18,8 @@ open Filter Finset Function
 
 section ConstSMul
 
-variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α] [ContinuousConstSMul γ α] {f : β
-  → α} {L : SummationFilter β}
+variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
+  [ContinuousConstSMul γ α] {f : β → α} {L : SummationFilter β}
 
 theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a L) :
     HasSum (fun i ↦ b • f i) (b • a) L :=
@@ -114,9 +114,9 @@ section HasSum
 
 -- Results in this section hold for continuous additive monoid homomorphisms or equivalences but we
 -- don't have bundled continuous additive homomorphisms.
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R₂
-  M₂] [TopologicalSpace M] [TopologicalSpace M₂] {σ : R →+* R₂} {σ' : R₂ →+* R} [RingHomInvPair σ
-  σ'] [RingHomInvPair σ' σ] {L : SummationFilter ι}
+variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R₂ M₂]
+  [TopologicalSpace M] [TopologicalSpace M₂] {σ : R →+* R₂} {σ' : R₂ →+* R} [RingHomInvPair σ σ']
+  [RingHomInvPair σ' σ] {L : SummationFilter ι}
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
 protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
@@ -178,8 +178,8 @@ end HasSum
 
 section automorphize
 
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*} [DivisionRing
-  R] [Module R M] [ContinuousConstSMul R M]
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*}
+  [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
 
 /-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
   function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/

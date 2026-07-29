@@ -49,7 +49,8 @@ open Fin Function
 
 namespace AlternatingMap
 
-variable {R : Type*} {M N : Type*} [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M]
+variable {R : Type*} {M N : Type*} [CommRing R] [AddCommGroup M]
+  [AddCommGroup N] [Module R M]
   [Module R N] {n : ℕ}
 
 /-- If `f` is a `(n + 1)`-multilinear alternating map, `x` is an element of the domain,

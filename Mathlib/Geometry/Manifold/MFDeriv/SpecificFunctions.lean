@@ -1049,8 +1049,8 @@ end AlgebraOverCommRing
 section DivisionRing
 open scoped RightActions
 
-variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'} {p' :
-  TangentSpace% z →L[𝕜] F'}
+variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+  {p' : TangentSpace% z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-((p z)⁻¹ •> p' <• (p z)⁻¹) : E →L[𝕜] F') :=

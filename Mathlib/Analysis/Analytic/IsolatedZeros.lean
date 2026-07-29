@@ -44,8 +44,8 @@ open Filter Function Module Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜
-  E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {s : E} {p : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 
 namespace HasSum
 
@@ -268,8 +268,8 @@ section Mul
 ### Vanishing of products of analytic functions
 -/
 
-variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A] {B : Type*}
-  [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
+variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
+  {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/

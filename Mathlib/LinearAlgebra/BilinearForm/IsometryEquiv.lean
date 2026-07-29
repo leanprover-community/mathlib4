@@ -49,8 +49,8 @@ def Equivalent (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.BilinForm R
 
 namespace IsometryEquiv
 
-variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂} {B₃ : LinearMap.BilinForm
-  R M₃}
+variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂}
+  {B₃ : LinearMap.BilinForm R M₃}
 
 instance : EquivLike (B₁.IsometryEquiv B₂) M₁ M₂ where
   coe f := f.toLinearEquiv
@@ -103,8 +103,8 @@ end IsometryEquiv
 
 namespace Equivalent
 
-variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂} {B₃ : LinearMap.BilinForm
-  R M₃}
+variable {B₁ : LinearMap.BilinForm R M₁} {B₂ : LinearMap.BilinForm R M₂}
+  {B₃ : LinearMap.BilinForm R M₃}
 
 @[refl]
 theorem refl (Q : LinearMap.BilinForm R M) : Q.Equivalent Q :=

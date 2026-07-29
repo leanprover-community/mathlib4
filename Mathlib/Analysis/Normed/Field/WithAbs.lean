@@ -87,7 +87,6 @@ end CommRing
 ### The completion of a field at an absolute value.
 -/
 
-
 end WithAbs
 
 namespace AbsoluteValue

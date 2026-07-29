@@ -638,8 +638,8 @@ end CommRing
 end Preorder
 
 section PartialOrder
-variable (𝕜) [Ring 𝕜] [PartialOrder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder
-  β] [DecidableEq α] [DecidableEq β] [DecidableLE α] [DecidableLE β]
+variable (𝕜) [Ring 𝕜] [PartialOrder α] [PartialOrder β] [LocallyFiniteOrder α]
+  [LocallyFiniteOrder β] [DecidableEq α] [DecidableEq β] [DecidableLE α] [DecidableLE β]
 
 /-- The Möbius function on a product order. Based on lemma 2.1.13 of Incidence Algebras by Spiegel
 and O'Donnell. -/

@@ -288,8 +288,8 @@ end OrderedCommMonoid
 
 section ProdSum
 
-variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (s : Finset ι) {f : ι → α}
-  (g : α → β)
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+  (s : Finset ι) {f : ι → α} (g : α → β)
 
 theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
     g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by

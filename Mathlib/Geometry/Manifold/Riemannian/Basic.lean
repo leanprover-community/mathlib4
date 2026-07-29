@@ -58,13 +58,15 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 noncomputable section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H] {I
-  : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 section
 
-variable [PseudoEMetricSpace M] [ChartedSpace H M] [RiemannianBundle (fun (x : M) ↦ TangentSpace%
-  x)]
+variable [PseudoEMetricSpace M] [ChartedSpace H M]
+  [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
 
 variable (I M) in
 /-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
@@ -208,8 +210,8 @@ the image of the neighborhood in the extended chart.
 open Manifold Metric
 open scoped NNReal
 
-variable [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)] [IsManifold I 1 M]
-  [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace% x)]
+variable [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
+  [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace% x)]
 
 /-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.

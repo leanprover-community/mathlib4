@@ -715,7 +715,6 @@ theorem sumCoords_reindex : (b.reindex e).sumCoords = b.sumCoords := by
   simp only [coe_sumCoords, repr_reindex]
   exact Finsupp.sum_mapDomain_index (fun _ => rfl) fun _ _ _ => rfl
 
-
 theorem coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=
   b.coord_repr_symm i (Finsupp.equivFunOnFinite.symm f)

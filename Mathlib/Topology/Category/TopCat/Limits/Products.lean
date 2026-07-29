@@ -28,7 +28,6 @@ noncomputable section
 
 namespace TopCat
 
-
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
   ofHom ⟨fun f => f i, continuous_apply i⟩

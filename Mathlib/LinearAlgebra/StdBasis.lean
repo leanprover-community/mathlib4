@@ -179,7 +179,8 @@ lemma AlgHom.eq_piEvalAlgHom {k G : Type*} [CommSemiring k] [NoZeroDivisors k] [
 
 namespace Module
 
-variable (ι R M : Type*) [Finite ι] [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (ι R M : Type*) [Finite ι] [CommSemiring R]
+  [AddCommMonoid M] [Module R M]
 
 /-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
 noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R

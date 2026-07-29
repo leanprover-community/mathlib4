@@ -22,7 +22,8 @@ open MeasureTheory Set Filter Function Asymptotics
 
 open scoped Topology ENNReal Interval NNReal
 
-variable {𝕜 E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {a b : ℝ}
+variable {𝕜 E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f : ℝ → E} {a b : ℝ}
 
 namespace intervalIntegral
 

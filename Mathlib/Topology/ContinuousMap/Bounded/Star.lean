@@ -96,8 +96,8 @@ end CStarRing
 
 section NormedAlgebra
 
-variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α] [NormedRing β] [NormedAlgebra 𝕜 β]
-  [StarAddMonoid β] [NormedStarGroup β]
+variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
+  [NormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
 
 /-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps!]

@@ -698,8 +698,8 @@ section NonUnitalAlgebra
 
 open Submodule
 
-variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A
-  A] [SMulCommClass R A A]
+variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+  [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- In a non-unital algebra, if every element of a set `s` commutes with `x`, then every element of
 `Submodule.span R s` commutes with `x`. -/
