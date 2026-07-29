@@ -3,6 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
+
 public import Mathlib.Analysis.Real.Sqrt
 
 /-!
@@ -16,6 +18,8 @@ We follow solution at
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1960_IMO_Problems/Problem_2)
 with minor modifications.
 -/
+
+public section
 
 open Real Set
 

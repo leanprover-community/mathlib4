@@ -3,6 +3,8 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
+module
+
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Data.Int.NatPrime
 public import Mathlib.Data.Set.Finite.Lemmas
@@ -15,6 +17,7 @@ Prove that there are infinitely many natural numbers $a$ with the following prop
 the number $z = n^4 + a$ is not prime for any natural number $n$.
 -/
 
+@[expose] public section
 
 open Int Nat
 

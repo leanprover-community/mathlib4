@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
+module
+
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -37,7 +39,7 @@ namespace Sensitivity
 
 /-! The next two lines assert we do not want to give a constructive proof,
 but rather use classical logic. -/
-noncomputable section
+@[expose] public noncomputable section
 
 local notation "√" => Real.sqrt
 

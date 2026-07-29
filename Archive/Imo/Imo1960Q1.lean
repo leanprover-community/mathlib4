@@ -3,6 +3,8 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
+module
+
 public import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
@@ -19,6 +21,7 @@ second predicate.
 The strategy here is roughly brute force, checking the possible multiples of 11.
 -/
 
+@[expose] public section
 
 open Nat
 

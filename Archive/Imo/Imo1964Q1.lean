@@ -3,6 +3,8 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+module
+
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Tactic.Ring
@@ -16,6 +18,8 @@ public import Mathlib.Tactic.Ring
 For (a), we find that the order of $2$ mod $7$ is $3$. Therefore for (b), it suffices to check
 $n = 0, 1, 2$.
 -/
+
+public section
 
 open Nat
 
