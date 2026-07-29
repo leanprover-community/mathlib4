@@ -182,7 +182,7 @@ instance : IsSMulApply ℕ (E₁ →ₚ[R] E₂) E₁ E₂ where
   smul_apply _ _ _ := rfl
 
 @[deprecated smul_apply (since := "2026-07-29")]
-protected lemma nsmul_apply (n : ℕ) (f : E₁ →ₚ[R] E₂) (x : E₁) : (n • f) x = n • f x := rfl
+protected lemma nsmul_apply (f : E₁ →ₚ[R] E₂) (n : ℕ) (x : E₁) : (n • f) x = n • f x := rfl
 
 instance : AddCommMonoid (E₁ →ₚ[R] E₂) := fast_instance% FunLike.addCommMonoid
 

@@ -83,7 +83,7 @@ def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ whe
   cont := g.cont.comp f.cont
 
 @[simp]
-lemma toContinuousLiinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
+lemma toContinuousLinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
     (g.comp f).toContinuousLinearMap = g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
   rfl
 
@@ -93,7 +93,8 @@ section ofClass
 
 variable {F : Type*} [FunLike F E₁ E₂] [ContinuousLinearMapClass F R E₁ E₂] [OrderHomClass F E₁ E₂]
 
-/-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
+/-- Reinterpret an element of a type of positive continuous linear maps as
+a positive continuous linear map. -/
 def ofClass (f : F) : E₁ →P[R] E₂ where
   toPositiveLinearMap := .ofClass f
   cont := map_continuous f
@@ -141,8 +142,8 @@ instance : IsZeroApply (E₁ →P[R] E₂) E₁ E₂ where
 variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
 @[simps! apply toPositiveLinearMap] protected def id : E₁ →P[R] E₁ where
-    toPositiveLinearMap := .id R E₁
-    cont := by dsimp [PositiveLinearMap.id]; fun_prop
+  toPositiveLinearMap := .id R E₁
+  cont := by dsimp [PositiveLinearMap.id]; fun_prop
 
 @[simp] lemma toContinuousLinearMap_id :
     (PositiveContinuousLinearMap.id R E₁).toContinuousLinearMap = .id R E₁ := rfl
