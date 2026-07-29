@@ -1051,7 +1051,9 @@ open ContinuousLinearMap Finset
 
 variable {𝕜}
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_{K}(E, F₁),
-where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function.
+
+TODO: Introduce a type of bundled C^k functions. -/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
   ContDiffMapSupportedIn.mkCLM 𝕜 (fun φ x ↦ B (φ x) (g x)) hadd hsmul hsmooth hsupp hbound
