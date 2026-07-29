@@ -283,6 +283,12 @@ lemma rank_mul_eq_right_of_isLowerTriangular {R : Type*} [CommRing R] [IsDomain 
   have hdet : A.det ≠ 0 := by simpa [det_of_lowerTriangular A hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
+lemma rank_mul_eq_right_of_isUpperTriangular {R : Type*} [CommRing R] [IsDomain R]
+    [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
+    (hA : A.IsUpperTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
+  have hdet : A.det ≠ 0 := by simpa [det_of_upperTriangular hA, Finset.prod_ne_zero_iff]
+  exact rank_mul_eq_right_of_det_ne_zero A B hdet
+
 /-- Taking a subset of the rows and columns reduces the rank. -/
 theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Fintype n₀] (A : Matrix m n R)
     (r : m₀ → m) (c : n₀ → n) : (A.submatrix r c).rank ≤ A.rank := by
@@ -383,10 +389,7 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
         fun a ha => by rw [if_neg fun he => ha (Subtype.ext he), zero_mul], if_pos rfl, one_mul]
     · have h0 : A i = 0 := hz i hi
-      rw [congrFun h0 j]
-      refine Finset.sum_eq_zero fun a _ => ?_
-      have hne : (a : m) ≠ i := fun he => hi (he ▸ a.2)
-      rw [if_neg hne, zero_mul]
+      aesop
   calc A.rank = (B * A.submatrix Subtype.val id).rank := by rw [hB]
     _ ≤ (A.submatrix Subtype.val id).rank := rank_mul_le_right _ _
     _ ≤ Fintype.card {x // x ∈ s} := rank_le_card_height _
