@@ -43,7 +43,8 @@ lemma continuous_duple {M : Type*} (x y : M) :
   convert continuous_convexCombPair (.single x) (.single y)
   aesop
 
-instance (M : Type*) [Nonempty M] : PathConnectedSpace (StdSimplex ℝ M) where
+instance pathConnectedSpace
+    (M : Type*) [Nonempty M] : PathConnectedSpace (StdSimplex ℝ M) where
   nonempty := by infer_instance
   joined x y :=
   ⟨{toContinuousMap := ⟨_, continuous_convexCombPair x y⟩
@@ -52,14 +53,7 @@ instance (M : Type*) [Nonempty M] : PathConnectedSpace (StdSimplex ℝ M) where
 
 /-- The standard one-dimension simplex is homeomorphic to the unit interval. -/
 noncomputable def homeomorphI : StdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
-  toFun s := ⟨s.weights 1, by simp⟩
-  invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
-  left_inv s := by
-    ext i
-    fin_cases i
-    · simp [sub_eq_iff_eq_add]
-    · simp
-  right_inv t := by simp
+  toEquiv := equivIcc
 
 @[local simp]
 lemma homeomorphI_apply_coe (s : StdSimplex ℝ (Fin 2)) :

@@ -137,6 +137,9 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
     simpa [hwa] using w.total
   mpr := by rintro rfl; simp
 
+lemma single_injective : Function.Injective (single (R := R) (M := M)) :=
+  fun _ _ h ↦ by simpa using congr_arg (Finsupp.support ∘ weights) h
+
 @[simp]
 lemma weights_apply_le_one
     (s : StdSimplex R M) (m : M) : s.weights m ≤ 1 := by
@@ -248,6 +251,40 @@ lemma mem_range_map_iff
       intro rfl
       simp only [hm, ← Finsupp.notMem_support_iff] at hy
       exact hy z.prop
+
+section
+
+variable {R' : Type*} [Ring R'] [PartialOrder R'] [IsStrictOrderedRing R']
+/-- The bijection between the one dimensional standard simplex
+and the interval `[0, 1]`. -/
+@[simps -isSimp]
+def equivIcc : StdSimplex R' (Fin 2) ≃ Set.Icc (0 : R') 1 where
+  toFun s := ⟨s.weights 1, by simp⟩
+  invFun t := duple (s := 1 - t) (t := t) 0 1 (by grind) (by grind) (by simp)
+  left_inv s := by
+    ext i
+    fin_cases i
+    · simp [sub_eq_iff_eq_add]
+    · simp
+  right_inv t := by simp
+
+attribute [local simp] equivIcc_apply_coe
+
+@[simp]
+lemma equivIcc_single_zero : equivIcc (.single (R := R') 0) = ⟨0, by simp⟩ := by aesop
+
+@[simp]
+lemma equivIcc_single_one : equivIcc (.single (R := R') 1) = ⟨1, by simp⟩ := by aesop
+
+@[simp]
+lemma equivIcc_symm_zero : equivIcc.symm ⟨0, by simp⟩ = .single (R := R') 0 :=
+  equivIcc.injective (by simp)
+
+@[simp]
+lemma equivIcc_symm_one : equivIcc.symm ⟨1, by simp⟩ = .single (R := R') 1 :=
+  equivIcc.injective (by simp)
+
+end
 
 /--
 Join operation for standard simplices (monadic join).
