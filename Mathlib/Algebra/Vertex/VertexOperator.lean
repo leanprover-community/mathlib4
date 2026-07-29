@@ -458,8 +458,9 @@ theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) 
     (A.resProdRight m B).coeff n v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
         (coeff B (n - m + i)) ((coeff A (-1 - i)) v) := by
-  dsimp only [resProdRight, ResLeft, Int.reduceNeg, coeff_of_coeff]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_of_coeff, binomCompRight_apply_coeff]
+  simp only [resProdRight, ResLeft, Int.reduceNeg]
+  rw [← binomCompRight_apply_coeff]
+  exact rfl
 
 @[simp]
 theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :

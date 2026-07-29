@@ -44,7 +44,7 @@ def restrictedValue (σ) (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
     use x0 * y0
     simp [hx0, hy0]
   one_mem' := by
-    simp only [RingHom.mem_range, Set.mem_setOf_eq, map_one, forall_const]
+    simp only [RingHom.mem_range, Set.mem_ofPred_eq, map_one, forall_const]
     use 1
     exact algebraMap.coe_one
   add_mem' hx hy := by
@@ -54,7 +54,7 @@ def restrictedValue (σ) (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
     use x0 + y0
     simp [hx0, hy0]
   zero_mem' := by
-    simp only [RingHom.mem_range, Set.mem_setOf_eq, map_zero, forall_const]
+    simp only [RingHom.mem_range, Set.mem_ofPred_eq, map_zero, forall_const]
     use 0
     exact algebraMap.coe_zero
   neg_mem' hx := by
