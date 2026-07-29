@@ -501,7 +501,7 @@ theorem degreeOf_leadingTermOf (n : σ) (p : MvPolynomial σ R) :
       rw [hb]
       exact Nat.zero_le _
 
-theorem leadingTermOf_mul_X (i j : σ) (f : MvPolynomial σ R) [Nontrivial R] :
+theorem leadingTermOf_mul_X (i j : σ) (f : MvPolynomial σ R) :
     (f * X j).leadingTermOf i  = f.leadingTermOf i * X j := by
   rw [leadingTermOf_def, leadingTermOf_def, Finset.sum_mul]
   apply Eq.symm
