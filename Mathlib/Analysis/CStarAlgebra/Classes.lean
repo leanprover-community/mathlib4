@@ -145,7 +145,7 @@ end MulOpposite
 attribute [local instance] IsUnital.toMulOneClass in
 /-- A unital non-unital C⋆-algebra is a C⋆-algebra.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] [IsUnital A] :
     CStarAlgebra A where
@@ -156,7 +156,7 @@ noncomputable abbrev IsUnital.toCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra 
 attribute [local instance] IsUnital.toCStarAlgebra in
 /-- A unital non-unital commutative C⋆-algebra is a commutative C⋆-algebra.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A]
     [IsUnital A] : CommCStarAlgebra A where

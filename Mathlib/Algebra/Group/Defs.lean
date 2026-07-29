@@ -444,7 +444,7 @@ variable {A : Type*}
 
 /-- A unital magma is `MulOneClass`.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toMulOneClass [Mul A] [IsUnital A] : MulOneClass A where
   one := isUnital.choose
@@ -825,7 +825,7 @@ end Monoid
 attribute [local instance] IsUnital.toMulOneClass in
 /-- A unital semigroup is a monoid.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 

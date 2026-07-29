@@ -1000,7 +1000,7 @@ section IsUnital
 attribute [local instance] IsUnital.toMulOneClass in
 /-- A unital non-unital seminormed ring is a seminormed ring.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toSeminormedRing {A : Type*} [NonUnitalSeminormedRing A]
     [IsUnital A] : SeminormedRing A where
@@ -1010,7 +1010,7 @@ noncomputable abbrev IsUnital.toSeminormedRing {A : Type*} [NonUnitalSeminormedR
 attribute [local instance] IsUnital.toSeminormedRing in
 /-- A unital non-unital seminormed commutative ring is a seminormed commutative ring.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toSeminormedCommRing {A : Type*} [NonUnitalSeminormedCommRing A]
     [IsUnital A] : SeminormedCommRing A where
@@ -1018,7 +1018,7 @@ noncomputable abbrev IsUnital.toSeminormedCommRing {A : Type*} [NonUnitalSeminor
 attribute [local instance] IsUnital.toMulOneClass in
 /-- A unital non-unital normed ring is a normed ring.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toNormedRing {A : Type*} [NonUnitalNormedRing A] [IsUnital A] :
     NormedRing A where
@@ -1028,7 +1028,7 @@ noncomputable abbrev IsUnital.toNormedRing {A : Type*} [NonUnitalNormedRing A] [
 attribute [local instance] IsUnital.toNormedRing in
 /-- A unital non-unital normed commutative ring is a normed commutative ring.
 
-This constructor is primarily intended to be used within proofs since they create bad definitional
+This constructor is primarily intended to be used within proofs since it creates bad definitional
 equalities. -/
 noncomputable abbrev IsUnital.toNormedCommRing {A : Type*} [NonUnitalNormedCommRing A]
     [IsUnital A] : NormedCommRing A where
