@@ -247,6 +247,7 @@ def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* H
       (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
       (toPowerSeries (R := R)).symm.toRingHom).comp (PowerSeries.rescale r)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
     (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff n a := by
   let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
@@ -256,10 +257,11 @@ theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : Po
     ← toPowerSeries_symm_apply_coeff]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem meval_notin_range [CommSemiring R] {g g' : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
     (hg' : g' ∉ Set.range (multiplesHom Γ g)) : (meval hg r a).coeff g' = 0 := by
   rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply]
-  exact embDomain_notin_range hg'
+  exact embDomain_of_notMem_range hg'
 
 theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
     meval hg r PowerSeries.X = single g r := by

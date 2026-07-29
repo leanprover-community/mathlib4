@@ -399,7 +399,7 @@ theorem mvpow_finite_co_support {σ : Type*} [Fintype σ] (y : σ →₀ HahnSer
     refine Set.Finite.of_surjOn (fun a => Finsupp.onFinset univ (fun i => a i (mem_univ i))
       (fun i _ ↦ mem_univ i)) (fun a ha => ?_) this
     simp_all only [dite_eq_ite, ite_true, implies_true, dite_true, mem_univ, ne_eq,
-      Set.mem_setOf_eq, Set.mem_image]
+      Set.mem_ofPred_eq, Set.mem_image]
     use fun i _ => a i
     exact ⟨ha, by ext; simp⟩
   exact pi_finite_co_support Finset.univ _ g (fun i => isPWO_iUnion_support_powers

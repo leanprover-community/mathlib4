@@ -208,7 +208,8 @@ lemma add_finsupp {α A : Type*} [AddMonoid A] {f g : α → A} (hf : Finite f.s
     (hg : Finite g.support) :
     Finsupp.ofSupportFinite f hf + Finsupp.ofSupportFinite g hg =
       Finsupp.ofSupportFinite (f + g) (finite_support_add hf hg) := by
-  ext; simp [Finsupp.add_apply, Finsupp.ofSupportFinite_coe]
+  ext
+  exact DFunLike.congr_arg _ rfl
 --#find_home! add_finsupp --[Mathlib.Algebra.Group.Finsupp]
 
 lemma finite_support_bracket [AddCancelCommMonoid A] (a : A) (x y : A →₀ L) :

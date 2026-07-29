@@ -553,6 +553,7 @@ domain where `x` is big). -/
 noncomputable def resProdRight (m : ℤ) (A B : VertexOperator R V) : VertexOperator R V :=
   LexResLeft (-1 : ℤ) (binomCompRight A B m)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
     (A.resProdRight m B).coeff n v =
       (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •

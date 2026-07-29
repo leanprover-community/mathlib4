@@ -625,14 +625,21 @@ theorem cosupp_subset_iunion_cosupp_left {V} [AddCommMonoid V] (s : SummableFami
     (t : SummableFamily Γ' V β) (g : Γ') {gh : Γ × Γ'}
     (hgh : gh ∈ VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
       t.isPWO_iUnion_support g)) :
-    Set.Finite.toFinset (s.finite_co_support (gh.1)) ⊆
+    Set.Finite.toFinset (s.finite_co_support gh.1) ⊆
     (VAddAntidiagonal g (Set.VAddAntidiagonal.finite_of_isPWO s.isPWO_iUnion_support
       t.isPWO_iUnion_support g)).biUnion
       fun (g' : Γ × Γ') => Set.Finite.toFinset (s.finite_co_support (g'.1)) := by
   intro a ha
-  simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
-    Function.mem_support, mem_biUnion, Prod.exists, exists_and_right, exists_and_left]
-  exact Exists.intro gh.1 ⟨⟨hgh.1, Exists.intro gh.2 hgh.2⟩, ha⟩
+  have : (s a).coeff gh.1 ≠ 0 := by
+    simp only [Set.Finite.toFinset, Set.mem_toFinset, Function.mem_support] at ha
+    exact ha
+  simp only [Set.Finite.toFinset, mem_biUnion, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support,
+    Set.mem_toFinset, Function.mem_support, Prod.exists, exists_and_right, exists_and_left]
+  use gh.1
+  refine ⟨⟨Exists.intro a this, ?_⟩, this⟩
+  use gh.2
+  simp only [mem_vaddAntidiagonal] at hgh
+  exact ⟨by simpa using hgh.2.1, hgh.2.2⟩
 
 open Classical in
 theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
@@ -660,7 +667,7 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
         (b a (mem_cons_self a s'), fun (i : σ) (hi : i ∈ s') => b i (mem_cons_of_mem hi)))
         ((Set.Finite.prod (htfc a gh.1) (hp gh.2)).subset ?_) ?_
       · intro x hx
-        simp_all only [Set.mem_image, Set.mem_prod, Set.mem_setOf_eq]
+        simp_all only [Set.mem_image, Set.mem_prod, Set.mem_ofPred_eq]
         obtain ⟨y, hy⟩ := hx
         constructor
         · have h : x.1 = y a (mem_cons_self a s') := by rw [← hy.2]
@@ -677,10 +684,10 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
         · exact hhi ▸ hxy.1
         · exact congrFun (congrFun hxy.2 i) (Or.resolve_left (mem_cons.mp hi) hhi)
     · intro x hx
-      simp only [Set.mem_setOf_eq] at hx
+      simp only [Set.mem_ofPred_eq] at hx
       have hhx := exists_ne_zero_of_sum_ne_zero hx
       simp only [mem_coe, mem_antidiagonal, Set.mem_iUnion, mem_support, ne_eq,
-        mem_cons, Set.mem_setOf_eq, exists_prop, Prod.exists]
+        mem_cons, Set.mem_ofPred_eq, exists_prop, Prod.exists]
       use hhx.choose.1, hhx.choose.2
       refine ⟨⟨?_, ?_⟩, hhx.choose_spec.2⟩
       · use x a (mem_cons_self a s')

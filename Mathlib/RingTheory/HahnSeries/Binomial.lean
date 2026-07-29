@@ -245,7 +245,7 @@ def onePlusPosOrderTop (Γ) (R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCa
     intro x y hx hy
     obtain (_|_) := subsingleton_or_nontrivial R
     · simp
-    · simp_all only [Set.mem_setOf_eq, minus_one_orderTop_pos]
+    · simp_all only [Set.mem_ofPred_eq, minus_one_orderTop_pos]
       have h1 : x.leadingCoeff * y.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
       constructor
       · rw [orderTop_mul_of_ne_zero (h1 ▸ one_ne_zero), hx.1, hy.1, add_zero]

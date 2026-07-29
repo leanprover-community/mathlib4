@@ -553,8 +553,8 @@ def ofIterate.linearMap [PartialOrder Γ'] :
 def toIterate.linearMap [PartialOrder Γ'] :
     HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
   toFun := toIterate
-  map_add' _ _ := by ext; simp [toIterate]
-  map_smul' _ _ := by ext; simp [toIterate]
+  map_add' _ _ := by ext; simp [toIterate, Pi.add_def]
+  map_smul' _ _ := by ext; simp [toIterate, Pi.smul_def]
 
 @[simp]
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R} {x : U⟦Γ⟧} :

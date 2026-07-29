@@ -212,23 +212,6 @@ instance [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) where
     simp only [(· • ·), SMul.smul]
     rw [eq_of, of_neg, of_carrier, of_carrier, eq_of, Int.natCast_add_one, zsmul_eq_smul,
       negSucc_zsmul, zsmul_eq_smul, of_neg, ← Int.natCast_add_one, natCast_zsmul]
-instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
-  smul x y := (of R) {
-    coeff := fun a =>
-      ∑ ij ∈ VAddAntidiagonal a
-        (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a),
-        x.coeff ij.fst • ((of R).symm y).coeff ij.snd
-    isPWO_support' :=
-        have h : { a : Γ' | (∑ ij ∈ VAddAntidiagonal a
-            (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a),
-              x.coeff ij.fst • ((of R).symm y).coeff ij.snd) ≠ 0 } ⊆
-            { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
-              ((of R).symm y).isPWO_support a)).Nonempty } := by
-          intro a ha
-          simp only [Set.mem_ofPred_eq]
-          contrapose! ha
-          simp [ha]
-        (isPWO_support_vaddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support).mono h }
 
 @[simp] theorem of_nsmul [AddCommMonoid V] (n : ℕ) (x : HahnSeries Γ V) :
     (of R) (n • x) = n • (of R) x := rfl
@@ -322,7 +305,7 @@ instance [Zero R] [SMul R V] : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
             { a : Γ' | (VAddAntidiagonal a (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support
               y.carrier.isPWO_support a)).Nonempty } := by
           intro a ha
-          simp only [Set.mem_setOf_eq]
+          simp only [Set.mem_ofPred_eq]
           contrapose! ha
           simp [ha]
         (isPWO_support_vaddAntidiagonal x.isPWO_support y.carrier.isPWO_support).mono h }
@@ -472,7 +455,7 @@ theorem support_smul_subset_vadd_support' [Zero R] [SMulWithZero R V] {x : R⟦�
     (x • y).carrier.support ⊆ x.support +ᵥ y.carrier.support := by
   refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
     fun a ↦ Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support y.carrier.isPWO_support a)
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   contrapose! hx
   simp [coeff_smul, hx]
 
@@ -1176,7 +1159,7 @@ theorem embDomain_smul (φ : Γ ↪o Γ') (f : Γ₁ ↪o Γ₂) (hf : ∀ (g : 
       simp only [Equiv.coe_fn_mk, mem_vaddAntidiagonal, HahnSeries.mem_support, embDomain_coeff,
         ne_eq, ← hf, EmbeddingLike.apply_eq_iff_eq] at h1
       exact ⟨i, j, h1, rfl⟩
-  · rw [HahnSeries.embDomain_notin_range hg, eq_comm]
+  · rw [HahnSeries.embDomain_of_notMem_range hg, eq_comm]
     contrapose! hg
     obtain ⟨i, hi, _, hj, h⟩ :=
       support_smul_subset_vadd_support' <| (HahnSeries.mem_support _ g).mpr hg

@@ -44,10 +44,20 @@ namespace CauchyDividedPower
 def exp' [IsAbsoluteValue (R := A) (‖·‖)] [CauchyDividedPower A] (x : A) : CauSeq A (‖·‖) :=
   ⟨fun n => ∑ m ∈ range n, dpow m x, (cauchy x).of_abv⟩
 
+lemma exp'_apply [IsAbsoluteValue (R := A) (‖·‖)] [CauchyDividedPower A] (x : A) :
+    exp' x = ⟨fun n => ∑ m ∈ range n, dpow m x, (cauchy x).of_abv⟩ :=
+  rfl
+
 /-- The exponential function. -/
 noncomputable def exp [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖·‖)]
     [CauchyDividedPower A] (x : A) : A :=
   CauSeq.lim (exp' x)
+
+@[simp]
+lemma exp_apply [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖·‖)]
+    [CauchyDividedPower A] (x : A) :
+    exp x = CauSeq.lim ⟨fun n => ∑ m ∈ range n, dpow m x, (cauchy x).of_abv⟩ :=
+  rfl
 
 theorem dpow_pos_zero [NoZeroSMulDivisors ℕ A] [CauchyDividedPower A] {n : ℕ} (hn : n ≠ 0) :
     dpow n (0 : A) = 0 := by
@@ -60,6 +70,7 @@ theorem dpow_pos_zero [NoZeroSMulDivisors ℕ A] [CauchyDividedPower A] {n : ℕ
       choose_one_right] at this
     exact (smul_eq_zero_iff_right hn).mp this.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exp_zero [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖·‖)]
     [CauchyDividedPower A] [NoZeroSMulDivisors ℕ A] :
     exp (0 : A) = 1 := by
@@ -69,14 +80,17 @@ theorem exp_zero [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖
     · simp only [h, ↓reduceIte, ← dpow_zero (AddSubmonoid.zero_mem support)]
       exact Finset.sum_eq_single_of_mem 0 (mem_range.mpr <| zero_lt_of_ne_zero h)
         fun k _ hk ↦ dpow_pos_zero hk
-  simp_rw [exp, exp', this]
-  exact lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => by simp [ε0, Nat.ne_zero_of_lt hj]⟩
+  simp only [exp_apply, this]
+  exact lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => lt_of_eq_of_lt
+    (by simp [CauSeq.sub_apply, Nat.ne_zero_of_lt hj]) ε0⟩
 
+set_option backward.isDefEq.respectTransparency false
 theorem exp_add [IsAbsoluteValue (R := A) (‖·‖)] [CauSeq.IsComplete A (‖·‖)]
     [CauchyDividedPower A] {x y : A} (hx : x ∈ CauchyDividedPower.support)
     (hy : y ∈ CauchyDividedPower.support) (hxy : x * y = y * x) :
     exp (x + y) = exp x * exp y := by
-  simp_rw [exp, exp', lim_mul_lim]
+  simp only [exp, exp']
+  rw [lim_mul_lim]
   apply (lim_eq_lim_of_equiv _).symm
   simp_rw [CauchyDividedPower.dpow_add hx hy hxy]
   exact cauchy_product (CauchyDividedPower.cauchy x) (CauchyDividedPower.cauchy y).of_abv
