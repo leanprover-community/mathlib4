@@ -199,13 +199,8 @@ instance : FloorRing ℤ where
     rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-<<<<<<< HEAD
 @[implicit_reducible]
 def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (floor : α → ℤ)
-=======
-@[instance_reducible]
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
->>>>>>> master
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -213,13 +208,8 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor 
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-<<<<<<< HEAD
 @[implicit_reducible]
 def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (ceil : α → ℤ)
-=======
-@[instance_reducible]
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
->>>>>>> master
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
