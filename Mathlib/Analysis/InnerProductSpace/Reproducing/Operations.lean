@@ -7,16 +7,13 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
-open RKHS
-
-
 /-!
 # main defintions
 -/
 
 public section
 
-open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate
+open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate RKHS
 
 namespace RKHS
 
