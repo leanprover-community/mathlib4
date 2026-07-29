@@ -78,28 +78,6 @@ lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]
 protected lemma map_nonneg (f : E₁ →P[R] E₂) {x : E₁} (hx : 0 ≤ x) : 0 ≤ f x :=
   map_nonneg f hx
 
-section Comp
-
-variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
-variable [AddCommMonoid E₄] [PartialOrder E₄] [Module R E₄] [TopologicalSpace E₄]
-
-/-- Composition of positive continuous linear maps. -/
-@[simps! apply toPositiveLinearMap]
-def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ where
-  toPositiveLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
-  cont := g.cont.comp f.cont
-
-@[simp]
-lemma toContinuousLinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
-    (g.comp f).toContinuousLinearMap = g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
-  rfl
-
-lemma comp_assoc (h : E₃ →P[R] E₄) (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
-    h.comp (g.comp f) = (h.comp g).comp f :=
-  rfl
-
-end Comp
-
 section ofClass
 
 variable {F : Type*} [FunLike F E₁ E₂] [ContinuousLinearMapClass F R E₁ E₂] [OrderHomClass F E₁ E₂]
@@ -164,22 +142,37 @@ variable (R E₁) in
 /-- The identity as a positive continuous linear map. -/
 @[simps! apply toPositiveLinearMap] protected def id : E₁ →P[R] E₁ where
   toPositiveLinearMap := .id R E₁
-  cont := by dsimp [PositiveLinearMap.id]; fun_prop
+  cont := continuous_id
 
 @[simp] lemma toContinuousLinearMap_id :
     (PositiveContinuousLinearMap.id R E₁).toContinuousLinearMap = .id R E₁ := rfl
 
-@[simp] lemma comp_id (f : E₁ →P[R] E₂) : f.comp (.id R E₁) = f := rfl
-@[simp] lemma id_comp (f : E₁ →P[R] E₂) : (PositiveContinuousLinearMap.id R E₂).comp f = f := rfl
-
-section zero
+section Comp
 
 variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
+variable [AddCommMonoid E₄] [PartialOrder E₄] [Module R E₄] [TopologicalSpace E₄]
 
+/-- Composition of positive continuous linear maps. -/
+@[simps! apply toPositiveLinearMap]
+def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ where
+  toPositiveLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
+  cont := g.cont.comp f.cont
+
+@[simp]
+lemma toContinuousLinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
+    (g.comp f).toContinuousLinearMap = g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
+  rfl
+
+lemma comp_assoc (h : E₃ →P[R] E₄) (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
+    h.comp (g.comp f) = (h.comp g).comp f :=
+  rfl
+
+@[simp] lemma comp_id (f : E₁ →P[R] E₂) : f.comp (.id R E₁) = f := rfl
+@[simp] lemma id_comp (f : E₁ →P[R] E₂) : (PositiveContinuousLinearMap.id R E₂).comp f = f := rfl
 @[simp] lemma zero_comp (f : E₁ →P[R] E₂) : (0 : E₂ →P[R] E₃).comp f = 0 := rfl
 @[simp] lemma comp_zero (f : E₂ →P[R] E₃) : f.comp (0 : E₁ →P[R] E₂) = 0 := by ext; simp
 
-end zero
+end Comp
 
 variable [IsOrderedAddMonoid E₂] [ContinuousAdd E₂]
 

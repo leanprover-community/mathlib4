@@ -107,7 +107,7 @@ def comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) : E₁ →ₚ[R] E�
     (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
   rfl
 
-@[simp] lemma comp_assoc (h : E₃ →ₚ[R] E₄) (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
+lemma comp_assoc (h : E₃ →ₚ[R] E₄) (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
     h.comp (g.comp f) = (h.comp g).comp f :=
   rfl
 
