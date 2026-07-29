@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-! # Positive continuous linear maps
 
@@ -15,6 +15,12 @@ C⋆-algebras are automatically continuous (see `PositiveLinearMap.exists_norm_a
 to an instance of `ContinuousLinearMapClass`) there are other situations (e.g., in the theory of
 W⋆-algebras) in which this does not hold and yet we wish to restrict to consider only *continuous*
 positive linear maps.
+
+## Implementation notes
+
+We do not define `PositiveContinuousLinearMapClass` to avoid adding a class that mixes order and
+algebra. One can achieve the same effect by using a combination of `ContinuousLinearMapClass` and
+`OrderHomClass`.
 
 -/
 
@@ -39,7 +45,7 @@ namespace PositiveContinuousLinearMap
 
 section General
 
-variable {R E₁ E₂ E₃ : Type*} [Semiring R]
+variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
   [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
   [Module R E₁] [Module R E₂] [TopologicalSpace E₁] [TopologicalSpace E₂]
 
@@ -75,6 +81,7 @@ protected lemma map_nonneg (f : E₁ →P[R] E₂) {x : E₁} (hx : 0 ≤ x) : 0
 section Comp
 
 variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
+variable [AddCommMonoid E₄] [PartialOrder E₄] [Module R E₄] [TopologicalSpace E₄]
 
 /-- Composition of positive continuous linear maps. -/
 @[simps! apply toPositiveLinearMap]
@@ -85,6 +92,10 @@ def comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) : E₁ →P[R] E₃ whe
 @[simp]
 lemma toContinuousLiinearMap_comp (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
     (g.comp f).toContinuousLinearMap = g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
+  rfl
+
+lemma comp_assoc (h : E₃ →P[R] E₄) (g : E₂ →P[R] E₃) (f : E₁ →P[R] E₂) :
+    h.comp (g.comp f) = (h.comp g).comp f :=
   rfl
 
 end Comp
@@ -120,9 +131,19 @@ lemma toPositiveLinearMap_injective :
     Function.Injective ((↑) : (E₁ →P[R] E₂) → (E₁ →ₚ[R] E₂)) :=
   fun _ _ h ↦ by ext x; congrm($h x)
 
+@[simp]
+lemma toPositiveLinearMap_inj (f g : E₁ →P[R] E₂) :
+    f.toPositiveLinearMap = g.toPositiveLinearMap ↔ f = g :=
+  toPositiveLinearMap_injective.eq_iff
+
 lemma toContinuousLinearMap_injective :
     Function.Injective ((↑) : (E₁ →P[R] E₂) → (E₁ →L[R] E₂)) :=
   fun _ _ h ↦ by ext x; congrm($h x)
+
+@[simp]
+lemma toContinuousLinearMap_inj (f g : E₁ →P[R] E₂) :
+    f.toContinuousLinearMap = g.toContinuousLinearMap ↔ f = g :=
+  toContinuousLinearMap_injective.eq_iff
 
 instance : Zero (E₁ →P[R] E₂) where
   zero := .mk (0 : E₁ →ₚ[R] E₂) <| by fun_prop
@@ -146,6 +167,18 @@ variable (R E₁) in
 
 @[simp] lemma toContinuousLinearMap_id :
     (PositiveContinuousLinearMap.id R E₁).toContinuousLinearMap = .id R E₁ := rfl
+
+@[simp] lemma comp_id (f : E₁ →P[R] E₂) : f.comp (.id R E₁) = f := rfl
+@[simp] lemma id_comp (f : E₁ →P[R] E₂) : (PositiveContinuousLinearMap.id R E₂).comp f = f := rfl
+
+section zero
+
+variable [AddCommMonoid E₃] [PartialOrder E₃] [Module R E₃] [TopologicalSpace E₃]
+
+@[simp] lemma zero_comp (f : E₁ →P[R] E₂) : (0 : E₂ →P[R] E₃).comp f = 0 := rfl
+@[simp] lemma comp_zero (f : E₂ →P[R] E₃) : f.comp (0 : E₁ →P[R] E₂) = 0 := by ext; simp
+
+end zero
 
 variable [IsOrderedAddMonoid E₂] [ContinuousAdd E₂]
 

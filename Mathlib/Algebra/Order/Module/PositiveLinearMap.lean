@@ -67,11 +67,12 @@ namespace PositiveLinearMap
 
 section general
 
-variable {R E₁ E₂ E₃ : Type*} [Semiring R]
+variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
     [AddCommMonoid E₁] [PartialOrder E₁]
     [AddCommMonoid E₂] [PartialOrder E₂]
     [AddCommMonoid E₃] [PartialOrder E₃]
-    [Module R E₁] [Module R E₂] [Module R E₃]
+    [AddCommMonoid E₄] [PartialOrder E₄]
+    [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
 
 instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
   coe f := f.toFun
@@ -104,6 +105,10 @@ def comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) : E₁ →ₚ[R] E�
 
 @[simp] lemma toOrderHom_comp (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
     (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
+  rfl
+
+@[simp] lemma comp_assoc (h : E₃ →ₚ[R] E₄) (g : E₂ →ₚ[R] E₃) (f : E₁ →ₚ[R] E₂) :
+    h.comp (g.comp f) = (h.comp g).comp f :=
   rfl
 
 @[simp] lemma comp_id (f : E₁ →ₚ[R] E₂) : f.comp (.id R E₁) = f := rfl
@@ -149,6 +154,9 @@ instance : IsZeroApply (E₁ →ₚ[R] E₂) E₁ E₂ where
 
 @[deprecated zero_apply (since := "2026-07-29")]
 protected lemma zero_apply (x : E₁) : (0 : E₁ →ₚ[R] E₂) x = 0 := rfl
+
+@[simp] lemma zero_comp (f : E₁ →ₚ[R] E₂) : (0 : E₂ →ₚ[R] E₃).comp f = 0 := rfl
+@[simp] lemma comp_zero (f : E₂ →ₚ[R] E₃) : f.comp (0 : E₁ →ₚ[R] E₂) = 0 := by ext; simp
 
 variable [IsOrderedAddMonoid E₂]
 
