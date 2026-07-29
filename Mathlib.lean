@@ -7435,9 +7435,11 @@ public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Tactic.Linter.UnneededImport
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Mathlib.Tactic.Linter.UnusedVariableCommand
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
 public import Mathlib.Tactic.Linter.Whitespace

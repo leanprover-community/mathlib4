@@ -14,9 +14,11 @@ marks a binder as used when a declaration of the scope binds the same user-facin
 leading telescope, with the exact declaration list of each command from the `declaredNames`
 producer. It reports binders with no use when their scope closes, and at the end of the file.
 
-The linter has two known blind spots, and both give false positives: usage inside `example`
-commands and usage inside notations is invisible, because neither adds a declaration to the
-environment.
+Usage marking has two sources: the leading binder names of the declarations that each command
+adds to the environment, and the identifier occurrences in each command's syntax. The second
+source covers `example` commands and notations, which add no declaration. Identifier matching
+is by name, so an unrelated identifier with the name of a binder also marks it: the linter
+prefers false negatives to false positives.
 -/
 
 meta section
@@ -72,6 +74,11 @@ where
     | .lam n _ b _, acc => go b (acc.insert n.eraseMacroScopes)
     | _, acc => acc
 
+/-- Collects the identifier names of a syntax tree. -/
+partial def collectIdents (s : Syntax) (acc : NameSet) : NameSet :=
+  if s.isIdent then acc.insert s.getId.eraseMacroScopes
+  else s.getArgs.foldl (fun a c => collectIdents c a) acc
+
 /-- Reports the unused entries of `lvl`. -/
 def reportUnused (lvl : Array VarEntry) : CommandElabM Unit := do
   for v in lvl do
@@ -115,13 +122,19 @@ def unusedVariablePost (readPre : PreStateFn) (stx : Syntax) (self : UnusedVarSt
             lvl := lvl.push { name := key.1, stx := id }
       levels := levels.set! i lvl
       counts := counts.set! i vds.size
-  -- Mark binders used by the declarations of this command.
+  -- Mark binders used by the declarations of this command. Identifier occurrences in the
+  -- command syntax also mark binders: this covers `example` commands and notations, which add
+  -- no declaration to the environment. Binder-management commands do not count as usage.
+  let mut usedNames : NameSet := {}
+  unless #[``Lean.Parser.Command.variable, ``Lean.Parser.Command.omit,
+      ``Lean.Parser.Command.include].contains stx.getKind do
+    usedNames := collectIdents stx usedNames
   if let some p := readPre declaredNames then
     let env ← getEnv
-    let mut usedNames : NameSet := {}
     for n in p.new do
       if let some ci := env.find? n then
         usedNames := leadingBinderNames ci.type |>.foldl (·.insert ·) usedNames
+  if true then
     if !usedNames.isEmpty then
       levels := levels.map fun lvl =>
         lvl.map fun v => if usedNames.contains v.name then { v with used := true } else v
