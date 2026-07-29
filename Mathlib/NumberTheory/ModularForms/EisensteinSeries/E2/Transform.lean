@@ -38,6 +38,8 @@ the action of `S = [[0, -1], [1, 0]]`.
 * **`E2_slash_action`**: The normalized version:
   `E₂|[2] γ = E₂ - (1/(2ζ(2))) D₂(γ)`
 
+* **`E2_periodic`**: as a consequence of invariance under `T`, `E2` is `1`-periodic.
+
 ## Proof Strategy
 
 The proof of `G2_S_transform` is the heart of this file. The strategy is:
@@ -225,6 +227,30 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
 lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
+
+/-- `E2` is invariant under the weight-2 slash action of `T`, since the defect `D2 T` vanishes. -/
+lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
+  rw [E2_slash_action]
+  simp [D2_T]
+
+/-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
+lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
+  have h := congrFun E2_T_transform z
+  rw [SL_slash_apply] at h
+  simpa [denom_apply, coe_T] using h
+
+/-- `E2 ∘ ofComplex` has period `1`. -/
+lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 := by
+  intro w
+  simp only [Function.comp_apply]
+  by_cases hw : 0 < w.im
+  · rw [ofComplex_apply_of_im_pos hw,
+      ofComplex_apply_of_im_pos (show 0 < (w + 1).im by simpa using hw), ← E2_T_smul ⟨w, hw⟩]
+    congr 1
+    ext
+    simpa using (coe_T_zpow_smul_eq (n := 1) (z := ⟨w, hw⟩)).symm
+  · rw [ofComplex_apply_of_im_nonpos (by simpa using not_lt.mp hw),
+      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
 
 end transform
 
