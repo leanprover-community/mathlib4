@@ -20,16 +20,6 @@ file used by the library's own linters.
 ## Current scripts and their purpose
 
 **Repository analysis and reporting**
-- `extract_measure_theory_documentation.py`
-  Writes the comments in `Mathlib/MeasureTheory` to `docs/measure_theory_comments.txt` for
-  prose-oriented tools such as spell checkers. Run
-  `python3 scripts/extract_measure_theory_documentation.py --check` to verify that the checked-in
-  corpus is current.
-- `extract_all_documentation.py`
-  Writes comments from `Mathlib`, `Archive`, `Counterexamples`, and `MathlibTest` to
-  `docs/mathlib_comments.txt`, using the same prose cleanup as the MeasureTheory extractor. Run
-  `python3 scripts/extract_all_documentation.py --check` to verify that the checked-in corpus is
-  current.
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
