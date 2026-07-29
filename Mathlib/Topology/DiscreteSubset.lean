@@ -399,6 +399,25 @@ lemma Disjoint.nhdsWithin_eq_of_cofinite
     rw [Filter.principal_le_iff]
     exact fun s hs x hx ↦ mem_of_mem_nhds (hx hs)
 
+/-- A set is codiscrete iff it is a punctured neighborhood of every point. -/
+lemma mem_codiscrete_iff_forall_mem_nhdsNE {s : Set X} :
+    s ∈ Filter.codiscrete X ↔ ∀ x, s ∈ 𝓝[≠] x := by
+  simp [Filter.codiscrete, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+
+/-- Codiscrete sets are punctured neighborhoods of every point. -/
+lemma mem_nhdsNE_of_mem_codiscrete {s : Set X} (hs : s ∈ Filter.codiscrete X) (x : X) :
+    s ∈ 𝓝[≠] x :=
+  mem_codiscrete_iff_forall_mem_nhdsNE.1 hs x
+
+omit [TopologicalSpace Y] in
+/--
+Two functions agree along the codiscrete filter iff they agree along the punctured neighborhood of
+every point.
+-/
+lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE {f₁ f₂ : X → Y} :
+    f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ := by
+  simp [EventuallyEq, Filter.Eventually, mem_codiscrete_iff_forall_mem_nhdsNE]
+
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
   simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]

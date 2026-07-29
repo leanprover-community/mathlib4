@@ -658,6 +658,23 @@ theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv 
   filter_upwards [h] with y hy
   apply Filter.EventuallyEq.deriv hy
 
+/--
+If two functions agree on a codiscrete subset of an open set `U`, then so do their derivatives.
+-/
+theorem Filter.EventuallyEq.codiscreteWithin_deriv {U : Set 𝕜} (h : f₁ =ᶠ[codiscreteWithin U] f)
+    (hU : IsOpen U) :
+    deriv f₁ =ᶠ[codiscreteWithin U] deriv f := by
+  filter_upwards [h, self_mem_codiscreteWithin U] with y h₁y h₂y
+  apply Filter.EventuallyEq.deriv_eq
+  have h₄ : {z | f₁ z = f z} ∪ Uᶜ ∈ 𝓝 y := by
+    rw [← nhdsNE_sup_pure y, mem_sup]
+    exact ⟨mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h y h₂y,
+      mem_pure.2 (mem_union_left _ h₁y)⟩
+  filter_upwards [h₄, hU.mem_nhds h₂y] with z h₁z h₂z
+  rcases h₁z with h₁z | h₁z
+  · exact h₁z
+  · exact absurd h₂z h₁z
+
 end congr
 
 section id
