@@ -12,20 +12,20 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 /-!
 # Pivots of a matrix
 
-`Matrix.IsPivot A l` defines a map-based representation `l` for the pivot, stating that
+`Matrix.IsPivotedBy A l` defines a map-based representation `l` for the pivot, stating that
 `l i` is the pivot column of each row `i` of `A`, with `⊤` for a zero row.
 
 ## Main definitions
 
-- `Matrix.IsPivot`: `l i : WithTop n` is the pivot column of each row `i` of `A`.
+- `Matrix.IsPivotedBy`: `l i : WithTop n` is the pivot column of each row `i` of `A`.
 
 ## Main results
 
-- `Matrix.IsPivot.rank_eq`: the rank of a matrix is its number of pivots.
-- `Matrix.IsPivot.unique`: the pivot of a matrix is unique if the column indices have a linear
+- `Matrix.IsPivotedBy.rank_eq`: the rank of a matrix is its number of pivots.
+- `Matrix.IsPivotedBy.unique`: the pivot of a matrix is unique if the column indices have a linear
   order.
-- `Matrix.decidableIsPivot`: A decidable instance for `IsPivot` over a `DecidableEq` ring and
-  linearly ordered indices.
+- `Matrix.decidableIsPivotedBy`: A decidable instance for `IsPivotedBy` over a
+  `DecidableEq` ring and linearly ordered indices.
 
 ## Tags
 
@@ -45,11 +45,11 @@ section Zero
 variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
 
 /-- `A` is in row echelon form and `l i` is the leading position of each row `i`. -/
-structure IsPivot [LT m] [LT n] (A : Matrix m n R) (l : m → WithTop n) : Prop where
+structure IsPivotedBy [LT m] [LT n] (A : Matrix m n R) (l : m → WithTop n) : Prop where
   isRowEchelon : A.IsRowEchelon
   isLeadingEntry : ∀ i : m, A.IsLeadingEntry i (l i)
 
-theorem IsPivot.eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivot l) :
+theorem IsPivotedBy.eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivotedBy l) :
     l i = ⊤ ↔ A i = 0 := by
   cases hc : l i with
   | top => simpa using isLeadingEntry_top_iff.mp (hc ▸ hA.isLeadingEntry i)
@@ -57,25 +57,25 @@ theorem IsPivot.eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivot l) :
 
 variable [LinearOrder n]
 
-theorem IsPivot.lt_of_lt_of_ne_top [LT m] {i₁ i₂ : m}
-    (hA : A.IsPivot l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
+theorem IsPivotedBy.lt_of_lt_of_ne_top [LT m] {i₁ i₂ : m}
+    (hA : A.IsPivotedBy l) (hlt : i₁ < i₂) (h₁ : l i₁ ≠ ⊤) : l i₁ < l i₂ := by
   by_contra! hle
   obtain ⟨c₂, hc₂⟩ := WithTop.ne_top_iff_exists.mp (hle.trans_lt h₁.lt_top).ne
   refine (hA.isLeadingEntry i₂).2 c₂ hc₂.symm (hA.isRowEchelon hlt fun j₁ hj₁ => ?_)
   exact (hA.isLeadingEntry i₁).1 j₁ ((WithTop.coe_lt_coe.mpr hj₁).trans_le (hc₂.le.trans hle))
 
 /-- The pivots of a matrix are unique. -/
-theorem IsPivot.unique [LT m] {l' : m → WithTop n}
-    (hl : A.IsPivot l) (hl' : A.IsPivot l') : l = l' :=
+theorem IsPivotedBy.unique [LT m] {l' : m → WithTop n}
+    (hl : A.IsPivotedBy l) (hl' : A.IsPivotedBy l') : l = l' :=
   funext fun i => (hl.isLeadingEntry i).unique (hl'.isLeadingEntry i)
 
-theorem IsPivot.strictMonoOn [Preorder m] (hA : A.IsPivot l) :
+theorem IsPivotedBy.strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :
     StrictMonoOn l {i | l i ≠ ⊤} :=
   fun _ h₁ _ _ hlt => hA.lt_of_lt_of_ne_top hlt h₁
 
 variable [PartialOrder m]
 
-theorem IsPivot.monotone (hA : A.IsPivot l) :
+theorem IsPivotedBy.monotone (hA : A.IsPivotedBy l) :
     Monotone l := by
   refine monotone_iff_forall_lt.mpr ?_
   intro i₁ i₂ hlt
@@ -85,8 +85,8 @@ theorem IsPivot.monotone (hA : A.IsPivot l) :
 
 /-- The map-structural characterisation of pivots. This is useful for proving that
 a matrix is in row echelon form. -/
-theorem isPivot_iff :
-    A.IsPivot l ↔
+theorem isPivotedBy_iff :
+    A.IsPivotedBy l ↔
       Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧ ∀ i : m, A.IsLeadingEntry i (l i) := by
   refine ⟨fun hA => ⟨hA.monotone, hA.strictMonoOn, hA.isLeadingEntry⟩, ?_⟩
   refine fun ⟨hmono, hstrict, hlead⟩ ↦ ⟨fun i₁ i₂ hlt j₂ hz ↦ (hlead i₂).1 j₂ ?_, hlead⟩
@@ -106,8 +106,18 @@ section Rank
 variable [Fintype m] [Fintype n] [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
   {A : Matrix m n R} {l : m → WithTop n}
 
+<<<<<<< HEAD
 theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} := by
   refine le_antisymm (A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by aesop)) ?_
+=======
+theorem IsPivotedBy.rank_le_card [LT m] [LT n] [DecidableEq n] [CommSemiring R]
+    [StrongRankCondition R] (hA : A.IsPivotedBy l) : A.rank ≤ #{i | l i ≠ ⊤} :=
+  A.rank_le_card_of_row_eq_zero _ fun i hi => hA.eq_top_iff.mp (by simpa using hi)
+
+variable [LinearOrder m] [LinearOrder n] [CommRing R] [IsDomain R]
+
+theorem IsPivotedBy.card_le_rank (hA : A.IsPivotedBy l) : #{i | l i ≠ ⊤} ≤ A.rank := by
+>>>>>>> 8a33542386 (ispivot rename)
   let g : {i // l i ≠ ⊤} → n := fun i => (l i.1).untop i.2
   have hlead : ∀ i, (∀ j < g i, A i.1 j = 0) ∧ A i.1 (g i) ≠ 0 := by
     intro i
@@ -125,6 +135,12 @@ theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} := by
         rw [rank_of_det_ne_zero hdet, Fintype.card_subtype]
     _ ≤ A.rank := rank_submatrix_le A Subtype.val g
 
+<<<<<<< HEAD
+=======
+theorem IsPivotedBy.rank_eq (hA : A.IsPivotedBy l) : A.rank = #{i | l i ≠ ⊤} :=
+  le_antisymm hA.rank_le_card hA.card_le_rank
+
+>>>>>>> 8a33542386 (ispivot rename)
 end Rank
 
 /-! ## Decidability -/
@@ -138,9 +154,9 @@ instance decidableIsLeadingEntry [Fintype n] [LT n] [DecidableLT n] [DecidableEq
   decidable_of_iff
     ((∀ j : n, (j : WithTop n) < c → A i j = 0) ∧ ∀ c₀ : n, c = c₀ → A i c₀ ≠ 0) Iff.rfl
 
-instance decidableIsPivot [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
-    (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivot l) :=
-  decidable_of_iff' _ isPivot_iff
+instance decidableIsPivotedBy [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
+    (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivotedBy l) :=
+  decidable_of_iff' _ isPivotedBy_iff
 
 end Decidability
 
