@@ -113,16 +113,14 @@ lemma IsOrderBornology.atTop_le_cobounded [NoMaxOrder α] : .atTop ≤ Bornology
 lemma IsOrderBornology.atBot_le_cobounded [NoMinOrder α] : .atBot ≤ Bornology.cobounded α :=
   atTop_le_cobounded (α := αᵒᵈ)
 
-instance IsOrderBornology.neBot_cobounded_of_noMinOrder [Nonempty α] [NoMinOrder α] :
+instance IsOrderBornology.neBot_cobounded_of_noBotOrder [NoBotOrder α] :
     (cobounded α).NeBot := by
   rw [Filter.neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ,
     isBounded_iff_bddBelow_bddAbove]
-  rintro ⟨⟨a, ha⟩, -⟩
-  obtain ⟨b, hb⟩ := exists_lt a
-  exact hb.not_ge <| ha <| mem_univ _
+  exact fun h ↦ not_bddBelow_univ h.1
 
-instance IsOrderBornology.neBot_cobounded_of_noMaxOrder [Nonempty α] [NoMaxOrder α] :
-    (cobounded α).NeBot := neBot_cobounded_of_noMinOrder (α := αᵒᵈ)
+instance IsOrderBornology.neBot_cobounded_of_noTopOrder [NoTopOrder α] :
+    (cobounded α).NeBot := neBot_cobounded_of_noBotOrder (α := αᵒᵈ)
 
 end Preorder
 
