@@ -73,7 +73,7 @@ Here are some additions to this file that could be made in the future:
 
 open Finset OrderDual
 
-variable {F 𝕜 𝕝 𝕞 α β : Type*}
+variable {𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
@@ -638,8 +638,8 @@ end CommRing
 end Preorder
 
 section PartialOrder
-variable (𝕜) [Ring 𝕜] [PartialOrder α] [PartialOrder β] [LocallyFiniteOrder α]
-  [LocallyFiniteOrder β] [DecidableEq α] [DecidableEq β] [DecidableLE α] [DecidableLE β]
+variable (𝕜) [Ring 𝕜] [PartialOrder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder
+  β] [DecidableEq α] [DecidableEq β] [DecidableLE α] [DecidableLE β]
 
 /-- The Möbius function on a product order. Based on lemma 2.1.13 of Incidence Algebras by Spiegel
 and O'Donnell. -/

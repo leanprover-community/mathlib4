@@ -48,7 +48,7 @@ open scoped Set.Notation
 
 universe u v u' v'
 
-variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
+variable {X : Type u} {Y : Type v} {Z : Type*}
 
 section Constructions
 
@@ -758,8 +758,8 @@ end Quotient
 
 section Pi
 
-variable {ι : Type*} {A B : ι → Type*} {κ : Type*} [TopologicalSpace X]
-  [T : ∀ i, TopologicalSpace (A i)] [∀ i, TopologicalSpace (B i)] {f : X → ∀ i : ι, A i}
+variable {ι : Type*} {A B : ι → Type*} {κ : Type*} [TopologicalSpace X] [T : ∀ i, TopologicalSpace
+  (A i)] [∀ i, TopologicalSpace (B i)] {f : X → ∀ i : ι, A i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
   simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
@@ -1222,8 +1222,8 @@ end Pi
 
 section Sigma
 
-variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, TopologicalSpace (σ i)]
-  [∀ k, TopologicalSpace (τ k)] [TopologicalSpace X]
+variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, TopologicalSpace (σ i)] [∀ k,
+  TopologicalSpace (τ k)] [TopologicalSpace X]
 
 @[continuity, fun_prop]
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
@@ -1417,8 +1417,7 @@ theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X
 end Monad
 
 section NhdsSet
-variable [TopologicalSpace X] [TopologicalSpace Y]
-  {s : Set X} {t : Set Y}
+variable [TopologicalSpace X] [TopologicalSpace Y] {s : Set X} {t : Set Y}
 
 /-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
 formulated in terms of a filter inequality. -/

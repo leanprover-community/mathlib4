@@ -26,7 +26,7 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
 open scoped Topology
 open Set Filter Asymptotics NNReal ENNReal
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
+variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r : ℝ≥0∞} {n m : ℕ}
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
@@ -147,8 +147,8 @@ We show that a continuous linear map into continuous multilinear maps is continu
 namespace ContinuousLinearMap
 
 variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
-  [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
-  {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
+  [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F) {s : Set (G × (Π i, Em i))} {x : G ×
+  (Π i, Em i)}
 
 /-- Formal multilinear series associated to a linear map into multilinear maps. -/
 noncomputable def toFormalMultilinearSeriesOfMultilinear :
@@ -197,11 +197,9 @@ end ContinuousLinearMap
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {Em Fm : ι → Type*}
-  [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
-  [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
-  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 Em (G →L[𝕜] F))
-  {s : Set ((Π i, Em i) × G)} {x : (Π i, Em i) × G}
+variable {ι : Type*} {Em Fm : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em
+  i)] [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)] [Fintype ι] (f :
+  ContinuousMultilinearMap 𝕜 Em (G →L[𝕜] F)) {s : Set ((Π i, Em i) × G)} {x : (Π i, Em i) × G}
 
 lemma cpolynomialAt_uncurry_of_linear :
     CPolynomialAt 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) x := by
@@ -228,8 +226,8 @@ lemma analyticWithinAt_uncurry_of_linear :
     AnalyticWithinAt 𝕜 (fun (p : (Π i, Em i) × G) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_linear.analyticWithinAt
 
-variable {t : Set ((Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))}
-  {q : (Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G)}
+variable {t : Set ((Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))} {q : (Π i, Fm i
+  →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G)}
 
 lemma cpolynomialAt_uncurry_compContinuousLinearMap :
     CPolynomialAt 𝕜 (fun (p : (Π i, Fm i →L[𝕜] Em i) × (ContinuousMultilinearMap 𝕜 Em G))

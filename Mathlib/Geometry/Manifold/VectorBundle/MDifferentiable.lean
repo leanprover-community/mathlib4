@@ -23,15 +23,13 @@ open scoped Manifold Topology
 section
 
 
-variable {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {𝕜 B F M : Type*} {E : B → Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
-  (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
-  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  {n : ℕ∞}
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace
+  (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*} [NormedAddCommGroup EB]
+  [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) (E' : B →
+  Type*) [∀ x, Zero (E' x)] {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*}
+  [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
 
 variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
@@ -221,8 +219,8 @@ protected theorem MDifferentiable.coordChange
 
 end coordChange
 
-variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
-  [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
+variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
+  [ContMDiffVectorBundle 1 F E IB]
 
 lemma MDifferentiableWithinAt.change_section_trivialization
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
@@ -329,12 +327,11 @@ theorem mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)]
-  [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I
+  : ModelWithCorners 𝕜 E H} {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀
+  b, TopologicalSpace (Z b)] [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)]
+  [VectorBundle 𝕜 F Z]
 
 theorem mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
@@ -352,7 +349,7 @@ end
 
 section operations
 
-variable {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {𝕜 B F M : Type*} {E : B → Type*}
 
 variable
   -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
@@ -615,21 +612,16 @@ Also a third manifold `M`, which will be the source of all our maps.
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
-  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
-  {EB₁ : Type*}
-  [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁] {HB₁ : Type*} [TopologicalSpace HB₁]
-  {IB₁ : ModelWithCorners 𝕜 EB₁ HB₁} [TopologicalSpace B₁] [ChartedSpace HB₁ B₁]
-  {EB₂ : Type*}
-  [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂] {HB₂ : Type*} [TopologicalSpace HB₂]
-  {IB₂ : ModelWithCorners 𝕜 EB₂ HB₂} [TopologicalSpace B₂] [ChartedSpace HB₂ B₂]
-  {EM : Type*}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
-  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
-  [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
-  {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
-  {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
+  [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [TopologicalSpace (TotalSpace
+  F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)] {EB₁ : Type*} [NormedAddCommGroup EB₁] [NormedSpace 𝕜
+  EB₁] {HB₁ : Type*} [TopologicalSpace HB₁] {IB₁ : ModelWithCorners 𝕜 EB₁ HB₁} [TopologicalSpace
+  B₁] [ChartedSpace HB₁ B₁] {EB₂ : Type*} [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂] {HB₂ :
+  Type*} [TopologicalSpace HB₂] {IB₂ : ModelWithCorners 𝕜 EB₂ HB₂} [TopologicalSpace B₂]
+  [ChartedSpace HB₂ B₂] {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*}
+  [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁] [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {b₁ : M →
+  B₁} {b₂ : M → B₂} {m₀ : M} {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)}
+  {s : Set M}
 
 /-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending

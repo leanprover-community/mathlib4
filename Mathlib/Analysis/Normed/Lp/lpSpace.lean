@@ -1254,7 +1254,7 @@ end OfLE
 
 section Eval
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p : ℝ≥0∞}
 
 variable (E p) in
 /-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/

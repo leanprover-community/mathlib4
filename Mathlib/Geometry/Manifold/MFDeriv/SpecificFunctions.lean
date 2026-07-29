@@ -679,7 +679,7 @@ theorem mfderiv_sumSwap :
     mfderiv% (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace% p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
 
-variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
+variable {f : M → N} {q : M} {q' : M'}
 
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
@@ -1049,8 +1049,8 @@ end AlgebraOverCommRing
 section DivisionRing
 open scoped RightActions
 
-variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
-  {p' q' : TangentSpace% z →L[𝕜] F'}
+variable {z : M} {F' : Type*} [NormedDivisionRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'} {p' :
+  TangentSpace% z →L[𝕜] F'}
 
 lemma HasMFDerivWithinAt.inv' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p') (hp_ne : p z ≠ 0) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p⁻¹) s z (-((p z)⁻¹ •> p' <• (p z)⁻¹) : E →L[𝕜] F') :=

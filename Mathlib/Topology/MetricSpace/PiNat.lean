@@ -789,7 +789,7 @@ namespace PiCountable
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
 
 section EDist
-variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι} {r : ℝ≥0∞}
+variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι}
 
 /-- Given a countable family of extended metric spaces,
 one may put an extended distance on their product `Π i, E i`.
@@ -1141,7 +1141,6 @@ lemma injective_distDenseSeq (x y : X) (hxy : x ≠ y) :
   obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
   exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
 
-variable (A : Type*) [TopologicalSpace A]
 
 lemma continuous_distDenseSeq_inv :
     Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (distDenseSeq X) → X) := by

@@ -363,7 +363,7 @@ namespace RatFunc
 
 open scoped LaurentSeries
 
-variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
+variable {F : Type u} [Field F] (p q : F[X])
 
 instance : FaithfulSMul F[X] F⸨X⸩ := by
   refine (faithfulSMul_iff_algebraMap_injective F[X] F⸨X⸩).mpr ?_

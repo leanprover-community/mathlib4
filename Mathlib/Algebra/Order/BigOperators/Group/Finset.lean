@@ -27,7 +27,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {ι α β M N G k R : Type*}
+variable {ι α β M N G k : Type*}
 
 namespace Finset
 
@@ -288,8 +288,8 @@ end OrderedCommMonoid
 
 section ProdSum
 
-variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
-  (s : Finset ι) {f : ι → α} (g : α → β)
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (s : Finset ι) {f : ι → α}
+  (g : α → β)
 
 theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
     g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
@@ -602,7 +602,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :

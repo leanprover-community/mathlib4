@@ -26,8 +26,8 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
-  {μ : Measure α} {p : α → (ι → β) → Prop}
+variable {ι : Sort*} {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β} {μ :
+  Measure α} {p : α → (ι → β) → Prop}
 
 /-- If we have the additional hypothesis `∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, this is a measurable set
 whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is equal to

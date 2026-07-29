@@ -50,8 +50,8 @@ the roots of the minimal polynomial of `s` over `R`.
 
 universe u v w z
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-variable [Algebra R S] [Algebra R T]
+variable {R S : Type*} [CommRing R] [CommRing S]
+variable [Algebra R S]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w}
 
@@ -439,7 +439,7 @@ section Field
 variable (K) (E : Type z) [Field E]
 variable [Algebra K E]
 variable [Module.Finite K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
-variable (b : κ → L) (pb : PowerBasis K L)
+variable (b : κ → L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
     embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
@@ -544,8 +544,8 @@ section Basis
 
 open Algebra
 
-variable [FiniteDimensional K L] [Algebra.IsSeparable K L] [Finite ι] [DecidableEq ι]
-  (b : Basis ι K L)
+variable [FiniteDimensional K L] [Algebra.IsSeparable K L] [Finite ι] [DecidableEq ι] (b : Basis ι
+  K L)
 
 /--
 The dual basis of a basis under the trace form in a finite separable extension.

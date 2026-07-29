@@ -990,8 +990,8 @@ theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
 end
 
 section TensorProduct
-variable {R S T U : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  [CommRing U] [Algebra R U] {p : Polynomial S}
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] {p :
+  Polynomial S}
 
 open Algebra TensorProduct
 

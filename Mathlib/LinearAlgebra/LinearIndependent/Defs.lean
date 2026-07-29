@@ -908,7 +908,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set ι} {x y : V}
+variable {v : ι → V} {s : Set ι}
 
 open Submodule
 

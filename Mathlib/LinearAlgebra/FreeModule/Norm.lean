@@ -22,7 +22,6 @@ variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Co
 
 section CommRing
 
-variable (F : Type*)
 
 /-- For a nonzero element `f` in an algebra `S` over a principal ideal domain `R` that is finite and
 free as an `R`-module, the norm of `f` relative to `R` is associated to the product of the Smith

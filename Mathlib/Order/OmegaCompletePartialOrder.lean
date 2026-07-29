@@ -97,7 +97,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
 instance : Membership α (Chain α) where
   mem c a := ∃ i, a = c i
 
-variable (c c' : Chain α)
+variable (c : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 

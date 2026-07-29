@@ -43,13 +43,11 @@ open LinearMap Submodule Module
 
 namespace LinearMap
 
-variable {K V V' V₂ V₂' V₃ : Type*}
+variable {K V V₂ V₃ : Type*}
 
 section Semiring
 
-variable [Semiring K]
-  [AddCommMonoid V] [Module K V]
-  [AddCommMonoid V₂] [Module K V₂]
+variable [Semiring K] [AddCommMonoid V] [Module K V] [AddCommMonoid V₂] [Module K V₂]
   [AddCommMonoid V₃] [Module K V₃]
 
 /-- A linear map **has Noetherian range** if its range is a Noetherian module. -/
@@ -111,10 +109,8 @@ end Semiring
 
 section Ring
 
-variable [Ring K]
-  [AddCommGroup V] [Module K V]
-  [AddCommGroup V₂] [Module K V₂]
-  [AddCommGroup V₃] [Module K V₃]
+variable [Ring K] [AddCommGroup V] [Module K V] [AddCommGroup V₂] [Module K V₂] [AddCommGroup V₃]
+  [Module K V₃]
 
 lemma HasFiniteRange.hasNoetherianRange [IsNoetherianRing K] {u : V →ₗ[K] V₂}
     (h : u.HasFiniteRange) : u.HasNoetherianRange := by
@@ -176,10 +172,8 @@ end Ring
 
 section CommRing
 
-variable [CommRing K]
-  [AddCommGroup V] [Module K V]
-  [AddCommGroup V₂] [Module K V₂]
-  [AddCommGroup V₃] [Module K V₃]
+variable [CommRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₂] [Module K V₂] [AddCommGroup
+  V₃] [Module K V₃]
 
 @[simp] lemma HasNoetherianRange.smul {f : V →ₗ[K] V₂}
     (hf : f.HasNoetherianRange) (c : K) : (c • f).HasNoetherianRange :=
@@ -212,10 +206,8 @@ end CommRing
 
 section Setoid
 
-variable [CommRing K]
-  [AddCommGroup V] [Module K V]
-  [AddCommGroup V₂] [Module K V₂]
-  [AddCommGroup V₃] [Module K V₃]
+variable [CommRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₂] [Module K V₂] [AddCommGroup
+  V₃] [Module K V₃]
 
 namespace FiniteRangeSetoid
 
@@ -299,10 +291,8 @@ end Setoid
 
 section QuasiInverse
 
-variable [CommRing K]
-  [AddCommGroup V] [Module K V]
-  [AddCommGroup V₂] [Module K V₂]
-  [AddCommGroup V₃] [Module K V₃]
+variable [CommRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₂] [Module K V₂] [AddCommGroup
+  V₃] [Module K V₃]
 
 open scoped LinearMap.FiniteRangeSetoid
 
