@@ -70,9 +70,9 @@ def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
     | _ => none
   | _ => none
 
-/-- Build the pivot-map literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
+/-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
-def mkPivotMapLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
+def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
   let finN ← mkAppM ``Fin #[mkNatLit n]
   let wtopN ← mkAppM ``WithTop #[finN]
   let top ← mkAppOptM ``Top.top #[some wtopN, none]
@@ -227,7 +227,7 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
 
 /-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`: parse the
 entries' values, scale fractional rows integral, eliminate, fold the scaling back into `L`,
-and elaborate the certificate with the kernel checking its three conditions. -/
+and elaborate the certificate with the kernel checking its four conditions. -/
 def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
   let M ← instantiateMVars M
   let some entries := parseMatrix? M
@@ -271,7 +271,7 @@ def mkBareissDecomposition (M : Expr) : TermElabM Expr := do
   -- constructing the main Bareiss certificate from internal raw data
   let L ← mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
   let σ ← mkPerm m d.swaps
-  let pivotE ← mkPivotMapLit m n d.pivot
+  let pivotE ← mkPivotLit m n d.pivot
   let rankE := mkNatLit d.pivot.size
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
                 $(← Term.exprToSyntax pivotE), $(← Term.exprToSyntax rankE),
