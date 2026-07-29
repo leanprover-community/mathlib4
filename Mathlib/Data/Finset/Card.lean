@@ -742,6 +742,10 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
+lemma Nontrivial.one_lt_card (hs : s.Nontrivial) : 1 < #s := s.one_lt_card_iff_nontrivial.mpr hs
+
+lemma Nontrivial.two_le_card (hs : s.Nontrivial) : 2 ≤ #s := s.one_lt_card_iff_nontrivial.mpr hs
+
 /-- Given an injective map `f : α → β` for finite sets `s ⊂ α` and `t ⊂ β` such that `t` has
     cardinality one more than `s`, there exists a unique element of `t` not in `f(s)`. -/
 theorem existsUnique_notMem_image_of_injOn_of_card_eq_add_one
