@@ -73,8 +73,8 @@ protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [Distr
 variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
-protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply ℕ F α β] [SMul M F]
-    [IsSMulApply M F α β] : Module M F :=
+protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [SMul M F] [IsSMulApply M F α β] :
+    Module M F :=
   coeAddHom_injective.module M (coeAddMonoidHom F α β) coe_smul
 
 protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F α β]
