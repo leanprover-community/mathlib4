@@ -37,7 +37,7 @@ matrix, echelon form, pivot
 
 namespace Matrix
 
-open Finset OrderDual
+open Finset
 
 variable {m n : Type*} {R : Type*}
 
@@ -106,7 +106,7 @@ end Zero
 
 theorem rank_mul_eq_right_of_lowerTriangular [Fintype m] [LinearOrder m] [Fintype n]
     [CommRing R] [IsDomain R] (A : Matrix m m R) (B : Matrix m n R)
-    (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
+    (hA : A.IsLowerTriangular) (hd : ∀ i, A i i ≠ 0) :
     (A * B).rank = B.rank := by
   have hdet : A.det ≠ 0 := by
     rw [det_of_lowerTriangular A hA]
@@ -130,7 +130,7 @@ theorem IsPivot.card_le_rank (hA : A.IsPivot l) : #{i | l i ≠ ⊤} ≤ A.rank 
     have hl := hA.isLeadingEntry i.1
     rw [← WithTop.coe_untop (l i.1) i.2, isLeadingEntry_coe_iff] at hl
     exact hl
-  have htri : (A.submatrix Subtype.val g).BlockTriangular id := by
+  have htri : (A.submatrix Subtype.val g).IsUpperTriangular := by
     intro i j hij
     exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (hA.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
@@ -146,7 +146,7 @@ theorem IsPivot.rank_eq (hA : A.IsPivot l) : A.rank = #{i | l i ≠ ⊤} :=
 
 theorem IsPivot.rank_eq_of_lowerTriangular {A : Matrix m m R} {B : Matrix m n R}
     {σ : Equiv.Perm m} (hpiv : (A * B.submatrix σ id).IsPivot l)
-    (hA : A.BlockTriangular toDual) (hd : ∀ i, A i i ≠ 0) :
+    (hA : A.IsLowerTriangular) (hd : ∀ i, A i i ≠ 0) :
     B.rank = #{i | l i ≠ ⊤} := by
   have hr : (B.submatrix σ id).rank = B.rank := B.rank_submatrix σ (Equiv.refl n)
   rw [← hr, ← rank_mul_eq_right_of_lowerTriangular A _ hA hd, hpiv.rank_eq]

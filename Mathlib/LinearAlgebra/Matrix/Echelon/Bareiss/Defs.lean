@@ -55,7 +55,7 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   rank : ℕ
   is_pivot : (L * (M.submatrix σ id)).IsPivot pivot
   card_eq : #{i | pivot i ≠ ⊤} = rank
-  L_lowerTriangular : L.BlockTriangular OrderDual.toDual
+  L_lowerTriangular : L.IsLowerTriangular
   L_diag_ne_zero : ∀ i, L i i ≠ 0
 
 theorem Decomposition.rank_eq (cert : Decomposition M) :

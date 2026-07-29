@@ -365,7 +365,7 @@ theorem gramSchmidtOrthonormalBasis_inv_triangular' {i j : ι} (hij : i < j) :
 size of the index set is the dimension of `E`, the matrix of coefficients of `f` with respect to the
 orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-triangular. -/
 theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
-    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
+    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).IsUpperTriangular := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
