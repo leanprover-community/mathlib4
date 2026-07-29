@@ -542,7 +542,9 @@ theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
 
 /-- Continuity of the measure of translates of a compact set: Given a compact set `k` in a
 topological group, for `g` close enough to the origin, `μ (g • k \ k)` is arbitrarily small. -/
-@[to_additive]
+@[to_additive /-- Continuity of the measure of translates of a compact set: Given a compact set `k`
+in an additive topological group, for `g` close enough to the origin, `μ (g +ᵥ k \ k)` is
+arbitrarily small. -/]
 lemma eventually_nhds_one_measure_smul_sdiff_lt [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -563,7 +565,9 @@ alias eventually_nhds_one_measure_smul_diff_lt := eventually_nhds_one_measure_sm
 /-- Continuity of the measure of translates of a compact set:
 Given a closed compact set `k` in a topological group,
 the measure of `g • k \ k` tends to zero as `g` tends to `1`. -/
-@[to_additive]
+@[to_additive /-- Continuity of the measure of translates of a compact set:
+Given a closed compact set `k` in an additive topological group,
+the measure of `g +ᵥ k \ k` tends to zero as `g` tends to `0`. -/]
 lemma tendsto_measure_smul_sdiff_isCompact_isClosed [LocallyCompactSpace G]
     [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ] {k : Set G}
     (hk : IsCompact k) (h'k : IsClosed k) :

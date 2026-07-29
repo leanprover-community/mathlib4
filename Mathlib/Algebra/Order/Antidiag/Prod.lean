@@ -122,7 +122,7 @@ theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : 
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
 /-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- See also `Finset.map_prodComm_antidiagonal`. -/]
 theorem map_swap_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal

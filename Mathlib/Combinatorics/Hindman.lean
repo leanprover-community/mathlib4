@@ -57,7 +57,8 @@ attribute [local instance] Ultrafilter.mul Ultrafilter.add
 
 /-- We could have taken this as the definition of `U * V`, but then we would have to prove that it
 defines an ultrafilter. -/
-@[to_additive]
+@[to_additive /-- We could have taken this as the definition of `U + V`, but then we would have to
+prove that it defines an ultrafilter. -/]
 theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → Prop) :
     (∀ᶠ m in ↑(U * V), p m) ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m * m') :=
   Iff.rfl

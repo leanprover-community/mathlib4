@@ -123,7 +123,7 @@ theorem prod_comm {s : Finset γ} {t : Finset α} {f : γ → α → β} :
   prod_comm' fun _ _ => Iff.rfl
 
 /-- Cyclically permute 3 nested instances of `Finset.prod`. -/
-@[to_additive]
+@[to_additive /-- Cyclically permute 3 nested instances of `Finset.sum`. -/]
 theorem prod_comm_cycle {s : Finset γ} {t : Finset α} {u : Finset κ} {f : γ → α → κ → β} :
     (∏ x ∈ s, ∏ y ∈ t, ∏ z ∈ u, f x y z) = ∏ z ∈ u, ∏ x ∈ s, ∏ y ∈ t, f x y z := by
   simp_rw [prod_comm (s := t), prod_comm (s := s)]

@@ -52,7 +52,8 @@ variable [IsTopologicalGroup G] [T2Space G]
 
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/
-@[to_additive]
+@[to_additive /-- If `G` is an additive topological group and `H` a finite-index additive subgroup,
+then `G` is topologically discrete iff `H` is. -/]
 lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteIndex] :
     DiscreteTopology H ↔ DiscreteTopology G := by
   refine ⟨fun hH ↦ ?_, fun hG ↦ inferInstance⟩

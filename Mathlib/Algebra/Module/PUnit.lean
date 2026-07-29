@@ -76,7 +76,7 @@ instance module [Semiring R] : Module R PUnit where
 instance : SMul PUnit R where smul _ x := x
 
 /-- The one-element type acts trivially on every element. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The one-element type acts trivially on every element. -/]
 lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
 
 @[to_additive] instance [SMul R S] : SMulCommClass PUnit R S := ⟨by simp⟩

@@ -33,7 +33,12 @@ namespace Subgroup
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`
 `SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _` -/
-@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
+@[to_additive /-- We redeclare this instance to get keys
+`VAdd (@Subtype (AddOpposite _) (@Membership.mem (AddOpposite _)
+  (AddSubgroup (AddOpposite _) _) _ (@AddSubgroup.op _ _ _))) _`
+compared to the keys for `AddSubmonoid.vadd`
+`VAdd (@Subtype _ (@Membership.mem _ (AddSubmonoid _ _) _ _)) _` -/]
+instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
 
 /-! ### Lattice results -/
 

@@ -90,6 +90,8 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     simp
   simpa [Tendsto, ← Filter.map_map] using! this
 
+/-- For the statement that `tprod` commutes with `Finset.prod`,
+  see `Multipliable.tprod_finsetProd`. -/
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
   see `Summable.tsum_finsetSum`. -/]
 protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]

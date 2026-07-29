@@ -159,7 +159,8 @@ theorem prod_ite_eq_of_mem [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι →
   simp only [prod_ite_eq, if_pos h]
 
 /-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
-@[to_additive]
+@[to_additive /-- The difference with `Finset.sum_ite_eq_of_mem` is that the arguments to `Eq` are
+swapped. -/]
 theorem prod_ite_eq_of_mem' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) (h : a ∈ s) :
     (∏ x ∈ s, if x = a then b x else 1) = b a := by
   simp only [prod_ite_eq', if_pos h]

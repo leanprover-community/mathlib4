@@ -69,7 +69,9 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
 action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable conditions. -/
-@[to_additive]
+@[to_additive /-- If an action `G` associates and commutes with addition on `M`, then it lifts to an
+action on `AddUnits M`. Notably, this provides `AddAction (AddUnits M) (AddUnits N)` under suitable
+conditions. -/]
 instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulAction G Mˣ where
   smul g m :=
@@ -102,7 +104,8 @@ lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsSca
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) := rfl
 
 /-- Note that this lemma exists more generally as the global `smul_inv` -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- Note that this lemma exists more generally as the global
+`vadd_neg` -/]
 lemma smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : (g • m)⁻¹ = g⁻¹ • m⁻¹ := ext rfl
 

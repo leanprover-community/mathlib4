@@ -385,7 +385,9 @@ variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
 /-- If a point in a topological group has a compact neighborhood, then the group is
 locally compact. -/
-@[to_additive]
+@[to_additive
+  /-- If a point in a topological additive group has a compact neighborhood, then the additive group
+  is locally compact. -/]
 theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
     (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
   suffices WeaklyLocallyCompactSpace G from inferInstance

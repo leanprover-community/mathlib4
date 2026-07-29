@@ -53,7 +53,7 @@ theorem Set.MapsTo.smul_setₛₗ (hst : MapsTo f s t) (c : M) : MapsTo f (c •
   Function.Semiconj.mapsTo_image_right (map_smulₛₗ _ _) hst
 
 /-- Translation of preimage is contained in preimage of translation -/
-@[to_additive]
+@[to_additive /-- Translation of preimage is contained in preimage of translation -/]
 theorem smul_preimage_set_subsetₛₗ (f : F) (c : M) (t : Set β) : c • f ⁻¹' t ⊆ f ⁻¹' (σ c • t) :=
   ((mapsTo_preimage f t).smul_setₛₗ c).subset_preimage
 
@@ -83,13 +83,15 @@ variable {M N F : Type*} {α β : Type*} {σ : M → N} [Monoid M] [Monoid N]
   {f : F} {s : Set α} {t : Set β} {c : M}
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
-@[to_additive]
+@[to_additive /-- `preimage_vadd_setₛₗ` when both scalars act by additive unit -/]
 theorem preimage_smul_setₛₗ_of_isUnit_isUnit (f : F)
     (hc : IsUnit c) (hc' : IsUnit (σ c)) (t : Set β) : f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ' hc.smul_bijective.surjective hc'.smul_bijective.injective
 
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
-@[to_additive]
+@[to_additive
+  /-- `preimage_vadd_setₛₗ` when `c` is an additive unit and `σ` is an additive monoid
+  homomorphism. -/]
 theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomClass G M N]
     (σ : G) [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
@@ -98,7 +100,9 @@ theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomC
 -- TODO: when you remove the next 2 aliases,
 -- please move the group version below out of the `Group` namespace.
 /-- `preimage_smul_setₛₗ` when `c` is a unit and `σ` is a monoid homomorphism. -/
-@[to_additive]
+@[to_additive
+  /-- `preimage_vadd_setₛₗ` when `c` is an additive unit and `σ` is an additive monoid
+  homomorphism. -/]
 protected theorem MonoidHom.preimage_smul_setₛₗ {F : Type*} (σ : M →* N) [FunLike F α β]
     [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
@@ -107,7 +111,7 @@ protected theorem MonoidHom.preimage_smul_setₛₗ {F : Type*} (σ : M →* N) 
 end Monoid
 
 /-- `preimage_smul_setₛₗ` in the context of groups -/
-@[to_additive]
+@[to_additive /-- `preimage_vadd_setₛₗ` in the context of additive groups -/]
 theorem Group.preimage_smul_setₛₗ {G H α β : Type*} [Group G] [Group H] (σ : G → H)
     [MulAction G α] [MulAction H β]
     {F : Type*} [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (c : G) (t : Set β) :
