@@ -382,33 +382,63 @@ theorem map_comp_apply {f : α → β} {g : β → γ} (x : FreeAbelianGroup α)
 theorem map_of_apply {f : α → β} (a : α) : map f (of a) = of (f a) :=
   rfl
 
+/-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
+def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+  toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
+  invFun n := n • of Inhabited.default
+  left_inv z := FreeAbelianGroup.induction_on z
+    (by simp only [zero_smul, map_zero])
+    (Unique.forall_iff.2 <| by simp only [one_smul, lift_apply_of]) (Unique.forall_iff.2 <| by simp)
+    fun x y hx hy ↦ by
+      simp only [map_add, add_smul] at *
+      rw [hx, hy]
+  right_inv n := by
+    rw [map_zsmul, lift_apply_of]
+    exact zsmul_one n
+  map_add' := map_add _
+
+/-- Isomorphic types have isomorphic free abelian groups. -/
+def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
+  toFun := map f
+  invFun := map f.symm
+  left_inv x := by rw [← map_comp_apply, Equiv.symm_comp_self, map_id, AddMonoidHom.id_apply]
+  right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
+  map_add' := map_add _
+
+section deprecated
+
 variable (α)
 
 section Mul
 
 variable [Mul α]
 
-instance mul : Mul (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance mul : Mul (FreeAbelianGroup α) :=
   ⟨fun x ↦ lift fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x⟩
 
 variable {α}
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem mul_def (x y : FreeAbelianGroup α) :
     x * y = lift (fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x) y :=
   rfl
 
-@[simp]
+@[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
   rw [mul_def, lift_apply_of, lift_apply_of]
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 
-instance distrib : Distrib (FreeAbelianGroup α) where
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance distrib : Distrib (FreeAbelianGroup α) where
   left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
   right_distrib x y z := by simp [mul_def, ← Pi.add_def]
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) where
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) where
   zero_mul a := by
     have h : 0 * a + 0 * a = 0 * a := by simp [← add_mul]
     simpa using h
@@ -419,18 +449,24 @@ end Mul
 section One
 variable [One α]
 
-instance one : One (FreeAbelianGroup α) :=
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance one : One (FreeAbelianGroup α) :=
   ⟨of 1⟩
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem one_def : (1 : FreeAbelianGroup α) = of 1 :=
   rfl
 
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem of_one : (of 1 : FreeAbelianGroup α) = 1 :=
   rfl
 
 end One
 
-instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) where
+attribute [local instance] nonUnitalNonAssocRing one
+
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) where
   mul_assoc x y z := by
     induction z using FreeAbelianGroup.induction_on with
     | zero => simp only [mul_zero]
@@ -452,7 +488,8 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
-instance ring : Ring (FreeAbelianGroup α) where
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance ring : Ring (FreeAbelianGroup α) where
   mul_one x := by
     rw [mul_def, one_def, lift_apply_of]
     induction x using FreeAbelianGroup.induction_on with
@@ -471,16 +508,18 @@ instance ring : Ring (FreeAbelianGroup α) where
 variable {α}
 
 /-- `FreeAbelianGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 def ofMulHom : α →* FreeAbelianGroup α where
   toFun := of
   map_one' := of_one _
   map_mul' := of_mul
 
-@[simp]
+@[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem ofMulHom_coe : (ofMulHom : α → FreeAbelianGroup α) = of :=
   rfl
 
 /-- If `f` preserves multiplication, then so does `lift f`. -/
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
   toFun f := { lift f with
     toFun := lift f
@@ -509,22 +548,25 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
     rw [← lift.apply_symm_apply (↑F : FreeAbelianGroup α →+ R)]
     rfl
 
-@[simp]
+@[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem liftMonoid_coe_addMonoidHom (f : α →* R) : ↑(liftMonoid f) = lift f :=
   rfl
 
-@[simp]
+@[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
   rfl
 
-@[simp]
+@[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem liftMonoid_symm_coe (f : FreeAbelianGroup α →+* R) :
     ⇑(liftMonoid.symm f) = lift.symm f :=
   rfl
 
 end Monoid
 
-instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
+attribute [local instance] ring
+
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+local instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
   mul_comm x y := by
     induction x using FreeAbelianGroup.induction_on with
     | zero => exact zero_mul y
@@ -541,27 +583,6 @@ instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
     | neg s ih => rw [neg_mul, ih, neg_mul_eq_mul_neg]
     | add x1 x2 ih1 ih2 => rw [add_mul, mul_add, ih1, ih2]
 
-/-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
-  toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
-  invFun n := n • of Inhabited.default
-  left_inv z := FreeAbelianGroup.induction_on z
-    (by simp only [zero_smul, map_zero])
-    (Unique.forall_iff.2 <| by simp only [one_smul, lift_apply_of]) (Unique.forall_iff.2 <| by simp)
-    fun x y hx hy ↦ by
-      simp only [map_add, add_smul] at *
-      rw [hx, hy]
-  right_inv n := by
-    rw [map_zsmul, lift_apply_of]
-    exact zsmul_one n
-  map_add' := map_add _
-
-/-- Isomorphic types have isomorphic free abelian groups. -/
-def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
-  toFun := map f
-  invFun := map f.symm
-  left_inv x := by rw [← map_comp_apply, Equiv.symm_comp_self, map_id, AddMonoidHom.id_apply]
-  right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
-  map_add' := map_add _
+end deprecated
 
 end FreeAbelianGroup
