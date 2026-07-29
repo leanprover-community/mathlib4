@@ -541,7 +541,7 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
     (homeomorphAddCircle p q hp hq).symm (x : 𝕜) = (x * (q⁻¹ * p) : 𝕜) :=
   rfl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) :
     Continuous ⇑(equivAddCircle p q hp hq) :=
   (homeomorphAddCircle ..).continuous
