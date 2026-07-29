@@ -992,8 +992,8 @@ theorem OpenPartialHomeomorph.isManifold_singleton
     {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
     letI := e.singletonChartedSpace h
     IsManifold I n M :=
-  @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
-    e.singleton_hasGroupoid h (contDiffGroupoid n I)
+  let := e.singletonChartedSpace h
+  IsManifold.mk' (gr := e.singleton_hasGroupoid h (contDiffGroupoid n I))
 
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]

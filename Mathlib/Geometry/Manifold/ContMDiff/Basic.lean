@@ -431,7 +431,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
     exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [@extChartAt_target] at this
+    rw [extChartAt_target] at this
     have := this.1
     rw [mem_preimage, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toOpenPartialHomeomorph_target] at this
@@ -474,7 +474,7 @@ lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e
     ext
     rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toOpenPartialHomeomorph_left_inv]
   rw [this]
-  letI := h'.singletonChartedSpace
+  let := h'.singletonChartedSpace
   apply ContMDiffOn.comp_contMDiff (t := range e') (contMDiffOn_isOpenEmbedding_symm h') hf
   simp
 
