@@ -419,7 +419,7 @@ section Mul
 
 variable [Mul α]
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance mul : Mul (FreeAbelianGroup α) :=
   ⟨fun x ↦ lift fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x⟩
 
@@ -438,12 +438,12 @@ theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
 theorem of_mul (x y : α) : of (x * y) = of x * of y :=
   Eq.symm <| of_mul_of x y
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance distrib : Distrib (FreeAbelianGroup α) where
   left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
   right_distrib x y z := by simp [mul_def, ← Pi.add_def]
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (FreeAbelianGroup α) where
   zero_mul a := by
     have h : 0 * a + 0 * a = 0 * a := by simp [← add_mul]
@@ -455,7 +455,7 @@ end Mul
 section One
 variable [One α]
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance one : One (FreeAbelianGroup α) :=
   ⟨of 1⟩
 
@@ -471,7 +471,7 @@ end One
 
 attribute [local instance] nonUnitalNonAssocRing one
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) where
   mul_assoc x y z := by
     induction z using FreeAbelianGroup.induction_on with
@@ -494,7 +494,7 @@ section Monoid
 
 variable {R : Type*} [Monoid α] [Ring R]
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance ring : Ring (FreeAbelianGroup α) where
   mul_one x := by
     rw [mul_def, one_def, lift_apply_of]
@@ -571,7 +571,7 @@ end Monoid
 
 attribute [local instance] ring
 
-@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
+@[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
   mul_comm x y := by
     induction x using FreeAbelianGroup.induction_on with
