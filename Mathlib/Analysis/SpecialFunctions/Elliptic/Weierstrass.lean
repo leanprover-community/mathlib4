@@ -239,7 +239,7 @@ lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
       (℘[L - l₀] z) :=
   (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSum
 
-/- `weierstrassPExcept l₀` is differentiable on non-lattice points and `l₀`. -/
+/-- `weierstrassPExcept l₀` is differentiable on non-lattice points and `l₀`. -/
 lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
     DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
