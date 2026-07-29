@@ -33,36 +33,38 @@ variable [TopologicalSpace α] [TopologicalSpace β]
 
 section SMul
 
-variable [SMul M α] [TopologicalSpace M] [ContinuousConstSMul M α]
+variable [SMul M α] [ContinuousConstSMul M α]
 
+@[to_additive]
 instance instSMulContinuousMap : SMul Mᵈᵐᵃ C(α, β) where
   smul c f := ⟨c • (f : α → β), f.continuous.comp (continuous_const_smul (mk.symm c))⟩
 
-omit [TopologicalSpace M] in
-@[simp, norm_cast]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_smul_continuousMap (c : Mᵈᵐᵃ) (f : C(α, β)) : ⇑(c • f) = c • ⇑f :=
   rfl
 
-omit [TopologicalSpace M] in
+@[to_additive]
 theorem smul_continuousMap_apply (c : Mᵈᵐᵃ) (f : C(α, β)) (a : α) :
     (c • f) a = f (mk.symm c • a) :=
   rfl
 
-omit [TopologicalSpace M] in
-@[simp]
+@[to_additive (attr := simp)]
 theorem mk_smul_continuousMap_apply (c : M) (f : C(α, β)) (a : α) : (mk c • f) a = f (c • a) :=
   rfl
 
 variable [SMul N β] [ContinuousConstSMul N β]
 
+@[to_additive]
 instance instSMulCommClass_right : SMulCommClass Mᵈᵐᵃ N C(α, β) where
   smul_comm _ _ _ := ext fun _ => rfl
 
+@[to_additive]
 instance instSMulCommClass_left : SMulCommClass N Mᵈᵐᵃ C(α, β) where
   smul_comm _ _ _ := ext fun _ => rfl
 
 variable [SMul N α] [SMulCommClass M N α] [ContinuousConstSMul N α]
 
+@[to_additive]
 instance instSMulCommClass_dom : SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ C(α, β) where
   smul_comm _ _ f := ext fun a => congr_arg f (smul_comm _ _ a).symm
 
@@ -70,10 +72,10 @@ end SMul
 
 section MulAction
 
-variable [Monoid M] [MulAction M α] [TopologicalSpace M] [ContinuousConstSMul M α]
+variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
+@[to_additive]
 instance instMulActionContinuousMap : MulAction Mᵈᵐᵃ C(α, β) where
-  smul := (· • ·)
   one_smul f := by ext; simp [smul_continuousMap_apply]
   mul_smul x y f := by ext; simp [smul_continuousMap_apply, mul_smul]
 
@@ -83,6 +85,7 @@ section ContinuousSMul
 
 variable [SMul M α] [TopologicalSpace M] [ContinuousSMul M α] [LocallyCompactSpace α]
 
+@[to_additive]
 instance instContinuousSMulContinuousMap : ContinuousSMul Mᵈᵐᵃ C(α, β) where
   continuous_smul := by
     let h : C(Mᵈᵐᵃ, C(α, α)) :=
