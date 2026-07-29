@@ -376,7 +376,10 @@ theorem preimage_subset_dom (s : Set β) : f.preimage s ⊆ f.Dom := fun _ ⟨y,
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f.preimage s ⊆ f.preimage t :=
   SetRel.preimage_mono h
 
-theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) = f.preimage s ∩ f.preimage t := by
+theorem preimage_inter (s t : Set β) : f.preimage (s ∩ t) ⊆ f.preimage s ∩ f.preimage t := by
+  grind
+
+theorem preimage_inter_eq (s t : Set β) : f.preimage (s ∩ t) = f.preimage s ∩ f.preimage t := by
   grind
 
 theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ f.preimage t :=
@@ -391,7 +394,7 @@ theorem preimage_empty : f.preimage ∅ = ∅ := by ext; simp [mem_preimage]
 theorem disjoint_preimage_of_disjoint {s t : Set β} (h : Disjoint s t) :
     Disjoint (f.preimage s) (f.preimage t) := by
   rw [Set.disjoint_iff_inter_eq_empty] at h ⊢
-  rw [← preimage_inter, h]
+  rw [← preimage_inter_eq, h]
   simp [preimage]
 
 theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
