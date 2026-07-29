@@ -58,7 +58,7 @@ def runHaveI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : T
         But this is not relevant for proofs because of proof irrelevance."
 
 @[tactic_alt Parser.Tactic.tacticHaveI__]
-elab tk:"haveI" c:letConfig d:letDecl : tactic => runHaveI tk c d
+elab (priority := high) tk:"haveI" c:letConfig d:letDecl : tactic => runHaveI tk c d
 
 /-- Run the `letI` tactic, with a try this suggestion when the goal is a `Prop`. -/
 def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : TacticM Unit := do
@@ -73,6 +73,6 @@ def runLetI (tk : Syntax) (c : TSyntax ``letConfig) (d : TSyntax ``letDecl) : Ta
         But this is not relevant for proofs because of proof irrelevance."
 
 @[tactic_alt Parser.Tactic.tacticLetI__]
-elab tk:"letI" c:letConfig d:letDecl : tactic => runLetI tk c d
+elab (priority := high) tk:"letI" c:letConfig d:letDecl : tactic => runLetI tk c d
 
 end Mathlib.Linter.HaveILetI
