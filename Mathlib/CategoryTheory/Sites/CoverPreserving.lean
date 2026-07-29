@@ -192,6 +192,7 @@ lemma Functor.isContinuous_iff_coverPreserving [RepresentablyFlat F] :
   refine ⟨fun h ↦ .of_isContinuous _ _ _, fun h ↦ ?_⟩
   apply Functor.isContinuous_of_coverPreserving (compatiblePreservingOfFlat _ _) h
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
 functor preserves all `1`-hypercovers. -/

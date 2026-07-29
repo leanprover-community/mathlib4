@@ -756,7 +756,7 @@ def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
   MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|
   forallTelescope strDecl.type fun args _ ↦ do
   let projs ← projs.mapM fun proj => do
-    if let some (projExpr, projName) := ← findAutomaticProjectionsAux str proj args then
+    if let some (projExpr, projName) ← findAutomaticProjectionsAux str proj args then
       unless ← isDefEq projExpr proj.expr?.get! do
         throwError "The projection {proj.newName} is not definitionally equal to an application \
           of {projName}:{indentExpr proj.expr?.get!}\nvs{indentExpr projExpr}"
@@ -1022,6 +1022,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
+  Mathlib.Tactic.warnIfImplicitIllTyped ref declName declType
   prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
       name := declName

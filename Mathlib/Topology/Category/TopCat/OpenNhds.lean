@@ -59,18 +59,20 @@ instance (x : X) : Lattice (OpenNhds x) :=
     le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
     le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
   le_top x := by
     cases x
     simp [le_def]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
-  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+  coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
 @[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
 
@@ -118,10 +120,12 @@ theorem map_id_obj (x : X) (U) : (map (𝟙 X) x).obj U = U := rfl
 theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q⟩ = ⟨⟨U, p⟩, q⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)

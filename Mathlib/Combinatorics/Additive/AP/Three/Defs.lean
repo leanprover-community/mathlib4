@@ -443,20 +443,18 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   convert! (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
-lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
+lemma Fin.addRothNumber_eq_rothNumberNat {k : Fin (n + 1)} (hkn : 2 * k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
   IsAddFreimanIso.addRothNumber_congr <| mod_cast isAddFreimanIso_Iio two_ne_zero hkn
 
-open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
-lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
+lemma Fin.addRothNumber_le_rothNumberNat {n : ℕ} (k : Fin (n + 1)) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
+  open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
     exact (AddHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
-  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; lia), ?_⟩
-  · simpa using! fun x ↦ natCast_strictMono hkn
-  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_def,
-    val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]
+  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp), ?_⟩
+  · simpa using! fun x ↦ natCast_strictMono (is_le k)
+  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_def, coe_range]
   exact fun x hx ↦ ⟨x, hx, by simp⟩
 
 end rothNumberNat

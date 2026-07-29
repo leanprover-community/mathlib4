@@ -58,7 +58,7 @@ The main steps of the proof are as follows.
 ## Main Result
 
 We give two versions of **Dirichlet's Theorem**:
-* `Nat.infinite_setOf_prime_and_eq_mod` states that the set of primes `p`
+* `Nat.infinite_setOfPred_prime_and_eq_mod` states that the set of primes `p`
   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
   there is a prime `p > n` such that `(p : ZMod q) = a`.
@@ -69,50 +69,6 @@ prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
 
 @[expose] public section
-
-/-!
-### Auxiliary statements
-
-An infinite product or sum over a function supported in prime powers can be written
-as an iterated product or sum over primes and natural numbers.
--/
-
-section auxiliary
-
-variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α]
-  [T0Space α]
-
-open Nat.Primes in
-@[to_additive tsum_eq_tsum_primes_of_support_subset_prime_powers]
-lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
-    (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
-    ∏' n : ℕ, f n = ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 1)) := by
-  have hfm' : Multipliable fun pk : Nat.Primes × ℕ ↦ f (pk.fst ^ (pk.snd + 1)) :=
-    prodNatEquiv.symm.multipliable_iff.mp <| by
-      simpa only [← coe_prodNatEquiv_apply, Prod.eta, Function.comp_def, Equiv.apply_symm_apply]
-        using! hfm.subtype _
-  simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
-    ← hfm'.tprod_prod]
-  refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
-
-@[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
-lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
-    (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
-    ∏' n : ℕ, f n = (∏' p : Nat.Primes, f p) * ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 2)) := by
-  rw [tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers hfm hf]
-  have hfs' (p : Nat.Primes) : Multipliable fun k : ℕ ↦ f (p ^ (k + 1)) :=
-    hfm.comp_injective <| (strictMono_nat_of_lt_succ
-      fun k ↦ pow_lt_pow_right₀ p.prop.one_lt <| lt_add_one (k + 1)).injective
-  conv_lhs =>
-    enter [1, p]; rw [(hfs' p).tprod_eq_zero_mul, zero_add, pow_one]
-    enter [2, 1, k]; rw [add_assoc, one_add_one_eq_two]
-  exact (Multipliable.subtype hfm _).tprod_mul <|
-    Multipliable.prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2))) <|
-    hfm.comp_injective <| Subtype.val_injective |>.comp
-    Nat.Primes.prodNatEquiv.injective |>.comp <|
-    Function.Injective.prodMap (fun ⦃_ _⦄ a ↦ a) <| add_left_injective 1
-
-end auxiliary
 
 /-!
 ### The L-series of the von Mangoldt function restricted to a residue class
@@ -140,7 +96,7 @@ lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
 
 @[simp]
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
-  simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero,
+  simp only [Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_zero, map_zero,
     implies_true]
 
 lemma abscissaOfAbsConv_residueClass_le_one :
@@ -151,9 +107,9 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   convert! this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
-  · simp +contextual only [term, Set.indicator, Set.mem_setOf_eq, hn, ↓reduceIte, apply_ite,
+  · simp +contextual only [term, Set.indicator, Set.mem_ofPred_eq, hn, ↓reduceIte, apply_ite,
       ite_self]
-  · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_notMem,
+  · simp +contextual only [term, Set.mem_ofPred_eq, hn, not_false_eq_true, Set.indicator_of_notMem,
       ofReal_zero, zero_div, ite_self]
 
 /-- The set we are interested in (prime numbers in the residue class `a`) is the same as the support
@@ -163,9 +119,9 @@ lemma support_residueClass_prime_div :
     Function.support (fun n : ℕ ↦ (if n.Prime then residueClass a n else 0) / n) =
       {p : ℕ | p.Prime ∧ (p : ZMod q) = a} := by
   simp only [Function.support, ne_eq, div_eq_zero_iff, ite_eq_right_iff,
-    Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_eq_zero, not_or, Classical.not_imp]
+    Set.indicator_apply_eq_zero, Set.mem_ofPred_eq, Nat.cast_eq_zero, not_or, Classical.not_imp]
   ext1 p
-  simp only [Set.mem_setOf_eq]
+  simp only [Set.mem_ofPred_eq]
   exact ⟨fun H ↦ ⟨H.1.1, H.1.2.1⟩,
     fun H ↦ ⟨⟨H.1, H.2, vonMangoldt_ne_zero_iff.mpr H.1.isPrimePow⟩, H.1.ne_zero⟩⟩
 
@@ -263,7 +219,7 @@ lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
   rw [eq_inv_mul_iff_mul_eq₀ <| mod_cast (Nat.totient_pos.mpr q.pos_of_neZero).ne']
-  simp +contextual only [residueClass, Set.indicator_apply, Set.mem_setOf_eq, apply_ite,
+  simp +contextual only [residueClass, Set.indicator_apply, Set.mem_ofPred_eq, apply_ite,
     ofReal_zero, mul_zero, ← Finset.sum_mul, sum_char_inv_mul_char_eq ℂ ha n, eq_comm (a := a),
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
@@ -294,7 +250,7 @@ lemma LSeries_residueClass_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
 
 variable (a)
 
-open Classical in
+open scoped Classical in
 /-- The auxiliary function used, e.g., with the Wiener-Ikehara Theorem to prove
 Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mangoldt
 function restricted to the residue class `a : ZMod q` minus the principal part
@@ -314,15 +270,15 @@ lemma continuousOn_LFunctionResidueClassAux' :
   simp only [LFunctionResidueClassAux, sub_eq_add_neg]
   refine continuousOn_const.mul <| ContinuousOn.add ?_ ?_
   · refine (continuousOn_neg_logDeriv_LFunctionTrivChar₁ q).mono fun s hs ↦ ?_
-    simp only [ne_eq, Set.mem_setOf_eq] at hs
+    simp only [ne_eq, Set.mem_ofPred_eq] at hs
     tauto
   · simp only [← Finset.sum_neg_distrib, mul_div_assoc, ← mul_neg, ← neg_div]
     refine continuousOn_finsetSum _ fun χ hχ ↦ continuousOn_const.mul ?_
     replace hχ : χ ≠ 1 := by simpa only [ne_eq, Finset.mem_compl, Finset.mem_singleton] using hχ
     refine (continuousOn_neg_logDeriv_LFunction_of_nontriv hχ).mono fun s hs ↦ ?_
-    simp only [ne_eq, Set.mem_setOf_eq] at hs
+    simp only [ne_eq, Set.mem_ofPred_eq] at hs
     rcases hs with rfl | hs
-    · simp only [ne_eq, Set.mem_setOf_eq, one_re, le_refl,
+    · simp only [ne_eq, Set.mem_ofPred_eq, one_re, le_refl,
         LFunction_ne_zero_of_one_le_re χ (.inl hχ), not_false_eq_true]
     · exact hs χ
 
@@ -334,9 +290,9 @@ lemma continuousOn_LFunctionResidueClassAux :
     ContinuousOn (LFunctionResidueClassAux a) {s | 1 ≤ s.re} := by
   refine (continuousOn_LFunctionResidueClassAux' a).mono fun s hs ↦ ?_
   rcases eq_or_ne s 1 with rfl | hs₁
-  · simp only [ne_eq, Set.mem_setOf_eq, true_or]
-  · simp only [ne_eq, Set.mem_setOf_eq, hs₁, false_or]
-    exact fun χ ↦ LFunction_ne_zero_of_one_le_re χ (.inr hs₁) <| Set.mem_setOf.mp hs
+  · simp only [ne_eq, Set.mem_ofPred_eq, true_or]
+  · simp only [ne_eq, Set.mem_ofPred_eq, hs₁, false_or]
+    exact fun χ ↦ LFunction_ne_zero_of_one_le_re χ (.inr hs₁) <| Set.mem_ofPred.mp hs
 
 variable {a}
 
@@ -350,7 +306,7 @@ lemma eqOn_LFunctionResidueClassAux (ha : IsUnit a) :
       (fun s ↦ L ↗(residueClass a) s - (q.totient : ℂ)⁻¹ / (s - 1))
       {s | 1 < s.re} := by
   intro s hs
-  replace hs := Set.mem_setOf.mp hs
+  replace hs := Set.mem_ofPred.mp hs
   simp only [LSeries_residueClass_eq ha hs, LFunctionResidueClassAux]
   rw [neg_div, ← neg_add', mul_neg, ← neg_mul, div_eq_mul_one_div (q.totient : ℂ)⁻¹,
     sub_eq_add_neg, ← neg_mul, ← mul_add]
@@ -399,7 +355,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
     simp only [ofReal_tsum, ofReal_div, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast,
       ofReal_add, ofReal_inv, ofReal_sub, ofReal_one]
     simp_rw [← LFunctionResidueClassAux_real ha hx,
-      eqOn_LFunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,
+      eqOn_LFunctionResidueClassAux ha <| Set.mem_ofPred.mpr (ofReal_re x ▸ hx), sub_add_cancel,
       LSeries, term]
     refine tsum_congr fun n ↦ ?_
     split_ifs with hn
@@ -408,7 +364,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
   have : ContinuousOn (fun x : ℝ ↦ (LFunctionResidueClassAux a x).re) (Set.Icc 1 2) :=
     continuous_re.continuousOn.comp (t := Set.univ) (continuousOn_LFunctionResidueClassAux a)
       (fun ⦃x⦄ a ↦ trivial) |>.comp continuous_ofReal.continuousOn fun x hx ↦ by
-        simpa only [Set.mem_setOf_eq, ofReal_re] using hx.1
+        simpa only [Set.mem_ofPred_eq, ofReal_re] using hx.1
   obtain ⟨C, hC⟩ := bddBelow_def.mp <| IsCompact.bddBelow_image isCompact_Icc this
   replace hC {x : ℝ} (hx : x ∈ Set.Icc 1 2) : C ≤ (LFunctionResidueClassAux a x).re :=
     hC (LFunctionResidueClassAux a x).re <|
@@ -472,19 +428,22 @@ variable {q : ℕ} [NeZero q] {a : ZMod q}
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
-theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
+theorem infinite_setOfPred_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
+
+@[deprecated (since := "2026-07-09")]
+alias infinite_setOf_prime_and_eq_mod := infinite_setOfPred_prime_and_eq_mod
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by
-  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (infinite_setOf_prime_and_eq_mod ha) n
-  exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
+  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (infinite_setOfPred_prime_and_eq_mod ha) n
+  exact ⟨p, hp₂.gt, Set.mem_ofPred.mp hp₁⟩
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ℤ` is coprime to `q`, then there are infinitely many prime numbers `p`
@@ -513,9 +472,12 @@ lemma frequently_atTop_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime
   obtain ⟨p, hn, hp, ha⟩ := forall_exists_prime_gt_and_modEq n hq h
   exact ⟨p, hn.le, hp, ha⟩
 
-lemma infinite_setOf_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+lemma infinite_setOfPred_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
     Set.Infinite {p : ℕ | p.Prime ∧ p ≡ a [MOD q]} :=
   frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq hq h)
+
+@[deprecated (since := "2026-07-09")]
+alias infinite_setOf_prime_and_modEq := infinite_setOfPred_prime_and_modEq
 
 end Nat
 

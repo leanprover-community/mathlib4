@@ -62,7 +62,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   By assumption, `LinearMap.range (f - 1)` is dense in the kernel of `g`,
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=
-    isClosed_setOf_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
+    isClosed_setOfPred_tendsto_birkhoffAverage 𝕜 hf uniformContinuous_id continuous_const
   refine closure_minimal (Set.forall_mem_range.2 fun x ↦ ?_) this (hg_ker hy)
   /- Finally, for `y = f x - x` the average is equal to the difference between averages
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
@@ -89,16 +89,16 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
-      (𝓝 <| (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjection x) := by
+      (𝓝 <| (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjectionOnto x) := by
   /- Due to the previous theorem, it suffices to verify
   that the range of `f - 1` is dense in the orthogonal complement
   to the submodule of fixed points of `f`. -/
   apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitz.weaken hf)
-  · exact (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjection_mem_subspace_eq_self
+  · exact (f.eqLocus (1 : E →L[𝕜] E)).orthogonalProjectionOnto_mem_subspace_eq_self
   · clear x
     /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`
     is a fixed point of `f`. -/
-    rw [Submodule.ker_orthogonalProjection, ← Submodule.topologicalClosure_coe,
+    rw [Submodule.ker_orthogonalProjectionOnto, ← Submodule.topologicalClosure_coe,
       SetLike.coe_subset_coe, ← Submodule.orthogonal_orthogonal_eq_closure]
     /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
     refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_

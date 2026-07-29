@@ -40,7 +40,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     intro k x'
     have := H (ε / 2 ^ k) (by positivity) x' (div_le_self ε_pos.le <| one_le_pow₀ one_le_two)
     simpa [reformulation] using! this
-  haveI : Nonempty X := ⟨x⟩
+  have : Nonempty X := ⟨x⟩
   choose! F hF using H
   -- Use the axiom of choice
   -- Now define u by induction starting at x, with u_{n+1} = F(n, u_n)
