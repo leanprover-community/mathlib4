@@ -406,7 +406,7 @@ section prod_module
 -- `F₁` and `F₂` are normed spaces.
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-variable {s : Set M} {x : M}
+  {s : Set M} {x : M}
 
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
