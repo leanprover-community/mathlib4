@@ -446,7 +446,7 @@ lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontin
   exact hUbasis.antitone (Nat.le_findGreatest hkn hk) (hy n (key n k hkn hk)).2
 
 /-- **Lower hemicontinuity along a countably generated filter** (subsequence form):
-if `f : α → Set β` is lower hemicontinuous at `x₀`, `β` is first countable at `y₀ ∈ f x₀`, and
+if `f : α → Set β` is lower hemicontinuous at `x₀`, `y₀ ∈ f x₀`, `𝓝 y₀` is countably generated and
 `x : ι → α` tends to `x₀` along a nontrivial countably generated filter `l`, then some sequence
 `u : ℕ → ι` converging to `l` admits a companion `y : ℕ → β` tending to `y₀` with
 `y k ∈ f (x (u k))` eventually.
