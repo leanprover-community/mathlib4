@@ -113,9 +113,8 @@ theorem toDirectSum_zero [Semiring M] : (0 : AddMonoidAlgebra M ι).toDirectSum 
 
 @[simp]
 theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
-    (f + g).toDirectSum = f.toDirectSum + g.toDirectSum := by
-  rw [toDirectSum, coeff_add, Finsupp.toDFinsupp_add]
-  rfl
+    (f + g).toDirectSum = f.toDirectSum + g.toDirectSum :=
+  Finsupp.toDFinsupp_add _ _
 
 @[simp]
 theorem toDirectSum_natCast [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) :

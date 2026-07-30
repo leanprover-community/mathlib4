@@ -732,18 +732,19 @@ end LinearMap
 
 end Ring
 
-namespace Equiv
-variable {R A A' B B' : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
-  [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
+namespace LinearEquiv
+variable {R A A' B B' : Type*} [CommSemiring R]
+  [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid A'] [AddCommMonoid B']
+  [Module R A] [Module R B] [Module R A'] [Module R B']
 
 variable (R) in
 open TensorProduct in
-lemma tensorProductComm_def (eA : A ≃+ A') (eB : B ≃+ B') :
-    letI := eA.module R
-    letI := eB.module R
-    TensorProduct.comm R A B = .trans
-      (congr (eA.linearEquiv R) (eB.linearEquiv R)) (.trans
-      (TensorProduct.comm R A' B') <| congr (eB.linearEquiv R).symm (eA.linearEquiv R).symm) := by
+lemma tensorProductComm_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') :
+    TensorProduct.comm R A B = .trans (congr eA eB) (.trans
+      (TensorProduct.comm R A' B') <| congr eB.symm eA.symm) := by
   ext x; induction x <;> simp [*]
 
-end Equiv
+end LinearEquiv
+
+@[deprecated (since := "2026-07-30")]
+alias Equiv.tensorProductComm_def := LinearEquiv.tensorProductComm_def

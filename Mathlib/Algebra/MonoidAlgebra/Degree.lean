@@ -89,7 +89,7 @@ variable (degb : A → B) (degt : A → T) (f g : R[A])
 theorem sup_support_coeff_add_le :
     (f + g).coeff.support.sup degb ≤ f.coeff.support.sup degb ⊔ g.coeff.support.sup degb := by
   classical
-  grw [coeff_add, Finsupp.support_add, Finset.sup_union]
+  exact (Finset.sup_mono Finsupp.support_add).trans_eq Finset.sup_union
 
 @[deprecated (since := "2026-06-18")] alias sup_support_add_le := sup_support_coeff_add_le
 
@@ -409,6 +409,8 @@ lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
   refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
   obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
 
+variable [AddZeroClass A]
+
 open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
@@ -421,8 +423,6 @@ lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).supDegree D = q.supDegree D := by
   rw [add_comm, supDegree_add_eq_left h]
-
-variable [AddZeroClass A]
 
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := by

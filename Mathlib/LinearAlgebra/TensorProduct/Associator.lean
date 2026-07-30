@@ -379,8 +379,7 @@ namespace LinearEquiv
 variable {R A A' B B' C C' : Type*}
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
 variable [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
-variable [Module R A] [Module R B] [Module R C]
-variable [Module R A'] [Module R B'] [Module R C']
+variable [Module R A] [Module R B] [Module R C] [Module R A'] [Module R B'] [Module R C']
 
 variable (R) in
 open TensorProduct in
@@ -394,3 +393,6 @@ lemma tensorProductAssoc_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') (eC : C
   | tmul x a => induction x <;> simp [*, add_tmul]
 
 end LinearEquiv
+
+@[deprecated (since := "2026-07-30")]
+alias Equiv.tensorProductAssoc_def := LinearEquiv.tensorProductAssoc_def

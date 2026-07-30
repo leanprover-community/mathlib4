@@ -161,7 +161,7 @@ theorem of'_modOf (g : G) : of' k G g %ᵒᶠ g = 0 := by
 theorem divOf_add_modOf [IsCancelAdd G] (x : k[G]) (g : G) :
     of' k G g * (x /ᵒᶠ g) + x %ᵒᶠ g = x := by
   ext g'
-  simp only [coeff_add, of'_apply, Finsupp.add_apply]
+  dsimp only [coeff_add, of'_apply, Finsupp.add_apply]
   obtain ⟨d, rfl⟩ | h := em (∃ d, g' = g + d)
   · rw [coeff_modOf_self_add, add_zero, coeff_single_mul_add, one_mul, coeff_divOf]
   · rw [coeff_modOf_of_not_exists_add x _ _ h, coeff_single_mul_of_forall_add_ne, zero_add]

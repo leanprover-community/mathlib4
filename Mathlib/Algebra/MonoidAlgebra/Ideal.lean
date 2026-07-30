@@ -30,9 +30,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
   classical
   let RHS : Ideal (MonoidAlgebra k G) :=
     { carrier := { p | ∀ m : G, m ∈ p.coeff.support → ∃ m' ∈ s, ∃ d, m = d * m' }
-      add_mem' {x y} hx hy m hm := by
-        grw [coeff_add, Finsupp.support_add, Finset.mem_union] at hm
-        exact hm.elim (hx m) (hy m)
+      add_mem' {x y} hx hy m hm := (Finset.mem_union.1 <| Finsupp.support_add hm).elim (hx m) (hy m)
       zero_mem' := by simp
       smul_mem' x y hy m hm := by
         simp only [smul_eq_mul, mul_def, coeff_finsuppSum] at hm
@@ -69,9 +67,7 @@ theorem AddMonoidAlgebra.mem_ideal_span_of'_image [AddMonoid A] [Semiring k] {s 
   classical
   let RHS : Ideal (AddMonoidAlgebra k A) := {
     carrier := { p | ∀ m : A, m ∈ p.coeff.support → ∃ m' ∈ s, ∃ d, m = d + m' }
-    add_mem' {x y} hx hy m hm := by
-      grw [coeff_add, Finsupp.support_add, Finset.mem_union] at hm
-      exact hm.elim (hx m) (hy m)
+    add_mem' {x y} hx hy m hm := (Finset.mem_union.1 <| Finsupp.support_add hm).elim (hx m) (hy m)
     zero_mem' := by simp
     smul_mem' x y hy m hm := by
       simp only [smul_eq_mul, mul_def, coeff_finsuppSum] at hm

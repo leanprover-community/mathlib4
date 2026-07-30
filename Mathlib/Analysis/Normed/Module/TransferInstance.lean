@@ -49,3 +49,5 @@ protected abbrev AddEquiv.normedSpace (𝕜 : Type*) [NormedField 𝕜]
     NormedSpace 𝕜 α :=
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
+
+@[deprecated (since := "2026-07-30")] alias Equiv.normedSpace := AddEquiv.normedSpace

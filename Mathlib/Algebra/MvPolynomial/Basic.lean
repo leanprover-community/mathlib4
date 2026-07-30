@@ -477,9 +477,8 @@ lemma support_C (c : R) [h : Decidable (c = 0)] :
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
 
-theorem support_add [DecidableEq σ] : (p + q).support ⊆ p.support ∪ q.support := by
-  unfold support
-  grw [coeff_add, Finsupp.support_add]
+theorem support_add [DecidableEq σ] : (p + q).support ⊆ p.support ∪ q.support :=
+  Finsupp.support_add
 
 theorem support_X [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
   classical rw [X, support_monomial, if_neg]; exact one_ne_zero

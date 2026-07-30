@@ -173,9 +173,6 @@ instance instUnique [Subsingleton R] : Unique R[M] := fast_instance% coeffEquiv.
 instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
   coeffEquiv.decidableEq
 
-@[no_expose, to_additive]
-instance : Add R[M] := coeffEquiv.add
-
 @[to_additive instAddMonoid]
 instance instAddMonoid : AddMonoid R[M] := fast_instance% coeffEquiv.addMonoid
 
@@ -189,8 +186,7 @@ instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
 /-- `MonoidAlgebra.coeff` as an `AddEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `AddMonoidAlgebra.coeff` as an `AddEquiv`. -/]
-def coeffAddEquiv : R[M] ≃+ (M →₀ R) :=
-  { coeffEquiv with map_add' := by simp [Equiv.add_def] }
+def coeffAddEquiv : R[M] ≃+ (M →₀ R) := coeffEquiv.addEquiv
 
 @[to_additive (attr := simp)] lemma coeff_zero : coeff (0 : R[M]) = 0 := rfl
 @[to_additive (attr := simp)] lemma ofCoeff_zero : (ofCoeff 0 : R[M]) = 0 := rfl
@@ -199,10 +195,10 @@ def coeffAddEquiv : R[M] ≃+ (M →₀ R) :=
   ofCoeff_inj
 
 @[to_additive (attr := simp)]
-lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := (rfl)
+lemma coeff_add (x y : R[M]) : coeff (x + y) = coeff x + coeff y := rfl
 
 @[to_additive (attr := simp)]
-lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := (rfl)
+lemma ofCoeff_add (x y : M →₀ R) : ofCoeff (x + y) = ofCoeff x + ofCoeff y := rfl
 
 @[to_additive (attr := simp)]
 lemma coeff_sum (s : Finset ι) (f : ι → R[M]) :
@@ -303,8 +299,7 @@ Further results on scalar multiplication can be found in
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A R[M] :=
-  fast_instance% coeffEquiv.smulZeroClass _ coeff_zero
+instance smulZeroClass : SMulZeroClass A R[M] := fast_instance% coeffEquiv.smulZeroClass _
 
 section
 -- Ensure that the different smul instances do not create a diamond.
@@ -337,8 +332,8 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
-instance distribSMul [DistribSMul N R] : DistribSMul N R[M] where
-  smul_add := by intros; ext; simp [smul_add]
+instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
+  fast_instance% coeffEquiv.distribSMul _
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
@@ -362,7 +357,7 @@ lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r�
   ext; simp
 
 @[to_additive (attr := deprecated coeff_add (since := "2026-06-18"))]
-lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := (rfl)
+lemma coe_add (f g : R[M]) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
 
 @[to_additive (attr := simp)]
 lemma single_add_erase (m : M) (x : R[M]) : single m (x.coeff m) + x.erase m = x := by
@@ -784,11 +779,11 @@ def curryAddEquiv : R[M × N] ≃+ R[N][M] :=
     (Finsupp.mapRange.addEquiv coeffAddEquiv.symm) coeffAddEquiv.symm
 
 @[to_additive (attr := simp)]
-lemma curryAddEquiv_single {M : Type*} (m : M) (n : N) (r : R) :
+lemma curryAddEquiv_single (m : M) (n : N) (r : R) :
     curryAddEquiv (single (m, n) r) = single m (single n r) := by simp [curryAddEquiv]
 
 @[to_additive (attr := simp)]
-lemma curryAddEquiv_symm_single {M : Type*} (m : M) (n : N) (r : R) :
+lemma curryAddEquiv_symm_single (m : M) (n : N) (r : R) :
     curryAddEquiv.symm (single m <| single n r) = (single (m, n) r) := by simp [curryAddEquiv]
 
 /-- A product monoid algebra is a nested monoid algebra. -/

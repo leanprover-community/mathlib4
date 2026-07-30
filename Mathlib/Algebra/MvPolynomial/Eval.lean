@@ -86,7 +86,6 @@ section
 
 @[simp]
 theorem eval₂_add : (p + q).eval₂ f g = p.eval₂ f g + q.eval₂ f g := by
-  rw [eval₂, AddMonoidAlgebra.coeff_add]
   classical exact Finsupp.sum_add_index (by simp [f.map_zero]) (by simp [add_mul, f.map_add])
 
 @[simp]

@@ -858,8 +858,7 @@ theorem coe_one : ((1 : MvPolynomial σ R) : MvPowerSeries σ R) = 1 :=
     coe_monomial _ _
 
 @[simp, norm_cast]
-theorem coe_add : ((φ + ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ + ψ := by
-  simp_rw [coe_def, coeff_add]
+theorem coe_add : ((φ + ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ + ψ :=
   rfl
 
 @[simp, norm_cast]

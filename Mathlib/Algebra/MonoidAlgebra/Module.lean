@@ -13,7 +13,6 @@ public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
-import all Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
@@ -50,10 +49,7 @@ section DistribMulAction
 variable [Monoid S] [Semiring R] [DistribMulAction S R]
 
 @[to_additive (dont_translate := S) distribMulAction]
-instance distribMulAction : DistribMulAction S R[M] where
-  __ := distribSMul
-  one_smul := by intros; ext; simp
-  mul_smul := by intros; ext; simp [mul_smul]
+instance distribMulAction : DistribMulAction S R[M] := fast_instance% coeffEquiv.distribMulAction _
 
 @[to_additive (dont_translate := S) (attr := simp)]
 lemma mapDomain_smul (f : M → N) (s : S) (x : R[M]) : mapDomain f (s • x) = s • mapDomain f x := by
@@ -65,24 +61,17 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] where
-  zero_smul := by intros; ext; simp
-  add_smul := by intros; ext; simp [add_smul]
+instance : Module R S[M] := fast_instance% coeffEquiv.module _
 
-@[to_additive (dont_translate := R)]
+@[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
-  coeffAddEquiv.moduleIsTorsionFree _
+  coeffEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
-@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+@[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S :=
-  { coeffAddEquiv with
-    map_smul' := fun r x => by
-      apply coeffAddEquiv.symm.injective
-      simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-      exact Iff.mpr (Equiv.apply_eq_iff_eq_symm_apply _) rfl }
+def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear map. -/
@@ -186,7 +175,7 @@ def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
     invFun x := ⟨.ofCoeff x.1, x.2⟩
     left_inv _ := rfl
     right_inv _ := rfl
-    map_add' _ _ := by exact rfl
+    map_add' _ _ := rfl
     map_smul' _ _ := rfl }
    ≪≫ₗ Finsupp.supportedEquivFinsupp s
 
@@ -214,7 +203,7 @@ TODO: Generalise to a group acting on another, instead of just the left multipli
 @[implicit_reducible]
 def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
-  fast_instance% coeffAddEquiv.distribMulAction _
+  fast_instance% coeffEquiv.distribMulAction _
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (dont_translate := R)]
