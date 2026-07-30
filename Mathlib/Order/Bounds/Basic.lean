@@ -642,7 +642,7 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
@@ -902,7 +902,7 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
 
 /-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
 def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
@@ -913,7 +913,7 @@ def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
   sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
 
 /-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
-@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+@[instance_reducible, to_dual self (reorder := 3 4, 5 6)]
 def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
     Lattice α where

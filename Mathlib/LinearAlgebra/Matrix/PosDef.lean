@@ -594,7 +594,6 @@ end Matrix
 
 namespace QuadraticForm
 
-open QuadraticMap
 
 variable {n : Type*} [Fintype n]
 

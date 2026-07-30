@@ -392,7 +392,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
     · grind
     · grind
     · intro x
-      simp only [coe_filter, Set.mem_setOf_eq, and_imp]
+      simp only [coe_filter, Set.mem_ofPred_eq, and_imp]
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
@@ -510,6 +510,9 @@ alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 theorem toFinset_filter (s : List α) (p : α → Bool) :
     (s.filter p).toFinset = s.toFinset.filter (p ·) := by
   ext; simp [List.mem_filter]
+
+theorem filter_toFinset (s : List α) (p : α → Prop) [DecidablePred p] :
+    s.toFinset.filter p = (s.filter p).toFinset := by simp
 
 end List
 

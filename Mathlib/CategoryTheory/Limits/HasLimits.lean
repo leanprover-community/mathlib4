@@ -137,10 +137,12 @@ def limit.cone (F : J ⥤ C) [HasLimit F] : Cone F :=
   (getLimitCone F).cone
 
 /-- An arbitrary choice of limit object of a functor. -/
+@[implicit_reducible]
 def limit (F : J ⥤ C) [HasLimit F] :=
   (limit.cone F).pt
 
 /-- The projection from the limit object to a value of the functor. -/
+@[implicit_reducible]
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
@@ -437,7 +439,6 @@ theorem limit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E) [h : Has
 
 end Post
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
     [h : HasLimit ((E ⋙ F) ⋙ G)] : -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
@@ -476,7 +477,7 @@ variable [HasLimitsOfShape J C]
 section
 
 /-- `limit F` is functorial in `F`, when `C` has all limits of shape `J`. -/
-@[simps]
+@[simps, implicit_reducible]
 def lim : (J ⥤ C) ⥤ C where
   obj F := limit F
   map α := limMap α
@@ -510,11 +511,9 @@ theorem limit.map_pre' [HasLimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J
     limit.pre F E₂ = limit.pre F E₁ ≫ lim.map (whiskerRight α F) := by
   ext1; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.id_pre (F : J ⥤ C) : limit.pre F (𝟭 _) = lim.map (Functor.leftUnitor F).inv := by
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H : C ⥤ D) :
     /- H (limit F) ⟶ H (limit G) ⟶ limit (G ⋙ H) vs
      H (limit F) ⟶ limit (F ⋙ H) ⟶ limit (G ⋙ H) -/
@@ -522,6 +521,7 @@ theorem limit.map_post {D : Type u'} [Category.{v'} D] [HasLimitsOfShape J D] (H
   ext
   simp only [whiskerRight_app, limMap_π, assoc, limit.post_π_assoc, limit.post_π, ← H.map_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between
 morphisms from `W` to the cone point of the limit cone for `F`
@@ -576,7 +576,6 @@ noncomputable def coneOfAdj (F : J ⥤ C) : Cone F where
   π := adj.counit.app F
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cones defined by `coneOfAdj` are limit cones. -/
 @[simps]
 def isLimitConeOfAdj (F : J ⥤ C) :
@@ -701,10 +700,12 @@ def colimit.cocone (F : J ⥤ C) [HasColimit F] : Cocone F :=
   (getColimitCocone F).cocone
 
 /-- An arbitrary choice of colimit object of a functor. -/
+@[implicit_reducible]
 def colimit (F : J ⥤ C) [HasColimit F] :=
   (colimit.cocone F).pt
 
 /-- The coprojection from a value of the functor to the colimit object. -/
+@[implicit_reducible]
 def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
 
@@ -953,7 +954,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
   simp [colimit.pre]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
     colimit.ι F (E.obj k) ≫ inv (colimit.pre F E) = colimit.ι (E ⋙ F) k := by
@@ -969,7 +969,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
     haveI : HasColimit ((D ⋙ E) ⋙ F) := h
@@ -1020,7 +1019,6 @@ theorem colimit.post_desc (c : Cocone F) :
   rw [← assoc, colimit.ι_post, ← G.map_comp, colimit.ι_desc, colimit.ι_desc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
     -- H G (colimit F) ⟶ H (colimit (F ⋙ G)) ⟶ colimit ((F ⋙ G) ⋙ H) equals
@@ -1034,7 +1032,6 @@ theorem colimit.post_post {E : Type u''} [Category.{v''} E] (H : D ⥤ E)
 
 end Post
 
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasColimit F] [HasColimit (E ⋙ F)] [HasColimit (F ⋙ G)] [h : HasColimit ((E ⋙ F) ⋙ G)] :
     -- G (colimit F) ⟶ G (colimit (E ⋙ F)) ⟶ colimit ((E ⋙ F) ⋙ G) vs
@@ -1074,7 +1071,7 @@ variable [HasColimitsOfShape J C]
 section
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
-@[simps]
+@[simps, implicit_reducible]
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
@@ -1116,7 +1113,6 @@ theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K �
   simp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem colimit.pre_id (F : J ⥤ C) :
     colimit.pre F (𝟭 _) = colim.map (Functor.leftUnitor F).hom := by cat_disch
 
@@ -1132,6 +1128,7 @@ theorem colimit.map_post {D : Type u'} [Category.{v'} D] [HasColimitsOfShape J D
   rw [← assoc, colimit.ι_map, assoc, colimit.ι_post]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between
 morphisms from the cone point of the colimit cocone for `F` to `W`
@@ -1215,6 +1212,7 @@ end Colimit
 
 section Opposite
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cone F` is a limit cone, then `t.op : Cocone F.op` is a colimit cocone.
 -/
@@ -1230,6 +1228,7 @@ def IsLimit.op {t : Cone F} (P : IsLimit t) : IsColimit t.op where
       rw [← w]
       rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `t : Cocone F` is a colimit cocone, then `t.op : Cone F.op` is a limit cone.
 -/

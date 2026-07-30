@@ -221,6 +221,7 @@ theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
     Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single),
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma d_apply {n : ℕ} (f : k[Fin (n + 1 + 1) → G]) :
     ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
   rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]; rfl
@@ -302,7 +303,6 @@ theorem εToSingle₀_comp_eq :
   ext1
   simpa using! (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quasiIso_forget₂_εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance

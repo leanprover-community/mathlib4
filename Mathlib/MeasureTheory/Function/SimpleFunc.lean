@@ -235,6 +235,7 @@ theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α 
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
   Set.support_indicator
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem range_indicator {s : Set α} (hs : MeasurableSet s) (hs_nonempty : s.Nonempty)
     (hs_ne_univ : s ≠ univ) (x y : β) :
@@ -831,7 +832,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   congr
   funext k
   rw [restrict_apply]
-  · simp only [coe_const, mem_setOf_eq, indicator_apply, Function.const_apply]
+  · simp only [coe_const, mem_ofPred_eq, indicator_apply, Function.const_apply]
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>

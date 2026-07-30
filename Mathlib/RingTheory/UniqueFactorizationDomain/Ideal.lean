@@ -12,7 +12,8 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 # Unique factorization and ascending chain condition on ideals
 
 ## Main results
-* `Ideal.setOf_isPrincipal_wellFoundedOn_gt`, `WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt`
+* `Ideal.setOfPred_isPrincipal_wellFoundedOn_gt`,
+  `WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt`
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
   chain condition on principal ideals.
 -/
@@ -37,7 +38,7 @@ theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R]
 section Ideal
 
 /-- The ascending chain condition on principal ideals holds in a `WfDvdMonoid` domain. -/
-lemma Ideal.setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α] [IsDomain α] :
+lemma Ideal.setOfPred_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α] [IsDomain α] :
     {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·) := by
   have : {I : Ideal α | I.IsPrincipal} = ((fun a ↦ Ideal.span {a}) '' Set.univ) := by
     ext
@@ -47,9 +48,12 @@ lemma Ideal.setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [WfDvdMonoid α
   ext
   exact Ideal.span_singleton_lt_span_singleton
 
+@[deprecated (since := "2026-07-09")]
+alias Ideal.setOf_isPrincipal_wellFoundedOn_gt := Ideal.setOfPred_isPrincipal_wellFoundedOn_gt
+
 /-- The ascending chain condition on principal ideals in a domain is sufficient to prove that
 the domain is `WfDvdMonoid`. -/
-lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDomain α]
+lemma WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDomain α]
     (h : {I : Ideal α | I.IsPrincipal}.WellFoundedOn (· > ·)) :
     WfDvdMonoid α := by
   have : WellFounded (α := {I : Ideal α // I.IsPrincipal}) (· > ·) := h
@@ -57,5 +61,9 @@ lemma WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt [CommSemiring α] [IsDom
   convert! InvImage.wf (fun a => ⟨Ideal.span ({ a } : Set α), _, rfl⟩) this
   ext
   exact Ideal.span_singleton_lt_span_singleton.symm
+
+@[deprecated (since := "2026-07-09")]
+alias WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt :=
+  WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt
 
 end Ideal

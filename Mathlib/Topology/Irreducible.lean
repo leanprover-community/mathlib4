@@ -133,7 +133,9 @@ lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs :
 
 /-- A maximal irreducible set that contains a given point. -/
 @[stacks 004W "(4)"]
-def irreducibleComponent (x : X) : Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
 theorem irreducibleComponent_property (x : X) :
@@ -337,7 +339,7 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
   · intro a b ha hb ⟨p, pS, pa⟩ bS
     by_contra! h0
     suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
-    simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
+    simp only [closure, mem_sInter, mem_ofPred_eq, and_imp, not_forall, exists_prop]
     use aᶜ
     grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
 
@@ -497,6 +499,7 @@ lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
     rw [← Set.image_preimage_eq Z hf₄]
     exact Set.image_mono this⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X → Y` is continuous, open, and has irreducible fibers, then it induces an
 bijection between irreducible components -/
 @[stacks 037A]

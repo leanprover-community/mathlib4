@@ -42,7 +42,7 @@ variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- Suppose that `R → S → A` is a tower of algebras.
 If an element `r : R` is invertible in `S`, then it is invertible in `A`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
     Invertible (algebraMap R A r) :=
   Invertible.copy (Invertible.map (algebraMap S A) (algebraMap R S r)) (algebraMap R A r)
@@ -50,7 +50,7 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
 
 /-- A natural number that is invertible when coerced to `R` is also invertible
 when coerced to any `R`-algebra. -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
   fast_instance% Invertible.algebraTower ℕ R A n
@@ -186,21 +186,23 @@ variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [A
 variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
 
 /-- Restrict the domain of an `AlgHom`. -/
-def AlgHom.restrictDomain : B →ₐ[A] D :=
+def AlgHom.domRestrict : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 
+@[deprecated (since := "2026-07-19")] alias AlgHom.restrictDomain := AlgHom.domRestrict
+
 /-- Extend the scalars of an `AlgHom`. -/
-def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
+def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.domRestrict B).toRingHom.toAlgebra where
   __ := f
   commutes' := fun _ ↦ rfl
-  __ := (f.restrictDomain B).toRingHom.toAlgebra
+  __ := (f.domRestrict B).toRingHom.toAlgebra
 
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
     (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
-  toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
+  toFun f := ⟨f.domRestrict B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra
     fg.2.restrictScalars A

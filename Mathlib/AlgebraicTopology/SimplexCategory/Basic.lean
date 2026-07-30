@@ -176,6 +176,7 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using! hii'
   }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     ⦋0⦌.const ⦋l⦌ i ≫ subinterval j l hjl =
     ⦋0⦌.const ⦋n⦌ ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
@@ -185,6 +186,7 @@ lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
   dsimp [subinterval]
   rw [add_comm]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
@@ -193,6 +195,7 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
@@ -593,12 +596,6 @@ instance : ConcreteCategory SimplexCategory (fun i j => Fin (i.len + 1) →o Fin
   hom := Hom.toOrderHom
   ofHom f := Hom.mk f
 
-instance (x : SimplexCategory) : Fintype (ToType x) :=
-  inferInstanceAs (Fintype (Fin _))
-
-instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
-  inferInstanceAs (OfNat (Fin _) n)
-
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
 @[simp]
@@ -742,7 +739,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
   by_cases h' : x ≤ Fin.castSucc i
   · rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
-    rw [Fin.succAbove_of_castSucc_lt _ _ _]
+    rw [Fin.succAbove_of_castSucc_lt]
     · rw [Fin.castSucc_castPred]
     · exact (Fin.castSucc_lt_succ_iff.mpr h')
   · simp only [not_le] at h'

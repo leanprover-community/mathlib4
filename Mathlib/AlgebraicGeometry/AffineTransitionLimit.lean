@@ -175,6 +175,7 @@ lemma exists_mem_of_isClosed_of_nonempty'
 
 section Opens
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Let `{ Dᵢ }` be a cofiltered diagram of compact schemes with affine transition maps.
 If `U ⊆ Dⱼ` contains the image of `limᵢ Dᵢ ⟶ Dⱼ`, then it contains the image of some `Dₖ ⟶ Dⱼ`. -/
@@ -195,6 +196,7 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
@@ -356,6 +358,7 @@ lemma exists_preimage_eq
 
 end Opens
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hc in
 lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
     IsAffineHom (c.π.app i) where
@@ -1053,6 +1056,7 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
   exact ⟨j, ⟨isIso_of_isOpenImmersion_of_opensRange_eq_top _
     ((preimage_opensRange_toSpecΓ (D.map fij)).symm.trans hj)⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hc in
 @[stacks 01Z4 "(1)"]
