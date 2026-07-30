@@ -27,6 +27,8 @@ We follow [Munkres2000], where this space is denoted `S_Ω`.
 
 @[expose] public section
 
+universe u v
+
 namespace Counterexample
 
 open Filter Set Topology
@@ -45,7 +47,7 @@ instance : CompactSpace (Iic ω₁) :=
   isCompact_iff_compactSpace.mp (by simp only [← Icc_bot, bot_eq_zero, isCompact_Icc])
 
 /-- Main theorem: `Iio ω₁ × Iic ω₁` is not normal. -/
-theorem not_normalSpace_Iio_prod_Iic_omega_one.{u} :
+theorem not_normalSpace_Iio_prod_Iic_omega_one :
     ¬ NormalSpace (Iio.{u+1} ω₁ × Iic.{u+1} ω₁) := by
   intro
   let A : Set (Iio ω₁ × Iic ω₁) := {(a,b) | inc a = b}
@@ -88,10 +90,10 @@ Type (u+1). We use Shrink to build versions of Iio.{1} ω₁ and Iic.{1} ω₁ i
 and make the results more general.
 -/
 
-instance smIio.{u} : Small.{u,1} (Iio ω₁) := small_lift _
+instance smIio : Small.{u,1} (Iio ω₁) := small_lift _
 abbrev ShIio := Shrink (Iio ω₁)
 noncomputable def homeoIio : ShIio ≃ₜ Iio ω₁ := (Shrink.homeomorph (Iio ω₁)).symm
-instance smIic.{u} : Small.{u,1} (Iic ω₁) := small_lift _
+instance smIic : Small.{u,1} (Iic ω₁) := small_lift _
 abbrev ShIic := Shrink (Iic ω₁)
 noncomputable def homeoIic : ShIic ≃ₜ Iic ω₁ := (Shrink.homeomorph (Iic ω₁)).symm
 
@@ -104,14 +106,14 @@ noncomputable def homeoIicIic : ShIic ≃ₜ ShIic := homeoIic.trans homeoIic.sy
 instance compactSpace_toType : CompactSpace ShIic := homeoIic.symm.compactSpace
 noncomputable def incT : ShIio → ShIic := homeoIic.symm ∘ inc ∘ homeoIio
 
-lemma incT_prod_embedding.{u, v} : IsEmbedding
+lemma incT_prod_embedding : IsEmbedding
     (fun (p : ShIio × ShIic) =>
       (incT.{u, v} p.1, homeoIicIic.{u, v} p.2)) := by
   refine IsEmbedding.prodMap ?_ homeoIicIic.isEmbedding
-  exact homeoIic.{v}.symm.isEmbedding.comp
+  exact homeoIic.symm.isEmbedding.comp
     (inc_embedding.comp homeoIio.isEmbedding)
 
-theorem prod_ShIio_ShIic_not_normal.{u, v} :
+theorem prod_ShIio_ShIic_not_normal :
     ¬ NormalSpace (ShIio.{u} × ShIic.{v}) := by
   intro
   exact not_normalSpace_Iio_prod_Iic_omega_one
@@ -120,29 +122,29 @@ theorem prod_ShIio_ShIic_not_normal.{u, v} :
 /-! Counterexamples -/
 
 /-- A subspace of a paracompact space need not be paracompact. -/
-theorem subspace_of_paracompact_not_paracompact.{u,v} :
+theorem subspace_of_paracompact_not_paracompact :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       ParacompactSpace Y → IsEmbedding f → ParacompactSpace X := fun h => by
-  have := h _ _ _ inferInstance incT_prod_embedding.{u, v}
-  exact prod_ShIio_ShIic_not_normal.{u, u} inferInstance
+  have := h _ _ _ inferInstance incT_prod_embedding
+  exact prod_ShIio_ShIic_not_normal.{u,u} inferInstance
 
 /-- The product of two normal spaces need not be normal. -/
-theorem product_of_normal_not_normal.{u,v} :
+theorem product_of_normal_not_normal :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y],
       NormalSpace X → NormalSpace Y → NormalSpace (X × Y) :=
-  fun h => prod_ShIio_ShIic_not_normal.{u, v} (h _ _ inferInstance inferInstance)
+  fun h => prod_ShIio_ShIic_not_normal (h _ _ inferInstance inferInstance)
 
 /-- A subspace of a normal space need not be normal. -/
-theorem subspace_of_normal_not_normal.{u,v} :
+theorem subspace_of_normal_not_normal :
     ¬ ∀ (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y),
       NormalSpace Y → IsEmbedding f → NormalSpace X :=
-  fun h => prod_ShIio_ShIic_not_normal.{u, u}
-    (h _ _ _ inferInstance incT_prod_embedding.{u, v})
+  fun h => prod_ShIio_ShIic_not_normal
+    (h _ _ _ inferInstance incT_prod_embedding)
 
 /-- A regular space need not be normal. -/
-theorem regular_not_normal.{u} :
+theorem regular_not_normal :
     ¬ ∀ (X : Type u) [TopologicalSpace X], RegularSpace X → NormalSpace X :=
-  fun h => prod_ShIio_ShIic_not_normal.{u, u} (h _ inferInstance)
+  fun h => prod_ShIio_ShIic_not_normal.{u,u} (h _ inferInstance)
 
 end Omega1Space
 
