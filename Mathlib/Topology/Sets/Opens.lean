@@ -257,13 +257,9 @@ theorem mem_iSup {ι} {x : α} {s : ι → Opens α} : x ∈ iSup s ↔ ∃ i, x
 theorem mem_sSup {Us : Set (Opens α)} {x : α} : x ∈ sSup Us ↔ ∃ u ∈ Us, x ∈ u := by
   simp_rw [sSup_eq_iSup, mem_iSup, exists_prop]
 
-/-- Open sets in a topological space form a frame. -/
-@[instance_reducible]
-def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
+instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s :=
-    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le
-
-instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
+    (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
 theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
   simp [himp_eq_sSup]
