@@ -278,6 +278,21 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
+@[simp]
+lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) [NeZero n] {p : EuclideanQuadrant n} :
+    (modelWithCornersEuclideanQuadrant n) p = p.val := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
+    fun i ↦ by simp only [le_sup_right]⟩ := rfl
+
+lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) (hx : ∀ i, 0 ≤ x i) :
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
+  rw [modelWithCornersEuclideanQuadrant_symm_apply]
+  simp [hx]
+
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
