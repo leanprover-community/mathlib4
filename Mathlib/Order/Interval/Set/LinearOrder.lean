@@ -234,6 +234,14 @@ theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) :=
 theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) :=
   Icc_union_Ici (h₁.trans (le_max_right ..))
 
+theorem Ioo_union_Ioi_eq_Ioi_sdiff_singleton (a_le_b : a ≤ b) :
+    Ioo a b ∪ Ioi b = Ioi a \ {b} := by
+  simp [← Ioc_union_Ioi_eq_Ioi a_le_b, union_sdiff_distrib]
+
+theorem Ico_union_Ioi_eq_Ici_sdiff_singleton (a_le_b : a ≤ b) :
+    Ico a b ∪ Ioi b = Ici a \ {b} := by
+  simp [← Icc_union_Ioi_eq_Ici a_le_b, union_sdiff_distrib]
+
 /-! ### An infinite and a finite interval -/
 
 theorem Iic_subset_Iio_union_Icc : Iic b ⊆ Iio a ∪ Icc a b := fun x hx =>
@@ -311,6 +319,14 @@ theorem Iio_subset_Iic_union_Ico : Iio b ⊆ Iic a ∪ Ico a b :=
 theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
   Subset.antisymm (fun _ hx => hx.elim (fun hx' => lt_of_le_of_lt hx' h) And.right)
     Iio_subset_Iic_union_Ico
+
+theorem Iio_union_Ioo_eq_Iio_sdiff_singleton (a_le_b : a ≤ b) :
+    Iio a ∪ Ioo a b = Iio b \ {a} := by
+  simp [← Iio_union_Ico_eq_Iio a_le_b, union_sdiff_distrib]
+
+theorem Iio_union_Ioc_eq_Iic_sdiff_singleton (a_le_b : a ≤ b) :
+    Iio a ∪ Ioc a b = Iic b \ {a} := by
+  simp [← Iio_union_Icc_eq_Iic a_le_b, union_sdiff_distrib]
 
 /-! ### Two finite intervals, `I?o` and `Ic?` -/
 
