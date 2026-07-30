@@ -434,12 +434,12 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
       clear hpt
       induction m with grind [Finset.sup_le_iff]
   · intro ⟨k, p, hp, hs⟩
-    have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_setOf _ _)
+    have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_ofPred _ _)
     have h₂ : {x ∈ s | k ≤ x ∧ x < k + p}.Finite :=
-      (Set.finite_Ico k (k + p)).subset (sep_subset_setOf _ _)
+      (Set.finite_Ico k (k + p)).subset (sep_subset_ofPred _ _)
     convert! (IsSemilinearSet.of_finite h₁).union (.add (.of_finite h₂) (.closure_finset { p }))
     ext x
-    simp only [sep_and, Finset.coe_singleton, mem_union, mem_setOf_eq, mem_add, mem_inter_iff,
+    simp only [sep_and, Finset.coe_singleton, mem_union, mem_ofPred_eq, mem_add, mem_inter_iff,
       SetLike.mem_coe, AddSubmonoid.mem_closure_singleton, smul_eq_mul, exists_exists_eq_and]
     constructor
     · intro hx

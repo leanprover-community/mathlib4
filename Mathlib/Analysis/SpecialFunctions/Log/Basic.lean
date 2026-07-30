@@ -361,20 +361,20 @@ lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
   tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp +unfoldPartialApp only [continuousOn_iff_continuous_restrict,
-    restrict]
+  simp +unfoldPartialApp only [continuousOn_iff_continuous_domRestrict,
+    domRestrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 
 /-- The real logarithm is continuous as a function from nonzero reals. -/
 @[fun_prop]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
+  continuousOn_iff_continuous_domRestrict.1 <| continuousOn_log.mono fun _ => id
 
 /-- The real logarithm is continuous as a function from positive reals. -/
 @[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  continuousOn_iff_continuous_domRestrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
   (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
