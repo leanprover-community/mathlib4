@@ -112,10 +112,10 @@ protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
 
 @[deprecated (since := "2026-06-10")] alias Symmetric.dflip_eq := Std.Symm.dflip_eq
 
-theorem flip_eq_iff : flip r = r ↔ Std.Symm r :=
+theorem Std.Symm.flip_eq_iff : flip r = r ↔ Std.Symm r :=
   ⟨fun h ↦ ⟨fun _ _ ↦ congr_fun₂ h .. |>.mp⟩, fun _ ↦ Std.Symm.flip_eq⟩
 
-theorem dflip_eq_iff : dflip r = r ↔ Std.Symm r :=
+theorem Std.Symm.dflip_eq_iff : dflip r = r ↔ Std.Symm r :=
   flip_eq_iff
 
 end NeImp

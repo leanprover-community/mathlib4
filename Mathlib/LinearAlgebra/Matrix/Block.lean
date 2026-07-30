@@ -75,7 +75,7 @@ theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
 
 protected theorem BlockTriangular.transpose :
     M.BlockTriangular b → Mᵀ.BlockTriangular (toDual ∘ b) :=
-  swap
+  dflip
 
 @[simp]
 protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :

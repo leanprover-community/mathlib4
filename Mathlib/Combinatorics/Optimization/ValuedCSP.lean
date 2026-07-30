@@ -170,7 +170,8 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
       · obtain ⟨g, _⟩ := valid.contains
-        have : (fun i => g ((Function.dflip ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
+        have : (fun i => g ((Function.dflip ![![a, b], ![b, a]]) i)) ∈ ω.tt
+          ![![a, b], ![b, a]] := by
           simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
         exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩

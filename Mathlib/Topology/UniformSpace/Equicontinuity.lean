@@ -530,7 +530,8 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 *when `ι → α` is equipped with the uniform structure of uniform convergence*. This is very useful
 for developing the equicontinuity API, but it should not be used directly for other purposes. -/
 theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {S : Set β} :
-    UniformEquicontinuousOn F S ↔ UniformContinuousOn (ofFun ∘ Function.dflip F : β → ι →ᵤ α) S := by
+    UniformEquicontinuousOn F S ↔ UniformContinuousOn
+    (ofFun ∘ Function.dflip F : β → ι →ᵤ α) S := by
   rw [UniformContinuousOn, (UniformFun.hasBasis_uniformity ι α).tendsto_right_iff]
   rfl
 
