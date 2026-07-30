@@ -91,13 +91,10 @@ section Star
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
 class Star (R : Type u) where
+  /-- A star operation (e.g. complex conjugate). -/
   star : R → R
 
 export Star (star)
-
-/-- A star operation (e.g. complex conjugate).
--/
-add_decl_doc star
 
 end Star
 

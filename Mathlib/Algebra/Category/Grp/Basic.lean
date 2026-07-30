@@ -499,66 +499,52 @@ theorem injective_of_mono {G H : AddCommGrpCat.{0}} (f : G ⟶ H) [Mono f] : Fun
 end AddCommGrpCat
 
 /-- Build an isomorphism in the category `GrpCat` from a `MulEquiv` between `Group`s. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/]
 def MulEquiv.toGrpIso {X Y : GrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := GrpCat.ofHom e.toMonoidHom
   inv := GrpCat.ofHom e.symm.toMonoidHom
 
-/-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/
-add_decl_doc AddEquiv.toAddGrpIso
-
 /-- Build an isomorphism in the category `CommGrpCat` from a `MulEquiv`
 between `CommGroup`s. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- Build an isomorphism in the category `AddCommGrpCat` from an `AddEquiv`
+between `AddCommGroup`s. -/]
 def MulEquiv.toCommGrpIso {X Y : CommGrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := CommGrpCat.ofHom e.toMonoidHom
   inv := CommGrpCat.ofHom e.symm.toMonoidHom
 
-/-- Build an isomorphism in the category `AddCommGrpCat` from an `AddEquiv`
-between `AddCommGroup`s. -/
-add_decl_doc AddEquiv.toAddCommGrpIso
-
 namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `GrpCat`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp)
+/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/]
 def groupIsoToMulEquiv {X Y : GrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/
-add_decl_doc addGroupIsoToAddEquiv
-
 /-- Build a `MulEquiv` from an isomorphism in the category `CommGroup`. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/]
 def commGroupIsoToMulEquiv {X Y : CommGrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
-
-/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/
-add_decl_doc addCommGroupIsoToAddEquiv
 
 end CategoryTheory.Iso
 
 /-- multiplicative equivalences between `Group`s are the same as (isomorphic to) isomorphisms
 in `GrpCat` -/
-@[to_additive]
+@[to_additive /-- Additive equivalences between `AddGroup`s are the same
+as (isomorphic to) isomorphisms in `AddGrpCat`. -/]
 def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
   hom := ↾fun e ↦ e.toGrpIso
   inv := ↾fun i ↦ i.groupIsoToMulEquiv
 
-/-- Additive equivalences between `AddGroup`s are the same
-as (isomorphic to) isomorphisms in `AddGrpCat`. -/
-add_decl_doc addEquivIsoAddGroupIso
-
 /-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
 in `CommGrpCat`. -/
-@[to_additive]
+@[to_additive /-- Additive equivalences between `AddCommGroup`s are
+the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/]
 def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
   hom := ↾fun e ↦ e.toCommGrpIso
   inv := ↾fun i ↦ i.commGroupIsoToMulEquiv
-
-/-- Additive equivalences between `AddCommGroup`s are
-the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/
-add_decl_doc addEquivIsoAddCommGroupIso
 
 namespace CategoryTheory.Aut
 

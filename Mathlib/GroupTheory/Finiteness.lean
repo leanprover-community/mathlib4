@@ -299,13 +299,10 @@ variable {G H : Type*} [Group G] [AddGroup H]
 section Subgroup
 
 /-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
-@[to_additive]
+@[to_additive /-- An additive subgroup of `H` is finitely generated if
+it is the closure of a finite subset of `H`. -/]
 def Subgroup.FG (P : Subgroup G) : Prop :=
   ∃ S : Finset G, Subgroup.closure ↑S = P
-
-/-- An additive subgroup of `H` is finitely generated if it is the closure of a finite subset of
-`H`. -/
-add_decl_doc AddSubgroup.FG
 
 /-- An equivalent expression of `Subgroup.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive /-- An equivalent expression of `AddSubgroup.fg` in terms of `Set.Finite` instead of
