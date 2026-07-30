@@ -290,7 +290,7 @@ set_option linter.deprecated false in
 initialize addLinter countHeartbeatsLinter
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
-macro (name := count_heartbeats) "#count_heartbeats" approx:(&" approximately")? : command => do
+macro (name := countHeartbeats) "#count_heartbeats" approx:(&" approximately")? : command => do
   let approx ←
     if approx.isSome then
       `(set_option linter.countHeartbeatsApprox true) else
@@ -299,7 +299,7 @@ macro (name := count_heartbeats) "#count_heartbeats" approx:(&" approximately")?
     #[← `(command| set_option linter.countHeartbeats true),
       approx]⟩
 
-deprecated_syntax count_heartbeats "use `#count_heartbeats in` or \
+deprecated_syntax countHeartbeats "use `#count_heartbeats in` or \
   `set_option trace.profiler true` with `set_option trace.profiler.useHeartbeats true`"
   (since := "2026-07-30")
 
