@@ -337,7 +337,7 @@ end Order
 /-! ## Center of a ring -/
 
 section Center
-variable {R : Type u}
+variable {R : Type u} {S : Type v}
 
 section NonUnitalNonAssocRing
 variable (R) [NonUnitalNonAssocRing R]
@@ -375,7 +375,7 @@ is isomorphic to the center of its opposite. -/
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-variable {S} [NonUnitalRing R] [NonUnitalRing S]
+variable [NonUnitalRing R] [NonUnitalRing S]
 
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
@@ -390,10 +390,6 @@ instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ 
 theorem map_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
     (hf : Function.Surjective f) : map f (center R) ≤ center S :=
   NonUnitalSubsemiring.map_center_le_center hf
-
-theorem center_le_comap_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
-    (hf : Function.Surjective f) : center R ≤ comap f (center S) :=
-  NonUnitalSubsemiring.center_le_comap_center hf
 
 theorem comap_center_le_center {F} [FunLike F R S] [NonUnitalRingHomClass F R S] {f : F}
     (hf : Function.Injective f) : comap f (center S) ≤ center R :=

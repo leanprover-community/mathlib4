@@ -85,11 +85,6 @@ theorem map_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
   Set.image_center_subset hf
 
 @[to_additive]
-theorem center_le_comap_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
-    (hf : Function.Surjective f) : center M ≤ comap f (center N) :=
-  map_le_iff_le_comap.mp (map_center_le_center hf)
-
-@[to_additive]
 theorem comap_center_le_center {F} [FunLike F M N] [MonoidHomClass F M N] {f : F}
     (hf : Function.Injective f) : comap f (center N) ≤ center M :=
   Set.preimage_center_subset hf
@@ -103,7 +98,7 @@ end MulOneClass
 
 section Monoid
 
-variable {M N} [Monoid M] [Monoid N]
+variable {M} [Monoid M]
 
 /-- The center of a monoid is commutative. -/
 @[to_additive]

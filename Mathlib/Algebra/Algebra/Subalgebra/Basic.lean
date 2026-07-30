@@ -927,22 +927,17 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
-theorem map_center_le_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
-    (hf : Function.Surjective f) : map (AlgHomClass.toAlgHom f) (center R A) ≤ center R B :=
+theorem map_center_le_center {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+    map f (center R A) ≤ center R B :=
   NonUnitalSubsemiring.map_center_le_center hf
 
-theorem center_le_comap_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
-    (hf : Function.Surjective f) : center R A ≤ comap (AlgHomClass.toAlgHom f) (center R B) :=
-  NonUnitalSubsemiring.center_le_comap_center hf
-
-theorem comap_center_le_center {F} [FunLike F A B] [AlgHomClass F R A B] {f : F}
-    (hf : Function.Injective f) : comap (AlgHomClass.toAlgHom f) (center R B) ≤ center R A :=
+theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
+    comap f (center R B) ≤ center R A :=
   NonUnitalSubsemiring.comap_center_le_center hf
 
 @[simp]
-theorem map_center_eq {F} [EquivLike F A B] [AlgEquivClass F R A B] {f : F} :
-    map (AlgHomClass.toAlgHom f) (center R A) = center R B :=
-  SetLike.coe_injective Set.image_center_eq
+theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
+  SetLike.coe_injective <| Set.image_center_eq (f := f)
 
 end Center
 

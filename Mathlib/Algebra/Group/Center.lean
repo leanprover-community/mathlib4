@@ -86,7 +86,7 @@ protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * 
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
   simp only [h.right_assoc, h.mid_assoc, (h.comm _).eq]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral a)
     (hf : Function.Surjective f) : IsMulCentral (f a) := by
   refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
