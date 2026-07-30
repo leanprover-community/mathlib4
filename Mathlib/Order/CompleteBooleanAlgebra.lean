@@ -766,7 +766,7 @@ protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α]
   __ := hf.coframe f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
 
 /-- Pullback a `CompletelyDistribLattice.MinimalAxioms` along an injection. -/
-protected theorem Function.completelyDistribLatticeMinimalAxioms
+protected theorem Function.Injective.completelyDistribLatticeMinimalAxioms
     [CompleteLattice α] [CompleteLattice β]
     (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) :
