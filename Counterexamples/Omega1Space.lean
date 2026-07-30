@@ -85,14 +85,12 @@ Type (u+1). We use Shrink to build versions of Iio.{1} ω₁ and Iic.{1} ω₁ i
 and make the results more general.
 -/
 
-instance smIio.{u} : Small.{u, 1} (Iio (ω_ 1)) := small_lift _
-abbrev ShIio.{u} := Shrink.{u,1} (Iio.{1} ω₁)
-noncomputable def homeoIio.{u} : ShIio.{u} ≃ₜ Iio.{1} ω₁ :=
-  (Shrink.homeomorph.{u,1} (Iio.{1} ω₁)).symm
-instance smIic.{u} : Small.{u, 1} (Iic (ω_ 1)) := small_lift _
-abbrev ShIic.{u} := Shrink.{u,1} (Iic.{1} ω₁)
-noncomputable def homeoIic.{u} : ShIic.{u} ≃ₜ Iic.{1} ω₁ :=
-  (Shrink.homeomorph.{u,1} (Iic.{1} ω₁)).symm
+instance smIio.{u} : Small.{u,1} (Iio ω₁) := small_lift _
+abbrev ShIio := Shrink (Iio ω₁)
+noncomputable def homeoIio : ShIio ≃ₜ Iio ω₁ := (Shrink.homeomorph (Iio ω₁)).symm
+instance smIic.{u} : Small.{u,1} (Iic ω₁) := small_lift _
+abbrev ShIic := Shrink (Iic ω₁)
+noncomputable def homeoIic : ShIic ≃ₜ Iic ω₁ := (Shrink.homeomorph (Iic ω₁)).symm
 
 instance : T2Space ShIio := homeoIio.symm.t2Space
 instance : T2Space ShIic := homeoIic.symm.t2Space
@@ -104,7 +102,7 @@ instance compactSpace_toType : CompactSpace ShIic := homeoIic.symm.compactSpace
 noncomputable def incT : ShIio → ShIic := homeoIic.symm ∘ inc ∘ homeoIio
 
 lemma incT_prod_embedding.{u, v} : Topology.IsEmbedding
-    (fun (p : ShIio.{u} × ShIic.{u}) =>
+    (fun (p : ShIio × ShIic) =>
       (incT.{u, v} p.1, homeoIicIic.{u, v} p.2)) := by
   refine Topology.IsEmbedding.prodMap ?_ homeoIicIic.isEmbedding
   exact homeoIic.{v}.symm.isEmbedding.comp
