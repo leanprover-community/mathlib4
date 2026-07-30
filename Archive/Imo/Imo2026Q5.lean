@@ -181,7 +181,7 @@ lemma displacement_eq (hf : ∀ x > 0, 0 < f x) (h : Condition f) (hx : 0 < x) (
       rw [IsLocallyConstant.iff_eventually_eq]
       intro p
       filter_upwards [Metric.ball_mem_nhds p hfz] with q hq using hnear q p hq
-    haveI : PreconnectedSpace (Set.Ioi (0 : ℝ)) := Subtype.preconnectedSpace isPreconnected_Ioi
+    have : PreconnectedSpace (Set.Ioi (0 : ℝ)) := Subtype.preconnectedSpace isPreconnected_Ioi
     exact hloc.apply_eq_of_preconnectedSpace ⟨x, hx⟩ ⟨y, hy⟩
   · grind
 
