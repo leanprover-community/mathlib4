@@ -57,8 +57,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
     ker (toLin' (diagonal w)) =
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
   rw [← comap_bot]
-  have := fun i : m => ker_comp (toLin' (diagonal w)) (proj i)
-  simpa [← this, proj_diagonal, ker_smul', ← iInf_ker_proj] using
+  simpa [← ker_comp, proj_diagonal, ker_smul', ← iInf_ker_proj] using
     (iSup_range_single_eq_iInf_ker_proj K _ isCompl_compl {i | w i = 0}.toFinite).symm
 
 theorem range_diagonal [DecidableEq m] (w : m → K) :
