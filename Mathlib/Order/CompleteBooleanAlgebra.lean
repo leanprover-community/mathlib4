@@ -98,12 +98,13 @@ distributive lattice. Do NOT use, except for implementing `CompleteDistribLattic
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompleteDistribLattice.ofMinimalAxioms`. -/
 structure CompleteDistribLattice.MinimalAxioms (α : Type u) [CompleteLattice α] extends
-    toFrameMinimalAxioms : Frame.MinimalAxioms α,
-    toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
+    toFrame : Frame.MinimalAxioms α, toCoframe : Coframe.MinimalAxioms α where
 
--- We give those projections better name further down
-attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalAxioms
-  CompleteDistribLattice.MinimalAxioms.toCoframeMinimalAxioms
+/-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
+add_decl_doc CompleteDistribLattice.MinimalAxioms.toFrame
+
+/-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Coframe`. -/
+add_decl_doc CompleteDistribLattice.MinimalAxioms.toCoframe
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
@@ -178,7 +179,6 @@ end MinimalAxioms
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
 -- See note [reducible non-instances]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Frame α where
-  __ := minAx
   compl a := sSup {c | c ⊓ a ≤ ⊥}
   himp a b := sSup {c | c ⊓ a ≤ b}
   le_himp_iff _ b c :=
@@ -195,7 +195,6 @@ This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
 @[to_dual existing]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Coframe α where
-  __ := minAx
   hnot a := sInf {c | ⊤ ≤ a ⊔ c}
   sdiff a b := sInf {c | a ≤ b ⊔ c}
   sdiff_le_iff a b _ :=
@@ -214,12 +213,6 @@ theorem of [CompleteDistribLattice α] : MinimalAxioms α where
   iInf_sup_le_sup_sInf a s := sup_sInf_eq.ge
 
 variable [CompleteLattice α] (minAx : MinimalAxioms α)
-
-/-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
-abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms
-
-/-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Coframe`. -/
-abbrev toCoframe : Coframe.MinimalAxioms α where __ := minAx
 
 end MinimalAxioms
 
@@ -267,9 +260,8 @@ private lemma iSup_iInf_eq [CompleteLattice α] (minAx : MinimalAxioms α) (f : 
 
 /-- Turn minimal axioms for `CompletelyDistribLattice` into minimal axioms for
 `CompleteDistribLattice`. -/
-abbrev toCompleteDistribLattice [CompleteLattice α] (minAx : MinimalAxioms α) :
+theorem toCompleteDistribLattice [CompleteLattice α] (minAx : MinimalAxioms α) :
     CompleteDistribLattice.MinimalAxioms α where
-  __ := minAx
   inf_sSup_le_iSup_inf a s := by
     calc
       _ = ⨅ i : ULift.{u} Bool, ⨆ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
@@ -300,9 +292,8 @@ This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := 
 `￢a := ⊤ \ a`. -/
 -- See note [reducible non-instances]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) :
-    CompletelyDistribLattice α where
-  __ := minAx
-  __ := CompleteDistribLattice.ofMinimalAxioms minAx.toCompleteDistribLattice
+    CompletelyDistribLattice α := fast_instance%
+  { CompleteDistribLattice.ofMinimalAxioms minAx.toCompleteDistribLattice, minAx with }
 
 end CompletelyDistribLattice
 
