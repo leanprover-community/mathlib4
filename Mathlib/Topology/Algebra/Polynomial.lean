@@ -159,12 +159,16 @@ open Polynomial NNReal
 
 variable {F K : Type*} [CommRing F] [NormedField K]
 
+/-- Nonzero polynomials are nonzero away from a cofinite set. -/
+lemma eventually_eval_ne_zero_cofinite [IsDomain F] {g : Polynomial F} (hg : g ≠ 0) :
+    ∀ᶠ z in cofinite, g.eval z ≠ 0 := by
+  simpa [eventually_cofinite] using finite_setOfPred_isRoot hg
+
 /-- Nonzero polynomials are nonzero away from a codiscrete set. -/
 lemma eventually_eval_ne_zero_codiscrete [IsDomain F] [TopologicalSpace F] [T1Space F]
     {g : Polynomial F} (hg : g ≠ 0) :
-    ∀ᶠ z in codiscrete F, g.eval z ≠ 0 := by
-  filter_upwards [(finite_setOfPred_isRoot hg).compl_mem_codiscrete] with z hz
-  exact hz
+    ∀ᶠ z in codiscrete F, g.eval z ≠ 0 :=
+  (eventually_eval_ne_zero_cofinite hg).filter_mono codiscrete_le_cofinite
 
 open Multiset
 
