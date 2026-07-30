@@ -73,7 +73,7 @@ theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
   aesop
 
 /-- If column indices have a linear order, then there's at most one leading position per row. -/
-theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : n}
+theorem IsLeadingEntry.eq [LinearOrder n] {i : m} {c₁ c₂ : n}
     (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
   le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
 
@@ -89,9 +89,8 @@ instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT
 `isRowEchelon`). -/
 structure IsReducedRowEchelon [LT m] [LT n] [One R] (A : Matrix m n R) : Prop where
   isRowEchelon : A.IsRowEchelon
-  eq_one_of_isLeadingEntry : ∀ ⦃i : m⦄ ⦃c : n⦄, A.IsLeadingEntry i c → A i c = 1
-  eq_zero_of_lt_of_isLeadingEntry :
-    ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → ∀ ⦃c : n⦄, A.IsLeadingEntry i₂ c → A i₁ c = 0
+  eq_one ⦃i : m⦄ ⦃c : n⦄ (hic : A.IsLeadingEntry i c) : A i c = 1
+  eq_zero ⦃i₁ i₂ : m⦄ ⦃c : n⦄ (hi : i₁ < i₂) (hc : A.IsLeadingEntry i₂ c) : A i₁ c = 0
 
 /-- If the row indices have a linear order, then the every entry in pivot columns vanishes
 except for the pivot. -/
@@ -99,7 +98,7 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
     {i₁ i₂ : m} {c : n} (hA : A.IsReducedRowEchelon) (hne : i₁ ≠ i₂)
     (hlead : A.IsLeadingEntry i₂ c) : A i₁ c = 0 := by
   rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
-  · exact hA.eq_zero_of_lt_of_isLeadingEntry hlt hlead
+  · exact hA.eq_zero hlt hlead
   · exact absurd heq hne
   · exact hA.isRowEchelon hlt hlead.1
 

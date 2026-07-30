@@ -50,7 +50,7 @@ variable [Zero R] {A : Matrix m n R} {l : m → WithTop n}
 with `⊤` for a zero row. -/
 structure IsPivotedBy [LT m] [LT n] (A : Matrix m n R) (l : m → WithTop n) : Prop where
   isRowEchelon : A.IsRowEchelon
-  isPivotEntry : ∀ i : m,
+  isPivotEntry (i : m) :
     (∀ j : n, (j : WithTop n) < l i → A i j = 0) ∧ ∀ c : n, l i = c → A i c ≠ 0
 
 namespace IsPivotedBy
@@ -92,7 +92,7 @@ theorem eq [LT m] {l' : m → WithTop n}
     | top =>
       rw [hl.eq_top_iff] at hc
       exact absurd (congrFun hc c') (hl'.isLeadingEntry hc').2
-    | coe c => exact_mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
+    | coe c => exact_mod_cast (hl.isLeadingEntry hc).eq (hl'.isLeadingEntry hc')
 
 theorem strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :
     StrictMonoOn l {i | l i ≠ ⊤} :=
