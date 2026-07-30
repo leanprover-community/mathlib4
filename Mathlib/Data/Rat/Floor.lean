@@ -108,11 +108,11 @@ section NormNum
 
 open Mathlib.Meta.NormNum Qq
 
-theorem isNat_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isNat_intFloor {R} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℕ) :
     IsNat r m → IsNat ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
@@ -144,11 +144,9 @@ meta def evalIntFloor : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) _ q(isNat_intFloor $x _ $pb)
     | .isNegNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       -- floor always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intFloor _ _ $pb)
@@ -168,11 +166,11 @@ meta def evalIntFloor : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) z q(isInt_intFloor_ofIsRat_neg $x $n $d $h)
   | _, _, _ => failure
 
-theorem isNat_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isNat_intCeil {R} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℕ) :
     IsNat r m → IsNat ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
@@ -203,11 +201,9 @@ meta def evalIntCeil : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) _ q(isNat_intCeil $x _ $pb)
     | .isNegNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       -- ceil always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intCeil _ _ $pb)
@@ -256,13 +252,11 @@ meta def evalIntFract : NormNumExt where eval {u α} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℕ) := Lean.mkRawNatLit 0
       letI : $z =Q 0 := ⟨⟩
       return .isNat _ z q(isNat_intFract_of_isNat $x _ $pb)
     | .isNegNat _ _ pb => do
-      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℕ) := Lean.mkRawNatLit 0
       letI : $z =Q 0 := ⟨⟩
@@ -287,11 +281,11 @@ meta def evalIntFract : NormNumExt where eval {u α} e := do
 ### `norm_num` extension for `round`
 -/
 
-theorem isNat_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isNat_round {R : Type*} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℕ) : IsNat r m → IsNat (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [FloorRing R]
     (r : R) (m : ℤ) : IsInt r m → IsInt (round r) m := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
@@ -316,11 +310,9 @@ meta def evalRound : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(isNat_round $x _ $pb)
     | .isNegNat sα nb pb => do
-      let _instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNegNat q(inferInstance) nb q(isInt_round _ _ $pb)
     | .isNNRat _ q n d h => do

@@ -53,15 +53,15 @@ namespace Nat
 
 variable {α : Type*} [Semiring α] [LinearOrder α] [FloorSemiring α] {a b : α} {n : ℕ}
 
-lemma cast_mem_Ioc_iff (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    ↑n ∈ Set.Ioc a b ↔ n ∈ Finset.Ioc ⌊a⌋₊ ⌊b⌋₊ := by simp [floor_lt ha, le_floor_iff hb]
-
-/-- The `0 ≤ b` hypothesis in `cast_mem_Ioc_iff` can be dropped if `IsStrictOrderedRing α`. -/
-lemma cast_mem_Ioc_iff' [IsStrictOrderedRing α] (ha : 0 ≤ a) :
+lemma cast_mem_Ioc_iff' (ha : 0 ≤ a) :
     ↑n ∈ Set.Ioc a b ↔ n ∈ Finset.Ioc ⌊a⌋₊ ⌊b⌋₊ := by
   rcases le_or_gt 0 b with hb | hb
-  · exact cast_mem_Ioc_iff ha hb
+  · simp [floor_lt ha, le_floor_iff hb]
   · grind [floor_of_nonpos hb.le]
+
+@[deprecated cast_mem_Ioc_iff' (since := "2026-07-30")]
+lemma cast_mem_Ioc_iff (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    ↑n ∈ Set.Ioc a b ↔ n ∈ Finset.Ioc ⌊a⌋₊ ⌊b⌋₊ := by simp [floor_lt ha, le_floor_iff hb]
 
 lemma cast_mem_Ico_iff : ↑n ∈ Set.Ico a b ↔ n ∈ Finset.Ico ⌈a⌉₊ ⌈b⌉₊ := by
   simp [ceil_le, lt_ceil]

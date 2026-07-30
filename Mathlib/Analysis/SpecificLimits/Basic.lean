@@ -707,7 +707,7 @@ theorem tendsto_nat_floor_atTop {α : Type*}
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 
 lemma tendsto_nat_ceil_atTop {α : Type*}
-    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α] :
+    [Semiring α] [LinearOrder α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
   simp only [Nat.ceil_natCast, le_refl]
