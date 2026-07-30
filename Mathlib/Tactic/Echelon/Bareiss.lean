@@ -112,16 +112,16 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   else
     return n
 
-/-- Read the rational value of a numeral. `a / b` is read as a fraction only when division
-in the ring is field division. -/
-def rat? (isDivRing : Bool) (e : Expr) : Option Rat :=
+/-- Read the rational value of a numeral. `a / b` is read as a fraction only when `fractions`
+is set: field division in characteristic zero, where the fraction reading is faithful. -/
+def rat? (fractions : Bool) (e : Expr) : Option Rat :=
   let (sign, e) : Int × Expr :=
     match_expr e.cleanupAnnotations with
     | Neg.neg _ _ a => (-1, a)
     | _ => (1, e)
   match_expr e.cleanupAnnotations with
   | HDiv.hDiv _ _ _ _ a b =>
-    if isDivRing then
+    if fractions then
       match a.cleanupAnnotations.int?, b.cleanupAnnotations.nat? with
       | some n, some d => some (mkRat (sign * n) d)
       | _, _ => none
@@ -131,16 +131,25 @@ def rat? (isDivRing : Bool) (e : Expr) : Option Rat :=
 
 /-- Read a matrix entry's rational value: off its numeral syntax when possible, else off the
 `norm_num` normal form of the entry. The evaluation is data-only — the certificate is stated
-about the original entries, so no proof is kept. -/
-def entryRat (isDivRing : Bool) (e : Expr) : MetaM Rat := do
+about the original entries, so no proof is kept. Fraction entries are read only in
+characteristic zero, where the reading is faithful; in positive characteristic the value of
+`a / b` depends on `b`'s invertibility, so such entries are refused. -/
+def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
   -- shortcut if the entry is already a value literal
-  match rat? isDivRing e with
+  match rat? (isDivRing && charZero) e with
   | some v => return v
   | none =>
+    if isDivRing && !charZero then
+      let stripped := match_expr e.cleanupAnnotations with
+        | Neg.neg _ _ a => a
+        | _ => e
+      if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
+        throwError "division entries are supported only in characteristic zero; write the \
+          entry as a numeral{indentExpr e}"
     -- fallback: try to evaluate the expression
     let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
     let r ← Meta.NormNum.deriveSimp ctx (useSimp := false) e
-    let some v := rat? isDivRing r.expr
+    let some v := rat? (isDivRing && charZero) r.expr
       | throwError "the entry does not evaluate to a numeral{indentExpr e}"
     return v
 
@@ -252,7 +261,15 @@ def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
   let u ← getDecLevel R
   have R : Q(Type u) := R
   let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
-  let ratRows ← entries.mapM fun row => row.mapM fun e => entryRat isDivRing e
+  -- in a `CharZero` ring the integer values decide their own zero tests, and fraction
+  -- entries read faithfully as rationals.
+  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
+  -- against the concrete `R` can provide, so the probe synthesizes it first.
+  let charZero ← do
+    match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
+    | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
+    | none => pure false
+  let ratRows ← entries.mapM fun row => row.mapM fun e => entryRat isDivRing charZero e
   -- scale each row integral by its denominator lcm; the scaling is folded into `L` below
   let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
   let values : Array (Array Int) :=
@@ -264,11 +281,6 @@ def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
     discard <| isZeroInR R 1
   catch e =>
     throwError "cannot verify the rank certificate: {e.toMessageData}"
-  -- in a `CharZero` ring the integer values decide their own zero tests, so expensive
-  -- kernel tests for zero can be avoided.
-  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
-  -- against the concrete `R` can provide, so this probe stays `mkAppM`-based.
-  let charZero := (← synthInstance? (← mkAppM ``CharZero #[R])).isSome
   let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
   -- `L * (D·M).submatrix σ id = E` gives `(L·D_σ) * (M.submatrix σ id) = E`: scale column
   -- `j` of `L` by the factor of the row that ends up in position `j`

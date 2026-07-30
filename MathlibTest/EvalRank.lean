@@ -96,6 +96,15 @@ example : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
 -- det = -7 ≡ 0 (mod 7): full rank over ℚ, but rank 1 over ZMod 7
 example : Matrix.rank (R := ZMod 7) !![2, 5; 3, 4] = 1 := by eval_rank
 
+-- division entries are refused in positive characteristic, where the fraction
+-- reading `2 / 3 = (2 : ℚ)/3` is not faithful
+/--
+error: division entries are supported only in characteristic zero; write the entry as a numeral
+  2 / 3
+-/
+#guard_msgs in
+example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
+
 -- This 9x9 matrix has rank 8 and is the Cartan matrix of the
 -- affine-type E8 root system.
 public lemma test_Cartan_matrix :
