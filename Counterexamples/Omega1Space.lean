@@ -25,6 +25,8 @@ We follow [Munkres2000], where this space is denoted `S_Ω`.
 * [J. Munkres, *Topology*][Munkres2000]
 -/
 
+@[expose] public section
+
 namespace Counterexample
 
 open scoped Cardinal Ordinal Topology
