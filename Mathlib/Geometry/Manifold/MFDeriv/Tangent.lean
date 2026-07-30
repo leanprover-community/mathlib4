@@ -53,14 +53,12 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
     tangentMap% (chartAt H p.1).symm q =
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
-  rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
+  rw [MDifferentiableAt.mfderiv_abuse (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
   simp only [TangentBundle.chartAt, tangentBundleCore,
     mfld_simps]
   -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
-  dsimp
-  have W := ((chartAt H (TotalSpace.proj p)).right_inv h).symm
-  rw! [W]
-  sorry
+  congr
+  exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
