@@ -138,15 +138,32 @@ lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
 namespace Order.Frame.MinimalAxioms
 variable (s : Set α) (a b : α)
 
+section
+variable [CompleteLattice α] (minAx : MinimalAxioms α)
+include minAx
+
 @[to_dual]
-private lemma inf_sSup_eq [CompleteLattice α] (minAx : MinimalAxioms α) :
-    a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+private lemma inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   le_antisymm (minAx.inf_sSup_le_iSup_inf _ _) iSup_inf_le_inf_sSup
 
 @[to_dual]
-private lemma sSup_inf_eq [CompleteLattice α] (minAx : MinimalAxioms α) :
-    sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
+private lemma sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using inf_sSup_eq s b minAx
+
+@[to_dual]
+private lemma iSup_inf_eq (f : ι → α) (a : α) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+  rw [iSup, minAx.sSup_inf_eq, iSup_range]
+
+@[to_dual]
+private lemma inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+  simpa only [inf_comm] using minAx.iSup_inf_eq f a
+
+@[to_dual]
+private lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
+    (a ⊓ ⨆ i, ⨆ j, f i j) = ⨆ i, ⨆ j, a ⊓ f i j := by
+  simp only [minAx.inf_iSup_eq]
+
+end
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
 @[to_dual /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/]
@@ -381,7 +398,7 @@ theorem himp_iInf_eq {f : ι → α} : a ⇨ (⨅ x, f x) = ⨅ x, a ⇨ f x :=
 theorem iSup_himp_eq {f : ι → α} : (⨆ x, f x) ⇨ a = ⨅ x, f x ⇨ a :=
   eq_of_forall_le_iff fun b => by simp [inf_iSup_eq]
 
-@[deprecated (since := "2026-07-15")] alias sdiff_iSup_eq := sdiff_iInf_eq
+@[deprecated (since := "2026-07-30")] alias sdiff_iSup_eq := sdiff_iInf_eq
 
 @[to_dual]
 theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
@@ -679,6 +696,21 @@ instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := inferI
 
 section lift
 
+/-- Pullback an `Order.Frame.MinimalAxioms` along an injection. -/
+@[to_dual /-- Pullback an `Order.Coframe.MinimalAxioms` along a function. -/]
+protected theorem Function.frameMinimalAxioms [CompleteLattice α] [CompleteLattice β]
+    (minAx : Frame.MinimalAxioms β) (f : α → β)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) : Frame.MinimalAxioms α where
+  inf_sSup_le_iSup_inf a s := by
+    rw [← le, ← sSup_image, map_inf, map_sSup s, minAx.inf_iSup₂_eq]
+    simp_rw [← map_inf]
+    exact ((map_sSup _).trans iSup_image).ge
+
+@[to_dual (attr := deprecated (since := "2026-07-30"))]
+alias Function.Injective.frameMinimalAxioms := Function.frameMinimalAxioms
+
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Frame` along an injection. -/
 protected abbrev Function.Injective.frame [Max α] [Min α] [LE α] [LT α] [SupSet α] [InfSet α]
@@ -703,6 +735,21 @@ protected abbrev Function.Injective.coframe [Max α] [Min α] [LE α] [LT α] [S
   __ := hf.completeLattice f le lt map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.coheytingAlgebra f le lt map_sup map_inf map_top map_bot map_hnot map_sdiff
 
+/-- Pullback a `CompleteDistribLattice.MinimalAxioms` along an injection. -/
+protected theorem Function.completeDistribLatticeMinimalAxioms
+    [CompleteLattice α] [CompleteLattice β]
+    (minAx : CompleteDistribLattice.MinimalAxioms β) (f : α → β)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) :
+    CompleteDistribLattice.MinimalAxioms α where
+  __ := f.frameMinimalAxioms minAx.toFrame le map_inf map_sSup
+  __ := f.coframeMinimalAxioms minAx.toCoframe le map_sup map_sInf
+
+@[deprecated (since := "2026-07-30")]
+alias Function.Injective.completeDistribLatticeMinimalAxioms :=
+  Function.completeDistribLatticeMinimalAxioms
+
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteDistribLattice` along an injection. -/
 protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α]
@@ -717,6 +764,16 @@ protected abbrev Function.Injective.completeDistribLattice [Max α] [Min α]
     CompleteDistribLattice α where
   __ := hf.frame f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp
   __ := hf.coframe f le lt map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
+
+/-- Pullback a `CompletelyDistribLattice.MinimalAxioms` along an injection. -/
+protected theorem Function.completelyDistribLatticeMinimalAxioms
+    [CompleteLattice α] [CompleteLattice β]
+    (minAx : CompletelyDistribLattice.MinimalAxioms β) (f : α → β) (hf : Injective f)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) :
+    CompletelyDistribLattice.MinimalAxioms α where
+  iInf_iSup_eq g := hf <| by
+    simp_rw [iInf, map_sInf, iInf_range, iSup, map_sSup, iSup_range, map_sInf, iInf_range,
+      minAx.iInf_iSup_eq']
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompletelyDistribLattice` along an injection. -/
