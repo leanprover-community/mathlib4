@@ -464,7 +464,7 @@ theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (h�
     FiniteDimensional 𝕜 (eigenspace T.toLinearMap μ) := by
   replace hT := hT.restrict'
     ((mem_invtSubmodule_iff_forall_mem_of_mem _).mp (eigenspace_mem_invtSubmodule T.toLinearMap μ))
-  rw [restrict_eigenspace, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
+  rw [restrict_eigenspace, FunLike.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
   rwa [← isCompactOperator_id_iff_finiteDimensional]
 
 end ContinuousLinearMap

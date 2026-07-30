@@ -103,8 +103,8 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
       lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, Module.End.one_apply,
-      LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
-      LinearMap.rTensor_tmul, map_add, LinearMap.add_apply, map_sub, LinearMap.sub_apply,
+      LieModuleHom.coe_toLinearMap, _root_.smul_apply, Function.comp_apply, LinearMap.coe_comp,
+      LinearMap.rTensor_tmul, map_add, _root_.add_apply, map_sub, _root_.sub_apply,
       LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
     abel
@@ -128,12 +128,12 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
-  simp only [Finset.sum_apply, LinearMap.coe_sum, LinearMap.smul_apply]
+  simp only [Finset.sum_apply, FunLike.coe_sum]
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
   -- Eliminate the binomial coefficients from the picture.
-  suffices (f₁ ^ i * f₂ ^ j) (m₁ ⊗ₜ m₂) = 0 by rw [this]; apply smul_zero
+  suffices (f₁ ^ i * f₂ ^ j) (m₁ ⊗ₜ m₂) = 0 by simp [this]
   -- Finish off with appropriate case analysis.
   rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
   · rw [(hf_comm.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hf₁,
@@ -340,7 +340,7 @@ lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L)
   obtain ⟨k, hk⟩ := exists_genWeightSpace_le_ker_of_isNoetherian M χ x
   use k
   ext ⟨m, hm⟩
-  simp only [this, Module.End.pow_restrict _, LinearMap.zero_apply, ZeroMemClass.coe_zero,
+  simp only [this, Module.End.pow_restrict _, _root_.zero_apply, ZeroMemClass.coe_zero,
     ZeroMemClass.coe_eq_zero]
   exact ZeroMemClass.coe_eq_zero.mp (hk hm)
 

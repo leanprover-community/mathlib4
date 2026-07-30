@@ -86,7 +86,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
         ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap ((2 : ℝ) • LinearMap.id)))
         using 1
       ext x
-      simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
+      simp only [Set.mem_Ioi, Set.mem_preimage, _root_.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
       rw [← mul_lt_mul_iff_right₀ (two_pos)]
       norm_num1

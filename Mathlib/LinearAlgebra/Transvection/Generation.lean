@@ -316,7 +316,7 @@ private theorem exists_dual_of_fixedReduce_ne_smul
     obtain ⟨a, ha⟩ :=
       LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent h.ne' he
     refine ⟨a, fun x ↦ by
-      simp only [← coe_toLinearMap, ha, LinearMap.smul_apply, one_apply, Subring.smul_def]⟩
+      simp only [← coe_toLinearMap, ha, _root_.smul_apply, one_apply, Subring.smul_def]⟩
   obtain ⟨v, hu⟩ := this
   -- We lift `v` to `u : V`.
   obtain ⟨u, rfl⟩ := e.fixedSubmodule.mkQ_surjective v
@@ -365,7 +365,7 @@ private theorem not_forall_fixedReduce_eq_smul {f g : Dual K V} {v : V} {a b : K
     have ha := ha x
     have hb := hb x
     simp only [LinearEquiv.mul_apply, transvection.apply, auxTransvection] at ha hb
-    rw [LinearMap.add_apply, add_smul, ← add_assoc] at hb
+    rw [add_apply, add_smul, ← add_assoc] at hb
     convert Submodule.sub_mem _ hb ha using 1
     -- should be taken care by a `module` tactic that handles noncommutative rings
     simp only [add_comm _ (g (e x) • _), ← add_assoc]
@@ -460,11 +460,9 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
         Submodule.exists_dual_map_eq_bot_of_lt_top hne_top inferInstance
       rw [← le_ker_iff_map] at hg2
       have hg : e.fixedSubmodule ⊔ K ∙ (e v - v) ≤ ker (f + g) := fun x hx ↦ by
-        rw [mem_ker, LinearMap.add_apply, mem_ker.mp (hf hx),
-          mem_ker.mp (hg2 (mem_sup_left hx)), add_zero]
+        rw [mem_ker, add_apply, mem_ker.mp (hf hx), mem_ker.mp (hg2 (mem_sup_left hx)), add_zero]
       have hfgv : (f + g) v = 1 := by
-        rw [LinearMap.add_apply, hfv,
-          mem_ker.mp (hg2 (mem_sup_right (mem_span_singleton_self v))), add_zero]
+        rw [add_apply, hfv, mem_ker.mp (hg2 (mem_sup_right (mem_span_singleton_self v))), add_zero]
       refine ⟨(auxTransvection hg)⁻¹, ?_, auxTransvection hg * e, ?_, by simp⟩
       · rw [inv_mem_transvections_iff]
         apply mem_transvections

@@ -40,7 +40,7 @@ def radical : Submodule R M where
     refine ⟨?_, by simp [hx.2, hy.2]⟩
     have := congr_arg (· y) hx.2
     simp only [QuadraticMap.polarBilin_apply_apply, QuadraticMap.polar,
-      LinearMap.zero_apply, sub_sub, sub_eq_zero] at this
+      _root_.zero_apply, sub_sub, sub_eq_zero] at this
     rw [this, hx.1, hy.1, zero_add]
 
 variable {Q}
@@ -125,7 +125,7 @@ If `2` is invertible in the coefficient ring,
 the radical of a quadratic map is the kernel of its polar bilinear map. -/
 lemma radical_eq_ker_polarBilin : Q.radical = Q.polarBilin.ker := by
   ext m
-  simp only [mem_radical_iff', LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
+  simp only [mem_radical_iff', LinearMap.mem_ker, LinearMap.ext_iff, _root_.zero_apply,
     QuadraticMap.polarBilin_apply_apply, QuadraticMap.polar]
   refine ⟨by simp +contextual, fun h ↦ ?_⟩
   suffices Q m = 0 by grind

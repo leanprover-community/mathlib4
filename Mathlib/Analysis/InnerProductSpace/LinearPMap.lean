@@ -173,7 +173,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
+  simp only [hT, not_false_iff, dif_neg, _root_.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   classical
