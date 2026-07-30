@@ -315,36 +315,15 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
       obtain ⟨f, hf⟩ := LatinRectangle.row_entry_to_column_entry A x
       simp [hf]
     let g : Cs -> As := fun x => ⟨f' x, by
-      simp only [As]
-      rw [Finset.mem_def]
-      simp only [Matrix.col_apply,
-        Finset.filter_val,
-        Multiset.mem_filter,
-        Finset.mem_val,
-        Finset.mem_univ,
-        true_and]
-      use x
-      rw [hf,<- Function.Embedding.toFun_eq_coe]⟩
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, ↑x, by
+        simp [Matrix.col_apply, hf]
+        rfl⟩⟩
     have ginj : Function.Injective g := by
       simp [Function.Injective,g]
     have gsurj : Function.Surjective g := by
       have As_is_f_image : As = Finset.image f Finset.univ := by
-        unfold As
         ext b
-        simp only [Matrix.col_apply,
-                   Finset.mem_image,
-                   Finset.mem_filter,
-                   Finset.mem_univ,
-                   true_and]
-        constructor
-        · intro h
-          obtain ⟨ i, hi ⟩ := h
-          rw [hf] at hi
-          use i
-        · intro h
-          obtain ⟨ i, hi ⟩ := h
-          rw [<-hf] at hi
-          use i
+        simp [As, Finset.mem_image, Matrix.col_apply, hf]
       unfold Function.Surjective
       unfold g
       simp only [Subtype.exists, Subtype.forall, Subtype.mk.injEq, exists_prop]
@@ -357,25 +336,33 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
       obtain ⟨a, ha⟩ := ha
       use a
       refine ⟨ ?_, ha.2 ⟩
-      simp only [Matrix.row_apply, Finset.mem_filter, Finset.mem_univ, true_and, Cs]
-      have h' := (h a).2
-      unfold Matrix.row at h'
-      simp only [Function.Surjective] at h'
-      specialize h' x
-      exact h'
+      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, (h a).2 x⟩
     have gbij : Function.Bijective g := ⟨ginj,gsurj⟩
     let As_to_Cs : Cs ≃ As := Equiv.ofBijective g gbij
     have h_As_card : Finset.card As = Fintype.card k := by
       rw [<- h_Cs_card]
       exact Finset.card_eq_of_equiv As_to_Cs.symm
     have h_intersect : As ∩ Bs = ∅ := by
-      ext
-      simp [As, Bs, B, symbolsNotIn]
+      ext a
+      simp only [Finset.mem_inter, Matrix.col_apply, symbolsNotIn, Finset.mem_sdiff,
+                 Finset.mem_univ, Finset.mem_image, true_and, not_exists, Finset.mem_filter,
+                 Finset.notMem_empty, iff_false, not_and, not_forall, Decidable.not_not, As, Bs, B]
+      intro haAs
+      have hInA : ∃ i, A.col a i = x := (Finset.mem_filter.mp haAs).2
+      grind
     have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by
-      congr
-      simp only [As, Bs, B, symbolsNotIn]
-      ext
-      simp [exists_or_forall_not]
+      have hunion : As ∪ Bs = Finset.univ := by
+        ext a
+        simp only [Finset.mem_union, Finset.mem_univ, iff_true]
+        by_cases h : ∃ i, A.col a i = x
+        · exact Or.inl (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
+        · exact Or.inr (Finset.mem_filter.mpr ⟨Finset.mem_univ _, by
+            simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ, Finset.mem_image,
+                       Matrix.col_apply, true_and, not_exists, B]
+            simp only [Matrix.col_apply, not_exists] at h
+            exact h
+            ⟩)
+      rw [hunion, Finset.card_univ]
     have h_card := Finset.card_union As Bs
     simp [h_union_card, h_As_card, h_intersect] at h_card
     lia
@@ -415,7 +402,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
         have h := A.row_injective
         simp only [Matrix.row] at h
         apply h
-      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
+      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
         have h₂ := A.card_eq.symm
         have h₃pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h₂]
         have h₃ : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α) :=
@@ -457,7 +444,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
         intro hM
         apply h at hM
         congr
-      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
+      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
         intro h
         have hfy := hf.2 y
         simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
@@ -465,7 +452,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
         have hfyi := hfy (Function.invFun (⇑ι) a1)
         contradiction
       · intro h
-        simp only [Subtype.forall, Finset.mem_univ, forall_true_left, Set.mem_setOf_eq] at hf
+        simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
         have hfy := hf.2 y
         simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
                    Finset.mem_image, Matrix.col_apply, true_and, not_exists, B]  at hfy
