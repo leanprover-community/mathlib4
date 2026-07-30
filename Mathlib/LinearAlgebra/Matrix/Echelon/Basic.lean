@@ -61,11 +61,11 @@ def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
   (∀ j < c, A i j = 0) ∧ A i c ≠ 0
 
 theorem IsLeadingEntry.row_ne_zero [LT n] {i : m} {c : n} (hc : A.IsLeadingEntry i c) :
-    A.row i ≠ 0 :=
+    A i ≠ 0 :=
   fun contra => hc.2 (congrFun contra c)
 
 theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
-    A.row i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by
+    A i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by
   refine ⟨fun h => ?_, fun ⟨c, hc⟩ => hc.row_ne_zero⟩
   obtain ⟨c, hc, hmin⟩ := wellFounded_lt.has_min {j | A i j ≠ 0} <| Function.ne_iff.mp h
   refine ⟨c, ?_, hc⟩
@@ -77,7 +77,7 @@ theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : n}
     (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
   le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
 
-instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
+instance [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
     (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
   decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
 

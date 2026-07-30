@@ -25,8 +25,6 @@ public import Mathlib.Order.WithBot
 - `Matrix.IsPivotedBy.unique`: the pivot of a matrix is unique if the column indices have a
   linear order.
 - `Matrix.isPivotedBy_iff`: the map-structural characterisation of pivots.
-- `Matrix.decidableIsPivotedBy`: a decidable instance for `IsPivotedBy` over a `DecidableEq`
-  type with zero and finite linearly ordered indices.
 
 ## Tags
 
@@ -126,6 +124,15 @@ theorem isPivotedBy_iff [PartialOrder m] [LinearOrder n] :
       WithTop.coe_le_coe.mpr <| le_of_not_gt fun hgt => (hlead i₁).2 c₁ hc₁.symm (hz c₁ hgt)
     exact lt_of_le_of_lt (hj.trans hc₁.le) (hstrict h₁ h₂ hlt)
 
+/-- A variant of `isPivotedBy_iff` phrased with `Matrix.IsLeadingEntry`. -/
+theorem isPivotedBy_iff' [PartialOrder m] [LinearOrder n] :
+    A.IsPivotedBy l ↔
+      Monotone l ∧ StrictMonoOn l {i | l i ≠ ⊤} ∧
+        ∀ i : m, (l i = ⊤ ∧ A i = 0) ∨ (∃ c : n, l i = c ∧ A.IsLeadingEntry i c) := by
+  rw [isPivotedBy_iff]
+  refine and_congr_right' <| and_congr_right' <| forall_congr' fun i => ?_
+  cases l i <;> simp [IsLeadingEntry, funext_iff]
+
 end Zero
 
 section Rank
@@ -162,7 +169,7 @@ section Decidability
 
 variable [Zero R] [DecidableEq R]
 
-instance decidableIsPivotedBy [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
+instance [Fintype m] [LinearOrder m] [Fintype n] [LinearOrder n]
     (A : Matrix m n R) (l : m → WithTop n) : Decidable (A.IsPivotedBy l) :=
   -- instance resolution cannot nest `Fintype.decidableForallFintype` under another binder
   have : DecidablePred fun i : m =>
