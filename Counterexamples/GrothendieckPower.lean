@@ -533,30 +533,33 @@ private theorem right_bA : right bA = b₁ := by
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact (TensorProduct.tmul_smul b 1 1).trans (TensorProduct.smul_tmul' b 1 1).symm
 
-/-- The image of `U` in the left tensor factor. -/
+/-- The element `U ⊗ₜ 1` in `A ⊗ A`. -/
 abbrev u₁ : A ⊗[R] A := left U
 
-/-- The image of `V` in the left tensor factor. -/
+/-- The element `V ⊗ₜ 1` in `A ⊗ A`. -/
 abbrev v₁ : A ⊗[R] A := left V
 
-/-- The image of `U` in the right tensor factor. -/
+/-- The element `1 ⊗ₜ U` in `A ⊗ A`. -/
 abbrev u₂ : A ⊗[R] A := right U
 
-/-- The image of `V` in the right tensor factor. -/
+/-- The element `1 ⊗ₜ V` in `A ⊗ A`. -/
 abbrev v₂ : A ⊗[R] A := right V
 
-/-- The image of `lambda` in the left tensor factor. -/
+/-- The element `λ ⊗ₜ 1 = (1+aU)(1+bV) ⊗ₜ 1` in `A ⊗ A`. -/
 abbrev l₁ : A ⊗[R] A := (1 + a₁ * u₁) * (1 + b₁ * v₁)
 
-/-- The image of `lambda` in the right tensor factor. -/
+/-- The element `1 ⊗ₜ λ = 1 ⊗ₜ (1+aU)(1+bV)` in `A ⊗ A`. -/
 abbrev l₂ : A ⊗[R] A := (1 + a₁ * u₂) * (1 + b₁ * v₂)
 
-/-- The proposed coproduct of `V`. -/
+/-- The element `δ_V := V ⊗ₜ λ + 1 ⊗ₜ V` which will be the image of V under the comultiplication
+on A. -/
 def deltaV : A ⊗[R] A := v₁ * l₂ + v₂
 
-/-- The proposed coproduct of `U`. -/
+/-- The element `δ_U := U ⊗ₜ 1 + λ ⊗ₜ U` which will be the image of U under the comultiplication
+on A. -/
 def deltaU : A ⊗[R] A := u₁ + l₁ * u₂
 
+/-- The proof that `δ_V` and `δ_U` satisfy the same relations as `V` and `U`. -/
 private theorem delta_relations :
     deltaV ^ 2 = a₁ ^ 2 * deltaV ∧
       deltaU ^ 2 = a₁ * b₁ * deltaU - b₁ ^ 2 * deltaV := by
@@ -565,6 +568,7 @@ private theorem delta_relations :
   simp only [right_aA, right_bA] at hv₂' hu₂'
   exact law_relations_generic ha₁ hb₁ hab₁ hv₁' hu₁' hv₂' hu₂'
 
+/-- The proof that `δ_λ := (1+aδ_U)(1+bδ_V) = λ ⊗ₜ λ` in `A ⊗ A`. -/
 private theorem delta_lambda :
     (1 + a₁ * deltaU) * (1 + b₁ * deltaV) = l₁ * l₂ := by
   obtain ⟨ha₁, hb₁, hab₁, hv₁', -⟩ := mapped_relations (S := A ⊗[R] A) left
@@ -582,7 +586,7 @@ private theorem b₁_smul : b₁ = b • 1 := by
   rw [show bA = b • (1 : A) from Algebra.algebraMap_eq_smul_one b]
   exact TensorProduct.smul_tmul' b 1 1
 
-/-- The coproduct algebra homomorphism, sending `U` to `deltaU` and `V` to `deltaV`. -/
+/-- The coproduct algebra homomorphism, sending `U` to `δ_U` and `V` to `δ_V`. -/
 noncomputable def comul : A →ₐ[R] A ⊗[R] A :=
   mkAlgHom deltaU deltaV
     (by rw [← left.commutes (a ^ 2), map_pow, map_pow]; exact delta_relations.1)
