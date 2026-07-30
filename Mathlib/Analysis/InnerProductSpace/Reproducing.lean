@@ -435,7 +435,7 @@ lemma toLinearMap_projection :
       ∘ (generator H H₁).ker.quotientEquivOrthogonal.toLinearMap :=  by
   rfl
 
-lemma projection_surjective : Function.Injective (projection H H₁) := by
+lemma projection_injective : Function.Injective (projection H H₁) := by
   simp only [projection, coe_comp, coe_subtypeL, coe_subtype, ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv, coe_quotientEquivOrthogonal,
     Subtype.val_injective, Function.Injective.of_comp_iff]

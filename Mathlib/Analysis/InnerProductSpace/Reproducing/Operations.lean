@@ -177,7 +177,7 @@ noncomputable def projection : OfKernel (K + K') →L[𝕜] WithLp 2 ((OfKernel 
     ((linearIsometryEquiv K K').trans (generator K K').ker.quotientEquivOrthogonal)
 
 @[simp low]
-lemma coe_orthogonalProjection_apply :
+lemma coe_orthogonalProjection :
     ⇑(projection K K') = (((generator K K').kerᗮ).subtypeL
       ∘ (generator K K').ker.quotientEquivOrthogonal ∘ (linearIsometry K K')) := by
   rfl
