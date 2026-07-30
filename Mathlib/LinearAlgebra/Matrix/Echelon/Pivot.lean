@@ -22,8 +22,8 @@ public import Mathlib.Order.WithBot
 ## Main results
 
 - `Matrix.IsPivotedBy.rank_eq`: the rank of a matrix is its number of pivots.
-- `Matrix.IsPivotedBy.eq`: the pivot of a matrix is unique if the column indices have a linear
-  order.
+- `Matrix.IsPivotedBy.unique`: the pivot of a matrix is unique if the column indices have a
+  linear order.
 - `Matrix.isPivotedBy_iff`: the map-structural characterisation of pivots.
 - `Matrix.decidableIsPivotedBy`: a decidable instance for `IsPivotedBy` over a `DecidableEq`
   type with zero and finite linearly ordered indices.
@@ -79,7 +79,7 @@ theorem lt_of_lt_of_ne_top [LT m] {i₁ i₂ : m}
   exact (hA.isPivotEntry i₁).1 j₁ ((WithTop.coe_lt_coe.mpr hj₁).trans_le (hc₂.le.trans hle))
 
 /-- The pivots of a matrix are unique. -/
-theorem eq [LT m] {l' : m → WithTop n}
+theorem unique [LT m] {l' : m → WithTop n}
     (hl : A.IsPivotedBy l) (hl' : A.IsPivotedBy l') : l = l' := by
   funext i
   cases hc' : l' i with
@@ -91,7 +91,7 @@ theorem eq [LT m] {l' : m → WithTop n}
     | top =>
       rw [hl.eq_top_iff] at hc
       exact absurd (congrFun hc c') (hl'.isLeadingEntry hc').2
-    | coe c => exact_mod_cast (hl.isLeadingEntry hc).eq (hl'.isLeadingEntry hc')
+    | coe c => exact_mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
 
 theorem strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :
     StrictMonoOn l {i | l i ≠ ⊤} :=

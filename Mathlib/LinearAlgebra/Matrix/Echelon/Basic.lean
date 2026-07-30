@@ -73,7 +73,7 @@ theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
   aesop
 
 /-- If column indices have a linear order, then there's at most one leading position per row. -/
-theorem IsLeadingEntry.eq [LinearOrder n] {i : m} {c₁ c₂ : n}
+theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : n}
     (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
   le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
 
