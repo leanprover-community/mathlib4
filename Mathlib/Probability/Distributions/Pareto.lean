@@ -91,7 +91,6 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
       positivity [lt_of_lt_of_le htp h]
   · positivity
 
-
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :

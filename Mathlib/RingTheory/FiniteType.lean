@@ -45,7 +45,6 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R
 
 namespace Finite
 
-
 variable {R S M N}
 
 section Algebra

@@ -716,7 +716,6 @@ end HolderOnWith
 
 namespace LipschitzOnWith
 
-
 variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/

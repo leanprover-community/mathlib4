@@ -39,7 +39,6 @@ assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
 
-
 variable {α : Type*}
 
 namespace Nonneg

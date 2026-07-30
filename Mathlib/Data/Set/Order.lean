@@ -13,7 +13,6 @@ public import Mathlib.Data.Set.Basic
 
 public section
 
-
 universe u v
 
 namespace Set

@@ -24,7 +24,6 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 
 @[expose] public section
 
-
 variable {α : Type*}
 
 section Lattice

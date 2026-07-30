@@ -23,8 +23,6 @@ public import Mathlib.RingTheory.OrzechProperty
 
 @[expose] public section
 
-
-
 open IsNoetherian Submodule Function
 
 section

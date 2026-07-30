@@ -57,7 +57,6 @@ theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
 theorem dist_self_mul_left (a b : E) : dist (b * a) b = ‖a‖ := by
   rw [dist_comm, dist_self_mul_right]
 
-
 variable [FunLike 𝓕 E F]
 
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that

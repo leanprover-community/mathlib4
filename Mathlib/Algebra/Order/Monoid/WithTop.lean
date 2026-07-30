@@ -17,7 +17,6 @@ universe u
 
 variable {α : Type u}
 
-
 namespace WithTop
 
 instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :

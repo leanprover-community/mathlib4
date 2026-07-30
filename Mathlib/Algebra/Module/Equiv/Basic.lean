@@ -769,7 +769,6 @@ section Field
 variable [Field K] [AddCommGroup M] [Module K M]
 variable (K) (M)
 
-
 /-- Multiplying by a nonzero element `a` of the field `K` is a linear equivalence. -/
 @[simps!]
 def smulOfNeZero (a : K) (ha : a ≠ 0) : M ≃ₗ[K] M :=

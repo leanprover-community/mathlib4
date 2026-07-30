@@ -22,7 +22,6 @@ public import Mathlib.FieldTheory.IsSepClosed
 
 public section
 
-
 variable {F : Type*} [Field F] [IsSepClosed F]
 
 namespace WeierstrassCurve

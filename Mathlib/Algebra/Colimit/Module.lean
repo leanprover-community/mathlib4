@@ -36,7 +36,6 @@ noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
-
 namespace Module
 
 alias DirectedSystem.map_self := DirectedSystem.map_self'

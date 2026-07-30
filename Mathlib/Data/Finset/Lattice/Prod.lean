@@ -18,7 +18,6 @@ public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
-
 variable {F α β γ ι κ : Type*}
 
 namespace Finset

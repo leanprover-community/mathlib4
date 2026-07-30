@@ -16,7 +16,6 @@ public import Mathlib.Order.Hom.Basic
 
 @[expose] public section
 
-
 universe u
 
 variable {α : Type u}

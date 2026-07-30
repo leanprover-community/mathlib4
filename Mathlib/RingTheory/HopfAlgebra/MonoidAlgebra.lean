@@ -62,7 +62,6 @@ end MonoidAlgebra
 
 namespace LaurentPolynomial
 
-
 variable (R A : Type*) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=

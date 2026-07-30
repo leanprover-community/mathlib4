@@ -26,7 +26,6 @@ morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 universe w t v u
 
-
 namespace CategoryTheory.Limits.FormalCoproduct
 
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C]

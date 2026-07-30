@@ -21,7 +21,6 @@ define `Λ.transport .. : LeftResolution ι'`.
 
 namespace CategoryTheory.Abelian
 
-
 variable {A C : Type*} [Category* C] [Category* A]
   {A' C' : Type*} [Category* C'] [Category* A']
 

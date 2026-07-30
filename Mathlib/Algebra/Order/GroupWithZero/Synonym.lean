@@ -16,8 +16,6 @@ Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 
 public section
 
-
-
 variable {α : Type*}
 
 

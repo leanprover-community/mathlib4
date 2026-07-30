@@ -623,7 +623,6 @@ end Localization
 
 end CommSemiring
 
-
 variable {R : Type*} [CommSemiring R]
 
 section NumDen

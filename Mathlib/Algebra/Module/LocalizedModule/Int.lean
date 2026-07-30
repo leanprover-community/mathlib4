@@ -30,7 +30,6 @@ can be unified.
 variable {R : Type*} [CommSemiring R] {S : Submonoid R} {M : Type*} [AddCommMonoid M]
   [Module R M] {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
-
 namespace IsLocalizedModule
 
 /-- Given `x : M'`, `M'` a localization of `M` via `f`, `IsInteger f x` iff `x` is in the image of

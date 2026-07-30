@@ -19,7 +19,6 @@ This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f
 
 public section
 
-
 variable {α M : Type*} [CommMonoid M] {f : α → M} {a b : α}
 
 namespace Finset

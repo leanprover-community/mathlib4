@@ -484,7 +484,6 @@ end
 
 section PullbackSymmetry
 
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- Making this a global instance would make the typeclass search go in an infinite loop. -/
@@ -519,7 +518,6 @@ theorem pullbackSymmetry_inv_comp_snd [HasPullback f g] :
 end PullbackSymmetry
 
 section PushoutSymmetry
-
 
 variable (f : X ⟶ Y) (g : X ⟶ Z)
 

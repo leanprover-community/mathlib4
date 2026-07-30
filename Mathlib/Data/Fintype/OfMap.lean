@@ -26,7 +26,6 @@ assert_not_exists Monoid
 
 open Function
 
-
 universe u v
 
 variable {α β γ : Type*}

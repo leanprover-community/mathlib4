@@ -184,7 +184,6 @@ section Cthickening
 
 variable [PseudoEMetricSpace α] {δ ε : ℝ} {s t : Set α} {x : α}
 
-
 /-- The closed `δ`-thickening `Metric.cthickening δ E` of a subset `E` in a pseudo emetric space
 consists of those points that are at infimum distance at most `δ` from `E`. -/
 def cthickening (δ : ℝ) (E : Set α) : Set α :=

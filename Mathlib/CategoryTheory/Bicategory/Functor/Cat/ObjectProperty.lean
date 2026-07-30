@@ -31,7 +31,6 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-
 namespace Pseudofunctor
 
 variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})

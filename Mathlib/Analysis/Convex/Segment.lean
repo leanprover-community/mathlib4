@@ -95,7 +95,6 @@ theorem openSegment_subset_iff :
 
 end SMul
 
-
 section MulActionWithZero
 
 variable (𝕜)

@@ -292,7 +292,6 @@ end IdentDistrib
 
 section UniformIntegrable
 
-
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]
 

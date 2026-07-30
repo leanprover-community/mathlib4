@@ -15,7 +15,6 @@ public section
 
 namespace Submodule
 
-
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 theorem card_eq_card_quotient_mul_card (S : Submodule R M) :

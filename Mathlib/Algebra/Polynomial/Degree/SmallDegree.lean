@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.WithBot
 
 public section
 
-
 open Polynomial
 
 namespace Polynomial

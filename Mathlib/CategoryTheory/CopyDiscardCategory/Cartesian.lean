@@ -33,7 +33,6 @@ universe v u
 
 namespace CategoryTheory
 
-
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory.{v} C]
 
 namespace CartesianCopyDiscard

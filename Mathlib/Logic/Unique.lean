@@ -99,7 +99,6 @@ instance : Unique True :=
 
 namespace Unique
 
-
 section
 
 variable {α : Sort*} [Unique α]

@@ -21,7 +21,6 @@ namespace Module
 
 namespace Finite
 
-
 variable {R M N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 

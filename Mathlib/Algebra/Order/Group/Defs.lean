@@ -28,7 +28,6 @@ public section
 -/
 assert_not_imported Mathlib.Algebra.NeZero
 
-
 universe u
 
 variable {α : Type u}

@@ -20,7 +20,6 @@ public section
 
 noncomputable section
 
-
 open Polynomial
 
 namespace Polynomial

@@ -39,7 +39,6 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 
 public section
 
-
 variable {f g h : ℕ →. ℕ}
 
 /--

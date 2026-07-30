@@ -43,7 +43,6 @@ corresponding hom types.
 
 namespace CategoryTheory
 
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section

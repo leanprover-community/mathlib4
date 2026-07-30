@@ -17,7 +17,6 @@ measurable.
 
 public section
 
-
 namespace Preorder
 
 variable {α : Type*} [Preorder α] {X : α → Type*} [∀ a, MeasurableSpace (X a)]

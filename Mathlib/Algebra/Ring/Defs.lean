@@ -52,7 +52,6 @@ universe u v
 
 variable {α : Type u} {R : Type v}
 
-
 /-!
 ### `Distrib` class
 -/

@@ -55,7 +55,6 @@ namespace ContinuousMultilinearMap
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞ω} {x : Π i, E i}
 
-
 lemma contDiffAt : ContDiffAt 𝕜 n f x := f.cpolynomialAt.contDiffAt
 
 lemma contDiff : ContDiff 𝕜 n f := contDiff_iff_contDiffAt.mpr (fun _ ↦ f.contDiffAt)

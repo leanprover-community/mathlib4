@@ -187,7 +187,6 @@ end
 
 section
 
-
 variable (f : X ⟶ Y) [Mono f]
 
 instance has_kernel_pair_of_mono : HasPullback f f :=
@@ -373,7 +372,6 @@ instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
 end
 
 section
-
 
 variable (f : X ⟶ Y) [Epi f]
 

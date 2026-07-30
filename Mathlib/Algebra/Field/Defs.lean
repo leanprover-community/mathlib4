@@ -54,7 +54,6 @@ assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom Set
 
-
 universe u
 
 variable {K : Type*}

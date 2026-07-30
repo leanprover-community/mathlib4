@@ -23,7 +23,6 @@ public section
 
 namespace CategoryTheory
 
-
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C) {A : Type*} [Category* A]
 
 namespace GrothendieckTopology

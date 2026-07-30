@@ -183,7 +183,6 @@ namespace Over
 section BinaryProduct
 variable {X : C} {Y Z : Over X}
 
-
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :

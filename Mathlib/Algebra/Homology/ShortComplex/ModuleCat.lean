@@ -25,7 +25,6 @@ variable {R : Type u} [Ring R]
 
 namespace CategoryTheory
 
-
 namespace ShortComplex
 
 noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where

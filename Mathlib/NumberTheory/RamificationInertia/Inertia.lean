@@ -48,7 +48,6 @@ local notation "f" => algebraMap R S
 
 open Module
 
-
 attribute [local instance] Ideal.Quotient.field
 
 section DecEq

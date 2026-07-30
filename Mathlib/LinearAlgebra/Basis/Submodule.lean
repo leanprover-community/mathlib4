@@ -48,7 +48,6 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 
 end Basis
 
-
 variable {v : ι → M}
 variable [Ring R] [CommRing R₂] [AddCommGroup M]
 variable [Module R M] [Module R₂ M]

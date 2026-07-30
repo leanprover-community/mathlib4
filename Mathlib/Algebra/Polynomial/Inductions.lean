@@ -23,7 +23,6 @@ noncomputable section
 
 open Polynomial
 
-
 namespace Polynomial
 
 universe u v w z

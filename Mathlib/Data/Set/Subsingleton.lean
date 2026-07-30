@@ -22,7 +22,6 @@ elements.
 
 assert_not_exists HeytingAlgebra RelIso
 
-
 universe u v
 
 namespace Set

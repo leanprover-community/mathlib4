@@ -52,7 +52,6 @@ an ordered field.
 
 public section
 
-
 variable {G P : Type*}
 
 /-- An ordered vector addition is a bi-monotone vector addition. -/

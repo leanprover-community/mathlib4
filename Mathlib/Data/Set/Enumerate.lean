@@ -23,7 +23,6 @@ assert_not_exists RelIso
 
 noncomputable section
 
-
 namespace Set
 
 section Enumerate

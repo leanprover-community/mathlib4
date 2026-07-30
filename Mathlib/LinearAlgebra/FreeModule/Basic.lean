@@ -175,7 +175,6 @@ end Free
 
 namespace Basis
 
-
 variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 set_option backward.isDefEq.respectTransparency false in

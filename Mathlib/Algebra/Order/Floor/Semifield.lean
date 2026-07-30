@@ -23,7 +23,6 @@ public section
 
 assert_not_exists Finset
 
-
 variable {R K : Type*}
 
 namespace Nat

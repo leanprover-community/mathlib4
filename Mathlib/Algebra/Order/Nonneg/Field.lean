@@ -24,7 +24,6 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 assert_not_exists abs_inv
 
-
 variable {α : Type*}
 
 section NNRat

@@ -367,7 +367,6 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
 
 section
 
-
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
 @[simp]

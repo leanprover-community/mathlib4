@@ -18,7 +18,6 @@ public section
 
 namespace ULift
 
-
 universe v u
 
 variable {α : Type u}

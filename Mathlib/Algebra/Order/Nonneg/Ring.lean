@@ -34,7 +34,6 @@ The disadvantage is that we have to duplicate some instances about `Set.Ici` to 
 
 public section
 
-
 variable {α : Type*}
 
 namespace Nonneg

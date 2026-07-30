@@ -17,7 +17,6 @@ everything in `α` is declared smaller than everything in `β`.
 
 @[expose] public section
 
-
 namespace Sum.Lex
 variable {α β : Type*}
 

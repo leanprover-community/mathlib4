@@ -22,7 +22,6 @@ public section
 
 namespace CategoryTheory.regularTopology
 
-
 variable {C : Type*} [Category* C] [Preregular C] {X : C}
 
 /--

@@ -20,8 +20,6 @@ normed group
 
 public section
 
-
-
 /-! ### Subgroups of normed groups -/
 
 variable {E : Type*}

@@ -20,8 +20,6 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 public section
 
-
-
 section Ring
 
 variable {R S A : Type*}

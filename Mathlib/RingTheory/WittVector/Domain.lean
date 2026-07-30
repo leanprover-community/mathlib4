@@ -40,7 +40,6 @@ noncomputable section
 
 namespace WittVector
 
-
 variable {p : ℕ} {R : Type*}
 
 local notation "𝕎" => WittVector p -- type as `\bbW`

@@ -117,7 +117,6 @@ instance hasFix : Fix (Part α) :=
 
 end Part
 
-
 namespace Pi
 
 instance Part.hasFix {β} : Fix (α → Part β) :=

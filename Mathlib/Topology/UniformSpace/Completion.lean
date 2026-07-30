@@ -555,7 +555,6 @@ section Extension₂
 
 variable (f : α → β → γ)
 
-
 /-- Extend a two variable map to the Hausdorff completions. -/
 protected def extension₂ (f : α → β → γ) : Completion α → Completion β → γ :=
   cPkg.extend₂ cPkg f
@@ -579,7 +578,6 @@ theorem uniformContinuous_extension₂ : UniformContinuous₂ (Completion.extens
 end Extension₂
 
 section Map₂
-
 
 /-- Lift a two variable map to the Hausdorff completions. -/
 protected def map₂ (f : α → β → γ) : Completion α → Completion β → Completion γ :=

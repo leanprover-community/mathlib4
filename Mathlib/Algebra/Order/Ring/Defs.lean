@@ -58,7 +58,6 @@ public section
 
 assert_not_exists MonoidHom
 
-
 universe u
 
 variable {R : Type u}

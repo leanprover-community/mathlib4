@@ -85,7 +85,6 @@ end Rand
 
 namespace Random
 
-
 variable [Monad m]
 
 /-- Generate a random value of type `α`. -/

@@ -33,7 +33,6 @@ to `Mathlib/Algebra/Group/Even.lean`.
 
 assert_not_exists DenselyOrdered IsOrderedRing
 
-
 variable {F α β : Type*}
 
 section Monoid

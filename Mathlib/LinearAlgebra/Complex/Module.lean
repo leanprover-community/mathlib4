@@ -52,7 +52,6 @@ element of a `StarModule` over `ℂ`.
 assert_not_exists NNReal
 namespace Complex
 
-
 open scoped Complex.SMul
 
 variable {R : Type*} {S : Type*}

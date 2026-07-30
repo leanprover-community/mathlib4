@@ -79,7 +79,6 @@ section MulAction
 
 variable {C : Type u} [Category.{v} C]
 
-
 instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id

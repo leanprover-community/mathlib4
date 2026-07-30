@@ -50,7 +50,6 @@ rounding, floor, ceil
 
 assert_not_exists Finset
 
-
 variable {F α β : Type*}
 
 /-! ### Floor semiring -/

@@ -851,7 +851,6 @@ lemma prod_smul_left {μ : Measure α} {R : Type*} [SMul R ℝ≥0∞] [IsScalar
 
 end Measure
 
-
 namespace MeasurePreserving
 
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}

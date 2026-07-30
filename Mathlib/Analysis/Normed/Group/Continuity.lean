@@ -30,7 +30,6 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
 
-
 section ContinuousENorm
 
 variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]

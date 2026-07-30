@@ -348,7 +348,6 @@ example : module I = @Algebra.toModule (AdicCompletion I R)
 
 section liftRingHom
 
-
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
 
 set_option backward.isDefEq.respectTransparency false in

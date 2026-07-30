@@ -18,7 +18,6 @@ the `PartialSup` is defined over a `SuccAddOrder`.
 
 public section
 
-
 variable {α ι : Type*} [SemilatticeSup α] [LinearOrder ι]
 
 @[simp]

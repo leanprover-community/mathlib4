@@ -43,7 +43,6 @@ public section
 
 namespace Convexity
 
-
 variable {I X : Type*}
 
 variable (X) in

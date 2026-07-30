@@ -52,7 +52,6 @@ lemma isCardinalPresentable {X : C} {J : Type w} [SmallCategory J]
 
 end Limits.ColimitPresentation
 
-
 namespace ObjectProperty
 
 variable {P : ObjectProperty C}

@@ -78,7 +78,6 @@ variable {γ : Type w} [EMetricSpace γ]
 
 section Pi
 
-
 variable {X : β → Type*} [Fintype β]
 
 /-- The product of a finite number of emetric spaces, with the max distance, is still

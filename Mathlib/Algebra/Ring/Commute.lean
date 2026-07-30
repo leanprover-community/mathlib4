@@ -29,7 +29,6 @@ universe u
 
 variable {R : Type u}
 
-
 namespace Commute
 
 @[simp]

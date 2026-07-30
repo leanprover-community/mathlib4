@@ -156,7 +156,6 @@ end DecidableEq
 
 section Equiv
 
-
 variable {κ : Type*}
 
 @[simp]

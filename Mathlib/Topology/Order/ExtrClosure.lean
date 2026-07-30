@@ -21,7 +21,6 @@ public section
 
 open Filter Set
 
-
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}
 

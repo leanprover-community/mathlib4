@@ -681,7 +681,6 @@ variable [AddCommMonoid M] [AddCommMonoid M₂]
 variable {σ₁₂ : R →+* R₂}
 variable [Module R M] [Module R₂ M₂]
 
-
 section DFinsupp
 
 open DFinsupp

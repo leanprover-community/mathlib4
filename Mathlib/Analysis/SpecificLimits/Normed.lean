@@ -286,7 +286,6 @@ section HasSummableGeometricSeries
 
 variable {R : Type*} [NormedRing R]
 
-
 /-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :

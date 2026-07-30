@@ -302,7 +302,6 @@ theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x =
 end Real
 end LocallyLipschitz
 
-
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 
 /-- A function `f : α → ℝ` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz extension

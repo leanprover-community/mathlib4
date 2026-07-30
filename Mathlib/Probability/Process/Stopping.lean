@@ -273,7 +273,6 @@ end Countable
 
 section IsRightContinuous
 
-
 variable [ConditionallyCompleteLinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     [FirstCountableTopology ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
 
@@ -1287,8 +1286,6 @@ end StronglyAdaptedStoppedProcess
 section Nat
 
 /-! ### Filtrations indexed by `ℕ` -/
-
-
 
 variable {u : ℕ → Ω → β} {τ π : Ω → ℕ∞}
 

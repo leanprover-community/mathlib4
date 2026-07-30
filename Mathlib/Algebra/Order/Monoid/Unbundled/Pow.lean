@@ -16,7 +16,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 public section
 
-
 variable {β G M : Type*}
 
 section Monoid

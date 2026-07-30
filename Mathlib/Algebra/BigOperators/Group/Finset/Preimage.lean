@@ -18,7 +18,6 @@ assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι κ β : Type*}
 
-
 namespace Finset
 
 variable [CommMonoid β]

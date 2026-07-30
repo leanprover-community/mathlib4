@@ -31,7 +31,6 @@ public section
 
 assert_not_exists MulAction
 
-
 universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}

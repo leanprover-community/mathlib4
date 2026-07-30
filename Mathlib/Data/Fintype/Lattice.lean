@@ -14,9 +14,6 @@ public import Mathlib.Data.Fintype.Basic
 
 public section
 
-
-
-
 universe u v
 
 variable {ι α β : Type*}

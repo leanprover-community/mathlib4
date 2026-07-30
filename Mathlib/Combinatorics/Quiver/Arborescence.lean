@@ -30,8 +30,6 @@ that for every `b : V` there is a unique path from `root` to `b`.
 
 @[expose] public section
 
-
-
 universe v u
 
 namespace Quiver

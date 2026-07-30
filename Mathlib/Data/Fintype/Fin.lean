@@ -21,7 +21,6 @@ open List (Vector)
 
 open Finset
 
-
 namespace Fin
 
 variable {α β : Type*} {n : ℕ}

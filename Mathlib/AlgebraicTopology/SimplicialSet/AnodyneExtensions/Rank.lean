@@ -33,7 +33,6 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 
 universe v u
 
-
 namespace SSet.Subcomplex
 
 variable {X : SSet.{u}} {A : X.Subcomplex}

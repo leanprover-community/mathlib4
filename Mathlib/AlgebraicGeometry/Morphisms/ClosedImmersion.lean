@@ -240,7 +240,6 @@ section Affine
 
 variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
 
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
 `f` induces an injection on global sections, then `f` is dominant. -/

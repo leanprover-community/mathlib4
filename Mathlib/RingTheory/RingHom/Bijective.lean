@@ -21,7 +21,6 @@ the ring hom property.
 
 public section
 
-
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 namespace RingHom.Bijective

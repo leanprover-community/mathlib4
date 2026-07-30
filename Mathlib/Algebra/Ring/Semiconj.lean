@@ -27,7 +27,6 @@ universe u
 
 variable {R : Type u}
 
-
 namespace SemiconjBy
 
 @[simp]

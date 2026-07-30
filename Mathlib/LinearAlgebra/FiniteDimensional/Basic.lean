@@ -625,7 +625,6 @@ end DivisionRing
 
 section SubalgebraRank
 
-
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
