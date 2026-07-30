@@ -171,32 +171,18 @@ lemma setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support :
   simp_rw [birkhoffSumSup_eq_iSup_birkhoffMax, lt_iSup_iff, Set.ofPred_exists, EReal.coe_pos,
     birkhoffMax_nonneg.lt_iff_ne, Function.support, ne_comm]
 
-theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (hn : 0 < n) :
+theorem lt_birkhoffAverage_iff_lt_birkhoffSum {a : ℝ} (ha : 0 ≤ a) :
     a < birkhoffAverage ℝ f g n x ↔ 0 < birkhoffSum f (g - fun _ ↦ a) n x := by
+  by_cases! hn : n = 0
+  · simpa [hn]
   nth_rw 2 [← smul_lt_smul_iff_of_pos_left (a := (↑n : ℝ)⁻¹) (by positivity)]
   rw [smul_zero, ← birkhoffAverage, birkhoffAverage_sub]
   simp only [Pi.sub_apply, sub_pos]
   nth_rw 2 [birkhoffAverage_of_comp_eq _ rfl (by positivity)]
 
-theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 < a) :
+theorem lt_birkhoffAverageSup_iff_lt_birkhoffSumSup {a : ℝ} (ha : 0 ≤ a) :
     a < birkhoffAverageSup f g x ↔ 0 < birkhoffSumSup f (g - fun _ ↦ a) x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have ⟨n, hn⟩ := lt_iSup_iff.mp h
-    apply lt_iSup_iff.mpr (.intro n _)
-    norm_cast at *
-    rwa [← lt_birkhoffAverage_iff_lt_birkhoffSum]
-    by_contra!
-    apply Nat.eq_zero_of_le_zero at this
-    simp only [this, birkhoffAverage_zero'] at hn
-    exact lt_asymm hn ha
-  · have ⟨n, hn⟩ := lt_iSup_iff.mp h
-    apply lt_iSup_iff.mpr (.intro n _)
-    norm_cast at *
-    rwa [lt_birkhoffAverage_iff_lt_birkhoffSum]
-    by_contra!
-    apply Nat.eq_zero_of_le_zero at this
-    simp only [this, birkhoffSum_zero'] at hn
-    exact lt_irrefl 0 hn
+  simp [birkhoffAverageSup, birkhoffSumSup, lt_iSup_iff, lt_birkhoffAverage_iff_lt_birkhoffSum ha]
 
 section MeasurePreserving
 
@@ -231,7 +217,7 @@ variable [IsFiniteMeasure μ]
 
 /-- The cumulative distribution function of `birkhoffAverageSup` at `a` is less than or equal to the
 integral of `g` on the set where `a < birkhoffAverageSup f g x`. -/
-public theorem distribution_birkhoffAverageSup_le_integral (a : ℝ) (ha : 0 < a) :
+public theorem distribution_birkhoffAverageSup_le_integral (a : ℝ) (ha : 0 ≤ a) :
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
   have p₁ := Integrable.sub hg (integrable_const a)
@@ -258,8 +244,8 @@ include hg
 /-- Maximal ergodic theorem: the operator `birkhoffAverageSup` satisfies a weak-type inequality. -/
 public theorem const_mul_distribution_birkhoffAverageSup_le_norm (a : ℝ) :
     a * μ.real {x | a < birkhoffAverageSup f (‖g ·‖) x} ≤ ∫ x, ‖g x‖ ∂μ := by
-  by_cases! ha : 0 < a; swap
-  · apply mul_nonpos_of_nonpos_of_nonneg ha measureReal_nonneg |>.trans
+  by_cases! ha : 0 ≤ a; swap
+  · apply mul_nonpos_of_nonpos_of_nonneg ha.le measureReal_nonneg |>.trans
     exact integral_nonneg (fun _ ↦ norm_nonneg _)
   calc
     _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ :=
