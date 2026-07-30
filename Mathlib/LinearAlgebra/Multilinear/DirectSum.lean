@@ -57,7 +57,7 @@ theorem fromDirectSumEquiv_lof [Finite ι] [(i : ι) → DecidableEq (κ i)]
     (f : (p : (i : ι) → κ i) → MultilinearMap R (fun i ↦ M i (p i)) M')
     (p : (i : ι) → κ i) (x : (i : ι) → M i (p i)) :
     fromDirectSumEquiv f (fun i => lof R _ _ _ (x i)) = f p x := by
-  haveI : Fintype ι := Fintype.ofFinite ι
+  have : Fintype ι := Fintype.ofFinite ι
   rw [fromDirectSumEquiv, ← fromDFinsuppEquiv_single]
   convert! rfl
 
@@ -78,7 +78,7 @@ theorem fromDirectSumEquiv_symm_apply [Finite ι] [(i : ι) → DecidableEq (κ 
     (f : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M')
     (p : (i : ι) → κ i) :
     fromDirectSumEquiv.symm f p = f.compLinearMap (fun i ↦ DirectSum.lof _ _ _ (p i)) := by
-  haveI : Fintype ι := Fintype.ofFinite ι
+  have : Fintype ι := Fintype.ofFinite ι
   simp_rw [fromDirectSumEquiv, DirectSum.lof, ← fromDFinsuppEquiv_symm_apply]
   convert! rfl
 

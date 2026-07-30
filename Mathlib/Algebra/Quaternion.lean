@@ -752,6 +752,7 @@ protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
 
 instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
 instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]

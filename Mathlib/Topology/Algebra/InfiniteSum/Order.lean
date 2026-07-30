@@ -84,7 +84,7 @@ protected lemma Multipliable.tprod_subtype_le {κ γ : Type*} [CommGroup γ] [Pa
     (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
   apply Multipliable.tprod_le_tprod_of_inj _
     (Subtype.coe_injective)
-    (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
+    (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, h, implies_true])
     (by simp only [le_refl, implies_true])
     (by apply hf.subtype)
   apply hf
@@ -98,7 +98,6 @@ theorem prod_le_hasProd [L.NeBot] [L.LeAtTop] (s : Finset ι) (hs : ∀ i, i ∉
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
     IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
@@ -266,7 +265,6 @@ protected theorem Multipliable.tprod_ne_one_iff (hf : Multipliable f) :
 omit [IsOrderedMonoid α] in
 @[to_additive]
 theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
-  classical
   exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
 end CanonicallyOrderedMul

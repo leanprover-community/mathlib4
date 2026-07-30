@@ -24,10 +24,12 @@ namespace Nat
 variable {a b k m n p : ℕ}
 
 /-- A version of `Nat.exists_infinite_primes` using the `Set.Infinite` predicate. -/
-theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
-  Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
+theorem infinite_setOfPred_prime : { p | Prime p }.Infinite :=
+  Set.infinite_of_not_bddAbove not_bddAbove_setOfPred_prime
 
-instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
+@[deprecated (since := "2026-07-09")] alias infinite_setOf_prime := infinite_setOfPred_prime
+
+instance Primes.infinite : Infinite Primes := infinite_setOfPred_prime.to_subtype
 
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
