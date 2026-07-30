@@ -53,10 +53,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_apply_zero :
 
 lemma valueGroup₀_equiv_withZeroMulInt_apply_zpow (k : ℤ) :
     valueGroup₀_equiv_withZeroMulInt v (hv.generator' ^ k) = WithZero.exp (- k) := by
-  simp only [map_zpow₀, valueGroup₀_equiv_withZeroMulInt_apply, WithZero.map'_coe,
-    MonoidHom.coe_coe]
-  rw [← WithZero.coe_zpow, WithZero.exp, WithZero.coe_inj, ← map_zpow]
-  simp [← mulintEquivOfZPowersEqTop_symm_apply_zpow
+  simp [WithZero.exp, ← mulintEquivOfZPowersEqTop_symm_apply_zpow
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)]
 
 lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
@@ -89,10 +86,11 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
   simp only [MonoidWithZeroHom.coe_ofClass] at h0
   · simp [h0]
   · rw [WithZero.map'_coe, ← coe_unzero h0, WithZero.coe_inj,
-      ← (MulEquiv.injective (intEquivOfZPowersEqTop _
-      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff]
+    ← (MulEquiv.injective (intEquivOfZPowersEqTop _
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff]
     ext
-    simp [generator', generator_eq_exp_neg_one_of_surjective hsurj, toAdd_unzero h0, exp_log h0]
+    simp [generator', generator_eq_exp_neg_one_of_surjective hsurj, toAdd_unzero_eq_log h0,
+      exp_log h0]
 
 end WithZeroMulInt
 

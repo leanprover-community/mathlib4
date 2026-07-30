@@ -114,8 +114,14 @@ theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :
 theorem isOpen_lt' [OrderTopology α] (a : α) : IsOpen { b : α | a < b } :=
   isOpen_iff_generate_intervals.2 <| .basic _ ⟨a, .inl rfl⟩
 
-@[to_dual]
+/-- A version of `isOpen_Ioi` that doesn't require a `LinearOrder`. -/
+@[to_dual /-- A version of `isOpen_Iio` that doesn't require a `LinearOrder`. -/]
 theorem isOpen_Ioi' [OrderTopology α] (a : α) : IsOpen (Ioi a) := isOpen_lt' a
+
+/-- A version of `isOpen_Ioo` that doesn't require a `LinearOrder`. -/
+@[to_dual self]
+theorem isOpen_Ioo' [OrderTopology α] (a b : α) : IsOpen (Ioo a b) :=
+  (isOpen_Ioi' a).inter (isOpen_Iio' b)
 
 @[to_dual gt_mem_nhds]
 theorem lt_mem_nhds [OrderTopology α] {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
