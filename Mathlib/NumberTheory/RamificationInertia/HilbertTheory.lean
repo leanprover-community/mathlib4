@@ -188,33 +188,27 @@ variable [Algebra A C] [IsScalarTower A C B]
 
 /-- The degree `[C : A]` of the decomposition ring `C` over `A` equals the number of prime ideals
 of `B` lying over `p`. -/
-theorem IsDecompositionRing.finrank_bot [FaithfulSMul A C] [Module.Finite A C] [FaithfulSMul C B]
-    [P.IsMaximal] [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
+theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsDecompositionRing G C]
+    (hp : p ≠ ⊥) :
     Module.finrank A C = (p.primesOver B).ncard := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
-  have : FaithfulSMul A B := by
-    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A C B, RingHom.coe_comp]
-    exact (FaithfulSMul.algebraMap_injective C B).comp (FaithfulSMul.algebraMap_injective A C)
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' A C B, IsDecompositionRing.finrank_top G P C hp,
+    Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P C hp,
     ← IsGaloisGroup.card_eq_finrank' G A B,
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
 /-- The degree `[C : A]` of the inertia ring `C` over `A` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
-theorem IsInertiaRing.finrank_bot [FaithfulSMul A C] [Module.Finite A C] [FaithfulSMul C B]
-    [P.IsMaximal] [P.IsInertiaRing G C] (hp : p ≠ ⊥) :
+theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsInertiaRing G C]
+    (hp : p ≠ ⊥) :
     Module.finrank A C = (p.primesOver B).ncard * p.inertiaDegIn B := by
   have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
-  have : FaithfulSMul A B := by
-    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A C B, RingHom.coe_comp]
-    exact (FaithfulSMul.algebraMap_injective C B).comp (FaithfulSMul.algebraMap_injective A C)
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' A C B, IsInertiaRing.finrank_top G P C hp,
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C hp,
     ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
@@ -222,20 +216,13 @@ theorem IsInertiaRing.finrank_bot [FaithfulSMul A C] [Module.Finite A C] [Faithf
 inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_decompositionRing (C' : Type*) [CommRing C'] [Algebra C' B]
     [FaithfulSMul C B] [FaithfulSMul C' B] [Algebra C C'] [IsScalarTower C C' B]
-    [Module.Finite C C']
     [P.IsMaximal] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
     Module.finrank C C' = p.inertiaDegIn B := by
-  have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : IsDomain C' := (FaithfulSMul.algebraMap_injective C' B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   have : Module.Finite C' B := Module.Finite.right C C' B
-  have : FaithfulSMul C C' := by
-    rw [faithfulSMul_iff_algebraMap_injective]
-    have h := FaithfulSMul.algebraMap_injective C B
-    rw [IsScalarTower.algebraMap_eq C C' B, RingHom.coe_comp] at h
-    exact h.of_comp
   rw [← mul_left_inj' (c := Module.finrank C' B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' C C' B, IsInertiaRing.finrank_top G P C' hp,
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C' hp,
     IsDecompositionRing.finrank_top G P C hp, mul_comm (p.ramificationIdxIn B)]
 
 end rank
