@@ -205,8 +205,6 @@ theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
 
 @[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
 
-
-
 theorem natCast_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
 

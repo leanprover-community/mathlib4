@@ -11,6 +11,8 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Data.ENat.Basic
 
+import Mathlib.Data.Nat.Cast.Order.Basic
+
 deriving instance
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
   OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
@@ -60,11 +62,9 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
   apply natCast_inj.1
   simp
 
-theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
-  lift n to ℕ using hn
-  induction m
-  · rw [top_sub_natCast, toNat_top, zero_tsub]
-  · rw [← natCast_sub, toNat_natCast, toNat_natCast, toNat_natCast]
+@[simp]
+theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
+  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
