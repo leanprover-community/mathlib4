@@ -258,13 +258,13 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 
 -- Duplicate of `Nat.cast_lt`, but requires less imports.
-@[simp 900, norm_cast]
+@[norm_cast]
 lemma natCast_lt_natCast {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := WithTop.coe_lt_coe
 
 @[deprecated (since := "2026-07-17")] alias coe_lt_coe := natCast_lt_natCast
 
 -- Duplicate of `Nat.cast_le`, but requires less imports.
-@[simp 900, norm_cast]
+@[norm_cast]
 lemma natCast_le_natCast {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := WithTop.coe_le_coe
 
 @[deprecated (since := "2026-07-17")] alias coe_le_coe := natCast_le_natCast
