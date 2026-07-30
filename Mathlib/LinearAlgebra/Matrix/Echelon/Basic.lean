@@ -5,8 +5,12 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.RelClasses
+
+import Mathlib.Order.WellFounded
 
 
 /-!
@@ -18,8 +22,7 @@ This file defines the row echelon form of matrices and the leading entries of th
 
 - `Matrix.IsRowEchelon` expresses that `M` is in row echelon form: an entry of a lower row
   vanishes whenever a higher row is zero at every column strictly to its left.
-- `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `M`,
-  with `⊤` for a zero row.
+- `Matrix.IsLeadingEntry`: `c : n` is the leading position of row `i` of `M`.
 - `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
   entries above it to vanish.
 
@@ -53,32 +56,30 @@ theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : M.IsR
 
 /-! ### Leading entries -/
 
-/-- `c` is the leading position of row `i`: entries strictly left of `c` vanish and, when
-`c` is a column, the entry at `c` is nonzero. `c = ⊤` states that the row is zero. -/
-def IsLeadingEntry [LT n] (M : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
-  (∀ j : n, (j : WithTop n) < c → M i j = 0) ∧ ∀ c₀ : n, c = c₀ → M i c₀ ≠ 0
+/-- `c` is the leading position of row `i`. -/
+def IsLeadingEntry [LT n] (M : Matrix m n R) (i : m) (c : n) : Prop :=
+  (∀ j < c, M i j = 0) ∧ M i c ≠ 0
 
-@[simp]
-theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    M.IsLeadingEntry i ⊤ ↔ M i = 0 := by
-  simp [IsLeadingEntry, funext_iff]
-
-@[simp]
-theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    M.IsLeadingEntry i c ↔ (∀ j < c, M i j = 0) ∧ M i c ≠ 0 := by
-  simp [IsLeadingEntry]
+theorem IsLeadingEntry.row_ne_zero [LT n] {i : m} {c : n} (hc : M.IsLeadingEntry i c) :
+    M.row i ≠ 0 :=
+  fun contra => hc.2 (congrFun contra c)
 
 /-- If column indices have a linear order, then there's at most one leading position per row. -/
-theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
-    (h₁ : M.IsLeadingEntry i c₁) (h₂ : M.IsLeadingEntry i c₂) :
-    c₁ = c₂ := by
-  refine le_antisymm (not_lt.mp ?_) (not_lt.mp ?_)
-  · intro hlt
-    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
-  · intro hlt
-    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
+theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : n}
+    (h₁ : M.IsLeadingEntry i c₁) (h₂ : M.IsLeadingEntry i c₂) : c₁ = c₂ :=
+  le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
+
+theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
+    M.row i ≠ 0 ↔ ∃ c, M.IsLeadingEntry i c := by
+  refine ⟨fun h => ?_, fun ⟨c, hc⟩ => hc.row_ne_zero⟩
+  obtain ⟨c, hc, hmin⟩ := wellFounded_lt.has_min {j | M i j ≠ 0} <| Function.ne_iff.mp h
+  refine ⟨c, fun j hj => ?_, hc⟩
+  by_contra! hmin
+  aesop
+
+instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
+    (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
+  decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
 
 /-! ### Reduced row echelon form -/
 
@@ -99,6 +100,6 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
   rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
   · exact hM.eq_zero_of_lt_of_isLeadingEntry hlt hlead
   · exact absurd heq hne
-  · exact hM.isRowEchelon hlt (isLeadingEntry_coe_iff.mp hlead).1
+  · exact hM.isRowEchelon hlt hlead.1
 
 end Matrix
