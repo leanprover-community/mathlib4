@@ -881,18 +881,9 @@ end AddCommGroup
 
 end SeminormedRing
 
-section NormedField
+section NormedDivisionRing
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
-
-theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
-    {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
-  cases isEmpty_or_nonempty ι
-  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
-    exact closedBall_bot _ hr
-  · ext x
-    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
-    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
@@ -972,6 +963,21 @@ theorem smul_closedBall_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : �
   Set.ext fun _ => by
     rw [mem_preimage, mem_closedBall, mem_closedBall, le_div_iff₀ (norm_pos_iff.mpr ha), mul_comm, ←
       map_smul_eq_mul p, smul_sub, smul_inv_smul₀ ha]
+
+end NormedDivisionRing
+
+section NormedField
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
+
+theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
+    {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+    exact closedBall_bot _ hr
+  · ext x
+    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
+    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
 end NormedField
 
@@ -1333,12 +1339,12 @@ variable {𝕜 E} {x : E}
 /-- Balls at the origin are absorbent. -/
 theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by
   rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm _ _).absorbent_ball_zero hr
+  exact (normSeminorm _ _).absorbent_ball_zero hr (𝕜 := 𝕜)
 
 /-- Balls containing the origin are absorbent. -/
 theorem absorbent_ball (hx : ‖x‖ < r) : Absorbent 𝕜 (Metric.ball x r) := by
   rw [← ball_normSeminorm 𝕜]
-  exact (normSeminorm _ _).absorbent_ball hx
+  exact (normSeminorm _ _).absorbent_ball hx (𝕜 := 𝕜)
 
 /-- Balls at the origin are balanced. -/
 theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
