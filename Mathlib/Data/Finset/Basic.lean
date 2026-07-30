@@ -103,8 +103,8 @@ lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
 
 end Lattice
 
-instance isDirected_le : IsDirectedOrder (Finset α) := by classical infer_instance
-instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
+instance isPredirected_le : IsPredirectedOrder (Finset α) := by classical infer_instance
+instance isPredirected_subset : IsPredirected (Finset α) (· ⊆ ·) := isPredirected_le
 
 /-! ### erase -/
 

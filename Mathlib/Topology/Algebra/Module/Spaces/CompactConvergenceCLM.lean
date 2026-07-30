@@ -86,7 +86,7 @@ protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace E] [TopologicalS
       fun Si => { f : E →SL_c[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
   UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | IsCompact S }
     ⟨∅, isCompact_empty⟩
-    (directedOn_of_sup_mem fun _ _ => IsCompact.union) h
+    (predirectedOn_of_sup_mem fun _ _ => IsCompact.union) h
 
 protected theorem hasBasis_nhds_zero [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F] :

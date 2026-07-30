@@ -134,7 +134,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
 of the metric space structure. -/
 protected theorem uniformity_dist' :
     𝓤 (Completion α) = ⨅ ε : { ε : ℝ // 0 < ε }, 𝓟 { p | dist p.1 p.2 < ε.val } := by
-  ext s; rw [mem_iInf_of_directed]
+  ext s; rw [mem_iInf_of_predirected]
   · simp [Completion.mem_uniformity_dist, subset_def]
   · rintro ⟨r, hr⟩ ⟨p, hp⟩
     use ⟨min r p, lt_min hr hp⟩

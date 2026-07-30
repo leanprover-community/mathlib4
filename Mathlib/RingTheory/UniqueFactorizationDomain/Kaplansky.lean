@@ -46,7 +46,7 @@ theorem exists_mem_kaplanskySet_le {C : Set (Ideal R)} (hS : 0 ∉ S) (hC : C �
   · refine ⟨sSup C, ?_, fun _ hz ↦ le_sSup hz⟩
     rw [mem_kaplanskySet_iff, eq_empty_iff_forall_notMem]
     intro x hx
-    rcases (Submodule.mem_sSup_of_directed ⟨_, hI⟩ hC₂.directedOn).1 hx.1 with ⟨J, hJ₁, hJ₂⟩
+    rcases (Submodule.mem_sSup_of_predirected ⟨_, hI⟩ hC₂.predirectedOn).1 hx.1 with ⟨J, hJ₁, hJ₂⟩
     have hx₂ : (J : Set R) ∩ S ≠ ∅ := nonempty_iff_ne_empty.1 ⟨x, hJ₂, hx.2⟩
     exact hx₂ (mem_kaplanskySet_iff.mp (hC hJ₁))
 

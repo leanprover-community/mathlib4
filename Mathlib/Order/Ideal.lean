@@ -67,7 +67,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is nonempty. -/
   nonempty' : carrier.Nonempty
   /-- The ideal is upward directed. -/
-  directed' : DirectedOn (· ≤ ·) carrier
+  predirected' : PredirectedOn (· ≤ ·) carrier
 
 -- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
@@ -84,12 +84,12 @@ structure IsIdeal {P} [LE P] (I : Set P) : Prop where
   /-- The ideal is nonempty. -/
   Nonempty : I.Nonempty
   /-- The ideal is upward directed. -/
-  Directed : DirectedOn (· ≤ ·) I
+  Predirected : PredirectedOn (· ≤ ·) I
 
 /-- Create an element of type `Order.Ideal` from a set satisfying the predicate
 `Order.IsIdeal`. -/
 def IsIdeal.toIdeal [LE P] {I : Set P} (h : IsIdeal I) : Ideal P :=
-  ⟨⟨I, h.IsLowerSet⟩, h.Nonempty, h.Directed⟩
+  ⟨⟨I, h.IsLowerSet⟩, h.Nonempty, h.Predirected⟩
 
 namespace Ideal
 
@@ -133,11 +133,11 @@ protected theorem lower (s : Ideal P) : IsLowerSet (s : Set P) :=
 protected theorem nonempty (s : Ideal P) : (s : Set P).Nonempty :=
   s.nonempty'
 
-protected theorem directed (s : Ideal P) : DirectedOn (· ≤ ·) (s : Set P) :=
-  s.directed'
+protected theorem predirected (s : Ideal P) : PredirectedOn (· ≤ ·) (s : Set P) :=
+  s.predirected'
 
 protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
-  ⟨s.lower, s.nonempty, s.directed⟩
+  ⟨s.lower, s.nonempty, s.predirected⟩
 
 theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (I : Set P)ᶜ := fun h ↦
   mt <| I.lower h
@@ -190,7 +190,7 @@ class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
-theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
+theorem inter_nonempty [IsPrecodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -198,13 +198,13 @@ theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P)
 
 end
 
-section Directed
+section Predirected
 
-variable [IsDirectedOrder P] [Nonempty P] {I : Ideal P}
+variable [IsPredirectedOrder P] [Nonempty P] {I : Ideal P}
 
 /-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
-  top := ⟨⊤, univ_nonempty, directedOn_univ⟩
+  top := ⟨⊤, univ_nonempty, predirectedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top
 
 @[simp]
@@ -239,7 +239,7 @@ theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
   ⟨fun h ↦ h.isCoatom, fun h ↦ IsCoatom.isMaximal h⟩
 
-end Directed
+end Predirected
 
 section OrderBot
 
@@ -284,7 +284,7 @@ variable {I : Ideal P} {x y : P}
 def principal (p : P) : Ideal P where
   toLowerSet := LowerSet.Iic p
   nonempty' := nonempty_Iic
-  directed' _ hx _ hy := ⟨p, le_rfl, hx, hy⟩
+  predirected' _ hx _ hy := ⟨p, le_rfl, hx, hy⟩
 
 instance [Inhabited P] : Inhabited (Ideal P) :=
   ⟨Ideal.principal default⟩
@@ -338,9 +338,9 @@ section SemilatticeSup
 
 variable [SemilatticeSup P] {x y : P} {I s : Ideal P}
 
-/-- A specific witness of `I.directed` when `P` has joins. -/
+/-- A specific witness of `I.predirected` when `P` has joins. -/
 theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
-  let ⟨_, hz, hx, hy⟩ := s.directed x hx y hy
+  let ⟨_, hz, hx, hy⟩ := s.predirected x hx y hy
   s.lower (sup_le hx hy) hz
 
 @[simp]
@@ -358,14 +358,14 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsCodirectedOrder P] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsPrecodirectedOrder P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=
   ⟨fun I J ↦
     { toLowerSet := I.toLowerSet ⊓ J.toLowerSet
       nonempty' := inter_nonempty I J
-      directed' := fun x hx y hy ↦ ⟨x ⊔ y, ⟨sup_mem hx.1 hy.1, sup_mem hx.2 hy.2⟩, by simp⟩ }⟩
+      predirected' := fun x hx y hy ↦ ⟨x ⊔ y, ⟨sup_mem hx.1 hy.1, sup_mem hx.2 hy.2⟩, by simp⟩ }⟩
 
 /-- The supremum of two ideals of a co-directed order is the union of the down sets of the pointwise
 supremum of `I` and `J`. -/
@@ -375,7 +375,7 @@ instance : Max (Ideal P) :=
       nonempty' := by
         obtain ⟨w, h⟩ := inter_nonempty I J
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
-      directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
+      predirected' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y, ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,
             sup_le
               (calc
@@ -434,7 +434,7 @@ instance : InfSet (Ideal P) :=
         ⟨⊥, by
           rw [LowerSet.carrier_eq_coe, LowerSet.coe_iInf₂, Set.mem_iInter₂]
           exact fun s _ ↦ s.bot_mem⟩
-      directed' := fun a ha b hb ↦
+      predirected' := fun a ha b hb ↦
         ⟨a ⊔ b,
           ⟨by
             rw [LowerSet.carrier_eq_coe, LowerSet.coe_iInf₂, Set.mem_iInter₂] at ha hb ⊢
@@ -593,7 +593,7 @@ def idealOfCofinals : Ideal P where
   carrier := { x : P | ∃ n, x ≤ sequenceOfCofinals p 𝒟 n }
   lower' := fun _ _ hxy ⟨n, hn⟩ ↦ ⟨n, le_trans hxy hn⟩
   nonempty' := ⟨p, 0, le_rfl⟩
-  directed' := fun _ ⟨n, hn⟩ _ ⟨m, hm⟩ ↦
+  predirected' := fun _ ⟨n, hn⟩ _ ⟨m, hm⟩ ↦
     ⟨_, ⟨max n m, le_rfl⟩, le_trans hn <| sequenceOfCofinals.monotone p 𝒟 (le_max_left _ _),
       le_trans hm <| sequenceOfCofinals.monotone p 𝒟 (le_max_right _ _)⟩
 
@@ -611,17 +611,17 @@ section sUnion
 variable [LE P]
 
 /-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
-lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
-    (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
+lemma isIdeal_sUnion_of_predirectedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hD : PredirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
   refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
-    directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
+    predirectedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
   let ⟨I, hI⟩ := hNe
   exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
 
 /-- A union of a nonempty chain of ideals of sets is an ideal. -/
 lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hC : IsChain (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion :=
-  isIdeal_sUnion_of_directedOn hidl hC.directedOn hNe
+  isIdeal_sUnion_of_predirectedOn hidl hC.predirectedOn hNe
 
 end sUnion
 

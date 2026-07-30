@@ -151,8 +151,8 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
-  rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
-      (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
+  rcases hs.elim_predirected_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
+      (Monotone.predirected_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 
 theorem IsCompact.exists_isGreatest [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)

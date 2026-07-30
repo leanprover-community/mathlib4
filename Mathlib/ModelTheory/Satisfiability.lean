@@ -118,8 +118,8 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
         exact ⟨hφ, h' (Finset.mem_singleton_self _)⟩
       exact ⟨ModelType.of T M'⟩⟩
 
-theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
-    (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
+theorem isSatisfiable_predirected_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
+    (h : Predirected (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
   refine ⟨fun h' i => h'.mono (Set.subset_iUnion _ _), fun h' => ?_⟩
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   intro T0 hT0
@@ -148,12 +148,12 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (
     (M : Type w') [L.Structure M] [M ⊨ T] [Infinite M] :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   classical
-    rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
+    rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_predirected_union_iff]
     · exact fun t =>
         isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
           ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
             (aleph0_le_lift.2 (aleph0_le_mk M)))
-    · apply Monotone.directed_le
+    · apply Monotone.predirected_le
       refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
       simp only [Finset.coe_map, Function.Embedding.coe_subtype]
       exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
@@ -183,8 +183,8 @@ theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : �
     rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
     rw [Set.iUnion_eq_iUnion_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
-      exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
+    obtain ⟨t, ht⟩ := Predirected.exists_mem_subset_of_finset_subset_biUnion (by
+      exact Monotone.predirected_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
         Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
     exact (h t).mono ht
 

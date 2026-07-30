@@ -164,11 +164,11 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
   · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (X ⁻¹' {a}) _ ▸
-      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
+      IsCompact.nonempty_iInter_of_predirected_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (g := (· ∩ X ⁻¹' {a})) _
-        fun _ _ => inter_subset_inter_left _
+      exact (predirectedOn_iff_predirected.mp C_chain.predirectedOn).mono_comp
+        (g := (· ∩ X ⁻¹' {a})) _ fun _ _ => inter_subset_inter_left _
     · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
       exact singleton_nonempty a
     all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont

@@ -483,7 +483,7 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
 section leadingCoeff
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
-  rw [leadingCoeff, Submodule.mem_iSup_of_directed]
+  rw [leadingCoeff, Submodule.mem_iSup_of_predirected]
   · simp only [mem_leadingCoeffNth]
     constructor
     · rintro ⟨i, p, hpI, _, rfl⟩

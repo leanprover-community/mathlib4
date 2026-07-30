@@ -154,7 +154,7 @@ abbrev withTop (J : CardinalDirectedPoset κ) : CardinalDirectedPoset κ :=
 section
 
 variable {J : CardinalDirectedPoset κ} (P : Set J.obj → Prop)
-  [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
+  [IsPredirectedOrder (Subtype P)] [Nonempty (Subtype P)]
   [∀ (S : Subtype P), IsCardinalFiltered S.val κ]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -297,8 +297,8 @@ instance : IsCardinalFiltered (Subtype (J.PropSetWithTop κ')) κ' :=
 instance : IsFiltered (Subtype (J.PropSetWithTop κ')) :=
   isFiltered_of_isCardinalFiltered _ κ'
 
-instance : IsDirectedOrder (Subtype (J.PropSetWithTop κ')) :=
-  IsFiltered.isDirectedOrder _
+instance : IsPredirectedOrder (Subtype (J.PropSetWithTop κ')) :=
+  IsFiltered.isPredirectedOrder _
 
 instance : Nonempty (Subtype (J.PropSetWithTop κ')) :=
   IsFiltered.nonempty
@@ -397,8 +397,8 @@ instance : IsCardinalFiltered (Subtype J.PropSet) κ :=
 
 instance : IsFiltered (Subtype J.PropSet) := isFiltered_of_isCardinalFiltered _ κ
 
-instance : IsDirectedOrder (Subtype J.PropSet) :=
-  IsFiltered.isDirectedOrder _
+instance : IsPredirectedOrder (Subtype J.PropSet) :=
+  IsFiltered.isPredirectedOrder _
 
 instance : Nonempty (Subtype J.PropSet) :=
   IsFiltered.nonempty

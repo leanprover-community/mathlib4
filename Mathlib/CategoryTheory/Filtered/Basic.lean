@@ -20,9 +20,9 @@ We give a simple characterisation of this condition as
 
 An important example of filtered category is given by nonempty directed types;
 actually, filtered categories may be considered as a generalization of nonempty directed types.
-In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
+In the file `CategoryTheory.Presentable.Predirected`, we show that "conversely"
 if `C` is a filtered category, there exists a final functor `α ⥤ C` from
-a nonempty directed type (`IsFiltered.isDirected`).
+a nonempty directed type (`IsFiltered.isPredirected`).
 
 Filtered colimits are often better behaved than arbitrary colimits.
 See `Mathlib/CategoryTheory/Limits/Types/` for some details.
@@ -105,15 +105,15 @@ instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [Se
 instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [SemilatticeSup α]
     [Nonempty α] : IsFiltered α where
 
-instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
-    [IsDirectedOrder α] : IsFilteredOrEmpty α where
+instance (priority := 100) isFilteredOrEmpty_of_predirected_le (α : Type u) [Preorder α]
+    [IsPredirectedOrder α] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 
-instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
-    [IsDirectedOrder α] [Nonempty α] : IsFiltered α where
+instance (priority := 100) isFiltered_of_predirected_le_nonempty (α : Type u) [Preorder α]
+    [IsPredirectedOrder α] [Nonempty α] : IsFiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by infer_instance
@@ -174,9 +174,9 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
 
 end AllowEmpty
 
-lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
-    IsDirectedOrder α where
-  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
+lemma isPredirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsPredirectedOrder α where
+  predirected i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 end IsFiltered
 
@@ -602,8 +602,8 @@ instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [
 instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u) [SemilatticeInf α]
     [Nonempty α] : IsCofiltered α where
 
-instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
-    [IsCodirectedOrder α] : IsCofilteredOrEmpty α where
+instance (priority := 100) isCofilteredOrEmpty_of_predirected_ge (α : Type u) [Preorder α]
+    [IsPrecodirectedOrder α] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
     let ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
@@ -611,8 +611,8 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     apply ULift.ext
     subsingleton⟩
 
-instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
-    [IsCodirectedOrder α] [Nonempty α] : IsCofiltered α where
+instance (priority := 100) isCofiltered_of_predirected_ge_nonempty (α : Type u) [Preorder α]
+    [IsPrecodirectedOrder α] [Nonempty α] : IsCofiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by infer_instance
@@ -681,8 +681,8 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
   let ⟨k, e, he⟩ := IsCofilteredOrEmpty.cone_maps (G ≫ f) (G' ≫ f')
   ⟨k, e ≫ G, e ≫ G', by simpa only [Category.assoc] using he⟩
 
-theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
-    Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
+theorem _root_.CategoryTheory.Functor.ranges_predirected (F : C ⥤ Type*) (j : C) :
+    Predirected (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;>
     simp_rw [F.map_comp] <;>

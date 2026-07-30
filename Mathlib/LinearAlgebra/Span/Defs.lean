@@ -344,10 +344,10 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 
 @[simp]
-theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
-    (H : Directed (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
+theorem coe_iSup_of_predirected {ι} [Nonempty ι] (S : ι → Submodule R M)
+    (H : Predirected (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
   let s : Submodule R M :=
-    { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed H).symm
+    { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_predirected H).symm
       smul_mem' := fun r _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).smul_mem' r hi⟩ }
   have : iSup S = s := le_antisymm
@@ -355,24 +355,25 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
   this.symm ▸ rfl
 
 @[simp]
-theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : Directed (· ≤ ·) S) {x} :
+theorem mem_iSup_of_predirected {ι} [Nonempty ι] (S : ι → Submodule R M)
+    (H : Predirected (· ≤ ·) S) {x} :
     x ∈ iSup S ↔ ∃ i, x ∈ S i := by
-  rw [← SetLike.mem_coe, coe_iSup_of_directed S H, mem_iUnion]
+  rw [← SetLike.mem_coe, coe_iSup_of_predirected S H, mem_iUnion]
   rfl
 
-theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
-    (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
+theorem mem_sSup_of_predirected {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
+    (hdir : PredirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected _ hdir.predirected_val, SetCoe.exists,
     exists_prop]
 
 @[norm_cast, simp]
 theorem coe_iSup_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Set M) = ⋃ k, (a k : Set M) :=
-  coe_iSup_of_directed a a.monotone.directed_le
+  coe_iSup_of_predirected a a.monotone.predirected_le
 
 @[simp]
 theorem mem_iSup_of_chain (a : ℕ →o Submodule R M) (m : M) : (m ∈ ⨆ k, a k) ↔ ∃ k, m ∈ a k :=
-  mem_iSup_of_directed a a.monotone.directed_le
+  mem_iSup_of_predirected a a.monotone.predirected_le
 
 section
 

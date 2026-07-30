@@ -35,8 +35,8 @@ open DirectLimit
 
 namespace fgSystem
 
-instance : IsDirectedOrder {N : Submodule R M // N.FG} where
-  directed N₁ N₂ :=
+instance : IsPredirectedOrder {N : Submodule R M // N.FG} where
+  predirected N₁ N₂ :=
     ⟨⟨_, N₁.2.sup N₂.2⟩, Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩
 
 instance : DirectedSystem _ (fgSystem R M · · · ·) where

@@ -531,8 +531,8 @@ theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
   congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
 
 @[to_additive]
-theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
-    (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
+theorem mem_biSup_of_predirectedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
+    (hK : PredirectedOn ((· ≤ ·) on K) {i | p i})
     {x : G} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
   -- Could use the `Submonoid` version, but we limit the imports here
   refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
@@ -550,14 +550,15 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {
     simp [hi, hi']
 
 @[to_additive]
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
+theorem mem_iSup_of_predirected {ι} [hι : Nonempty ι] {K : ι → Subgroup G}
+    (hK : Predirected (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
   have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
-  rw [this, mem_biSup_of_directedOn trivial]
+  rw [this, mem_biSup_of_predirectedOn trivial]
   · simp
   · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, directedOn_range]
-    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    rw [predirectedOn_onFun_iff, Set.image_univ, predirectedOn_range]
+    -- `Predirected.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
     intro j
@@ -572,32 +573,33 @@ theorem mem_iSup_prop {p : Prop} {K : p → Subgroup G} {x : G} :
   simp +contextual [h]
 
 @[to_additive]
-theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_predirected {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, S i :=
-  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
+  Set.ext fun x ↦ by simp [mem_iSup_of_predirected hS]
 
 @[to_additive]
-theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
+theorem mem_sSup_of_predirectedOn {K : Set (Subgroup G)} (Kne : K.Nonempty)
+    (hK : PredirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected hK.predirected_val, SetCoe.exists, exists_prop]
 
 @[to_additive]
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → Subgroup G} [hS : ∀ i, IsMulCommutative (S i)]
-    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subgroup G) := by
+    (dir : Predirected (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subgroup G) := by
   refine .of_setLike_mul_comm ?_
-  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_predirected dir, Set.mem_iUnion,
     SetLike.mem_coe, forall_exists_index]
   intro a i ha b j hb
   obtain ⟨k, hik, hjk⟩ := dir i j
   exact setLike_mul_comm (hik ha) (hjk hb)
 
 @[to_additive]
-instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι]
     {S : ι →o Subgroup G} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : Subgroup G) :=
-  isMulCommutative_iSup S.monotone.directed_le
+  isMulCommutative_iSup S.monotone.predirected_le
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 

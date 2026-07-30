@@ -210,11 +210,11 @@ variable [Std.Refl r]
 theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y ∨ y ≺ x :=
   (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
 
-theorem IsChain.directedOn (H : IsChain r s) : DirectedOn r s := fun x hx y hy =>
+theorem IsChain.predirectedOn (H : IsChain r s) : PredirectedOn r s := fun x hx y hy =>
   ((H.total hx hy).elim fun h => ⟨y, hy, h, refl _⟩) fun h => ⟨x, hx, refl _, h⟩
 
-protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
-    Directed r fun x : { a : β // a ∈ c } => f x :=
+protected theorem IsChain.predirected {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
+    Predirected r fun x : { a : β // a ∈ c } => f x :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ =>
     (by_cases fun hab : a = b => by
       simp only [hab, exists_prop, and_self_iff, Subtype.exists]
@@ -223,8 +223,9 @@ protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f 
 
 theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a ∈ s) (mem2 : b ∈ s)
     (mem3 : c ∈ s) : ∃ (z : _) (_ : z ∈ s), r a z ∧ r b z ∧ r c z := by
-  rcases directedOn_iff_directed.mpr (IsChain.directed hchain) a mem1 b mem2 with ⟨z, mem4, H1, H2⟩
-  rcases directedOn_iff_directed.mpr (IsChain.directed hchain) z mem4 c mem3 with
+  rcases predirectedOn_iff_predirected.mpr (IsChain.predirected hchain) a mem1 b mem2 with
+    ⟨z, mem4, H1, H2⟩
+  rcases predirectedOn_iff_predirected.mpr (IsChain.predirected hchain) z mem4 c mem3 with
     ⟨z', mem5, H3, H4⟩
   exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
 

@@ -172,7 +172,7 @@ theorem Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici {f : ℕ → ℝ
   rw [← tendsto_add_atTop_iff_nat k, ← range_add_eq_image_Ici, sInf_range]
   exact tendsto_atTop_ciInf h_ant h_bdd
 
-variable [IsDirected ι (· ≤ ·)]
+variable [IsPredirected ι (· ≤ ·)]
 
 /-- The limit of a monotone, bounded above function `f : ι → ℝ` is a least upper bound
 of the function. -/

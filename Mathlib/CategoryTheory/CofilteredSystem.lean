@@ -108,7 +108,7 @@ This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
-theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
+theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsPredirectedOrder J]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
@@ -235,7 +235,7 @@ theorem isMittagLeffler_of_exists_finite_range
     { s : Finset (F.obj j) | ∃ (i : _) (f : i ⟶ j), ↑s = range (F.map f) }
     ⟨_, i, hi, hf.coe_toFinset⟩
   refine ⟨i, f, fun k g =>
-    (F.ranges_directed j).directedOn_range.is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
+    (F.ranges_predirected j).predirectedOn_range.is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩

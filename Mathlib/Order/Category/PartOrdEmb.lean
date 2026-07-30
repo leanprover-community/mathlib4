@@ -382,7 +382,7 @@ that `Subtype P` is directed and nonempty, and that any `a : α` belongs
 to some `J : Set α` satisfying `P`. Then, `α` is the colimit in the
 category `PartOrdEmb` of these subsets. -/
 noncomputable def isColimitOfPredicateSet
-    [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
+    [IsPredirectedOrder (Subtype P)] [Nonempty (Subtype P)]
     (hP : ∀ (a : α), ∃ (J : Set α), P J ∧ a ∈ J) :
     IsColimit (coconeOfPredicateSet P) :=
   isColimitOfReflects (forget PartOrdEmb.{u}) (by

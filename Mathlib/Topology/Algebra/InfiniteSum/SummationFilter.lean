@@ -220,7 +220,7 @@ instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
   simpa [eq_univ_iff_forall, support, -eventually_and]
     using! fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
 
-instance [Nonempty β] [IsDirectedOrder β] [IsCodirectedOrder β] : (conditional β).NeBot :=
+instance [Nonempty β] [IsPredirectedOrder β] [IsPrecodirectedOrder β] : (conditional β).NeBot :=
   ⟨by rw [conditional_filter]; infer_instance⟩
 
 instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :

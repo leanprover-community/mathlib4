@@ -1027,10 +1027,10 @@ section StarSubalgebraB
 
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
-theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
-    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+theorem coe_iSup_of_predirected [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
+    (dir : Predirected (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalStarSubalgebra R A :=
-    { __ := NonUnitalSubalgebra.copy _ _ (NonUnitalSubalgebra.coe_iSup_of_directed dir).symm
+    { __ := NonUnitalSubalgebra.copy _ _ (NonUnitalSubalgebra.coe_iSup_of_predirected dir).symm
       star_mem' := fun hx ↦
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, star_mem (s := S i) hi⟩ }
@@ -1039,21 +1039,21 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
   this.symm ▸ rfl
 
 theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
-    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Predirected (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
-  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
-    coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_predirected dir,
+    coe_iSup_of_predirected dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
 
-instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι]
     {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
-  isMulCommutative_iSup S.monotone.directed_le
+  isMulCommutative_iSup S.monotone.predirected_le
 
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/
 noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A)
-    (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →⋆ₙₐ[R] B)
+    (dir : Predirected (· ≤ ·) K) (f : ∀ i, K i →⋆ₙₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : NonUnitalStarSubalgebra R A) (hT : T = iSup K) : ↥T →⋆ₙₐ[R] B := by
   subst hT
@@ -1064,7 +1064,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
             let ⟨k, hik, hjk⟩ := dir i j
             rw [hf i k hik, hf j k hjk]
             rfl)
-          _ (by rw [coe_iSup_of_directed dir])
+          _ (by rw [coe_iSup_of_predirected dir])
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
@@ -1073,17 +1073,17 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero,
           AddSubmonoid.mk_add_mk, Set.inclusion_mk]
-        apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
+        apply Set.iUnionLift_binary (coe_iSup_of_predirected dir) dir _ (fun _ => (· * ·))
         all_goals simp
       map_add' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
-        apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
+        apply Set.iUnionLift_binary (coe_iSup_of_predirected dir) dir _ (fun _ => (· + ·))
         all_goals simp
       map_smul' := fun r => by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
-        apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
+        apply Set.iUnionLift_unary (coe_iSup_of_predirected dir) _ (fun _ x => r • x)
           (fun _ _ => rfl)
         all_goals simp
       map_star' := by
@@ -1092,13 +1092,13 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           MulMemClass.mk_mul_mk, NonUnitalAlgHom.toDistribMulActionHom_eq_coe,
           DistribMulActionHom.toFun_eq_coe, NonUnitalAlgHom.coe_to_distribMulActionHom,
           NonUnitalAlgHom.coe_mk]
-        apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => star x)
+        apply Set.iUnionLift_unary (coe_iSup_of_predirected dir) _ (fun _ x => star x)
           (fun _ _ => rfl)
         all_goals simp [map_star] }
 
 end StarSubalgebraB
 
-variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed (· ≤ ·) K}
+variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Predirected (· ≤ ·) K}
   {f : ∀ i, K i →⋆ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalStarSubalgebra R A} {hT : T = iSup K}
 

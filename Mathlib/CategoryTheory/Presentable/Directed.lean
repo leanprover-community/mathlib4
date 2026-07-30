@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Products.Unitor
 
 In this file, we formalize the proof by Deligne (SGA 4 I 8.1.6) that for
 any (small) filtered category `J`, there exists a final functor `F : α ⥤ J`
-where `α` is a directed partially ordered set (`IsFiltered.exists_directed`).
+where `α` is a directed partially ordered set (`IsFiltered.exists_predirected`).
 The construction applies more generally to `κ`-filtered categories and
 `κ`-directed posets (`IsCardinalFiltered.exists_cardinal_directed`).
 
@@ -542,13 +542,13 @@ end IsCardinalFiltered
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
-lemma IsFiltered.exists_directed
+lemma IsFiltered.exists_predirected
     (J : Type w) [SmallCategory J] [IsFiltered J] :
-    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsPredirected α (· ≤ ·)) (_ : Nonempty α)
       (F : α ⥤ J), F.Final := by
   have := (isCardinalFiltered_aleph0_iff.{w} J).2 inferInstance
   obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
   have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
-  exact ⟨α, _, IsFiltered.isDirectedOrder _, nonempty, F, inferInstance⟩
+  exact ⟨α, _, IsFiltered.isPredirectedOrder _, nonempty, F, inferInstance⟩
 
 end CategoryTheory

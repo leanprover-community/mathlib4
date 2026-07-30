@@ -68,9 +68,9 @@ theorem IsNoetherianRing.of_prime (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
   refine ⟨isOka_fg.forall_of_forall_prime' (fun C hC₁ hC₂ I hI h ↦ ⟨sSup C, ?_, h⟩) H⟩
   obtain ⟨G, hG⟩ := h
   obtain ⟨J, J_mem_C, G_subset_J⟩ : ∃ J ∈ C, (G : Set R) ⊆ J := by
-    refine hC₂.directedOn.exists_mem_subset_of_finset_subset_biUnion ⟨I, hI⟩ (fun _ hx ↦ ?_)
+    refine hC₂.predirectedOn.exists_mem_subset_of_finset_subset_biUnion ⟨I, hI⟩ (fun _ hx ↦ ?_)
     simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-    exact (Submodule.mem_sSup_of_directed ⟨I, hI⟩ hC₂.directedOn).1 <| hG ▸ subset_span hx
+    exact (Submodule.mem_sSup_of_predirected ⟨I, hI⟩ hC₂.predirectedOn).1 <| hG ▸ subset_span hx
   suffices J_eq_sSup : J = sSup C from J_eq_sSup ▸ J_mem_C
   exact le_antisymm (le_sSup J_mem_C) (hG ▸ Ideal.span_le.2 G_subset_J)
 

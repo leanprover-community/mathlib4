@@ -43,7 +43,7 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     (hf : f.HasBasis p s) {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
-  refine (mem_biInf_of_directed ?_ ⟨univ, univ_sets _⟩).trans ?_
+  refine (mem_biInf_of_predirected ?_ ⟨univ, univ_sets _⟩).trans ?_
   · intro t₁ ht₁ t₂ ht₂
     exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm inter_subset_left, gm inter_subset_right⟩
   · simp only [← (hg _).mem_iff]
@@ -185,10 +185,10 @@ theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β
   simp only [mem_lift_sets (Monotone.of_map_inf hg), exists_imp, and_imp]
   exact fun t ht hs => H t ht hs
 
-theorem lift_iInf_of_directed [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
-    (hf : Directed (· ≥ ·) f) (hg : Monotone g) : (iInf f).lift g = ⨅ i, (f i).lift g :=
+theorem lift_iInf_of_predirected [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
+    (hf : Predirected (· ≥ ·) f) (hg : Monotone g) : (iInf f).lift g = ⨅ i, (f i).lift g :=
   lift_iInf_le.antisymm fun s => by
-    simp only [mem_lift_sets hg, exists_imp, and_imp, mem_iInf_of_directed hf]
+    simp only [mem_lift_sets hg, exists_imp, and_imp, mem_iInf_of_predirected hf]
     exact fun t i ht hs => mem_iInf_of_mem i <| mem_lift ht hs
 
 theorem lift_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Filter β}

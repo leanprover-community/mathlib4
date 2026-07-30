@@ -28,7 +28,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 ## Main results
 
-* `IsCountablyCompact.elim_directed_cover`: for every countable open directed cover of a
+* `IsCountablyCompact.elim_predirected_cover`: for every countable open directed cover of a
   countably compact set, some single element of the cover contains the set.
 * `IsCountablyCompact.elim_finite_subcover`: a countably compact set has a finite subcover for
   any countable open cover.
@@ -103,15 +103,15 @@ alias ⟨IsCountablyCompact.seq_clusterPt,
 
 /-- For every countable open directed cover of a countably compact set, there exists a single
 element of the cover which itself includes the set. -/
-theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
+theorem IsCountablyCompact.elim_predirected_cover [Countable ι] [Nonempty ι]
     (hA : IsCountablyCompact A) (U : ι → Set E) (hUo : ∀ i, IsOpen (U i))
-    (hAU : A ⊆ ⋃ i, U i) (hdU : Directed (· ⊆ ·) U) : ∃ i, A ⊆ U i := by
+    (hAU : A ⊆ ⋃ i, U i) (hdU : Predirected (· ⊆ ·) U) : ∃ i, A ⊆ U i := by
   by_contra! h
-  have hdir : Directed (· ≥ ·) fun i => 𝓟 (A \ U i) :=
+  have hdir : Predirected (· ≥ ·) fun i => 𝓟 (A \ U i) :=
     fun i j => (hdU i j).imp fun _ ⟨hi, hj⟩ => ⟨principal_mono.mpr <| sdiff_subset_sdiff_right hi,
       principal_mono.mpr <| sdiff_subset_sdiff_right hj⟩
   have : NeBot (⨅ i, 𝓟 (A \ U i)) :=
-    iInf_neBot_of_directed' hdir fun i => (sdiff_nonempty.mpr (h i)).principal_neBot
+    iInf_neBot_of_predirected' hdir fun i => (sdiff_nonempty.mpr (h i)).principal_neBot
   have hle : (⨅ i, 𝓟 (A \ U i)) ≤ 𝓟 A :=
     iInf_le_of_le ‹Nonempty ι›.some <| principal_mono.mpr sdiff_subset
   rcases hA hle with ⟨a, ha, hac⟩
@@ -123,9 +123,9 @@ theorem IsCountablyCompact.elim_directed_cover [Countable ι] [Nonempty ι]
 theorem IsCountablyCompact.elim_finite_subcover (hA : IsCountablyCompact A) [Countable ι]
     {U : ι → Set E} (hUo : ∀ i, IsOpen (U i)) (hAU : A ⊆ ⋃ i, U i) :
     ∃ t : Finset ι, A ⊆ ⋃ i ∈ t, U i :=
-  hA.elim_directed_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
+  hA.elim_predirected_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
     (iUnion_eq_iUnion_finset U ▸ hAU)
-    (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
+    (predirected_of_isPredirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 
 /-- A set is countably compact if and only if every countable open cover has a finite subcover. -/
 theorem isCountablyCompact_iff_countable_open_cover :

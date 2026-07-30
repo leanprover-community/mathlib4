@@ -487,7 +487,7 @@ theorem iSup_restrict_spanningSets_of_measurableSet [SigmaFinite μ] (hs : Measu
     ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
   calc
     ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
-      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
+      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).predirected_le hs).symm
     _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
 
 theorem iSup_restrict_spanningSets [SigmaFinite μ] (s : Set α) :

@@ -372,11 +372,11 @@ theorem exists_mem_nhds (x : X) : ∃ n, K n ∈ 𝓝 x := by
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
-  refine hs.elim_directed_cover (interior ∘ K) (fun _ ↦ isOpen_interior) ?_ ?_
+  refine hs.elim_predirected_cover (interior ∘ K) (fun _ ↦ isOpen_interior) ?_ ?_
   · intro x _
     rcases K.exists_mem x with ⟨k, hk⟩
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
-  · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
+  · exact Monotone.predirected_le fun _ _ h ↦ interior_mono <| K.subset h
 
 open scoped Classical in
 /-- The minimal `n` such that `x ∈ K n`. -/

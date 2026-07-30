@@ -227,8 +227,8 @@ theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
-  isGLB_csInf_of_directed _ _ := isGLB_csInf _
-  isLUB_csSup_of_directed _ _ := isLUB_csSup _
+  isGLB_csInf_of_predirected _ _ := isGLB_csInf _
+  isLUB_csSup_of_predirected _ _ := isLUB_csSup _
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩

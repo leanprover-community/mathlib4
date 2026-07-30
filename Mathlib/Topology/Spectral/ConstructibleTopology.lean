@@ -108,7 +108,8 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     refine zorn_subset_nonempty 𝒮 (fun c hc𝒮 hc hne@⟨x, hxc⟩ ↦ ?_) s hs
     refine ⟨⋃₀ c, ?_, fun S hSc ↦ Set.subset_sUnion_of_subset c S subset_rfl hSc⟩
     refine ⟨by grind, fun a hac ha ↦ ?_, by grind⟩
-    obtain ⟨i, hmem, hsub⟩ := hc.directedOn.exists_mem_subset_of_finite_of_subset_sUnion hne ha hac
+    obtain ⟨i, hmem, hsub⟩ :=
+      hc.predirectedOn.exists_mem_subset_of_finite_of_subset_sUnion hne ha hac
     exact (hc𝒮 hmem).2.1 a hsub ha
   let B' := {s | s ∈ B ∧ IsClosed s}
   /- Let `Z` be the intersection of all closed sets in `B`. We argue

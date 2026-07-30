@@ -867,12 +867,12 @@ embeddings by adding new elements, the maximal embedding must have the maximal d
 /-- A partial linear map that contains every element in a directed set of
 `HahnEmbedding.Partial`. -/
 noncomputable
-def sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c) :
+def sSupFun {c : Set (Partial seed)} (hc : PredirectedOn (· ≤ ·) c) :
     M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ :=
   LinearPMap.sSup ((·.val) '' c) (hc.mono_comp (by simp))
 
 theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
-    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : StrictMono (sSupFun hc) := by
+    (hnonempty : c.Nonempty) (hc : PredirectedOn (· ≤ ·) c) : StrictMono (sSupFun hc) := by
   intro x y h
   apply lt_of_sub_pos
   rw [← LinearPMap.map_sub]
@@ -890,18 +890,18 @@ theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
   rw [← Subtype.coe_lt_coe]
   simp [h]
 
-theorem le_sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c)
+theorem le_sSupFun {c : Set (Partial seed)} (hc : PredirectedOn (· ≤ ·) c)
     {f : Partial seed} (hf : f ∈ c) :
     f.val ≤ sSupFun hc :=
   LinearPMap.le_sSup _ <| (Set.mem_image _ _ _).mpr ⟨f, hf, rfl⟩
 
 theorem baseEmbedding_le_sSupFun {c : Set (Partial seed)}
-    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : seed.baseEmbedding ≤ sSupFun hc := by
+    (hnonempty : c.Nonempty) (hc : PredirectedOn (· ≤ ·) c) : seed.baseEmbedding ≤ sSupFun hc := by
   obtain ⟨f, hf⟩ := hnonempty
   exact le_trans f.prop.baseEmbedding_le (le_sSupFun hc hf)
 
 theorem truncLT_mem_range_sSupFun {c : Set (Partial seed)}
-    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) (x : (sSupFun hc).domain)
+    (hnonempty : c.Nonempty) (hc : PredirectedOn (· ≤ ·) c) (x : (sSupFun hc).domain)
     (c : FiniteArchimedeanClass M) :
     toLex ((HahnSeries.truncLTLinearMap K c) (ofLex (sSupFun hc x))) ∈
     LinearMap.range (sSupFun hc).toFun := by
@@ -922,7 +922,7 @@ theorem truncLT_mem_range_sSupFun {c : Set (Partial seed)}
   simpa [hleft, hright] using hx'
 
 theorem isPartial_sSupFun [IsOrderedAddMonoid R]
-    {c : Set (Partial seed)} (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) :
+    {c : Set (Partial seed)} (hnonempty : c.Nonempty) (hc : PredirectedOn (· ≤ ·) c) :
     IsPartial seed (sSupFun hc) where
   strictMono := sSupFun_strictMono hnonempty hc
   baseEmbedding_le := baseEmbedding_le_sSupFun hnonempty hc
@@ -931,7 +931,7 @@ theorem isPartial_sSupFun [IsOrderedAddMonoid R]
 /-- Promote `HahnEmbedding.Partial.sSupFun` to a `HahnEmbedding.Partial`. -/
 noncomputable
 def sSup [IsOrderedAddMonoid R] {c : Set (Partial seed)}
-    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : Partial seed :=
+    (hnonempty : c.Nonempty) (hc : PredirectedOn (· ≤ ·) c) : Partial seed :=
   ⟨_, isPartial_sSupFun hnonempty hc⟩
 
 variable (seed) in
@@ -939,7 +939,8 @@ theorem exists_isMax [IsOrderedAddMonoid R] :
     ∃ f : Partial seed, IsMax f := by
   apply zorn_le_nonempty
   intro c hc hnonempty
-  exact ⟨sSup hnonempty hc.directedOn, mem_upperBounds.mpr fun _ hf ↦ le_sSupFun hc.directedOn hf⟩
+  exact ⟨sSup hnonempty hc.predirectedOn,
+    mem_upperBounds.mpr fun _ hf ↦ le_sSupFun hc.predirectedOn hf⟩
 
 variable (seed) in
 /-- There exists a `HahnEmbedding.Partial` whose domain is the whole module. -/

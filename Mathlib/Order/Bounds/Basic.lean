@@ -129,8 +129,8 @@ protected lemma IsCofinalFor.mono_left (hst : s ⊆ t) (htu : IsCofinalFor t u) 
 protected lemma IsCofinalFor.mono_right (htu : t ⊆ u) (hst : IsCofinalFor s t) :
     IsCofinalFor s u := hst.trans htu.isCofinalFor
 
-lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β] {s : Set (α × β)}
-    (hs : DirectedOn (· ≤ ·) s) : IsCofinalFor ((Prod.fst '' s) ×ˢ (Prod.snd '' s)) s := by
+lemma PredirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β] {s : Set (α × β)}
+    (hs : PredirectedOn (· ≤ ·) s) : IsCofinalFor ((Prod.fst '' s) ×ˢ (Prod.snd '' s)) s := by
   rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
@@ -148,14 +148,14 @@ theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s
   rw [union_comm]
   exact hc.union_left
 
-theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
-    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+theorem PredirectedOn.of_isCofinalFor (hd : PredirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : PredirectedOn (· ≤ ·) s := by
   intro x hx y hy
   obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
   obtain ⟨w, hw, hzw⟩ := hc hz
   exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
 
-theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem isCofinalFor_or_isCofinalFor_of_predirectedOn_union (h : PredirectedOn (· ≤ ·) (s ∪ t)) :
     IsCofinalFor t s ∨ IsCofinalFor s t := by
   rw [or_iff_not_imp_left]
   intro hts x hx
@@ -165,13 +165,13 @@ theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤
   · cases hys z hzs hyz
   · exact ⟨z, hzt, hxz⟩
 
-theorem directedOn_union_iff :
-    DirectedOn (· ≤ ·) (s ∪ t) ↔
-      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
+theorem predirectedOn_union_iff :
+    PredirectedOn (· ≤ ·) (s ∪ t) ↔
+      PredirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ PredirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
-    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
-    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
+  · rcases isCofinalFor_or_isCofinalFor_of_predirectedOn_union h with hts | hst
+    · exact .inl ⟨PredirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨PredirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
   · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
     · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
       obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
@@ -182,15 +182,15 @@ theorem directedOn_union_iff :
       obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
       exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
 
-theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
-  rw [directedOn_union_iff] at h
+theorem predirectedOn_or_predirectedOn_of_union (h : PredirectedOn (· ≤ ·) (s ∪ t)) :
+    PredirectedOn (· ≤ ·) s ∨ PredirectedOn (· ≤ ·) t := by
+  rw [predirectedOn_union_iff] at h
   tauto
 
-theorem directedOn_or_directedOn_of_union'
-    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
-    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
-  obtain h | h := directedOn_or_directedOn_of_union h
+theorem predirectedOn_or_predirectedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : PredirectedOn (· ≤ ·) (s ∪ t)) :
+    PredirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ PredirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := predirectedOn_or_predirectedOn_of_union h
   · obtain rfl | hs := s.eq_empty_or_nonempty
     · aesop
     · exact .inl ⟨h, hs⟩
@@ -339,8 +339,8 @@ theorem BddAbove.inter_of_right (h : BddAbove t) : BddAbove (s ∩ t) :=
   h.mono inter_subset_right
 
 /-- In a directed order, the union of bounded above sets is bounded above. -/
-@[to_dual /-- In a codirected order, the union of bounded below sets is bounded below. -/]
-theorem BddAbove.union [IsDirectedOrder α] {s t : Set α} :
+@[to_dual /-- In a precodirected order, the union of bounded below sets is bounded below. -/]
+theorem BddAbove.union [IsPredirectedOrder α] {s t : Set α} :
     BddAbove s → BddAbove t → BddAbove (s ∪ t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   obtain ⟨c, hca, hcb⟩ := exists_ge_ge a b
@@ -349,8 +349,9 @@ theorem BddAbove.union [IsDirectedOrder α] {s t : Set α} :
 
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
 @[to_dual
-/-- In a codirected order, the union of two sets is bounded below if and only if both sets are. -/]
-theorem bddAbove_union [IsDirectedOrder α] {s t : Set α} :
+/-- In a precodirected order, the union of two sets is bounded below if and only if both sets
+are. -/]
+theorem bddAbove_union [IsPredirectedOrder α] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
   ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
@@ -671,12 +672,12 @@ theorem nonempty_of_not_bddAbove [ha : Nonempty α] (h : ¬BddAbove s) : s.Nonem
 
 /-- Adding a point to a set preserves its boundedness above. -/
 @[to_dual (attr := simp) /-- Adding a point to a set preserves its boundedness below. -/]
-theorem bddAbove_insert [IsDirectedOrder α] {s : Set α} {a : α} :
+theorem bddAbove_insert [IsPredirectedOrder α] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
   simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 @[to_dual]
-protected theorem BddAbove.insert [IsDirectedOrder α] {s : Set α} (a : α) :
+protected theorem BddAbove.insert [IsPredirectedOrder α] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
   bddAbove_insert.2
 
@@ -739,21 +740,21 @@ section Minimal
 
 variable [Preorder α] {s : Set α} {a b : α}
 
-theorem DirectedOn.le_of_minimal (h : DirectedOn (fun x y ↦ y ≤ x) s) (hMin : Minimal (· ∈ s) a)
-    (hb : b ∈ s) : a ≤ b := by
+theorem PredirectedOn.le_of_minimal (h : PredirectedOn (fun x y ↦ y ≤ x) s)
+    (hMin : Minimal (· ∈ s) a) (hb : b ∈ s) : a ≤ b := by
   obtain ⟨z, hz, hza, hzb⟩ := h a hMin.1 b hb
   exact (hMin.2 hz hza).trans hzb
 
-theorem DirectedOn.le_of_maximal (h : DirectedOn (· ≤ ·) s) (hMax : Maximal (· ∈ s) a)
+theorem PredirectedOn.le_of_maximal (h : PredirectedOn (· ≤ ·) s) (hMax : Maximal (· ∈ s) a)
     (hb : b ∈ s) : b ≤ a := by
   obtain ⟨z, hz, haz, hbz⟩ := h a hMax.1 b hb
   exact hbz.trans (hMax.2 hz haz)
 
-theorem DirectedOn.minimal_iff_isLeast (h : DirectedOn (fun x y ↦ y ≤ x) s) :
+theorem PredirectedOn.minimal_iff_isLeast (h : PredirectedOn (fun x y ↦ y ≤ x) s) :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   ⟨fun hMin ↦ ⟨hMin.1, fun _ hy ↦ h.le_of_minimal hMin hy⟩, fun h ↦ ⟨h.1, fun _ hy _ ↦ h.2 hy⟩⟩
 
-theorem DirectedOn.maximal_iff_isGreatest (h : DirectedOn (· ≤ ·) s) :
+theorem PredirectedOn.maximal_iff_isGreatest (h : PredirectedOn (· ≤ ·) s) :
     Maximal (· ∈ s) a ↔ IsGreatest s a :=
   minimal_iff_isLeast (α := αᵒᵈ) h
 
@@ -761,11 +762,11 @@ end Minimal
 
 theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
-  (Std.Total.directedOn s).minimal_iff_isLeast
+  (Std.Total.predirectedOn s).minimal_iff_isLeast
 
 theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
     Maximal (· ∈ s) a ↔ IsGreatest s a :=
-  (Std.Total.directedOn s).maximal_iff_isGreatest
+  (Std.Total.predirectedOn s).maximal_iff_isGreatest
 
 /-!
 ### (In)equalities with the least upper bound and the greatest lower bound

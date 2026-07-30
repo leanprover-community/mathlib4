@@ -236,7 +236,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
         (OrderEmbedding.subtype _)⟩
   rcases (F a₁).prop with ⟨f, hf, ha₁⟩
   rcases (F a₂).prop with ⟨g, hg, ha₂⟩
-  rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
+  rcases our_ideal.predirected _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 
 /-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. This is
@@ -254,7 +254,7 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
   exact ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
       rcases (F a).prop with ⟨f, hf, ha⟩
       rcases (G b).prop with ⟨g, hg, hb⟩
-      rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
+      rcases our_ideal.predirected _ hf _ hg with ⟨m, _, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
 
 end Order

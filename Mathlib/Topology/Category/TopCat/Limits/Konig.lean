@@ -21,7 +21,7 @@ We give this in a more general form, which is that cofiltered limits
 of nonempty compact Hausdorff spaces are nonempty
 (`nonempty_limitCone_of_compact_t2_cofiltered_system`).
 
-This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirectedOrder J]` and
+This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsPredirectedOrder J]` and
 `F : Jᵒᵖ ⥤ TopCat`.
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
@@ -83,8 +83,8 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-theorem partialSections.directed :
-    Directed GE.ge fun G : FiniteDiagram J => partialSections F G.2 := by
+theorem partialSections.predirected :
+    Predirected GE.ge fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
   intro A B
   let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
@@ -128,8 +128,9 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
     Nonempty (TopCat.limitCone F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed (fun G => partialSections F _)
-      (partialSections.directed F) (fun G => partialSections.nonempty F _)
+    IsCompact.nonempty_iInter_of_predirected_nonempty_isCompact_isClosed
+      (fun G => partialSections F _)
+      (partialSections.predirected F) (fun G => partialSections.nonempty F _)
       (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
       partialSections.closed F _
   use u

@@ -161,14 +161,14 @@ theorem mem_filter_of_mem (B : FilterBasis α) {U : Set α} : U ∈ B → U ∈ 
   ⟨U, U_in, Subset.refl _⟩
 
 theorem eq_iInf_principal (B : FilterBasis α) : B.filter = ⨅ s : B.sets, 𝓟 s := by
-  have : Directed (· ≥ ·) fun s : B.sets => 𝓟 (s : Set α) := by
+  have : Predirected (· ≥ ·) fun s : B.sets => 𝓟 (s : Set α) := by
     rintro ⟨U, U_in⟩ ⟨V, V_in⟩
     rcases B.inter_sets U_in V_in with ⟨W, W_in, W_sub⟩
     use ⟨W, W_in⟩
     simp only [le_principal_iff, mem_principal]
     exact subset_inter_iff.mp W_sub
   ext U
-  simp [mem_filter_iff, mem_iInf_of_directed this]
+  simp [mem_filter_iff, mem_iInf_of_predirected this]
 
 protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := by
   apply le_antisymm
@@ -407,38 +407,38 @@ theorem HasBasis.inf {ι ι' : Type*} {p : ι → Prop} {s : ι → Set α} {p' 
     (l ⊓ l').HasBasis (fun i : ι × ι' => p i.1 ∧ p' i.2) fun i => s i.1 ∩ s' i.2 :=
   (hl.inf' hl').comp_equiv Equiv.pprodEquivProd.symm
 
-theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Sort _} [Nonempty ι] {l : ι → Filter α}
+theorem hasBasis_iInf_of_predirected' {ι : Type*} {ι' : ι → Sort _} [Nonempty ι] {l : ι → Filter α}
     (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
-    (h : Directed (· ≥ ·) l) :
+    (h : Predirected (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : Σ i, ι' i => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
-  rw [mem_iInf_of_directed h, Sigma.exists]
+  rw [mem_iInf_of_predirected h, Sigma.exists]
   exact exists_congr fun i => (hl i).mem_iff
 
-theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Sort _} [Nonempty ι] {l : ι → Filter α}
+theorem hasBasis_iInf_of_predirected {ι : Type*} {ι' : Sort _} [Nonempty ι] {l : ι → Filter α}
     (s : ι → ι' → Set α) (p : ι → ι' → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
-    (h : Directed (· ≥ ·) l) :
+    (h : Predirected (· ≥ ·) l) :
     (⨅ i, l i).HasBasis (fun ii' : ι × ι' => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
-  rw [mem_iInf_of_directed h, Prod.exists]
+  rw [mem_iInf_of_predirected h, Prod.exists]
   exact exists_congr fun i => (hl i).mem_iff
 
-theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Set ι}
+theorem hasBasis_biInf_of_predirected' {ι : Type*} {ι' : ι → Sort _} {dom : Set ι}
     (hdom : dom.Nonempty) {l : ι → Filter α} (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop)
-    (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
+    (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : PredirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : Σ i, ι' i => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
-  rw [mem_biInf_of_directed h hdom, Sigma.exists]
+  rw [mem_biInf_of_predirected h hdom, Sigma.exists]
   grind +splitIndPred
 
-theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (hdom : dom.Nonempty)
+theorem hasBasis_biInf_of_predirected {ι : Type*} {ι' : Sort _} {dom : Set ι} (hdom : dom.Nonempty)
     {l : ι → Filter α} (s : ι → ι' → Set α) (p : ι → ι' → Prop)
-    (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
+    (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : PredirectedOn (l ⁻¹'o GE.ge) dom) :
     (⨅ i ∈ dom, l i).HasBasis (fun ii' : ι × ι' => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
-  rw [mem_biInf_of_directed h hdom, Prod.exists]
+  rw [mem_biInf_of_predirected h hdom, Prod.exists]
   grind +splitIndPred
 
 lemma hasBasis_top :
@@ -573,16 +573,16 @@ theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s 
 theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s i) := by
   simpa only [iInf_true] using h.eq_biInf
 
-theorem hasBasis_iInf_principal {s : ι → Set α} (h : Directed (· ≥ ·) s) [Nonempty ι] :
+theorem hasBasis_iInf_principal {s : ι → Set α} (h : Predirected (· ≥ ·) s) [Nonempty ι] :
     (⨅ i, 𝓟 (s i)).HasBasis (fun _ => True) s :=
   ⟨fun t => by
-    simpa only [true_and] using! mem_iInf_of_directed (h.mono_comp _ monotone_principal.dual) t⟩
+    simpa only [true_and] using! mem_iInf_of_predirected (h.mono_comp _ monotone_principal.dual) t⟩
 
-theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedOn (s ⁻¹'o (· ≥ ·)) S)
+theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : PredirectedOn (s ⁻¹'o (· ≥ ·)) S)
     (ne : S.Nonempty) : (⨅ i ∈ S, 𝓟 (s i)).HasBasis (fun i => i ∈ S) s :=
   ⟨fun t => by
-    refine mem_biInf_of_directed ?_ ne
-    rw [directedOn_iff_directed, ← directed_comp] at h ⊢
+    refine mem_biInf_of_predirected ?_ ne
+    rw [predirectedOn_iff_predirected, ← predirected_comp] at h ⊢
     refine h.mono_comp _ ?_
     exact fun _ _ => principal_mono.2⟩
 
@@ -646,9 +646,9 @@ protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
   ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
-lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsPredirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
-  ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
+  ⟨hasBasis_iInf_principal hs.predirected_ge, hs⟩
 
 end SameType
 

@@ -104,7 +104,7 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
 
 section Indexed
 
-theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : Directed (· ⊆ ·) s)
+theorem linearIndepOn_iUnion_of_predirected {η : Type*} {s : η → Set ι} (hs : Predirected (· ⊆ ·) s)
     (h : ∀ i, LinearIndepOn R v (s i)) : LinearIndepOn R v (⋃ i, s i) := by
   by_cases hη : Nonempty η
   · refine linearIndepOn_of_finite (⋃ i, s i) fun t ht ft => ?_
@@ -115,16 +115,17 @@ theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : 
     rintro _ ⟨_, ⟨i, _⟩, _⟩
     exact hη ⟨i⟩
 
-theorem linearIndepOn_sUnion_of_directed {s : Set (Set ι)} (hs : DirectedOn (· ⊆ ·) s)
+theorem linearIndepOn_sUnion_of_predirected {s : Set (Set ι)} (hs : PredirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndepOn R v a) : LinearIndepOn R v (⋃₀ s) := by
   rw [sUnion_eq_iUnion]
-  exact linearIndepOn_iUnion_of_directed hs.directed_val (by simpa using h)
+  exact linearIndepOn_iUnion_of_predirected hs.predirected_val (by simpa using h)
 
-theorem linearIndepOn_biUnion_of_directed {η} {s : Set η} {t : η → Set ι}
-    (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndepOn R v (t a)) :
+theorem linearIndepOn_biUnion_of_predirected {η} {s : Set η} {t : η → Set ι}
+    (hs : PredirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndepOn R v (t a)) :
     LinearIndepOn R v (⋃ a ∈ s, t a) := by
   rw [biUnion_eq_iUnion]
-  exact linearIndepOn_iUnion_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
+  exact linearIndepOn_iUnion_of_predirected (predirected_comp.2 <| hs.predirected_val)
+    (by simpa using h)
 
 end Indexed
 
@@ -209,7 +210,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
-      f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
+      f.support.coe_union _ ▸ hc.predirectedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
         simpa using! And.intro hfsupp hgsupp
     exact linearIndepOn_iffₛ.mp I.2 f (subset_union_left.trans hI)
       g (subset_union_right.trans hI) hsum
@@ -393,8 +394,8 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
     LinearIndepOn R id (⋃ i, f i) := by
   classical
   rw [iUnion_eq_iUnion_finset f]
-  apply linearIndepOn_iUnion_of_directed
-  · apply directed_of_isDirected_le
+  apply linearIndepOn_iUnion_of_predirected
+  · apply predirected_of_isPredirected_le
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
   induction t using Finset.induction_on with
@@ -762,7 +763,7 @@ theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s)
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndepOn K v b} ?_ _ ⟨hst, hs⟩
     · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
       · exact sUnion_subset fun x xc => (hc xc).1
-      · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
+      · exact linearIndepOn_sUnion_of_predirected cc.predirectedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem
   refine ⟨b, h.prop.1, sb, fun _ ⟨x, hx, hvx⟩ => by_contra fun hn ↦ hn ?_, h.prop.2⟩
   subst hvx

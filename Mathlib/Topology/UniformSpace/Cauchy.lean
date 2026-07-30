@@ -693,7 +693,7 @@ protected theorem Filter.totallyBounded_iff_filter {g : Filter α} :
     have hb : Antitone fun t : Finset α ↦ g ⊓ 𝓟 (d.preimage t)ᶜ :=
       fun s t (h : s ⊆ t) => by beta_reduce; gcongr
     have : Filter.NeBot f :=
-      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge).mpr fun t =>
+      (Filter.iInf_neBot_iff_of_predirected' <| hb.predirected_ge).mpr fun t =>
         Filter.notMem_iff_inf_principal_compl.mp <| hd_cover t t.finite_toSet
     have : f ≤ g := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩

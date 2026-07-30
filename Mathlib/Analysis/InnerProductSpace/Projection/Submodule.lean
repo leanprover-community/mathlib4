@@ -134,7 +134,8 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
     rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe, Metric.mem_closure_iff] at y_mem
     exact y_mem ε hε
   rw [dist_eq_norm] at hay
-  obtain ⟨I, hI⟩ : ∃ I, a ∈ U I := by rwa [Submodule.mem_iSup_of_directed _ hU.directed_le] at ha
+  obtain ⟨I, hI⟩ : ∃ I, a ∈ U I := by
+    rwa [Submodule.mem_iSup_of_predirected _ hU.predirected_le] at ha
   refine ⟨I, fun i (hi : I ≤ i) => ?_⟩
   rw [norm_sub_rev, starProjection_minimal]
   refine lt_of_le_of_lt ?_ hay

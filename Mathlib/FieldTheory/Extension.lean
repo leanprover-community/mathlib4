@@ -111,14 +111,14 @@ variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 noncomputable def union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
-  have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
+  have dir : Predirected (· ≤ ·) t := hc.predirectedOn.predirected_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
     AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
       rw [AlgHom.comp_apply, ← inclusion]
       dsimp only [coe_type_toSubalgebra]
       rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
     _ le_rfl).comp
-      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
+      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_predirected dir)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
@@ -144,7 +144,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
   have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = π.1.1 ⊔ adjoin F S := by
     by_contra!; choose π hπ using this
     have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
-    have ⟨π₀, hπ₀⟩ := hc.directed.finite_le π
+    have ⟨π₀, hπ₀⟩ := hc.predirected.finite_le π
     have ⟨θ, hθπ, hθ⟩ := hext _ π₀.2 S
     rw [← adjoin_le_iff] at hθ
     let θ₀ := θ.emb.comp (inclusion hθ)

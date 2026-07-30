@@ -211,7 +211,7 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
-  · exact directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union
+  · exact predirectedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : ContinuousMultilinearMap 𝕜 E F)).HasBasis

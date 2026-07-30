@@ -84,7 +84,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
   haveI : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
-  refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => ?_)
+  refine IsCompact.nonempty_iInter_of_predirected_nonempty_isCompact_isClosed _ (fun t u => ?_)
     (fun t => (hFS t.mem).1)
     (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1

@@ -195,7 +195,7 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
   rw [← isUniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
   exact .comap _ <| UniformOnFun.hasBasis_uniformity_of_basis _ _ {K | IsCompact K}
-    ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
+    ⟨∅, isCompact_empty⟩ (predirectedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 
 theorem hasBasis_compactConvergenceUniformity :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × Set (β × β) => IsCompact p.1 ∧ p.2 ∈ 𝓤 β) fun p =>
@@ -217,7 +217,7 @@ theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Typ
     HasBasis (𝓤 C(α, β)) (fun i : ℕ × ι ↦ p i.2) fun i ↦
       {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} :=
   (UniformOnFun.hasBasis_uniformity_of_covering_of_basis {K | IsCompact K} K.isCompact
-    (Monotone.directed_le K.subset) (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
+    (Monotone.predirected_le K.subset) (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
 
 theorem _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
     {V : ℕ → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasAntitoneBasis V) :

@@ -83,7 +83,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
     simp only [T, Set.sUnion_subset_iff, and_imp, forall_exists_index, mem_sUnion,
       Set.mem_setOf_eq]
     refine
-      ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
+      ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.predirectedOn).2 fun u hu => (UT hu).2.1,
         fun a hat b u uU hbu hab => ?_⟩
     obtain ⟨c, cu, ac, hc⟩ : ∃ c, c ∈ u ∧ (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c :=
       (UT uU).2.2 a hat b hbu hab

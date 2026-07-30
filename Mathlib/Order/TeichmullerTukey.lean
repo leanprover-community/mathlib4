@@ -52,7 +52,7 @@ theorem IsOfFiniteCharacter.exists_maximal {F} (hF : IsOfFiniteCharacter F) {x :
   refine (hF (sUnion c)).mpr fun s sc sfin ↦ ?_
   /- Use the finite character property and the fact that any finite subset of the union is also a
   subset of some element of the chain. -/
-  obtain ⟨t, tc, st⟩ := cch.directedOn.exists_mem_subset_of_finite_of_subset_sUnion cne sfin sc
+  obtain ⟨t, tc, st⟩ := cch.predirectedOn.exists_mem_subset_of_finite_of_subset_sUnion cne sfin sc
   exact (hF t).mp (cF tc) s st sfin
 
 end Order

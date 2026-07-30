@@ -14,8 +14,9 @@ In this file we prove various facts about membership in a subsemigroup.
 The intent is to mimic `GroupTheory/Submonoid/Membership`, but currently this file is mostly a
 stub and only provides rudimentary support.
 
-* `mem_iSup_of_directed`, `coe_iSup_of_directed`, `mem_sSup_of_directed_on`,
-  `coe_sSup_of_directed_on`: the supremum of a directed collection of subsemigroup is their union.
+* `mem_iSup_of_predirected`, `coe_iSup_of_predirected`, `mem_sSup_of_predirected_on`,
+  `coe_sSup_of_predirected_on`: the supremum of a directed collection of subsemigroup is their
+  union.
 
 ## TODO
 
@@ -47,7 +48,8 @@ namespace Subsemigroup
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
 
 @[to_additive]
-lemma mem_iSup_of_directed {ι : Sort*} {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
+lemma mem_iSup_of_predirected {ι : Sort*} {S : ι → Subsemigroup M} (hS : Predirected (· ≤ ·) S)
+    {x : M} :
     x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
@@ -59,13 +61,13 @@ lemma mem_iSup_of_directed {ι : Sort*} {S : ι → Subsemigroup M} (hS : Direct
   exact ⟨k, mul_mem (hik hi) (hjk hj)⟩
 
 @[to_additive]
-theorem mem_biSup_of_directedOn {ι : Type*} {p : ι → Prop} {S : ι → Subsemigroup M}
-    (hS : DirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
+theorem mem_biSup_of_predirectedOn {ι : Type*} {p : ι → Prop} {S : ι → Subsemigroup M}
+    (hS : PredirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
     x ∈ ⨆ i, ⨆ (_h : p i), S i ↔ ∃ i, p i ∧ x ∈ S i := by
-  rw [iSup_subtype', mem_iSup_of_directed]
+  rw [iSup_subtype', mem_iSup_of_predirected]
   · simp
-  rw [← Function.comp_def, directed_comp]
-  exact hS.directed_val
+  rw [← Function.comp_def, predirected_comp]
+  exact hS.predirected_val
 
 @[to_additive (attr := simp)]
 theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
@@ -75,17 +77,17 @@ theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
   · simpa [h] using! id
 
 @[to_additive]
-theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_predirected {S : ι → Subsemigroup M} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+  Set.ext fun x => by simp [mem_iSup_of_predirected hS]
 
 /-- The supremum of a directed family of commutative subsemigroups is commutative. -/
 @[to_additive]
 theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
-    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Predirected (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subsemigroup M) := by
   refine .of_setLike_mul_comm ?_
-  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_predirected dir, Set.mem_iUnion,
     SetLike.mem_coe, forall_exists_index]
   intro a i ha b j hb
   obtain ⟨k, hik, hjk⟩ := dir i j
@@ -93,20 +95,21 @@ theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
 
 /-- The supremum of a directed family of commutative subsemigroups is commutative. -/
 @[to_additive]
-instance instIsMulCommutative_iSup {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup {ι : Type*} [Preorder ι] [IsPredirectedOrder ι]
     (S : ι →o Subsemigroup M) [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : Subsemigroup M) :=
-  isMulCommutative_iSup S.monotone.directed_le
+  isMulCommutative_iSup S.monotone.predirected_le
 
 @[to_additive]
-theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
+theorem mem_sSup_of_predirected_on {S : Set (Subsemigroup M)} (hS : PredirectedOn (· ≤ ·) S)
+    {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected hS.predirected_val, SetCoe.exists, exists_prop]
 
 @[to_additive]
-theorem coe_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) :
+theorem coe_sSup_of_predirected_on {S : Set (Subsemigroup M)} (hS : PredirectedOn (· ≤ ·) S) :
     (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directed_on hS]
+  Set.ext fun x => by simp [mem_sSup_of_predirected_on hS]
 
 @[to_additive]
 theorem mem_sup_left {S T : Subsemigroup M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by

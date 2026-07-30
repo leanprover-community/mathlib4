@@ -26,14 +26,14 @@ namespace IsChain
 include hc
 
 lemma pairwise_iUnion₂ : (⋃ s ∈ c, s).Pairwise r ↔ ∀ s ∈ c, s.Pairwise r :=
-  pairwise_iUnion₂_iff hc.directedOn
+  pairwise_iUnion₂_iff hc.predirectedOn
 
 lemma pairwiseDisjoint_iUnion₂ [PartialOrder β] [OrderBot β] (f : α → β) :
     (⋃ s ∈ c, s).PairwiseDisjoint f ↔ ∀ s ∈ c, s.PairwiseDisjoint f :=
   hc.pairwise_iUnion₂
 
 lemma pairwise_sUnion : (⋃₀ c).Pairwise r ↔ ∀ s ∈ c, s.Pairwise r :=
-  Set.pairwise_sUnion hc.directedOn
+  Set.pairwise_sUnion hc.predirectedOn
 
 lemma pairwiseDisjoint_sUnion [PartialOrder β] [OrderBot β] (f : α → β) :
     (⋃₀ c).PairwiseDisjoint f ↔ ∀ s ∈ c, s.PairwiseDisjoint f :=

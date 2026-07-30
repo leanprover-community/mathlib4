@@ -180,7 +180,7 @@ theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Fil
 
 /-- A point `a` is a cluster point of the sequence `x` if and only if `a` belongs to the closure
 of every tail `x '' {n | i ≤ n}`. -/
-theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsPredirectedOrder ι]
     [Nonempty ι] {x : ι → X} {a : X} :
     MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
   simp [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure]

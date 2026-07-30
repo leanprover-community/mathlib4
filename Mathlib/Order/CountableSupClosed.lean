@@ -127,8 +127,8 @@ protected lemma CountableSupClosed.iInter [LE α]
   .sInter <| forall_mem_range.2 hf
 
 @[to_dual]
-protected lemma CountableSupClosed.directedOn [SemilatticeSup α] (hs : CountableSupClosed s) :
-    DirectedOn (· ≤ ·) s := hs.supClosed.directedOn
+protected lemma CountableSupClosed.predirectedOn [SemilatticeSup α] (hs : CountableSupClosed s) :
+    PredirectedOn (· ≤ ·) s := hs.supClosed.predirectedOn
 
 @[to_dual]
 protected lemma CountableSupClosed.prod [Preorder α] [Preorder β]

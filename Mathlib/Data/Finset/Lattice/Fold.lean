@@ -221,9 +221,9 @@ theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → 
     simp only [sup_cons, forall_mem_cons] at hs ⊢
     exact hp _ hs.1 _ (ih hs.2)
 
-@[to_dual le_inf_of_directed_le]
-theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s : Set α)
-    (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
+@[to_dual le_inf_of_predirected_le]
+theorem sup_le_of_le_predirected {α : Type*} [SemilatticeSup α] [OrderBot α] (s : Set α)
+    (hs : s.Nonempty) (hdir : PredirectedOn (· ≤ ·) s) (t : Finset α) :
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
     induction t using Finset.induction_on with

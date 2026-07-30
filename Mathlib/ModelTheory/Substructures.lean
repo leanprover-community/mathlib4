@@ -385,8 +385,8 @@ theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
     ⨆ i, S i = closure L (⋃ i, (S i : Set M)) := by simp_rw [closure_iUnion, closure_eq]
 
 -- This proof uses the fact that `Substructure.closure` is finitary.
-theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
-    (hS : Directed (· ≤ ·) S) {x : M} :
+theorem mem_iSup_of_predirected {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
+    (hS : Predirected (· ≤ ·) S) {x : M} :
     x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
@@ -397,11 +397,11 @@ theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Subs
   refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
 
 -- This proof uses the fact that `Substructure.closure` is finitary.
-theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
-    (hS : DirectedOn (· ≤ ·) S) {x : M} :
+theorem mem_sSup_of_predirectedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected hS.predirected_val, Subtype.exists, exists_prop]
 
 variable (L) (M)
 

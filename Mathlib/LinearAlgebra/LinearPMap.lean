@@ -20,7 +20,7 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their
   domains, and returns the unique partial linear map on `f.domain ⊔ g.domain` that
   extends both `f` and `g`.
-* `sSup` takes a `DirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
+* `sSup` takes a `PredirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
   partial linear map on the `sSup` of their domains that extends all these maps.
 
 Moreover, we define
@@ -578,16 +578,16 @@ theorem supSpanSingleton_apply_mk_of_mem (f : E →ₛₗ.[σ] F) {x : E} (y : F
 end
 
 set_option backward.privateInPublic true in
-private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
+private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : PredirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₛₗ[σ] F, (⟨_, f⟩ : E →ₛₗ.[σ] F) ∈ upperBounds c := by
   rcases c.eq_empty_or_nonempty with rfl | cne
   · simp
-  have hdir : DirectedOn (· ≤ ·) (domain '' c) :=
-    directedOn_image.2 (hc.mono @(domain_mono.monotone))
+  have hdir : PredirectedOn (· ≤ ·) (domain '' c) :=
+    predirectedOn_image.2 (hc.mono @(domain_mono.monotone))
   have P : ∀ x : ↥(sSup (domain '' c)), { p : c // (x : E) ∈ p.val.domain } := by
     rintro x
     apply Classical.indefiniteDescription
-    have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
+    have := (mem_sSup_of_predirected (cne.image _) hdir).1 x.2
     rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
@@ -613,25 +613,25 @@ set_option backward.privateInPublic.warn false in
 /-- For a family of (semi)linear maps with a directed domains such that the one defined on a larger
 domain restricts to the one defined on the smaller domain, this defines the (semi)linear map defined
 on the union of the domains extending all the (semi)linear maps in the family. -/
-protected noncomputable def sSup (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
+protected noncomputable def sSup (c : Set (E →ₛₗ.[σ] F)) (hc : PredirectedOn (· ≤ ·) c) :
     E →ₛₗ.[σ] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
 
-theorem domain_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) :
+theorem domain_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : PredirectedOn (· ≤ ·) c) :
     (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
 
 theorem mem_domain_sSup_iff {c : Set (E →ₛₗ.[σ] F)} (hnonempty : c.Nonempty)
-    (hc : DirectedOn (· ≤ ·) c) {x : E} :
+    (hc : PredirectedOn (· ≤ ·) c) {x : E} :
     x ∈ (LinearPMap.sSup c hc).domain ↔ ∃ f ∈ c, x ∈ f.domain := by
-  rw [domain_sSup, Submodule.mem_sSup_of_directed (hnonempty.image _)
-    (DirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
+  rw [domain_sSup, Submodule.mem_sSup_of_predirected (hnonempty.image _)
+    (PredirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
   simp
 
-protected theorem le_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₛₗ.[σ] F}
+protected theorem le_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : PredirectedOn (· ≤ ·) c) {f : E →ₛₗ.[σ] F}
     (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=
   Classical.choose_spec (sSup_aux c hc) hf
 
-protected theorem sSup_le {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) {g : E →ₛₗ.[σ] F}
+protected theorem sSup_le {c : Set (E →ₛₗ.[σ] F)} (hc : PredirectedOn (· ≤ ·) c) {g : E →ₛₗ.[σ] F}
     (hg : ∀ f ∈ c, f ≤ g) : LinearPMap.sSup c hc ≤ g :=
   le_of_eqLocus_ge <|
     sSup_le fun _ ⟨f, hf, Eq⟩ =>
@@ -639,8 +639,8 @@ protected theorem sSup_le {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· �
         have : f ≤ LinearPMap.sSup c hc ⊓ g := le_inf (LinearPMap.le_sSup _ hf) (hg f hf)
         this.1
 
-protected theorem sSup_apply {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) {l : E →ₛₗ.[σ] F}
-    (hl : l ∈ c) (x : l.domain) :
+protected theorem sSup_apply {c : Set (E →ₛₗ.[σ] F)} (hc : PredirectedOn (· ≤ ·) c)
+    {l : E →ₛₗ.[σ] F} (hl : l ∈ c) (x : l.domain) :
     (LinearPMap.sSup c hc) ⟨x, (LinearPMap.le_sSup hc hl).1 x.2⟩ = l x := by
   symm
   apply (Classical.choose_spec (sSup_aux c hc) hl).2

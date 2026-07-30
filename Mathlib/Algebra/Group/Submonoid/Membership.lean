@@ -21,8 +21,8 @@ public import Mathlib.Algebra.Group.Int.Defs
 
 In this file we prove various facts about membership in a submonoid:
 
-* `mem_iSup_of_directed`, `coe_iSup_of_directed`, `mem_sSup_of_directedOn`,
-  `coe_sSup_of_directedOn`: the supremum of a directed collection of submonoid is their union.
+* `mem_iSup_of_predirected`, `coe_iSup_of_predirected`, `mem_sSup_of_predirectedOn`,
+  `coe_sSup_of_predirectedOn`: the supremum of a directed collection of submonoid is their union.
 * `sup_eq_range`, `mem_sup`: supremum of two submonoids `S`, `T` of a commutative monoid is the set
   of products;
 * `closure_singleton_eq`, `mem_closure_singleton`, `mem_closure_pair`: the multiplicative (resp.,
@@ -54,8 +54,8 @@ namespace Submonoid
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
 
 @[to_additive]
-lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
-    {x : M} : x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
+lemma mem_iSup_of_predirected {ι : Sort*} [Nonempty ι] {S : ι → Submonoid M}
+    (hS : Predirected (· ≤ ·) S) {x : M} : x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
@@ -65,14 +65,14 @@ lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {S : ι → Submonoid M} (
   exact ⟨k, mul_mem (hik hi) (hjk hj)⟩
 
 @[to_additive]
-theorem mem_biSup_of_directedOn {ι : Type*} {p : ι → Prop} (hp : ∃ i, p i) {S : ι → Submonoid M}
-    (hS : DirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
+theorem mem_biSup_of_predirectedOn {ι : Type*} {p : ι → Prop} (hp : ∃ i, p i) {S : ι → Submonoid M}
+    (hS : PredirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
     x ∈ ⨆ i, ⨆ (_h : p i), S i ↔ ∃ i, p i ∧ x ∈ S i := by
   rw [← nonempty_subtype] at hp
-  rw [iSup_subtype', mem_iSup_of_directed]
+  rw [iSup_subtype', mem_iSup_of_predirected]
   · simp
-  rw [← Function.comp_def, directed_comp]
-  exact hS.directed_val
+  rw [← Function.comp_def, predirected_comp]
+  exact hS.predirected_val
 
 @[to_additive (attr := simp)]
 theorem mem_iSup_prop {p : Prop} {S : p → Submonoid M} {x : M} :
@@ -81,27 +81,28 @@ theorem mem_iSup_prop {p : Prop} {S : p → Submonoid M} {x : M} :
   simp +contextual [h]
 
 @[to_additive]
-theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_predirected {ι} [Nonempty ι] {S : ι → Submonoid M}
+    (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, S i :=
-  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
+  Set.ext fun x ↦ by simp [mem_iSup_of_predirected hS]
 
 @[to_additive]
-theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
-    (hS : DirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+theorem mem_sSup_of_predirectedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) {x : M} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val]
+  simp [sSup_eq_iSup', mem_iSup_of_predirected hS.predirected_val]
 
 @[to_additive]
-theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
-    (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+theorem coe_sSup_of_predirectedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) : (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
+  Set.ext fun x => by simp [mem_sSup_of_predirectedOn Sne hS]
 
 @[to_additive]
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
     {S : ι → Submonoid M} [hS : ∀ i, IsMulCommutative (S i)]
-    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Submonoid M) := by
+    (dir : Predirected (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Submonoid M) := by
   refine .of_setLike_mul_comm ?_
-  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_predirected dir, Set.mem_iUnion,
     SetLike.mem_coe, forall_exists_index]
   intro a i ha b j hb
   obtain ⟨k, hik, hjk⟩ := dir i j
@@ -109,9 +110,9 @@ theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
 
 @[to_additive]
 instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
-    [IsDirectedOrder ι] {S : ι →o Submonoid M} [hS : ∀ i, IsMulCommutative (S i)] :
+    [IsPredirectedOrder ι] {S : ι →o Submonoid M} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : Submonoid M) :=
-  Submonoid.isMulCommutative_iSup S.monotone.directed_le
+  Submonoid.isMulCommutative_iSup S.monotone.predirected_le
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by

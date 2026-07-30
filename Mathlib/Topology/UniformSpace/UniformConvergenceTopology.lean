@@ -585,7 +585,7 @@ family `UniformOnFun.gen 𝔖 S V` for `S ∈ 𝔖` and `V ∈ 𝓑` is a filter
 `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] β)`.
 We will show in `has_basis_uniformity_of_basis` that, if `𝓑` is a basis for `𝓤 β`, then the
 corresponding filter is the uniformity of `α →ᵤ[𝔖] β`. -/
-protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
+protected theorem isBasis_gen (𝔖 : Set (Set α)) (h : 𝔖.Nonempty) (h' : PredirectedOn (· ⊆ ·) 𝔖)
     (𝓑 : FilterBasis <| β × β) :
     IsBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓑) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
@@ -630,9 +630,9 @@ protected theorem hasBasis_uniformity_of_basis_aux₁ {p : ι → Prop} {s : ι 
   simp_rw [UniformOnFun.gen_eq_preimage_restrict, uniformity_comap]
   exact (UniformFun.hasBasis_uniformity_of_basis S β hb).comap _
 
-protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
+protected theorem hasBasis_uniformity_of_basis_aux₂ (h : PredirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
-    DirectedOn
+    PredirectedOn
       ((fun s : Set α => (UniformFun.uniformSpace s β).comap (s.restrict : (α →ᵤ β) → s →ᵤ β)) ⁻¹'o
         GE.ge)
       𝔖 :=
@@ -644,19 +644,19 @@ protected theorem hasBasis_uniformity_of_basis_aux₂ (h : DirectedOn (· ⊆ ·
 /-- If `𝔖 : Set (Set α)` is nonempty and directed and `𝓑` is a filter basis of `𝓤 β`, then the
 uniformity of `α →ᵤ[𝔖] β` admits the family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and
 `V ∈ 𝓑` as a filter basis. -/
-protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖)
+protected theorem hasBasis_uniformity_of_basis (h : 𝔖.Nonempty) (h' : PredirectedOn (· ⊆ ·) 𝔖)
     {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       UniformOnFun.gen 𝔖 Si.1 (s Si.2) := by
   simp only [iInf_uniformity]
   exact
-    hasBasis_biInf_of_directed h (fun S => UniformOnFun.gen 𝔖 S ∘ s) _
+    hasBasis_biInf_of_predirected h (fun S => UniformOnFun.gen 𝔖 S ∘ s) _
       (fun S _hS => UniformOnFun.hasBasis_uniformity_of_basis_aux₁ α β 𝔖 hb S)
       (UniformOnFun.hasBasis_uniformity_of_basis_aux₂ α β 𝔖 h' hb)
 
 /-- If `𝔖 : Set (Set α)` is nonempty and directed, then the uniformity of `α →ᵤ[𝔖] β` admits the
 family `{(f, g) | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
-protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
+protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : PredirectedOn (· ⊆ ·) 𝔖) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
   UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 h h' (𝓤 β).basis_sets
@@ -670,11 +670,11 @@ Let `V` bounded by `p` be a basis of entourages of `β`.
 Then `UniformOnFun.gen 𝔖 (t i) (V j)` bounded by `p j` is a basis of entourages of `α →ᵤ[𝔖] β`. -/
 protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Nonempty ι]
     {t : ι → Set α} {p : ι' → Prop} {V : ι' → Set (β × β)} (ht : ∀ i, t i ∈ 𝔖)
-    (hdir : Directed (· ⊆ ·) t) (hex : ∀ s ∈ 𝔖, ∃ i, s ⊆ t i) (hb : HasBasis (𝓤 β) p V) :
+    (hdir : Predirected (· ⊆ ·) t) (hex : ∀ s ∈ 𝔖, ∃ i, s ⊆ t i) (hb : HasBasis (𝓤 β) p V) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun i : ι × ι' ↦ p i.2) fun i ↦
       UniformOnFun.gen 𝔖 (t i.1) (V i.2) := by
   have hne : 𝔖.Nonempty := (range_nonempty t).mono (range_subset_iff.2 ht)
-  have hd : DirectedOn (· ⊆ ·) 𝔖 := fun s₁ hs₁ s₂ hs₂ ↦ by
+  have hd : PredirectedOn (· ⊆ ·) 𝔖 := fun s₁ hs₁ s₂ hs₂ ↦ by
     rcases hex s₁ hs₁, hex s₂ hs₂ with ⟨⟨i₁, his₁⟩, i₂, his₂⟩
     rcases hdir i₁ i₂ with ⟨i, hi₁, hi₂⟩
     exact ⟨t i, ht _, his₁.trans hi₁, his₂.trans hi₂⟩
@@ -687,16 +687,16 @@ protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Non
 such that each `s ∈ 𝔖` is included in some `t n`
 and `V n` is an antitone basis of entourages of `β`,
 then `UniformOnFun.gen 𝔖 (t n) (V n)` is an antitone basis of entourages of `α →ᵤ[𝔖] β`. -/
-protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
+protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsPredirectedOrder ι]
     {t : ι → Set α} {V : ι → Set (β × β)}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n)
     (hb : HasAntitoneBasis (𝓤 β) V) :
     (𝓤 (α →ᵤ[𝔖] β)).HasAntitoneBasis fun n ↦ UniformOnFun.gen 𝔖 (t n) (V n) := by
   have := hb.nonempty
   refine ⟨(UniformOnFun.hasBasis_uniformity_of_covering_of_basis 𝔖
-    ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
+    ht hmono.predirected_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
   · rintro ⟨k, l⟩ -
-    rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
+    rcases predirected_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
     exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
   · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
 
@@ -712,7 +712,7 @@ variable (α β)
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓑` as a filter basis, for any basis
 `𝓑` of `𝓤 β`. -/
 protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty)
-    (h' : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
+    (h' : PredirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {s : ι → Set (β × β)} (hb : HasBasis (𝓤 β) p s) :
     (𝓝 f).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 Si.1 (s Si.2) } :=
   letI : UniformSpace (α → β) := UniformOnFun.uniformSpace α β 𝔖
@@ -720,7 +720,7 @@ protected theorem hasBasis_nhds_of_basis (f : α →ᵤ[𝔖] β) (h : 𝔖.None
 
 /-- For `f : α →ᵤ[𝔖] β`, where `𝔖 : Set (Set α)` is nonempty and directed, `𝓝 f` admits the
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓤 β` as a filter basis. -/
-protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h' : DirectedOn (· ⊆ ·) 𝔖) :
+protected theorem hasBasis_nhds (f : α →ᵤ[𝔖] β) (h : 𝔖.Nonempty) (h' : PredirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 f).HasBasis (fun SV : Set α × Set (β × β) => SV.1 ∈ 𝔖 ∧ SV.2 ∈ 𝓤 β) fun SV =>
       { g | (g, f) ∈ UniformOnFun.gen 𝔖 SV.1 SV.2 } :=
   UniformOnFun.hasBasis_nhds_of_basis α β 𝔖 f h h' (Filter.basis_sets _)
@@ -739,7 +739,7 @@ theorem isUniformEmbedding_toFun_finite :
   simp_rw [Pi.uniformity, comap_iInf, comap_comap]
   refine HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
     (UniformOnFun.hasBasis_uniformity α β _ ⟨∅, finite_empty⟩
-      (directedOn_of_sup_mem fun _ _ ↦ .union))
+      (predirectedOn_of_sup_mem fun _ _ ↦ .union))
     (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, ⋂ x ∈ S, U x⟩, ⟨⟨hS, biInter_mem hS |>.mpr hU⟩,
       fun f hf ↦ mem_iInter₂.mpr fun x hx ↦ mem_iInter₂.mp (hf x hx) x hx⟩⟩)
     (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, fun _ ↦ U⟩, ⟨hS, fun _ _ ↦ hU⟩, fun f hf x hx ↦

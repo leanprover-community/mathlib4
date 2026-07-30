@@ -704,20 +704,20 @@ end Map
 theorem map_iInf_le {f : ι → Filter α} {m : α → β} : map m (iInf f) ≤ ⨅ i, map m (f i) :=
   le_iInf fun _ => map_mono <| iInf_le _ _
 
-theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· ≥ ·) f) [Nonempty ι] :
+theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Predirected (· ≥ ·) f) [Nonempty ι] :
     map m (iInf f) = ⨅ i, map m (f i) :=
   map_iInf_le.antisymm fun s (hs : m ⁻¹' s ∈ iInf f) =>
-    let ⟨i, hi⟩ := (mem_iInf_of_directed hf _).1 hs
+    let ⟨i, hi⟩ := (mem_iInf_of_predirected hf _).1 hs
     have : ⨅ i, map m (f i) ≤ 𝓟 s :=
       iInf_le_of_le i <| by simpa only [le_principal_iff, mem_map]
     Filter.le_principal_iff.1 this
 
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
-    (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
+    (h : PredirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
   haveI := nonempty_subtype.2 ne
   simp only [iInf_subtype']
-  exact map_iInf_eq h.directed_val
+  exact map_iInf_eq h.predirected_val
 
 theorem map_inf_le {f g : Filter α} {m : α → β} : map m (f ⊓ g) ≤ map m f ⊓ map m g :=
   (@map_mono _ _ m).map_inf_le f g

@@ -84,7 +84,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     zorn_subset_nonempty S
       (fun c hcS hc ⟨_, _⟩ =>
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_sUnion fun s hs => (hcS hs).1,
+          ⟨hc.predirectedOn.convex_sUnion fun s hs => (hcS hs).1,
             disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
           fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩

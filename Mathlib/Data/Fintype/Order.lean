@@ -178,18 +178,18 @@ noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool where
 noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
   Fintype.toCompleteAtomicBooleanAlgebra _
 
-/-! ### Directed Orders -/
+/-! ### Predirected Orders -/
 
-section DirectedOrders
+section PredirectedOrders
 
 variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [Nonempty γ] {f : γ → α}
   [Finite β]
 
-theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
+theorem Predirected.finite_set_le (D : Predirected r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
   convert! D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
-lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Directed r f)
+lemma Predirected.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → α} (hf : Predirected r f)
     (g : κ → ι) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
   simpa using
@@ -197,61 +197,62 @@ lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → �
 
 variable [Nonempty α] [Preorder α]
 
-theorem Finite.exists_le [IsDirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
-  directed_id.finite_le _
+theorem Finite.exists_le [IsPredirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+  predirected_id.finite_le _
 
-theorem Finite.exists_ge [IsCodirectedOrder α] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
-  directed_id.finite_le (r := (· ≥ ·)) _
+theorem Finite.exists_ge [IsPrecodirectedOrder α] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+  predirected_id.finite_le (r := (· ≥ ·)) _
 
-theorem Set.Finite.exists_le [IsDirectedOrder α] {s : Set α} (hs : s.Finite) :
+theorem Set.Finite.exists_le [IsPredirectedOrder α] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
-  directed_id.finite_set_le hs
+  predirected_id.finite_set_le hs
 
-theorem Set.Finite.exists_ge [IsCodirectedOrder α] {s : Set α} (hs : s.Finite) :
+theorem Set.Finite.exists_ge [IsPrecodirectedOrder α] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, M ≤ i :=
-  directed_id.finite_set_le (r := (· ≥ ·)) hs
+  predirected_id.finite_set_le (r := (· ≥ ·)) hs
 
 @[simp]
-theorem Finite.bddAbove_range [IsDirectedOrder α] (f : β → α) : BddAbove (Set.range f) := by
+theorem Finite.bddAbove_range [IsPredirectedOrder α] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 @[simp]
-theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow (Set.range f) := by
+theorem Finite.bddBelow_range [IsPrecodirectedOrder α] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
-end DirectedOrders
+end PredirectedOrders
 
 section
 variable {ι : Sort*} {α : Type*} [CompleteLattice α] {s : Set α} {a : α} {f : ι → α}
 
-lemma le_iSup_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
+lemma le_iSup_iff_of_predirected [Nonempty ι] [Finite ι] (hf : Predirected (· ≤ ·) f) :
     a ≤ ⨆ i, f i ↔ ∃ i, a ≤ f i where
   mp ha := by obtain ⟨i, hi⟩ := hf.finite_le id; exact ⟨i, ha.trans <| iSup_le hi⟩
   mpr := by rintro ⟨i, hai⟩; exact le_iSup_of_le i hai
 
-lemma le_sSup_iff_of_directedOn (hs : s.Nonempty) (hs' : s.Finite) (hs'' : DirectedOn (· ≤ ·) s) :
+lemma le_sSup_iff_of_predirectedOn (hs : s.Nonempty) (hs' : s.Finite)
+    (hs'' : PredirectedOn (· ≤ ·) s) :
     a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
   have := hs.to_subtype
   have := hs'.to_subtype
-  simp [sSup_eq_iSup', le_iSup_iff_of_directed hs''.directed_val]
+  simp [sSup_eq_iSup', le_iSup_iff_of_predirected hs''.predirected_val]
 
 end
 
 namespace Set
 variable {ι : Sort*} {α : Type*} {S : Set (Set α)} {s : Set α} {f : ι → Set α}
 
-lemma subset_iUnion_iff_of_directed [Nonempty ι] [Finite ι] (hf : Directed (· ≤ ·) f) :
-    s ⊆ ⋃ i, f i ↔ ∃ i, s ⊆ f i := le_iSup_iff_of_directed hf
+lemma subset_iUnion_iff_of_predirected [Nonempty ι] [Finite ι] (hf : Predirected (· ≤ ·) f) :
+    s ⊆ ⋃ i, f i ↔ ∃ i, s ⊆ f i := le_iSup_iff_of_predirected hf
 
-lemma subset_sUnion_iff_of_directed (hS : S.Nonempty) (hS' : S.Finite)
-    (hS'' : DirectedOn (· ≤ ·) S) : s ⊆ sSup S ↔ ∃ t ∈ S, s ⊆ t :=
-  le_sSup_iff_of_directedOn hS hS' hS''
+lemma subset_sUnion_iff_of_predirected (hS : S.Nonempty) (hS' : S.Finite)
+    (hS'' : PredirectedOn (· ≤ ·) S) : s ⊆ sSup S ↔ ∃ t ∈ S, s ⊆ t :=
+  le_sSup_iff_of_predirectedOn hS hS' hS''
 
 end Set
 

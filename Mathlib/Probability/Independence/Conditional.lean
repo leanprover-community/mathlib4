@@ -569,11 +569,11 @@ theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     CondIndep m' (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) hm' μ :=
   Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
-theorem condIndep_iSup_of_directed_le {m : ι → MeasurableSpace Ω}
+theorem condIndep_iSup_of_predirected_le {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ)
-    (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Predirected (· ≤ ·) m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
-  Kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
+  Kernel.indep_iSup_of_predirected_le h_indep h_le h_le' hm
 
 theorem iCondIndepSet.condIndep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (i : ι) :

@@ -149,39 +149,39 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
 open Encodable in
 /-- **Monotone convergence theorem** for a supremum over a directed family and indexed by a
 countable type. -/
-theorem lintegral_iSup_directed_of_measurable [Countable β] {f : β → α → ℝ≥0∞}
-    (hf : ∀ b, Measurable (f b)) (h_directed : Directed (· ≤ ·) f) :
+theorem lintegral_iSup_predirected_of_measurable [Countable β] {f : β → α → ℝ≥0∞}
+    (hf : ∀ b, Measurable (f b)) (h_predirected : Predirected (· ≤ ·) f) :
     ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
   · simp
   inhabit β
-  have : ∀ a, ⨆ b, f b a = ⨆ n, f (h_directed.sequence f n) a := by
+  have : ∀ a, ⨆ b, f b a = ⨆ n, f (h_predirected.sequence f n) a := by
     intro a
     refine le_antisymm (iSup_le fun b => ?_) (iSup_le fun n => le_iSup (fun n => f n a) _)
-    exact le_iSup_of_le (encode b + 1) (h_directed.le_sequence b a)
+    exact le_iSup_of_le (encode b + 1) (h_predirected.le_sequence b a)
   calc
-    ∫⁻ a, ⨆ b, f b a ∂μ = ∫⁻ a, ⨆ n, f (h_directed.sequence f n) a ∂μ := by simp only [this]
-    _ = ⨆ n, ∫⁻ a, f (h_directed.sequence f n) a ∂μ :=
-      (lintegral_iSup (fun n => hf _) h_directed.sequence_mono)
+    ∫⁻ a, ⨆ b, f b a ∂μ = ∫⁻ a, ⨆ n, f (h_predirected.sequence f n) a ∂μ := by simp only [this]
+    _ = ⨆ n, ∫⁻ a, f (h_predirected.sequence f n) a ∂μ :=
+      (lintegral_iSup (fun n => hf _) h_predirected.sequence_mono)
     _ = ⨆ b, ∫⁻ a, f b a ∂μ := by
       refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun b => ?_)
       · exact le_iSup (fun b => ∫⁻ a, f b a ∂μ) _
-      · exact le_iSup_of_le (encode b + 1) (lintegral_mono <| h_directed.le_sequence b)
+      · exact le_iSup_of_le (encode b + 1) (lintegral_mono <| h_predirected.le_sequence b)
 
 /-- **Monotone convergence theorem** for a supremum over a directed family and indexed by a
 countable type. -/
-theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ b, AEMeasurable (f b) μ)
-    (h_directed : Directed (· ≤ ·) f) : ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
+theorem lintegral_iSup_predirected [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ b, AEMeasurable (f b) μ)
+    (h_predirected : Predirected (· ≤ ·) f) : ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
   simp_rw [← iSup_apply]
-  let p : α → (β → ENNReal) → Prop := fun x f' => Directed LE.le f'
+  let p : α → (β → ENNReal) → Prop := fun x f' => Predirected LE.le f'
   have hp : ∀ᵐ x ∂μ, p x fun i => f i x := by
     filter_upwards [] with x i j
-    obtain ⟨z, hz₁, hz₂⟩ := h_directed i j
+    obtain ⟨z, hz₁, hz₂⟩ := h_predirected i j
     exact ⟨z, hz₁ x, hz₂ x⟩
-  have h_ae_seq_directed : Directed LE.le (aeSeq hf p) := by
+  have h_ae_seq_predirected : Predirected LE.le (aeSeq hf p) := by
     intro b₁ b₂
-    obtain ⟨z, hz₁, hz₂⟩ := h_directed b₁ b₂
+    obtain ⟨z, hz₁, hz₂⟩ := h_predirected b₁ b₂
     refine ⟨z, ?_, ?_⟩ <;>
       · intro x
         by_cases hx : x ∈ aeSeqSet hf p
@@ -189,7 +189,8 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
           apply_rules [hz₁, hz₂]
         · simp only [aeSeq, hx, if_false]
           exact le_rfl
-  convert! lintegral_iSup_directed_of_measurable (aeSeq.measurable hf p) h_ae_seq_directed using 1
+  convert! lintegral_iSup_predirected_of_measurable (aeSeq.measurable hf p) h_ae_seq_predirected
+    using 1
   · simp_rw [← iSup_apply]
     rw [lintegral_congr_ae (aeSeq.iSup hf hp).symm]
   · congr 1
@@ -361,7 +362,7 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
   classical
   simp only [ENNReal.tsum_eq_iSup_sum]
-  rw [lintegral_iSup_directed]
+  rw [lintegral_iSup_predirected]
   · simp [lintegral_finsetSum' _ fun i _ => hf i]
   · intro b
     exact Finset.aemeasurable_fun_sum _ fun i _ => hf i

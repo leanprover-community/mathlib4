@@ -118,12 +118,12 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     intro c hcs c_chain y hy
     clear hp_nonneg hp_dense p
     have cne : c.Nonempty := ⟨y, hy⟩
-    have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
+    have hcd : PredirectedOn (· ≤ ·) c := c_chain.predirectedOn
     refine ⟨LinearPMap.sSup c hcd, ?_, fun _ ↦ LinearPMap.le_sSup hcd⟩
     rintro ⟨x, hx⟩ hxs
-    have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
-      directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
-    rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
+    have hdir : PredirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
+      predirectedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
+    rcases (mem_sSup_of_predirected (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
     convert! ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl

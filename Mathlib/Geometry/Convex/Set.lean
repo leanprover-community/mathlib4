@@ -85,7 +85,7 @@ lemma IsConvexSet.iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i �
     (h : ∀ i j, IsConvexSet R (s i j)) : IsConvexSet R (⋂ (i) (j), s i j) :=
   .iInter fun i ↦ .iInter <| h i
 
-protected lemma IsConvexSet.sUnion {S : Set (Set X)} (hS : DirectedOn (· ⊆ ·) S)
+protected lemma IsConvexSet.sUnion {S : Set (Set X)} (hS : PredirectedOn (· ⊆ ·) S)
     (hS' : ∀ s ∈ S, IsConvexSet R s) : IsConvexSet R (⋃₀ S) := by
   obtain rfl | hS'' := S.eq_empty_or_nonempty
   · simp
@@ -94,9 +94,9 @@ protected lemma IsConvexSet.sUnion {S : Set (Set X)} (hS : DirectedOn (· ⊆ ·
     hS.exists_mem_subset_of_finite_of_subset_sUnion hS'' w.weights.support.finite_toSet hw
   exact mem_sUnion_of_mem (hS' s hsS hws) hsS
 
-protected lemma IsConvexSet.iUnion {ι : Sort*} {s : ι → Set X} (hs : Directed (· ⊆ ·) s)
+protected lemma IsConvexSet.iUnion {ι : Sort*} {s : ι → Set X} (hs : Predirected (· ⊆ ·) s)
     (hs' : ∀ i, IsConvexSet R (s i)) : IsConvexSet R (⋃ i, s i) :=
-  .sUnion hs.directedOn_range <| by simpa
+  .sUnion hs.predirectedOn_range <| by simpa
 
 protected lemma IsConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f) (hs : IsConvexSet R s) :
     IsConvexSet R (f ⁻¹' s) := by

@@ -24,13 +24,14 @@ variable {α : Type*} {f : α → α} {x y : α}
 
 open Function (Commute)
 
-theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
+theorem predirected_ptsOfPeriod_pnat (f : α → α) :
+    Predirected (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
 
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
   iUnion_pnat_ptsOfPeriod f ▸
-    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pnat f) fun i => bijOn_ptsOfPeriod f i.pos
+    bijOn_iUnion_of_predirected (predirected_ptsOfPeriod_pnat f) fun i => bijOn_ptsOfPeriod f i.pos
 
 theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     minimalPeriod f x = p ↔ IsPeriodicPt f p x ∧ ¬IsFixedPt f x := by

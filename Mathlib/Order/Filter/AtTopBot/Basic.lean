@@ -26,8 +26,8 @@ open Set
 
 namespace Filter
 
-section IsDirected
-variable [Preorder α] [IsDirectedOrder α] {p : α → Prop}
+section IsPredirected
+variable [Preorder α] [IsPredirectedOrder α] {p : α → Prop}
 
 -- `Filter.HasMonotoneBasis` doesn't exist, so we cannot use `to_dual` here.
 theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ici :=
@@ -37,7 +37,7 @@ theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :
   hasAntitoneBasis_atTop.1
 
 @[to_dual existing]
-lemma atBot_basis {α : Type*} [Preorder α] [IsCodirectedOrder α] [Nonempty α] :
+lemma atBot_basis {α : Type*} [Preorder α] [IsPrecodirectedOrder α] [Nonempty α] :
     (@atBot α _).HasBasis (fun _ => True) Iic := atTop_basis (α := αᵒᵈ)
 
 @[to_dual]
@@ -67,7 +67,7 @@ instance atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun 
 
 @[to_dual]
 theorem atTop_neBot_iff {α : Type*} [Preorder α] :
-    (atTop : Filter α).NeBot ↔ Nonempty α ∧ IsDirectedOrder α := by
+    (atTop : Filter α).NeBot ↔ Nonempty α ∧ IsPredirectedOrder α := by
   refine ⟨fun h ↦ ⟨nonempty_of_neBot atTop, ⟨fun x y ↦ ?_⟩⟩, fun ⟨h₁, h₂⟩ ↦ atTop_neBot⟩
   exact ((eventually_ge_atTop x).and (eventually_ge_atTop y)).exists
 
@@ -93,7 +93,7 @@ lemma exists_eventually_atTop {r : α → β → Prop} :
     H n (hb.trans hn)
 
 @[to_dual existing]
-lemma exists_eventually_atBot {α : Type*} [Preorder α] [IsCodirectedOrder α] [Nonempty α]
+lemma exists_eventually_atBot {α : Type*} [Preorder α] [IsPrecodirectedOrder α] [Nonempty α]
     {r : α → β → Prop} : (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b :=
   exists_eventually_atTop (α := αᵒᵈ)
 
@@ -105,7 +105,7 @@ theorem map_atTop_eq {f : α → β} : atTop.map f = ⨅ a, 𝓟 (f '' { a' | a 
 theorem frequently_atTop' [NoMaxOrder α] : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b > a, p b :=
   atTop_basis_Ioi.frequently_iff.trans <| by simp
 
-end IsDirected
+end IsPredirected
 
 /-!
 ### Sequences
@@ -140,8 +140,8 @@ theorem extraction_forall_of_eventually' {P : ℕ → ℕ → Prop} (h : ∀ n, 
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P n (φ n) :=
   extraction_forall_of_eventually (by simp [eventually_atTop, h])
 
-section IsDirected
-variable [Preorder α] [IsDirectedOrder α] {F : Filter β} {u : α → β}
+section IsPredirected
+variable [Preorder α] [IsPredirectedOrder α] {F : Filter β} {u : α → β}
 
 @[to_dual inf_map_atBot_neBot_iff]
 theorem inf_map_atTop_neBot_iff [Nonempty α] :
@@ -165,10 +165,10 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
   rcases exists_le_of_tendsto_atTop h a b' with ⟨a', ha', ha''⟩
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
-end IsDirected
+end IsPredirected
 
-section IsDirected
-variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
+section IsPredirected
+variable [Nonempty α] [Preorder α] [IsPredirectedOrder α] {f : α → β} {l : Filter β}
 
 @[to_dual]
 theorem tendsto_atTop' : Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b, a ≤ b → f b ∈ s := by
@@ -203,7 +203,7 @@ theorem tendsto_atTop_atBot_iff_of_antitone (hf : Antitone f) :
     Tendsto f atTop atBot ↔ ∀ b : β, ∃ a, f a ≤ b :=
   tendsto_atTop_atTop_iff_of_monotone (β := βᵒᵈ) hf
 
-end IsDirected
+end IsPredirected
 
 theorem Tendsto.subseq_mem {F : Filter α} {V : ℕ → Set α} (h : ∀ n, V n ∈ F) {u : ℕ → α}
     (hu : Tendsto u atTop F) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, u (φ n) ∈ V n :=
@@ -218,7 +218,7 @@ insertion and a connection above `b`. -/
 Galois coinsertion. The Galois "coinsertion" and "connection" is weakened to only require it to be
 an insertion and a connection below `b`. -/]
 theorem map_atTop_eq_of_gc_preorder
-    [Preorder α] [IsDirectedOrder α] [Preorder β] [IsDirectedOrder β] {f : α → β}
+    [Preorder α] [IsPredirectedOrder α] [Preorder β] [IsPredirectedOrder β] {f : α → β}
     (hf : Monotone f) (b : β)
     (hgi : ∀ c, b ≤ c → ∃ x, f x = c ∧ ∀ a, f a ≤ c ↔ a ≤ x) : map f atTop = atTop := by
   have : Nonempty α := (hgi b le_rfl).nonempty
@@ -240,7 +240,7 @@ insertion and a connection above `b`. -/
 Galois coinsertion. The Galois "coinsertion" and "connection" is weakened to only require it to be
 an insertion and a connection below `b`. -/]
 theorem map_atTop_eq_of_gc
-    [Preorder α] [IsDirectedOrder α] [PartialOrder β] [IsDirectedOrder β]
+    [Preorder α] [IsPredirectedOrder α] [PartialOrder β] [IsPredirectedOrder β]
     {f : α → β} (g : β → α) (b : β) (hf : Monotone f)
     (gc : ∀ a, ∀ c, b ≤ c → (f a ≤ c ↔ a ≤ g c)) (hgi : ∀ c, b ≤ c → (c ≤ f (g c))) :
     map f atTop = atTop :=
@@ -248,14 +248,14 @@ theorem map_atTop_eq_of_gc
     ⟨g c, le_antisymm ((gc _ _ hc).2 le_rfl) (hgi c hc), (gc · c hc)⟩
 
 @[to_dual]
-theorem map_val_atTop_of_Ici_subset [Preorder α] [IsDirectedOrder α] {a : α} {s : Set α}
+theorem map_val_atTop_of_Ici_subset [Preorder α] [IsPredirectedOrder α] {a : α} {s : Set α}
     (h : Ici a ⊆ s) : map ((↑) : s → α) atTop = atTop := by
   choose f hl hr using exists_ge_ge (α := α)
-  have : DirectedOn (· ≤ ·) s := fun x _ y _ ↦
+  have : PredirectedOn (· ≤ ·) s := fun x _ y _ ↦
     ⟨f a (f x y), h <| hl _ _, (hl x y).trans (hr _ _), (hr x y).trans (hr _ _)⟩
-  have : IsDirectedOrder s := by
-    rw [directedOn_iff_directed] at this
-    rwa [IsDirectedOrder, ← directed_id_iff]
+  have : IsPredirectedOrder s := by
+    rw [predirectedOn_iff_predirected] at this
+    rwa [IsPredirectedOrder, ← predirected_id_iff]
   refine map_atTop_eq_of_gc_preorder (Subtype.mono_coe _) a fun c hc ↦ ?_
   exact ⟨⟨c, h hc⟩, rfl, fun _ ↦ .rfl⟩
 
@@ -268,14 +268,14 @@ theorem _root_.Nat.map_cast_int_atTop : map ((↑) : ℕ → ℤ) atTop = atTop 
 /-- The image of the filter `atTop` on `Ici a` under the coercion equals `atTop`. -/
 @[to_dual (attr := simp)
 /-- The image of the filter `atBot` on `Iic a` under the coercion equals `atBot`. -/]
-theorem map_val_Ici_atTop [Preorder α] [IsDirectedOrder α] (a : α) :
+theorem map_val_Ici_atTop [Preorder α] [IsPredirectedOrder α] (a : α) :
     map ((↑) : Ici a → α) atTop = atTop :=
   map_val_atTop_of_Ici_subset Subset.rfl
 
 /-- The image of the filter `atTop` on `Ioi a` under the coercion equals `atTop`. -/
 @[to_dual (attr := simp)
 /-- The image of the filter `atBot` on `Iio a` under the coercion equals `atBot`. -/]
-theorem map_val_Ioi_atTop [Preorder α] [IsDirectedOrder α] [NoMaxOrder α] (a : α) :
+theorem map_val_Ioi_atTop [Preorder α] [IsPredirectedOrder α] [NoMaxOrder α] (a : α) :
     map ((↑) : Ioi a → α) atTop = atTop :=
   let ⟨_b, hb⟩ := exists_gt a
   map_val_atTop_of_Ici_subset <| Ici_subset_Ioi.2 hb
@@ -283,7 +283,7 @@ theorem map_val_Ioi_atTop [Preorder α] [IsDirectedOrder α] [NoMaxOrder α] (a 
 /-- The `atTop` filter for `↑(Ioi a)` comes from the `atTop` filter in the ambient order. -/
 @[to_dual
 /-- The `atBot` filter for `↑(Iio a)` comes from the `atBot` filter in the ambient order. -/]
-theorem atTop_Ioi_eq [Preorder α] [IsDirectedOrder α] (a : α) :
+theorem atTop_Ioi_eq [Preorder α] [IsPredirectedOrder α] (a : α) :
     atTop = comap ((↑) : Ioi a → α) atTop := by
   rcases isEmpty_or_nonempty (Ioi a) with h | ⟨⟨b, hb⟩⟩
   · subsingleton
@@ -292,30 +292,30 @@ theorem atTop_Ioi_eq [Preorder α] [IsDirectedOrder α] (a : α) :
 /-- The `atTop` filter for `↑(Ici a)` comes from the `atTop` filter in the ambient order. -/
 @[to_dual
 /-- The `atBot` filter for `↑(Iic a)` comes from the `atBot` filter in the ambient order. -/]
-theorem atTop_Ici_eq [Preorder α] [IsDirectedOrder α] (a : α) :
+theorem atTop_Ici_eq [Preorder α] [IsPredirectedOrder α] (a : α) :
     atTop = comap ((↑) : Ici a → α) atTop := by
   rw [← map_val_Ici_atTop a, comap_map Subtype.coe_injective]
 
 @[to_dual]
-theorem tendsto_Ioi_atTop [Preorder α] [IsDirectedOrder α]
+theorem tendsto_Ioi_atTop [Preorder α] [IsPredirectedOrder α]
     {a : α} {f : β → Ioi a} {l : Filter β} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
   rw [atTop_Ioi_eq, tendsto_comap_iff, Function.comp_def]
 
 @[to_dual]
-theorem tendsto_Ici_atTop [Preorder α] [IsDirectedOrder α]
+theorem tendsto_Ici_atTop [Preorder α] [IsPredirectedOrder α]
     {a : α} {f : β → Ici a} {l : Filter β} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
   rw [atTop_Ici_eq, tendsto_comap_iff, Function.comp_def]
 
 @[to_dual (attr := simp)]
-theorem tendsto_comp_val_Ioi_atTop [Preorder α] [IsDirectedOrder α] [NoMaxOrder α]
+theorem tendsto_comp_val_Ioi_atTop [Preorder α] [IsPredirectedOrder α] [NoMaxOrder α]
     {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Ioi a => f x) atTop l ↔ Tendsto f atTop l := by
   rw [← map_val_Ioi_atTop a, tendsto_map'_iff, Function.comp_def]
 
 @[to_dual (attr := simp)]
-theorem tendsto_comp_val_Ici_atTop [Preorder α] [IsDirectedOrder α]
+theorem tendsto_comp_val_Ici_atTop [Preorder α] [IsPredirectedOrder α]
     {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Ici a => f x) atTop l ↔ Tendsto f atTop l := by
   rw [← map_val_Ici_atTop a, tendsto_map'_iff, Function.comp_def]
@@ -379,7 +379,7 @@ protected theorem HasAntitoneBasis.tendsto [Preorder ι] {l : Filter α} {s : ι
     (hl : l.HasAntitoneBasis s) {φ : ι → α} (h : ∀ i : ι, φ i ∈ s i) : Tendsto φ atTop l :=
   fun _t ht => mem_map.2 <| (hl.eventually_subset ht).mono fun i hi => hi (h i)
 
-theorem HasAntitoneBasis.comp_mono [Nonempty ι] [Preorder ι] [IsDirectedOrder ι] [Preorder ι']
+theorem HasAntitoneBasis.comp_mono [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι] [Preorder ι']
     {l : Filter α}
     {s : ι' → Set α} (hs : l.HasAntitoneBasis s) {φ : ι → ι'} (φ_mono : Monotone φ)
     (hφ : Tendsto φ atTop atTop) : l.HasAntitoneBasis (s ∘ φ) :=

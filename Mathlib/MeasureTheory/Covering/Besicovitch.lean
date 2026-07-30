@@ -790,7 +790,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     apply le_bot_iff.1
     exact le_of_tendsto_of_tendsto' tendsto_const_nhds C fun n => (A n).trans (B n)
   · refine (pairwiseDisjoint_iUnion ?_).2 fun n => (Pu n).1
-    apply (monotone_nat_of_le_succ fun n => ?_).directed_le
+    apply (monotone_nat_of_le_succ fun n => ?_).predirected_le
     rw [← Nat.succ_eq_add_one, u_succ]
     exact (hF (u n) (Pu n)).1
 

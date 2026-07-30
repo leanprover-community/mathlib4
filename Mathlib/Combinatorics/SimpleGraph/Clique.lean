@@ -132,11 +132,11 @@ theorem IsClique.inter_left {s : Set α} (hs : G.IsClique s) (t : Set α) : G.Is
 theorem IsClique.inter_right {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| t ∩ s :=
   Set.Pairwise.inter_right hs t
 
-theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) :
+theorem isClique_sUnion {S : Set (Set α)} (hd : PredirectedOn (· ⊆ ·) S) :
     G.IsClique (⋃₀ S) ↔ ∀ s ∈ S, G.IsClique s :=
   Set.pairwise_sUnion hd
 
-theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) :
     G.IsClique (⋃ i, s i) ↔ ∀ i, G.IsClique (s i) :=
   Set.pairwise_iUnion hd
 

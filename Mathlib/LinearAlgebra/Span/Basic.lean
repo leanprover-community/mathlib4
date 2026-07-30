@@ -347,10 +347,10 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
 
 theorem singleton_span_isCompactElement (x : M) :
     IsCompactElement (span R {x} : Submodule R M) := by
-  rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
+  rw [CompleteLattice.isCompactElement_iff_le_of_predirected_sSup_le]
   intro d hemp hdir hsup
   have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
-  obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_directed hemp hdir).mp this
+  obtain ⟨y, ⟨hyd, hxy⟩⟩ := (mem_sSup_of_predirected hemp hdir).mp this
   exact ⟨y, ⟨hyd, by simpa only [span_le, singleton_subset_iff] ⟩⟩
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/

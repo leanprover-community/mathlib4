@@ -122,9 +122,9 @@ This isn't an instance due to a loop with `LinearOrder`.
 -- See note [reducible non-instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
-     [IsCodirectedOrder α] : LinearOrder α where
+     [IsPrecodirectedOrder α] : LinearOrder α where
   le_total a b :=
-    have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
+    have ⟨c, ha, hb⟩ := predirected_of (· ≥ ·) a b
     le_total_of_codirected ha hb
   toDecidableEq := inferInstance
   toDecidableLE := inferInstance
@@ -137,7 +137,7 @@ This isn't an instance due to a loop with `LinearOrder`.
 @[to_dual existing]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
-     [IsDirectedOrder α] : LinearOrder α :=
+     [IsPredirectedOrder α] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 
@@ -251,7 +251,7 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section IsLeast
 
--- TODO: generalize to PartialOrder and `DirectedOn`
+-- TODO: generalize to PartialOrder and `PredirectedOn`
 @[to_dual]
 lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOrder X]
     [IsSuccArchimedean X] {S : Set X} (hS : BddAbove S) (hS' : S.Nonempty) :

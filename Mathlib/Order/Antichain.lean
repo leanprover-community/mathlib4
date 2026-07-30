@@ -331,9 +331,9 @@ theorem eq (hs : IsStrongAntichain r s) {a b c : α} (ha : a ∈ s) (hb : b ∈ 
 protected theorem isAntichain [Std.Refl r] (h : IsStrongAntichain r s) : IsAntichain r s :=
   h.imp fun _ b hab => (hab b).resolve_right (not_not_intro <| refl _)
 
-protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
+protected theorem subsingleton [IsPredirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=
   fun a ha b hb =>
-  let ⟨_, hac, hbc⟩ := directed_of r a b
+  let ⟨_, hac, hbc⟩ := predirected_of r a b
   h.eq ha hb hac hbc
 
 protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=

@@ -34,7 +34,9 @@ open Set Filter Function
 equal to this filter. -/
 instance : IsAtomic (Filter α) :=
   IsAtomic.of_isChain_bounded fun c hc hne hb =>
-    ⟨sInf c, (sInf_neBot_of_directed' hne (show IsChain (· ≥ ·) c from hc.symm).directedOn hb).ne,
+    ⟨sInf c,
+      (sInf_neBot_of_predirected' hne
+        (show IsChain (· ≥ ·) c from hc.symm).predirectedOn hb).ne,
       fun _ hx => sInf_le hx⟩
 
 /-- An ultrafilter is a minimal (maximal in the set order) proper filter. -/

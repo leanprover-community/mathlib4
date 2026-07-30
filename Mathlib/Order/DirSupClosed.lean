@@ -37,22 +37,22 @@ variable [Preorder α]
 /-- A predicate for a set which is closed under directed suprema of nonempty sets.
 This is the complement of a `DirSupInaccOn` set. -/
 def DirSupClosedOn (D : Set (Set α)) (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
+  ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
 
 /-- A predicate for a set which is inaccessible by directed suprema of nonempty sets in `D`.
 This is the complement of a `DirSupClosedOn` set. -/
 def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
+  ∀ ⦃d⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 
 /-- A predicate for a set which is closed under directed suprema of nonempty sets.
 This is the complement of a `DirSupInacc` set. -/
 def DirSupClosed (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
+  ∀ ⦃d⦄, d ⊆ s → d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s
 
 /-- A predicate for a set which is inaccessible by directed suprema of nonempty sets.
 This is the complement of a `DirSupClosed` set. -/
 def DirSupInacc (s : Set α) : Prop :=
-  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
+  ∀ ⦃d⦄, d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 
 @[simp] lemma dirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
   simp [DirSupClosedOn, DirSupClosed]
@@ -171,10 +171,10 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
     (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
   intro d hD hdu hd₀ hd₁ a ha
   have hdst : d ∩ s ∪ d ∩ t = d := by grind
-  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
+  wlog h : PredirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
   · rw [union_comm] at hdu hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
-      (directedOn_union_iff.mp (by rwa [hdst])).resolve_right h
+      (predirectedOn_union_iff.mp (by rwa [hdst])).resolve_right h
   obtain ⟨hds, hcof⟩ := h
   have hcof' : IsCofinalFor d (d ∩ s) := hcof.union_right.mono_left hdst.ge
   exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right
@@ -191,21 +191,21 @@ theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInac
   simpa using hs.dirSupInaccOn.inter isLowerSet_univ ht.dirSupInaccOn
 
 theorem DirSupInaccOn.of_inter_subset
-    (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
+    (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInaccOn D s := by
   intro d hd₀ hd₁ hd₂ a hda hd₃
   obtain ⟨b, hbd, hb⟩ := h hd₀ hd₁ hd₂ hda hd₃
   exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
 
 theorem DirSupInacc.of_inter_subset
-    (h : ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
+    (h : ∀ ⦃d : Set α⦄, d.Nonempty → PredirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
   dirSupInaccOn_univ.1 (.of_inter_subset (by simpa))
 
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInaccOn` can be replaced with the stronger
 `∃ b ∈ d, Ici b ∩ d ⊆ s` (under mild assumptions on `D`). -/
 theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
-    DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
+    DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s where
   mpr := .of_inter_subset
   mp h t hD ht₀ ht₁ a ha has := by
@@ -219,7 +219,7 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
 `∃ b ∈ d, Ici b ∩ d ⊆ s`. -/
 theorem dirSupInacc_iff_inter_subset :
-    DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
+    DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → PredirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
   simpa using dirSupInaccOn_iff_inter_subset isLowerSet_univ
 
@@ -237,7 +237,7 @@ lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
 
 theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
-  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton a)
+  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (predirectedOn_singleton a)
   rw [← isLUB_congr_of_antisymmRel h]
   exact isLUB_singleton
 
@@ -303,19 +303,19 @@ section CompleteLattice
 variable [CompleteLattice α]
 
 lemma dirSupClosedOn_iff_forall_sSup : DirSupClosedOn D s ↔
-    ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s := by
+    ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → PredirectedOn (· ≤ ·) d → sSup d ∈ s := by
   simp [DirSupClosedOn, isLUB_iff_sSup_eq]
 
 lemma dirSupInaccOn_iff_forall_sSup : DirSupInaccOn D s ↔
-    ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
+    ∀ ⦃d⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInaccOn, isLUB_iff_sSup_eq]
 
 lemma dirSupClosed_iff_forall_sSup : DirSupClosed s ↔
-    ∀ ⦃d⦄, d ⊆ s → d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s := by
+    ∀ ⦃d⦄, d ⊆ s → d.Nonempty → PredirectedOn (· ≤ ·) d → sSup d ∈ s := by
   simp [DirSupClosed, isLUB_iff_sSup_eq]
 
 lemma dirSupInacc_iff_forall_sSup : DirSupInacc s ↔
-    ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
+    ∀ ⦃d⦄, d.Nonempty → PredirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc, isLUB_iff_sSup_eq]
 
 end CompleteLattice

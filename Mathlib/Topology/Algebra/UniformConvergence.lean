@@ -247,7 +247,7 @@ instance : IsUniformGroup (α →ᵤ[𝔖] G) :=
 
 @[to_additive]
 protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
-    (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {b : ι → Set G}
+    (h𝔖₂ : PredirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
@@ -258,7 +258,7 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
 
 @[to_additive]
 protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
-    (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
+    (h𝔖₂ : PredirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=

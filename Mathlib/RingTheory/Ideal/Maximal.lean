@@ -215,7 +215,7 @@ theorem exists_le_prime_disjoint (S : Submonoid α) (disjoint : Disjoint (I : Se
   cases isEmpty_or_nonempty c
   · exact ⟨I, disjoint, fun J hJ ↦ isEmptyElim (⟨J, hJ⟩ : c)⟩
   refine ⟨sSup c, Set.disjoint_left.mpr fun x hx ↦ ?_, fun _ ↦ le_sSup⟩
-  have ⟨p, hp⟩ := (Submodule.mem_iSup_of_directed _ hc'.directed).mp (sSup_eq_iSup' c ▸ hx)
+  have ⟨p, hp⟩ := (Submodule.mem_iSup_of_predirected _ hc'.predirected).mp (sSup_eq_iSup' c ▸ hx)
   exact Set.disjoint_left.mp (hc p.2) hp
 
 theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :

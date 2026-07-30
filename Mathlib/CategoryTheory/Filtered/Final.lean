@@ -476,7 +476,7 @@ end CategoryTheory
 open CategoryTheory
 
 lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-    [IsDirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
+    [IsPredirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
     hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
   rw [Functor.final_iff_of_isFiltered]
   constructor
@@ -492,7 +492,7 @@ lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J
       exact ⟨c, 𝟙 _, rfl⟩
 
 lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J₂]
-    [IsCodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
+    [IsPrecodirectedOrder J₁] {f : J₁ → J₂} (hf : Monotone f) :
     hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
   rw [Functor.initial_iff_of_isCofiltered]
   constructor

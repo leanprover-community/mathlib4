@@ -317,8 +317,8 @@ instance [T2Space α] (K : Compacts α) : SemilatticeInf (K.compactNhds) where
 /-- The set of opens neighbourhood of a compact subset -/
 def openNhds (K : Compacts α) : Set (Opens α) := {U | (K : Set α) ⊆ U}
 
-instance (K : Compacts α) : IsCodirectedOrder K.openNhds where
-  directed U1 U2 := ⟨⟨U1.val ⊓ U2.val, Set.subset_inter U1.property U2.property⟩,
+instance (K : Compacts α) : IsPrecodirectedOrder K.openNhds where
+  predirected U1 U2 := ⟨⟨U1.val ⊓ U2.val, Set.subset_inter U1.property U2.property⟩,
   ⟨Subtype.mk_le_mk.2 inf_le_left, Subtype.mk_le_mk.2 inf_le_right⟩⟩
 
 instance (K : Compacts α) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
@@ -362,8 +362,9 @@ def openRcNhdsToCompactNhds (K : Compacts α) : K.openRcNhds → K.compactNhds :
 lemma openRcNhdsToCompactNhds_mono (K : Compacts α) : Monotone K.openRcNhdsToCompactNhds :=
   fun _ _ h ↦ closure_mono h
 
-instance [T2Space α] (K : Compacts α) : IsCodirectedOrder K.openRcNhds where
-  directed U1 U2 := ⟨⟨U1 ⊓ U2, (isCompact_closure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
+instance [T2Space α] (K : Compacts α) : IsPrecodirectedOrder K.openRcNhds where
+  predirected U1 U2 := ⟨⟨U1 ⊓ U2,
+    (isCompact_closure_of_mem_openRcNhds (Subtype.coe_prop U1) |>.inter
     <| isCompact_closure_of_mem_openRcNhds U2.coe_prop).of_isClosed_subset
       isClosed_closure <| closure_inter_subset_inter_closure ..,
       le_inf (subset_of_mem_openRcNhds (Subtype.coe_prop U1))

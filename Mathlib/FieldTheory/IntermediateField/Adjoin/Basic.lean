@@ -111,21 +111,22 @@ theorem finrank_sup_le :
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
 
-theorem coe_iSup_of_directed [Nonempty ι] (dir : Directed (· ≤ ·) t) :
+theorem coe_iSup_of_predirected [Nonempty ι] (dir : Predirected (· ≤ ·) t) :
     ↑(iSup t) = ⋃ i, (t i : Set L) :=
   let M : IntermediateField K L :=
-    { __ := Subalgebra.copy _ _ (Subalgebra.coe_iSup_of_directed dir).symm
+    { __ := Subalgebra.copy _ _ (Subalgebra.coe_iSup_of_predirected dir).symm
       inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (t i).inv_mem hi⟩ }
   have : iSup t = M := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (t i : Set L)) i) (Set.iUnion_subset fun _ ↦ le_iSup t _)
   this.symm ▸ rfl
 
-theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
+theorem toSubalgebra_iSup_of_predirected (dir : Predirected (· ≤ ·) t) :
     (iSup t).toSubalgebra = ⨆ i, (t i).toSubalgebra := by
   cases isEmpty_or_nonempty ι
   · simp_rw [iSup_of_empty, bot_toSubalgebra]
-  · exact SetLike.ext' ((coe_iSup_of_directed dir).trans (Subalgebra.coe_iSup_of_directed dir).symm)
+  · exact SetLike.ext'
+      ((coe_iSup_of_predirected dir).trans (Subalgebra.coe_iSup_of_predirected dir).symm)
 
 instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
@@ -198,11 +199,12 @@ open Set CompleteLattice
 
 /-- Adjoining a single element is compact in the lattice of intermediate fields. -/
 theorem adjoin_simple_isCompactElement (x : E) : IsCompactElement F⟮x⟯ := by
-  simp_rw [isCompactElement_iff_le_of_directed_sSup_le,
+  simp_rw [isCompactElement_iff_le_of_predirected_sSup_le,
     adjoin_simple_le_iff, sSup_eq_iSup', ← exists_prop]
   intro s hne hs hx
   have := hne.to_subtype
-  rwa [← SetLike.mem_coe, coe_iSup_of_directed hs.directed_val, mem_iUnion, Subtype.exists] at hx
+  rwa [← SetLike.mem_coe, coe_iSup_of_predirected hs.predirected_val, mem_iUnion,
+    Subtype.exists] at hx
 
 /-- Adjoining a finite subset is compact in the lattice of intermediate fields. -/
 theorem adjoin_finset_isCompactElement (S : Finset E) :

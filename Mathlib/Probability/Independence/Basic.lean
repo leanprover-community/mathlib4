@@ -513,11 +513,11 @@ theorem indep_iSup_of_disjoint
     Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ :=
   Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
-theorem indep_iSup_of_directed_le
+theorem indep_iSup_of_predirected_le
     [IsZeroOrProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
-    (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Predirected (· ≤ ·) m) :
     Indep (⨆ i, m i) m1 μ :=
-  Kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
+  Kernel.indep_iSup_of_predirected_le h_indep h_le h_le' hm
 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) :

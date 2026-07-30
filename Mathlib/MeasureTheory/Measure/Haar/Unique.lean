@@ -748,7 +748,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       simp only [mem_iUnion, exists_prop] at hx hy
       rcases hx with ⟨a, ac, xa⟩
       rcases hy with ⟨b, bc, yb⟩
-      obtain ⟨m, mc, am, bm⟩ : ∃ m ∈ c, a ⊆ m ∧ b ⊆ m := hc.directedOn _ ac _ bc
+      obtain ⟨m, mc, am, bm⟩ : ∃ m ∈ c, a ⊆ m ∧ b ⊆ m := hc.predirectedOn _ ac _ bc
       exact (cA mc).2 (am xa) (bm yb) hxy
     · intro a ac
       exact subset_biUnion_of_mem (u := id) ac

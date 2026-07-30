@@ -160,7 +160,7 @@ theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
-      (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
+      (IsChain.predirectedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
     le := by
       refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
@@ -170,13 +170,14 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       symm
       generalize_proofs _ _ h1
       exact
-        LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
+        LinearPMap.sSup_apply
+          (IsChain.predirectedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
 
 theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) (a : ExtensionOf i f) (ha : a ∈ c) :
     a ≤ ExtensionOf.max hchain hnonempty :=
-  LinearPMap.le_sSup (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
+  LinearPMap.le_sSup (IsChain.predirectedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
     (Set.mem_image _ _ _).mpr ⟨a, ha, rfl⟩
 
 variable (i f) [Fact <| Function.Injective i]

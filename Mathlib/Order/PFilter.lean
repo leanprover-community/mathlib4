@@ -52,9 +52,9 @@ def IsPFilter [Preorder P] (F : Set P) : Prop :=
   IsIdeal (OrderDual.ofDual ⁻¹' F)
 
 theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
-    (directed : DirectedOn (· ≥ ·) F) (mem_of_le : ∀ {x y : P}, x ≤ y → x ∈ F → y ∈ F) :
+    (predirected : PredirectedOn (· ≥ ·) F) (mem_of_le : ∀ {x y : P}, x ≤ y → x ∈ F → y ∈ F) :
     IsPFilter F :=
-  ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
+  ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, predirected⟩
 
 /-- Create an element of type `Order.PFilter` from a set satisfying the predicate
 `Order.IsPFilter`. -/
@@ -80,7 +80,7 @@ theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 
 protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty
 
-theorem directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
+theorem predirected : PredirectedOn (· ≥ ·) (F : Set P) := F.dual.predirected
 
 theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
 
@@ -137,7 +137,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf P] {x y : P} {F : PFilter P}
 
-/-- A specific witness of `pfilter.directed` when `P` has meets. -/
+/-- A specific witness of `pfilter.predirected` when `P` has meets. -/
 theorem inf_mem (hx : x ∈ F) (hy : y ∈ F) : x ⊓ y ∈ F :=
   Ideal.sup_mem hx hy
 

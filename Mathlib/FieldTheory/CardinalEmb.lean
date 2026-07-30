@@ -258,8 +258,8 @@ section Lim
 
 variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
-theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
-  (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
+theorem predirected_filtration : Predirected (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
+  (filtration.monotone.comp <| Subtype.mono_coe _).predirected_le
 
 variable (hi : IsSuccPrelimit i)
 include hi
@@ -287,15 +287,15 @@ the limit of the types of embeddings of `E⟮<j⟯` for `j < i`. -/
 def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
   toFun f := ⟨fun j ↦ embFunctor _ _ (id j.2 : j < i).le f, fun _ _ _ ↦ rfl⟩
   invFun f := if h : Nonempty (Iio i) then
-    Subalgebra.iSupLift _ directed_filtration f.1
+    Subalgebra.iSupLift _ predirected_filtration f.1
       (fun _ _ h ↦ (f.2 <| filtration.map_rel_iff.mp h).symm) _ <| by
-        rw [← iSup_filtration hi, toSubalgebra_iSup_of_directed directed_filtration]
+        rw [← iSup_filtration hi, toSubalgebra_iSup_of_predirected predirected_filtration]
     else (Algebra.ofId F Ē).comp ((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E)
   left_inv f := by
     split_ifs with h
     · ext ⟨x, hx⟩
       rw [← iSup_filtration hi, mem_toSubalgebra, ← SetLike.mem_coe,
-          coe_iSup_of_directed directed_filtration, mem_iUnion] at hx
+          coe_iSup_of_predirected predirected_filtration, mem_iUnion] at hx
       rw [Subalgebra.iSupLift_of_mem _ _ (by exact hx.choose_spec)]; rfl
     · apply AlgHom.ext
       rw [((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E).forall_congr_left]

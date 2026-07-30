@@ -78,7 +78,7 @@ protected theorem hasBasis_nhds_zero_of_basis
     (𝓝 (0 : E →SLₚₜ[σ] F)).HasBasis (fun Si : Set E × ι => Finite Si.1 ∧ p Si.2)
       fun Si => { f : E →SLₚₜ[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
   UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | Finite S }
-    ⟨∅, Set.finite_empty⟩ (directedOn_of_sup_mem fun _ _ => Set.Finite.union) h
+    ⟨∅, Set.finite_empty⟩ (predirectedOn_of_sup_mem fun _ _ => Set.Finite.union) h
 
 protected theorem hasBasis_nhds_zero :
     (𝓝 (0 : E →SLₚₜ[σ] F)).HasBasis

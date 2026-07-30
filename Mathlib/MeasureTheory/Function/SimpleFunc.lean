@@ -115,7 +115,7 @@ theorem exists_range_iff {f : α →ₛ β} {p : β → Prop} : (∃ y ∈ f.ran
 theorem preimage_eq_empty_iff (f : α →ₛ β) (b : β) : f ⁻¹' {b} = ∅ ↔ b ∉ f.range :=
   preimage_singleton_eq_empty.trans <| not_congr mem_range.symm
 
-theorem exists_forall_le [Nonempty β] [Preorder β] [IsDirectedOrder β] (f : α →ₛ β) :
+theorem exists_forall_le [Nonempty β] [Preorder β] [IsPredirectedOrder β] (f : α →ₛ β) :
     ∃ C, ∀ x, f x ≤ C :=
   f.range.exists_le.imp fun _ => forall_mem_range.1
 
@@ -1063,8 +1063,8 @@ theorem restrict_lintegral_eq_lintegral_restrict (f : α →ₛ ℝ≥0∞) {s :
     (hs : MeasurableSet s) : (restrict f s).lintegral μ = f.lintegral (μ.restrict s) := by
   rw [f.restrict_lintegral hs, lintegral_restrict]
 
-theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
-    (f : α →ₛ ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) (μ : Measure α) :
+theorem lintegral_restrict_iUnion_of_predirected {ι : Type*} [Countable ι]
+    (f : α →ₛ ℝ≥0∞) {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) (μ : Measure α) :
     f.lintegral (μ.restrict (⋃ i, s i)) = ⨆ i, f.lintegral (μ.restrict (s i)) := by
   simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
     ENNReal.mul_iSup]

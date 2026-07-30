@@ -68,8 +68,8 @@ theorem GoodProducts.Plimit (o : Ordinal) (ho : Order.IsSuccLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
-  exact linearIndepOn_iUnion_of_directed
-    (Monotone.directed_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
+  exact linearIndepOn_iUnion_of_predirected
+    (Monotone.predirected_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
     (linearIndependent_iff_smaller _ _).mp (h o' ho' (ho'.le.trans hho)
     (π C (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))
 

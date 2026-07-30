@@ -124,11 +124,11 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
   refine zorn_le_nonempty_Ici₀ _ ?_ _ le_rfl
   intro s hs H y hys
   have inst : Nonempty s := ⟨⟨y, hys⟩⟩
-  have hdir := H.directed.mono_comp _ LocalSubring.toSubring_mono
+  have hdir := H.predirected.mono_comp _ LocalSubring.toSubring_mono
   refine ⟨@LocalSubring.mk _ _ (⨆ i : s, i.1.toSubring) ⟨?_⟩, ?_⟩
   · intro ⟨a, ha⟩ ⟨b, hb⟩ e
-    obtain ⟨A, haA : a ∈ A.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp ha
-    obtain ⟨B, hbB : b ∈ B.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp hb
+    obtain ⟨A, haA : a ∈ A.1.toSubring⟩ := (Subring.mem_iSup_of_predirected hdir).mp ha
+    obtain ⟨B, hbB : b ∈ B.1.toSubring⟩ := (Subring.mem_iSup_of_predirected hdir).mp hb
     obtain ⟨C, hCA, hCB⟩ := hdir A B
     refine (C.1.2.2 (a := ⟨a, hCA haA⟩) (b := ⟨b, hCB hbB⟩) (Subtype.ext congr(($e).1))).imp ?_ ?_
     · exact fun h ↦ h.map (Subring.inclusion (le_iSup (fun i : s ↦ i.1.toSubring) C))
@@ -137,8 +137,8 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
     refine ⟨le_iSup (fun i : s ↦ i.1.toSubring) ⟨A, hA⟩, ⟨?_⟩⟩
     rintro ⟨a, haA⟩ h
     obtain ⟨⟨b, hb⟩, e⟩ := isUnit_iff_exists_inv.mp h
-    obtain ⟨B, hbB : b ∈ B.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp hb
-    obtain ⟨C, hCA, hCB⟩ := H.directed ⟨A, hA⟩ B
+    obtain ⟨B, hbB : b ∈ B.1.toSubring⟩ := (Subring.mem_iSup_of_predirected hdir).mp hb
+    obtain ⟨C, hCA, hCB⟩ := H.predirected ⟨A, hA⟩ B
     apply hCA.2.1
     exact isUnit_iff_exists_inv.mpr ⟨⟨b, hCB.1 hbB⟩, Subtype.ext congr(($e).1)⟩
 

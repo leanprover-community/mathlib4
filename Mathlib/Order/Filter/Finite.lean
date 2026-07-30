@@ -174,7 +174,7 @@ theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → F
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [iInf_eq_iInf_finset, iInf_sets_eq]
-  exact directed_of_isDirected_le fun _ _ => biInf_mono
+  exact predirected_of_isPredirected_le fun _ _ => biInf_mono
 
 theorem iInf_sets_eq_finite' (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset (PLift ι), (⨅ i ∈ t, f (PLift.down i)).sets := by

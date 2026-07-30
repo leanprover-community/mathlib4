@@ -54,7 +54,7 @@ theorem primaryComponent_mem (x : M) :
   simp only [primaryComponent, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall]
   constructor
   · intro a
-    rw [Submodule.mem_iSup_of_directed] at a
+    rw [Submodule.mem_iSup_of_predirected] at a
     · simpa using a
     · intro x y
       use max x y

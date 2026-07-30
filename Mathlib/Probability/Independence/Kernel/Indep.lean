@@ -620,15 +620,15 @@ theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
   · exact isPiSystem_piiUnionInter _ (fun n => @isPiSystem_measurableSet Ω (m n)) _
   · exact indepSets_piiUnionInter_of_disjoint (h_indep.congr η_eq) hST
 
-theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
+theorem indep_iSup_of_predirected_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] (h_indep : ∀ i, Indep (m i) m' κ μ)
-    (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Predirected (· ≤ ·) m) :
     Indep (⨆ i, m i) m' κ μ := by
   let p : ι → Set (Set Ω) := fun n => { t | MeasurableSet[m n] t }
   have hp : ∀ n, IsPiSystem (p n) := fun n => @isPiSystem_measurableSet Ω (m n)
   have h_gen_n : ∀ n, m n = generateFrom (p n) := fun n =>
     (@generateFrom_measurableSet Ω (m n)).symm
-  have hp_supr_pi : IsPiSystem (⋃ n, p n) := isPiSystem_iUnion_of_directed_le p hp hm
+  have hp_supr_pi : IsPiSystem (⋃ n, p n) := isPiSystem_iUnion_of_predirected_le p hp hm
   let p' := { t : Set Ω | MeasurableSet[m'] t }
   have hp'_pi : IsPiSystem p' := @isPiSystem_measurableSet Ω m'
   have h_gen' : m' = generateFrom p' := (@generateFrom_measurableSet Ω m').symm
@@ -669,14 +669,14 @@ theorem indep_iSup_of_monotone [SemilatticeSup ι] {Ω} {m : ι → MeasurableSp
     (h_indep : ∀ i, Indep (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
     (hm : Monotone m) :
     Indep (⨆ i, m i) m' κ μ :=
-  indep_iSup_of_directed_le h_indep h_le h_le' (Monotone.directed_le hm)
+  indep_iSup_of_predirected_le h_indep h_le h_le' (Monotone.predirected_le hm)
 
 theorem indep_iSup_of_antitone [SemilatticeInf ι] {Ω} {m : ι → MeasurableSpace Ω}
     {m' m0 : MeasurableSpace Ω} {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ]
     (h_indep : ∀ i, Indep (m i) m' κ μ) (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0)
     (hm : Antitone m) :
     Indep (⨆ i, m i) m' κ μ :=
-  indep_iSup_of_directed_le h_indep h_le h_le' hm.directed_le
+  indep_iSup_of_predirected_le h_indep h_le h_le' hm.predirected_le
 
 theorem iIndepSets.piiUnionInter_of_notMem {π : ι → Set (Set Ω)} {a : ι} {S : Finset ι}
     (hp_ind : iIndepSets π κ μ) (haS : a ∉ S) :

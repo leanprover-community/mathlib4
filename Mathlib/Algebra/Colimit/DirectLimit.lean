@@ -61,7 +61,7 @@ variable {R ι : Type*} [Preorder ι] {G : ι → Type*} {H : ι → Type*} {C :
 variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
 variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [∀ i, FunLike (H i) (G i) C]
 variable [DirectedSystem G (f · · ·)]
-variable [IsDirectedOrder ι]
+variable [IsPredirectedOrder ι]
 
 namespace DirectLimit
 

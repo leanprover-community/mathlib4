@@ -976,10 +976,10 @@ section SuprLift
 
 variable {ι : Sort*}
 
-theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
-    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+theorem coe_iSup_of_predirected [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
+    (dir : Predirected (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalSubalgebra R A :=
-    { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed dir).symm
+    { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_predirected dir).symm
       smul_mem' := fun r _x hx ↦
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, (S i).smul_mem' r hi⟩ }
@@ -988,21 +988,22 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
   this.symm ▸ rfl
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
-    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Predirected (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) := by
   have := NonUnitalSubsemiring.isMulCommutative_iSup dir
-  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    NonUnitalSubsemiring.coe_iSup_of_directed dir]
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_predirected dir,
+    NonUnitalSubsemiring.coe_iSup_of_predirected dir]
 
-instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι]
     {S : ι →o NonUnitalSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) :=
-  isMulCommutative_iSup S.monotone.directed_le
+  isMulCommutative_iSup S.monotone.predirected_le
 
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/
-noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (dir : Directed (· ≤ ·) K)
+noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A)
+    (dir : Predirected (· ≤ ·) K)
     (f : ∀ i, K i →ₙₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : NonUnitalSubalgebra R A) (hT : T = iSup K) : ↥T →ₙₐ[R] B := by
   subst hT
@@ -1013,25 +1014,25 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
               let ⟨k, hik, hjk⟩ := dir i j
               rw [hf i k hik, hf j k hjk]
               rfl)
-            _ (by rw [coe_iSup_of_directed dir])
+            _ (by rw [coe_iSup_of_predirected dir])
         map_zero' := by
           dsimp
           exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
         map_mul' := by
           dsimp
-          apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
+          apply Set.iUnionLift_binary (coe_iSup_of_predirected dir) dir _ (fun _ => (· * ·))
           all_goals simp
         map_add' := by
           dsimp
-          apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
+          apply Set.iUnionLift_binary (coe_iSup_of_predirected dir) dir _ (fun _ => (· + ·))
           all_goals simp
         map_smul' := fun r => by
           dsimp
-          apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
+          apply Set.iUnionLift_unary (coe_iSup_of_predirected dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)
           all_goals simp }
 
-variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Directed (· ≤ ·) K}
+variable [Nonempty ι] {K : ι → NonUnitalSubalgebra R A} {dir : Predirected (· ≤ ·) K}
   {f : ∀ i, K i →ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalSubalgebra R A} {hT : T = iSup K}
 

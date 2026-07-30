@@ -29,7 +29,7 @@ variable [CompleteLattice α] [CompleteLattice β]
 /- `f` is Scott continuous if and only if it commutes with `sSup` on directed sets -/
 lemma scottContinuous_iff_map_sSup {f : α → β} :
     ScottContinuous f ↔
-      ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) where
+      ∀ ⦃d : Set α⦄, d.Nonempty → PredirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) where
   mp h _ d₁ d₂ := by rw [IsLUB.sSup_eq (h d₁ d₂ (isLUB_iff_sSup_eq.mpr rfl))]
   mpr h _ d₁ d₂ _ hda := by rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), IsLUB.sSup_eq hda]
 

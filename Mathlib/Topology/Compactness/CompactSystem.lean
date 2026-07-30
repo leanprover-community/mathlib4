@@ -128,17 +128,17 @@ lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCo
 
 /-- To prove that a set of sets is a compact system, it suffices to consider directed families of
 sets. -/
-theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_of_predirected (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-      ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
+      ∀ (C : ℕ → Set α), Predirected (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
-  · rw [← exists_dissipate_eq_empty_iff_of_directed hdi]
+  · rw [← exists_dissipate_eq_empty_iff_of_predirected hdi]
     exact h C (by simp [hi])
   rw [← biInter_le_eq_iInter] at h2
   suffices (∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅) ∧ (⋂ n, dissipate C n = ∅) by
     by_cases! f : ∀ n, dissipate C n ∈ S
-    · exact h (dissipate C) directed_dissipate f this.2
+    · exact h (dissipate C) predirected_dissipate f this.2
     · obtain ⟨n, hn⟩ := f
       exact ⟨n, by simpa [hn] using this.1 n⟩
   refine ⟨fun n ↦ ?_, h2⟩
@@ -148,11 +148,11 @@ theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
 
 /-- To prove that a set of sets is a compact system, it suffices to consider directed families of
 sets. -/
-theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_nonempty_iInter_of_predirected (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-    ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
+    ∀ (C : ℕ → Set α), (Predirected (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
-  rw [isCompactSystem_iff_of_directed hpi]
+  rw [isCompactSystem_iff_of_predirected hpi]
   refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> contrapose!
   · exact h1 C h3 h4
   · exact h1 C h3 s

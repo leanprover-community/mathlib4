@@ -166,7 +166,7 @@ def toNormedField : NormedField L :=
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
-      rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
+      rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_predirected]
       · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
         refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
         · set δ : ℝ≥0 := hv.hom _ ε with hδ
@@ -189,7 +189,7 @@ def toNormedField : NormedField L :=
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
-      · simp only [Directed]
+      · simp only [Predirected]
         intro x y
         use min x y
         simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]

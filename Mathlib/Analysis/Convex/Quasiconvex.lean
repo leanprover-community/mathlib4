@@ -78,12 +78,12 @@ theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Conv
     QuasiconcaveOn 𝕜 s f :=
   Convex.quasiconvexOn_of_convex_le (β := βᵒᵈ) hs h
 
-theorem QuasiconvexOn.convex [IsDirectedOrder β] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
+theorem QuasiconvexOn.convex [IsPredirectedOrder β] (hf : QuasiconvexOn 𝕜 s f) : Convex 𝕜 s :=
   fun x hx y hy _ _ ha hb hab =>
   let ⟨_, hxz, hyz⟩ := exists_ge_ge (f x) (f y)
   (hf _ ⟨hx, hxz⟩ ⟨hy, hyz⟩ ha hb hab).1
 
-theorem QuasiconcaveOn.convex [IsCodirectedOrder β] (hf : QuasiconcaveOn 𝕜 s f) : Convex 𝕜 s :=
+theorem QuasiconcaveOn.convex [IsPrecodirectedOrder β] (hf : QuasiconcaveOn 𝕜 s f) : Convex 𝕜 s :=
   hf.dual.convex
 
 end LE_β

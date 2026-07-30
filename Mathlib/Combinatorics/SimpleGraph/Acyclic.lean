@@ -104,8 +104,8 @@ lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
 lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
 
-private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGraph V)
-    (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :
+private lemma Walk.exists_mem_contains_edges_of_predirected (Hs : Set <| SimpleGraph V)
+    (hHs : Hs.Nonempty) (h_dir : PredirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :
     ∃ H ∈ Hs, ∀ e ∈ p.edges, e ∈ H.edgeSet := by
   induction p with
   | nil => exact ⟨hHs.some, hHs.some_mem, by simp⟩
@@ -116,12 +116,12 @@ private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGrap
     simpa using ⟨H, hH, (le_iff_adj.mp h₂) _ _ h_adj, fun a ha => edgeSet_mono h₁ (ih a ha)⟩
 
 /-- The directed supremum of acyclic graphs is acyclic. -/
-lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
-    (h_acyc : ∀ H ∈ Hs, H.IsAcyclic) (h_dir : DirectedOn (· ≤ ·) Hs) : IsAcyclic (sSup Hs) := by
+lemma isAcyclic_sSup_of_isAcyclic_predirectedOn (Hs : Set <| SimpleGraph V)
+    (h_acyc : ∀ H ∈ Hs, H.IsAcyclic) (h_dir : PredirectedOn (· ≤ ·) Hs) : IsAcyclic (sSup Hs) := by
   rcases Hs.eq_empty_or_nonempty with rfl | hnemp
   · simp
   · intro u p hp
-    obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_directed Hs hnemp h_dir
+    obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_predirected Hs hnemp h_dir
     exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
 
 /-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
@@ -131,7 +131,7 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
   refine zorn_le_nonempty₀ {H | H ≤ G ∧ H.IsAcyclic} (fun c hcs hc y hy ↦ ?_) _ ⟨hHG, hH⟩
   refine ⟨sSup c, ⟨?_, ?_⟩, fun _ ↦ le_sSup⟩
   · grind [sSup_le_iff]
-  · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
+  · exact isAcyclic_sSup_of_isAcyclic_predirectedOn c (by grind) hc.predirectedOn
 
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :

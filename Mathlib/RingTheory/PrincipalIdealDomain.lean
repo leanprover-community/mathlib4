@@ -531,7 +531,8 @@ theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
   · obtain ⟨K, hKmem⟩ := Set.nonempty_def.1 H
     refine ⟨sSup c, fun ⟨x, hx⟩ ↦ ?_, fun _ ↦ le_sSup⟩
     have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
-    obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
+    obtain ⟨J, hJc, hxJ⟩ :=
+      (Submodule.mem_sSup_of_predirected ⟨K, hKmem⟩ hchain.predirectedOn).1 hxmem
     have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
     exact hs hJc ⟨hsSupJ ▸ ⟨x, hx⟩⟩
   · simpa [Set.not_nonempty_iff_eq_empty.1 H, isPrincipalIdealRing_iff] using hR

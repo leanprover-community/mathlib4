@@ -40,12 +40,12 @@ theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
     a (m ⊔ n) = a m ⊔ a n :=
   map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
 
-theorem directed [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
-    (ha : Directed r a) : Directed s (f ∘ a) :=
+theorem predirected [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
+    (ha : Predirected r a) : Predirected s (f ∘ a) :=
   ha.mono_comp _ fun _ _ h ↦ map_rel f h
 
-theorem directedOn [FunLike F α β] [RelHomClass F r s] {f : F}
-    {t : Set α} (hs : DirectedOn r t) : DirectedOn s (f '' t) :=
+theorem predirectedOn [FunLike F α β] [RelHomClass F r s] {f : F}
+    {t : Set α} (hs : PredirectedOn r t) : PredirectedOn s (f '' t) :=
   hs.mono_comp fun _ _ h ↦ map_rel f h
 
 end RelHomClass

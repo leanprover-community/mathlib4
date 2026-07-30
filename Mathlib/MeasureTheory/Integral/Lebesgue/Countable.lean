@@ -270,8 +270,8 @@ theorem lintegral_le_of_forall_fin_meas_trim_le {μ : Measure α} (hm : m ≤ m0
   have : ∫⁻ x in univ, f x ∂μ = ∫⁻ x, f x ∂μ := by simp only [Measure.restrict_univ]
   rw [← this]
   refine univ_le_of_forall_fin_meas_le hm C hf fun S _ hS_mono => ?_
-  rw [setLIntegral_iUnion_of_directed]
-  exact directed_of_isDirected_le hS_mono
+  rw [setLIntegral_iUnion_of_predirected]
+  exact predirected_of_isPredirected_le hS_mono
 
 alias lintegral_le_of_forall_fin_meas_le_of_measurable := lintegral_le_of_forall_fin_meas_trim_le
 

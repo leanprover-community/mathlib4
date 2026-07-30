@@ -64,8 +64,8 @@ lemma supClosed_sInter (hS : ∀ s ∈ S, SupClosed s) : SupClosed (⋂₀ S) :=
 lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
   supClosed_sInter <| forall_mem_range.2 hf
 
-@[to_dual InfClosed.codirectedOn]
-lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
+@[to_dual InfClosed.precodirectedOn]
+lemma SupClosed.predirectedOn (hs : SupClosed s) : PredirectedOn (· ≤ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
 
 @[to_dual]

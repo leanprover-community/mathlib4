@@ -408,28 +408,28 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
 /-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
-    {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
+theorem mem_iSup_of_predirected {ι} [hι : Nonempty ι] {S : ι → Subfield K}
+    (hS : Predirected (· ≤ ·) S) {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   let s : Subfield K :=
-    { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed hS).symm
+    { __ := Subring.copy _ _ (Subring.coe_iSup_of_predirected hS).symm
       inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).inv_mem hi⟩ }
   have : iSup S = s := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set K)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   exact this ▸ Set.mem_iUnion
 
-theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subfield K) : Set K) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+theorem coe_iSup_of_predirected {ι} [hι : Nonempty ι] {S : ι → Subfield K}
+    (hS : Predirected (· ≤ ·) S) : ((⨆ i, S i : Subfield K) : Set K) = ⋃ i, ↑(S i) :=
+  Set.ext fun x => by simp [mem_iSup_of_predirected hS]
 
-theorem mem_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
-    {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+theorem mem_sSup_of_predirectedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) {x : K} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected hS.predirected_val, Subtype.exists, exists_prop]
 
-theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
-    (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+theorem coe_sSup_of_predirectedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) : (↑(sSup S) : Set K) = ⋃ s ∈ S, ↑s :=
+  Set.ext fun x => by simp [mem_sSup_of_predirectedOn Sne hS]
 
 end Subfield
 

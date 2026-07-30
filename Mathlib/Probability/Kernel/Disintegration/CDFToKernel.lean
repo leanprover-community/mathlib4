@@ -149,12 +149,12 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
   have h_nonempty : Nonempty { r' : ℚ // x < ↑r' } := by
     obtain ⟨r, hrx⟩ := exists_rat_gt x
     exact ⟨⟨r, hrx⟩⟩
-  rw [h, lintegral_iInf_directed_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ ?_]
+  rw [h, lintegral_iInf_predirected_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ ?_]
   rotate_left
   · intro b
     rw [setLIntegral_stieltjesOfMeasurableRat_rat hf a _ hs]
     exact measure_ne_top _ _
-  · refine Monotone.directed_ge fun i j hij b ↦ ?_
+  · refine Monotone.predirected_ge fun i j hij b ↦ ?_
     simp_rw [← measure_stieltjesOfMeasurableRat_Iic]
     refine measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
@@ -483,19 +483,19 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
-  have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
-    refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
+  have h_dir : Predirected (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
+    refine Monotone.predirected_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
-  have h_dir_prod : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ s ×ˢ Iic (q : ℝ) := by
-    refine Monotone.directed_le fun i j hij ↦ ?_
+  have h_dir_prod : Predirected (fun x y ↦ x ⊆ y) fun q : ℚ ↦ s ×ˢ Iic (q : ℝ) := by
+    refine Monotone.predirected_le fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
   simp_rw [h_dir.measure_iUnion, h_dir_prod.measure_iUnion]
-  rw [lintegral_iSup_directed]
+  rw [lintegral_iSup_predirected]
   · simp_rw [setLIntegral_toKernel_Iic hf _ _ hs]
   · refine fun q ↦ Measurable.aemeasurable ?_
     exact (Kernel.measurable_coe _ measurableSet_Iic).comp measurable_prodMk_left
-  · refine Monotone.directed_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
+  · refine Monotone.predirected_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
 
 lemma lintegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν) (a : α) :

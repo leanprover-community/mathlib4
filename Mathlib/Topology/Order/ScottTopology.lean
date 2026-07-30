@@ -79,7 +79,7 @@ For mild conditions on `D`, this is equivalent to saying that open sets are `Dir
 and closed sets are `DirSupClosedOn D`. -/
 @[implicit_reducible]
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
-  IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
+  IsOpen u := ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d _ ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
   isOpen_inter s t hs ht d hd₀ hd₁ hd₂ a hd₃ ha := by
@@ -116,7 +116,7 @@ variable (α D) in
 lemma topology_eq : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
 
 lemma isOpen_iff :
-    IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
+    IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
   simp +instances [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
@@ -247,7 +247,7 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     exact ⟨(isUpperSet_of_isOpen (D := univ) hu).preimage (h.monotone D hD),
       fun t h₀ hd₁ hd₂ a hd₃ ha ↦ image_inter_nonempty_iff.mp <|
         (isOpen_iff_isUpperSet_and_dirSupInaccOn (D := univ).mp hu).2 trivial (Nonempty.image f hd₁)
-        (directedOn_image.mpr (hd₂.mono @(h.monotone D hD))) (h h₀ hd₁ hd₂ hd₃) ha⟩
+        (predirectedOn_image.mpr (hd₂.mono @(h.monotone D hD))) (h h₀ hd₁ hd₂ hd₃) ha⟩
   · refine fun hf t h₀ d₁ d₂ a d₃ ↦
       ⟨(monotone_of_continuous (D := D) hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
@@ -290,7 +290,7 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α un
       rw [compl_eq_comm, le_antisymm_iff]
       refine ⟨fun _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset ?_⟩
       exact dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed hU.isClosed_compl) le_rfl neUc
-        (isChain_of_trichotomous Uᶜ).directedOn
+        (isChain_of_trichotomous Uᶜ).predirectedOn
   · rintro (rfl | ⟨a, rfl⟩)
     · exact isOpen_univ
     · exact isClosed_Iic.isOpen_compl

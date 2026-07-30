@@ -45,7 +45,7 @@ Complete partial orders are partial orders where every directed set has a least 
 -/
 class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α, OrderBot α where
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
-  lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
+  lubOfPredirected : ∀ d, PredirectedOn (· ≤ ·) d → IsLUB d (sSup d)
 
 /-- Create a `CompletePartialOrder` from a `PartialOrder` and `SupSet`
 such that for every directed set `d`, `sSup d` is the least upper bound of `d`.
@@ -53,37 +53,39 @@ such that for every directed set `d`, `sSup d` is the least upper bound of `d`.
 The bottom element is defined as `sSup ∅`.
 -/
 @[reducible]
-def CompletePartialOrder.ofLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
-    (lub_of_directed : ∀ d : Set α, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
+def CompletePartialOrder.ofLubOfPredirected (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
+    (lub_of_predirected : ∀ d : Set α, PredirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
     CompletePartialOrder α where
   __ := H1; __ := H2
   bot := sSup ∅
-  bot_le := isLUB_empty_iff.mp <| lub_of_directed ∅ IsChain.empty.directedOn
-  lubOfDirected := lub_of_directed
+  bot_le := isLUB_empty_iff.mp <| lub_of_predirected ∅ IsChain.empty.predirectedOn
+  lubOfPredirected := lub_of_predirected
 
 variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
 
-protected lemma DirectedOn.isLUB_sSup : DirectedOn (· ≤ ·) d → IsLUB d (sSup d) :=
-CompletePartialOrder.lubOfDirected _
+protected lemma PredirectedOn.isLUB_sSup : PredirectedOn (· ≤ ·) d → IsLUB d (sSup d) :=
+CompletePartialOrder.lubOfPredirected _
 
-protected lemma DirectedOn.le_sSup (hd : DirectedOn (· ≤ ·) d) (ha : a ∈ d) : a ≤ sSup d :=
+protected lemma PredirectedOn.le_sSup (hd : PredirectedOn (· ≤ ·) d) (ha : a ∈ d) : a ≤ sSup d :=
 hd.isLUB_sSup.1 ha
 
-protected lemma DirectedOn.sSup_le (hd : DirectedOn (· ≤ ·) d) (ha : ∀ b ∈ d, b ≤ a) : sSup d ≤ a :=
+protected lemma PredirectedOn.sSup_le (hd : PredirectedOn (· ≤ ·) d) (ha : ∀ b ∈ d, b ≤ a) :
+    sSup d ≤ a :=
 hd.isLUB_sSup.2 ha
 
-protected lemma Directed.le_iSup (hf : Directed (· ≤ ·) f) (i : ι) : f i ≤ ⨆ j, f j :=
-hf.directedOn_range.le_sSup <| Set.mem_range_self _
+protected lemma Predirected.le_iSup (hf : Predirected (· ≤ ·) f) (i : ι) : f i ≤ ⨆ j, f j :=
+hf.predirectedOn_range.le_sSup <| Set.mem_range_self _
 
-protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
-hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
+protected lemma Predirected.iSup_le (hf : Predirected (· ≤ ·) f) (ha : ∀ i, f i ≤ a) :
+    ⨆ i, f i ≤ a :=
+hf.predirectedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas
 
 /-- Scott-continuity takes on a simpler form in complete partial orders. -/
 lemma CompletePartialOrder.scottContinuous {f : α → β} :
     ScottContinuous f ↔
-    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB (f '' d) (f (sSup d)) := by
+    ∀ ⦃d : Set α⦄, d.Nonempty → PredirectedOn (· ≤ ·) d → IsLUB (f '' d) (f (sSup d)) := by
   refine ⟨fun h d hd₁ hd₂ ↦ h hd₁ hd₂ hd₂.isLUB_sSup, fun h d hne hd a hda ↦ ?_⟩
   rw [hda.unique hd.isLUB_sSup]
   exact h hne hd
@@ -94,12 +96,12 @@ open OmegaCompletePartialOrder
 instance (priority := 100) CompletePartialOrder.toOmegaCompletePartialOrder :
     OmegaCompletePartialOrder α where
   ωSup c := ⨆ n, c n
-  le_ωSup c := c.directed.le_iSup
-  ωSup_le c _ := c.directed.iSup_le
+  le_ωSup c := c.predirected.le_iSup
+  ωSup_le c _ := c.predirected.iSup_le
 
 /-- A complete partial order is an conditionally complete partial order. -/
 instance (priority := 100) : ConditionallyCompletePartialOrderSup α where
-  isLUB_csSup_of_directed _ h_dir _ _ := h_dir.isLUB_sSup
+  isLUB_csSup_of_predirected _ h_dir _ _ := h_dir.isLUB_sSup
 
 end CompletePartialOrder
 
@@ -107,4 +109,4 @@ end CompletePartialOrder
 instance (priority := 100) CompleteLattice.toCompletePartialOrder [CompleteLattice α] :
     CompletePartialOrder α where
   sSup := sSup
-  lubOfDirected _ _ := isLUB_sSup _
+  lubOfPredirected _ _ := isLUB_sSup _

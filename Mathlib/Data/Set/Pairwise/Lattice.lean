@@ -27,7 +27,7 @@ variable {f : ι → α} {s : Set α}
 namespace Set
 
 -- TODO: fix naming inconsistency with the iUnion₂ theorems below.
-theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
+theorem pairwise_iUnion {f : κ → Set α} (hd : Predirected (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
@@ -39,20 +39,20 @@ theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
     exact H p (mp hm) (np hn) hij
 
 -- TODO: harmonize explicitness of `r`
-theorem pairwise_iUnion₂ {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s)
+theorem pairwise_iUnion₂ {s : Set (Set α)} (hd : PredirectedOn (· ⊆ ·) s)
     (r : α → α → Prop) (h : ∀ a ∈ s, a.Pairwise r) : (⋃ a ∈ s, a).Pairwise r := by
   simp only [Set.Pairwise, mem_iUnion, exists_prop, forall_exists_index, and_imp]
   intro x S hS hx y T hT hy hne
   obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
   exact h U hU (hSU hx) (hTU hy) hne
 
-theorem pairwise_iUnion₂_iff {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
+theorem pairwise_iUnion₂_iff {s : Set (Set α)} (hd : PredirectedOn (· ⊆ ·) s) :
     (⋃ a ∈ s, a).Pairwise r ↔ ∀ a ∈ s, a.Pairwise r :=
   ⟨fun h a ha ↦ h.mono <| subset_iUnion₂_of_subset a ha (by rfl), pairwise_iUnion₂ hd _⟩
 
-theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (hd : DirectedOn (· ⊆ ·) s) :
+theorem pairwise_sUnion {r : α → α → Prop} {s : Set (Set α)} (hd : PredirectedOn (· ⊆ ·) s) :
     (⋃₀ s).Pairwise r ↔ ∀ a ∈ s, Set.Pairwise a r := by
-  rw [sUnion_eq_iUnion, pairwise_iUnion hd.directed_val, SetCoe.forall]
+  rw [sUnion_eq_iUnion, pairwise_iUnion hd.predirected_val, SetCoe.forall]
 
 end Set
 
@@ -64,11 +64,11 @@ section PartialOrderBot
 
 variable [PartialOrder α] [OrderBot α] {s : Set ι} {f : ι → α}
 
-theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Directed (· ⊆ ·) g) :
+theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Predirected (· ⊆ ·) g) :
     (⋃ n, g n).PairwiseDisjoint f ↔ ∀ ⦃n⦄, (g n).PairwiseDisjoint f :=
   pairwise_iUnion h
 
-theorem pairwiseDisjoint_sUnion {s : Set (Set ι)} (h : DirectedOn (· ⊆ ·) s) :
+theorem pairwiseDisjoint_sUnion {s : Set (Set ι)} (h : PredirectedOn (· ⊆ ·) s) :
     (⋃₀ s).PairwiseDisjoint f ↔ ∀ ⦃a⦄, a ∈ s → Set.PairwiseDisjoint a f :=
   pairwise_sUnion h
 

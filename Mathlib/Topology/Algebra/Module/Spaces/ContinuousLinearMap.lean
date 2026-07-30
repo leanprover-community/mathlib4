@@ -100,7 +100,7 @@ protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologica
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
   UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | IsVonNBounded 𝕜₁ S }
     ⟨∅, isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => IsVonNBounded.union) h
+    (predirectedOn_of_sup_mem fun _ _ => IsVonNBounded.union) h
 
 protected theorem hasBasis_nhds_zero [TopologicalSpace F] [IsTopologicalAddGroup F] :
     (𝓝 (0 : E →SL[σ] F)).HasBasis

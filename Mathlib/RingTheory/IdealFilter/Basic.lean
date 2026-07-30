@@ -146,7 +146,7 @@ lemma IsTorsionQuot.inf {F : IdealFilter A}
 
 lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     Order.IsPFilter {L : Ideal A | ∃ K ∈ G, F.IsTorsionQuot L K} := by
-  refine Order.IsPFilter.of_def ?nonempty ?directed ?mem_of_le
+  refine Order.IsPFilter.of_def ?nonempty ?predirected ?mem_of_le
   · obtain ⟨J, hJ⟩ := G.nonempty
     exact ⟨J, J, hJ, isTorsionQuot_self F J⟩
   · rintro I ⟨K, hK, hIK⟩ J ⟨L, hL, hJL⟩

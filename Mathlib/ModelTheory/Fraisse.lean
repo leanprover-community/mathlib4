@@ -103,7 +103,7 @@ def Hereditary : Prop :=
 /-- A class `K` has the joint embedding property when for every `M`, `N` in `K`, there is another
   structure in `K` into which both `M` and `N` embed. -/
 def JointEmbedding : Prop :=
-  DirectedOn (fun M N : Bundled.{w} L.Structure => Nonempty (M ↪[L] N)) K
+  PredirectedOn (fun M N : Bundled.{w} L.Structure => Nonempty (M ↪[L] N)) K
 
 /-- A class `K` has the amalgamation property when for any pair of embeddings of a structure `M` in
   `K` into other structures in `K`, those two structures can be embedded into a fourth structure in
@@ -200,7 +200,7 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
 set_option backward.isDefEq.respectTransparency false in
 -- This is not a simp-lemma because it does not apply to itself.
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
-theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
+theorem age_directLimit {ι : Type w} [Preorder ι] [IsPredirectedOrder ι] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
   classical

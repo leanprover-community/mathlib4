@@ -242,7 +242,7 @@ theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) 
 
 variable {𝕜 E}
 
-theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
+theorem orthonormal_iUnion_of_predirected {η : Type*} {s : η → Set E} (hs : Predirected (· ⊆ ·) s)
     (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
   classical
@@ -253,10 +253,11 @@ theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Dir
   rw [orthonormal_subtype_iff_ite] at h_orth
   exact h_orth x (hik hxi) y (hjk hyj)
 
-theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· ⊆ ·) s)
+theorem orthonormal_sUnion_of_predirected {s : Set (Set E)} (hs : PredirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, Orthonormal 𝕜 (fun x => ((x : a) : E))) :
     Orthonormal 𝕜 (fun x => x : ⋃₀ s → E) := by
-  rw [Set.sUnion_eq_iUnion]; exact orthonormal_iUnion_of_directed hs.directed_val (by simpa using h)
+  rw [Set.sUnion_eq_iUnion]
+  exact orthonormal_iUnion_of_predirected hs.predirected_val (by simpa using h)
 
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
 containing it. -/
@@ -267,7 +268,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
   · obtain ⟨b, hb⟩ := this
     exact ⟨b, hb.1, hb.2.1, fun u hus hu => hb.2.eq_of_ge hu hus⟩
   · refine fun c hc cc _c0 => ⟨⋃₀ c, ?_, ?_⟩
-    · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
+    · exact orthonormal_sUnion_of_predirected cc.predirectedOn fun x xc => hc xc
     · exact fun _ => Set.subset_sUnion_of_mem
 
 open Module

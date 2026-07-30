@@ -54,14 +54,16 @@ preserves `IsLUB` on elements of `D`.
 The dual notion
 
 ```lean
-∀ ⦃d : Set α⦄, d ∈ D →  d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
+∀ ⦃d : Set α⦄, d ∈ D →  d.Nonempty → PredirectedOn (· ≥ ·) d →
+  ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
 ```
 
 does not appear to play a significant role in the literature, so is omitted here.
 -/
 @[fun_prop]
 def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+  ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → PredirectedOn (· ≤ ·) d →
+    ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
 lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f) :
     ScottContinuousOn D₁ f := fun _ hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
@@ -69,7 +71,7 @@ lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
   refine fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair hab) ?_).1
+    (h (hD a b hab) (insert_nonempty _ _) (predirectedOn_pair hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
@@ -89,9 +91,9 @@ theorem ScottContinuousOn.comp {g : β → γ} {D'}
     (hg : ScottContinuousOn D' g) (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) := by
   intro d hd₁ hd₂ hd₃ a ha
-  have hd : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
+  have hd : PredirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
     have := hf.monotone
-    simp only [Monotone, DirectedOn, mem_image, exists_exists_and_eq_and, forall_exists_index,
+    simp only [Monotone, PredirectedOn, mem_image, exists_exists_and_eq_and, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂] at ⊢ this hd₃
     grind
   rw [Set.image_comp]
@@ -146,7 +148,7 @@ Scott topology.
 -/
 @[fun_prop]
 def ScottContinuous (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+  ∀ ⦃d : Set α⦄, d.Nonempty → PredirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
 @[simp] lemma scottContinuousOn_univ : ScottContinuousOn univ f ↔ ScottContinuous f := by
   simp [ScottContinuousOn, ScottContinuous]

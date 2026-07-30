@@ -937,7 +937,8 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
         zorn_le_nonempty₀ { K : Ideal R | r ∉ radical K }
           (fun c hc hcc y hyc =>
             ⟨sSup c, fun ⟨n, hrnc⟩ =>
-              let ⟨_, hyc, hrny⟩ := (Submodule.mem_sSup_of_directed ⟨y, hyc⟩ hcc.directedOn).1 hrnc
+              let ⟨_, hyc, hrny⟩ :=
+                (Submodule.mem_sSup_of_predirected ⟨y, hyc⟩ hcc.predirectedOn).1 hrnc
               hc hyc ⟨n, hrny⟩,
               fun _ => le_sSup⟩)
           I hri

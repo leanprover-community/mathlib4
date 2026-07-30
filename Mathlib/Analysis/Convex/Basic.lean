@@ -108,7 +108,7 @@ theorem convex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [
     {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → Convex 𝕜 (t i)) : Convex 𝕜 (s.pi t) :=
   fun _ hx => starConvex_pi fun _ hi => ht hi <| hx _ hi
 
-theorem Directed.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Predirected.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Predirected (· ⊆ ·) s)
     (hc : ∀ ⦃i : ι⦄, Convex 𝕜 (s i)) : Convex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy a b ha hb hab
   rw [mem_iUnion] at hx hy ⊢
@@ -117,10 +117,10 @@ theorem Directed.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed 
   obtain ⟨k, hik, hjk⟩ := hdir i j
   exact ⟨k, hc (hik hx) (hjk hy) ha hb hab⟩
 
-theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) c)
+theorem PredirectedOn.convex_sUnion {c : Set (Set E)} (hdir : PredirectedOn (· ⊆ ·) c)
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
   rw [sUnion_eq_iUnion]
-  exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
+  exact (predirectedOn_iff_predirected.1 hdir).convex_iUnion fun A => hc A.2
 
 theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]

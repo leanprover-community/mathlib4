@@ -119,19 +119,19 @@ lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
     rw [dissipate_succ] at h' ⊢
     exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
 
-theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
-    (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
+theorem isPiSystem_iUnion_of_predirected_le {α ι} (p : ι → Set (Set α))
+    (hp_pi : ∀ n, IsPiSystem (p n)) (hp_predirected : Predirected (· ≤ ·) p) :
     IsPiSystem (⋃ n, p n) := by
   intro t1 ht1 t2 ht2 h
   rw [Set.mem_iUnion] at ht1 ht2 ⊢
   obtain ⟨n, ht1⟩ := ht1
   obtain ⟨m, ht2⟩ := ht2
-  obtain ⟨k, hpnk, hpmk⟩ : ∃ k, p n ≤ p k ∧ p m ≤ p k := hp_directed n m
+  obtain ⟨k, hpnk, hpmk⟩ : ∃ k, p n ≤ p k ∧ p m ≤ p k := hp_predirected n m
   exact ⟨k, hp_pi k t1 (hpnk ht1) t2 (hpmk ht2) h⟩
 
 theorem isPiSystem_iUnion_of_monotone {α ι} [SemilatticeSup ι] (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_mono : Monotone p) : IsPiSystem (⋃ n, p n) :=
-  isPiSystem_iUnion_of_directed_le p hp_pi (Monotone.directed_le hp_mono)
+  isPiSystem_iUnion_of_predirected_le p hp_pi (Monotone.predirected_le hp_mono)
 
 /-- Rectangles formed by π-systems form a π-system. -/
 lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) (hD : IsPiSystem D) :

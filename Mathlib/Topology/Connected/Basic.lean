@@ -135,7 +135,7 @@ theorem IsConnected.union {s t : Set α} (H : (s ∩ t).Nonempty) (Hs : IsConnec
     Ht.isPreconnected
 
 /-- The directed sUnion of a set S of preconnected subsets is preconnected. -/
-theorem IsPreconnected.sUnion_directed {S : Set (Set α)} (K : DirectedOn (· ⊆ ·) S)
+theorem IsPreconnected.sUnion_predirected {S : Set (Set α)} (K : PredirectedOn (· ⊆ ·) S)
     (H : ∀ s ∈ S, IsPreconnected s) : IsPreconnected (⋃₀ S) := by
   rintro u v hu hv Huv ⟨a, ⟨s, hsS, has⟩, hau⟩ ⟨b, ⟨t, htS, hbt⟩, hbv⟩
   obtain ⟨r, hrS, hsr, htr⟩ : ∃ r ∈ S, s ⊆ r ∧ t ⊆ r := K s hsS t htS

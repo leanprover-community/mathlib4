@@ -642,11 +642,11 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
 
-theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
-    (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+theorem setLIntegral_iUnion_of_predirected {ι : Type*} [Countable ι]
+    (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
   simp only [lintegral_def, iSup_comm (ι := ι),
-    SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
+    SimpleFunc.lintegral_restrict_iUnion_of_predirected _ hd]
 
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     ∫⁻ x, max (f x) (g x) ∂μ =

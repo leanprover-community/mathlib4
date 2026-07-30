@@ -93,7 +93,7 @@ theorem DirectedSystem.map_map' ⦃i j k⦄ (hij hjk x) :
 namespace DirectLimit
 open DirectedSystem
 
-variable [IsDirectedOrder ι]
+variable [IsPredirectedOrder ι]
 
 /-- The setoid on the sigma type defining the direct limit. -/
 @[implicit_reducible]
@@ -137,7 +137,7 @@ theorem exists_eq_mk₂ (z w : DirectLimit F f) : ∃ i x y, z = ⟦⟨i, x⟩�
 theorem exists_eq_mk₃ (w u v : DirectLimit F f) :
     ∃ i x y z, w = ⟦⟨i, x⟩⟧ ∧ u = ⟦⟨i, y⟩⟧ ∧ v = ⟦⟨i, z⟩⟧ :=
   w.inductionOn₃ u v fun x y z ↦
-    have ⟨i, hxi, hyi, hzi⟩ := directed_of₃ (· ≤ ·) x.1 y.1 z.1
+    have ⟨i, hxi, hyi, hzi⟩ := predirected_of₃ (· ≤ ·) x.1 y.1 z.1
     ⟨i, _, _, _, eq_of_le x i hxi, eq_of_le y i hyi, eq_of_le z i hzi⟩
 
 @[elab_as_elim] protected theorem induction₂ {C : DirectLimit F f → DirectLimit F f → Prop}

@@ -759,38 +759,38 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
 /-- The underlying set of a non-empty directed sSup of subrings is just a union of the subrings.
   Note that this fails without the directedness assumption (the union of two subrings is
   typically not a subring) -/
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
-    {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
+theorem mem_iSup_of_predirected {ι} [hι : Nonempty ι] {S : ι → Subring R}
+    (hS : Predirected (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
-      (Submonoid.coe_iSup_of_directed hS) (AddSubgroup.coe_iSup_of_directed hS)
+      (Submonoid.coe_iSup_of_predirected hS) (AddSubgroup.coe_iSup_of_predirected hS)
   suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 
-theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subring R) : Set R) = ⋃ i, S i :=
-  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
+theorem coe_iSup_of_predirected {ι} [hι : Nonempty ι] {S : ι → Subring R}
+    (hS : Predirected (· ≤ ·) S) : ((⨆ i, S i : Subring R) : Set R) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_predirected hS]
 
-theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
-    {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+theorem mem_sSup_of_predirectedOn {S : Set (Subring R)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) {x : R} : x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_predirected hS.predirected_val, SetCoe.exists, exists_prop]
 
-theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
-    (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
-  Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+theorem coe_sSup_of_predirectedOn {S : Set (Subring R)} (Sne : S.Nonempty)
+    (hS : PredirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
+  Set.ext fun x => by simp [mem_sSup_of_predirectedOn Sne hS]
 
 theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
-    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Predirected (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subring R) := by
-  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subsemigroup.coe_iSup_of_directed dir] using! Subsemigroup.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_predirected dir,
+    Subsemigroup.coe_iSup_of_predirected dir] using! Subsemigroup.isMulCommutative_iSup dir
 
-instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι]
     {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : Subring R) :=
-  Subring.isMulCommutative_iSup S.monotone.directed_le
+  Subring.isMulCommutative_iSup S.monotone.predirected_le
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=

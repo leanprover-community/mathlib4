@@ -47,7 +47,7 @@ variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
 theorem locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
-    (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
+    (h𝔖₂ : PredirectedOn (· ⊆ ·) 𝔖) :
     LocallyConvexSpace R (UniformConvergenceCLM σ F 𝔖) := by
   apply LocallyConvexSpace.ofBasisZero _ _ _ _
     (UniformConvergenceCLM.hasBasis_nhds_zero_of_basis _ _ _ h𝔖₁ h𝔖₂
@@ -69,7 +69,7 @@ variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCo
 
 instance instLocallyConvexSpace : LocallyConvexSpace R (E →SL[σ] F) :=
   UniformConvergenceCLM.locallyConvexSpace R _ ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
+    (predirectedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
 
 end ContinuousLinearMap
 

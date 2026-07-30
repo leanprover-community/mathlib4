@@ -420,19 +420,19 @@ end SymmDiff
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
 
-theorem iUnion_inter_of_monotone {ι α} [Preorder ι] [IsDirectedOrder ι] {s t : ι → Set α}
+theorem iUnion_inter_of_monotone {ι α} [Preorder ι] [IsPredirectedOrder ι] {s t : ι → Set α}
     (hs : Monotone s) (ht : Monotone t) : ⋃ i, s i ∩ t i = (⋃ i, s i) ∩ ⋃ i, t i :=
   iSup_inf_of_monotone hs ht
 
-theorem iUnion_inter_of_antitone {ι α} [Preorder ι] [IsCodirectedOrder ι] {s t : ι → Set α}
+theorem iUnion_inter_of_antitone {ι α} [Preorder ι] [IsPrecodirectedOrder ι] {s t : ι → Set α}
     (hs : Antitone s) (ht : Antitone t) : ⋃ i, s i ∩ t i = (⋃ i, s i) ∩ ⋃ i, t i :=
   iSup_inf_of_antitone hs ht
 
-theorem iInter_union_of_monotone {ι α} [Preorder ι] [IsCodirectedOrder ι] {s t : ι → Set α}
+theorem iInter_union_of_monotone {ι α} [Preorder ι] [IsPrecodirectedOrder ι] {s t : ι → Set α}
     (hs : Monotone s) (ht : Monotone t) : ⋂ i, s i ∪ t i = (⋂ i, s i) ∪ ⋂ i, t i :=
   iInf_sup_of_monotone hs ht
 
-theorem iInter_union_of_antitone {ι α} [Preorder ι] [IsDirectedOrder ι] {s t : ι → Set α}
+theorem iInter_union_of_antitone {ι α} [Preorder ι] [IsPredirectedOrder ι] {s t : ι → Set α}
     (hs : Antitone s) (ht : Antitone t) : ⋂ i, s i ∪ t i = (⋂ i, s i) ∪ ⋂ i, t i :=
   iInf_sup_of_antitone hs ht
 
@@ -1217,21 +1217,21 @@ theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) 
 
 end Pi
 
-section Directed
+section Predirected
 
-theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
-    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, mem_iUnion, exists_imp]
+theorem predirectedOn_iUnion {r} {f : ι → Set α} (hd : Predirected (· ⊆ ·) f)
+    (h : ∀ x, PredirectedOn r (f x)) : PredirectedOn r (⋃ x, f x) := by
+  simp only [PredirectedOn, mem_iUnion, exists_imp]
   exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
     let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
     let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
 
-theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
-    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+theorem predirectedOn_sUnion {r} {S : Set (Set α)} (hd : PredirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, PredirectedOn r x) : PredirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
-  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
-end Directed
+  exact predirectedOn_iUnion (predirectedOn_iff_predirected.mp hd) (fun i ↦ h i.1 i.2)
+end Predirected
 
 end Set
 

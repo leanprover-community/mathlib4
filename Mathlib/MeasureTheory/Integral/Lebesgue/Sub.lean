@@ -104,30 +104,30 @@ theorem lintegral_iInf' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasu
 
 /-- **Monotone convergence theorem** for an infimum over a directed family and indexed by a
 countable type. -/
-theorem lintegral_iInf_directed_of_measurable [Countable β]
+theorem lintegral_iInf_predirected_of_measurable [Countable β]
     {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
-    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
+    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_predirected : Predirected (· ≥ ·) f) :
     ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
   · simp only [iInf_of_empty, lintegral_const,
       ENNReal.top_mul (Measure.measure_univ_ne_zero.mpr hμ)]
   inhabit β
-  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
+  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_predirected.sequence f n) a := by
     refine fun a =>
       le_antisymm (le_iInf fun n => iInf_le _ _)
         (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) ?_)
-    exact h_directed.sequence_le b a
+    exact h_predirected.sequence_le b a
   calc
     ∫⁻ a, ⨅ b, f b a ∂μ
-    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
-    _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
-      rw [lintegral_iInf ?_ h_directed.sequence_anti]
+    _ = ∫⁻ a, ⨅ n, (f ∘ h_predirected.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
+    _ = ⨅ n, ∫⁻ a, (f ∘ h_predirected.sequence f) n a ∂μ := by
+      rw [lintegral_iInf ?_ h_predirected.sequence_anti]
       · exact hf_int _
       · exact fun n => hf _
     _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
       refine le_antisymm (le_iInf fun b => ?_) (le_iInf fun n => ?_)
-      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
+      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_predirected.sequence_le b)
       · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
 
 theorem lintegral_tendsto_of_tendsto_of_antitone {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞}

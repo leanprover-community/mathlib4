@@ -132,7 +132,7 @@ section OrderedSemiring
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
 
-instance (priority := 100) : IsDirectedOrder R :=
+instance (priority := 100) : IsPredirectedOrder R :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
@@ -166,8 +166,8 @@ section OrderedRing
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
 
-instance (priority := 100) : IsCodirectedOrder R where
-  directed a b :=
+instance (priority := 100) : IsPrecodirectedOrder R where
+  predirected a b :=
     let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
     ⟨(min m n : ℤ), le_trans (Int.cast_mono <| min_le_left _ _) hm,
       le_trans (Int.cast_mono <| min_le_right _ _) hn⟩

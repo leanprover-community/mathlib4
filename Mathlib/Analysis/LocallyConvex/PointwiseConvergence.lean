@@ -124,7 +124,7 @@ variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module
 
 instance : LocallyConvexSpace R (E →SLₚₜ[σ] F) :=
   UniformConvergenceCLM.locallyConvexSpace R {(s : Set E) | Set.Finite s} ⟨∅, Set.finite_empty⟩
-    (directedOn_of_sup_mem fun _ _ => Set.Finite.union)
+    (predirectedOn_of_sup_mem fun _ _ => Set.Finite.union)
 
 end IsTopologicalAddGroup
 

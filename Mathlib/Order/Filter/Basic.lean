@@ -465,7 +465,7 @@ theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} 
   rw [iInf_subtype']
   exact eq_iInf_of_mem_iff_exists_mem fun {_} => by simp only [Subtype.exists, h, exists_prop]
 
-theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
+theorem iInf_sets_eq {f : ι → Filter α} (h : Predirected (· ≥ ·) f) [ne : Nonempty ι] :
     (iInf f).sets = ⋃ i, (f i).sets :=
   let ⟨i⟩ := ne
   let u :=
@@ -482,18 +482,19 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
   congr_arg Filter.sets this.symm
 
-theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
+theorem mem_iInf_of_predirected {f : ι → Filter α} (h : Predirected (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
   simp only [← Filter.mem_sets, iInf_sets_eq h, mem_iUnion]
 
-theorem mem_biInf_of_directed {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
-    (ne : s.Nonempty) {t : Set α} : (t ∈ ⨅ i ∈ s, f i) ↔ ∃ i ∈ s, t ∈ f i := by
+theorem mem_biInf_of_predirected {f : β → Filter α} {s : Set β}
+    (h : PredirectedOn (f ⁻¹'o (· ≥ ·)) s) (ne : s.Nonempty) {t : Set α} :
+    (t ∈ ⨅ i ∈ s, f i) ↔ ∃ i ∈ s, t ∈ f i := by
   haveI := ne.to_subtype
-  simp_rw [iInf_subtype', mem_iInf_of_directed h.directed_val, Subtype.exists, exists_prop]
+  simp_rw [iInf_subtype', mem_iInf_of_predirected h.predirected_val, Subtype.exists, exists_prop]
 
-theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
+theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : PredirectedOn (f ⁻¹'o (· ≥ ·)) s)
     (ne : s.Nonempty) : (⨅ i ∈ s, f i).sets = ⋃ i ∈ s, (f i).sets :=
-  ext fun t => by simp [mem_biInf_of_directed h ne]
+  ext fun t => by simp [mem_biInf_of_predirected h ne]
 
 @[simp]
 theorem sup_join {f₁ f₂ : Filter (Filter α)} : join f₁ ⊔ join f₂ = join (f₁ ⊔ f₂) :=
@@ -516,39 +517,41 @@ instance instCoframe : Coframe (Filter α) where
     grind
 
 /-- If `f : ι → Filter α` is directed, `ι` is not empty, and `∀ i, f i ≠ ⊥`, then `iInf f ≠ ⊥`.
-See also `iInf_neBot_of_directed` for a version assuming `Nonempty α` instead of `Nonempty ι`. -/
-theorem iInf_neBot_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Directed (· ≥ ·) f) :
+See also `iInf_neBot_of_predirected` for a version assuming `Nonempty α` instead of `Nonempty ι`. -/
+theorem iInf_neBot_of_predirected' {f : ι → Filter α} [Nonempty ι] (hd : Predirected (· ≥ ·) f) :
     (∀ i, NeBot (f i)) → NeBot (iInf f) :=
   not_imp_not.1 <| by simpa only [not_forall, not_neBot, ← empty_mem_iff_bot,
-    mem_iInf_of_directed hd] using id
+    mem_iInf_of_predirected hd] using id
 
 /-- If `f : ι → Filter α` is directed, `α` is not empty, and `∀ i, f i ≠ ⊥`, then `iInf f ≠ ⊥`.
-See also `iInf_neBot_of_directed'` for a version assuming `Nonempty ι` instead of `Nonempty α`. -/
-theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : Directed (· ≥ ·) f)
+See also `iInf_neBot_of_predirected'` for a version assuming `Nonempty ι` instead of
+`Nonempty α`. -/
+theorem iInf_neBot_of_predirected {f : ι → Filter α} [hn : Nonempty α] (hd : Predirected (· ≥ ·) f)
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
     simp [iInf_of_empty f, top_ne_bot]
-  · exact iInf_neBot_of_directed' hd hb
+  · exact iInf_neBot_of_predirected' hd hb
 
-theorem sInf_neBot_of_directed' {s : Set (Filter α)} (hne : s.Nonempty) (hd : DirectedOn (· ≥ ·) s)
-    (hbot : ⊥ ∉ s) : NeBot (sInf s) :=
+theorem sInf_neBot_of_predirected' {s : Set (Filter α)} (hne : s.Nonempty)
+    (hd : PredirectedOn (· ≥ ·) s) (hbot : ⊥ ∉ s) : NeBot (sInf s) :=
   (sInf_eq_iInf' s).symm ▸
-    @iInf_neBot_of_directed' _ _ _ hne.to_subtype hd.directed_val fun ⟨_, hf⟩ =>
+    @iInf_neBot_of_predirected' _ _ _ hne.to_subtype hd.predirected_val fun ⟨_, hf⟩ =>
       ⟨ne_of_mem_of_not_mem hf hbot⟩
 
-theorem sInf_neBot_of_directed [Nonempty α] {s : Set (Filter α)} (hd : DirectedOn (· ≥ ·) s)
+theorem sInf_neBot_of_predirected [Nonempty α] {s : Set (Filter α)} (hd : PredirectedOn (· ≥ ·) s)
     (hbot : ⊥ ∉ s) : NeBot (sInf s) :=
   (sInf_eq_iInf' s).symm ▸
-    iInf_neBot_of_directed hd.directed_val fun ⟨_, hf⟩ => ⟨ne_of_mem_of_not_mem hf hbot⟩
+    iInf_neBot_of_predirected hd.predirected_val fun ⟨_, hf⟩ => ⟨ne_of_mem_of_not_mem hf hbot⟩
 
-theorem iInf_neBot_iff_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Directed (· ≥ ·) f) :
+theorem iInf_neBot_iff_of_predirected' {f : ι → Filter α} [Nonempty ι]
+    (hd : Predirected (· ≥ ·) f) :
     NeBot (iInf f) ↔ ∀ i, NeBot (f i) :=
-  ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_directed' hd⟩
+  ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_predirected' hd⟩
 
-theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Directed (· ≥ ·) f) :
+theorem iInf_neBot_iff_of_predirected {f : ι → Filter α} [Nonempty α] (hd : Predirected (· ≥ ·) f) :
     NeBot (iInf f) ↔ ∀ i, NeBot (f i) :=
-  ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_directed hd⟩
+  ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_predirected hd⟩
 
 /-! #### `principal` equations -/
 

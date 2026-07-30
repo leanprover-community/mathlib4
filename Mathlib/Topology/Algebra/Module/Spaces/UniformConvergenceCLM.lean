@@ -267,7 +267,7 @@ theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     ⟨rfl⟩ fun u s hs => (h𝔖₃ s hs).image u
 
 theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F]
-    {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
+    {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : PredirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SLᵤ[σ, 𝔖] F)).HasBasis
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
@@ -278,7 +278,7 @@ theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup 
   exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap DFunLike.coe
 
 theorem hasBasis_nhds_zero [TopologicalSpace F] [IsTopologicalAddGroup F]
-    (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
+    (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : PredirectedOn (· ⊆ ·) 𝔖) :
     (𝓝 (0 : E →SLᵤ[σ, 𝔖] F)).HasBasis
       (fun SV : Set E × Set F => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 0 : Filter F)) fun SV =>
       { f : E →SLᵤ[σ, 𝔖] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=

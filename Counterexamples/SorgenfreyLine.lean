@@ -77,7 +77,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
     ← inf_iInf, ← iInf_inf, this, iInf_subtype]
   suffices (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio from this.principal_inf _
   refine hasBasis_biInf_principal ?_ nonempty_Ioi
-  exact directedOn_iff_directed.2 <| Monotone.directed_ge fun x y hxy ↦ Iio_subset_Iio hxy
+  exact predirectedOn_iff_predirected.2 <| Monotone.predirected_ge fun x y hxy ↦ Iio_subset_Iio hxy
 
 theorem nhds_basis_Ico_rat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by

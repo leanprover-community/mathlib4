@@ -401,27 +401,28 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
     AlgebraicIndependent R fun x : f '' s => (x : A) := by
   convert! AlgebraicIndependent.image_of_comp s f id hs
 
-theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
-    (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
+theorem algebraicIndependent_iUnion_of_predirected {η : Type*} [Nonempty η] {s : η → Set A}
+    (hs : Predirected (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
   refine algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => ?_
   rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩
   rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
   exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
 
-theorem algebraicIndependent_sUnion_of_directed {s : Set (Set A)} (hsn : s.Nonempty)
-    (hs : DirectedOn (· ⊆ ·) s) (h : ∀ a ∈ s, AlgebraicIndependent R ((↑) : a → A)) :
+theorem algebraicIndependent_sUnion_of_predirected {s : Set (Set A)} (hsn : s.Nonempty)
+    (hs : PredirectedOn (· ⊆ ·) s) (h : ∀ a ∈ s, AlgebraicIndependent R ((↑) : a → A)) :
     AlgebraicIndependent R ((↑) : ⋃₀ s → A) := by
   letI : Nonempty s := Nonempty.to_subtype hsn
   rw [sUnion_eq_iUnion]
-  exact algebraicIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+  exact algebraicIndependent_iUnion_of_predirected hs.predirected_val (by simpa using h)
 
 theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
     (hs : AlgebraicIndepOn R id s) : ∃ u, s ⊆ u ∧
       Maximal (fun (x : Set A) ↦ AlgebraicIndepOn R id x ∧ x ⊆ t) u := by
   refine zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ u ⊆ t}
     (fun c hc chainc hcn ↦ ⟨⋃₀ c, ⟨?_, ?_⟩, fun _ ↦ subset_sUnion_of_mem⟩) s ⟨hs, hst⟩
-  · exact algebraicIndependent_sUnion_of_directed hcn chainc.directedOn (fun x hxc ↦ (hc hxc).1)
+  · exact algebraicIndependent_sUnion_of_predirected hcn chainc.predirectedOn
+      (fun x hxc ↦ (hc hxc).1)
   exact fun x ⟨w, hyc, hwy⟩ ↦ (hc hyc).2 hwy
 
 theorem AlgebraicIndependent.repr_ker (hx : AlgebraicIndependent R x) :

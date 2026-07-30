@@ -301,7 +301,7 @@ lemma map_finite_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [
 
 @[to_dual]
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsDirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsPredirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
   induction s, hs using Set.Finite.induction_on with
   | empty => simp [iSup_const]
@@ -312,19 +312,19 @@ theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonemp
 
 @[to_dual]
 theorem Finite.iSup_biInf_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsCodirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsPrecodirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j :=
   @Finite.iSup_biInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
 
 @[to_dual]
 theorem _root_.iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsDirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
+    [IsPredirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j := by
   simpa only [iInf_univ] using finite_univ.iSup_biInf_of_monotone fun i _ => hf i
 
 @[to_dual]
 theorem _root_.iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsCodirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
+    [IsPrecodirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j :=
   @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
 
@@ -334,25 +334,25 @@ theorem _root_.iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder �
 @[deprecated (since := "2026-02-03")] protected alias iInf_iSup_of_antitone := iInf_iSup_of_antitone
 
 /-- An increasing union distributes over finite intersection. -/
-theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirectedOrder ι']
+theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsPredirectedOrder ι']
     [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
     ⋃ j : ι', ⋂ i : ι, s i j = ⋂ i : ι, ⋃ j : ι', s i j :=
   iSup_iInf_of_monotone hs
 
 /-- A decreasing union distributes over finite intersection. -/
 theorem iUnion_iInter_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι']
-    [IsCodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
+    [IsPrecodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
     ⋃ j : ι', ⋂ i : ι, s i j = ⋂ i : ι, ⋃ j : ι', s i j :=
   iSup_iInf_of_antitone hs
 
 /-- An increasing intersection distributes over finite union. -/
 theorem iInter_iUnion_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι']
-    [IsCodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
+    [IsPrecodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
     ⋂ j : ι', ⋃ i : ι, s i j = ⋃ i : ι, ⋂ j : ι', s i j :=
   iInf_iSup_of_monotone hs
 
 /-- A decreasing intersection distributes over finite union. -/
-theorem iInter_iUnion_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirectedOrder ι']
+theorem iInter_iUnion_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsPredirectedOrder ι']
     [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
     ⋂ j : ι', ⋃ i : ι, s i j = ⋃ i : ι, ⋂ j : ι', s i j :=
   iInf_iSup_of_antitone hs
@@ -411,7 +411,7 @@ theorem Finite.biSup_iInf_eq {ι : Type v} {κ : ι → Sort w} [Nonempty (∀ a
 
 section
 
-variable [Preorder α] [IsDirectedOrder α] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsPredirectedOrder α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above. -/
 @[to_dual /-- A finite set is bounded below. -/]
@@ -456,8 +456,8 @@ lemma Set.finite_sdiff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x
 @[deprecated (since := "2026-06-03")]
 alias Set.finite_diff_iUnion_Ioo' := Set.finite_sdiff_iUnion_Ioo'
 
-lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
-    {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
+lemma Predirected.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
+    {f : ι → Set α} (h : Predirected (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
     ∃ i, (s : Set α) ⊆ f i := by
   induction s using Finset.cons_induction with
   | empty => simp
@@ -467,18 +467,18 @@ lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonem
     rcases h i j with ⟨k, hik, hjk⟩
     exact ⟨k, hik hi, hj.trans hjk⟩
 
-theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}
-    {c : Set ι} (hn : c.Nonempty) (hc : DirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}
+theorem PredirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}
+    {c : Set ι} (hn : c.Nonempty) (hc : PredirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}
     (hs : (s : Set α) ⊆ ⋃ i ∈ c, f i) : ∃ i ∈ c, (s : Set α) ⊆ f i := by
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
-  simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+  simpa using (predirected_comp.2 hc.predirected_val).exists_mem_subset_of_finset_subset_biUnion hs
 
-theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
-    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+theorem PredirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : PredirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
     (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
   rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
-  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  have := PredirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
   exact hs.coe_toFinset ▸ this
 
 end LinearOrder

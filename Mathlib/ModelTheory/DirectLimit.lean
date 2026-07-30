@@ -122,13 +122,13 @@ namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
 @[instance_reducible]
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid (Σˣ f) where
+def setoid [DirectedSystem G fun i j h => f i j h] [IsPredirectedOrder ι] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
-        obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
+        obtain ⟨ijk, hijijk, hjkijk⟩ := predirected_of (· ≤ ·) ij jk
         refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
         rw [← DirectedSystem.map_map _ hiij hijijk, hij, DirectedSystem.map_map]
         rw [← DirectedSystem.map_map _ hkjk hjkijk, ← hjk, DirectedSystem.map_map]⟩
@@ -136,7 +136,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
 -/
 @[instance_reducible]
-noncomputable def sigmaStructure [IsDirectedOrder ι] [Nonempty ι] : L.Structure (Σˣ f) where
+noncomputable def sigmaStructure [IsPredirectedOrder ι] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
       funMap F
@@ -150,18 +150,18 @@ noncomputable def sigmaStructure [IsDirectedOrder ι] [Nonempty ι] : L.Structur
 end DirectLimit
 
 /-- The direct limit of a directed system is the structures glued together along the embeddings. -/
-def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] :=
+def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsPredirectedOrder ι] :=
   Quotient (DirectLimit.setoid G f)
 
 attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
-instance [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] [Inhabited ι]
+instance [DirectedSystem G fun i j h => f i j h] [IsPredirectedOrder ι] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
   ⟨⟦⟨default, default⟩⟧⟩
 
 namespace DirectLimit
 
-variable [IsDirectedOrder ι] [DirectedSystem G fun i j h => f i j h]
+variable [IsPredirectedOrder ι] [DirectedSystem G fun i j h => f i j h]
 
 theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
@@ -169,7 +169,7 @@ theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
   cases y
   refine ⟨fun xy => ?_, fun xy => ⟨i, hx, hy, xy⟩⟩
   obtain ⟨j, _, _, h⟩ := xy
-  obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
+  obtain ⟨k, ik, jk⟩ := predirected_of (· ≤ ·) i j
   have h := congr_arg (f j k jk) h
   apply (f i k ik).injective
   rw [DirectedSystem.map_map, DirectedSystem.map_map] at *
@@ -178,14 +178,14 @@ theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
 theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
     Structure.Sigma.mk f i (funMap F (unify f x i hi)) ≈ .mk f j (funMap F (unify f x j hj)) := by
-  obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
+  obtain ⟨k, ik, jk⟩ := predirected_of (· ≤ ·) i j
   refine ⟨k, ik, jk, ?_⟩
   rw [(f i k ik).map_fun, (f j k jk).map_fun, comp_unify, comp_unify]
 
 theorem relMap_unify_equiv {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R (unify f x i hi) = RelMap R (unify f x j hj) := by
-  obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
+  obtain ⟨k, ik, jk⟩ := predirected_of (· ≤ ·) i j
   rw [← (f i k ik).map_rel, comp_unify, ← (f j k jk).map_rel, comp_unify]
 
 variable [Nonempty ι]
@@ -233,7 +233,7 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
     funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
   simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
+    predirected_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
   refine ⟨k, jk, ik, ?_⟩
   simp only [Embedding.map_fun, comp_unify]
   rfl
@@ -333,12 +333,12 @@ noncomputable def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j
     DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
-      obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
+      obtain ⟨i, hx, hy⟩ := predirected_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
       exact congr_arg _ ((equiv_iff ..).1 xy)
   inj' x y xy := by
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
-    obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
+    obtain ⟨i, hx, hy⟩ := predirected_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq_iff_equiv, equiv_iff G f hx hy]
     exact (g i).injective xy
@@ -405,7 +405,7 @@ theorem equiv_lift_of {i : ι} (x : G i) :
 variable {L ι G f}
 
 /-- The direct limit of countably many countably generated structures is countably generated. -/
-theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
+theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsPredirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
@@ -421,7 +421,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonem
       trivial
     · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 
-instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
+instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsPredirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) :=
@@ -431,7 +431,7 @@ end DirectLimit
 
 section Substructure
 
-variable [Nonempty ι] [IsDirectedOrder ι]
+variable [Nonempty ι] [IsPredirectedOrder ι]
 variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where

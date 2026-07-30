@@ -482,12 +482,13 @@ theorem nonempty_inter_of_measure_lt_add' {m : MeasurableSpace α} (μ : Measure
 /-- Continuity from below:
 the measure of the union of a directed sequence of (not necessarily measurable) sets
 is the supremum of the measures. -/
-theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+theorem _root_.Predirected.measure_iUnion [Countable ι] {s : ι → Set α}
+    (hd : Predirected (· ⊆ ·) s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
   -- WLOG, `ι = ℕ`
   rcases Countable.exists_injective_nat ι with ⟨e, he⟩
   generalize ht : Function.extend e s ⊥ = t
-  replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot he
+  replace hd : Predirected (· ⊆ ·) t := ht ▸ hd.extend_bot he
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
     simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion, iSup_extend_bot he,
       Function.comp_def, Pi.bot_apply, bot_eq_empty, measure_empty] at this
@@ -517,7 +518,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : 
 the measure of the union of a monotone family of sets is equal to the supremum of their measures.
 The theorem assumes that the `atTop` filter on the index set is countably generated,
 so it works for a family indexed by a countable type, as well as `ℝ`. -/
-theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirectedOrder ι]
+theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsPredirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
   cases isEmpty_or_nonempty ι with
@@ -525,38 +526,38 @@ theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirectedOrder ι]
   | inr _ =>
     rcases exists_seq_monotone_tendsto_atTop_atTop ι with ⟨x, hxm, hx⟩
     rw [← hs.iUnion_comp_tendsto_atTop hx, ← Monotone.iSup_comp_tendsto_atTop _ hx]
-    exacts [(hs.comp hxm).directed_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
+    exacts [(hs.comp hxm).predirected_le.measure_iUnion, fun _ _ h ↦ measure_mono (hs h)]
 
-theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsCodirectedOrder ι]
+theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsPrecodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) :=
   hs.dual_left.measure_iUnion
 
 /-- Continuity from below: the measure of the union of a sequence of
 (not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
-theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirectedOrder ι]
+theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsPredirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {f : ι → Set α} :
     μ (⋃ i, f i) = ⨆ i, μ (accumulate f i) := by
   rw [← iUnion_accumulate]
   exact monotone_accumulate.measure_iUnion
 
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
-    (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
+    (hd : PredirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
   haveI := ht.to_subtype
-  rw [biUnion_eq_iUnion, hd.directed_val.measure_iUnion, ← iSup_subtype'']
+  rw [biUnion_eq_iUnion, hd.predirected_val.measure_iUnion, ← iSup_subtype'']
 
 /-- **Continuity from above**:
 the measure of the intersection of a directed downwards countable family of measurable sets
 is the infimum of the measures. -/
-theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
-    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) :
+theorem _root_.Predirected.measure_iInter [Countable ι] {s : ι → Set α}
+    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Predirected (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   rcases hfin with ⟨k, hk⟩
   have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
   rw [← ENNReal.sub_sub_cancel hk (iInf_le (fun i => μ (s i)) k), ENNReal.sub_iInf, ←
     ENNReal.sub_sub_cancel hk (measure_mono (iInter_subset _ k)), ←
     measure_sdiff (iInter_subset _ k) (.iInter h) (this _ (iInter_subset _ k)),
-    sdiff_iInter, Directed.measure_iUnion]
+    sdiff_iInter, Predirected.measure_iUnion]
   · congr 1
     refine le_antisymm (iSup_mono' fun i => ?_) (iSup_mono fun i => le_measure_sdiff)
     rcases hd i k with ⟨j, hji, hjk⟩
@@ -569,7 +570,7 @@ theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
 the measure of the intersection of a monotone family of measurable sets
 indexed by a type with countably generated `atBot` filter
 is equal to the infimum of the measures. -/
-theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
+theorem _root_.Monotone.measure_iInter [Preorder ι] [IsPrecodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s)
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
@@ -579,7 +580,7 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
   calc
     ⨅ i, μ (s i) ≤ ⨅ n, μ (s (x n)) := le_iInf_comp (μ ∘ s) x
     _ = μ (⋂ n, s (x n)) := by
-      refine .symm <| (hs.comp_antitone hxm).directed_ge.measure_iInter (fun n ↦ hsm _) ?_
+      refine .symm <| (hs.comp_antitone hxm).predirected_ge.measure_iInter (fun n ↦ hsm _) ?_
       rcases hfin with ⟨k, hk⟩
       rcases (hx.eventually_le_atBot k).exists with ⟨n, hn⟩
       exact ⟨n, ne_top_of_le_ne_top hk <| measure_mono <| hs hn⟩
@@ -591,7 +592,7 @@ theorem _root_.Monotone.measure_iInter [Preorder ι] [IsCodirectedOrder ι]
 /-- Continuity from above (a.e. version):
 the measure of the intersection of a family of sets that is almost everywhere monotone
 is equal to the infimum of the measures. -/
-theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
+theorem measure_iInter_of_ae_monotone [Preorder ι] [IsPrecodirectedOrder ι]
     [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Monotone (ω ∈ s ·))
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
@@ -613,7 +614,7 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
 the measure of the intersection of an antitone family of measurable sets
 indexed by a type with countably generated `atTop` filter
 is equal to the infimum of the measures. -/
-theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
+theorem _root_.Antitone.measure_iInter [Preorder ι] [IsPredirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s)
     (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) :=
@@ -622,7 +623,7 @@ theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirectedOrder ι]
 /-- Continuity from above (a.e. version):
 the measure of the intersection of a family of sets that is almost everywhere antitone
 is equal to the infimum of the measures. -/
-lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
+lemma measure_iInter_of_ae_antitone [Preorder ι] [IsPredirectedOrder ι]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : ∀ᵐ ω ∂μ, Antitone (ω ∈ s ·))
     (hsm : ∀ (i : ι), NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
@@ -632,7 +633,7 @@ lemma measure_iInter_of_ae_antitone [Preorder ι] [IsDirectedOrder ι]
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
 theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α}
-    {μ : Measure α} [Countable ι] [Preorder ι] [IsDirectedOrder ι]
+    {μ : Measure α} [Countable ι] [Preorder ι] [IsPredirectedOrder ι]
     {f : ι → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (hfin : ∃ i, μ (f i) ≠ ∞) :
     μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
   rw [← Antitone.measure_iInter]
@@ -1480,13 +1481,14 @@ theorem ae_zero {_m0 : MeasurableSpace α} : ae (0 : Measure α) = ⊥ :=
 section Intervals
 
 theorem biSup_measure_Iic [Preorder α] {s : Set α} (hsc : s.Countable)
-    (hst : ∀ x : α, ∃ y ∈ s, x ≤ y) (hdir : DirectedOn (· ≤ ·) s) :
+    (hst : ∀ x : α, ∃ y ∈ s, x ≤ y) (hdir : PredirectedOn (· ≤ ·) s) :
     ⨆ x ∈ s, μ (Iic x) = μ univ := by
   rw [← measure_biUnion_eq_iSup hsc]
   · congr
     simp only [← bex_def] at hst
     exact iUnion₂_eq_univ_iff.2 hst
-  · exact directedOn_iff_directed.2 (hdir.directed_val.mono_comp _ fun x y => Iic_subset_Iic.2)
+  · exact predirectedOn_iff_predirected.2
+      (hdir.predirected_val.mono_comp _ fun x y => Iic_subset_Iic.2)
 
 theorem tendsto_measure_Ico_atTop [Preorder α] [NoMaxOrder α]
     [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :

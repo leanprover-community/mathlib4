@@ -105,7 +105,7 @@ instance instLE : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
-lemma directed : Directed (· ≤ ·) c := directedOn_range.1 c.isChain_range.directedOn
+lemma predirected : Predirected (· ≤ ·) c := predirectedOn_range.1 c.isChain_range.predirectedOn
 
 /-- `map` function for `Chain` -/
 @[simps toOrderHom]
@@ -273,7 +273,7 @@ lemma ωScottContinuous.monotone (h : ωScottContinuous f) : Monotone f :=
 lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
     IsLUB (Set.range (c.map ⟨f, hf.monotone⟩)) (f (ωSup c)) := by
   simpa [Set.range_comp]
-    using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
+    using hf (by simp) (Set.range_nonempty _) (isChain_range c).predirectedOn (isLUB_range_ωSup c)
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuousOn.id

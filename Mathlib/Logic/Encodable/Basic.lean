@@ -542,41 +542,41 @@ instance {α} [Encodable α] : Std.Total (Encodable.encode' α ⁻¹'o (· ≤ �
 
 end Encodable
 
-namespace Directed
+namespace Predirected
 
 open Encodable
 
 variable {α : Type*} {β : Type*} [Encodable α] [Inhabited α]
 
-/-- Given a `Directed r` function `f : α → β` defined on an encodable inhabited type,
+/-- Given a `Predirected r` function `f : α → β` defined on an encodable inhabited type,
 construct a noncomputable sequence such that `r (f (x n)) (f (x (n + 1)))`
 and `r (f a) (f (x (encode a + 1))`. -/
-protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (hf : Directed r f) : ℕ → α
+protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (hf : Predirected r f) : ℕ → α
   | 0 => default
   | n + 1 =>
-    let p := Directed.sequence f hf n
+    let p := Predirected.sequence f hf n
     match (decode n : Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
 
-theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
+theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Predirected r f) (n : ℕ) :
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
-  dsimp [Directed.sequence]
+  dsimp [Predirected.sequence]
   generalize hf.sequence f n = p
   rcases (decode n : Option α) with - | a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 
-theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
+theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Predirected r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, encodek]
+  simp only [Predirected.sequence, encodek]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}
 
 section
 
-variable (hf : Directed (· ≤ ·) f)
+variable (hf : Predirected (· ≤ ·) f)
 
 theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
   monotone_nat_of_le_succ <| hf.sequence_mono_nat
@@ -588,7 +588,7 @@ end
 
 section
 
-variable (hf : Directed (· ≥ ·) f)
+variable (hf : Predirected (· ≥ ·) f)
 
 theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
   antitone_nat_of_succ_le <| hf.sequence_mono_nat
@@ -598,7 +598,7 @@ theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f 
 
 end
 
-end Directed
+end Predirected
 
 section Quotient
 

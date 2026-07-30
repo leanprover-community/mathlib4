@@ -952,14 +952,14 @@ lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
 
 namespace StarSubalgebra
 
-section directed
+section predirected
 
 variable {R}
 
-theorem coe_iSup_of_directed {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
-    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+theorem coe_iSup_of_predirected {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
+    (dir : Predirected (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : StarSubalgebra R A :=
-    { __ := NonUnitalStarSubalgebra.copy _ _ (NonUnitalStarSubalgebra.coe_iSup_of_directed
+    { __ := NonUnitalStarSubalgebra.copy _ _ (NonUnitalStarSubalgebra.coe_iSup_of_predirected
         (S := fun i ↦ (S i).toNonUnitalStarSubalgebra) dir).symm
       algebraMap_mem' x :=
         let ⟨i⟩ := ‹Nonempty ι›
@@ -969,16 +969,16 @@ theorem coe_iSup_of_directed {ι : Type*} [Nonempty ι] {S : ι → StarSubalgeb
   this.symm ▸ rfl
 
 theorem isMulCommutative_iSup {ι : Type*} [Nonempty ι] {S : ι → StarSubalgebra R A}
-    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Predirected (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : StarSubalgebra R A) := by
-  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
-    Subalgebra.coe_iSup_of_directed dir] using Subalgebra.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_predirected dir,
+    Subalgebra.coe_iSup_of_predirected dir] using Subalgebra.isMulCommutative_iSup dir
 
-instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsPredirectedOrder ι]
     {S : ι →o StarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : StarSubalgebra R A) :=
-  isMulCommutative_iSup S.monotone.directed_le
+  isMulCommutative_iSup S.monotone.predirected_le
 
-end directed
+end predirected
 
 end StarSubalgebra
