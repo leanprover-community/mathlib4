@@ -218,12 +218,15 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
         (hr <| closure_ball_subset_closedBall hx).1.differentiableWithinAt) fun x hx =>
       (hr <| ball_subset_closedBall hx).2⟩
 
-theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
+theorem isOpen_setOfPred_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and ?_
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_mem_nhds_and_isMaxOn_norm := isOpen_setOfPred_mem_nhds_and_isMaxOn_norm
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
@@ -235,8 +238,8 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
   have hV : ∀ x ∈ V, ‖f x‖ = ‖f c‖ := fun x hx => le_antisymm (hm hx.1) (hx.2 hcU)
   suffices U ⊆ V from fun x hx => hV x (this hx)
   have hVo : IsOpen V := by
-    simpa only [ho.mem_nhds_iff, setOf_and, setOf_mem_eq]
-      using isOpen_setOf_mem_nhds_and_isMaxOn_norm hd
+    simpa only [ho.mem_nhds_iff, ofPred_and, ofPred_mem_eq]
+      using isOpen_setOfPred_mem_nhds_and_isMaxOn_norm hd
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, hm⟩
   set W := U ∩ {z | ‖f z‖ ≠ ‖f c‖}
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne

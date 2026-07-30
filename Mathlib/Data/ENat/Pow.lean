@@ -39,7 +39,7 @@ lemma epow_def {x y : ℕ∞} :
     x ^ y = if y < ⊤ then x ^ y.toNat else if x = 0 then 0 else if x = 1 then 1 else ⊤ := by
   cases y with
   | top => simp only [lt_self_iff_false, ↓reduceIte]; rfl
-  | coe n => simp only [coe_lt_top, ↓reduceIte, toNat_coe]; rfl
+  | coe n => simp only [natCast_lt_top, ↓reduceIte, toNat_natCast]; rfl
 
 @[simp, norm_cast]
 lemma epow_natCast {y : ℕ} : x ^ (y : ℕ∞) = x ^ y := rfl
@@ -68,11 +68,11 @@ lemma top_epow (h : y ≠ 0) : (⊤ : ℕ∞) ^ y = ⊤ := by
 
 @[simp]
 lemma epow_zero : x ^ (0 : ℕ∞) = 1 := by
-  rw [← coe_zero, epow_natCast, pow_zero]
+  rw [← natCast_zero, epow_natCast, pow_zero]
 
 @[simp]
 lemma epow_one : x ^ (1 : ℕ∞) = x := by
-  rw [← coe_one, epow_natCast, pow_one]
+  rw [← natCast_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
   have : (0 : ℕ∞) ≤ 1 := zero_le_one

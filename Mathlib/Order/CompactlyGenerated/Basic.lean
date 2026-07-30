@@ -452,7 +452,7 @@ lemma iSupIndep_iff_supIndep {ι : Type*} {f : ι → α} :
   classical
   have hf : Set.InjOn f {i : ι | f i ≠ ⊥} := by
     by_contra! hf
-    simp_all only [Set.InjOn, ne_eq, Set.mem_setOf_eq, not_forall]
+    simp_all only [Set.InjOn, ne_eq, Set.mem_ofPred_eq, not_forall]
     obtain ⟨x₁, hx₁, x₂, hx₂, hfeq, hneq⟩ := hf
     specialize h ({x₁, x₂} : Finset ι)
     rw [Finset.supIndep_pair hneq, disjoint_iff, hfeq, inf_idem (f x₂)] at h

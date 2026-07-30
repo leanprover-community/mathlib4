@@ -283,7 +283,7 @@ def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 
 @[simp]
-theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.restrict f :=
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.domRestrict f :=
   rfl
 
 @[simp]
@@ -298,7 +298,7 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
 theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
   DFunLike.ext' <| (map_continuous f).ext_on hs (map_continuous g) <|
-    Set.restrict_eq_restrict_iff.1 <| congr_arg DFunLike.coe h
+    Set.domRestrict_eq_domRestrict_iff.1 <| congr_arg DFunLike.coe h
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
@@ -335,19 +335,17 @@ lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Con
 
 lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ContinuousOn f s) :
-    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
-  mkD_of_continuous hf.restrict
+    mkD (s.domRestrict f) g = ⟨s.domRestrict f, hf.domRestrict⟩ := mkD_of_continuous hf.domRestrict
 
 lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     (hf : ¬ ContinuousOn f s) :
-    mkD (s.restrict f) g = g := by
-  rw [continuousOn_iff_continuous_restrict] at hf
+    mkD (s.domRestrict f) g = g := by
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
-    mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
+    mkD (s.domRestrict f) g x = f x := by rw [mkD_of_continuousOn hf, coe_mk, Set.domRestrict_apply]
 
 lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
   mkD_of_continuous f.continuous
@@ -367,8 +365,8 @@ noncomputable def liftCover : C(α, β) :=
   haveI H : ⋃ i, S i = Set.univ :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
-    rw [continuousOn_iff_continuous_restrict]
-    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
+    rw [continuousOn_iff_continuous_domRestrict]
+    simpa +unfoldPartialApp only [Set.domRestrict, Set.liftCover_coe]
       using map_continuous (φ i)
 
 variable {S φ hφ hS}
