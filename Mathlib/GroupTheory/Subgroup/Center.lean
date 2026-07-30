@@ -68,11 +68,6 @@ theorem map_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
   Submonoid.map_center_le_center hf
 
 @[to_additive]
-theorem center_le_comap_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
-    (hf : Function.Surjective f) : center G ≤ comap f (center H) :=
-  Submonoid.center_le_comap_center hf
-
-@[to_additive]
 theorem comap_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F}
     (hf : Function.Injective f) : comap f (center H) ≤ center G :=
   Submonoid.comap_center_le_center hf
