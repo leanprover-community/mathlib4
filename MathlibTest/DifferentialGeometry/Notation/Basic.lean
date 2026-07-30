@@ -31,27 +31,27 @@ section TotalSpace
 variable {σ : Π x : M, V x}
   {σ' : (x : E) → Trivial E E' x} {σ'' : (y : E) → Trivial E E' y} {s : E → E'}
 
-/-- info: T% σ : M → TotalSpace F V -/
+/-- info: (T% σ) : M → TotalSpace F V -/
 #guard_msgs in
 #check T% σ
 
 -- Note how the name of the bound variable `x` resp. `y` would have been preserved,
 -- except for the delaborator collapsing this to `T%` again.
-/-- info: T% σ' : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% σ') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ'
 
-/-- info: T% σ'' : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% σ'') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ''
 
-/-- info: T% s : E → TotalSpace E' (Trivial E E') -/
+/-- info: (T% s) : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% s
 
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
-/-- info: T% X : M → TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% X
 
@@ -60,10 +60,10 @@ variable {x : M}
 -- Testing precedence.
 section precedence
 
-/-- info: T% σ x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: T% σ x : TotalSpace F V -/
+/-- info: (T% σ) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -75,12 +75,13 @@ section precedence
 variable {ι j : Type*}
 
 -- Partially applied.
-/-- info: T% s : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
+/-- info: (T% s) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → (x : M) → V x} in
 #check T% s
 
-/-- info: T% s i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
+-- Note: pre-existing bug in the delaborator, should be `T% (s i)`!
+/-- info: (T% s) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x)) -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
 #check T% s i
@@ -102,44 +103,44 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 
 -- Applying a section to an argument.
 -- This application is not beta-reduced, because of the parentheses around the T%.
-/-- info: T% X x : TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
 -- We apply head-beta reduction of the applied form: there is nothing to do here.
-/-- info: T% X x : TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
 -- This variant is beta-reduced.
-/-- info: T% X x : TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 
-/-- info: T% X : M → TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
 -- As is this version.
-/-- info: T% X : M → TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
 -- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
 -- we apply head beta reduction to the application.
-/-- info: T% X x : TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
 -- Parentheses around the argument are not required right now.
-/-- info: T% X x : TotalSpace E (TangentSpace I) -/
+/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`T% X` is a function into `TotalSpace E`
+`(T% X)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
@@ -148,7 +149,7 @@ hint: you may be missing suitable typeclass assumptions
 
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`T% X` is a function into `TotalSpace E`
+`(T% X)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
@@ -160,7 +161,7 @@ section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
-/-- info: T% σ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 #check T% σ
 
@@ -180,7 +181,7 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check T% σ
 
-/-- info: T% σ : B → TotalSpace F E -/
+/-- info: (T% σ) : B → TotalSpace F E -/
 #guard_msgs in
 variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
@@ -1482,7 +1483,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 
 set_option pp.notation true in
 /--
-info: T% f : Unit → TotalSpace Unit (Trivial Unit Unit)
+info: (T% f) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
 trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/

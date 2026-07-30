@@ -194,17 +194,17 @@ section interaction
 
 -- Note: these tests might be incomplete; extend as needed!
 
-/-- info: MDifferentiableAt I I.tangent T% X : M → Prop -/
+/-- info: MDifferentiableAt I I.tangent (T% X) : M → Prop -/
 #guard_msgs in
 #check MDiffAt (T% X)
 
-/-- info: MDifferentiableAt I (I.prod (modelWithCornersSelf 𝕜 F)) T% σ : M → Prop -/
+/-- info: MDifferentiableAt I (I.prod (modelWithCornersSelf 𝕜 F)) (T% σ) : M → Prop -/
 #guard_msgs in
 #check MDiffAt (T% σ)
 
 /--
 info: MDifferentiableAt (modelWithCornersSelf 𝕜 E) ((modelWithCornersSelf 𝕜 E).prod (modelWithCornersSelf 𝕜 E'))
-  T% σ' : E → Prop
+  (T% σ') : E → Prop
 -/
 #guard_msgs in
 #check MDiffAt (T% σ')

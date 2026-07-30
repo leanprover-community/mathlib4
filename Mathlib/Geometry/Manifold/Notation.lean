@@ -1053,7 +1053,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let σe := b.getAppArgs[4]!.getAppFn
   guard <| σe.isFVar
   let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
-  `(T% $σs) >>= annotateGoToSyntaxDef
+  `((T% $σs)) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
 @[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
