@@ -112,84 +112,56 @@ lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
   simp [linearIsometryAux, toKerOrthogonal]
 
 theorem linearIsometry_surjective : Function.Surjective (linearIsometry K K') := by
-  set W := WithLp 2 ((OfKernel K) × (OfKernel K'))
-  set L : Submodule 𝕜 W := (generator K K').ker with hLdef
-  set S : Set W := {p | ∃ (x : X) (v : V),
-      p = WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)} with hSdef
-  set T : Submodule 𝕜 W := Submodule.span 𝕜 S with hTdef
-  -- `T` lies inside the orthogonal complement of `L`.
-  have h1 : T ≤ Lᗮ := by
-    refine Submodule.span_le.mpr ?_
-    rintro p ⟨x, v, rfl⟩
-    exact kerFun_mem_orthogonal K K' x v
-  -- Hence, by the orthogonal Galois connection, `L` lies inside the orthogonal complement of `T`.
-  have h2 : L ≤ Tᗮ := (Submodule.le_orthogonal_orthogonal L).trans (Submodule.orthogonal_le h1)
-  -- Conversely, anything orthogonal to `T` lies in `L`: this is a direct computation.
-  have h3 : Tᗮ ≤ L := by
-    intro q hq
+  set W := WithLp 2 (OfKernel K × OfKernel K')
+  set L : Submodule 𝕜 W := (generator K K').ker
+  set T : Submodule 𝕜 W := Submodule.span 𝕜
+    {p : W | ∃ x v, p = WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)}
+  -- `T` and `L` are exact orthogonal complements of one another.
+  have hTL : Tᗮ = L := by
+    refine le_antisymm (fun q hq ↦ ?_)
+      ((Submodule.le_orthogonal_orthogonal L).trans <| Submodule.orthogonal_le <|
+        Submodule.span_le.mpr fun p ⟨x, v, hp⟩ ↦ hp ▸ kerFun_mem_orthogonal K K' x v)
     obtain ⟨f, g⟩ := q
-    have hq' : ∀ p ∈ T, ⟪p, (WithLp.toLp 2 (f, g) : W)⟫_𝕜 = 0 := hq
-    have key : ∀ x : X, f x + g x = 0 := by
-      intro x
-      refine ext_inner_left 𝕜 fun v ↦ ?_
-      have h := hq' (WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v))
-        (Submodule.subset_span ⟨x, v, rfl⟩)
-      rw [WithLp.prod_inner_apply] at h
-      simp at h
-      simp [h, inner_add_right]
-    change generator K K' (WithLp.toLp 2 (f, g)) = 0
     funext x
-    simpa [generator_apply] using key x
-  have hTL : Tᗮ = L := le_antisymm h3 h2
-  -- Consequently the topological closure of `T` is exactly `Lᗮ`.
-  have hclosureT : T.topologicalClosure = Lᗮ := by
-    rw [← (congrArg Submodule.orthogonal hTL)]
-    exact Eq.symm (orthogonal_orthogonal_eq_closure T)
-  have hclosureT_set : closure (T : Set W) = (Lᗮ : Set W) := congrArg SetLike.coe hclosureT
-  -- The quotient map restricted to `Lᗮ` is surjective onto the quotient.
-  have hsurjLperp : (Submodule.Quotient.mk : W → W ⧸ L) '' (Lᗮ : Set W) = Set.univ := by
-    ext y
-    simp only [Set.mem_image, Set.mem_univ, iff_true]
-    refine ⟨(L.quotientEquivOrthogonal y : W), (L.quotientEquivOrthogonal y).2, ?_⟩
-    simp
-  have hcont : Continuous (Submodule.Quotient.mk : W → W ⧸ L) := continuous_quotient_mk'
-  -- Hence the image of `T` under the quotient map is dense.
-  have hdense : closure ((Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W)) = Set.univ := by
+    refine ext_inner_left 𝕜 fun v ↦ ?_
+    have := hq _ (Submodule.subset_span ⟨x, v, rfl⟩)
+    rw [WithLp.prod_inner_apply] at this
+    simp only [kerFun_inner] at this
+    simp [inner_add_right, this]
+  -- Hence the image of `T` in the quotient is dense.
+  have hdense : Dense ((Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W)) := by
+    have hLperp : closure (T : Set W) = (Lᗮ : Set W) := by
+      rw [← Submodule.topologicalClosure_coe, ← orthogonal_orthogonal_eq_closure, hTL]
+    have hsurj : (Submodule.Quotient.mk : W → W ⧸ L) '' (Lᗮ : Set W) = Set.univ :=
+      Set.eq_univ_of_forall fun y ↦
+        ⟨L.quotientEquivOrthogonal y, (L.quotientEquivOrthogonal y).2, by simp⟩
     have hsub : (Submodule.Quotient.mk : W → W ⧸ L) '' (closure (T : Set W)) ⊆
         closure ((Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W)) :=
-      image_closure_subset_closure_image hcont
-    rw [hclosureT_set, hsurjLperp] at hsub
-    exact le_antisymm (fun _ _ ↦ Set.mem_univ _) hsub
-  -- The image of `T` under the quotient map lands inside the range of `linearIsometry K K'`.
+      image_closure_subset_closure_image continuous_quotient_mk'
+    rw [hLperp, hsurj] at hsub
+    exact dense_iff_closure_eq.mpr (Set.univ_subset_iff.mp hsub)
+  -- That image lies in the range of `linearIsometry K K'`.
   have hMapRange : (Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W) ⊆
       Set.range (linearIsometry K K') := by
     rintro _ ⟨t, ht, rfl⟩
     induction ht using Submodule.span_induction with
     | mem p hp =>
-        obtain ⟨x, v, rfl⟩ := hp
-        exact ⟨kerFun (OfKernel (K + K')) x v, (linearIsometry_kerFun_apply_eq_mk K K' x v)⟩
+      obtain ⟨x, v, rfl⟩ := hp
+      exact ⟨kerFun (OfKernel (K + K')) x v, linearIsometry_kerFun_apply_eq_mk K K' x v⟩
     | zero => exact ⟨0, by simp⟩
     | add p q _ _ ihp ihq =>
-        obtain ⟨a, ha⟩ := ihp
-        obtain ⟨b, hb⟩ := ihq
-        exact ⟨a + b, by simp [map_add, ha, hb]⟩
+      obtain ⟨a, ha⟩ := ihp; obtain ⟨b, hb⟩ := ihq
+      exact ⟨a + b, by simp [ha, hb]⟩
     | smul c p _ ih =>
-        obtain ⟨a, ha⟩ := ih
-        exact ⟨c • a, by simp [map_smul, ha]⟩
-  -- Therefore the range of `linearIsometry K K'` is dense.
-  have hRangeDense : closure (Set.range (linearIsometry K K')) = Set.univ := by
-    refine le_antisymm (fun _ _ ↦ Set.mem_univ _) ?_
-    rw [← hdense]
-    exact closure_mono hMapRange
-  -- The range is also closed, being the image of a complete space under an isometry.
-  have hce : Topology.IsClosedEmbedding (linearIsometry K K') :=
-    (linearIsometry K K').isometry.isClosedEmbedding
-  have hclosed : IsClosed (Set.range (linearIsometry K K')) := hce.isClosed_range
-  have hRangeEqUniv : Set.range (linearIsometry K K') = Set.univ := by
-    rw [← hRangeDense, hclosed.closure_eq]
-  intro y
-  have hy : y ∈ Set.range (linearIsometry K K') := by rw [hRangeEqUniv]; trivial
-  exact hy
+      obtain ⟨a, ha⟩ := ih
+      exact ⟨c • a, by simp [ha]⟩
+  -- The range is closed (isometric image of a complete space); a dense subset of a closed
+  -- set fills it.
+  rw [← Set.range_eq_univ]
+  refine le_antisymm (Set.subset_univ _) ?_
+  rw [← hdense.closure_eq,
+    ← (linearIsometry K K').isometry.isClosedEmbedding.isClosed_range.closure_eq]
+  exact closure_mono hMapRange
 
 /-- The RKHS made from a sum of kernels is linearly isometrically equivalent to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
