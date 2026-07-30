@@ -99,11 +99,11 @@ instance Pi.instIsOrderBornology {ι : Type*} {α : ι → Type*} [∀ i, Preord
     simp_rw [← forall_isBounded_image_eval_iff, bddBelow_pi, bddAbove_pi, ← forall_and,
       isBounded_iff_bddBelow_bddAbove]
 
+variable (α) in
 lemma Nonempty.of_isOrderBornology : Nonempty α := Bornology.isBounded_empty.bddBelow.nonempty
 
 instance IsOrderBornology.neBot_cobounded_of_noBotOrder [NoBotOrder α] : (cobounded α).NeBot := by
-  rw [Filter.neBot_iff, Ne, cobounded_eq_bot_iff, ← isBounded_univ, isBounded_iff_bddBelow_bddAbove]
-  exact fun h ↦ not_bddBelow_univ h.1
+  simp [Filter.neBot_iff, cobounded_eq_bot_iff, ← isBounded_univ, isBounded_iff_bddBelow_bddAbove]
 
 instance IsOrderBornology.neBot_cobounded_of_noTopOrder [NoTopOrder α] : (cobounded α).NeBot :=
   neBot_cobounded_of_noBotOrder (α := αᵒᵈ)
@@ -129,8 +129,6 @@ section LinearOrder
 variable [LinearOrder α] [IsOrderBornology α]
 
 lemma IsOrderBornology.cobounded_le_atBot_sup_atTop : cobounded α ≤ .atBot ⊔ .atTop := by
-  cases isEmpty_or_nonempty α
-  · simp
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
     ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
