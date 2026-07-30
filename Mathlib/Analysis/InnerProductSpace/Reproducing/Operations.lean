@@ -206,6 +206,21 @@ lemma norm_projection [Nontrivial ((generator K K')).kerᗮ] :
     ‖projection K K'‖ = 1 := by
   grw [projection, ContinuousLinearMap.opNorm_comp_linearIsometryEquiv, norm_subtypeL]
 
+lemma projection_injective : Function.Injective (projection K K') := by
+  simp only [projection, coe_comp, coe_subtypeL, coe_subtype, ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Subtype.val_injective,
+    Function.Injective.of_comp_iff]
+  exact LinearIsometryEquiv.injective
+      ((linearIsometryEquiv K K').trans ((generator K K')).ker.quotientEquivOrthogonal)
+
+lemma range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
+  ext
+  simp only [projection, coe_comp]
+  constructor
+  · rintro ⟨x, rfl⟩
+    simp
+  · simp
+
 end Add
 
 end RKHS
