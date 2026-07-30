@@ -62,6 +62,17 @@ def linearEquiv :
       simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mpr e.apply_eq_iff_eq_symm_apply rfl }
 
+@[simp]
+lemma linearEquiv_apply (a : α) [AddCommMonoid β] [Module R β] :
+    e.linearEquiv R a = e a := rfl
+
+@[simp]
+lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
+    letI := Equiv.addCommMonoid e
+    letI := Equiv.module R e
+    (e.linearEquiv R).symm b = e.symm b := rfl
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree [Module.IsTorsionFree R β] :
     letI := e.module R
@@ -78,7 +89,7 @@ if the `AddEquiv` is induced by an `R`-module isomorphism. -/
 lemma LinearEquiv.isScalarTower [IsScalarTower R A β] (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.module A
     IsScalarTower R A α := by
-  letI := e.toAddEquiv.module A
+  let := e.toAddEquiv.module A
   constructor
   intro x y z
   simp only [Equiv.smul_def, smul_assoc]

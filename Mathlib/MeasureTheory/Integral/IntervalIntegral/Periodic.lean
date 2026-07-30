@@ -131,7 +131,7 @@ instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
 noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T) where
   toEquiv := equivIoc T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIoc T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -140,7 +140,7 @@ noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T
 noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T) where
   toEquiv := equivIco T a
   measurable_toFun := measurable_of_measurable_on_compl_singleton _
-    (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
+    (continuousOn_iff_continuous_domRestrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIco T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
 
@@ -160,6 +160,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   congr! with hx
   rw [equivIoc_coe_eq hx]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Subtype.measureSpace in
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
 interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
@@ -182,6 +183,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Subtype.measureSpace in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
@@ -222,7 +224,7 @@ also satisfies `MemLp` with respect to the Haar measure. -/
 lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
     (hLp : MemLp f p (volume.restrict (Ioc t (t + T)))) :
       MemLp (AddCircle.liftIoc T t f) p := by
-  simp only [AddCircle.liftIoc, Set.restrict_def, Function.comp_def]
+  simp only [AddCircle.liftIoc, Set.domRestrict_def, Function.comp_def]
   apply hLp.comp_measurePreserving
   refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
   exact AddCircle.measurePreserving_equivIoc T
@@ -350,7 +352,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
       simpa only [← sub_eq_add_neg, add_sub_cancel_right] using
         this hf.neg (t + T) (s + T) (by aesop : 0 < -T)
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
-  haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
+  have : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
   apply IsAddFundamentalDomain.setIntegral_eq (G := AddSubgroup.zmultiples T)
   exacts [isAddFundamentalDomain_Ioc hT t, isAddFundamentalDomain_Ioc hT s, hf.map_vadd_zmultiples]
