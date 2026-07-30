@@ -25,7 +25,7 @@ variable
 #guard_msgs in
 #check MDifferentiable I I f
 
-/-- info: MDiff (T% v) : Prop -/
+/-- info: MDiff T% v : Prop -/
 #guard_msgs in
 #check MDiff (T% v)
 
@@ -33,7 +33,7 @@ variable
 #guard_msgs in
 #check MDiffAt f x
 
-/-- info: MDiffAt (T% v) x : Prop -/
+/-- info: MDiffAt T% v x : Prop -/
 #guard_msgs in
 #check MDiffAt (T% v) x
 
@@ -41,11 +41,11 @@ variable
 #guard_msgs in
 #check MDifferentiableOn I I f s
 
-/-- info: MDiff[s] (T% v) : Prop -/
+/-- info: MDiff[s] T% v : Prop -/
 #guard_msgs in
 #check MDifferentiableOn I I.tangent (T% v) s
 
-/-- info: MDiff[s] (T% v) : Prop -/
+/-- info: MDiff[s] T% v : Prop -/
 #guard_msgs in
 #check MDiff[s] (T% v)
 
@@ -58,11 +58,11 @@ variable
 #guard_msgs in
 #check MDiffAt[s] f x
 
-/-- info: MDiffAt (T% v) x : Prop -/
+/-- info: MDiffAt T% v x : Prop -/
 #guard_msgs in
 #check MDiffAt (T% v) x
 
-/-- info: MDiffAt[s] (T% v) x : Prop -/
+/-- info: MDiffAt[s] T% v x : Prop -/
 #guard_msgs in
 #check MDiffAt[s] (T% v) x
 
@@ -70,7 +70,7 @@ variable
 #guard_msgs in
 #check mfderiv% f x
 
-/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace I.tangent ⟨x, v x⟩ -/
+/-- info: mfderiv% T% v x : TangentSpace I x →L[ℝ] TangentSpace I.tangent ⟨x, v x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% v) x
 
@@ -141,55 +141,51 @@ variable
 variable {f : B → 𝕜} {a : 𝕜} {s : Π x : B, E x} {u : Set B} {x₀ : B}
   {f' : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (⟨x₀, s x₀⟩ : TotalSpace F E)}
 
-/--
-info: mfderiv% (T% s) : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩
--/
+/-- info: mfderiv% T% s : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩ -/
 #guard_msgs in
 #check mfderiv I (I.prod 𝓘(𝕜, F)) (T% s)
 
-/--
-info: mfderiv% (T% s) : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩
--/
+/-- info: mfderiv% T% s : (x : B) → TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, s x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% s)
 
-/-- info: mfderiv[u] (T% s) x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
+/-- info: mfderiv[u] T% s x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
 #guard_msgs in
 #check mfderivWithin I (I.prod 𝓘(𝕜, F)) (T% s) u x₀
 
-/-- info: mfderiv[u] (T% s) x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
+/-- info: mfderiv[u] T% s x₀ : TangentSpace I x₀ →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x₀, s x₀⟩ -/
 #guard_msgs in
 #check mfderiv[u] (T% s) x₀
 
-/-- info: MDiff (T% s) : Prop -/
+/-- info: MDiff T% s : Prop -/
 #guard_msgs in
 #check MDifferentiable I (I.prod 𝓘(𝕜, F)) (T% s)
 
-/-- info: MDiff (T% s) : Prop -/
+/-- info: MDiff T% s : Prop -/
 #guard_msgs in
 #check MDiff (T% s)
 
-/-- info: MDiffAt (T% s) x₀ : Prop -/
+/-- info: MDiffAt T% s x₀ : Prop -/
 #guard_msgs in
 #check MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (T% s) x₀
 
-/-- info: MDiffAt (T% s) x₀ : Prop -/
+/-- info: MDiffAt T% s x₀ : Prop -/
 #guard_msgs in
 #check MDiffAt (T% s) x₀
 
-/-- info: MDiff[u] (T% s) : Prop -/
+/-- info: MDiff[u] T% s : Prop -/
 #guard_msgs in
 #check MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (T% s) u
 
-/-- info: MDiff[u] (T% s) : Prop -/
+/-- info: MDiff[u] T% s : Prop -/
 #guard_msgs in
 #check MDiff[u] (T% s)
 
-/-- info: MDiffAt[u] (T% s) x₀ : Prop -/
+/-- info: MDiffAt[u] T% s x₀ : Prop -/
 #guard_msgs in
 #check MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (T% s) u x₀
 
-/-- info: MDiffAt[u] (T% s) x₀ : Prop -/
+/-- info: MDiffAt[u] T% s x₀ : Prop -/
 #guard_msgs in
 #check MDiffAt[u] (T% s) x₀
 
