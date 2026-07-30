@@ -21,7 +21,16 @@ namespace Function
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
+/- ### Lemmas on existing definitions -/
+
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
+
+attribute [mfld_simps] id_comp comp_id
+
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+  rfl
+
+/- ### Dependent composition -/
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -139,7 +148,7 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 @[inherit_doc onFun]
 scoped infixl:2 " on " => onFun
 
-/- ### swap -/
+/- ### The argument-reversing map -/
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
@@ -148,11 +157,6 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
-
-attribute [mfld_simps] id_comp comp_id
-
-theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
-  rfl
 
 /- ### Bijective functions -/
 
@@ -235,7 +239,7 @@ namespace Pi
 
 variable {ι : Sort*} {α β : ι → Sort*}
 
-/- ### map -/
+/- ### `Pi.map` function -/
 
 /-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
 by applying `f i` to `i`-th component. -/
