@@ -88,6 +88,20 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
+instance [Finite n] : OrderClosedTopology (Matrix n n 𝕜) where
+  isClosed_le' := by
+    change IsClosed {p : Matrix n n 𝕜 × Matrix n n 𝕜 | (p.2 - p.1).PosSemidef}
+    have : Fintype n := Fintype.ofFinite n
+    have : {p : Matrix n n 𝕜 × Matrix n n 𝕜 | (p.2 - p.1).PosSemidef} =
+        {p | (p.2 - p.1).IsHermitian} ∩ ⋂ x, {p | 0 ≤ star x ⬝ᵥ ((p.2 - p.1) *ᵥ x)} := by
+      ext p
+      simp only [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_iInter]
+      exact posSemidef_iff_dotProduct_mulVec
+    rw [this]
+    refine IsClosed.inter ?_ ?_
+    · exact isClosed_eq (by fun_prop) (by fun_prop)
+    · exact isClosed_iInter <| fun _ ↦ isClosed_le (by fun_prop) (by fun_prop)
+
 variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
