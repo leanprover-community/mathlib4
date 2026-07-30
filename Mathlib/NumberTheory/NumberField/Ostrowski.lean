@@ -6,6 +6,7 @@ Authors: Fabrizio Barroero
 module
 
 public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.DedekindDomain.SInteger
 
 /-!
@@ -125,7 +126,7 @@ def maximalIdeal : HeightOneSpectrum (𝓞 K) where
 
 include hf_nonarch in
 /-- A nontrivial non-archimedean absolute value on a number field is equal to a `v`-adic absolute
-value attached for some `v : HeightOneSpectrum (𝓞 K)`. -/
+value attached to some `v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
 theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
   let P := maximalIdeal f hf_nonarch hf_nontriv
@@ -166,6 +167,24 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     rintro Q _ hc rfl
     ext x
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
+
+include hf_nonarch in
+/-- A nontrivial non-archimedean absolute value on a number field is equivalent to a `v`-adic
+absolute value attached to some `v : HeightOneSpectrum (𝓞 K)`. -/
+theorem exists_heightOneSpectrum_equiv_adicAbv (hf_nontriv : f.IsNontrivial) :
+    ∃! P : HeightOneSpectrum (𝓞 K), f ≈ adicAbv K P := by
+  obtain ⟨P, ⟨b, hb, hf⟩, -⟩ :=
+    exists_heightOneSpectrum_eq_adicAbv f hf_nonarch hf_nontriv
+  refine ⟨P, ?_, fun Q hQ ↦ ?_⟩
+  · rw [hf]
+    apply AbsoluteValue.isEquiv_iff_lt_one_iff.mpr
+    intro _
+    simpa [NumberField.HeightOneSpectrum.adicAbv, IsDedekindDomain.HeightOneSpectrum.adicAbv,
+      IsDedekindDomain.HeightOneSpectrum.adicAbvDef] using
+      (toNNReal_lt_one_iff hb).trans (toNNReal_lt_one_iff (one_lt_absNorm_nnreal P)).symm
+  · ext x
+    simpa only [NumberField.HeightOneSpectrum.adicAbv, hf,
+      adicAbv_coe_lt_one_iff] using (hQ.lt_one_iff (x := (x : K))).symm
 
 end Nonarchimedean
 
