@@ -687,14 +687,14 @@ end Perm
 
 /-- `Function.dflip` as an equivalence. -/
 @[simps (attr := grind =) -fullyApplied]
-def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
+def dflip (α β : Sort*) (γ : α → β → Sort*) :
     ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
   toFun := Function.dflip
   invFun := Function.dflip
 
 theorem _root_.Function.dflip_bijective {α β : Sort*} {γ : α → β → Sort*} :
     Function.Bijective (@Function.dflip _ _ γ) :=
-  functionSwap _ _ _ |>.bijective
+  Equiv.dflip _ _ _ |>.bijective
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps (attr := grind =) apply]
