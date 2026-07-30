@@ -514,7 +514,7 @@ section discrete_union
 theorem IsDiscrete.iUnion {ι : Sort*} [Finite ι] {s : ι → Set X} (hs : ∀ i, IsDiscrete (s i))
     (hsc : ∀ i, IsClosed (s i)) : IsDiscrete (⋃ i, s i) := by
   suffices (⋃ i, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
-  simp [compl_mem_codiscrete_iff, *]
+  simp only [compl_iUnion, iInter_mem, compl_mem_codiscrete_iff, and_self, implies_true, hsc, hs]
 
 /-- The union of two discrete closed subsets is discrete. -/
 theorem IsDiscrete.union {s t : Set X} (hs : IsDiscrete s) (ht : IsDiscrete t)
