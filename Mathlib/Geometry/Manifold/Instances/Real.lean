@@ -252,7 +252,7 @@ lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
     (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
 
 lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
-    (x : EuclideanSpace ℝ (Fin n)) (hx : 0 ≤ x 0) :
+    {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
     (𝓡∂ n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
   rw [modelWithCornersEuclideanHalfSpace_symm_apply]
   simp [hx]
@@ -279,16 +279,15 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
 @[simp]
-lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) [NeZero n] {p : EuclideanQuadrant n} :
+lemma modelWithCornersEuclideanQuadrant_apply (n : ℕ) {p : EuclideanQuadrant n} :
     (modelWithCornersEuclideanQuadrant n) p = p.val := rfl
 
-lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} [NeZero n]
-    (x : EuclideanSpace ℝ (Fin n)) :
+lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace ℝ (Fin n)) :
     (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 fun i ↦ max (x i) 0,
     fun i ↦ by simp only [le_sup_right]⟩ := rfl
 
-lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ} [NeZero n]
-    (x : EuclideanSpace ℝ (Fin n)) (hx : ∀ i, 0 ≤ x i) :
+lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
+    {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
     (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
   rw [modelWithCornersEuclideanQuadrant_symm_apply]
   simp [hx]
