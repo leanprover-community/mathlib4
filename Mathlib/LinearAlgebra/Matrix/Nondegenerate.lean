@@ -181,7 +181,7 @@ theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
     (hv : M *ᵥ v = 0) : v = 0 :=
   nondegenerate_of_det_ne_zero hM |>.separatingRight.eq_zero_of_mulVec_eq_zero hv
 
--- Non-field analogue of `mulVec_injective_iff_isUnit` (`NonsingularInverse.lean`).
+/-- See also `Matrix.mulVec_injective_iff_isUnit` when working over a field. -/
 theorem mulVec_injective_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
     Function.Injective M.mulVec :=
   fun _ _ hxy => sub_eq_zero.mp

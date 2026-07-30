@@ -5,8 +5,12 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.RelClasses
+
+import Mathlib.Order.WellFounded
 
 
 /-!
@@ -16,10 +20,9 @@ This file defines the row echelon form of matrices and the leading entries of th
 
 ## Main definitions
 
-- `Matrix.IsRowEchelon` expresses that `M` is in row echelon form: an entry of a lower row
+- `Matrix.IsRowEchelon` expresses that `A` is in row echelon form: an entry of a lower row
   vanishes whenever a higher row is zero at every column strictly to its left.
-- `Matrix.IsLeadingEntry`: `c : WithTop n` is the leading position of row `i` of `M`,
-  with `⊤` for a zero row.
+- `Matrix.IsLeadingEntry`: `c : n` is the leading position of row `i` of `A`.
 - `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
   entries above it to vanish.
 
@@ -34,71 +37,67 @@ matrix, echelon form
 universe v
 
 variable {m n : Type*}
-variable {R : Type v} {M : Matrix m n R}
+variable {R : Type v} {A : Matrix m n R}
 
 namespace Matrix
 
 variable [Zero R]
 
-/-- `M` is in row echelon form: for rows `i₁ < i₂`, if the higher row `i₁` is zero at every
+/-- `A` is in row echelon form: for rows `i₁ < i₂`, if the higher row `i₁` is zero at every
 column strictly left of `j₂`, then the lower row `i₂` is zero at `j₂`. -/
-def IsRowEchelon [LT m] [LT n] (M : Matrix m n R) : Prop :=
-  ∀ ⦃i₁ i₂⦄, i₁ < i₂ → ∀ ⦃j₂⦄, (∀ j₁ < j₂, M i₁ j₁ = 0) → M i₂ j₂ = 0
+def IsRowEchelon [LT m] [LT n] (A : Matrix m n R) : Prop :=
+  ∀ ⦃i₁ i₂⦄, i₁ < i₂ → ∀ ⦃j₂⦄, (∀ j₁ < j₂, A i₁ j₁ = 0) → A i₂ j₂ = 0
 
 /-- In an echelon matrix, rows below a zero row are zero. -/
-theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : M.IsRowEchelon)
-    (hlt : i₁ < i₂) (h0 : M i₁ = 0) : M i₂ = 0 := by
+theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : A.IsRowEchelon)
+    (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 := by
   funext j
   exact he hlt fun j₁ _ => congrFun h0 j₁
 
 /-! ### Leading entries -/
 
-/-- `c` is the leading position of row `i`: entries strictly left of `c` vanish and, when
-`c` is a column, the entry at `c` is nonzero. `c = ⊤` states that the row is zero. -/
-def IsLeadingEntry [LT n] (M : Matrix m n R) (i : m) (c : WithTop n) : Prop :=
-  (∀ j : n, (j : WithTop n) < c → M i j = 0) ∧ ∀ c₀ : n, c = c₀ → M i c₀ ≠ 0
+/-- `c` is the leading position of row `i`. -/
+def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
+  (∀ j < c, A i j = 0) ∧ A i c ≠ 0
 
-@[simp]
-theorem isLeadingEntry_top_iff [LT n] {i : m} :
-    M.IsLeadingEntry i ⊤ ↔ M i = 0 := by
-  simp [IsLeadingEntry, funext_iff]
+theorem IsLeadingEntry.row_ne_zero [LT n] {i : m} {c : n} (hc : A.IsLeadingEntry i c) :
+    A.row i ≠ 0 :=
+  fun contra => hc.2 (congrFun contra c)
 
-@[simp]
-theorem isLeadingEntry_coe_iff [LT n] {i : m} {c : n} :
-    M.IsLeadingEntry i c ↔ (∀ j < c, M i j = 0) ∧ M i c ≠ 0 := by
-  simp [IsLeadingEntry]
+theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
+    A.row i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by
+  refine ⟨fun h => ?_, fun ⟨c, hc⟩ => hc.row_ne_zero⟩
+  obtain ⟨c, hc, hmin⟩ := wellFounded_lt.has_min {j | A i j ≠ 0} <| Function.ne_iff.mp h
+  refine ⟨c, ?_, hc⟩
+  by_contra
+  aesop
 
 /-- If column indices have a linear order, then there's at most one leading position per row. -/
-theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : WithTop n}
-    (h₁ : M.IsLeadingEntry i c₁) (h₂ : M.IsLeadingEntry i c₂) :
-    c₁ = c₂ := by
-  refine le_antisymm (not_lt.mp ?_) (not_lt.mp ?_)
-  · intro hlt
-    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₂.2 c₀ hc (h₁.1 c₀ hlt')
-  · intro hlt
-    obtain ⟨c₀, hc, hlt'⟩ := WithTop.lt_iff_exists_coe.mp hlt
-    exact h₁.2 c₀ hc (h₂.1 c₀ hlt')
+theorem IsLeadingEntry.unique [LinearOrder n] {i : m} {c₁ c₂ : n}
+    (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
+  le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
+
+instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
+    (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
+  decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
 
 /-! ### Reduced row echelon form -/
 
-/-- `M` is in reduced row echelon form: it is in row echelon form, each leading entry is
+/-- `A` is in reduced row echelon form: it is in row echelon form, each leading entry is
 `1`, and entries above a leading entry vanish (entries below one vanish by
 `isRowEchelon`). -/
-structure IsReducedRowEchelon [LT m] [LT n] [One R] (M : Matrix m n R) : Prop where
-  isRowEchelon : M.IsRowEchelon
-  eq_one_of_isLeadingEntry : ∀ ⦃i : m⦄ ⦃c : n⦄, M.IsLeadingEntry i c → M i c = 1
-  eq_zero_of_lt_of_isLeadingEntry :
-    ∀ ⦃i₁ i₂ : m⦄, i₁ < i₂ → ∀ ⦃c : n⦄, M.IsLeadingEntry i₂ c → M i₁ c = 0
+structure IsReducedRowEchelon [LT m] [LT n] [One R] (A : Matrix m n R) : Prop where
+  isRowEchelon : A.IsRowEchelon
+  eq_one ⦃i : m⦄ ⦃c : n⦄ (hA : A.IsLeadingEntry i c) : A i c = 1
+  eq_zero ⦃i₁ i₂ : m⦄ ⦃c : n⦄ (hlt : i₁ < i₂) (hA : A.IsLeadingEntry i₂ c) : A i₁ c = 0
 
-/-- If the row indices have a linear order, then the every entry in pivot columns vanishes
+/-- If the row indices have a linear order, then every entry in a pivot column vanishes
 except for the pivot. -/
 theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT n] [One R]
-    {i₁ i₂ : m} {c : n} (hM : M.IsReducedRowEchelon) (hne : i₁ ≠ i₂)
-    (hlead : M.IsLeadingEntry i₂ c) : M i₁ c = 0 := by
-  rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
-  · exact hM.eq_zero_of_lt_of_isLeadingEntry hlt hlead
-  · exact absurd heq hne
-  · exact hM.isRowEchelon hlt (isLeadingEntry_coe_iff.mp hlead).1
+    {i₁ i₂ : m} {c : n} (hA : A.IsReducedRowEchelon) (hne : i₁ ≠ i₂)
+    (hlead : A.IsLeadingEntry i₂ c) : A i₁ c = 0 := by
+  rcases hne.lt_or_gt with hlt | hlt
+  · exact hA.eq_zero hlt hlead
+  · exact hA.isRowEchelon hlt hlead.1
 
 end Matrix

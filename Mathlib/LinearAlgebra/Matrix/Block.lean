@@ -20,14 +20,12 @@ matrices built out of blocks.
 
 * `Matrix.BlockTriangular` expresses that an `o` by `o` matrix is block triangular,
   if the rows and columns are ordered according to some order `b : o → α`
-* `Matrix.IsUpperTriangular` and `Matrix.IsLowerTriangular`: the special cases where each
-  entry is its own block
 
 ## Main results
 
 * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
   is equal to the product of the determinants of all the blocks
-* `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
+* `Matrix.det_of_isUpperTriangular` and `Matrix.det_of_isLowerTriangular`: the determinant of
   a triangular matrix is the product of the entries along the diagonal
 
 ## Tags
@@ -336,15 +334,19 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 
-theorem det_of_upperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
+theorem det_of_isUpperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
   have : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
-theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLowerTriangular) :
+@[deprecated (since := "2026-07-30")] alias det_of_upperTriangular := det_of_isUpperTriangular
+
+theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLowerTriangular) :
     M.det = ∏ i : m, M i i := by
   rw [← det_transpose]
-  exact det_of_upperTriangular h.transpose
+  exact det_of_isUpperTriangular h.transpose
+
+@[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
 
 open Polynomial
 
@@ -357,7 +359,7 @@ theorem matrixOfPolynomials_blockTriangular {R} [Semiring R] {n : ℕ} (p : Fin 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
       Nat.le_of_eq (h_deg i)))]
   convert! prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
