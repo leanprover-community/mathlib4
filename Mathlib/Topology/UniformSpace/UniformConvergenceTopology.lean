@@ -496,7 +496,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
     (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
       refine @IsUniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
-      change comap (Prod.map Function.swap Function.swap) _ = _
+      change comap (Prod.map Function.dflip Function.dflip) _ = _
       rw [← uniformity_comap]
       congr
       unfold Pi.uniformSpace
@@ -1103,7 +1103,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
   @Equiv.toUniformEquivOfIsUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
       _ _ (Equiv.piComm _) <| by
     constructor
-    change comap (Prod.map Function.swap Function.swap) _ = _
+    change comap (Prod.map Function.dflip Function.dflip) _ = _
     erw [← uniformity_comap]
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,

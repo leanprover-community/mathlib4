@@ -486,7 +486,7 @@ continuous at `x₀` *when `ι → α` is equipped with the topology of uniform 
 very useful for developing the equicontinuity API, but it should not be used directly for other
 purposes. -/
 theorem equicontinuousAt_iff_continuousAt {F : ι → X → α} {x₀ : X} :
-    EquicontinuousAt F x₀ ↔ ContinuousAt (ofFun ∘ Function.swap F : X → ι →ᵤ α) x₀ := by
+    EquicontinuousAt F x₀ ↔ ContinuousAt (ofFun ∘ Function.dflip F : X → ι →ᵤ α) x₀ := by
   rw [ContinuousAt, (UniformFun.hasBasis_nhds ι α _).tendsto_right_iff]
   rfl
 
@@ -496,7 +496,7 @@ theorem equicontinuousAt_iff_continuousAt {F : ι → X → α} {x₀ : X} :
 developing the equicontinuity API, but it should not be used directly for other purposes. -/
 theorem equicontinuousWithinAt_iff_continuousWithinAt {F : ι → X → α} {S : Set X} {x₀ : X} :
     EquicontinuousWithinAt F S x₀ ↔
-    ContinuousWithinAt (ofFun ∘ Function.swap F : X → ι →ᵤ α) S x₀ := by
+    ContinuousWithinAt (ofFun ∘ Function.dflip F : X → ι →ᵤ α) S x₀ := by
   rw [ContinuousWithinAt, (UniformFun.hasBasis_nhds ι α _).tendsto_right_iff]
   rfl
 
@@ -505,7 +505,7 @@ continuous *when `ι → α` is equipped with the topology of uniform convergenc
 very useful for developing the equicontinuity API, but it should not be used directly for other
 purposes. -/
 theorem equicontinuous_iff_continuous {F : ι → X → α} :
-    Equicontinuous F ↔ Continuous (ofFun ∘ Function.swap F : X → ι →ᵤ α) := by
+    Equicontinuous F ↔ Continuous (ofFun ∘ Function.dflip F : X → ι →ᵤ α) := by
   simp_rw [Equicontinuous, continuous_iff_continuousAt, equicontinuousAt_iff_continuousAt]
 
 /-- A family `𝓕 : ι → X → α` is equicontinuous on `S` iff the function `swap 𝓕 : X → ι → α` is
@@ -513,7 +513,7 @@ continuous on `S` *when `ι → α` is equipped with the topology of uniform con
 very useful for developing the equicontinuity API, but it should not be used directly for other
 purposes. -/
 theorem equicontinuousOn_iff_continuousOn {F : ι → X → α} {S : Set X} :
-    EquicontinuousOn F S ↔ ContinuousOn (ofFun ∘ Function.swap F : X → ι →ᵤ α) S := by
+    EquicontinuousOn F S ↔ ContinuousOn (ofFun ∘ Function.dflip F : X → ι →ᵤ α) S := by
   simp_rw [EquicontinuousOn, ContinuousOn, equicontinuousWithinAt_iff_continuousWithinAt]
 
 /-- A family `𝓕 : ι → β → α` is uniformly equicontinuous iff the function `swap 𝓕 : β → ι → α` is
@@ -521,7 +521,7 @@ uniformly continuous *when `ι → α` is equipped with the uniform structure of
 This is very useful for developing the equicontinuity API, but it should not be used directly
 for other purposes. -/
 theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
-    UniformEquicontinuous F ↔ UniformContinuous (ofFun ∘ Function.swap F : β → ι →ᵤ α) := by
+    UniformEquicontinuous F ↔ UniformContinuous (ofFun ∘ Function.dflip F : β → ι →ᵤ α) := by
   rw [UniformContinuous, (UniformFun.hasBasis_uniformity ι α).tendsto_right_iff]
   rfl
 
@@ -530,7 +530,7 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
 *when `ι → α` is equipped with the uniform structure of uniform convergence*. This is very useful
 for developing the equicontinuity API, but it should not be used directly for other purposes. -/
 theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {S : Set β} :
-    UniformEquicontinuousOn F S ↔ UniformContinuousOn (ofFun ∘ Function.swap F : β → ι →ᵤ α) S := by
+    UniformEquicontinuousOn F S ↔ UniformContinuousOn (ofFun ∘ Function.dflip F : β → ι →ᵤ α) S := by
   rw [UniformContinuousOn, (UniformFun.hasBasis_uniformity ι α).tendsto_right_iff]
   rfl
 

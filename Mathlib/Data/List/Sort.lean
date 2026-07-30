@@ -725,7 +725,7 @@ theorem pairwise_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Pairwise rb 
 
 @[simp]
 theorem pairwise_swap_listMap (e : ra ↪r rb) {l : List α} :
-    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) := by
+    (l.map e).Pairwise (Function.dflip rb) ↔ l.Pairwise (Function.dflip ra) := by
   simp [pairwise_map, e.map_rel_iff]
 
 end RelEmbedding
@@ -740,7 +740,7 @@ theorem pairwise_listMap (e : ra ≃r rb) {l : List α} : (l.map e).Pairwise rb 
 
 @[simp]
 theorem pairwise_swap_listMap (e : ra ≃r rb) {l : List α} :
-    (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) :=
+    (l.map e).Pairwise (Function.dflip rb) ↔ l.Pairwise (Function.dflip ra) :=
   e.toRelEmbedding.pairwise_swap_listMap
 
 end RelIso

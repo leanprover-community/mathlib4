@@ -102,7 +102,7 @@ theorem not_rightTotal (wf : WellFounded r) [Nonempty α] : ¬ Relator.RightTota
   specialize ha b (Set.mem_univ b)
   contradiction
 
-theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
+theorem not_leftTotal (wf : WellFounded (Function.dflip r)) [Nonempty α] :
     ¬ Relator.LeftTotal r := by
   intro h
   obtain ⟨a, -, ha⟩ := wf.has_min Set.univ Set.univ_nonempty

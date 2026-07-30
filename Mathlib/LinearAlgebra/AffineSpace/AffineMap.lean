@@ -926,7 +926,7 @@ theorem coe_homothetyHom (c : P1) : ⇑(homothetyHom c : k →* _) = homothety c
 /-- `homothety` as an affine map. -/
 def homothetyAffine (c : P1) : k →ᵃ[k] P1 →ᵃ[k] P1 :=
   ⟨homothety c, (LinearMap.lsmul k _).flip (id k P1 -ᵥ const k P1 c),
-    Function.swap (homothety_add c)⟩
+    Function.dflip (homothety_add c)⟩
 
 @[simp]
 theorem coe_homothetyAffine (c : P1) : ⇑(homothetyAffine c : k →ᵃ[k] _) = homothety c :=

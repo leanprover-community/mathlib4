@@ -64,7 +64,7 @@ def IsPrincipal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
 @[deprecated (since := "2026-03-17")]
 alias Principal := IsPrincipal
 
-theorem isPrincipal_swap_iff : IsPrincipal (Function.swap op) o ↔ IsPrincipal op o := by
+theorem isPrincipal_swap_iff : IsPrincipal (Function.dflip op) o ↔ IsPrincipal op o := by
   constructor <;> exact fun h a b ha hb => h hb ha
 
 @[deprecated (since := "2026-03-17")]
@@ -77,7 +77,7 @@ theorem not_isPrincipal_iff : ¬ IsPrincipal op o ↔ ∃ a < o, ∃ b < o, o �
 alias not_principal_iff := not_isPrincipal_iff
 
 theorem isPrincipal_iff_of_monotone
-    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)) :
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.dflip op a)) :
     IsPrincipal op o ↔ ∀ a < o, op a a < o := by
   use fun h a ha => h ha ha
   intro H a b ha hb
@@ -89,7 +89,7 @@ theorem isPrincipal_iff_of_monotone
 alias principal_iff_of_monotone := isPrincipal_iff_of_monotone
 
 theorem not_isPrincipal_iff_of_monotone
-    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)) :
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.dflip op a)) :
     ¬ IsPrincipal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [isPrincipal_iff_of_monotone h₁ h₂]
 

@@ -215,9 +215,9 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
-    bitwise (Function.swap f) = Function.swap (bitwise f) := by
+    bitwise (Function.dflip f) = Function.dflip (bitwise f) := by
   funext m n
-  simp only [Function.swap]
+  simp only [Function.dflip]
   induction m using Nat.binaryRec' generalizing n with
   | zero => simp
   | bit bm m hm ihm =>

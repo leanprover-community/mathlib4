@@ -52,7 +52,7 @@ theorem vec_inj {A B : Matrix m n R} : A.vec = B.vec ↔ A = B := by
   simp_rw [← Matrix.ext_iff, funext_iff, Prod.forall, @forall_comm m n, vec]
 
 theorem vec_bijective : Function.Bijective (vec : Matrix m n R → _) :=
-  Equiv.curry _ _ _ |>.symm.bijective.comp Function.swap_bijective
+  Equiv.curry _ _ _ |>.symm.bijective.comp Function.dflip_bijective
 
 theorem vec_map (A : Matrix m n R) (f : R → S) : vec (A.map f) = f ∘ vec A := rfl
 

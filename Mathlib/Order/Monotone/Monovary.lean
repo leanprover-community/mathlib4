@@ -183,10 +183,10 @@ theorem Antivary.dual_right : Antivary f g → Monovary f (toDual ∘ g) :=
   swap
 
 theorem MonovaryOn.dual : MonovaryOn f g s → MonovaryOn (toDual ∘ f) (toDual ∘ g) s :=
-  swap₂
+  dflip₂
 
 theorem AntivaryOn.dual : AntivaryOn f g s → AntivaryOn (toDual ∘ f) (toDual ∘ g) s :=
-  swap₂
+  dflip₂
 
 theorem MonovaryOn.dual_left : MonovaryOn f g s → AntivaryOn (toDual ∘ f) g s :=
   id
@@ -195,10 +195,10 @@ theorem AntivaryOn.dual_left : AntivaryOn f g s → MonovaryOn (toDual ∘ f) g 
   id
 
 theorem MonovaryOn.dual_right : MonovaryOn f g s → AntivaryOn f (toDual ∘ g) s :=
-  swap₂
+  dflip₂
 
 theorem AntivaryOn.dual_right : AntivaryOn f g s → MonovaryOn f (toDual ∘ g) s :=
-  swap₂
+  dflip₂
 
 @[simp]
 theorem monovary_toDual_left : Monovary (toDual ∘ f) g ↔ Antivary f g :=

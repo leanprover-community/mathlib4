@@ -108,7 +108,7 @@ lemma FractionalOperation.IsValid.contains {ω : FractionalOperation D m} (valid
 /-- Fractional operation applied to a transposed table of values. -/
 def FractionalOperation.tt {ι : Type*} (ω : FractionalOperation D m) (x : Fin m → ι → D) :
     Multiset (ι → D) :=
-  ω.map (fun (g : (Fin m → D) → D) (i : ι) => g ((Function.swap x) i))
+  ω.map (fun (g : (Fin m → D) → D) (i : ι) => g ((Function.dflip x) i))
 
 /-- Cost function admits given fractional operation, i.e., `ω` improves `f` in the `≤` sense. -/
 def Function.AdmitsFractional {n : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) : Prop :=
@@ -170,7 +170,7 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
       · obtain ⟨g, _⟩ := valid.contains
-        have : (fun i => g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
+        have : (fun i => g ((Function.dflip ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
           simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
         exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩

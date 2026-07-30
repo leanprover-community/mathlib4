@@ -551,7 +551,7 @@ variable (α) in
 every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
+  exact ⟨linearOrderOfSTO (Function.dflip WellOrderingRel),
     by simpa [isWellFounded_iff] using! WellOrderingRel.isWellOrder.wf⟩
 
 variable (α) in

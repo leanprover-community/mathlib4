@@ -242,7 +242,7 @@ theorem dist_triangle8 (a b c d e f g h : α) : dist a h ≤ dist a b + dist b c
   gcongr
   exact dist_triangle4 a b c d
 
-theorem swap_dist : Function.swap (@dist α _) = dist := by funext x y; exact dist_comm _ _
+theorem swap_dist : Function.dflip (@dist α _) = dist := by funext x y; exact dist_comm _ _
 
 theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
   abs_sub_le_iff.2
