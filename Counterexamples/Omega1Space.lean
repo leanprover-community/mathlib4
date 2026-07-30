@@ -29,8 +29,8 @@ We follow [Munkres2000], where this space is denoted `S_Ω`.
 
 namespace Counterexample
 
-open scoped Cardinal Ordinal Topology
-open Set
+open Filter Set Topology
+open scoped Cardinal Ordinal
 
 namespace Omega1Space
 
@@ -68,13 +68,13 @@ theorem not_normalSpace_Iio_prod_Iic_omega_one.{u} :
       Subtype.coe_lt_coe.mp (lt_of_le_of_lt (le_max_right _ _) hz2)
     exact ⟨⟨z, hz1⟩, hx, fun hU' => hUV.le_bot ⟨hU', hsub ⟨mem_of_mem_nhds hN1, hcN hc⟩⟩⟩
   choose β hβ1 hβ2 using hβ_ex
-  let seq : ℕ → Iio ω₁ := Nat.rec ⟨0, (Cardinal.isSuccLimit_omega _).bot_lt⟩ fun _ prev => β prev
+  let seq : ℕ → Iio ω₁ := Nat.rec ⟨0, (Cardinal.isSuccLimit_omega _).bot_lt⟩ fun _  ↦ β
   have hmono : Monotone (fun n => (seq n).1) :=
     monotone_nat_of_le_succ fun n => (Subtype.coe_lt_coe.mpr (hβ1 (seq n))).le
   let b := ⨆ i, (seq i).1
   let hbω₁ := Ordinal.iSup_lt_omega_one (fun n => (seq n).2)
   have htf : Filter.Tendsto (fun n => (seq n).1) Filter.atTop (𝓝 b) :=
-    tendsto_atTop_ciSup hmono (by use ω₁; grind [upperBounds])
+    tendsto_atTop_ciSup hmono ⟨ω₁, mem_upperBounds.mpr <| forall_mem_range.mpr fun n ↦ (seq n).2.le⟩
   have htprod : Filter.Tendsto (fun n => ((seq n, inc (seq (n + 1))) : Iio ω₁ × Iic ω₁))
       Filter.atTop (𝓝 (⟨b, hbω₁⟩, inc ⟨b, hbω₁⟩)) :=
     (Topology.IsInducing.subtypeVal.tendsto_nhds_iff.mpr htf).prodMk_nhds
