@@ -31,10 +31,10 @@ We prove the maximal ergodic theorem for a measure-preserving map `f` and an int
 
 * `setIntegral_birkhoffSumSup_nonneg`: for a measure-preserving `f`, the integral of an integrable
   `g` over the set where `birkhoffSumSup f g` is positive is non-negative.
-* `distribution_birkhoffAverageSup_le_integral`: the cumulative distribution function of
+* `const_mul_distribution_birkhoffAverageSup_le_integral`: the cumulative distribution function of
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
-* `iSup_distribution_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
+* `const_mul_distribution_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
    weak-type inequality.
 -/
 
@@ -217,7 +217,7 @@ variable [IsFiniteMeasure μ]
 
 /-- The cumulative distribution function of `birkhoffAverageSup` at `a` is less than or equal to the
 integral of `g` on the set where `a < birkhoffAverageSup f g x`. -/
-public theorem distribution_birkhoffAverageSup_le_integral (a : ℝ) (ha : 0 ≤ a) :
+public theorem const_mul_distribution_birkhoffAverageSup_le_integral (a : ℝ) (ha : 0 ≤ a) :
     a * μ.real {x | a < birkhoffAverageSup f g x}
     ≤ ∫ x in {x | a < birkhoffAverageSup f g x}, g x ∂μ := by
   have p₁ := Integrable.sub hg (integrable_const a)
@@ -249,7 +249,7 @@ public theorem const_mul_distribution_birkhoffAverageSup_le_norm (a : ℝ) :
     exact integral_nonneg (fun _ ↦ norm_nonneg _)
   calc
     _ ≤ ∫ x in {x | a < birkhoffAverageSup f (‖g ·‖) x}, ‖g x‖ ∂μ :=
-      distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
+      const_mul_distribution_birkhoffAverageSup_le_integral μ hf hg.norm a ha
     _ ≤ ∫ x, ‖g x‖ ∂μ :=
       setIntegral_le_integral hg.norm (ae_of_all _ (norm_nonneg <| g ·))
 
