@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Batteries.Tactic.Lint.Basic
 public import Mathlib.Lean.Expr.Basic
 
 /-!

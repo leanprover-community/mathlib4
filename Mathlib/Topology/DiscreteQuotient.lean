@@ -154,9 +154,6 @@ instance : OrderTop (DiscreteQuotient X) where
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
-@[nolint instanceDiamonds]
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
-
 -- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 

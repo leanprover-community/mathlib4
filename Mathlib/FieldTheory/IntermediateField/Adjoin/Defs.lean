@@ -6,7 +6,7 @@ Authors: Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
-public import Mathlib.Tactic.Linter.InstanceDiamonds
+
 /-!
 # Adjoining Elements to Fields
 
