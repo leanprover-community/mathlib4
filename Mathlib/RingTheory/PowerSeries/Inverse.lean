@@ -60,9 +60,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
           ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff x.1 φ * coeff x.2 (inv.aux a φ) else 0 := by
   rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
-  simp only [Finsupp.single_eq_zero]
-  split_ifs; · rfl
-  simp_rw [lt_iff_le_not_ge, coeff]
+  simp_rw [lt_iff_le_not_ge]
   simp
 
 /-- A formal power series is invertible if the constant coefficient is invertible. -/
