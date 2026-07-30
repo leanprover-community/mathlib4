@@ -45,7 +45,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [LE α]
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instSupSet [SupSet α] :
     SupSet (WithTop α) :=
@@ -53,7 +53,7 @@ noncomputable instance WithTop.instSupSet [SupSet α] :
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-open Classical in
+open scoped Classical in
 @[to_dual]
 noncomputable instance WithTop.instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
@@ -68,7 +68,7 @@ theorem WithTop.sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) 
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
   if_neg <| by simp [hs, h's]
 
-@[to_dual (attr := simp)]
+@[simp]
 theorem WithTop.sInf_empty [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
   if_pos <| by simp
 
@@ -104,6 +104,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   rw [if_neg, preimage_image_eq, if_pos hs]
   · exact Option.some_injective _
   · rintro ⟨x, _, ⟨⟩⟩
+
+@[simp]
+theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
+  WithTop.sInf_empty (α := αᵒᵈ)
 
 @[to_dual]
 theorem WithTop.sSup_empty (α : Type*) [CompleteLattice α] : (sSup ∅ : WithTop α) = ⊥ := by
@@ -260,15 +264,18 @@ theorem notMem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
 See `sSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-@[to_dual csInf_eq_of_forall_ge_of_forall_gt_exists_lt
-/-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
-is smaller than all elements of `s`, and that this is not the case of any `w>b`.
-See `sInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/]
 theorem csSup_eq_of_forall_le_of_forall_lt_exists_gt (hs : s.Nonempty) (H : ∀ a ∈ s, a ≤ b)
     (H' : ∀ w, w < b → ∃ a ∈ s, w < a) : sSup s = b :=
   (eq_of_le_of_not_lt (csSup_le hs H)) fun hb =>
     let ⟨_, ha, ha'⟩ := H' _ hb
     lt_irrefl _ <| ha'.trans_le <| le_csSup ⟨b, H⟩ ha
+
+/-- Introduction rule to prove that `b` is the infimum of `s`: it suffices to check that `b`
+is smaller than all elements of `s`, and that this is not the case of any `w>b`.
+See `sInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
+theorem csInf_eq_of_forall_ge_of_forall_gt_exists_lt :
+    s.Nonempty → (∀ a ∈ s, b ≤ a) → (∀ w, b < w → ∃ a ∈ s, a < w) → sInf s = b :=
+  csSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ)
 
 /-- `b < sSup s` when there is an element `a` in `s` with `b < a`, when `s` is bounded above.
 This is essentially an iff, except that the assumptions for the two implications are
@@ -735,7 +742,11 @@ end WithTop
 
 namespace Monotone
 
-variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+variable [ConditionallyCompleteLattice β]
+
+section Preorder
+
+variable [Preorder α] {f : α → β} (h_mono : Monotone f)
 include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
@@ -750,6 +761,24 @@ theorem le_csSup_image {s : Set α} {c : α} (hcs : c ∈ s) (h_bdd : BddAbove s
 theorem csSup_image_le {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ upperBounds s) :
     sSup (f '' s) ≤ f B :=
   csSup_le (Nonempty.image f hs) (h_mono.mem_upperBounds_image hB)
+
+end Preorder
+
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice α]
+variable {f : α → β} {s : Set α} (hs : s.Nonempty) (hf : Monotone f)
+include hs hf
+
+theorem csSup_image_le_map_csSup (hbdd : BddAbove s := by bddDefault) :
+    sSup (f '' s) ≤ f (sSup s) :=
+  csSup_image_le hf hs <| isLUB_csSup hs hbdd |>.left
+
+theorem map_csInf_le_csInf_image (hbdd : BddBelow s := by bddDefault) :
+    f (sInf s) ≤ sInf (f '' s) :=
+  le_csInf_image hf hs <| isGLB_csInf hs hbdd |>.left
+
+end ConditionallyCompleteLattice
 
 end Monotone
 
@@ -925,7 +954,7 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
-open Classical in
+open scoped Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
   isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by

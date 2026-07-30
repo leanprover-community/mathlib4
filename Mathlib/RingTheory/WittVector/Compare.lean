@@ -51,7 +51,7 @@ theorem eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
   rw [this, ne_eq, TruncatedWittVector.ext_iff, not_forall]; clear this
   use ⟨i, hin⟩
   rw [WittVector.coeff_truncate, coeff_zero, Fin.val_mk, WittVector.coeff_p_pow]
-  haveI : Nontrivial R := CharP.nontrivial_of_char_ne_one hp.1.ne_one
+  have : Nontrivial R := CharP.nontrivial_of_char_ne_one hp.1.ne_one
   exact one_ne_zero
 
 section Iso

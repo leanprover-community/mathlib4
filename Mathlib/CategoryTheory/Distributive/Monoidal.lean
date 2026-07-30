@@ -212,6 +212,7 @@ lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/

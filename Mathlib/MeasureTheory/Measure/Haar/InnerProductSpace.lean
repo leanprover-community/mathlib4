@@ -81,7 +81,7 @@ end
 parallelepiped spanned by any orthonormal basis. -/
 theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
     volume (parallelepiped b) = 1 := by
-  haveI : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
+  have : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
   rw [← o.measure_eq_volume]
   exact o.measure_orthonormalBasis b
@@ -192,7 +192,7 @@ theorem WithLp.volume_preserving_symm_measurableEquiv_toLp_prod :
     convert! this
     ext uv
     <;> simp [volumePreservingSymmMeasurableEquivToLpProdAux, MeasurableEquiv.coe_sumPiEquivProdPi,
-      LinearEquiv.prodCongr_symm, MeasurableEquiv.prodCongr]
+      MeasurableEquiv.prodCongr]
   refine (LinearIsometryEquiv.measurePreserving _).trans ?_
   refine (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp _).trans ?_
   refine (measurePreserving_sumPiEquivProdPi _).trans ?_

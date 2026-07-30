@@ -31,7 +31,7 @@ variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def uniformSpace : UniformSpace G :=
   @IsTopologicalAddGroup.rightUniformSpace G _ B.topology B.isTopologicalAddGroup
 
@@ -43,8 +43,8 @@ protected theorem isUniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
       F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
-  letI := B.uniformSpace
-  haveI := B.isUniformAddGroup
+  let := B.uniformSpace
+  have := B.isUniformAddGroup
   suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine ⟨h', ?_⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]

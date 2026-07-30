@@ -366,7 +366,7 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
   calc ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν
     ≤ ∫ x in t, (μ.rnDeriv ν x).toReal ∂ν := by
-        refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
+        refine setIntegral_mono_set ?_ ?_ (LE.le.eventuallyLE (subset_toMeasurable _ _))
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
   _ = (withDensity ν (rnDeriv μ ν)).real t := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m

@@ -62,6 +62,7 @@ instance (priority := 100) [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] 
     P.Nonempty :=
   nonempty_of_prop P.prop_terminal
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryProducts] :
     P.IsClosedUnderIsomorphisms where
@@ -78,7 +79,7 @@ lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
     [Q.IsClosedUnderBinaryProducts] [Q.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] :
     P.binaryProductsClosure ≤ Q ↔ P ≤ Q := by
   refine ⟨fun h ↦ (P.le_limitsClosure _).trans h, fun h ↦ ?_⟩
-  letI : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryProducts.closedUnderIsomorphisms Q
+  let : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryProducts.closedUnderIsomorphisms Q
   exact limitsClosure_le h
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite products. -/
@@ -165,6 +166,7 @@ instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)
     P.Nonempty :=
   nonempty_of_prop P.prop_initial
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :
@@ -182,7 +184,7 @@ lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
     [Q.IsClosedUnderBinaryCoproducts] [Q.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] :
     P.binaryCoproductsClosure ≤ Q ↔ P ≤ Q := by
   refine ⟨fun h ↦ (P.le_colimitsClosure _).trans h, fun h ↦ ?_⟩
-  letI : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms Q
+  let : Q.IsClosedUnderIsomorphisms := IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms Q
   exact colimitsClosure_le h
 
 /-- The typeclass saying that `P : ObjectProperty C` is stable under finite coproducts. -/
