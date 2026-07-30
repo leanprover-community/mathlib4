@@ -280,13 +280,13 @@ lemma rank_mul_eq_right_of_isUnit_det {R : Type*} [CommRing R] [Fintype m] [Deci
 lemma rank_mul_eq_right_of_isLowerTriangular {R : Type*} [CommRing R] [IsDomain R]
     [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.IsLowerTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
-  have hdet : A.det ≠ 0 := by simpa [det_of_lowerTriangular A hA, Finset.prod_ne_zero_iff]
+  have hdet : A.det ≠ 0 := by simpa [det_of_isLowerTriangular A hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 lemma rank_mul_eq_right_of_isUpperTriangular {R : Type*} [CommRing R] [IsDomain R]
     [Fintype m] [LinearOrder m] (A : Matrix m m R) (B : Matrix m n R)
     (hA : A.IsUpperTriangular) (hd : ∀ i, A.diag i ≠ 0) : (A * B).rank = B.rank := by
-  have hdet : A.det ≠ 0 := by simpa [det_of_upperTriangular hA, Finset.prod_ne_zero_iff]
+  have hdet : A.det ≠ 0 := by simpa [det_of_isUpperTriangular hA, Finset.prod_ne_zero_iff]
   exact rank_mul_eq_right_of_det_ne_zero A B hdet
 
 /-- Taking a subset of the rows and columns reduces the rank. -/

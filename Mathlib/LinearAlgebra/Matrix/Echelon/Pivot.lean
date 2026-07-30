@@ -129,7 +129,7 @@ theorem rank_eq (hA : A.IsPivotedBy l) : A.rank = #{i | l i ≠ ⊤} := by
     intro i j hij
     exact (hlead i).1 _ ((WithTop.untop_lt_untop_iff _ _).mpr (hA.strictMonoOn j.2 i.2 hij))
   have hdet : (A.submatrix Subtype.val g).det ≠ 0 := by
-    rw [det_of_upperTriangular htri]
+    rw [det_of_isUpperTriangular htri]
     exact prod_ne_zero_iff.mpr fun i _ => (hlead i).2
   calc #{i | l i ≠ ⊤}
       = (A.submatrix Subtype.val g).rank := by
