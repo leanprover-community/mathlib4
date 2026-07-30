@@ -168,19 +168,19 @@ variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A] [Ring.Has
 /-- The degree `[B : C]` of `B` over the decomposition ring `C` equals the product of the
 ramification index and the inertia degree of `p` in `B`. -/
 -- TODO: this should also hold for `p = ⊥`, then `P = ⊥`, `A` and `B` are fields and `C = B`.
-theorem IsDecompositionRing.finrank_top [FaithfulSMul C B] [P.IsMaximal]
+theorem IsDecompositionRing.finrank_top [FaithfulSMul C B] [P.IsPrime]
     [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
     Module.finrank C B = p.ramificationIdxIn B * p.inertiaDegIn B := by
-  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : p.IsPrime := isPrime_of_liesOver P p
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
   rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) C B, card_stabilizer_eq p]
 
 /-- The degree `[B : C]` of `B` over the inertia ring `C` equals the ramification index of `p`
 in `B`. -/
-theorem IsInertiaRing.finrank_top [FaithfulSMul C B] [P.IsMaximal] [P.IsInertiaRing G C]
+theorem IsInertiaRing.finrank_top [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C]
     (hp : p ≠ ⊥) :
     Module.finrank C B = p.ramificationIdxIn B := by
-  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : p.IsPrime := isPrime_of_liesOver P p
   have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
   rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) C B, card_inertia_eq_ramificationIdxIn p]
 
@@ -188,10 +188,10 @@ variable [Algebra A C] [IsScalarTower A C B]
 
 /-- The degree `[C : A]` of the decomposition ring `C` over `A` equals the number of prime ideals
 of `B` lying over `p`. -/
-theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsDecompositionRing G C]
+theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsDecompositionRing G C]
     (hp : p ≠ ⊥) :
     Module.finrank A C = (p.primesOver B).ncard := by
-  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
@@ -201,10 +201,10 @@ theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsDe
 
 /-- The degree `[C : A]` of the inertia ring `C` over `A` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
-theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsInertiaRing G C]
+theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C]
     (hp : p ≠ ⊥) :
     Module.finrank A C = (p.primesOver B).ncard * p.inertiaDegIn B := by
-  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
@@ -216,7 +216,7 @@ theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsMaximal] [P.IsInertiaR
 inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_decompositionRing (C' : Type*) [CommRing C'] [Algebra C' B]
     [FaithfulSMul C B] [FaithfulSMul C' B] [Algebra C C'] [IsScalarTower C C' B]
-    [P.IsMaximal] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
+    [P.IsPrime] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
     Module.finrank C C' = p.inertiaDegIn B := by
   have : IsDomain C' := (FaithfulSMul.algebraMap_injective C' B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
@@ -246,7 +246,7 @@ theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
 
 variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMul C B]
   [Module.Finite A B] [Module.Flat A B] [Module.Flat C B] [Ring.HasFiniteQuotients A]
-  [𝓟.IsMaximal] [P.IsMaximal]
+  [𝓟.IsPrime] [P.IsPrime]
 
 include G P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
