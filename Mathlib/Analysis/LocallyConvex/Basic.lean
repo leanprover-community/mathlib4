@@ -45,7 +45,7 @@ absorbent, balanced, locally convex, LCTVS
 
 @[expose] public section
 
-open Set
+open Set Bornology Filter
 open scoped Pointwise Topology
 
 variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
@@ -63,14 +63,20 @@ variable (𝕜) in
 def Balanced (A : Set E) :=
   ∀ a : 𝕜, ‖a‖ ≤ 1 → a • A ⊆ A
 
-lemma absorbs_iff_norm : Absorbs 𝕜 A B ↔ ∃ r, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
-  Filter.atTop_basis.cobounded_of_norm.eventually_iff.trans <| by simp only [true_and]; rfl
+lemma absorbs_iff_norm :
+    Absorbs 𝕜 A B ↔ ∃ r > 0, ∀ c : 𝕜, ‖c‖ ≤ r → c ≠ 0 → MapsTo (c • ·) B A := by
+  simp [Absorbs, nhdsWithin, Metric.nhds_basis_closedBall.inf_principal _ |>.eventually_iff]
 
-alias ⟨_, Absorbs.of_norm⟩ := absorbs_iff_norm
+-- lemma absorbs_iff_norm : Absorbs 𝕜 A B ↔ ∃ r, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
+--   Filter.atTop_basis.cobounded_of_norm.eventually_iff.trans <| by simp only [true_and]; rfl
 
-lemma Absorbs.exists_pos (h : Absorbs 𝕜 A B) : ∃ r > 0, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
-  let ⟨r, hr₁, hr⟩ := (Filter.atTop_basis' 1).cobounded_of_norm.eventually_iff.1 h
-  ⟨r, one_pos.trans_le hr₁, hr⟩
+-- alias ⟨_, Absorbs.of_norm⟩ := absorbs_iff_norm
+
+alias ⟨Absorbs.exists_pos, Absorbs.of_norm⟩ := absorbs_iff_norm
+
+-- lemma Absorbs.exists_pos (h : Absorbs 𝕜 A B) : ∃ r > 0, ∀ c : 𝕜, r ≤ ‖c‖ → B ⊆ c • A :=
+--   let ⟨r, hr₁, hr⟩ := (Filter.atTop_basis' 1).cobounded_of_norm.eventually_iff.1 h
+--   ⟨r, one_pos.trans_le hr₁, hr⟩
 
 theorem balanced_iff_smul_mem : Balanced 𝕜 s ↔ ∀ ⦃a : 𝕜⦄, ‖a‖ ≤ 1 → ∀ ⦃x : E⦄, x ∈ s → a • x ∈ s :=
   forall₂_congr fun _a _ha => smul_set_subset_iff
@@ -119,6 +125,10 @@ variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 theorem Balanced.smul (a : 𝕝) (hs : Balanced 𝕜 s) : Balanced 𝕜 (a • s) := fun _b hb =>
   (smul_comm _ _ _).subset.trans <| smul_set_mono <| hs _ hb
 
+/-- A balanced set absorbs itself. -/
+theorem Balanced.absorbs_self (hs : Balanced 𝕜 s) : Absorbs 𝕜 s s :=
+  .of_norm ⟨1, one_pos, fun _c hc _ => hs.smul_mem hc⟩
+
 end SMul
 
 section Module
@@ -156,28 +166,15 @@ section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
-theorem absorbs_iff_eventually_nhdsNE_zero :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝[≠] 0, MapsTo (c • ·) t s := by
-  rw [absorbs_iff_eventually_cobounded_mapsTo, ← Filter.inv_cobounded₀]; rfl
+theorem absorbs_iff_eventually_cobounded_mapsTo :
+    Absorbs 𝕜 s t ↔ ∀ᶠ c in cobounded 𝕜, MapsTo (c⁻¹ • ·) t s := by
+  rw [absorbs_iff_eventually_nhdsNE_zero, ← inv_cobounded₀, eventually_inv]
 
-alias ⟨Absorbs.eventually_nhdsNE_zero, _⟩ := absorbs_iff_eventually_nhdsNE_zero
-
-theorem absorbent_iff_eventually_nhdsNE_zero :
-    Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
-  forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
-
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
-
-theorem absorbs_iff_eventually_nhds_zero (h₀ : 0 ∈ s) :
-    Absorbs 𝕜 s t ↔ ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s := by
-  rw [← nhdsNE_sup_pure, Filter.eventually_sup, Filter.eventually_pure,
-    ← absorbs_iff_eventually_nhdsNE_zero, and_iff_left]
-  intro x _
-  simpa only [zero_smul]
-
-theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
-    ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
-  (absorbs_iff_eventually_nhds_zero h₀).1 h
+theorem absorbs_iff_eventually_cobounded :
+    Absorbs 𝕜 s t ↔ ∀ᶠ c in cobounded 𝕜, t ⊆ c • s := by
+  rw [absorbs_iff_eventually_cobounded_mapsTo]
+  exact eventually_congr <| (eventually_ne_cobounded 0).mono fun c hc ↦ by
+    rw [← preimage_smul_inv₀ hc]; rfl
 
 variable [NormedRing 𝕝] [Module 𝕜 𝕝] [NormSMulClass 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
   {a b : 𝕜} {x : E}
@@ -213,10 +210,6 @@ theorem Balanced.smul_congr (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a �
 theorem Balanced.smul_eq (hs : Balanced 𝕜 s) (ha : ‖a‖ = 1) : a • s = s :=
   (hs _ ha.le).antisymm <| hs.subset_smul ha.ge
 
-/-- A balanced set absorbs itself. -/
-theorem Balanced.absorbs_self (hs : Balanced 𝕜 s) : Absorbs 𝕜 s s :=
-  .of_norm ⟨1, fun _ => hs.subset_smul⟩
-
 end NormedDivisionRing
 
 section NormedField
@@ -227,10 +220,6 @@ theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
-
-/-- Every neighbourhood of the origin is absorbent. -/
-theorem absorbent_nhds_zero (hA : A ∈ 𝓝 (0 : E)) : Absorbent 𝕜 A :=
-  absorbent_iff_inv_smul.2 fun _ ↦ Filter.tendsto_inv₀_cobounded.zero_smul_const _ hA
 
 /-- The union of `{0}` with the interior of a balanced set is balanced. -/
 theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
