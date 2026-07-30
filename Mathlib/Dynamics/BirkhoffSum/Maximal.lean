@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Average
-public import Mathlib.Dynamics.BirkhoffSum.Measurable
 public import Mathlib.Dynamics.BirkhoffSum.Integrable
 
 /-!
