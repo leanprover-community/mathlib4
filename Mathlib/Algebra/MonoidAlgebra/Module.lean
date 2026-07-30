@@ -71,8 +71,7 @@ instance : Module R S[M] where
 
 @[to_additive (dont_translate := R)]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
-  -- exact (coeffEquiv.linearEquiv R).injective.moduleIsTorsionFree _ (by simp)
-  coeffEquiv.moduleIsTorsionFree _
+  coeffAddEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
@@ -203,15 +202,15 @@ lemma basis_apply (k) [Semiring k] (r : R) :
     MonoidAlgebra.basis R k r = MonoidAlgebra.single r 1 :=
   rfl
 
--- /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `M = kˣ`.
+/-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `M = kˣ`.
 
--- TODO: Change the type to `DistribMulAction Gᵈᵐᵃ S[M]` and then it can be an instance.
--- TODO: Generalise to a group acting on another, instead of just the left multiplication action.
--- -/
--- @[implicit_reducible]
--- def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
---   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
---   fast_instance% coeffEquiv.distribMulAction _
+TODO: Change the type to `DistribMulAction Gᵈᵐᵃ S[M]` and then it can be an instance.
+TODO: Generalise to a group acting on another, instead of just the left multiplication action.
+-/
+@[implicit_reducible]
+def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
+  have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
+  fast_instance% coeffAddEquiv.distribMulAction _
 
 @[to_additive (dont_translate := R)]
 lemma single_mem_span_single [Semiring R] [Nontrivial R] {m : M} {s : Set M} :

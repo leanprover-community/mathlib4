@@ -725,14 +725,12 @@ end LinearMap
 end Ring
 
 namespace Equiv
-variable {R A A' B B' : Type*} [CommSemiring R]
+variable {R A A' B B' : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
   [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
 
 variable (R) in
 open TensorProduct in
-lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
-    letI := eA.addCommMonoid
-    letI := eB.addCommMonoid
+lemma tensorProductComm_def (eA : A ≃+ A') (eB : B ≃+ B') :
     letI := eA.module R
     letI := eB.module R
     TensorProduct.comm R A B = .trans

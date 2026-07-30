@@ -156,9 +156,16 @@ section CommRing
 
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
 
-instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) where
+/-- `ModuleCat.Hom.hom` bundled as an additive equivalence. -/
+@[simps!]
+def homAddEquiv {M N : TopModuleCat S} : (M ⟶ N) ≃+ (M →L[S] N) :=
+  { homEquiv (X := M) (Y := N) with map_add' _ _ := rfl }
+
+instance {X Y : TopModuleCat S} : SMul S (X ⟶ Y) where
   smul r f := ofHom (r • f.hom)
-  __ := Equiv.module _ CategoryTheory.ConcreteCategory.homEquiv
+
+instance {X Y : TopModuleCat S} : Module S (X ⟶ Y) :=
+  fast_instance% (homAddEquiv).module S
 
 instance : Linear S (TopModuleCat S) where
   smul_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_smul _ _ _)

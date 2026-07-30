@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.Normed.Module.TransferInstance
+public import Mathlib.Algebra.Group.Shrink
 
 /-!
 # Transfer normed algebraic structures from `α` to `Shrink α`
@@ -27,6 +28,6 @@ instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.normedAddCommGroup
 
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
-  (equivShrink α).symm.normedSpace 𝕜
+  (Shrink.addEquiv (α := α)).normedSpace 𝕜
 
 end Shrink

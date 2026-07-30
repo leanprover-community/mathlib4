@@ -19,11 +19,11 @@ variable {R α : Type*} [Small.{v} α] [Semiring R] [AddCommMonoid α] [Module R
 
 namespace Shrink
 
-instance : Module R (Shrink.{v} α) := (equivShrink α).symm.module R
+instance : Module R (Shrink.{v} α) := addEquiv.module R
 
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves module structure. -/
 @[simps!]
-def linearEquiv : Shrink.{v} α ≃ₗ[R] α := (equivShrink α).symm.linearEquiv _
+def linearEquiv : Shrink.{v} α ≃ₗ[R] α := (addEquiv (α := α)).linearEquiv R
 
 end Shrink

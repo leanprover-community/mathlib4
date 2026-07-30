@@ -303,7 +303,8 @@ Further results on scalar multiplication can be found in
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A R[M] := fast_instance% coeffEquiv.smulZeroClass _
+instance smulZeroClass : SMulZeroClass A R[M] :=
+  fast_instance% coeffEquiv.smulZeroClass _ coeff_zero
 
 section
 -- Ensure that the different smul instances do not create a diamond.
