@@ -108,7 +108,8 @@ lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- If `C` acts monoidally on `D`, then every object of `D` is
+canonically an additive module over the trivial additive monoid. -/]
 instance (X : D) : ModObj (𝟙_ C) X where
   smul := (λₗ _).hom
 
@@ -355,7 +356,7 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
-@[to_additive (attr := simps!, implicit_reducible)
+@[to_additive (attr := simps!, instance_reducible)
   /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
   additive monoid objects, `M` inherits an `A`-additive module structure via
   "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]
