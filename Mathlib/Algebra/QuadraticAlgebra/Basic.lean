@@ -11,13 +11,18 @@ public import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Quadratic algebras: involution and norm.
+# Quadratic algebras: involution, norm, trace, and change of generator.
 
 Let `R` be a commutative ring. We define:
 
 * `QuadraticAlgebra.star`: the quadratic involution
 
 * `QuadraticAlgebra.norm`: the norm
+
+* `QuadraticAlgebra.trace`: the trace, as an `R`-linear map
+
+* `QuadraticAlgebra.map` and `QuadraticAlgebra.mapEquiv`: the `R`-algebra map, respectively
+  isomorphism (when `u` is a unit), induced by the change of generator `ω ↦ u • ω + k`
 
 We prove:
 
@@ -68,6 +73,10 @@ theorem omega_mul_omega_eq_mk : (ω : QuadraticAlgebra R a b) * ω = ⟨a, b⟩ 
 theorem omega_mul_omega_eq_add :
     (ω : QuadraticAlgebra R a b) * ω = a • 1 + b • ω := by
   ext <;> simp
+
+@[simp]
+theorem basis_apply_one : (basis a b) 1 = ω := by
+  ext <;> simp [basis]
 
 @[simp]
 theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨a * y, x + b * y⟩ := by
@@ -148,7 +157,7 @@ section star
 variable [CommRing R]
 
 /-- Conjugation in `QuadraticAlgebra R a b`.
-The conjugate of `x + y ω` is `x + y ω' = (x - a * y) - y ω`. -/
+The conjugate of `x + y ω` is `x + y ω' = (x + b * y) - y ω`. -/
 instance : Star (QuadraticAlgebra R a b) where
   star z := ⟨z.re + b * z.im, -z.im⟩
 
@@ -301,6 +310,125 @@ theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
     exact Submonoid.mul_mem _ hz (star_mem_nonZeroDivisors hz)
 
 end norm
+
+section trace
+
+variable [CommRing R]
+
+/-- the trace in a quadratic algebra, as an `R`-linear map. -/
+def trace : QuadraticAlgebra R a b →ₗ[R] R where
+  toFun z := 2 * z.re + b * z.im
+  map_add' z w := by simp only [re_add, im_add]; ring
+  map_smul' r z := by simp only [re_smul, im_smul, RingHom.id_apply, smul_eq_mul]; ring
+
+theorem trace_apply (z : QuadraticAlgebra R a b) :
+    trace z = 2 * z.re + b * z.im := rfl
+
+@[simp]
+theorem trace_algebraMap (r : R) :
+    trace (algebraMap R (QuadraticAlgebra R a b) r) = 2 * r := by
+  simp [trace_apply, algebraMap_re, algebraMap_im]
+
+@[simp]
+theorem trace_natCast (n : ℕ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_apply, re_natCast, im_natCast]
+
+@[simp]
+theorem trace_intCast (n : ℤ) : trace (n : QuadraticAlgebra R a b) = 2 * n := by
+  simp [trace_apply, re_intCast, im_intCast]
+
+@[simp]
+theorem trace_omega : trace (ω : QuadraticAlgebra R a b) = b := by
+  simp [trace_apply]
+
+@[simp]
+theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
+  simp [trace_apply]
+
+@[simp]
+theorem trace_star (z : QuadraticAlgebra R a b) : trace (star z) = trace z := by
+  simp only [trace_apply, re_star, im_star]
+  ring
+
+/-- `z + star z` is the trace of `z`. -/
+theorem algebraMap_trace_eq_add_star (z : QuadraticAlgebra R a b) :
+    algebraMap R (QuadraticAlgebra R a b) (trace z) = z + star z := by
+  ext <;>
+  simp only [trace_apply, algebraMap_re, algebraMap_im, re_add, im_add, re_star, im_star] <;>
+  ring
+
+/-- The conjugate of `z` is `trace z - z`. -/
+theorem star_eq (z : QuadraticAlgebra R a b) :
+    star z = algebraMap R (QuadraticAlgebra R a b) (trace z) - z := by
+  rw [algebraMap_trace_eq_add_star]; ring
+
+/-- `z - star z` is a multiple of the different `ω - star ω`. -/
+theorem sub_star (z : QuadraticAlgebra R a b) :
+    z - star z = z.im • (ω - star ω) := by
+  ext <;> simp <;> ring
+
+/-- Every element of a quadratic algebra satisfies its characteristic equation. -/
+theorem sq_sub_trace_smul_add_norm_eq_zero (z : QuadraticAlgebra R a b) :
+    z ^ 2 - trace z • z + algebraMap R _ (norm z) = 0 := by
+  rw [Algebra.smul_def, algebraMap_trace_eq_add_star, algebraMap_norm_eq_mul_star]; ring
+
+/-- The reduction `z ^ 2 = trace z • z - norm z`, lowering the degree of a square. -/
+theorem sq_eq_trace_smul_sub_norm (z : QuadraticAlgebra R a b) :
+    z ^ 2 = trace z • z - algebraMap R _ (norm z) := by
+  rw [← sub_eq_zero, ← sub_add]
+  exact sq_sub_trace_smul_add_norm_eq_zero z
+
+end trace
+
+section map
+
+variable [CommRing R]
+
+-- The quadratic relation satisfied by the new generator `u • ω + k`; this is what makes
+-- `map` well defined. Stated with `x * x` rather than `x ^ 2` to match the shape of the
+-- subtype condition of `lift` (`{ u // u * u = a • 1 + b • u }`), so it feeds `map` verbatim.
+private theorem map_relation (a b u k : R) :
+    (u • ω + algebraMap R (QuadraticAlgebra R a b) k) *
+        (u • ω + algebraMap R (QuadraticAlgebra R a b) k) =
+      (u ^ 2 * a - u * b * k - k ^ 2) • 1 +
+        (u * b + 2 * k) • (u • ω + algebraMap R (QuadraticAlgebra R a b) k) := by
+  ext <;> simp <;> ring
+
+/-- The `R`-algebra map induced by the change of generator `ω ↦ u • ω + k`, see `map_omega`. -/
+@[simps!]
+def map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) :
+    QuadraticAlgebra R a' b' →ₐ[R] QuadraticAlgebra R a b :=
+  lift ⟨u • ω + algebraMap R _ k, by rw [ha, hb]; exact map_relation a b u k⟩
+
+@[simp]
+theorem map_omega (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) :
+    map a b u k ha hb ω = u • ω + algebraMap R (QuadraticAlgebra R a b) k := by
+  ext <;> simp
+
+theorem injective_map (a b u k : R) {a' b' : R} (ha : a' = u ^ 2 * a - u * b * k - k ^ 2)
+    (hb : b' = u * b + 2 * k) (hu : IsRegular u) :
+    Function.Injective (map a b u k ha hb) := by
+  intro z w h
+  have hy : z.im = w.im := hu.right <| by simpa using congr_arg im h
+  exact QuadraticAlgebra.ext (by simpa [hy] using congr_arg re h) hy
+
+/-- `map` along a unit `u`, as an isomorphism. -/
+@[simps! apply symm_apply]
+def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
+    (ha : a' = (u : R) ^ 2 * a - (u : R) * b * k - k ^ 2)
+    (hb : b' = (u : R) * b + 2 * k) :
+    QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b where
+  __ := map a b u k ha hb
+  invFun := map a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
+    (by simp only [sq, ha, mul_assoc, mul_sub, Units.inv_mul_cancel_left, hb, mul_add, neg_mul,
+        mul_neg, sub_neg_eq_add, neg_neg]; ring)
+    (by simp only [hb, mul_add, Units.inv_mul_cancel_left, neg_mul, mul_neg]; ring)
+  left_inv _ := by ext <;> simp [mul_assoc]
+  right_inv _ := by ext <;> simp [mul_assoc]
+
+end map
 
 section field
 
