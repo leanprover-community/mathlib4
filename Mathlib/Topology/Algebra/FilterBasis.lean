@@ -291,7 +291,7 @@ end RingFilterBasis
   Example : if `M` is a topological module then the neighbourhoods of zero are a
   `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
   compatible with the module structure on `M`. -/
-structure ModuleFilterBasis (R M : Type*) [CommRing R] [TopologicalSpace R] [AddCommGroup M]
+structure ModuleFilterBasis (R M : Type*) [Semiring R] [TopologicalSpace R] [AddCommGroup M]
   [Module R M] extends AddGroupFilterBasis M where
   smul' : ∀ {U}, U ∈ sets → ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ sets, V • W ⊆ U
   smul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U
@@ -299,7 +299,7 @@ structure ModuleFilterBasis (R M : Type*) [CommRing R] [TopologicalSpace R] [Add
 
 namespace ModuleFilterBasis
 
-variable {R M : Type*} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
