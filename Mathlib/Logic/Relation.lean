@@ -102,12 +102,12 @@ protected theorem Std.Symm.iff [Std.Symm r] (x y : α) : r x y ↔ r y x :=
 
 @[deprecated (since := "2026-06-10")] protected alias Symmetric.iff := Std.Symm.iff
 
-theorem Std.Symm.flip_eq [Std.Symm r] : flip r = r :=
+@[simp] theorem Std.Symm.flip_eq [Std.Symm r] : flip r = r :=
   funext₂ fun _ _ ↦ propext <| Std.Symm.iff (r := r) ..
 
 @[deprecated (since := "2026-06-10")] alias Symmetric.flip_eq := Std.Symm.flip_eq
 
-theorem Std.Symm.dflip_eq [Std.Symm r] : dflip r = r :=
+@[simp] theorem Std.Symm.dflip_eq [Std.Symm r] : dflip r = r :=
   Std.Symm.flip_eq
 
 @[deprecated (since := "2026-06-10")] alias Symmetric.dflip_eq := Std.Symm.dflip_eq

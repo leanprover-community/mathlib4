@@ -49,7 +49,7 @@ theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
-  RelEmbedding.swap (natLT f H)
+  RelEmbedding.dflip (natLT f H)
 
 @[simp]
 theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
@@ -227,7 +227,7 @@ theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
   · rw [WellFoundedGT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
     refine ⟨fun a => ?_⟩
-    obtain ⟨n, hn⟩ := h (a.swap : _ →r _).toOrderHom
+    obtain ⟨n, hn⟩ := h (a.dflip : _ →r _).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 
 theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT α] (a : ℕ →o α) :

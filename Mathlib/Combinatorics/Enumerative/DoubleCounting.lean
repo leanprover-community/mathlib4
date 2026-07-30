@@ -59,9 +59,9 @@ def bipartiteBelow : Finset α := {a ∈ s | r a b}
 /-- Elements of `t` which are "above" `a` according to relation `r`. -/
 def bipartiteAbove : Finset β := {b ∈ t | r a b}
 
-theorem bipartiteBelow_swap : t.bipartiteBelow (swap r) a = t.bipartiteAbove r a := rfl
+theorem bipartiteBelow_dflip : t.bipartiteBelow (dflip r) a = t.bipartiteAbove r a := rfl
 
-theorem bipartiteAbove_swap : s.bipartiteAbove (swap r) b = s.bipartiteBelow r b := rfl
+theorem bipartiteAbove_dflip : s.bipartiteAbove (dflip r) b = s.bipartiteBelow r b := rfl
 
 @[simp, norm_cast]
 theorem coe_bipartiteBelow : s.bipartiteBelow r b = ({a ∈ s | r a b} : Set α) := coe_filter _ _
@@ -111,7 +111,7 @@ is an upper bound. -/
 theorem card_nsmul_le_card_nsmul' [∀ a b, Decidable (r a b)]
     (hn : ∀ b ∈ t, n ≤ #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) ≤ m) : #t • n ≤ #s • m :=
-  card_nsmul_le_card_nsmul (swap r) hn hm
+  card_nsmul_le_card_nsmul (dflip r) hn hm
 
 end OrderedSemiring
 
@@ -154,7 +154,7 @@ the RHS is an upper bound. -/
 theorem card_nsmul_lt_card_nsmul_of_lt_of_le' [∀ a b, Decidable (r a b)] (ht : t.Nonempty)
     (hn : ∀ b ∈ t, n < #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) ≤ m) : #t • n < #s • m :=
-  card_nsmul_lt_card_nsmul_of_lt_of_le (swap r) ht hn hm
+  card_nsmul_lt_card_nsmul_of_lt_of_le (dflip r) ht hn hm
 
 /-- **Double counting** argument.
 
@@ -163,7 +163,7 @@ is a strict upper bound. -/
 theorem card_nsmul_lt_card_nsmul_of_le_of_lt' [∀ a b, Decidable (r a b)] (hs : s.Nonempty)
     (hn : ∀ b ∈ t, n ≤ #(s.bipartiteBelow r b))
     (hm : ∀ a ∈ s, #(t.bipartiteAbove r a) < m) : #t • n < #s • m :=
-  card_nsmul_lt_card_nsmul_of_le_of_lt (swap r) hs hn hm
+  card_nsmul_lt_card_nsmul_of_le_of_lt (dflip r) hs hn hm
 
 end StrictOrderedSemiring
 
@@ -201,7 +201,7 @@ theorem card_le_card_of_forall_subsingleton (hs : ∀ a ∈ s, ∃ b, b ∈ t �
 
 theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s ∧ r a b)
     (hs : ∀ a ∈ s, ({ b ∈ t | r a b } : Set β).Subsingleton) : #t ≤ #s :=
-  card_le_card_of_forall_subsingleton (swap r) ht hs
+  card_le_card_of_forall_subsingleton (dflip r) ht hs
 
 /-- Given a finite collection of finite subsets $B_1, \ldots, B_k$
 and, for every $x \in \bigcup_i B_i$, let $C_x$ be the set of indices

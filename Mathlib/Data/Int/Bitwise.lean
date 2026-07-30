@@ -223,7 +223,7 @@ theorem bitwise_or : bitwise or = lor := by
   rcases m with m | m <;> rcases n with n | n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff,
       negSucc.injEq, Bool.true_or]
-  · rw [Nat.bitwise_swap, Function.dflip]
+  · rw [Nat.bitwise_dflip, Function.dflip]
     congr
     funext x y
     cases x <;> cases y <;> rfl
@@ -238,7 +238,7 @@ theorem bitwise_and : bitwise and = land := by
     <;> simp only [bitwise, natBitwise, Bool.not_false,
       cond_false, cond_true, Bool.and_true,
       Bool.and_false]
-  · rw [Nat.bitwise_swap, Function.dflip]
+  · rw [Nat.bitwise_dflip, Function.dflip]
     congr
     funext x y
     cases x <;> cases y <;> rfl
@@ -256,7 +256,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
     simp
   · congr
     simp
-  · rw [Nat.bitwise_swap, Function.dflip]
+  · rw [Nat.bitwise_dflip, Function.dflip]
     congr
     funext x y
     cases x <;> cases y <;> rfl

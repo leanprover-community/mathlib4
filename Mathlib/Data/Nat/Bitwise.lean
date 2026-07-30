@@ -214,7 +214,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
           convert! hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
-theorem bitwise_swap {f : Bool → Bool → Bool} :
+theorem bitwise_dflip {f : Bool → Bool → Bool} :
     bitwise (Function.dflip f) = Function.dflip (bitwise f) := by
   funext m n
   simp only [Function.dflip]
@@ -229,10 +229,10 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
 is also commutative. -/
 theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :
     bitwise f n m = bitwise f m n :=
-  suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
+  suffices bitwise f = dflip (bitwise f) by conv_lhs => rw [this]
   calc
-    bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
-    _ = swap (bitwise f) := bitwise_swap
+    bitwise f = bitwise (dflip f) := congr_arg _ <| funext fun _ => funext <| hf _
+    _ = dflip (bitwise f) := bitwise_dflip
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
   bitwise_comm Bool.or_comm n m

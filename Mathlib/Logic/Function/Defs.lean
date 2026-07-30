@@ -207,3 +207,21 @@ protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) :
 lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
 
 end Pi
+
+namespace Std.Commutative
+
+open Function
+
+variable {α} {op : α → α → α}
+
+@[simp] theorem flip_eq [Std.Commutative op] : flip op = op :=
+  funext fun a ↦ funext fun b ↦ comm b a
+
+@[simp] theorem dflip_eq [Std.Commutative op] : dflip op = op := flip_eq
+
+theorem flip_eq_iff : flip op = op ↔ Std.Commutative op :=
+  ⟨fun h ↦ ⟨fun a b ↦ congrFun (congrFun h b) a⟩, fun _ ↦ flip_eq⟩
+
+theorem dflip_eq_iff : dflip op = op ↔ Std.Commutative op := flip_eq_iff
+
+end Std.Commutative

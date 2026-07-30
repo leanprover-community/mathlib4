@@ -83,7 +83,7 @@ protected theorem subsingleton [Std.Trichotomous r] (h : IsAntichain r s) : s.Su
 protected theorem flip (hs : IsAntichain r s) : IsAntichain (flip r) s := fun _ ha _ hb h =>
   hs hb ha h.symm
 
-theorem swap (hs : IsAntichain r s) : IsAntichain (swap r) s :=
+theorem dflip (hs : IsAntichain r s) : IsAntichain (dflip r) s :=
   hs.flip
 
 theorem image (hs : IsAntichain r s) (f : α → β) (h : ∀ ⦃a b⦄, r' (f a) (f b) → r a b) :
@@ -312,7 +312,7 @@ theorem setOfPred_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) 
 alias setOf_maximal_antichain := setOfPred_maximal_antichain
 
 theorem setOfPred_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
-  (setOfPred_maximal_antichain (α := αᵒᵈ) P).swap
+  (setOfPred_maximal_antichain (α := αᵒᵈ) P).dflip
 
 @[deprecated (since := "2026-07-09")] alias setOf_minimal_antichain := setOfPred_minimal_antichain
 
@@ -350,7 +350,7 @@ protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s
 protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 
-theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+theorem dflip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (dflip r) s :=
   hs.flip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)

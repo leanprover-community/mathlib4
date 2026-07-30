@@ -165,10 +165,10 @@ section OrderDual
 open OrderDual
 
 theorem Monovary.dual : Monovary f g → Monovary (toDual ∘ f) (toDual ∘ g) :=
-  swap
+  dflip
 
 theorem Antivary.dual : Antivary f g → Antivary (toDual ∘ f) (toDual ∘ g) :=
-  swap
+  dflip
 
 theorem Monovary.dual_left : Monovary f g → Antivary (toDual ∘ f) g :=
   id
@@ -177,10 +177,10 @@ theorem Antivary.dual_left : Antivary f g → Monovary (toDual ∘ f) g :=
   id
 
 theorem Monovary.dual_right : Monovary f g → Antivary f (toDual ∘ g) :=
-  swap
+  dflip
 
 theorem Antivary.dual_right : Antivary f g → Monovary f (toDual ∘ g) :=
-  swap
+  dflip
 
 theorem MonovaryOn.dual : MonovaryOn f g s → MonovaryOn (toDual ∘ f) (toDual ∘ g) s :=
   dflip₂

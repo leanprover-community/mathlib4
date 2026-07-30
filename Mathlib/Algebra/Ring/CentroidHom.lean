@@ -328,7 +328,7 @@ theorem toEnd_smul (m : M) (x : CentroidHom α) : (m • x).toEnd = m • x.toEn
   rfl
 
 instance : AddCommMonoid (CentroidHom α) :=
-  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
+  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (dflip toEnd_smul)
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -572,7 +572,7 @@ theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
 
 instance : AddCommGroup (CentroidHom α) :=
   toEnd_injective.addCommGroup _
-    toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_smul) (swap toEnd_smul)
+    toEnd_zero toEnd_add toEnd_neg toEnd_sub (dflip toEnd_smul) (dflip toEnd_smul)
 
 @[simp, norm_cast]
 theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=

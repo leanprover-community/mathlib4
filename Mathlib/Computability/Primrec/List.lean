@@ -115,7 +115,7 @@ instance list : Primcodable (List α) :=
         (ofNat (List ℕ) n).reverse.foldl
           (fun o m => (@decode α _ m).bind fun a => o.map (List.cons (encode a))) (some []) :=
       list_foldl' H ((list_reverse' H).comp (.ofNat (List ℕ))) (const (some []))
-        (Primrec.comp₂ (bind_decode_iff.2 <| .swap this) Primrec₂.right)
+        (Primrec.comp₂ (bind_decode_iff.2 <| .dflip this) Primrec₂.right)
     nat_iff.1 <|
       (encode_iff.2 this).of_eq fun n => by
         rw [List.foldl_reverse]

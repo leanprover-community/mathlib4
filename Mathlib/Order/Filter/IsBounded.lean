@@ -151,12 +151,12 @@ theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : 
 theorem _root_.Monotone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
     l.IsBoundedUnder (· ≥ ·) (v ∘ u) :=
-  hl.comp (swap hv)
+  hl.comp (dflip hv)
 
 theorem _root_.Antitone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≥ ·) u) :
     l.IsBoundedUnder (· ≤ ·) (v ∘ u) :=
-  hl.comp (swap hv)
+  hl.comp (dflip hv)
 
 theorem _root_.Antitone.isBoundedUnder_ge_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Antitone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :

@@ -52,8 +52,8 @@ theorem LiftRelO.imp_right (R : α → β → Prop) {C D : WSeq α → WSeq β �
     (H : ∀ s t, C s t → D s t) {o p} : LiftRelO R C o p → LiftRelO R D o p :=
   LiftRelO.imp (fun _ _ => id) H
 
-theorem LiftRelO.swap (R : α → β → Prop) (C) :
-    swap (LiftRelO R C) = LiftRelO (swap R) (swap C) := by
+theorem LiftRelO.dflip (R : α → β → Prop) (C) :
+    dflip (LiftRelO R C) = LiftRelO (dflip R) (dflip C) := by
   funext x y
   rcases x with ⟨⟩ | ⟨hx, jx⟩ <;> rcases y with ⟨⟩ | ⟨hy, jy⟩ <;> rfl
 
@@ -95,14 +95,14 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       intro s t
       apply Or.inl⟩⟩
 
-theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
-    LiftRel (swap R) s2 s1 := by
-  refine ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => ?_⟩
-  rw [← LiftRelO.swap, Computation.LiftRel.swap]
+theorem LiftRel.dflip_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
+    LiftRel (dflip R) s2 s1 := by
+  refine ⟨dflip (LiftRel R), h, fun {s t} (h : LiftRel R t s) => ?_⟩
+  rw [← LiftRelO.dflip, Computation.LiftRel.dflip]
   apply liftRel_destruct h
 
-theorem LiftRel.swap (R : α → β → Prop) : swap (LiftRel R) = LiftRel (swap R) :=
-  funext fun _ => funext fun _ => propext ⟨LiftRel.swap_lem, LiftRel.swap_lem⟩
+theorem LiftRel.dflip (R : α → β → Prop) : dflip (LiftRel R) = LiftRel (dflip R) :=
+  funext fun _ => funext fun _ => propext ⟨LiftRel.dflip_lem, LiftRel.dflip_lem⟩
 
 instance LiftRelO.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl <| LiftRelO R (· = ·) where
   refl a := by
@@ -119,7 +119,8 @@ instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel 
     apply Computation.LiftRel.refl _ |>.refl
 
 instance LiftRel.symm (R : α → α → Prop) [Std.Symm R] : Std.Symm (LiftRel R) where
-  symm s1 s2 (h : Function.swap (LiftRel R) s2 s1) := by rwa [LiftRel.swap, Std.Symm.swap_eq] at h
+    symm s1 s2 (h : Function.dflip (LiftRel R) s2 s1) := by
+      rwa [LiftRel.dflip, Std.Symm.dflip_eq] at h
 
 instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) := by
   refine ⟨fun s t u h1 h2 ↦ ?_⟩
@@ -211,7 +212,7 @@ theorem exists_of_liftRel_left {R : α → β → Prop} {s t} (H : LiftRel R s t
   exact ⟨b, get?_mem (Computation.mem_map (Prod.fst.{v, v} <$> ·) td), ab⟩
 
 theorem exists_of_liftRel_right {R : α → β → Prop} {s t} (H : LiftRel R s t) {b} (h : b ∈ t) :
-    ∃ a, a ∈ s ∧ R a b := by rw [← LiftRel.swap] at H; exact exists_of_liftRel_left H h
+    ∃ a, a ∈ s ∧ R a b := by rw [← LiftRel.dflip] at H; exact exists_of_liftRel_left H h
 
 @[simp]
 theorem liftRel_nil (R : α → β → Prop) : LiftRel R nil nil := by
@@ -444,11 +445,11 @@ theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WS
         · intro
           apply liftRel_join.lem _ ST fun _ _ => id
         · intro b mb
-          rw [← LiftRelO.swap]
-          apply liftRel_join.lem (swap R)
-          · rw [← LiftRel.swap R, ← LiftRel.swap]
+          rw [← LiftRelO.dflip]
+          apply liftRel_join.lem (dflip R)
+          · rw [← LiftRel.dflip R, ← LiftRel.dflip]
             apply ST
-          · rw [← LiftRel.swap R, ← LiftRel.swap (LiftRel R)]
+          · rw [← LiftRel.dflip R, ← LiftRel.dflip (LiftRel R)]
             exact fun s1 s2 ⟨s, t, S, T, h1, h2, st, ST⟩ => ⟨t, s, T, S, h2, h1, st, ST⟩
           · exact mb⟩
 
