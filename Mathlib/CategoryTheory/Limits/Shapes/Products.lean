@@ -771,7 +771,7 @@ instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.
 
 open Opposite in
 /-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
   obj X := { obj n := ∏ᶜ fun _ : (unop n :) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
@@ -787,8 +787,10 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
   left_triangle_components _ := by apply Quiver.Hom.unop_inj; cat_disch
 
+-- Note: We may consider making `sigmaConst` an abbrev in order to
+-- improve automation downstream
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
   obj X := { obj n := ∐ fun _ : n ↦ X, map f := Limits.Sigma.map' f fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Sigma.map fun _ ↦ f }
