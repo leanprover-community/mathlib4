@@ -335,7 +335,6 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
--- set_option trace.Meta.isDefEq true in
 
 @[to_additive (dont_translate := N) distribSMul]
 instance distribSMul [DistribSMul N R] : DistribSMul N R[M] where

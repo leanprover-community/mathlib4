@@ -163,7 +163,11 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
 
-instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
+/-- `TopRep.Hom.hom` bundled as an additive equivalence. -/
+def addHomEquiv : (A ⟶ B) ≃+ (A.ρ →ⁱL B.ρ) :=
+  { ConcreteCategory.homEquiv (X := A) with map_add' := hom_add A B }
+
+instance : Module k (A ⟶ B) := fast_instance% addHomEquiv.module k
 
 lemma hom_smul (r : k) (f : A ⟶ B) : (r • f).hom = r • f.hom := rfl
 

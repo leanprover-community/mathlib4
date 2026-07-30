@@ -48,7 +48,7 @@ def continuousLinearEquiv (e : α ≃+ β) :
   { toLinearEquiv := e.linearEquiv _
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
-      simp +instances only [Equiv.topologicalSpace, ← e.coinduced_symm]
+      simp +instances only [Equiv.topologicalSpace, Equiv.toFun_as_coe, ← e.coinduced_symm]
       exact continuous_coinduced_rng }
 
 @[simp]
