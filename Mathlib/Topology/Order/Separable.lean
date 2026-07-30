@@ -21,6 +21,8 @@ In this file we prove some results about a separable linearly ordered topologica
   points of a subset that are isolated in the subspace topology form a countable set.
 * `Set.separableSpace`: a separable linearly ordered topological space is hereditarily separable.
 
+TODO: Generalize the hereditary separability result to separable GO-spaces.
+
 -/
 
 public section
