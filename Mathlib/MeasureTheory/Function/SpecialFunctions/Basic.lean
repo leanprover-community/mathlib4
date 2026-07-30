@@ -109,13 +109,8 @@ theorem measurable_cosh : Measurable cosh :=
   continuous_cosh.measurable
 
 theorem measurable_arg : Measurable arg :=
-  have A : Measurable fun x : ℂ => Real.arcsin (x.im / ‖x‖) :=
-    Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
-  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / ‖x‖) :=
-    Real.measurable_arcsin.comp ((measurable_im.comp measurable_neg).div measurable_norm)
-  Measurable.ite (isClosed_le continuous_const continuous_re).measurableSet A <|
-    Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)
-      (B.sub_const _)
+  Measurable.ite (by measurability) (by fun_prop) <|
+    Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
 theorem measurable_log : Measurable log :=
   (measurable_ofReal.comp <| Real.measurable_log.comp measurable_norm).add <|
@@ -269,37 +264,28 @@ end ComplexComposition
 @[fun_prop]
 protected theorem Measurable.complex_ofReal {α : Type*} {m : MeasurableSpace α} {f : α → ℝ}
     (hf : Measurable f) :
-    Measurable fun x ↦ (f x : ℂ) :=
-  Complex.measurable_ofReal.comp hf
+    Measurable fun x ↦ (f x : ℂ) := by fun_prop
 
 @[fun_prop]
 protected theorem AEMeasurable.complex_ofReal {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {f : α → ℝ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x ↦ (f x : ℂ)) μ :=
-  Complex.measurable_ofReal.comp_aemeasurable hf
+    AEMeasurable (fun x ↦ (f x : ℂ)) μ := by
+  fun_prop
 
 section PowInstances
 
 instance Complex.hasMeasurablePow : MeasurablePow ℂ ℂ :=
-  ⟨Measurable.ite (measurable_fst (measurableSet_singleton 0))
-      (Measurable.ite (measurable_snd (measurableSet_singleton 0)) measurable_one measurable_zero)
-      (measurable_fst.clog.mul measurable_snd).cexp⟩
+  ⟨Measurable.ite (by measurability)
+    (Measurable.ite (by measurability) measurable_one measurable_zero) (by fun_prop)⟩
 
-instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ :=
-  ⟨Complex.measurable_re.comp <|
-      (Complex.measurable_ofReal.comp measurable_fst).pow
-        (Complex.measurable_ofReal.comp measurable_snd)⟩
+instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ := ⟨Complex.measurable_re.comp <| by fun_prop⟩
 
-instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
-  ⟨(measurable_fst.coe_nnreal_real.pow measurable_snd).subtype_mk⟩
+instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ := ⟨Measurable.subtype_mk (by fun_prop)⟩
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
   refine ⟨ENNReal.measurable_of_measurable_nnreal_prod ?_ ?_⟩
   · simp_rw [ENNReal.coe_rpow_def]
-    refine Measurable.ite ?_ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
-    exact
-      MeasurableSet.inter (measurable_fst (measurableSet_singleton 0))
-        (measurable_snd measurableSet_Iio)
+    exact Measurable.ite (by measurability) measurable_const (by fun_prop)
   · simp_rw [ENNReal.top_rpow_def]
     refine Measurable.ite measurableSet_Ioi measurable_const ?_
     exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
