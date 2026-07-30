@@ -201,7 +201,8 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   obtain ⟨w, w_pos, w_lt⟩ := exists_between hε
   obtain ⟨n, hn⟩ := ((tendsto_order.1 u_lim).2 w w_pos).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x] with a ha μa_pos μa_lt_top
-  grw [ENNReal.div_le_iff μa_pos.ne' μa_lt_top.ne, ha, hn, w_lt]
+  rw [ENNReal.div_le_iff μa_pos.ne' μa_lt_top.ne]
+  exact ha.le.trans (mul_le_mul_left (hn.trans w_lt).le _)
 
 section AbsolutelyContinuous
 
@@ -360,11 +361,11 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         simp only [μ.smul_apply, smul_eq_mul,
           measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
   have B :
-    (q : ℝ≥0∞) * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
+    q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
     calc
-      (q : ℝ≥0∞) * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) =
-          (q : ℝ≥0∞) * μ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
+      q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) =
+          q * μ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
         conv_rhs => rw [inter_comm]
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
@@ -373,8 +374,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
           tendsto_nhds_limUnder hx.2.1.1
-        have I : ∀ᶠ b : Set α in v.filterAt x, (q : ℝ≥0∞) < ρ b / μ b :=
-          (tendsto_order.1 L).1 _ hx.2.1.2
+        have I : ∀ᶠ b : Set α in v.filterAt x, q < ρ b / μ b := (tendsto_order.1 L).1 _ hx.2.1.2
         apply I.frequently.mono fun a ha ↦ ?_
         exact ENNReal.mul_le_of_le_div ha.le
       _ = ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
@@ -465,7 +465,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   let s := {x : α | v.limRatioMeas hρ x = ∞} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
   have ρs : ρ s ≠ ∞ := measure_ne_top_of_subset inter_subset_right μo.ne
-  have A : Tendsto (fun q : ℝ≥0∞ ↦ ρ s / q) (𝓝[Ioo 0 ∞] ∞) (𝓝 (ρ s / ∞)) :=
+  have A : Tendsto (fun q ↦ ρ s / q) (𝓝[Ioo 0 ∞] ∞) (𝓝 (ρ s / ∞)) :=
     (ENNReal.Tendsto.const_div tendsto_id (.inr ρs)).mono_left nhdsWithin_le_nhds
   rw [ENNReal.div_top] at A
   have _ := right_nhdsWithin_Ioo_neBot (ENNReal.zero_lt_top)
@@ -483,7 +483,7 @@ theorem measure_limRatioMeas_zero : ρ (v.limRatioMeas hρ ⁻¹' {0}) = 0 := by
   let s := {x : α | v.limRatioMeas hρ x = 0} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
   have μs : μ s ≠ ∞ := measure_ne_top_of_subset inter_subset_right μo.ne
-  have A : Tendsto (fun q : ℝ≥0∞ ↦ q * μ s) (𝓝[Ioi 0] 0) (𝓝 (0 * μ s)) :=
+  have A : Tendsto (fun q ↦ q * μ s) (𝓝[Ioi 0] 0) (𝓝 (0 * μ s)) :=
     (ENNReal.Tendsto.mul_const tendsto_id (.inr μs)).mono_left nhdsWithin_le_nhds
   rw [zero_mul] at A
   apply ge_of_tendsto A
@@ -697,12 +697,11 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
     ∀ᵐ x ∂μ.restrict s,
       Tendsto (fun a => μ (t ∩ a) / μ a) (v.filterAt x) (𝓝 (t.indicator 1 x)) := by
     apply ae_mono restrict_le_self
-    apply ae_tendsto_measure_inter_div_of_measurableSet
-    exact measurableSet_toMeasurable _ _
+    exact v.ae_tendsto_measure_inter_div_of_measurableSet (measurableSet_toMeasurable μ s)
   have B : ∀ᵐ x ∂μ.restrict s, t.indicator 1 x = (1 : ℝ≥0∞) := by
     refine ae_restrict_of_ae_restrict_of_subset (subset_toMeasurable μ s) ?_
     filter_upwards [ae_restrict_mem (measurableSet_toMeasurable μ s)] with _ hx
-    simp only [t, hx, Pi.one_apply, indicator_of_mem]
+    rw [indicator_of_mem hx, Pi.one_apply]
   filter_upwards [A, B] with x hx h'x
   rw [h'x] at hx
   apply hx.congr' _

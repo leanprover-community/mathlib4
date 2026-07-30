@@ -25,17 +25,17 @@ as possible.
 public section
 
 
-open MeasureTheory Set TopologicalSpace
+open ENNReal MeasureTheory Set TopologicalSpace
 
-open ENNReal NNReal
+variable {α : Type*} {m : MeasurableSpace α} (μ : Measure α)
 
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p < q`, then `f` is almost-everywhere
 measurable. It is even enough to have this for `p` and `q` in a countable dense set. -/
-theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*}
-    {m : MeasurableSpace α} (μ : Measure α) {β : Type*} [CompleteLinearOrder β] [DenselyOrdered β]
-    [TopologicalSpace β] [OrderTopology β] [SecondCountableTopology β] [MeasurableSpace β]
-    [BorelSpace β] (s : Set β) (s_count : s.Countable) (s_dense : Dense s) (f : α → β)
+theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {β : Type*}
+    [CompleteLinearOrder β] [DenselyOrdered β] [TopologicalSpace β] [OrderTopology β]
+    [SecondCountableTopology β] [MeasurableSpace β] [BorelSpace β] (s : Set β)
+    (s_count : s.Countable) (s_dense : Dense s) (f : α → β)
     (h : ∀ p ∈ s, ∀ q ∈ s, p < q → ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
@@ -59,7 +59,8 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
   have f'_meas : Measurable f' := by fun_prop (disch := simp_all)
   let t := ⋃ (p : s) (q : ↥(s ∩ Ioi p)), u' p ∩ v p q
-  have μt : μ t ≤ 0 :=
+  have μt : μ t = 0 := by
+    apply le_antisymm _ bot_le
     calc
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
@@ -69,16 +70,11 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q
         exact biInter_subset_of_mem q.2
-      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by grind
+      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), 0 := by grind
       _ = 0 := by simp only [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by
-    have : ∀ᵐ x ∂μ, x ∉ t := by
-      have : μ t = 0 := le_antisymm μt bot_le
-      change μ _ = 0
-      convert! this
-      ext y
-      simp only [mem_ofPred_eq, mem_compl_iff, not_notMem]
-    filter_upwards [this] with x hx
+    filter_upwards [compl_mem_ae_iff.2 μt] with x hx
+    rw [mem_compl_iff] at hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
       by_cases H : x ∈ u' i
@@ -103,10 +99,8 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
 `p < q`, then `f` is almost-everywhere measurable. -/
-theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m : MeasurableSpace α}
-    (μ : Measure α) (f : α → ℝ≥0∞)
-    (h : ∀ (p : ℝ≥0∞) (q : ℝ≥0∞), p < q →
-      ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
+theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets (f : α → ℝ≥0∞)
+    (h : ∀ p q, p < q → ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
         { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
   obtain ⟨s, s_count, s_dense⟩ := TopologicalSpace.exists_countable_dense ENNReal
