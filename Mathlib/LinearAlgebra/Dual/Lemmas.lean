@@ -889,7 +889,8 @@ theorem dualAnnihilator_iInf_eq {ι : Sort*} [Finite ι] (W : ι → Subspace K 
     (PLift ι) (fun i ↦ W i.down)
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
-  · simp [iSup_of_empty']
+  · intro W
+    rw [iSup_of_empty', iInf_of_isEmpty, sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
     rw [iInf_option, iSup_option, dualAnnihilator_inf_eq, h]
 
