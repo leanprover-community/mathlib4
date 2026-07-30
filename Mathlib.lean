@@ -3871,7 +3871,9 @@ public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.ENat.BigOperators
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations

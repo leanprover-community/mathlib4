@@ -5,24 +5,25 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Units
-public import Mathlib.Algebra.Order.AddGroupWithTop
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Algebra.Order.Ring.WithTop
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
+public import Mathlib.Data.Nat.SuccPred
 
+@[expose] public section
 
-instance : SuccAddOrder ℕ∞ where
-  succ_eq_add_one x := by cases x <;> simp
+deriving instance SuccOrder for ENat
 
+namespace ENat
+
+variable {a b c d m n : ℕ∞}
 
 @[simp] theorem succ_natCast (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
 
 @[deprecated (since := "2026-07-17")] alias succ_coe := succ_natCast
 
-
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl
 
+instance : SuccAddOrder ℕ∞ where
+  succ_eq_add_one x := by cases x <;> simp
 
 @[deprecated Order.succ_eq_add_one (since := "2026-05-25")]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
@@ -34,8 +35,6 @@ theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
 theorem add_one_le_iff' (hn : n ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hn)
 
-
-
 theorem natCast_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
   add_one_le_iff <| natCast_ne_top m
 
@@ -45,7 +44,6 @@ theorem add_one_le_natCast_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
   add_one_le_iff' <| natCast_ne_top n
 
 @[deprecated (since := "2026-07-17")] alias add_one_le_coe_iff := add_one_le_natCast_iff
-
 
 @[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
 protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
@@ -79,6 +77,13 @@ theorem natCast_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
 
 @[deprecated (since := "2026-07-17")] alias coe_lt_add_one_iff := natCast_lt_add_one_iff
 
+protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
+  cases b
+  · simp
+  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_natCast_add_one_iff.mp <|
+      lt_tsub_iff_right.mp h
+
+namespace WithBot
 
 lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.natCast_one, WithBot.coe_natCast, ← Nat.cast_add,
@@ -106,9 +111,4 @@ lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n 
 lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
   add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
 
-
-protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
-  cases b
-  · simp
-  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_natCast_add_one_iff.mp <|
-      lt_tsub_iff_right.mp h
+end WithBot

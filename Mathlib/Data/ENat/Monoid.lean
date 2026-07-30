@@ -5,13 +5,18 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Units
-public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Data.ENat.Basic
 
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.Nat.Cast.Order.Basic
+
+/-!
+# `LinearOrderedAddCommMonoidWithTop` structure on `ENat`
+-/
+
+@[expose] public section
 
 deriving instance
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
