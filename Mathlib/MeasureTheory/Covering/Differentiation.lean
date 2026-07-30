@@ -162,7 +162,7 @@ variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ
 as `μ a` is eventually positive by `ae_eventually_measure_pos`. -/
 theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 0) := by
-  have A : ∀ ε > (0 : ℝ≥0∞), ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
+  have A : ∀ ε > 0, ∀ᵐ x ∂μ, ∀ᶠ a in v.filterAt x, ρ a < ε * μ a := by
     intro ε hε
     rcases eq_top_or_lt_top ε with rfl | hε'
     · filter_upwards [v.ae_eventually_measure_pos] with x hx
@@ -214,7 +214,7 @@ sets in a Vitali family has measure `0` if `c < d`. Indeed, the first inequality
 that `ρ s ≤ c * μ s`, and the second one that `ρ s ≥ d * μ s`, a contradiction if `0 < μ s`. -/
 theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0∞} (hcd : c < d) (s : Set α)
     (hc : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, ρ a ≤ c * μ a)
-    (hd : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, (d : ℝ≥0∞) * μ a ≤ ρ a) : μ s = 0 := by
+    (hd : ∀ x ∈ s, ∃ᶠ a in v.filterAt x, d * μ a ≤ ρ a) : μ s = 0 := by
   have _ := μ.smul_locallyfinite hcd.ne_top
   apply measure_null_of_locally_null s fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
@@ -287,7 +287,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
   let s := {x | ∃ c, Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 c)}
   let o : ℕ → Set α := spanningSets (ρ + μ)
   let u n := s ∩ {x | v.limRatio ρ x < p} ∩ o n
-  let w n := s ∩ {x | (q : ℝ≥0∞) < v.limRatio ρ x} ∩ o n
+  let w n := s ∩ {x | q < v.limRatio ρ x} ∩ o n
   -- the supersets are obtained by restricting to the set `s` where the limit is well defined, to
   -- a finite measure part `o n`, taking a measurable superset here, and then taking the union over
   -- `n`.
