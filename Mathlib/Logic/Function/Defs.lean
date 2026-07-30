@@ -119,6 +119,12 @@ theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f
 
 theorem onFun_dflip_comm (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
 
+theorem injective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Injective :=
+  fun _ _ h => funext fun _ => funext fun _ => congrFun (congrFun h _) _
+
+theorem surjective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Surjective :=
+  (⟨dflip ·, rfl⟩)
+
 attribute [mfld_simps] id_comp comp_id
 
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
@@ -133,6 +139,9 @@ theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijecti
 
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩
+
+theorem bijective_dflip {α β : Sort*} {φ : α → β → Sort u₃} :
+    Function.Bijective (dflip (φ := φ)) := ⟨injective_dflip, surjective_dflip⟩
 
 variable {f : α → β}
 

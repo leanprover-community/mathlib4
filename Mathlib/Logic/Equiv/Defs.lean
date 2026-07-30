@@ -685,16 +685,7 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 
 end Perm
 
-/-- `Function.dflip` as an equivalence. -/
-@[simps (attr := grind =) -fullyApplied]
-def dflip (α β : Sort*) (γ : α → β → Sort*) :
-    ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
-  toFun := Function.dflip
-  invFun := Function.dflip
-
-theorem _root_.Function.dflip_bijective {α β : Sort*} {γ : α → β → Sort*} :
-    Function.Bijective (@Function.dflip _ _ γ) :=
-  Equiv.dflip _ _ _ |>.bijective
+@[deprecated (since := "2026-07-30")] alias _root_.Function.dflip_bijective := bijective_dflip
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps (attr := grind =) apply]
