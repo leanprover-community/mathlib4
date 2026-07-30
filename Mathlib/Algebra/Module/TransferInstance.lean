@@ -42,14 +42,16 @@ variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R β]
 
 namespace AddEquiv
 
-variable (R) (e : α ≃+ β)
+variable (e : α ≃+ β)
 
+variable (R) in
 /-- Transfer `Module` across an `Equiv` -/
 protected abbrev module : Module R α where
   __ := e.distribMulAction R
   zero_smul := by simp [e.smul_def, zero_smul]
   add_smul := by simp [e.smul_def, add_smul]
 
+variable (R) in
 /-- When `α` is equipped with the `A`-module structure transferred via `e : α ≃+ β`,
 this isomorphism is `A`-linear. -/
 def linearEquiv :
@@ -63,16 +65,13 @@ def linearEquiv :
       exact Iff.mpr e.apply_eq_iff_eq_symm_apply rfl }
 
 @[simp]
-lemma linearEquiv_apply (a : α) [AddCommMonoid β] [Module R β] :
-    e.linearEquiv R a = e a := rfl
+lemma linearEquiv_apply (a : α) : e.linearEquiv R a = e a := rfl
 
 @[simp]
-lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
-    letI := Equiv.addCommMonoid e
-    letI := Equiv.module R e
-    (e.linearEquiv R).symm b = e.symm b := rfl
+lemma linearEquiv_symm_apply (b : β) : (e.linearEquiv R).symm b = e.symm b := rfl
 
 set_option backward.isDefEq.respectTransparency false in
+variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree [Module.IsTorsionFree R β] :
     letI := e.module R
