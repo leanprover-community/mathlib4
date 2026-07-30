@@ -13,13 +13,17 @@ public import Mathlib.Data.ENat.Basic
 
 deriving instance
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
-  Sub, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
+  OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors
   for ENat
 
 namespace ENat
 
 variable {a b c d m n : ℕ∞}
+
+@[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
+
+@[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
@@ -56,17 +60,6 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
   apply natCast_inj.1
   simp
 
-@[simp] theorem lift_natCast (n : ℕ) : lift (n : ℕ∞) (WithTop.natCast_lt_top n) = n := rfl
-
-
-@[deprecated (since := "2026-07-17")] alias lift_coe := lift_natCast
-
-@[simp] theorem lift_zero : lift 0 (WithTop.natCast_lt_top 0) = 0 := rfl
-@[simp] theorem lift_one : lift 1 (WithTop.natCast_lt_top 1) = 1 := rfl
-@[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift ofNat(n) (WithTop.natCast_lt_top n) = OfNat.ofNat n := rfl
-
-
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
   induction m
@@ -94,26 +87,7 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
   toNat_le_of_le_natCast <| h.trans_eq (natCast_toNat hn).symm
 
 
-@[simp]
-theorem top_sub_natCast (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
-  rfl
 
-@[deprecated (since := "2026-07-17")] alias top_sub_coe := top_sub_natCast
-
-@[simp]
-theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
-  rfl
-
-@[simp]
-theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
-  rfl
-
-
-@[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
-
-@[simp]
-theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
 
 
 @[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :

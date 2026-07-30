@@ -38,7 +38,7 @@ open Function
 assert_not_exists MonoidWithZero IsOrderedRing
 
 deriving instance Nontrivial,
-  Add, Sub, LE, LT, Bot, Zero, One, ZeroLEOneClass, NatCast,
+  Add, Sub, LE, LT, Bot, Zero, One, ZeroLEOneClass,
   Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT
   for ENat
 
@@ -77,10 +77,6 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 
 @[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
 
-@[simp] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
-
-@[deprecated (since := "2026-07-17")] alias coe_mul := natCast_mul
-
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
 
@@ -89,10 +85,18 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 @[deprecated (since := "2026-07-17")] alias coe_lift := natCast_lift
 
+@[simp] theorem lift_natCast (n : ℕ) : lift (n : ℕ∞) (WithTop.coe_lt_top n) = n := rfl
 @[simp] theorem lift_lt_iff {x : ℕ∞} {h} {n : ℕ} : lift x h < n ↔ x < n := WithTop.untop_lt_iff _
 @[simp] theorem lift_le_iff {x : ℕ∞} {h} {n : ℕ} : lift x h ≤ n ↔ x ≤ n := WithTop.untop_le_iff _
 @[simp] theorem lt_lift_iff {x : ℕ} {n : ℕ∞} {h} : x < lift n h ↔ x < n := WithTop.lt_untop_iff _
 @[simp] theorem le_lift_iff {x : ℕ} {n : ℕ∞} {h} : x ≤ lift n h ↔ x ≤ n := WithTop.le_untop_iff _
+
+@[deprecated (since := "2026-07-17")] alias lift_coe := lift_natCast
+
+@[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
+@[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
+@[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+    lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
 @[simp] theorem add_eq_top {a b : ℕ∞} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithTop.add_eq_top
@@ -178,12 +182,30 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 @[simp] lemma one_ne_top : 1 ≠ (⊤ : ℕ∞) := nofun
 
 @[simp]
+theorem top_sub_natCast (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
+  rfl
+
+@[deprecated (since := "2026-07-17")] alias top_sub_coe := top_sub_natCast
+
+@[simp]
+theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
+  rfl
+
+@[simp]
+theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
+  rfl
+
+@[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
   WithTop.top_pos
 
 @[simp]
 theorem one_lt_top : (1 : ℕ∞) < ⊤ :=
   WithTop.one_lt_top
+
+@[simp] theorem sub_top (a : ℕ∞) : a - ⊤ = 0 := WithTop.sub_top
+
+
 
 theorem natCast_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
