@@ -671,9 +671,7 @@ theorem Filter.EventuallyEq.codiscreteWithin_deriv {U : Set 𝕜} (h : f₁ =ᶠ
     exact ⟨mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h y h₂y,
       mem_pure.2 (mem_union_left _ h₁y)⟩
   filter_upwards [h₄, hU.mem_nhds h₂y] with z h₁z h₂z
-  rcases h₁z with h₁z | h₁z
-  · exact h₁z
-  · exact absurd h₂z h₁z
+  grind
 
 end congr
 
