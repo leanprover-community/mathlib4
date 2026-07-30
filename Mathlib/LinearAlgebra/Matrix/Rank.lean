@@ -226,17 +226,12 @@ theorem rank_of_det_ne_zero {R : Type*} [CommRing R] [IsDomain R] [Fintype m] [D
 
 lemma rank_smul_of_mem_nonZeroDivisors {R : Type*} [CommRing R] {c : R} (B : Matrix m n R)
     (hc : c ∈ nonZeroDivisors R) : (c • B).rank = B.rank := by
-  have hinj : Function.Injective (LinearMap.lsmul R (m → R) c) := by
-    intro x y hxy
-    funext i
-    have hi : c * x i = c * y i := congrFun hxy i
-    have hz : (x i - y i) * c = 0 := by
-      rw [sub_mul, mul_comm (x i), hi, mul_comm]
-      simp
-    aesop
-  have hcomp : (c • B).mulVecLin = (LinearMap.lsmul R (m → R) c).comp B.mulVecLin := by aesop
+  have hc' : IsSMulRegular R c := isSMulRegular_iff_mem_nonZeroSMulDivisors.mpr hc.1
+  have hreg : IsSMulRegular (m → R) c := IsSMulRegular.pi fun _ => hc'
+  let f := LinearMap.lsmul R (m → R) c
+  have hcomp : (c • B).mulVecLin = f.comp B.mulVecLin := by aesop
   rw [rank, rank, hcomp, LinearMap.range_comp]
-  exact (Submodule.equivMapOfInjective _ hinj _).finrank_eq.symm
+  exact (Submodule.equivMapOfInjective f hreg _).finrank_eq.symm
 
 lemma rank_mul_eq_left_of_det_mem_nonZeroDivisors {R : Type*} [CommRing R] [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : A.det ∈ nonZeroDivisors R) :
