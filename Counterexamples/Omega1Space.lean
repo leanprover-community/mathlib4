@@ -85,15 +85,17 @@ Type (u+1). We use Shrink to build versions of Iio.{1} ω₁ and Iic.{1} ω₁ i
 and make the results more general.
 -/
 
-abbrev ShIio.{u} := Shrink.{u,0} (Shrink.{0,1} (Iio.{1} ω₁))
-noncomputable def homeoIio.{u} : ShIio.{u} ≃ₜ Iio.{1} ω₁   :=
-  ((Shrink.homeomorph.{0,1} (Iio.{1} ω₁)).trans (Shrink.homeomorph.{u,0} _)).symm
-abbrev ShIic.{u} := Shrink.{u,0} (Shrink.{0,1} (Iic.{1} ω₁))
+instance smIio.{u} : Small.{u, 1} (Iio (ω_ 1)) := small_lift _
+abbrev ShIio.{u} := Shrink.{u,1} (Iio.{1} ω₁)
+noncomputable def homeoIio.{u} : ShIio.{u} ≃ₜ Iio.{1} ω₁ :=
+  (Shrink.homeomorph.{u,1} (Iio.{1} ω₁)).symm
+instance smIic.{u} : Small.{u, 1} (Iic (ω_ 1)) := small_lift _
+abbrev ShIic.{u} := Shrink.{u,1} (Iic.{1} ω₁)
 noncomputable def homeoIic.{u} : ShIic.{u} ≃ₜ Iic.{1} ω₁ :=
-  ((Shrink.homeomorph.{0,1} (Iic.{1} ω₁)).trans (Shrink.homeomorph.{u,0} _)).symm
+  (Shrink.homeomorph.{u,1} (Iic.{1} ω₁)).symm
 
 instance : T2Space ShIio := homeoIio.symm.t2Space
-instance : T2Space ShIic := Homeomorph.t2Space homeoIic.symm
+instance : T2Space ShIic := homeoIic.symm.t2Space
 instance : NormalSpace ShIio := homeoIio.symm.normalSpace
 instance : NormalSpace ShIic := homeoIic.symm.normalSpace
 
