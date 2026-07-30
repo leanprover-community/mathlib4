@@ -339,10 +339,14 @@ theorem det_of_isUpperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
   have : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
+@[deprecated (since := "2026-07-30")] alias det_of_upperTriangular := det_of_isUpperTriangular
+
 theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLowerTriangular) :
     M.det = ∏ i : m, M i i := by
   rw [← det_transpose]
   exact det_of_isUpperTriangular h.transpose
+
+@[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
 
 open Polynomial
 

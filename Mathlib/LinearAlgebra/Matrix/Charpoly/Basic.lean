@@ -200,6 +200,9 @@ lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.Is
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
   simp [charpoly, det_of_isUpperTriangular h.charmatrix]
 
+@[deprecated (since := "2026-07-30")]
+alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
+
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
 applied to the matrix itself, is zero.

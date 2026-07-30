@@ -368,6 +368,10 @@ theorem gramSchmidtOrthonormalBasis_inv_isUpperTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).IsUpperTriangular := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
+@[deprecated (since := "2026-07-30")]
+alias gramSchmidtOrthonormalBasis_inv_blockTriangular :=
+  gramSchmidtOrthonormalBasis_inv_isUpperTriangular
+
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
