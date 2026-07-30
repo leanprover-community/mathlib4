@@ -39,10 +39,9 @@ section Coeff
 
 @[simp]
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
-  rcases p with ⟨⟩
-  rcases q with ⟨⟩
-  simp_rw [← ofFinsupp_add, coeff]
-  exact Finsupp.add_apply _ _ _
+  rcases p with ⟨p⟩
+  rcases q with ⟨q⟩
+  simp_rw [← ofFinsupp_add, coeff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply]
 
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
@@ -103,7 +102,7 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 @[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
-  simp [Polynomial.sum]
+  simp [sum_def]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained

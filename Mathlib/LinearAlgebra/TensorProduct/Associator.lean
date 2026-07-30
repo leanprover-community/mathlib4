@@ -367,28 +367,22 @@ lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
 
 end LinearMap
 
-namespace Equiv
+namespace LinearEquiv
 variable {R A A' B B' C C' : Type*}
-variable [CommSemiring R] [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
+variable [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [Module R A] [Module R B] [Module R C]
 variable [Module R A'] [Module R B'] [Module R C']
 
 variable (R) in
 open TensorProduct in
-lemma tensorProductAssoc_def (eA : A ≃ A') (eB : B ≃ B') (eC : C ≃ C') :
-    letI := eA.addCommMonoid
-    letI := eB.addCommMonoid
-    letI := eC.addCommMonoid
-    letI := eA.module R
-    letI := eB.module R
-    letI := eC.module R
-    TensorProduct.assoc R A B C = .trans
-      (congr (congr (eA.linearEquiv R) (eB.linearEquiv R)) (eC.linearEquiv R)) (.trans
-      (TensorProduct.assoc R A' B' C') <| congr (eA.linearEquiv R).symm <|
-        congr (eB.linearEquiv R).symm (eC.linearEquiv R).symm) := by
+lemma tensorProductAssoc_def (eA : A ≃ₗ[R] A') (eB : B ≃ₗ[R] B') (eC : C ≃ₗ[R] C') :
+    TensorProduct.assoc R A B C = .trans (congr (congr eA eB) eC) (.trans
+      (TensorProduct.assoc R A' B' C') <| congr eA.symm <| congr eB.symm (eC).symm) := by
   ext x
   induction x with
   | zero => simp
   | add => simp [*]
   | tmul x a => induction x <;> simp [*, add_tmul]
 
-end Equiv
+end LinearEquiv
