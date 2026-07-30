@@ -525,7 +525,7 @@ namespace CategoryTheory.Iso
 def groupIsoToMulEquiv {X Y : GrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/
+/-- Build an `addEquiv` from an isomorphism in the category `AddGrpCat` -/
 add_decl_doc addGroupIsoToAddEquiv
 
 /-- Build a `MulEquiv` from an isomorphism in the category `CommGrpCat`. -/
