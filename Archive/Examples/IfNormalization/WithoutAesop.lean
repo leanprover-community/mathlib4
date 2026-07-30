@@ -60,7 +60,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · simp only [eval, apply_ite, ite_eq_iff']
           cases hfv : f v
-          · simp +contextual only [cond_false, h, he₁]
+          · simp +contextual only [Bool.cond_false, h, he₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
@@ -74,7 +74,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · subst h
                 simp_all
               · simp_all
-          · simp only [cond_true, h, ht₁]
+          · simp only [Bool.cond_true, h, ht₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
