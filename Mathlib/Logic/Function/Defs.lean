@@ -21,8 +21,6 @@ namespace Function
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
-/- ### Lemmas on existing definitions -/
-
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
 attribute [mfld_simps] id_comp comp_id
