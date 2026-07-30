@@ -6,12 +6,14 @@ section Jordan
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
+-- Wielandt claims that this is proved by the same method as above.
 proof_wanted IsPreprimitive.is_two_pretransitive'
     (hG : IsPreprimitive G α)
     {s : Set α} {n : ℕ} (hsn : Nat.card s = n + 1) (hsn' : n + 1 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
+-- Wielandt claims that this stronger version is proved in the same way
 proof_wanted is_two_preprimitive_strong_jordan
     (hG : IsPreprimitive G α)
     {s : Set α} {n : ℕ} (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α)
