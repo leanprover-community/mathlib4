@@ -255,7 +255,7 @@ local instance : CompleteSpace (ArithmeticFunction R) := by
     ext f
     exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
   rw [ArithmeticFunction.range_coe]
-  apply isClosed_setOf_map_zero
+  apply isClosed_setOfPred_map_zero
 
 /-- The Euler product of a family of arithmetic functions. Defined as a `tprod`, but see
 `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/

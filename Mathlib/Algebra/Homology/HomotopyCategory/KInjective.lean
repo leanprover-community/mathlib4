@@ -143,7 +143,7 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
     `isKInjective_of_injective_aux` in order to get better approximations,
     and we pass to the limit. -/
     let X (n : ℕ) : Set (Cochain K L (-1)) :=
-      setOf (fun α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1))
+      Set.ofPred (fun α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1))
     let x₀ : X 0 := ⟨0, fun p q hpq hp ↦
       IsZero.eq_of_tgt (L.isZero_of_isStrictlyGE d _ (by lia)) _ _⟩
     let φ (n : ℕ) (α : X n) : X (n + 1) :=

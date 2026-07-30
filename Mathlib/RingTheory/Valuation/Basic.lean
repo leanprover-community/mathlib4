@@ -445,7 +445,7 @@ def leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀) : AddSubgroup R where
   carrier := { x | v x ≤ γ }
   zero_mem' := by simp
   add_mem' {x y} x_in y_in := (v.map_add x y).trans (max_le x_in y_in)
-  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+  neg_mem' x_in := by rwa [Set.mem_ofPred, map_neg]
 
 @[simp]
 lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
@@ -561,7 +561,7 @@ lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
   carrier := { x | v x < γ }
   zero_mem' := by simp
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
-  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+  neg_mem' x_in := by rwa [Set.mem_ofPred, map_neg]
 
 @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
     x ∈ ltAddSubgroup v γ ↔ v x < γ :=

@@ -1081,7 +1081,7 @@ theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e)
 
 theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e)
     (hb : a' ^ e * (nat_lit 1).rawCast = b) :
-    a = b + 0 := by simp [← hone, ←hb, *]
+    a = b + 0 := by simp [← hone, ← hb, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
