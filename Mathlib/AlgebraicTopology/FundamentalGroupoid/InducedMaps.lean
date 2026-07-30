@@ -150,7 +150,6 @@ include hfg
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image :
     (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map ⟦q⟧ := by
-  simp only [map_eq]
   apply Path.Homotopic.hpath_hext
   exact hfg
 

@@ -52,7 +52,7 @@ def Extension : Type :=
 
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
-  letI := ZMod.algebra k p
+  let := ZMod.algebra k p
   unfold Extension
   convert!
     GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
@@ -75,7 +75,7 @@ instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
-  letI := ZMod.algebra k p
+  let := ZMod.algebra k p
   rw [← pow_finrank_eq_natCard p, ← pow_finrank_eq_natCard p, finrank_zmod_extension, pow_mul]
 
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
@@ -152,27 +152,49 @@ theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l
 
 end FiniteField
 
-section Polynomial
+namespace Irreducible
 
-open FiniteField Polynomial
+open FiniteField
 
-variable {K : Type*} [Field K]
+variable {k}
+variable {f : k[X]} (hi : Irreducible f)
+include hi
 
-theorem Irreducible.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} {f : K[X]}
-    (hi : Irreducible f) (h : f ∣ X ^ (Nat.card K) ^ n - X) : f.natDegree ∣ n := by
+omit [Finite k] in -- Junk for `Nat.card` allows us to omit the finiteness assumption here.
+theorem natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} (h : f ∣ X ^ (Nat.card k) ^ n - X) :
+    f.natDegree ∣ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  cases finite_or_infinite K; swap
+  cases finite_or_infinite k; swap
   · rw [Nat.card_eq_zero_of_infinite, zero_pow hn, pow_zero, ← dvd_neg, neg_sub] at h
     rw [((Splits.X_sub_C 1).of_dvd (X_sub_C_ne_zero 1) h).natDegree_eq_one_of_irreducible hi]
     exact one_dvd n
-  let ⟨p, hp⟩ := CharP.exists K
-  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime K p⟩
+  let ⟨p, hp⟩ := CharP.exists k
+  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime k p⟩
   have : NeZero n := ⟨hn⟩
-  rw [← finrank_extension K p n]
+  rw [← finrank_extension k p n]
   apply Irreducible.natDegree_dvd_finrank hi
-  refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap K (Extension K p n)) h)
+  refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap _ (Extension _ p n)) h)
   · apply IsSplittingField.splits
-  · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero K hn Finite.one_lt_card)
+  · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero _ hn Finite.one_lt_card)
 
-end Polynomial
+theorem natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X {n : ℕ} :
+    f.natDegree ∣ n ↔ f ∣ X ^ (Nat.card k) ^ n - X := by
+  refine ⟨fun hdvd ↦ dvd_trans ?_ (dvd_pow_pow_sub_self_of_dvd hdvd),
+    hi.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X⟩
+  let a := AdjoinRoot.root f
+  have : NeZero f.natDegree := NeZero.of_pos (Irreducible.natDegree_pos hi)
+  have : Fact <| Irreducible f := ⟨hi⟩
+  rw [← hi.dvd_iff_aeval_eq_zero (b := a) (by aesop)]
+  let ⟨p, hp⟩ := CharP.exists k
+  have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime k p⟩
+  let e := FiniteField.algEquivExtension k p f.natDegree (AdjoinRoot f)
+    (finrank_quotient_span_eq_natDegree (f := f))
+  have hpeval : (e a) ^ (Nat.card k) ^ f.natDegree - (e a) = 0 := by
+    have := Fintype.ofFinite (Extension k p f.natDegree)
+    rw [← (natCard_extension k p f.natDegree), ← Fintype.card_eq_nat_card,
+      pow_card (e a), sub_self]
+  apply_fun e.symm at hpeval
+  simpa using hpeval
+
+end Irreducible

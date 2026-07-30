@@ -135,6 +135,7 @@ Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used i
 noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α :=
   subtypeCongr e e.toCompl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   simp [extendSubtype, subtypeCongr, sumCompl_symm_apply_of_pos hx]
@@ -145,8 +146,8 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
-  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply,
-    sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
+  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply,
+    sumCompl_symm_apply_of_neg hx]
   rfl
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
@@ -167,7 +168,6 @@ theorem Perm.exists_extending_pair [Finite α]
 theorem Perm.exists_map_finset_eq
     (s t : Finset β) (h : s.card = t.card) :
     ∃ σ : Perm β, s.map σ.toEmbedding = t := by
-  classical
   obtain ⟨σ, hσ⟩ := Perm.exists_extending_pair
     (fun x : s => (x : β)) (fun x : s => ((s.equivOfCardEq h) x : β))
     Subtype.val_injective (Subtype.val_injective.comp (s.equivOfCardEq h).injective)

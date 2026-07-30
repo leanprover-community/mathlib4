@@ -32,6 +32,7 @@ theorem num_continuous : Continuous ↿num := by unfold num; fun_prop
 @[fun_prop]
 theorem denom_continuous : Continuous ↿denom := by unfold denom; fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma continuous_toSL2R : Continuous toSL2R := by
   apply continuous_induced_rng.mpr
   simp only [Function.comp_def, coe_toSL2R]
