@@ -129,7 +129,7 @@ theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congr
 
 end Diag
 
-/- ### onFun -/
+/- ### `onFun` function -/
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
@@ -154,7 +154,7 @@ attribute [mfld_simps] id_comp comp_id
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
 
-/- ### Bijective -/
+/- ### Bijective functions -/
 
 /-- A function is called bijective if it is both injective and surjective. -/
 def Bijective (f : α → β) :=
@@ -199,14 +199,13 @@ theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) 
 
 end Bicomp
 
-
 end Function
 
 namespace Function
 
 variable {α : Type u₁} {β : Type u₂}
 
-/- ### IsFixedPt -/
+/- ### Fixed points of functions -/
 
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
