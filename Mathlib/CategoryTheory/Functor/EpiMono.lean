@@ -40,8 +40,6 @@ class PreservesEpimorphisms (F : C ⥤ D) : Prop where
   /-- A functor preserves epimorphisms if it maps epimorphisms to epimorphisms. -/
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Epi (F.map f)
 
-attribute [to_dual existing] PreservesEpimorphisms.preserves PreservesEpimorphisms.mk
-
 @[to_dual]
 instance map_epi (F : C ⥤ D) [PreservesEpimorphisms F] {X Y : C} (f : X ⟶ Y) [Epi f] :
     Epi (F.map f) :=
@@ -61,8 +59,6 @@ class ReflectsEpimorphisms (F : C ⥤ D) : Prop where
   /-- A functor reflects epimorphisms if morphisms that are mapped to epimorphisms are themselves
   epimorphisms. -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), Epi (F.map f) → Epi f
-
-attribute [to_dual existing] ReflectsEpimorphisms.reflects ReflectsEpimorphisms.mk
 
 @[to_dual]
 theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X ⟶ Y}

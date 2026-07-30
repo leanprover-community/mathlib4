@@ -493,6 +493,7 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
+set_option linter.translate.warnInvalid false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
 @[to_dual (attr := simps)
 /-- Transport an adjunction along a natural isomorphism on the right. -/]
@@ -504,6 +505,8 @@ def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) :
       Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
     simp [← Functor.comp_map]
   right_triangle_components := by simp [← Functor.map_comp]
+
+attribute [to_dual existing] ofNatIsoLeft_unit ofNatIsoLeft_counit
 
 @[to_dual none]
 lemma homEquiv_ofNatIsoLeft_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
