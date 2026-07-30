@@ -8,6 +8,10 @@ module
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.Nat.SuccPred
 
+/-!
+# `SuccOrder` structure on `ENat`
+-/
+
 @[expose] public section
 
 deriving instance SuccOrder for ENat
@@ -112,3 +116,4 @@ lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
   add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
 
 end WithBot
+end ENat
