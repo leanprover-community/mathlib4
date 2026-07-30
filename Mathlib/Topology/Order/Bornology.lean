@@ -129,6 +129,7 @@ section LinearOrder
 variable [LinearOrder α] [IsOrderBornology α]
 
 lemma IsOrderBornology.cobounded_le_atBot_sup_atTop : cobounded α ≤ .atBot ⊔ .atTop := by
+  have := Nonempty.of_isOrderBornology α
   intro s
   rw [Filter.mem_sup, Filter.atTop_basis.mem_iff, Filter.atBot_basis.mem_iff,
     ← compl_compl s, ← isBounded_def, isBounded_iff_bddBelow_bddAbove, compl_compl s]
