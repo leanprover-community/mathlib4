@@ -639,6 +639,15 @@ protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDiffAt[s] f x) :
         ((extChartAt I x) x)) ∘L (tangentSpaceCastModel I x) := by
   simp only [mfderivWithin, h, if_pos]
 
+/-- Formula for the manifold derivative of a map within a set, abusing the defeq between the tangent
+space and the model space. Use instead `MDifferentiableWithinAt.mfderivWithin`, unless you have
+good reasons not to do so. -/
+protected theorem MDifferentiableWithinAt.mfderivWithin_abuse (h : MDiffAt[s] f x) :
+    mfderiv[s] f x =
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
+        ((extChartAt I x) x) :=
+  h.mfderivWithin
+
 theorem MDifferentiableAt.hasMFDerivAt (h : MDiffAt f x) : HasMFDerivAt% f x (mfderiv% f x) := by
   refine ⟨h.continuousAt, ?_⟩
   simp only [mfderiv, h, mfld_simps]
@@ -650,6 +659,14 @@ protected theorem MDifferentiableAt.mfderiv (h : MDiffAt f x) :
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) ∘L
       (tangentSpaceCastModel I x) := by
   simp only [mfderiv, h, if_pos]
+
+/-- Formula for the manifold derivative of a map, abusing the defeq between the tangent space
+and the model space. Use instead `MDifferentiableAt.mfderiv`, unless you have good reasons not
+to do so. -/
+protected theorem MDifferentiableAt.mfderiv_abuse (h : MDiffAt f x) :
+    mfderiv% f x =
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) :=
+  h.mfderiv
 
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt% f x f') : mfderiv% f x = f' :=
   (hasMFDerivAt_unique h h.mdifferentiableAt.hasMFDerivAt).symm
