@@ -3,14 +3,16 @@ Copyright (c) 2026 Juanjo Madrigal. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Juanjo Madrigal
 -/
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.SetTheory.Ordinal.Topology
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Order.MonotoneConvergence
-import Mathlib.Topology.Order.T5
-import Mathlib.Topology.Instances.Shrink
+module
+
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Ordinal.Topology
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Order.MonotoneConvergence
+public import Mathlib.Topology.Order.T5
+public import Mathlib.Topology.Instances.Shrink
 
 /-!
 # The space `ω₁`
