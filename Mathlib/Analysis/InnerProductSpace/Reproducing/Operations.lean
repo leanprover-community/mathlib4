@@ -172,25 +172,15 @@ noncomputable def linearIsometryEquiv :
 
 /-- The map taking every function in `OfKernel (K + K')` to the elements from
 `WithLp 2 ((OfKernel K) × (OfKernel K'))` that minimizes the quotient norm. -/
-noncomputable def projection : OfKernel (K + K') →L[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) :=
-  ((generator K K').kerᗮ).subtypeL ∘L
-    ((linearIsometryEquiv K K').trans (generator K K').ker.quotientEquivOrthogonal)
+noncomputable def projection : OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) :=
+  ((generator K K').kerᗮ).subtypeₗᵢ.comp (((linearIsometryEquiv K K').trans
+    (generator K K').ker.quotientEquivOrthogonal).toLinearIsometry)
 
 @[simp low]
 lemma coe_orthogonalProjection :
-    ⇑(projection K K') = (((generator K K').kerᗮ).subtypeL
+    ⇑(projection K K') = (((generator K K').kerᗮ).subtype
       ∘ (generator K K').ker.quotientEquivOrthogonal ∘ (linearIsometry K K')) := by
   rfl
-
-lemma projection_apply (f : OfKernel (K + K')) :
-    projection K K' f = (((generator K K').kerᗮ).subtypeL
-      ∘ (generator K K').ker.quotientEquivOrthogonal ∘ (linearIsometry K K')) f := by
-  rfl
-
-lemma projection_inner (f g : OfKernel (K + K')) :
-    ⟪projection K K' f, projection K K' g⟫_𝕜 = ⟪f, g⟫_𝕜 := by
-  simp [← ((linearIsometryEquiv K K').trans
-    (generator K K').ker.quotientEquivOrthogonal).inner_map_map, projection]
 
 theorem projection_kerFun (x : X) (v : V) :
     projection K K' (kerFun (OfKernel (K + K')) x v) =
@@ -198,28 +188,9 @@ theorem projection_kerFun (x : X) (v : V) :
   simp [projection, linearIsometryEquiv, linearIsometry_kerFun_apply_eq_mk,
     kerFun_mem_orthogonal K K' x v]
 
-lemma norm_projection_le :
-    ‖projection K K'‖ ≤ 1 := by
-  grw [projection, ContinuousLinearMap.opNorm_comp_linearIsometryEquiv, norm_subtypeL_le]
-
-lemma norm_projection [Nontrivial ((generator K K')).kerᗮ] :
-    ‖projection K K'‖ = 1 := by
-  grw [projection, ContinuousLinearMap.opNorm_comp_linearIsometryEquiv, norm_subtypeL]
-
-lemma projection_injective : Function.Injective (projection K K') := by
-  simp only [projection, coe_comp, coe_subtypeL, coe_subtype, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, Subtype.val_injective,
-    Function.Injective.of_comp_iff]
-  exact LinearIsometryEquiv.injective
-      ((linearIsometryEquiv K K').trans ((generator K K')).ker.quotientEquivOrthogonal)
-
 lemma range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
   ext
-  simp only [projection, coe_comp]
-  constructor
-  · rintro ⟨x, rfl⟩
-    simp
-  · simp
+  simp [Set.range_comp, Set.range_comp, (linearIsometry_surjective K K').range_eq]
 
 end Add
 
