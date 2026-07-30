@@ -53,15 +53,15 @@ structure Decomposition (M : Matrix (Fin m) (Fin n) R) where
   pivot : Fin m → WithTop (Fin n)
   /-- The rank: the number of rows with a pivot. -/
   rank : ℕ
-  is_pivot : (L * (M.submatrix σ id)).IsPivot pivot
+  isPivotedBy : (L * (M.submatrix σ id)).IsPivotedBy pivot
   card_eq : #{i | pivot i ≠ ⊤} = rank
   L_lowerTriangular : L.IsLowerTriangular
-  L_diag_ne_zero : ∀ i, L i i ≠ 0
+  L_diag_ne_zero : ∀ i, L.diag i ≠ 0
 
 theorem Decomposition.rank_eq (cert : Decomposition M) :
     M.rank = cert.rank := by
   have hr : (M.submatrix cert.σ id).rank = M.rank := M.rank_submatrix cert.σ (Equiv.refl (Fin n))
-  rw [← hr, ← Matrix.rank_mul_eq_right_of_lowerTriangular cert.L _ cert.L_lowerTriangular
-    cert.L_diag_ne_zero, cert.is_pivot.rank_eq, cert.card_eq]
+  rw [← hr, ← Matrix.rank_mul_eq_right_of_isLowerTriangular cert.L _ cert.L_lowerTriangular
+    cert.L_diag_ne_zero, cert.isPivotedBy.rank_eq, cert.card_eq]
 
 end Bareiss
