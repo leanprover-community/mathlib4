@@ -81,35 +81,9 @@ lemma bracket_def (x y : L') :
     letI := e.lieRing
     ⁅x, y⁆ = e.symm ⁅e x, e y⁆ := rfl
 
-variable (R) in
-/-- Transfer `LieAlgebra` across an `Equiv` -/
-@[deprecated LinearEquiv.lieAlgebra (since := "2026-07-30")]
-protected abbrev lieAlgebra :
-    letI := e.lieRing
-    LieAlgebra R L' :=
-  letI := e.lieRing
-  letI := e.module R
-  { lie_smul _ _ _ := by simp [Equiv.smul_def, AddEquiv.bracket_def] }
-
-variable (R) in
-/-- An equivalence `e : L' ≃ L` gives a Lie algebra equivalence `L' ≃ₗ⁅R⁆ L` where the algebraic
-structures on `L'` are obtained by transporting the structures on `L` back along `e`. -/
-@[deprecated linearEquiv.lieEquiv (since := "2026-07-30")]
-def lieEquiv :
-    letI := e.lieRing
-    letI := e.lieAlgebra R
-    L' ≃ₗ⁅R⁆ L :=
-  letI := e.lieRing
-  letI := e.lieAlgebra R
-  { e.linearEquiv R with map_lie' {x y} := by simp [AddEquiv.bracket_def] }
-
-@[deprecated LinearEquiv.lieEquiv_apply (since := "2026-07-30")]
-lemma lieEquiv_apply (a : L') : e.lieEquiv R a = e a := rfl
-
-@[deprecated LinearEquiv.lieEquiv_symm_apply (since := "2026-07-30")]
-lemma lieEquiv_symm_apply (b : L) :
-    letI := e.lieRing
-    letI := e.lieAlgebra R
-    (e.lieEquiv R).symm b = e.symm b := rfl
+@[deprecated (since := "2026-07-30")] alias lieAlgebra := LinearEquiv.lieAlgebra
+@[deprecated (since := "2026-07-30")] alias lieEquiv := LinearEquiv.lieEquiv
+@[deprecated (since := "2026-07-30")] alias lieEquiv_apply := LinearEquiv.lieEquiv_apply
+@[deprecated (since := "2026-07-30")] alias lieEquiv_symm_apply := LinearEquiv.lieEquiv_symm_apply
 
 end Equiv
