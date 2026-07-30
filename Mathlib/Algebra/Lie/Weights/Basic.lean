@@ -238,10 +238,12 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-@[simp]
-lemma coe_zero [Nontrivial (genWeightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
+  zero_apply _ := rfl
 
-lemma zero_apply [Nontrivial (genWeightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
+@[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -266,7 +268,6 @@ lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : 
 
 noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
