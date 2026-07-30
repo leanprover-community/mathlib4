@@ -68,8 +68,8 @@ theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
     A.row i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by
   refine ⟨fun h => ?_, fun ⟨c, hc⟩ => hc.row_ne_zero⟩
   obtain ⟨c, hc, hmin⟩ := wellFounded_lt.has_min {j | A i j ≠ 0} <| Function.ne_iff.mp h
-  refine ⟨c, fun j hj => ?_, hc⟩
-  by_contra! hmin
+  refine ⟨c, ?_, hc⟩
+  by_contra
   aesop
 
 /-- If column indices have a linear order, then there's at most one leading position per row. -/
@@ -77,7 +77,6 @@ theorem IsLeadingEntry.eq [LinearOrder n] {i : m} {c₁ c₂ : n}
     (h₁ : A.IsLeadingEntry i c₁) (h₂ : A.IsLeadingEntry i c₂) : c₁ = c₂ :=
   le_antisymm (not_lt.mp fun hlt => h₂.2 (h₁.1 c₂ hlt)) (not_lt.mp fun hlt => h₁.2 (h₂.1 c₁ hlt))
 
-/-- Decidability instance of isLeadingEntry. -/
 instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
     (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
   decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
@@ -89,17 +88,16 @@ instance decidableIsLeadingEntry [DecidableEq R] [Fintype n] [LT n] [DecidableLT
 `isRowEchelon`). -/
 structure IsReducedRowEchelon [LT m] [LT n] [One R] (A : Matrix m n R) : Prop where
   isRowEchelon : A.IsRowEchelon
-  eq_one ⦃i : m⦄ ⦃c : n⦄ (hic : A.IsLeadingEntry i c) : A i c = 1
-  eq_zero ⦃i₁ i₂ : m⦄ ⦃c : n⦄ (hi : i₁ < i₂) (hc : A.IsLeadingEntry i₂ c) : A i₁ c = 0
+  eq_one ⦃i : m⦄ ⦃c : n⦄ (hA : A.IsLeadingEntry i c) : A i c = 1
+  eq_zero ⦃i₁ i₂ : m⦄ ⦃c : n⦄ (hlt : i₁ < i₂) (hA : A.IsLeadingEntry i₂ c) : A i₁ c = 0
 
-/-- If the row indices have a linear order, then the every entry in pivot columns vanishes
+/-- If the row indices have a linear order, then every entry in a pivot column vanishes
 except for the pivot. -/
 theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT n] [One R]
     {i₁ i₂ : m} {c : n} (hA : A.IsReducedRowEchelon) (hne : i₁ ≠ i₂)
     (hlead : A.IsLeadingEntry i₂ c) : A i₁ c = 0 := by
-  rcases lt_trichotomy i₁ i₂ with hlt | heq | hlt
+  rcases hne.lt_or_gt with hlt | hlt
   · exact hA.eq_zero hlt hlead
-  · exact absurd heq hne
   · exact hA.isRowEchelon hlt hlead.1
 
 end Matrix
