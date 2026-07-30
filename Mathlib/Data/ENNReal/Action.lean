@@ -108,13 +108,9 @@ instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
 
 instance : IsOrderedModule ℝ≥0 ℝ≥0∞ where
 
-example : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
-
 instance : IsOrderedSMul ℝ≥0 ℝ≥0∞ where
   smul_le_smul_left a b hab c := by gcongr
   smul_le_smul_right a b hab c := by gcongr
-
-example : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
 
 end Actions
 

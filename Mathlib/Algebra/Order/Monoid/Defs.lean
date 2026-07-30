@@ -21,8 +21,6 @@ open Function
 
 variable {α : Type*}
 
--- TODO: assume weaker typeclasses
-
 /-- An ordered (additive) monoid is a monoid with a preorder such that addition is monotone. -/
 class IsOrderedAddMonoid (α : Type*) [AddCommMonoid α] [Preorder α] where
   protected add_le_add_left (a b : α) : a ≤ b → ∀ c, a + c ≤ b + c
@@ -79,7 +77,7 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
   {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
-  le_of_mul_le_mul_left' := sorry -- IsOrderedCancelMonoid.le_of_mul_le_mul_left _ _ _
+  le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left
 
 @[to_additive]
 instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT

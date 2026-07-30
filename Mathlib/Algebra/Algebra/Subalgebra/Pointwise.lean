@@ -103,7 +103,7 @@ theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S 
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 
 instance : SMulLeftMono R' (Subalgebra R A) :=
-  ⟨fun _ _ => map_mono⟩
+  ⟨fun _ _ _ => map_mono⟩
 
 end Pointwise
 

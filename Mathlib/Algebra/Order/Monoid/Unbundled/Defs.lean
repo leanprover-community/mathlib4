@@ -320,55 +320,6 @@ theorem covariant_smul_lt [SMul M N] [LT N] [SMulLeftStrictMono M N] :
     Covariant M N (· • ·) (· < ·) :=
   SMulLeftStrictMono.elim
 
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_left]
-theorem mul_le_mul_left' [Mul M] [LE M] [MulLeftMono M] {b c : M} (bc : b ≤ c) (a : M) :
-    a * b ≤ a * c :=
-  MulLeftMono.elim a bc
-
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_right]
-theorem mul_le_mul_right' [Mul M] [LE M] [MulRightMono M] {b c : M} (bc : b ≤ c) (a : M) :
-    b * a ≤ c * a :=
-  MulRightMono.elim a bc
-
-@[to_additive (attr := gcongr) add_lt_add_left]
-theorem mul_lt_mul_left' [Mul M] [LT M] [MulLeftStrictMono M] {b c : M} (bc : b < c) (a : M) :
-    a * b < a * c :=
-  MulLeftStrictMono.elim a bc
-
-@[to_additive (attr := gcongr) add_lt_add_right]
-theorem mul_lt_mul_right' [Mul M] [LT M] [MulRightStrictMono M] {b c : M} (bc : b < c)
-    (a : M) :
-    b * a < c * a :=
-  MulRightStrictMono.elim a bc
-
-@[to_additive lt_of_add_lt_add_left]
-theorem lt_of_mul_lt_mul_left' [Mul M] [LT M] [MulLeftReflectLT M] {a b c : M}
-    (bc : a * b < a * c) :
-    b < c :=
-  MulLeftReflectLT.elim a bc
-
-@[to_additive lt_of_add_lt_add_right]
-theorem lt_of_mul_lt_mul_right' [Mul M] [LT M] [MulRightReflectLT M] {a b c : M}
-    (bc : b * a < c * a) :
-    b < c :=
-  MulRightReflectLT.elim a bc
-
-@[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [Mul M] [LE M] [MulLeftReflectLE M] {a b c : M}
-    (bc : a * b ≤ a * c) :
-    b ≤ c :=
-  MulLeftReflectLE.le_of_mul_le_mul_left' a bc
-
-@[to_additive le_of_add_le_add_right]
-theorem le_of_mul_le_mul_right' [Mul M] [LE M] [MulRightReflectLE M] {a b c : M}
-    (bc : b * a ≤ c * a) :
-    b ≤ c :=
-  MulRightReflectLE.le_of_mul_le_mul_right' a bc
-
 @[to_additive (attr := gcongr)]
 theorem smul_le_smul_left [SMul M N] [LE N] [SMulLeftMono M N]
     (m : M) {a b : N} (h : a ≤ b) :
@@ -583,12 +534,12 @@ instance mulRightReflectLT_of_mulRightMono [Mul N] [LinearOrder N] [MulRightMono
   elim := covariant_le_iff_contravariant_lt.mp MulRightMono.elim
 
 @[to_additive]
-instance mulLeftMono_of_mulLeftReflectLT [Mul N] [LinearOrder N] [MulLeftReflectLT N] :
+theorem mulLeftMono_of_mulLeftReflectLT [Mul N] [LinearOrder N] [MulLeftReflectLT N] :
     MulLeftMono N where
   elim := covariant_le_iff_contravariant_lt.mpr MulLeftReflectLT.elim
 
 @[to_additive]
-instance mulRightMono_of_mulRightReflectLT [Mul N] [LinearOrder N] [MulRightReflectLT N] :
+theorem mulRightMono_of_mulRightReflectLT [Mul N] [LinearOrder N] [MulRightReflectLT N] :
     MulRightMono N where
   elim := covariant_le_iff_contravariant_lt.mpr MulRightReflectLT.elim
 

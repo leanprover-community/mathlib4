@@ -48,7 +48,6 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
 instance (priority := 100) toMulRightMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulRightMono R := by
   refine ⟨fun a b c h => ?_⟩
-  dsimp [swap]
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [add_mul]
   apply self_le_add_right
