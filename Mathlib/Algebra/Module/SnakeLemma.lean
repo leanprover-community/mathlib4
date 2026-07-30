@@ -82,6 +82,7 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
   rw [← sub_eq_zero, ← map_sub, hz₁, hπ₁]
   exact ⟨_, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 **Snake Lemma**
 Suppose we have an exact commutative diagram

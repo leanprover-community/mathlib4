@@ -68,8 +68,8 @@ lemma exists_egirth_eq_length :
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
-  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma', ENat.iInf_coe_ne_top,
-      ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
+  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma',
+      ENat.iInf_natCast_ne_top, ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
@@ -115,7 +115,7 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
@@ -130,13 +130,13 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
 
 lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| hwc.egirth_le_length
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| hwc.egirth_le_length
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨by tauto, fun h ↦ ?_⟩
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
-  simp_all only [girth, ENat.toNat_coe]
+  simp_all only [girth, ENat.toNat_natCast]
   tauto
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by

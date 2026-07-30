@@ -216,28 +216,29 @@ as well as their unprimed versions in case `𝔖` covers `X`. -/
 theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
     (UniformOnFun.uniformSpace X α 𝔖).comap F =
-    (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) := by
+    (Pi.uniformSpace _).comap ((⋃₀ 𝔖).domRestrict ∘ F) := by
   -- Recall that the uniform structure on `X →ᵤ[𝔖] α` is the one induced by all the maps
-  -- `K.restrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`. Its pullback along `F`, which is
+  -- `K.domRestrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`. Its pullback along `F`, which is
   -- the LHS of our goal, is thus the uniform structure induced by the maps
-  -- `K.restrict ∘ F : ι → (K →ᵤ α)` for `K ∈ 𝔖`.
+  -- `K.domRestrict ∘ F : ι → (K →ᵤ α)` for `K ∈ 𝔖`.
   have H1 : (UniformOnFun.uniformSpace X α 𝔖).comap F =
-      ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.restrict ∘ F) := by
+      ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.domRestrict ∘ F) := by
     simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap,
       UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp_def,
       UniformFun, Equiv.coe_fn_symm_mk]
   -- Now, note that a similar fact is true for the uniform structure on `X → α` induced by
-  -- the map `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by
-  -- all maps `K.restrict : (X → α) → (K → α)` for `K ∈ 𝔖`, which means that the RHS of our
-  -- goal is the uniform structure induced by the maps `K.restrict ∘ F : ι → (K → α)` for `K ∈ 𝔖`.
-  have H2 : (Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F) =
-      ⨅ (K ∈ 𝔖), (Pi.uniformSpace _).comap (K.restrict ∘ F) := by
+  -- the map `(⋃₀ 𝔖).domRestrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by
+  -- all maps `K.domRestrict : (X → α) → (K → α)` for `K ∈ 𝔖`, which means that the RHS of our
+  -- goal is the uniform structure induced by the maps `K.domRestrict ∘ F : ι → (K → α)`
+  -- for `K ∈ 𝔖`.
+  have H2 : (Pi.uniformSpace _).comap ((⋃₀ 𝔖).domRestrict ∘ F) =
+      ⨅ (K ∈ 𝔖), (Pi.uniformSpace _).comap (K.domRestrict ∘ F) := by
     simp_rw [UniformSpace.comap_comap, Pi.uniformSpace_comap_restrict_sUnion (fun _ ↦ α) 𝔖,
       UniformSpace.comap_iInf]
   -- But, for `K ∈ 𝔖` fixed, we know that the uniform structures of `K →ᵤ α` and `K → α`
-  -- induce, via the equicontinuous family `K.restrict ∘ F`, the same uniform structure on `ι`.
-  have H3 : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.restrict ∘ F) =
-      (Pi.uniformSpace _).comap (K.restrict ∘ F) := fun K hK ↦ by
+  -- induce, via the equicontinuous family `K.domRestrict ∘ F`, the same uniform structure on `ι`.
+  have H3 : ∀ K ∈ 𝔖, (UniformFun.uniformSpace K α).comap (K.domRestrict ∘ F) =
+      (Pi.uniformSpace _).comap (K.domRestrict ∘ F) := fun K hK ↦ by
     have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
     exact (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).comap_uniformFun_eq
   -- Combining these three facts completes the proof.
@@ -257,7 +258,7 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' [UniformSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
     IsUniformInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
-    IsUniformInducing ((⋃₀ 𝔖).restrict ∘ F) := by
+    IsUniformInducing ((⋃₀ 𝔖).domRestrict ∘ F) := by
   rw [isUniformInducing_iff_uniformSpace, isUniformInducing_iff_uniformSpace,
       ← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
   rfl
@@ -280,7 +281,7 @@ lemma EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi [UniformSpace ι]
   let φ : ((⋃₀ 𝔖) → α) ≃ᵤ (X → α) := UniformEquiv.piCongrLeft (β := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.isUniformInducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
-      show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
+      show domRestrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isUniformInducing.comp H, fun H ↦ φ.symm.isUniformInducing.comp H⟩
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
@@ -296,10 +297,10 @@ lemma EquicontinuousOn.inducing_uniformOnFun_iff_pi' [TopologicalSpace ι]
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) :
     IsInducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
-    IsInducing ((⋃₀ 𝔖).restrict ∘ F) := by
+    IsInducing ((⋃₀ 𝔖).domRestrict ∘ F) := by
   rw [isInducing_iff, isInducing_iff]
   change (_ = ((UniformOnFun.uniformSpace X α 𝔖).comap F).toTopologicalSpace) ↔
-    (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).restrict ∘ F)).toTopologicalSpace)
+    (_ = ((Pi.uniformSpace _).comap ((⋃₀ 𝔖).domRestrict ∘ F)).toTopologicalSpace)
   rw [← EquicontinuousOn.comap_uniformOnFun_eq 𝔖_compact F_eqcont]
 
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, `α` a uniform space,
@@ -319,7 +320,7 @@ lemma EquicontinuousOn.isInducing_uniformOnFun_iff_pi [TopologicalSpace ι]
   let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (Y := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
-      show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
+      show domRestrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
   exact ⟨fun H ↦ φ.isInducing.comp H, fun H ↦ φ.symm.isInducing.comp H⟩
 
 -- TODO: find a way to factor common elements of this proof and the proof of
@@ -332,17 +333,17 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K) (ℱ : Filter ι) (f : X → α) :
     Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
-    Tendsto ((⋃₀ 𝔖).restrict ∘ F) ℱ (𝓝 <| (⋃₀ 𝔖).restrict f) := by
+    Tendsto ((⋃₀ 𝔖).domRestrict ∘ F) ℱ (𝓝 <| (⋃₀ 𝔖).domRestrict f) := by
   -- Recall that the uniform structure on `X →ᵤ[𝔖] α` is the one induced by all the maps
-  -- `K.restrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`.
+  -- `K.domRestrict : (X →ᵤ[𝔖] α) → (K →ᵤ α)` for `K ∈ 𝔖`.
   -- Similarly, the uniform structure on `X → α` induced by the map
-  -- `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)` is equal to the one induced by
-  -- all maps `K.restrict : (X → α) → (K → α)` for `K ∈ 𝔖`
+  -- `(⋃₀ 𝔖).domRestrict : (X → α) → ((⋃₀ 𝔖) → α)` is equal to the one induced by
+  -- all maps `K.domRestrict : (X → α) → (K → α)` for `K ∈ 𝔖`
   -- Thus, we just have to compare the two sides of our goal when restricted to some
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
-  rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
+  rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).domRestrict), ← nhds_induced]
   simp_rw +instances [UniformOnFun.topologicalSpace_eq,
-    Pi.induced_restrict_sUnion 𝔖 (A := fun _ ↦ α), _root_.nhds_iInf, nhds_induced, tendsto_iInf,
+    Pi.induced_domRestrict_sUnion 𝔖 (A := fun _ ↦ α), _root_.nhds_iInf, nhds_induced, tendsto_iInf,
     tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
@@ -365,7 +366,8 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi
   let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (Y := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont,
-      show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
+      show domRestrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl,
+      show domRestrict (⋃₀ 𝔖) f = φ.symm f by rfl,
       φ.symm.isInducing.tendsto_nhds_iff]
 
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X` and
@@ -375,14 +377,14 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     {𝔖 : Set (Set X)} (𝔖_compact : ∀ K ∈ 𝔖, IsCompact K)
     (F_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn F K)
     (H : IsClosed (range <| UniformOnFun.ofFun 𝔖 ∘ F)) :
-    IsClosed (range <| (⋃₀ 𝔖).restrict ∘ F) := by
+    IsClosed (range <| (⋃₀ 𝔖).domRestrict ∘ F) := by
   -- Do we have no equivalent of `nontriviality`?
   rcases isEmpty_or_nonempty α with _ | _
   · simp [isClosed_discrete]
   -- This follows from the previous lemmas and the characterization of the closure using filters.
   simp_rw [isClosed_iff_clusterPt, ← Filter.map_top, ← mapClusterPt_def,
     mapClusterPt_iff_ultrafilter, range_comp, Subtype.coe_injective.surjective_comp_right.forall,
-    ← restrict_eq, ← EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont]
+    ← domRestrict_eq, ← EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont]
   exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
     Eventually.of_forall mem_range_self
 
@@ -422,8 +424,8 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
     (F_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ ∀ i, F i x ∈ Q) :
     CompactSpace ι := by
   -- By equicontinuity, we know that the topology on `ι` is also the one induced by
-  -- `restrict (⋃₀ 𝔖) ∘ F`.
-  have : IsInducing (restrict (⋃₀ 𝔖) ∘ F) := by
+  -- `domRestrict (⋃₀ 𝔖) ∘ F`.
+  have : IsInducing (domRestrict (⋃₀ 𝔖) ∘ F) := by
     rwa [EquicontinuousOn.inducing_uniformOnFun_iff_pi' 𝔖_compact F_eqcont] at F_ind
   -- Thus, we just have to check that the range of this map is compact.
   rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
@@ -433,7 +435,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   rw [← forall_sUnion] at F_pointwiseCompact
   choose! Q Q_compact F_in_Q using F_pointwiseCompact
   -- Notice that, since the range of `F` is closed in `X →ᵤ[𝔖] α`, equicontinuity ensures that
-  -- the range of `(⋃₀ 𝔖).restrict ∘ F` is still closed in the product topology.
+  -- the range of `(⋃₀ 𝔖).domRestrict ∘ F` is still closed in the product topology.
   -- But it's contained in the product of the `Q x`s, which is compact by Tykhonov, hence
   -- it is compact as well.
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
@@ -480,7 +482,7 @@ theorem ArzelaAscoli.isCompact_closure_of_isClosedEmbedding [TopologicalSpace ι
   have : ∀ K ∈ 𝔖, ∀ x ∈ K, Continuous (eval x ∘ F) := fun K hK x hx ↦
     UniformOnFun.uniformContinuous_eval_of_mem _ _ hx hK |>.continuous.comp F_clemb.continuous
   have cls_eqcont : ∀ K ∈ 𝔖, EquicontinuousOn (F ∘ ((↑) : closure s → ι)) K :=
-    fun K hK ↦ (s_eqcont K hK).closure' <| show Continuous (K.restrict ∘ F) from
+    fun K hK ↦ (s_eqcont K hK).closure' <| show Continuous (K.domRestrict ∘ F) from
       continuous_pi fun ⟨x, hx⟩ ↦ this K hK x hx
   have cls_pointwiseCompact : ∀ K ∈ 𝔖, ∀ x ∈ K, ∃ Q, IsCompact Q ∧ closure s ⊆ {i | F i x ∈ Q} :=
     fun K hK x hx ↦ (s_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, closure_minimal hQ.2 <|
@@ -499,7 +501,7 @@ theorem ArzelaAscoli.isCompact_of_equicontinuous
   suffices h : IsInducing (Equiv.Set.image _ S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfIsInducing _ h).symm.compactSpace
-  rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi _ _ _]
+  rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi]
   · exact ContinuousMap.isUniformEmbedding_toUniformOnFunIsCompact.isInducing.comp .subtypeVal
   · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
   · exact fun _ ↦ id

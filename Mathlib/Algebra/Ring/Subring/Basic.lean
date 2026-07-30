@@ -975,6 +975,7 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
 `x ∈ s' ↔ e x ∈ s`. -/
 @[simps!]

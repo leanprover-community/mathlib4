@@ -35,7 +35,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 open Primrec
 
 set_option backward.privateInPublic true in
-@[implicit_reducible]
+@[instance_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -608,7 +608,7 @@ end Nat
 
 namespace Nat.Primrec'
 
-open List.Vector Primrec
+open List.Vector
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with

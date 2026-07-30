@@ -61,7 +61,7 @@ lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
 
 /-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
 structure. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
   haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
@@ -114,7 +114,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
-  @Finite.Set.finite_biUnion' _ _ (setOf p) h t _
+  @Finite.Set.finite_biUnion' _ _ (Set.ofPred p) h t _
 
 instance finite_iInter {ι : Sort*} [Nonempty ι] (t : ι → Set α) [∀ i, Finite (t i)] :
     Finite (⋂ i, t i) :=
