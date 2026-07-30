@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
