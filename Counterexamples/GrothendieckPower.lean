@@ -3,15 +3,17 @@ Copyright (c) 2026 Akhil Mathew. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Akhil Mathew
 -/
-import Mathlib.Algebra.Category.CommHopfAlgCat
-import Mathlib.Algebra.QuadraticAlgebra.Basic
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.FunLike.Fintype
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Coalgebra.GroupLike
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.NormNum.BigOperators
+module
+
+public import Mathlib.Algebra.Category.CommHopfAlgCat
+public import Mathlib.Algebra.QuadraticAlgebra.Basic
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Coalgebra.GroupLike
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.NormNum.BigOperators
 
 /-!
 # A finite free group scheme of rank four that is not killed by four
@@ -107,6 +109,8 @@ AI assistants Codex (OpenAI) and Claude (Anthropic).
 
 group scheme, Hopf algebra, counterexample
 -/
+
+@[expose] public section
 
 namespace Counterexample.GrothendieckPower
 
@@ -352,16 +356,17 @@ section UniversalProperty
 variable {S : Type*} [CommRing S] [Algebra R S]
 
 /-- The `R`-algebra map `B →ₐ[R] S` sending `VB` to a root of `X² - a²X`. -/
-private noncomputable def mkAlgHomB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
+noncomputable def mkAlgHomB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
     B →ₐ[R] S :=
   QuadraticAlgebra.lift ⟨v, by rw [zero_smul, zero_add, Algebra.smul_def, ← pow_two, hv]⟩
 
-private theorem mkAlgHomB_VB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
+theorem mkAlgHomB_VB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
     mkAlgHomB v hv VB = v :=
   quadratic_lift_omega v _
 
-/-- The `R`-algebra map `A →ₐ[R] S` sending `U` and `V` to a pair of elements satisfying the
-defining relations of `A`. -/
+/-- If `S` is an arbitrary `R`-algebra, then to give an `R`-algebra map `A →ₐ[R] S`
+it suffices to give a pair of elements `u` and `v` in `S` satisfying the
+equations `v²=a²v` amd `u²=abu-b²v`. -/
 noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     A →ₐ[R] S :=
@@ -475,7 +480,7 @@ private theorem law_lambda_generic {S : Type*} [CommRing S]
     (a * u₁ * b ^ 2 * v₁ * u₂) * ha -
     (2 * a * b ^ 4 * v₁ * v₂) * ha
 
-/-- The group-like unit controlling the semidirect-product law. -/
+/-- The group-like unit `(1+aU)(1+bV)` of `A` controlling the semidirect-product law. -/
 def lambda : A := (1 + aA * U) * (1 + bA * V)
 
 private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
@@ -656,7 +661,7 @@ noncomputable def counit : A →ₐ[R] R :=
 @[simp] theorem counit_lambda : counit lambda = 1 := by
   simp [lambda]
 
-private theorem comul_coassoc :
+theorem comul_coassoc :
     (Algebra.TensorProduct.assoc R R R A A A).toAlgHom.comp
         ((Algebra.TensorProduct.map comul (.id R A)).comp comul) =
       (Algebra.TensorProduct.map (.id R A) comul).comp comul := by
@@ -666,14 +671,14 @@ private theorem comul_coassoc :
   · simp [comul_V_formula, comul_lambda, Algebra.TensorProduct.one_def,
       TensorProduct.add_tmul, TensorProduct.tmul_add, add_assoc]
 
-private theorem counit_left :
+theorem counit_left :
     (Algebra.TensorProduct.map counit (.id R A)).comp comul =
       (Algebra.TensorProduct.lid R A).symm := by
   apply algHom_ext
   · simp [counit_lambda]
   · simp
 
-private theorem counit_right :
+theorem counit_right :
     (Algebra.TensorProduct.map (.id R A) counit).comp comul =
       (Algebra.TensorProduct.rid R R A).symm := by
   apply algHom_ext
@@ -893,7 +898,7 @@ private theorem universalPoint_mul_powerMap_seven :
     universalPoint * toConv (powerMap 7) = 1 := by
   simpa [powerMap, ← pow_succ'] using universalPoint_pow_eight
 
-private theorem antipode_right_identity :
+theorem antipode_right_identity :
     ((Algebra.TensorProduct.lift (powerMap 7) (.id R A) fun _ ↦ Commute.all _).comp
       (Bialgebra.comulAlgHom R A)) =
         (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A) := by
@@ -906,7 +911,7 @@ private theorem antipode_right_identity :
   rw [← AlgHom.comp_assoc, Algebra.TensorProduct.lmul'_comp_map] at h
   exact h
 
-private theorem antipode_left_identity :
+theorem antipode_left_identity :
     ((Algebra.TensorProduct.lift (.id R A) (powerMap 7) fun _ _ ↦ Commute.all _ _).comp
       (Bialgebra.comulAlgHom R A)) =
         (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A) := by
