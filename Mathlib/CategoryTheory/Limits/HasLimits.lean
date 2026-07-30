@@ -66,6 +66,8 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable {F : J ⥤ C}
 
+to_dual_name_hint Lift Desc
+
 section Limit
 
 /-- `LimitCone F` contains a cone over `F` together with the information that it is a limit. -/

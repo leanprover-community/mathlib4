@@ -72,7 +72,7 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsLimit.fac IsColimit.fac
 
-to_dual_name_hint Left Right
+to_dual_name_hint Lift Desc, Left Right
 
 namespace IsLimit
 
