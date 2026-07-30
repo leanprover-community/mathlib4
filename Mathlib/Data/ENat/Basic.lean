@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
 
+import Mathlib.Algebra.Order.Group.Nat
+
 /-!
 # Definition and basic properties of extended natural numbers
 
@@ -77,6 +79,12 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 
 @[deprecated (since := "2026-07-17")] alias coe_sub := natCast_sub
 
+@[simp]
+lemma natCast_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
+  WithTop.coe_lt_top n
+
+@[deprecated (since := "2026-07-17")] alias coe_lt_top := natCast_lt_top
+
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
 
@@ -85,7 +93,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 @[deprecated (since := "2026-07-17")] alias coe_lift := natCast_lift
 
-@[simp] theorem lift_natCast (n : ℕ) : lift (n : ℕ∞) (WithTop.coe_lt_top n) = n := rfl
+@[simp] theorem lift_natCast (n : ℕ) : lift (n : ℕ∞) (natCast_lt_top n) = n := rfl
 @[simp] theorem lift_lt_iff {x : ℕ∞} {h} {n : ℕ} : lift x h < n ↔ x < n := WithTop.untop_lt_iff _
 @[simp] theorem lift_le_iff {x : ℕ∞} {h} {n : ℕ} : lift x h ≤ n ↔ x ≤ n := WithTop.untop_le_iff _
 @[simp] theorem lt_lift_iff {x : ℕ} {n : ℕ∞} {h} : x < lift n h ↔ x < n := WithTop.lt_untop_iff _
@@ -93,10 +101,10 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 @[deprecated (since := "2026-07-17")] alias lift_coe := lift_natCast
 
-@[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
-@[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
+@[simp] theorem lift_zero : lift 0 (natCast_lt_top 0) = 0 := rfl
+@[simp] theorem lift_one : lift 1 (natCast_lt_top 1) = 1 := rfl
 @[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
+    lift ofNat(n) (natCast_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
 @[simp] theorem add_eq_top {a b : ℕ∞} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithTop.add_eq_top
@@ -215,6 +223,48 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
   lift n to ℕ using hn
   rfl
 
+theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
+  lift n to ℕ using hn
+  induction m
+  · rw [top_sub_natCast, toNat_top, Nat.zero_sub]
+  · rw [← natCast_sub, toNat_natCast, toNat_natCast, toNat_natCast]
+
+theorem add_le_add_iff_left {m n k : ENat} (h : k ≠ ⊤) :
+    k + n ≤ k + m ↔ n ≤ m :=
+  WithTop.add_le_add_iff_left h
+
+theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
+    n + k ≤ m + k ↔ n ≤ m :=
+  WithTop.add_le_add_iff_right h
+
+theorem le_natCast_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+  WithTop.le_coe_iff
+
+@[deprecated (since := "2026-07-17")] alias le_coe_iff := le_natCast_iff
+
+lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
+  WithTop.add_lt_add_iff_right h
+
+lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
+  WithTop.add_lt_add_iff_left h
+
+protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
+  WithTop.add_lt_add hac hbd
+
+protected theorem add_lt_add_of_le_of_lt : a ≠ ⊤ → a ≤ b → c < d → a + c < b + d :=
+  WithTop.add_lt_add_of_le_of_lt
+
+protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a + c < b + d :=
+  WithTop.add_lt_add_of_lt_of_le
+
+lemma natCast_lt_natCast {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := WithTop.coe_lt_coe
+
+@[deprecated (since := "2026-07-17")] alias coe_lt_coe := natCast_lt_natCast
+
+lemma natCast_le_natCast {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := WithTop.coe_le_coe
+
+@[deprecated (since := "2026-07-17")] alias coe_le_coe := natCast_le_natCast
+
 @[elab_as_elim]
 theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
     (succ : ∀ n : ℕ, motive n → motive n.succ)
@@ -242,6 +292,15 @@ lemma eq_of_forall_natCast_le_iff (hm : ∀ a : ℕ, a ≤ m ↔ a ≤ n) : m = 
 protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   simp_rw [lt_iff_not_ge]
   exact not_forall.mp <| eq_top_iff_forall_ge.2.mt hn
+
+@[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
+lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
+
+lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
+lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
+lemma addLECancellable_natCast (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
+
+@[deprecated (since := "2026-07-17")] alias addLECancellable_coe := addLECancellable_natCast
 
 variable {α : Type*}
 

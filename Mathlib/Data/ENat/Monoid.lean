@@ -46,6 +46,11 @@ lemma pow_ne_top_iff {n : ℕ} : a ^ n ≠ ⊤ ↔ a ≠ ⊤ ∨ n = 0 := WithTo
 
 lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ⊤) : a = ⊤ := WithTop.eq_top_of_pow n ha
 
+@[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
+    lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
+  apply natCast_inj.1
+  simp
+
 /-- Homomorphism from `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
   toFun := toNat
@@ -57,14 +62,21 @@ def toNatHom : MonoidWithZeroHom ℕ∞ ℕ where
 
 lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 
-@[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
-    lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
-  apply natCast_inj.1
-  simp
-
 @[simp]
 theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by decide) (fun _ => by simp [toNat_natCast]) n
+
+@[deprecated (since := "2026-07-17")] alias coe_toNat_eq_self := natCast_toNat_eq_self
+
+alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
+
+@[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
+
+@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
+    n.toNat = m ↔ n = m := by
+  cases n
+  · simpa using NeZero.ne' m
+  · simp
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
@@ -86,104 +98,7 @@ lemma toNat_le_of_le_natCast {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ 
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
   toNat_le_of_le_natCast <| h.trans_eq (natCast_toNat hn).symm
 
-
-
-
-
-@[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
-    n.toNat = m ↔ n = m := by
-  cases n
-  · simpa using NeZero.ne' m
-  · simp
-
 @[deprecated (since := "2026-07-17")] alias toNat_eq_iff_eq_coe := toNat_eq_iff_eq_natCast
-
-@[deprecated (since := "2026-07-17")] alias coe_toNat_eq_self := natCast_toNat_eq_self
-
-alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
-
-@[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
-
-
-
-theorem natCast_add_one_le_iff {m : ℕ} {n : ℕ∞} : m + 1 ≤ n ↔ m < n :=
-  add_one_le_iff <| natCast_ne_top m
-
-@[deprecated (since := "2026-07-17")] alias coe_add_one_le_iff := natCast_add_one_le_iff
-
-theorem add_one_le_natCast_iff {m : ℕ∞} {n : ℕ} : m + 1 ≤ n ↔ m < n :=
-  add_one_le_iff' <| natCast_ne_top n
-
-@[deprecated (since := "2026-07-17")] alias add_one_le_coe_iff := add_one_le_natCast_iff
-
-
-theorem add_le_add_iff_left {m n k : ENat} (h : k ≠ ⊤) :
-    k + n ≤ k + m ↔ n ≤ m :=
-  WithTop.add_le_add_iff_left h
-
-theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
-    n + k ≤ m + k ↔ n ≤ m :=
-  WithTop.add_le_add_iff_right h
-
-theorem le_natCast_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
-  WithTop.le_coe_iff
-
-@[deprecated (since := "2026-07-17")] alias le_coe_iff := le_natCast_iff
-
-@[simp]
-lemma natCast_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
-  WithTop.natCast_lt_top n
-
-@[deprecated (since := "2026-07-17")] alias coe_lt_top := natCast_lt_top
-
-
-lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < m :=
-  WithTop.add_lt_add_iff_right h
-
-lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
-  WithTop.add_lt_add_iff_left h
-
-protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
-  WithTop.add_lt_add hac hbd
-
-protected theorem add_lt_add_of_le_of_lt : a ≠ ⊤ → a ≤ b → c < d → a + c < b + d :=
-  WithTop.add_lt_add_of_le_of_lt
-
-protected theorem add_lt_add_of_lt_of_le : c ≠ ⊤ → a < b → c ≤ d → a + c < b + d :=
-  WithTop.add_lt_add_of_lt_of_le
-
-
-@[deprecated Order.one_le_iff_ne_zero (since := "2026-05-25")]
-protected theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
-  Order.one_le_iff_ne_zero
-
-@[deprecated Order.lt_one_iff (since := "2026-05-25")]
-lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
-  Order.lt_one_iff
-
-@[deprecated Order.le_one_iff (since := "2026-05-25")]
-lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 :=
-  Order.le_one_iff
-
-theorem lt_add_one_iff (hn : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
-  Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hn)
-
-theorem lt_add_one_iff' (hm : m ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
-  Order.lt_add_one_iff_of_not_isMax' (not_isMax_iff_ne_top.mpr hm)
-
-@[simp]
-theorem lt_two_iff : n < 2 ↔ n ≤ 1 := by
-  rw [← one_add_one_eq_two, lt_add_one_iff one_ne_top]
-
-theorem lt_natCast_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
-  lt_add_one_iff (natCast_ne_top n)
-
-@[deprecated (since := "2026-07-17")] alias lt_coe_add_one_iff := lt_natCast_add_one_iff
-
-theorem natCast_lt_add_one_iff {m : ℕ} {n : ℕ∞} : m < n + 1 ↔ m ≤ n :=
-  lt_add_one_iff' (natCast_ne_top m)
-
-@[deprecated (since := "2026-07-17")] alias coe_lt_add_one_iff := natCast_lt_add_one_iff
 
 @[deprecated add_pos_of_right (since := "2026-05-25")]
 lemma add_one_pos : 0 < n + 1 :=
@@ -199,12 +114,6 @@ protected lemma le_sub_of_add_le_left (ha : a ≠ ⊤) : a + b ≤ c → b ≤ c
 
 protected lemma le_sub_of_add_le_right (hb : b ≠ ⊤) : a + b ≤ c → a ≤ c - b :=
   (addLECancellable_of_ne_top hb).le_tsub_of_add_le_right
-
-protected lemma le_sub_one_of_lt (h : a < b) : a ≤ b - 1 := by
-  cases b
-  · simp
-  · exact ENat.le_sub_of_add_le_right one_ne_top <| lt_natCast_add_one_iff.mp <|
-      lt_tsub_iff_right.mp h
 
 lemma lt_add_left {n k : ℕ∞} (h : n ≠ ⊤) (h' : 0 < k) : n < k + n := calc
     _ = 0 + n := (zero_add n).symm
@@ -243,12 +152,17 @@ lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_to
   simpa [ha, h_top]
 
 lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
-  obtain rfl | hne := eq_or_ne a ⊤
-  · simp [top_mul hc]
-  obtain rfl | h0 := eq_or_ne a 0
-  · simp
-  nth_rewrite 1 [← mul_one a, ENat.mul_le_mul_left_iff h0 hne, Order.one_le_iff_ne_zero]
-  assumption
+  have hc' : 1 ≤ c := by
+    cases c with
+    | coe => simpa [Nat.one_le_iff_ne_zero] using hc
+    | top => simp
+  cases a with
+  | top => rw [top_mul hc]
+  | coe a => cases a with
+    | zero => simp
+    | succ a =>
+      nth_rewrite 1 [← mul_one (M := ℕ∞) (a + 1 :)]
+      rwa [ENat.mul_le_mul_left_iff] <;> simp
 
 lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
@@ -268,40 +182,6 @@ instance : Unique ℕ∞ˣ where
     replace x_y := x_y.symm
     rw [x_y, ← x_z, ← natCast_mul, ← natCast_one, natCast_inj, _root_.mul_eq_one] at this
     rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
-
-
-@[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
-lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
-
-lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
-lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top
-lemma addLECancellable_natCast (a : ℕ) : AddLECancellable (a : ℕ∞) := WithTop.addLECancellable_coe _
-
-@[deprecated (since := "2026-07-17")] alias addLECancellable_coe := addLECancellable_natCast
-
-
-section AddMonoidWithOne
-variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
-
-@[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by
-  cases n <;> simp
-
-variable [CharZero α]
-
-lemma map_natCast_strictMono : StrictMono (map (Nat.cast : ℕ → α)) :=
-  strictMono_map_iff.2 Nat.strictMono_cast
-
-lemma map_natCast_injective : Injective (map (Nat.cast : ℕ → α)) := map_natCast_strictMono.injective
-
-@[simp] lemma map_natCast_inj : m.map (Nat.cast : ℕ → α) = n.map Nat.cast ↔ m = n :=
-  map_natCast_injective.eq_iff
-
-@[simp] lemma map_natCast_eq_zero : n.map (Nat.cast : ℕ → α) = 0 ↔ n = 0 := by
-  simp [← map_natCast_inj (α := α)]
-
-end AddMonoidWithOne
-
-section withTop_enat
 
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
@@ -331,8 +211,27 @@ lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞)
 lemma natCast_lt_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
   lt_of_lt_of_le (mod_cast lt_add_one n) (natCast_le_of_coe_top_le_withTop hN (n + 1))
 
-end withTop_enat
+section AddMonoidWithOne
+variable {α : Type*} [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
+@[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by
+  cases n <;> simp
+
+variable [CharZero α]
+
+lemma map_natCast_strictMono : StrictMono (map (Nat.cast : ℕ → α)) :=
+  strictMono_map_iff.2 Nat.strictMono_cast
+
+lemma map_natCast_injective : Function.Injective (map (Nat.cast : ℕ → α)) :=
+  map_natCast_strictMono.injective
+
+@[simp] lemma map_natCast_inj : m.map (Nat.cast : ℕ → α) = n.map Nat.cast ↔ m = n :=
+  map_natCast_injective.eq_iff
+
+@[simp] lemma map_natCast_eq_zero : n.map (Nat.cast : ℕ → α) = 0 ↔ n = 0 := by
+  simp [← map_natCast_inj (α := α)]
+
+end AddMonoidWithOne
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps -fullyApplied]
@@ -375,18 +274,7 @@ lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero
     (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
   map_mul ((.ofClass (Nat.castRingHom R) : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
-
-
-lemma natCast_lt_natCast {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
-
-@[deprecated (since := "2026-07-17")] alias coe_lt_coe := natCast_lt_natCast
-
-lemma natCast_le_natCast {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
-
-@[deprecated (since := "2026-07-17")] alias coe_le_coe := natCast_le_natCast
-
-namespace ENat.WithBot
-
+namespace WithBot
 
 @[simp]
 lemma add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
@@ -418,36 +306,11 @@ lemma add_le_add_natCast_right_iff {a b : WithBot ℕ∞} {c : ℕ} : a + c ≤ 
 lemma add_le_add_one_right_iff {a b : WithBot ℕ∞} : a + 1 ≤ b + 1 ↔ a ≤ b :=
   WithBot.add_le_add_natCast_right_iff
 
-lemma lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
-  rw [← WithBot.coe_one, ← ENat.natCast_one, WithBot.coe_natCast, ← Nat.cast_add,
-    ← WithBot.coe_natCast]
-  cases n
-  · simp only [bot_le, WithBot.bot_lt_coe]
-  · rw [WithBot.coe_lt_coe, Nat.cast_add, natCast_one, ENat.lt_add_one_iff (natCast_ne_top _),
-      ← WithBot.coe_le_coe, WithBot.coe_natCast]
-
-lemma add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
-  rw [← WithBot.coe_one, ← natCast_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
-  cases m
-  · simp
-  · rw [WithBot.coe_le_coe, natCast_add, natCast_one, ENat.add_one_le_iff (natCast_ne_top n),
-      ← WithBot.coe_lt_coe, WithBot.coe_natCast]
-
-lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n < m := by
-  induction n with
-  | bot => simp
-  | coe n =>
-    norm_cast
-    simp [add_one_le_iff']
-
-@[simp]
-lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
-  add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
-
 lemma add_le_add_natCast_left_iff {a b : WithBot ℕ∞} {c : ℕ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [add_comm _ a, add_comm _ b, WithBot.add_le_add_natCast_right_iff]
 
 lemma add_le_add_one_left_iff {a b : WithBot ℕ∞} : 1 + a ≤ 1 + b ↔ a ≤ b :=
   WithBot.add_le_add_natCast_left_iff
 
-end ENat.WithBot
+end WithBot
+end ENat
