@@ -11,8 +11,8 @@ public import Mathlib.Combinatorics.Graph.Basic
 /-!
 # Graphs as graph-like structures
 
-This file defines `IncidenceType` and uses it to show that `Graph` is `HyperGraphLike`,
-`GraphLike`, and `Undirected`, with incidence identifiers of type `IncidenceType V E` (directed
+This file defines `Incidence` and uses it to show that `Graph` is `HyperGraphLike`,
+`GraphLike`, and `Undirected`, with incidence identifiers of type `Incidence V E` (directed
 darts: `dir` for non-loops, and `fwd`/`bwd` for loops).
 -/
 
@@ -25,94 +25,95 @@ namespace Graph
 /-- `Graph.Dart` is a type for darts or length 1 walks of `Graph`. Every edge of a graph is composed
   of two darts: for loops, there are `fwd` and `bwd` darts, and for non-loops, there are two `dir`
   darts. -/
-inductive IncidenceType (α β : Type*) : Type _ where
-  | dir : β → ∀ (u v : α), u ≠ v → IncidenceType α β
-  | fwd : β → α → IncidenceType α β
-  | bwd : β → α → IncidenceType α β
+inductive Incidence (α β : Type*) : Type _ where
+  | dir : β → ∀ (u v : α), u ≠ v → Incidence α β
+  | fwd : β → α → Incidence α β
+  | bwd : β → α → Incidence α β
 
-open HyperGraphLike IncidenceType
+open HyperGraphLike Incidence
 
-variable {d : IncidenceType V E}
+variable {d : Incidence V E}
 
-/-- The edge of a `IncidenceType`. -/
+/-- The edge of a `Incidence`. -/
 @[expose]
-def IncidenceType.edge (d : IncidenceType V E) : E :=
+def Incidence.edge (d : Incidence V E) : E :=
   match d with
   | .dir e _ _ _ => e
   | .fwd e _ => e
   | .bwd e _ => e
 
-/-- The source of a `IncidenceType`. -/
+/-- The source of a `Incidence`. -/
 @[expose]
-def IncidenceType.source (d : IncidenceType V E) : V :=
+def Incidence.source (d : Incidence V E) : V :=
   match d with
   | .dir _ u _ _ => u
   | .fwd _ v => v
   | .bwd _ v => v
 
-/-- The target of a `IncidenceType`. -/
+/-- The target of a `Incidence`. -/
 @[expose]
-def IncidenceType.target (d : IncidenceType V E) : V :=
+def Incidence.target (d : Incidence V E) : V :=
   match d with
   | .dir _ _ v _ => v
   | .fwd _ v => v
   | .bwd _ v => v
 
-lemma IncidenceType.dir_of_ne (hne : d.source ≠ d.target) :
+lemma Incidence.dir_of_ne (hne : d.source ≠ d.target) :
     d = dir d.edge d.source d.target hne := by
   cases d <;> grind [source, target, edge]
 
-lemma IncidenceType.fwd_or_bwd_of_eq (heq : d.source = d.target) :
+lemma Incidence.fwd_or_bwd_of_eq (heq : d.source = d.target) :
     d = fwd d.edge d.source ∨ d = bwd d.edge d.target := by
   cases d <;> grind [source, target, edge]
 
-section inc12
+section firstSecondIncidence
 
 variable [DecidableEq V] (e : E) (u v : V)
 
 /-- The first incidence of a link. -/
-def inc1 := if h : u = v then fwd e u else dir e u v h
+def firstIncidence := if h : u = v then fwd e u else dir e u v h
 
 /-- The second incidence of a link. -/
-def inc2 := if h : u = v then bwd e u else dir e v u (Ne.symm h)
+def secondIncidence := if h : u = v then bwd e u else dir e v u (Ne.symm h)
 
 @[simp, grind =]
-lemma inc1_edge : (inc1 e u v).edge = e := by
-  by_cases huv : u = v <;> simp [inc1, huv, edge]
+lemma firstIncidence_edge : (firstIncidence e u v).edge = e := by
+  by_cases huv : u = v <;> simp [firstIncidence, huv, edge]
 
 @[simp, grind =]
-lemma inc2_edge : (inc2 e u v).edge = e := by
-  by_cases huv : u = v <;> simp [inc2, huv, edge]
+lemma secondIncidence_edge : (secondIncidence e u v).edge = e := by
+  by_cases huv : u = v <;> simp [secondIncidence, huv, edge]
 
 @[simp, grind =]
-lemma inc1_source : (inc1 e u v).source = u := by
-  by_cases huv : u = v <;> simp [inc1, huv, source]
+lemma firstIncidence_source : (firstIncidence e u v).source = u := by
+  by_cases huv : u = v <;> simp [firstIncidence, huv, source]
 
 @[simp, grind =]
-lemma inc2_source : (inc2 e u v).source = v := by
-  by_cases huv : u = v <;> simp [inc2, huv, source]
+lemma secondIncidence_source : (secondIncidence e u v).source = v := by
+  by_cases huv : u = v <;> simp [secondIncidence, huv, source]
 
 @[simp, grind =]
-lemma inc1_target : (inc1 e u v).target = v := by
-  by_cases huv : u = v <;> simp [inc1, huv, target]
+lemma firstIncidence_target : (firstIncidence e u v).target = v := by
+  by_cases huv : u = v <;> simp [firstIncidence, huv, target]
 
 @[simp, grind =]
-lemma inc2_target : (inc2 e u v).target = u := by
-  by_cases huv : u = v <;> simp [inc2, huv, target]
+lemma secondIncidence_target : (secondIncidence e u v).target = u := by
+  by_cases huv : u = v <;> simp [secondIncidence, huv, target]
 
 @[simp, grind .]
-lemma inc1_ne_inc2 : inc1 e u v ≠ inc2 e u v := by
-  by_cases huv : u = v <;> simp [inc1, inc2, huv]
+lemma firstIncidence_ne_secondIncidence : firstIncidence e u v ≠ secondIncidence e u v := by
+  by_cases huv : u = v <;> simp [firstIncidence, secondIncidence, huv]
 
 omit [DecidableEq V]
-lemma isLink_iff_exists_incidenceType : G.IsLink e u v ↔ ∃ i j : IncidenceType V E, i ≠ j ∧
+lemma isLink_iff_exists_incidenceType : G.IsLink e u v ↔ ∃ i j : Incidence V E, i ≠ j ∧
     G.IsLink i.edge i.source i.target ∧ G.IsLink j.edge j.source j.target ∧
     (G.IsLink i.edge i.source i.target ∧ i.source = u ∧ i.edge = e) ∧
     (G.IsLink j.edge j.source j.target ∧ j.source = v ∧ j.edge = e) := by
     classical
     refine ⟨fun h => ?_, fun ⟨i, j, hij, hi, hj, hi', hj'⟩ => ?_⟩
-    · use inc1 e u v, inc2 e u v, inc1_ne_inc2 e u v, ?_, ?_, ⟨?_, inc1_source e u v,
-        inc1_edge e u v⟩, ?_, inc2_source e u v, inc2_edge e u v <;> simp [h, h.symm]
+    · use firstIncidence e u v, secondIncidence e u v, firstIncidence_ne_secondIncidence e u v, ?_,
+        ?_, ⟨?_, firstIncidence_source e u v, firstIncidence_edge e u v⟩, ?_,
+        secondIncidence_source e u v, secondIncidence_edge e u v <;> simp [h, h.symm]
     obtain ⟨-, rfl, rfl⟩ := hi'
     obtain ⟨-, rfl, he⟩ := hj'
     have := hi.eq_and_eq_or_eq_and_eq (he ▸ hj)
@@ -123,10 +124,10 @@ lemma isLink_iff_exists_incidenceType : G.IsLink e u v ↔ ∃ i j : IncidenceTy
     have hjne : j.source ≠ j.target := by grind
     grind [dir_of_ne hne, dir_of_ne hjne]
 
-end inc12
+end firstSecondIncidence
 
 @[simps]
-instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
+instance : HyperGraphLike V (Incidence V E) E (Graph V E) where
   verts G := V(G)
   edges G := E(G)
   IsIncident G i e v := G.IsLink i.edge i.source i.target ∧ i.source = v ∧ i.edge = e
@@ -143,14 +144,14 @@ instance : HyperGraphLike V (IncidenceType V E) E (Graph V E) where
 
 attribute [grind =] verts_def edges_def isSource_def isTarget_def isLink_def adj_def
 
-@[simp↓, grind .]
-lemma mem_edgeFun_inc1_iff [DecidableEq V] :
-    f ∈ edgeFun G (inc1 e u v) ↔ G.IsLink e u v ∧ e = f := by
+@[simp high, grind .]
+lemma mem_edgeFun_firstIncidence_iff [DecidableEq V] :
+    f ∈ edgeFun G (firstIncidence e u v) ↔ G.IsLink e u v ∧ e = f := by
   simp [isIncident_def]
 
-@[simp↓, grind .]
-lemma mem_edgeFun_inc2_iff [DecidableEq V] :
-    f ∈ edgeFun G (inc2 e u v) ↔ G.IsLink e u v ∧ e = f := by
+@[simp high, grind .]
+lemma mem_edgeFun_secondIncidence_iff [DecidableEq V] :
+    f ∈ edgeFun G (secondIncidence e u v) ↔ G.IsLink e u v ∧ e = f := by
   simp [isIncident_def, isLink_comm]
 
 lemma edgeFun_preimage_singleton_eq_fwd_bwd_of_isLink_loop (h : G.IsLink e x x) :
@@ -177,20 +178,20 @@ lemma order_eq_two_of_isLink (h : G.IsLink e x y) : order G e = 2 := by
   rw [edgeFun_preimage_singleton_eq_dir_of_isLink_nonloop h hne]
   exact Set.encard_pair (by grind)
 
-instance : GraphLike V (IncidenceType V E) E (Graph V E) where
+instance : GraphLike V (Incidence V E) E (Graph V E) where
   order_eq_two G e he := by
     obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet he
     exact order_eq_two_of_isLink h
   exists_isSource_of_mem_edgeSet G e he := by
     obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet he
     classical
-    exact ⟨inc1 e x y, by simpa, by simpa [IsSource]⟩
+    exact ⟨firstIncidence e x y, by simpa, by simpa [IsSource]⟩
   exists_isTarget_of_mem_edgeSet G e he := by
     obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet he
     classical
-    exact ⟨inc2 e x y, by simpa, by simp [IsTarget, h.symm]⟩
+    exact ⟨secondIncidence e x y, by simpa, by simp [IsTarget, h.symm]⟩
 
-instance : Undirected V (IncidenceType V E) E (Graph V E) where
+instance : Undirected V (Incidence V E) E (Graph V E) where
   isSource_iff G i := by simp [IsSource, IsTarget]
 
 end Graph

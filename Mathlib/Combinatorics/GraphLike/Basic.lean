@@ -5,10 +5,8 @@ Authors: Jun Kwon, Thomas Waring
 -/
 module
 
-public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.PFun
-public import Mathlib.Order.Partition.Basic
 
 /-!
 # Typeclasses for graph-like structures
