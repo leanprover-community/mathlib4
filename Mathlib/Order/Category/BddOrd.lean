@@ -42,7 +42,6 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where
@@ -168,7 +167,6 @@ def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where

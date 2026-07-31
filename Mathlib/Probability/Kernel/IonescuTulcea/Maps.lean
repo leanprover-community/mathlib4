@@ -89,6 +89,7 @@ lemma measurable_IicProdIoc {m n : ι} : Measurable (IicProdIoc (X := X) m n) :=
 
 namespace MeasurableEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioc a b` into `Iic b`. This version requires `a ≤ b` to get a measurable
 equivalence. -/
 def IicProdIoc {a b : ι} (hab : a ≤ b) :
@@ -115,6 +116,7 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab).symm =
     fun x ↦ (frestrictLe₂ hab x, restrict₂ Ioc_subset_Iic_self x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Gluing `Iic a` and `Ioi a` into `ℕ`, version as a measurable equivalence
 on dependent functions. -/
 def IicProdIoi (a : ι) :
@@ -142,6 +144,7 @@ section Nat
 
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Identifying `{a + 1}` with `Ioc a (a + 1)`, as a measurable equiv on dependent functions. -/
 def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1), X i where
   toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
@@ -167,16 +170,8 @@ lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
       (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_right hbc) s) ×ˢ
         (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_left hab) s) := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IocProdIoc, forall_const, Subtype.forall,
-    mem_Ioc, Set.mem_prod, restrict₂]
-  refine ⟨fun h ↦ ⟨fun i ⟨hi1, hi2⟩ ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i ⟨hi1, hi2⟩ ↦ ?_⟩
-  · convert h i ⟨hi1, hi2.trans hbc⟩
-    rw [dif_pos hi2]
-  · convert h i ⟨lt_of_le_of_lt hab hi1, hi2⟩
-    rw [dif_neg (not_le.2 hi1)]
-  · split_ifs with hi3
-    · exact h1 i ⟨hi1, hi3⟩
-    · exact h2 i ⟨not_le.1 hi3, hi2⟩
+  simp
+  grind [IocProdIoc]
 
 variable [LocallyFiniteOrderBot ι]
 
@@ -188,9 +183,9 @@ lemma _root_.IicProdIoc_preimage {a b : ι} (hab : a ≤ b) (s : (i : Iic b) →
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, IicProdIoc_def, forall_const,
     Subtype.forall, mem_Iic, Set.mem_prod, frestrictLe₂_apply, restrict₂, mem_Ioc]
   refine ⟨fun h ↦ ⟨fun i hi ↦ ?_, fun i ⟨hi1, hi2⟩ ↦ ?_⟩, fun ⟨h1, h2⟩ i hi ↦ ?_⟩
-  · convert h i (hi.trans hab)
+  · convert! h i (hi.trans hab)
     rw [dif_pos hi]
-  · convert h i hi2
+  · convert! h i hi2
     rw [dif_neg (not_le.2 hi1)]
   · split_ifs with hi3
     · exact h1 i hi3

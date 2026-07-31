@@ -29,7 +29,6 @@ section RealTVS
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set E} {x y : E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the positive tangent cone at its endpoints. -/
 theorem sub_mem_posTangentConeAt_of_openSegment_subset (h : openSegment ℝ x y ⊆ s) :
@@ -99,6 +98,9 @@ theorem uniqueDiffOn_Iio (a : ℝ) : UniqueDiffOn ℝ (Iio a) :=
 
 theorem uniqueDiffOn_Icc {a b : ℝ} (hab : a < b) : UniqueDiffOn ℝ (Icc a b) :=
   uniqueDiffOn_convex (convex_Icc a b) <| by simp only [interior_Icc, nonempty_Ioo, hab]
+
+theorem uniqueDiffOn_uIcc {a b : ℝ} (hab : a ≠ b) : UniqueDiffOn ℝ (uIcc a b) :=
+  uniqueDiffOn_Icc <| min_lt_max.mpr hab
 
 theorem uniqueDiffOn_Ico (a b : ℝ) : UniqueDiffOn ℝ (Ico a b) :=
   if hab : a < b then

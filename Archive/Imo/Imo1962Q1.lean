@@ -105,9 +105,7 @@ lemma case_more_digits {c n : ℕ} (hc : (digits 10 c).length ≥ 6) (hpp : Prob
 Now we combine these cases to show that 153846 is the smallest solution.
 -/
 
-lemma satisfied_by_153846 : ProblemPredicate 153846 := by
-  norm_num [ProblemPredicate]
-  decide
+lemma satisfied_by_153846 : ProblemPredicate 153846 := by simp +decide [ProblemPredicate]
 
 lemma no_smaller_solutions (n : ℕ) (hn : ProblemPredicate n) : n ≥ 153846 := by
   have ⟨c, hcn⟩ := without_digits hn

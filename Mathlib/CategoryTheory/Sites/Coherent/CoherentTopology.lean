@@ -20,7 +20,7 @@ This file characterises the covering sieves of the coherent topology.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

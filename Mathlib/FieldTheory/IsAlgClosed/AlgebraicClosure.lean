@@ -5,7 +5,6 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
@@ -73,7 +72,7 @@ lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f �
   (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
     (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
 
-open Classical in
+open scoped Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
 to the splitting field of the product of the polynomials
 sending indeterminates $X_{f_i}$ to the distinct roots of `f`. -/
@@ -82,6 +81,7 @@ def toSplittingField (s : Finset (Monics k)) :
   MvPolynomial.aeval fun fi ↦
     if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).1.1 else 37
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
     toSplittingField s ((subProdXSubC f).coeff n) = 0 := by
   classical
@@ -129,22 +129,26 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
-instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
+deriving instance Inhabited for AlgebraicClosure
 
-set_option backward.isDefEq.respectTransparency false in
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
-  Submodule.Quotient.instSMul' _
+  inferInstanceAs <| SMul S (_ ⧸ _)
+
+instance : CommRing (AlgebraicClosure k) where
+  nsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℕ); (· • · )
+  zsmul := letI := AlgebraicClosure.instSMulOfIsScalarTower k (S := ℤ); (· • · )
+  __ : CommRing (AlgebraicClosure k) := inferInstanceAs <| CommRing (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R (_ ⧸ _)
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  Ideal.Quotient.isScalarTower _ _ _
+  inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
 
-instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) where
-  __ := Ideal.Quotient.field _
+attribute [local instance] Ideal.Quotient.field in
+instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  inferInstanceAs <| GroupWithZero (_ ⧸ _)
 
 instance instField : Field (AlgebraicClosure k) where
   __ := instCommRing _
@@ -191,6 +195,7 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           erw [eval_C]
           simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
   rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _

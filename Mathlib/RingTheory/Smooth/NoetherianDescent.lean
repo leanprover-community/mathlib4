@@ -51,20 +51,34 @@ variable (D : DescentAux A B)
 variable (R)
 
 /-- (Implementation detail): The finite type `R`-algebra. -/
-def subalgebra (D : DescentAux A B) : Subalgebra R A :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
       ((⋃ i, (D.h i).coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.q i).coeffs, x.coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
-instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : CommRing (D.subalgebra R) :=
+  inferInstanceAs <| CommRing (Algebra.adjoin _ _)
 
-instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₀ : Algebra R (D.subalgebra R) :=
+  inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
-instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₁ : Algebra (D.subalgebra R) A :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
-instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₂ : Algebra (D.subalgebra R) B :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
@@ -81,37 +95,65 @@ lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
   · refine Set.finite_iUnion fun i ↦ ?_
     exact Set.Finite.biUnion (Finset.finite_toSet _) (fun i hi ↦ Finset.finite_toSet _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
-    grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+    rw [Subalgebra.setRange_algebraMap]
+    grind [subalgebra, Algebra.subset_adjoin]
 
 set_option quotPrecheck false in
 local notation "f₀" =>
   Ideal.Quotient.mkₐ (D.subalgebra R)
     (Ideal.span <| .range <| D.P.relationOfHasCoeffs (D.subalgebra R))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.subalgebra R) A) := by
   have : ((D.h i).coeffs : Set _) ⊆ ⋃ i, ((D.h i).coeffs : Set A) :=
     Set.subset_iUnion_of_subset i subset_rfl
-  grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
     ↑(D.p i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro p hp
   have : (p.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.p i).coeffs, ↑x.coeffs :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset p hp subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_q_subset (i) :
     ↑(D.q i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro q hq
   have : (q.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.q i).coeffs, ↑(coeffs x) :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset q hq subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
@@ -161,6 +203,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
@@ -183,7 +226,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     algHom_ext (by simp [hh])
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
-      convert ho
+      convert! ho
       exact congr($hdiag _)
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,

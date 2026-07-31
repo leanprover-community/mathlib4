@@ -43,7 +43,6 @@ open Matrix
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The algebra isomorphism stating "matrices of polynomials are the same as polynomials of matrices".
 
@@ -55,14 +54,12 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
   ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
   simp [matPolyEquiv]
 
 @[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
   rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
   simp [matPolyEquiv, Matrix.smul_one_eq_diagonal]
@@ -73,7 +70,6 @@ set_option backward.isDefEq.respectTransparency false in
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
@@ -91,7 +87,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, single_add]
+    simp [hp, hq, coeff_add, Matrix.add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -122,8 +118,9 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
   ext m i j
-  simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self, RingHom.id_apply]
+  simp only [matPolyEquiv_coeff_apply, Matrix.smul_apply, Matrix.one_apply, smul_eq_mul, mul_ite,
+    mul_one, mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self,
+    RingHom.id_apply]
   split_ifs <;> simp
 
 @[simp]
@@ -157,7 +154,7 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   contrapose
   simp only [notMem_support_iff]
   intro hk
-  rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
+  rw [← matPolyEquiv_coeff_apply, hk, Matrix.zero_apply]
 
 theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
     Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by

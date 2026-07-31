@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
@@ -69,7 +69,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
-  coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
+  coe_injective := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
     obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
@@ -451,11 +451,11 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 /-- The product of two affine maps is an affine map. -/
 @[simps linear]
 def prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : P1 →ᵃ[k] P2 × P3 where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   linear := f.linear.prod g.linear
   map_vadd' := by simp
 
-theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -482,24 +482,31 @@ theorem prodMap_apply (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) (x) : f.prodMa
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
   ((LinearMap.id : k →ₗ[k] k).smulRight (p₁ -ᵥ p₀)).toAffineMap +ᵥ const k k p₀
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_lineMap (p₀ p₁ : P1) : (lineMap p₀ p₁ : k → P1) = fun c => c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_apply (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c = c • (p₁ -ᵥ p₀) +ᵥ p₀ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_apply_module' (p₀ p₁ : V1) (c : k) : lineMap p₀ p₁ c = c • (p₁ - p₀) + p₀ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_apply_module (p₀ p₁ : V1) (c : k) : lineMap p₀ p₁ c = (1 - c) • p₀ + c • p₁ := by
   simp [lineMap_apply_module', smul_sub, sub_smul]; abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_apply_ring' (a b c : k) : lineMap a b c = c * (b - a) + a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_apply_ring (a b c : k) : lineMap a b c = (1 - c) * a + c * b :=
   lineMap_apply_module a b c
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_vadd_apply (p : P1) (v : V1) (c : k) : lineMap p (v +ᵥ p) c = c • v +ᵥ p := by
   rw [lineMap_apply, vadd_vsub]
 
@@ -508,6 +515,7 @@ theorem lineMap_linear (p₀ p₁ : P1) :
     (lineMap p₀ p₁ : k →ᵃ[k] P1).linear = LinearMap.id.smulRight (p₁ -ᵥ p₀) :=
   add_zero _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
   simp [lineMap_apply]
 
@@ -515,35 +523,42 @@ theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
 theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
   ext <| lineMap_same_apply p
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
   simp [lineMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_apply_one (p₀ p₁ : P1) : lineMap p₀ p₁ (1 : k) = p₁ := by
   simp [lineMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_eq_lineMap_iff [IsDomain k] [IsTorsionFree k V1] {p₀ p₁ : P1} {c₁ c₂ : k} :
     lineMap p₀ p₁ c₁ = lineMap p₀ p₁ c₂ ↔ p₀ = p₁ ∨ c₁ = c₂ := by
   rw [lineMap_apply, lineMap_apply, ← @vsub_eq_zero_iff_eq V1, vadd_vsub_vadd_cancel_right, ←
     sub_smul, smul_eq_zero, sub_eq_zero, vsub_eq_zero_iff_eq, or_comm, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_eq_left_iff [IsDomain k] [IsTorsionFree k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₀ ↔ p₀ = p₁ ∨ c = 0 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_eq_right_iff [IsDomain k] [IsTorsionFree k V1] {p₀ p₁ : P1} {c : k} :
     lineMap p₀ p₁ c = p₁ ↔ p₀ = p₁ ∨ c = 1 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_one]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (k) in
 theorem lineMap_injective [IsDomain k] [IsTorsionFree k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
     Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc =>
   (lineMap_eq_lineMap_iff.mp hc).resolve_left h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
     f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
@@ -554,10 +569,12 @@ theorem comp_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) :
     f.comp (lineMap p₀ p₁) = lineMap (f p₀) (f p₁) :=
   ext <| f.apply_lineMap p₀ p₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).1 = lineMap p₀.1 p₁.1 c :=
   fst.apply_lineMap p₀ p₁ c
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = lineMap p₀.2 p₁.2 c :=
   snd.apply_lineMap p₀ p₁ c
@@ -566,39 +583,48 @@ theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [lineMap_symm p₀, comp_apply]
   congr
   simp [lineMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_vsub_left (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p₀ = c • (p₁ -ᵥ p₀) :=
   vadd_vsub _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₀ -ᵥ lineMap p₀ p₁ c = c • (p₀ -ᵥ p₁) := by
   rw [← neg_vsub_eq_vsub_rev, lineMap_vsub_left, ← smul_neg, neg_vsub_eq_vsub_rev]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lineMap_vsub_right (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ c -ᵥ p₁ = (1 - c) • (p₀ -ᵥ p₁) := by
   rw [← lineMap_apply_one_sub, lineMap_vsub_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_vsub_lineMap (p₀ p₁ : P1) (c : k) : p₁ -ᵥ lineMap p₀ p₁ c = (1 - c) • (p₁ -ᵥ p₀) := by
   rw [← lineMap_apply_one_sub, left_vsub_lineMap]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_vadd_lineMap (v₁ v₂ : V1) (p₁ p₂ : P1) (c : k) :
     lineMap v₁ v₂ c +ᵥ lineMap p₁ p₂ c = lineMap (v₁ +ᵥ p₁) (v₂ +ᵥ p₂) c :=
   ((fst : V1 × P1 →ᵃ[k] V1) +ᵥ (snd : V1 × P1 →ᵃ[k] P1)).apply_lineMap (v₁, p₁) (v₂, p₂) c
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
     lineMap p₁ p₂ c -ᵥ lineMap p₃ p₄ c = lineMap (p₁ -ᵥ p₃) (p₂ -ᵥ p₄) c :=
   ((fst : P1 × P1 →ᵃ[k] P1) -ᵥ (snd : P1 × P1 →ᵃ[k] P1)).apply_lineMap (_, _) (_, _) c
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma lineMap_lineMap_right (p₀ p₁ : P1) (c d : k) :
     lineMap p₀ (lineMap p₀ p₁ c) d = lineMap p₀ p₁ (d * c) := by simp [lineMap_apply, mul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma lineMap_lineMap_left (p₀ p₁ : P1) (c d : k) :
     lineMap (lineMap p₀ p₁ c) p₁ d = lineMap p₀ p₁ (1 - (1 - d) * (1 - c)) := by
   simp_rw [lineMap_apply_one_sub, ← lineMap_apply_one_sub p₁, lineMap_lineMap_right]
@@ -664,6 +690,7 @@ theorem proj_apply (i : ι) (f : ∀ i, P i) : @proj k _ ι V P _ _ _ i f = f i 
 theorem proj_linear (i : ι) : (@proj k _ ι V P _ _ _ i).linear = @LinearMap.proj k ι _ V _ _ i :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_lineMap_apply (f g : ∀ i, P i) (c : k) (i : ι) :
     lineMap f g c i = lineMap (f i) (g i) c :=
   (proj i : (∀ i, P i) →ᵃ[k] P i).apply_lineMap f g c
@@ -725,6 +752,7 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
 
 end Module
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpolating between affine maps with `lineMap` commutes with evaluation. -/
 @[simp]
 lemma lineMap_apply' [SMulCommClass k k V2] (f g : P1 →ᵃ[k] P2) (c : k)
@@ -804,7 +832,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by
   refine pi_ext_nonempty fun i x => ?_
-  convert AffineMap.congr_fun (h i) x
+  convert! AffineMap.congr_fun (h i) x
 
 end Ext
 
@@ -835,6 +863,7 @@ theorem homothety_apply (c : P1) (r : k) (p : P1) : homothety c r p = r • (p -
 theorem homothety_linear (c : P1) (r : k) : (homothety c r).linear = r • LinearMap.id := by
   simp [homothety]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem homothety_eq_lineMap (c : P1) (r : k) (p : P1) : homothety c r p = lineMap c p r :=
   rfl
 

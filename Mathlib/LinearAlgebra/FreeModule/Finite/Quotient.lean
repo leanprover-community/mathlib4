@@ -50,7 +50,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     simp_rw [ab.mem_submodule_iff', ab, ab_eq]
     have : ∀ (c : ι → R) (i), b'.repr (∑ j : ι, c j • a j • b' j) i = a i * c i := by
       intro c i
-      simp only [← SemigroupAction.mul_smul, b'.repr_sum_self, mul_comm]
+      simp only [← mul_smul, b'.repr_sum_self, mul_comm]
     constructor
     · rintro ⟨c, rfl⟩ i
       exact ⟨c i, this c i⟩
@@ -107,7 +107,7 @@ theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submod
   refine ⟨fun h ↦ le_antisymm (finrank_le N) <|
     ((LinearMap.lsmul ℤ M (Nat.card (M ⧸ N))).codRestrict N
       fun x ↦ ?_).finrank_le_finrank_of_injective ?_, fun h ↦ finiteQuotientOfFreeOfRankEq N h⟩
-  · simpa using AddSubgroup.nsmul_index_mem N.toAddSubgroup x
+  · simpa using! AddSubgroup.nsmul_index_mem N.toAddSubgroup x
   · refine (LinearMap.lsmul_injective ?_).codRestrict _
     exact Int.ofNat_ne_zero.mpr <| Nat.card_ne_zero.mpr
       ⟨Set.nonempty_iff_univ_nonempty.mpr Set.univ_nonempty, h⟩

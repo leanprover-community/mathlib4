@@ -110,7 +110,7 @@ theorem run_bind (empty : ω) (append : ω → ω → ω)
   rfl
 
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
-@[inline, implicit_reducible]
+@[inline, instance_reducible]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 
@@ -150,17 +150,17 @@ theorem run_pass (cmd : WriterT ω M (α × (ω → ω))) :
     WriterT.run (MonadWriter.pass cmd) = (fun ((a, f), w) ↦ (a, f w)) <$> cmd.run :=
   rfl
 
-instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+instance {ε : Type*} [MonadExceptOf ε M] : MonadExceptOf ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd.run fun e ↦ (c e).run
 
 @[simp]
-theorem run_throw {M} {ε : Type*} [MonadExcept ε M] (e : ε) :
+theorem run_throw {M} {ε : Type*} [MonadExceptOf ε M] (e : ε) :
     (throw e : WriterT ω M α).run = throw e :=
   rfl
 
 @[simp]
-theorem run_tryCatch {M} {ε : Type*} [MonadExcept ε M]
+theorem run_tryCatch {M} {ε : Type*} [MonadExceptOf ε M]
     (cmd : WriterT ω M α) (c : ε → WriterT ω M α) :
     (tryCatch cmd c : WriterT ω M α).run = tryCatch cmd.run fun e ↦ (c e).run :=
   rfl

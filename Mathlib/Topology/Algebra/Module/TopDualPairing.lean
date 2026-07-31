@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Continuous Perfect Pairing for `topDualPairing`
@@ -22,7 +22,7 @@ finite-dimensional Hausdorff space over a complete nontrivially normed field.
   finite-dimensional Hausdorff spaces over complete nontrivially normed fields.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -35,8 +35,8 @@ variable [FiniteDimensional 𝕜 E] [T2Space E]
 Hausdorff spaces over complete nontrivially normed fields. -/
 instance topDualPairing_isContPerfPair : (topDualPairing 𝕜 E).IsContPerfPair where
   continuous_uncurry := by
-    haveI : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
-    haveI : IsModuleTopology 𝕜 (E →L[𝕜] 𝕜) := isModuleTopologyOfFiniteDimensional
+    have : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
+    have : IsModuleTopology 𝕜 (E →L[𝕜] 𝕜) := isModuleTopologyOfFiniteDimensional
     exact IsModuleTopology.continuous_bilinear_of_finite_left (topDualPairing 𝕜 E)
   bijective_left := Function.bijective_id
   bijective_right := by

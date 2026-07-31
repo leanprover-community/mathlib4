@@ -34,7 +34,6 @@ def ordConnectedComponent (s : Set α) (x : α) : Set α :=
 theorem mem_ordConnectedComponent : y ∈ ordConnectedComponent s x ↔ [[x, y]] ⊆ s :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dual_ordConnectedComponent :
     ordConnectedComponent (ofDual ⁻¹' s) (toDual x) = ofDual ⁻¹' ordConnectedComponent s x :=
   ext <| (Surjective.forall toDual.surjective).2 fun x => by simp [mem_ordConnectedComponent]
@@ -67,7 +66,7 @@ theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
 
 theorem ordConnectedComponent_inter (s t : Set α) (x : α) :
     ordConnectedComponent (s ∩ t) x = ordConnectedComponent s x ∩ ordConnectedComponent t x := by
-  simp [ordConnectedComponent, setOf_and]
+  simp [ordConnectedComponent, ofPred_and]
 
 theorem mem_ordConnectedComponent_comm :
     y ∈ ordConnectedComponent s x ↔ x ∈ ordConnectedComponent s y := by
@@ -117,7 +116,9 @@ theorem ordConnectedProj_eq {x y : s} :
 
 /-- A set that intersects each order connected component of a set by a single point. Defined as the
 range of `Set.ordConnectedProj s`. -/
-def ordConnectedSection (s : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def ordConnectedSection (s : Set α) : Set α :=
   range <| ordConnectedProj s
 
 theorem dual_ordConnectedSection (s : Set α) :
@@ -166,7 +167,9 @@ theorem dual_ordSeparatingSet :
 
 /-- An auxiliary neighborhood that will be used in the proof of
 `OrderTopology.CompletelyNormalSpace`. -/
-def ordT5Nhd (s t : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
 theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by

@@ -36,7 +36,7 @@ that is, there is a positive probability of reaching any
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

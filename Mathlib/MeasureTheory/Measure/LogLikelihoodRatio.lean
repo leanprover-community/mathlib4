@@ -188,7 +188,7 @@ lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     · simp only [ne_eq, inv_eq_zero]
       exact (integral_exp_pos hf).ne'
     · simp only [ne_eq, div_eq_zero_iff]
-      push_neg
+      push Not
       exact ⟨(exp_pos _).ne', (integral_exp_pos hf).ne'⟩
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 

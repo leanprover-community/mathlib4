@@ -112,7 +112,7 @@ theorem mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebr
     x ∈ (mapToFractionRing K S B hS).range ↔
       ∃ (a s : A) (_ : s ∈ S), x = algebraMap A K a * (algebraMap A K s)⁻¹ := by
   rw [mem_range_mapToFractionRing_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   congr
   rw [Units.val_inv_eq_inv_val]
   rfl

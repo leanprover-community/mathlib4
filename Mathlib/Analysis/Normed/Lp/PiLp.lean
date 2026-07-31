@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
+
 Given finitely many metric spaces, one can put the max distance on their product, but there is also
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `Π i, α i`
@@ -195,6 +196,37 @@ lemma single_neg (p : ℝ≥0∞) (i : ι) {a : β i} :
   simp_rw [← toLp_single, Pi.single_neg, toLp_neg]
 
 end AddCommGroup
+
+section LinearIndependent
+
+theorem linearIndependent_single [Semiring 𝕜] {η : Type*} {ιs : η → Type*}
+    {Ms : η → Type*} [∀ i, AddCommGroup (Ms i)] [∀ i, Module 𝕜 (Ms i)] [DecidableEq η]
+    (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent 𝕜 (v i)) :
+    LinearIndependent 𝕜 fun ji : Σ j, ιs j ↦ single p ji.1 (v ji.1 ji.2) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun ji : Σ j, ιs j ↦ Pi.single ji.1 (v ji.1 ji.2)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single v hs
+
+theorem linearIndependent_single_one [Ring 𝕜] :
+    LinearIndependent 𝕜 (fun i : ι ↦ single p i (1 : 𝕜)) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun i : ι ↦ Pi.single i (1 : 𝕜)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single_one ι 𝕜
+
+theorem linearIndependent_single_of_ne_zero [Ring 𝕜] [IsDomain 𝕜] {M : Type*}
+    [AddCommGroup M] [Module 𝕜 M] [IsTorsionFree 𝕜 M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+    LinearIndependent 𝕜 fun i : ι ↦ single p i (v i) := by
+  suffices LinearIndependent 𝕜 ((WithLp.linearEquiv p 𝕜 _).symm.toLinearMap ∘
+      fun i : ι ↦ Pi.single i (v i)) by
+    simpa
+  rw [LinearMap.linearIndependent_iff_of_injOn _ (by simp)]
+  exact Pi.linearIndependent_single_of_ne_zero hv
+
+end LinearIndependent
 
 end Single
 
@@ -385,6 +417,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
 
 attribute [local instance] PiLp.pseudoEmetricAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
@@ -515,8 +548,6 @@ theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
   toEquiv := WithLp.equiv p (Π i, β i)
-  continuous_toFun := continuous_ofLp p β
-  continuous_invFun := continuous_toLp p β
 
 @[simp]
 lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
@@ -536,10 +567,12 @@ instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   (Pi.uniformSpace β).comap ofLp
 
+@[fun_prop]
 lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
   uniformContinuous_comap
 
+@[fun_prop]
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_comap' uniformContinuous_id
@@ -721,6 +754,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
   simp [norm_eq_sum]
 
@@ -733,6 +767,7 @@ theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := 
 theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
   NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
   simp [PiLp.edist_eq_sum]
 
@@ -756,7 +791,7 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
-    simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
+    simpa only [NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) this
   rw [nnnorm_eq_of_L2, NNReal.sq_sqrt]
 
 theorem dist_eq_of_L2 (x y : PiLp 2 β) :
@@ -928,16 +963,11 @@ def _root_.LinearIsometryEquiv.piLpCurry :
       ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
-    simp_rw [← coe_nnnorm, NNReal.coe_inj]
-    dsimp only [WithLp.linearEquiv_symm_apply]
+    simp_rw [← coe_nnnorm, NNReal.coe_inj, WithLp.linearEquiv_symm_apply]
     obtain rfl | hp := eq_or_ne p ⊤
-    · simp_rw [← PiLp.nnnorm_ofLp, Pi.nnnorm_def, ← PiLp.nnnorm_ofLp, Pi.nnnorm_def]
-      dsimp [Sigma.curry]
-      rw [← Finset.univ_sigma_univ, Finset.sup_sigma]
+    · simp [Pi.nnnorm_def, ← Finset.univ_sigma_univ, Finset.sup_sigma, Sigma.curry]
     · have : 0 < p.toReal := (toReal_pos_iff_ne_top _).mpr hp
-      simp_rw [PiLp.nnnorm_eq_sum hp]
-      dsimp [Sigma.curry]
-      simp_rw [one_div, NNReal.rpow_inv_rpow this.ne', ← Finset.univ_sigma_univ, Finset.sum_sigma]
+      simp [nnnorm_eq_sum hp, this.ne', ← Finset.univ_sigma_univ, Finset.sum_sigma, Sigma.curry]
 
 @[simp] theorem _root_.LinearIsometryEquiv.piLpCurry_apply
     (f : PiLp p (fun i : Sigma κ => α i.1 i.2)) :
@@ -984,10 +1014,9 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup]
@@ -995,8 +1024,7 @@ theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
       ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [single_eq_same]
-      · rw [single_eq_of_ne' _ hij, nnnorm_zero]
-        exact zero_le _
+      · simp [hij]
     · rw [single_eq_same]
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 :=
@@ -1107,14 +1135,13 @@ end Fintype
 
 section
 
-variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_ofLp _ _
-  continuous_invFun := continuous_toLp p _
+  continuous_invFun := (by fun_prop : Continuous fun (a : Π i, β i) ↦ toLp p a)
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
@@ -1122,12 +1149,24 @@ lemma coe_continuousLinearEquiv :
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
+/-- The natural equivalence between `PiLp p β` and `β default`,
+for any index type `ι` with a unique element. -/
+@[simps! apply symm_apply]
+def equivOfUnique [Unique ι] : PiLp p β ≃L[𝕜] β default :=
+  (continuousLinearEquiv p 𝕜 β).trans <| .piUnique 𝕜 β
+
+end
+
+section
+
+variable [Semiring 𝕜] [∀ i, NormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := PiLp.continuous_apply ..
+  cont := (by fun_prop : Continuous fun a : PiLp p β ↦ a.ofLp i)
 
 end
 
@@ -1226,7 +1265,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
-  letI := pseudoMetricSpaceToPi p α
+  let := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
@@ -1236,7 +1275,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  let := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 

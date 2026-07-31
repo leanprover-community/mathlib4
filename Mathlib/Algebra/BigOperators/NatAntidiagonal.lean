@@ -20,6 +20,8 @@ variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 
 namespace Finset
 
+open HasAntidiagonal
+
 namespace Nat
 
 theorem prod_antidiagonal_succ {n : ℕ} {f : ℕ × ℕ → M} :

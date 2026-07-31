@@ -11,10 +11,10 @@ public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
-# *-ring structure on ℚ and ℚ≥0.
+# \*-ring structure on `ℚ` and `ℚ≥0`.
 -/
 
-@[expose] public section
+public section
 
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
 instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm

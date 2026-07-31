@@ -110,7 +110,12 @@ protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     simp only [root_reflectionPerm, reflection_apply, coroot']
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
-    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
+    obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was: `grind` -/
+    simp_all
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
@@ -209,8 +214,6 @@ protected lemma IsRootSystem.ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
 
-@[deprecated (since := "2025-12-14")] alias _root_.RootSystem.ext := IsRootSystem.ext
-
 private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsDomain R]
     [IsTorsionFree R M] (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
@@ -261,8 +264,6 @@ def mk'' :
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
-
-@[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
 
 variable {p root coroot hp hs hsp} in
 lemma isRootSystem_mk'' (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :

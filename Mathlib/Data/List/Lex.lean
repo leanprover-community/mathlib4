@@ -27,7 +27,7 @@ Related files are:
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace List

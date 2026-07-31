@@ -347,17 +347,9 @@ theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : �
     Injective f := by
   grind [Injective]
 
-@[deprecated (since := "2025-12-23")]
-alias injective_of_lt_imp_ne := Function.Injective.of_lt_imp_ne
-
 theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
     (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
   fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
-
-@[deprecated Injective.of_eq_imp_le (since := "2025-12-23")]
-theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
-    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  .of_eq_imp_le (h ·.le)
 
 /-! ### Monotonicity under composition -/
 
@@ -572,10 +564,10 @@ section apply
 variable {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
 
 lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
-  simp [Monotone, Pi.le_def, @forall_swap ι]
+  simp [Monotone, Pi.le_def, @forall_comm ι]
 
 lemma antitone_iff_apply₂ : Antitone f ↔ ∀ i, Antitone (f · i) := by
-  simp [Antitone, Pi.le_def, @forall_swap ι]
+  simp [Antitone, Pi.le_def, @forall_comm ι]
 
 alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
 alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂

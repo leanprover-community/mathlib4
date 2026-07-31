@@ -94,6 +94,8 @@ abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 
 end Weight
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
 instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [IsDomain R] [Module.IsTorsionFree R M] :
     LinearWeights R L M :=

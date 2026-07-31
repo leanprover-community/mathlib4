@@ -15,7 +15,7 @@ public import Mathlib.Order.Atoms
 # Facts about ordered structures and ordered instances on subgroups
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 
@@ -77,7 +77,8 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
+@[to_additive
+/-- An additive subgroup of an additive ordered group is an additive ordered group. -/]
 instance toIsOrderedMonoid [CommGroup G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl

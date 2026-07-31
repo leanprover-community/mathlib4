@@ -42,7 +42,7 @@ variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a b : α}
 
 instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; congr
+  coe_injective L M h := by cases L; congr
 
 instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
 
@@ -244,21 +244,17 @@ lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 @[simp] lemma map_map (g : LatticeHom β γ) (f : LatticeHom α β) :
     (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
 lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.mem_set_image
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
   SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_symm_eq_iff_eq_map {M : Sublattice β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
   simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
@@ -352,10 +348,10 @@ lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
   simp [SetLike.le_def, forall_and]
 
 @[simp] lemma prod_eq_bot {M : Sublattice β} : L.prod M = ⊥ ↔ L = ⊥ ∨ M = ⊥ := by
-  simpa only [← coe_inj] using Set.prod_eq_empty_iff
+  simpa only [← coe_inj] using! Set.prod_eq_empty_iff
 
 @[simp] lemma prod_eq_top [Nonempty α] [Nonempty β] {M : Sublattice β} :
-    L.prod M = ⊤ ↔ L = ⊤ ∧ M = ⊤ := by simpa only [← coe_inj] using Set.prod_eq_univ
+    L.prod M = ⊤ ↔ L = ⊤ ∧ M = ⊤ := by simpa only [← coe_inj] using! Set.prod_eq_univ
 
 /-- The product of sublattices is isomorphic to their product as lattices. -/
 @[simps! toEquiv apply symm_apply]
@@ -386,7 +382,7 @@ attribute [norm_cast] coe_pi
   ext fun a ↦ by simp [mem_pi]
 
 @[simp] lemma pi_bot {s : Set κ} (hs : s.Nonempty) : (pi s fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ :=
-  ext fun a ↦ by simpa [mem_pi] using hs
+  ext fun a ↦ by simpa [mem_pi] using! hs
 
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
@@ -400,4 +396,16 @@ lemma pi_univ_eq_bot {L : ∀ i, Sublattice (π i)} {i : κ} (hL : L i = ⊥) : 
   pi_univ_eq_bot_iff.2 ⟨i, hL⟩
 
 end Pi
+
+namespace LatticeHom
+
+/--
+The range of `LatticeHom` is a sublattice.
+-/
+def range (f : LatticeHom α β) := (Sublattice.map f ⊤).copy (Set.range f) image_univ.symm
+
+lemma range_coe : (LatticeHom.range f : Set β) = Set.range f := rfl
+
+end LatticeHom
+
 end Sublattice

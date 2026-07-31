@@ -255,7 +255,7 @@ associated Grothendieck topology is pullback stable, and so an additional constr
 in the inductive construction is not needed.
 -/
 def toGrothendieck (K : Coverage C) : GrothendieckTopology C :=
-  K.toPrecoverage.toGrothendieck.copy (fun X ↦ setOf (K.Saturate X)) <| by
+  K.toPrecoverage.toGrothendieck.copy (fun X ↦ Set.ofPred (K.Saturate X)) <| by
     ext
     exact K.saturate_iff_saturate_toPrecoverage.symm
 
@@ -375,10 +375,16 @@ def Precoverage.toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnder
     exact ⟨S.pullbackArrows f, J.pullbackArrows_mem _ hS,
       Presieve.FactorsThruAlong.pullbackArrows f S⟩
 
+lemma Precoverage.toCoverage_le_toCoverage {J : Precoverage C} [J.HasPullbacks]
+    [J.IsStableUnderBaseChange] (K : GrothendieckTopology C) :
+    (J.toCoverage ≤ K.toCoverage) =
+      (∀ ⦃X : C⦄, ∀ S ∈ J.coverings X, Sieve.generate S ∈ K X) := rfl
+
 lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
     [J.IsStableUnderBaseChange] :
     J.toCoverage.toGrothendieck = J.toGrothendieck := by
-  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf]
+  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf,
+    Precoverage.toCoverage_le_toCoverage]
 
 lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
     J.toPrecoverage.toGrothendieck = J.toGrothendieck := by

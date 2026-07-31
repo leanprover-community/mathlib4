@@ -30,9 +30,8 @@ gives an equivalence between this set and ℕ+, as we will formalize
 below. -/
 def PrimeMultiset :=
   Multiset Nat.Primes
-deriving Inhabited, AddCommMonoid, DistribLattice,
-  SemilatticeSup, Sub,
-  IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
+deriving Inhabited, AddCommMonoid, SemilatticeSup, DistribLattice,
+  Sub, IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
 
 namespace PrimeMultiset
 
@@ -117,10 +116,11 @@ theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) =
 def prod (v : PrimeMultiset) : ℕ+ :=
   (v : Multiset PNat).prod
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_prod (v : PrimeMultiset) : (v.prod : ℕ) = (v : Multiset ℕ).prod := by
   have h : (v.prod : ℕ) = ((v.map (↑) : Multiset ℕ+).map (↑)).prod :=
     PNat.coeMonoidHom.map_multiset_prod v.toPNatMultiset
-  simpa [Multiset.map_map] using h
+  simpa [Multiset.map_map] using! h
 
 theorem prod_ofPrime (p : Nat.Primes) : (ofPrime p).prod = (p : ℕ+) :=
   Multiset.prod_singleton _
@@ -129,6 +129,7 @@ theorem prod_ofPrime (p : Nat.Primes) : (ofPrime p).prod = (p : ℕ+) :=
 def ofNatMultiset (v : Multiset ℕ) (h : ∀ p : ℕ, p ∈ v → p.Prime) : PrimeMultiset :=
   @Multiset.pmap ℕ Nat.Primes Nat.Prime (fun p hp => ⟨p, hp⟩) v h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_ofNatMultiset {p : ℕ+} {s : Multiset ℕ} (hs) :
     p ∈ (ofNatMultiset s hs : Multiset ℕ+) ↔ (p : ℕ) ∈ s := by
@@ -136,6 +137,7 @@ theorem mem_ofNatMultiset {p : ℕ+} {s : Multiset ℕ} (hs) :
     ← PNat.coe_inj]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem to_ofNatMultiset (v : Multiset ℕ) (h) : (ofNatMultiset v h : Multiset ℕ) = v := by
   dsimp [ofNatMultiset, toNatMultiset]
@@ -149,6 +151,7 @@ theorem prod_ofNatMultiset (v : Multiset ℕ) (h) :
 def ofPNatMultiset (v : Multiset ℕ+) (h : ∀ p : ℕ+, p ∈ v → p.Prime) : PrimeMultiset :=
   @Multiset.pmap ℕ+ Nat.Primes PNat.Prime (fun p hp => ⟨(p : ℕ), hp⟩) v h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem to_ofPNatMultiset (v : Multiset ℕ+) (h) : (ofPNatMultiset v h : Multiset ℕ+) = v := by
   dsimp [ofPNatMultiset, toPNatMultiset]
@@ -168,6 +171,7 @@ about how this interacts with our constructions on multisets. -/
 def ofNatList (l : List ℕ) (h : ∀ p : ℕ, p ∈ l → p.Prime) : PrimeMultiset :=
   ofNatMultiset (l : Multiset ℕ) h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_ofNatList {p : ℕ+} {l : List ℕ} (hl) :
     p ∈ (ofNatList l hl : Multiset ℕ+) ↔ (p : ℕ) ∈ l := by
@@ -184,6 +188,7 @@ the coercion from lists to multisets. -/
 def ofPNatList (l : List ℕ+) (h : ∀ p : ℕ+, p ∈ l → p.Prime) : PrimeMultiset :=
   ofPNatMultiset (l : Multiset ℕ+) h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toPNatMultiset_ofPNatList {l : List ℕ+} (hl) : (ofPNatList l hl : Multiset ℕ+) = l := by
   simp [ofPNatList]
@@ -206,7 +211,6 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   rw [coePNatMonoidHom.map_add]
   exact Multiset.prod_add _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
@@ -241,6 +245,7 @@ end PNat
 
 namespace PrimeMultiset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we start with a multiset of primes, take the product and
 then factor it, we get back the original multiset. -/
 @[simp]
@@ -299,7 +304,6 @@ theorem factorMultiset_ofPrime (p : Nat.Primes) :
   change (p : ℕ+).factorMultiset.prod = (PrimeMultiset.ofPrime p).prod
   rw [(p : ℕ+).prod_factorMultiset, PrimeMultiset.prod_ofPrime]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We now have four different results that all encode the
 idea that inequality of multisets corresponds to divisibility
 of positive integers. -/

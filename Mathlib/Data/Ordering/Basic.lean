@@ -5,7 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Tactic.Lemma
+public import Mathlib.Init
 
 /-!
 # Helper definitions and instances for `Ordering`

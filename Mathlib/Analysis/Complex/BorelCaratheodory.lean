@@ -50,7 +50,7 @@ lemma eq_mul_div_one_add_of_eq_div_sub (_ : M ≠ 0) (_ : 2 * M - z ≠ 0)
 lemma norm_two_mul_div_one_add_le (hM : 0 < M) (hw : ‖w‖ < 1) :
     ‖2 * ↑M * w / (1 + w)‖ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := by
   simp only [norm_div, norm_mul, norm_ofNat, norm_real, Real.norm_eq_abs, abs_of_pos hM]
-  gcongr; · linarith
+  gcongr
   rw [← norm_one (α := ℂ)]; exact norm_sub_le_norm_add 1 w
 
 /-- If `z.re ≤ M`, then `‖z‖ ≤ ‖2M - z‖`. This shows that the Schwarz transform
@@ -112,7 +112,7 @@ public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball
   have hfz : ‖f z - f 0‖ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) := by
     apply borelCaratheodory_zero (by positivity) (by fun_prop) ?_ hR hz (by simp)
     intro x hx
-    simp only [Set.mem_setOf_eq, sub_re]
+    simp only [Set.mem_ofPred_eq, sub_re]
     calc (f x).re - (f 0).re ≤ M - (f 0).re := by gcongr; exact hf₁ hx
       _ ≤ M + ‖f 0‖ := by linarith [neg_le_abs (f 0).re, abs_re_le_norm (f 0)]
   have h_denom_ne : R - ‖z‖ ≠ 0 := by linarith [mem_ball_zero_iff.mp hz]

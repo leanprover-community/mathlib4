@@ -47,7 +47,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert h.compl
+    convert! h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]
@@ -123,7 +123,7 @@ variable [Preorder α] [Preorder β] {s : Set α} {p : α → Prop} (a : α)
 
 @[to_dual]
 theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ici a ⊆ s := by
-  simp [IsUpperSet, subset_def, @forall_swap (_ ∈ s)]
+  simp [IsUpperSet, subset_def, @forall_comm (_ ∈ s)]
 
 @[to_dual] alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 
@@ -139,13 +139,9 @@ theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
 theorem IsLowerSet.ordConnected (h : IsLowerSet s) : s.OrdConnected :=
   ⟨fun _ _ _ hb => Icc_subset_Iic_self.trans <| h.Iic_subset hb⟩
 
+@[to_dual]
 theorem IsUpperSet.preimage (hs : IsUpperSet s) {f : β → α} (hf : Monotone f) :
     IsUpperSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
-
--- `to_dual` cannot yet reorder arguments of arguments
-@[to_dual existing]
-theorem IsLowerSet.preimage (hs : IsLowerSet s) {f : β → α} (hf : Monotone f) :
-    IsLowerSet (f ⁻¹' s : Set β) := fun _ _ h => hs <| hf h
 
 @[to_dual]
 theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f '' s : Set β) := by
@@ -171,15 +167,19 @@ theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=
 
 @[simp]
 theorem Set.antitone_mem : Antitone (· ∈ s) ↔ IsLowerSet s :=
-  forall_swap
+  forall_comm
 
 @[simp]
-theorem isUpperSet_setOf : IsUpperSet { a | p a } ↔ Monotone p :=
+theorem isUpperSet_setOfPred : IsUpperSet { a | p a } ↔ Monotone p :=
   Iff.rfl
 
+@[deprecated (since := "2026-07-09")] alias isUpperSet_setOf := isUpperSet_setOfPred
+
 @[simp]
-theorem isLowerSet_setOf : IsLowerSet { a | p a } ↔ Antitone p :=
-  forall_swap
+theorem isLowerSet_setOfPred : IsLowerSet { a | p a } ↔ Antitone p :=
+  forall_comm
+
+@[deprecated (since := "2026-07-09")] alias isLowerSet_setOf := isLowerSet_setOfPred
 
 @[to_dual]
 lemma IsUpperSet.upperBounds_subset (hs : IsUpperSet s) : s.Nonempty → upperBounds s ⊆ s :=
@@ -235,7 +235,7 @@ theorem isUpperSet_iff_forall_lt : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a < b �
 
 @[to_dual]
 theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ioi a ⊆ s := by
-  simp [isUpperSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
+  simp [isUpperSet_iff_forall_lt, subset_def, @forall_comm (_ ∈ s)]
 
 end PartialOrder
 

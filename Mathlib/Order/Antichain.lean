@@ -33,8 +33,10 @@ section General
 
 variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
-  hr <| h hr'
+protected instance Std.Symm.compl [Std.Symm r] : Std.Symm rᶜ where
+  symm a b hr hr' := hr <| symm b a hr'
+
+@[deprecated (since := "2026-06-10")] alias Symmetric.compl := Std.Symm.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
@@ -101,13 +103,18 @@ protected theorem insert (hs : IsAntichain r s) (hl : ∀ ⦃b⦄, b ∈ s → a
     (hr : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) : IsAntichain r (insert a s) :=
   isAntichain_insert.2 ⟨hs, fun _ hb hab => ⟨hr hb hab, hl hb hab⟩⟩
 
-theorem _root_.isAntichain_insert_of_symmetric (hr : Symmetric r) :
+theorem _root_.isAntichain_insert_of_symm [Std.Symm r] :
     IsAntichain r (insert a s) ↔ IsAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b :=
-  pairwise_insert_of_symmetric hr.compl
+  pairwise_insert_of_symm
 
-theorem insert_of_symmetric (hs : IsAntichain r s) (hr : Symmetric r)
-    (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) : IsAntichain r (insert a s) :=
-  (isAntichain_insert_of_symmetric hr).2 ⟨hs, h⟩
+@[deprecated (since := "2026-06-10")]
+alias _root_.isAntichain_insert_of_symmetric := _root_.isAntichain_insert_of_symm
+
+theorem insert_of_symm (hs : IsAntichain r s) [Std.Symm r] (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) :
+    IsAntichain r (insert a s) :=
+  isAntichain_insert_of_symm.mpr ⟨hs, h⟩
+
+@[deprecated (since := "2026-06-10")] alias insert_of_symmetric := insert_of_symm
 
 theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain r' (φ '' s) := by
   intro b hb b' hb' h₁ h₂
@@ -176,7 +183,7 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
 @[simp] protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
-  h.subset Set.diff_subset
+  h.subset Set.sdiff_subset
 
 end IsAntichain
 
@@ -260,19 +267,25 @@ theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (
 
 /-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
 then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+theorem IsAntichain.eq_setOfPred_maximal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
     {x | Maximal (· ∈ s) x} = t := by
   refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
   obtain ⟨y, hyx, hy⟩ := hs x hx
   rwa [← ht.eq (h y hy) hx hyx]
 
+@[deprecated (since := "2026-07-09")]
+alias IsAntichain.eq_setOf_maximal := IsAntichain.eq_setOfPred_maximal
+
 /-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
 then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+theorem IsAntichain.eq_setOfPred_minimal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
     {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_setOf_maximal h hs
+  ht.to_dual.eq_setOfPred_maximal h hs
+
+@[deprecated (since := "2026-07-09")]
+alias IsAntichain.eq_setOf_minimal := IsAntichain.eq_setOfPred_minimal
 
 end Preorder
 
@@ -292,11 +305,16 @@ theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
 
-theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
+theorem setOfPred_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
   fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
 
-theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
-  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
+@[deprecated (since := "2026-07-09")]
+alias setOf_maximal_antichain := setOfPred_maximal_antichain
+
+theorem setOfPred_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
+  (setOfPred_maximal_antichain (α := αᵒᵈ) P).swap
+
+@[deprecated (since := "2026-07-09")] alias setOf_minimal_antichain := setOfPred_minimal_antichain
 
 end PartialOrder
 
@@ -348,7 +366,8 @@ theorem preimage (hs : IsStrongAntichain r s) {f : β → α} (hf : Injective f)
 theorem _root_.isStrongAntichain_insert :
     IsStrongAntichain r (insert a s) ↔
       IsStrongAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ∀ c, ¬r a c ∨ ¬r b c :=
-  Set.pairwise_insert_of_symmetric fun _ _ h c => (h c).symm
+  have : Std.Symm fun a b ↦ ∀ c, ¬r a c ∨ ¬r b c := { symm _ _ h c := h c |>.symm }
+  Set.pairwise_insert_of_symm
 
 protected theorem insert (hs : IsStrongAntichain r s)
     (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ∀ c, ¬r a c ∨ ¬r b c) : IsStrongAntichain r (insert a s) :=

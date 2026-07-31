@@ -33,7 +33,8 @@ namespace LieAlgebra
 
 /--
 The semi-direct sum of two Lie algebras `K` and `L` over `R`, relative to a Lie algebra homomorphism
-`ψ: L → Liederivation R K K`. As a set it just `K × L`, however the Lie bracket is twisted by `ψ`.
+`ψ: L → LieDerivation R K K`. As a set, it is just `K × L`, however the Lie bracket is twisted by
+`ψ`.
 -/
 @[ext] structure SemiDirectSum {R : Type*} [CommRing R] (K : Type*) [LieRing K] [LieAlgebra R K]
     (L : Type*) [LieRing L] [LieAlgebra R L] (_ : L →ₗ⁅R⁆ LieDerivation R K K) where
@@ -95,6 +96,7 @@ instance : LieRing (K ⋊⁅ψ⁆ L) where
   lie_self _ := by simp
   leibniz_lie _ _ _ := by simp; grind [lie_skew]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LieAlgebra R (K ⋊⁅ψ⁆ L) where
   lie_smul _ _ _ := by simp [smul_sub, smul_add]
 
@@ -154,7 +156,7 @@ end
 variable (R K L) in
 /-- The product of two Lie algebras realized through a semidirect sum with trivial `ψ` -/
 @[simps!]
-def prod_iso : (K ⋊⁅(0 : L→ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
+def prod_iso : (K ⋊⁅(0 : L →ₗ⁅R⁆ (LieDerivation R K K))⁆ L) ≃ₗ⁅R⁆ (K × L) where
   __ := toProdl 0
   map_lie' {_ _} := by simp
 

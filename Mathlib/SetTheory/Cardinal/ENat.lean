@@ -176,7 +176,6 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
@@ -187,7 +186,6 @@ lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := b
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Projection from cardinals to `ℕ∞`. Sends all infinite cardinals to `⊤`.
 
 We define this function as a bundled monotone ring homomorphism. -/
@@ -242,7 +240,7 @@ lemma ofENat_toENat_le (a : Cardinal) : ↑(toENat a) ≤ a := enat_gc.l_u_le _
 @[simp]
 lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
   rw [eq_comm, ← enat_gc.exists_eq_l]
-  simpa only [mem_range, eq_comm] using Set.ext_iff.1 range_ofENat a
+  simpa only [mem_range, eq_comm] using! Set.ext_iff.1 range_ofENat a
 
 @[simp] alias ⟨_, ofENat_toENat⟩ := ofENat_toENat_eq_self
 
@@ -276,7 +274,6 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
   natCast_le_toENat
 
 @[simp] lemma toENat_lt_natCast : toENat c < n ↔ c < n := by simp [← not_le]
-@[simp] lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := toENat_lt_natCast
 @[simp] lemma toENat_lt_ofNat [n.AtLeastTwo] : toENat c < ofNat(n) ↔ c < ofNat(n) :=
   toENat_lt_natCast
 
@@ -290,6 +287,9 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
 @[simp] lemma toENat_eq_one : toENat c = 1 ↔ c = 1 := toENat_eq_natCast
 @[simp] lemma toENat_eq_ofNat [n.AtLeastTwo] : toENat c = ofNat(n) ↔ c = ofNat(n) :=
   toENat_eq_natCast
+
+@[deprecated toENat_eq_zero (since := "2026-05-25")]
+lemma toENat_lt_one : toENat c < 1 ↔ c < 1 := by simp
 
 @[deprecated (since := "2026-01-13")] alias toENat_eq_nat := toENat_eq_natCast
 
@@ -319,7 +319,6 @@ lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injO
 
 @[simp] lemma ofENat_add_aleph0 (m : ℕ∞) : m + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_ofENat]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofENat_mul_aleph0 {m : ℕ∞} (hm : m ≠ 0) : ↑m * ℵ₀ = ℵ₀ := by
   induction m with
   | top => exact aleph0_mul_aleph0

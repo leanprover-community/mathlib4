@@ -46,7 +46,7 @@ class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 /-- See note [custom simps projection]. -/
 def SlashInvariantForm.Simps.coe (f : SlashInvariantForm Γ k) : ℍ → ℂ := f
@@ -159,7 +159,6 @@ section smulℝ
 
 variable {α : Type*} [SMul α ℂ] [SMul α ℝ] [IsScalarTower α ℝ ℂ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `ℝ`, valid without restrictions on the determinant. -/
 instance instSMulℝ : SMul α (SlashInvariantForm Γ k) where
   smul c f :=
@@ -229,16 +228,12 @@ def const [Γ.HasDetOne] (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := by ext; simp [slash_def, σ, Subgroup.HasDetOne.det_eq hg]
 
-@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
-
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]
 def constℝ [Γ.HasDetPlusMinusOne] (x : ℝ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := funext fun τ ↦ by simp [slash_apply,
     Subgroup.HasDetPlusMinusOne.abs_det hg, -Matrix.GeneralLinearGroup.val_det_apply]
-
-@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 instance [Γ.HasDetPlusMinusOne] : One (SlashInvariantForm Γ 0) where
   one := { constℝ 1 with toFun := 1 }
@@ -250,7 +245,6 @@ theorem one_coe_eq_one [Γ.HasDetPlusMinusOne] : ((1 : SlashInvariantForm Γ 0) 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invariant forms
 of weights `k₁` and `k₂`. -/
 def mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
@@ -264,7 +258,6 @@ theorem coe_mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantFor
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
 function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
 @[simps -fullyApplied]

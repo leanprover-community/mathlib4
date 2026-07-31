@@ -114,7 +114,7 @@ theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
   simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
-  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+  positivity [inner_self_nonneg (x := x) (𝕜 := 𝕜)]
 
 @[simp]
 theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →ₗ[𝕜] E) :=
@@ -199,10 +199,11 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
-  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
+  simp_rw [LinearMap.IsPositive, Matrix.isSymmetric_toEuclideanLin_iff, inner_re_symm,
     EuclideanSpace.inner_eq_star_dotProduct, Matrix.ofLp_toLpLin, Matrix.toLin'_apply,
     dotProduct_comm (A.mulVec _), Matrix.posSemidef_iff_dotProduct_mulVec, and_congr_right_iff,
     RCLike.nonneg_iff (K := 𝕜)]
@@ -214,7 +215,7 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
   rw [← Matrix.isPositive_toEuclideanLin_iff]
-  convert isPositive_linearIsometryEquiv_conj_iff b.repr
+  convert! isPositive_linearIsometryEquiv_conj_iff b.repr
   ext
   simp [LinearMap.toMatrix]
 
@@ -223,9 +224,6 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
 theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
-
-@[deprecated (since := "2025-10-17")] alias IsPositive.of_isSymmetricProjection :=
-  IsSymmetricProjection.isPositive
 
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
@@ -245,7 +243,6 @@ theorem IsPositive.trace_nonneg {f : E →ₗ[𝕜] E} (hf : f.IsPositive) : 0 �
   unfold trace
   split_ifs with h
   · have : FiniteDimensional 𝕜 E := Module.Finite.of_basis h.choose_spec.some
-    classical
     simp_rw [traceAux_eq 𝕜 _ (stdOrthonormalBasis 𝕜 E).toBasis]
     exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
   · simp
@@ -363,17 +360,17 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
 
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
-  simpa using isPositive_one.conj_adjoint S
+  simpa using! isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
     (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘L T ∘L S).IsPositive := by
-  convert hT.conj_adjoint (S†)
+  convert! hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
-  simpa using isPositive_one.adjoint_conj S
+  simpa using! isPositive_one.adjoint_conj S
 
 section LinearMap
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
@@ -383,42 +380,45 @@ theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
   have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 F
-  simpa [← isPositive_toContinuousLinearMap_iff] using
+  simpa [← isPositive_toContinuousLinearMap_iff] using!
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
 theorem _root_.LinearMap.isPositive_self_comp_adjoint (S : E →ₗ[𝕜] F) :
     (S ∘ₗ S.adjoint).IsPositive := by
-  simpa using LinearMap.isPositive_one.conj_adjoint S
+  simpa using! LinearMap.isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
-  convert hT.conj_adjoint S.adjoint
+  convert! hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
 
 theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
     (S.adjoint ∘ₗ S).IsPositive := by
-  simpa using LinearMap.isPositive_one.adjoint_conj S
+  simpa using! LinearMap.isPositive_one.adjoint_conj S
 
 end LinearMap
 
 theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
     [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
   simp_rw [← coe_coe, U.starProjection_isSymmetric _, hT.isSymmetric _,
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
-    [U.HasOrthogonalProjection] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
-  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
-    Function.comp_apply, coe_comp']
-  simp_rw [U.inner_orthogonalProjection_eq_of_mem_right, Submodule.subtypeL_apply,
-    U.inner_orthogonalProjection_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
+theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    (U.orthogonalProjectionOnto ∘L T ∘L U.subtypeL).IsPositive := by
+  simp only [isPositive_iff, IsSymmetric, toLinearMap_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, comp_apply]
+  simp_rw [U.inner_orthogonalProjectionOnto_eq_of_mem_right, Submodule.subtypeL_apply,
+    U.inner_orthogonalProjectionOnto_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
+
+@[deprecated (since := "2026-05-05")] alias IsPositive.orthogonalProjection_comp :=
+  IsPositive.orthogonalProjectionOnto_comp
 
 open scoped NNReal
 
@@ -516,7 +516,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
-    toLinearMap_starProjection_eq_isComplProjection, IsCompl.projection_range]
+    toLinearMap_starProjection_eq_isComplProjection, range_projection]
 
 /-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
@@ -547,7 +547,7 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
   let a (i : Fin (Module.finrank 𝕜 E)) : E :=
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
-  simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
+  simp_rw [_root_.sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
     mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
     ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
     Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
@@ -561,6 +561,6 @@ theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matri
   rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
     isPositive_iff_eq_sum_rankOne]
   simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
-    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+    ContinuousLinearMap.toLinearMap_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
   exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
     fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

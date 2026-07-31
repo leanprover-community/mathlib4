@@ -14,12 +14,13 @@ public import Mathlib.CategoryTheory.Sites.Over
 We show that if `J` is subcanonical, then also `J.over X` is subcanonical.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.GrothendieckTopology
 
 variable {C : Type*} [Category* C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance subcanonical_over (J : GrothendieckTopology C) [J.Subcanonical] (X : C) :
     (J.over X).Subcanonical := by

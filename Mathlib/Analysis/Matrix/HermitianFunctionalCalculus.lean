@@ -68,7 +68,6 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
       Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
     FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
@@ -93,7 +92,6 @@ lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Instance of the continuous functional calculus for a Hermitian matrix over `𝕜` with
 `RCLike 𝕜`. -/
 instance instContinuousFunctionalCalculus :
@@ -134,26 +132,22 @@ should prefer the generic API, especially because it will make rewriting easier.
 protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
   conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_eq_cfcAux : cfcHom hA.isSelfAdjoint = hA.cfcAux :=
   cfcHom_eq_of_continuous_of_map_id hA hA.cfcAux
     hA.isClosedEmbedding_cfcAux.continuous hA.cfcAux_id
 
-set_option backward.isDefEq.respectTransparency false in
 instance instContinuousFunctionalCalculusIsClosedEmbedding :
     ClosedEmbeddingContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   isClosedEmbedding _ hA := cfcHom_eq_cfcAux hA ▸ hA.isHermitian.isClosedEmbedding_cfcAux
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.isClosedEmbedding_cfcAux.continuous
     hA.cfcAux_id
-  rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
-  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,
+  rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_domRestrict]; fun_prop), this]
+  simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.domRestrict_apply,
     IsHermitian.cfc]
 
-set_option backward.isDefEq.respectTransparency false in
 open Polynomial in
 lemma charpoly_cfc_eq (f : ℝ → ℝ) :
     (cfc f A).charpoly = ∏ i, (X - C (f (hA.eigenvalues i) : 𝕜)) := by

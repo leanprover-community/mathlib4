@@ -67,7 +67,7 @@ variable (f : R →+* S₁) (g : σ → S₁)
 /-- Evaluate a polynomial `p` given a valuation `g` of all the variables
   and a ring hom `f` from the scalar ring to the target -/
 def eval₂ (p : MvPolynomial σ R) : S₁ :=
-  p.sum fun s a => f a * s.prod fun n e => g n ^ e
+  (AddMonoidAlgebra.coeff p).sum fun s a => f a * s.prod fun n e => g n ^ e
 
 theorem eval₂_eq (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) :
     f.eval₂ g X = ∑ d ∈ f.support, g (f.coeff d) * ∏ i ∈ d.support, X i ^ d i :=
@@ -195,9 +195,14 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
   rw [← comp_eval₂Hom]
   rfl
 
+theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+    (φ : S₁ →+* S₂) (g : σ → S₁) :
+    φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
+  map_eval₂Hom f g φ p
+
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
-  simp only [monomial_eq, map_mul, eval₂Hom_C, Finsupp.prod, map_prod, map_pow, eval₂Hom_X']
+  simp only [coe_eval₂Hom, eval₂_monomial]
 
 @[simp]
 theorem eval₂Hom_smul (f : R →+* S₁) (g : σ → S₁) (r : R) (P : MvPolynomial σ R) :
@@ -218,6 +223,7 @@ theorem eval₂_eta (p : MvPolynomial σ R) : eval₂ C X p = p := by
   apply MvPolynomial.induction_on p <;>
     simp +contextual [eval₂_add, eval₂_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_congr (g₁ g₂ : σ → S₁)
     (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → coeff c p ≠ 0 → g₁ i = g₂ i) :
     p.eval₂ f g₁ = p.eval₂ f g₂ := by
@@ -322,12 +328,11 @@ section Map
 variable (f : R →+* S₁)
 
 /-- `map f p` maps a polynomial `p` across a ring hom `f` -/
-def map : MvPolynomial σ R →+* MvPolynomial σ S₁ :=
-  eval₂Hom (C.comp f) X
+def map : MvPolynomial σ R →+* MvPolynomial σ S₁ := AddMonoidAlgebra.mapRingHom _ f
 
 @[simp]
 theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomial s (f a) :=
-  (eval₂_monomial _ _).trans monomial_eq.symm
+  AddMonoidAlgebra.map_single ..
 
 @[simp]
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
@@ -338,31 +343,15 @@ theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   _root_.map_ofNat _ _
 
 @[simp]
-theorem map_X : ∀ n : σ, map f (X n : MvPolynomial σ R) = X n :=
-  eval₂_X _ _
+theorem map_X (n : σ) : map f (X n : MvPolynomial σ R) = X n := by simp [X]
 
-theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p :=
-  eval₂_eta
+theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p := AddMonoidAlgebra.map_id
 
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
-    map g (map f p) = map (g.comp f) p :=
-  (eval₂_comp_left (map g) (C.comp f) X p).trans <| by
-    congr
-    · ext1 a
-      simp only [map_C, comp_apply, RingHom.coe_comp]
-    · ext1 n
-      simp only [map_X, comp_apply]
+    map g (map f p) = map (g.comp f) p := AddMonoidAlgebra.map_map ..
 
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
-  unfold map eval; simp only [coe_eval₂Hom]
-  have h := eval₂_comp_left (eval₂Hom (RingHom.id S₁) g) (C.comp f) X p
-  dsimp only [coe_eval₂Hom] at h
-  rw [h]
-  congr
-  · ext1 a
-    simp
-  · ext1 n
-    simp only [comp_apply, eval₂_X]
+  simp [eval₂, eval]; simp [map, MvPolynomial, Finsupp.sum_mapRange_index, mapRingHom]
 
 theorem eval₂_comp_right {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f : R →+* S₁) (g : σ → S₁) (p) :
     k (eval₂ f g p) = eval₂ k (k ∘ g) (map f p) := by
@@ -402,6 +391,8 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
     simp only [hp, hq, (map f).map_add, coeff_add, f.map_add]
   · intro p i hp m
     simp only [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
+
+lemma map_eq_eval₂Hom_C_comp : map (σ := σ) f = eval₂Hom (C.comp f) X := by ext a x <;> simp
 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
@@ -470,7 +461,7 @@ theorem constantCoeff_comp_map (f : R →+* S₁) :
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
@@ -479,7 +470,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
   · exact MvPolynomial.support_map_subset _ _
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, ← f.map_zero] at hx
   exact hf hx
 
@@ -488,9 +479,11 @@ theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
   simp only [coeff_map, coeff_zero, hr]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
-    map f (Finsupp.mapRange g hg φ) = φ ↔ ∀ d, f (g (coeff d φ)) = coeff d φ := by
-  simp_rw [MvPolynomial.ext_iff, coeff_map, coeff_mapRange]
+    map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
+      ∀ d, f (g (coeff d φ)) = coeff d φ := by
+  simp_rw [MvPolynomial.ext_iff, coeff_map]; rfl
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
     (map f p).coeffs ⊆ p.coeffs.image f := by
@@ -560,11 +553,12 @@ theorem eval₂AlgHom_X (i : σ) :
 end Algebra
 
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
-@[simps!]
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ :=
-  { map (↑f : S₁ →+* S₂) with
-    commutes' r := by simp }
+    MvPolynomial σ S₁ →ₐ[R] MvPolynomial σ S₂ := AddMonoidAlgebra.mapAlgHom _ f
+
+@[simp]
+lemma mapAlgHom_apply [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂)
+    (x : MvPolynomial σ S₁) : mapAlgHom f x = map f x := rfl
 
 @[simp]
 theorem mapAlgHom_id [Algebra R S₁] :
@@ -577,12 +571,11 @@ theorem mapAlgHom_coe_ringHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S�
       (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
   RingHom.mk_coe _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     (mapAlgHom f).range.toSubmodule = coeffsIn σ f.range.toSubmodule := by
+  simp only [← SetLike.coe_set_eq, Subalgebra.coe_toSubmodule, AlgHom.coe_range]
   ext
-  rw [Subalgebra.mem_toSubmodule, ← SetLike.mem_coe, AlgHom.coe_range, mapAlgHom, AlgHom.coe_mk,
-    mem_range_map_iff_coeffs_subset, mem_coeffsIn_iff_coeffs_subset]
+  erw [mem_range_map_iff_coeffs_subset, mem_coeffsIn_iff_coeffs_subset]
   simp [Set.subset_def]
 
 end Map
@@ -860,6 +853,7 @@ section Algebra
 
 variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
+open scoped AlgebraMonoidAlgebra in
 /--
 If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
 
@@ -869,17 +863,19 @@ global instance.
 -/
 @[instance_reducible]
 noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
-  (MvPolynomial.map (algebraMap R S)).toAlgebra
+  inferInstanceAs <| Algebra (AddMonoidAlgebra _ _) (AddMonoidAlgebra _ _)
 
 attribute [local instance] algebraMvPolynomial
 
-@[simp]
+-- We want this to have higher priority than `AddMonoidAlgebra.algebraMap_def`.
+-- TODO: Unify `MvPolynomial.map` and `AddMonoidAlgebra.mapRingHom` so that this becomes useless.
+@[simp high]
 lemma algebraMap_def :
     algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
   rfl
 
 instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+  IsScalarTower.of_algebraMap_eq' (by ext; simp [C, monomial, map])
 
 instance [FaithfulSMul R S] : FaithfulSMul (MvPolynomial σ R) (MvPolynomial σ S) :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr

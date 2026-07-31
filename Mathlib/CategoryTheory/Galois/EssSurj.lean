@@ -49,13 +49,12 @@ namespace PreGaloisCategory
 
 variable {C : Type u₁} [Category.{u₂} C] {F : C ⥤ FintypeCat.{u₁}}
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable [GaloisCategory C] [FiberFunctor F]
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
 
-set_option backward.privateInPublic true in
 private local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
@@ -67,9 +66,6 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
   fintypeQuotient ⟨MulAction.stabilizer (G) x, stabilizer_isOpen (G) x⟩
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
 of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
@@ -78,8 +74,8 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     ∃ (ι : Type) (_ : Finite ι) (f : ι → OpenSubgroup (G)),
       Nonempty ((∐ fun i ↦ G ⧸ₐ (f i).toSubgroup) ≅ X) := by
   obtain ⟨ι, hf, f, u, hc⟩ := has_decomp_connected_components' X
-  letI (i : ι) : TopologicalSpace (f i).V := ⊥
-  haveI (i : ι) : DiscreteTopology (f i).V := ⟨rfl⟩
+  let (i : ι) : TopologicalSpace (f i).V := ⊥
+  have (i : ι) : DiscreteTopology (f i).V := ⟨rfl⟩
   have (i : ι) : ContinuousSMul G (f i).V := ContinuousSMul.mk <| by
     let r : f i ⟶ X := Sigma.ι f i ≫ u.hom
     let r'' (p : G × (f i).V) : G × X.V := (p.1, r.hom p.2)
@@ -153,6 +149,7 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :
@@ -173,6 +170,7 @@ private def coconeQuotientDiag :
     apply (QuotientGroup.leftRel_apply).mpr
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiagDesc
@@ -187,10 +185,7 @@ private def coconeQuotientDiagDesc
         s.ι.naturality m
       conv_rhs => rw [← h1]
       have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-        simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
-          functorToAction_map_quotientToEndObjectHom V h u m]
-        change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
-        simp [m]
+        simp [J', functorToAction_map_quotientToEndObjectHom V h u m, ← comp_apply, m]
       simp [← h2, J'])
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
@@ -204,6 +199,7 @@ private def coconeQuotientDiagDesc
     rw [← this, u.inv.comm g]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
 private def coconeQuotientDiagIsColimit :
@@ -230,8 +226,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     ∃ (X : C), Nonempty ((functorToAction F).obj X ≅ Aut F ⧸ₐ V.toSubgroup) := by
   obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F (one_mem V) V.isOpen'
-  haveI (X : I) : IsConnected X.val := hc X X.property
-  haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+  have (X : I) : IsConnected X.val := hc X X.property
+  have (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
   have hn : Nonempty (F.obj <| (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F (∏ᶜ fun X : I => X) hn
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
@@ -254,7 +250,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
-    simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
+    simp only [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
   have := V.quotient_finite_of_isOpen' (U.subgroupOf V) V.isOpen (V.subgroupOf_isOpen U U.isOpen)
   exact ⟨colimit (quotientDiag V hUnormal u),

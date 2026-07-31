@@ -48,7 +48,6 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
@@ -179,7 +178,6 @@ theorem forget_bddLat_lat_eq_forget_distLat_lat :
       forget₂ BddDistLat DistLat ⋙ forget₂ DistLat Lat :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded distributive lattices from an order isomorphism
 between them. -/
 @[simps]

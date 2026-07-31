@@ -72,7 +72,7 @@ def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
 
 /-- The constructed `sheafPullback G A J K` is left adjoint
 to `G.sheafPushforwardContinuous A J K`. -/
-def sheafAdjunctionContinuous [Functor.IsContinuous G J K] [HasWeakSheafify K A] :
+def sheafAdjunctionContinuous [HasWeakSheafify K A] :
     sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
