@@ -222,9 +222,9 @@ Message: 'Second copyright line should be "Released under the Custom License."'
 set_option linter.style.header.license "Released under the Custom License." in
 #check_copyright
 "/-
-Copyright (c) 2026 The Beneficial AI Foundation. All rights reserved.
+Copyright (c) 2026 Name. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Name LastName
+Authors: Name
 -/
 "
 
@@ -232,9 +232,9 @@ Authors: Name LastName
 set_option linter.style.header.license "Released under the Custom License." in
 #check_copyright
 "/-
-Copyright (c) 2026 The Beneficial AI Foundation. All rights reserved.
+Copyright (c) 2026 Name. All rights reserved.
 Released under the Custom License.
-Authors: Name LastName
+Authors: Name
 -/
 "
 
