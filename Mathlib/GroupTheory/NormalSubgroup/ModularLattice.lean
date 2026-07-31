@@ -26,13 +26,11 @@ variable {G : Type*} [Group G]
 lattice. -/]
 instance : IsModularLattice (NormalSubgroup G) where
   sup_inf_le_assoc_of_le := by
-    intro x y z h g hg
-    change g ∈ (x.toSubgroup ⊔ y.toSubgroup) ⊓ z.toSubgroup at hg
-    change g ∈ x.toSubgroup ⊔ (y.toSubgroup ⊓ z.toSubgroup)
-    rw [← SetLike.mem_coe, Subgroup.normal_mul]
-    rw [Subgroup.mul_inf_assoc _ _ _ h]
-    change g ∈ (x.toSubgroup ⊔ y.toSubgroup) ∧ g ∈ z.toSubgroup at hg
-    rw [← SetLike.mem_coe, Subgroup.normal_mul] at hg
-    exact hg
+    intro x y z h
+    apply le_of_eq
+    apply toSubgroup_injective
+    apply SetLike.coe_injective
+    simp only [toSubgroup_inf, toSubgroup_sup, Subgroup.coe_inf, Subgroup.normal_mul]
+    exact (Subgroup.mul_inf_assoc _ _ _ h).symm
 
 end NormalSubgroup

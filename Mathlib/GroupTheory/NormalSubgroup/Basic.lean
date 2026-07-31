@@ -6,7 +6,6 @@ Authors: Diwen Yu
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Order.Copy
 
 /-!
 # Normal subgroups as a complete lattice
@@ -34,12 +33,8 @@ namespace NormalSubgroup
 variable {G : Type*} [Group G]
 
 @[to_additive]
-theorem toSubgroup_injective : Function.Injective
-    (fun H ↦ H.toSubgroup : NormalSubgroup G → Subgroup G) :=
-  fun A B h ↦ by
-    ext
-    dsimp at h
-    rw [h]
+theorem toSubgroup_injective : Function.Injective (NormalSubgroup.toSubgroup (G := G)) :=
+  fun A B h ↦ NormalSubgroup.ext (by simp [h])
 
 @[to_additive]
 instance : SetLike (NormalSubgroup G) G where
@@ -52,7 +47,7 @@ instance : PartialOrder (NormalSubgroup G) := .ofSetLike (NormalSubgroup G) G
 @[to_additive]
 instance : SubgroupClass (NormalSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
-  one_mem H := H.toSubgroup.one_mem
+  one_mem H := H.one_mem'
   inv_mem := Subgroup.inv_mem' _
 
 @[to_additive]
@@ -72,6 +67,32 @@ theorem toSubgroup_ofSubgroup (H : Subgroup G) [H.Normal] :
     ((ofSubgroup H : NormalSubgroup G) : Subgroup G) = H :=
   rfl
 
+@[to_additive]
+instance : OrderTop (NormalSubgroup G) where
+  top := { toSubgroup := ⊤ }
+  le_top H := show H.toSubgroup ≤ ⊤ from le_top
+
+@[to_additive]
+instance : OrderBot (NormalSubgroup G) where
+  bot := { toSubgroup := ⊥ }
+  bot_le H := show (⊥ : Subgroup G) ≤ H.toSubgroup from bot_le
+
+@[to_additive]
+instance : SemilatticeSup (NormalSubgroup G) where
+  sup H K := { toSubgroup := H.toSubgroup ⊔ K.toSubgroup }
+  le_sup_left H K := show H.toSubgroup ≤ H.toSubgroup ⊔ K.toSubgroup from le_sup_left
+  le_sup_right H K := show K.toSubgroup ≤ H.toSubgroup ⊔ K.toSubgroup from le_sup_right
+  sup_le H K L hH hK :=
+    show H.toSubgroup ⊔ K.toSubgroup ≤ L.toSubgroup from sup_le hH hK
+
+@[to_additive]
+instance : SemilatticeInf (NormalSubgroup G) where
+  inf H K := { toSubgroup := H.toSubgroup ⊓ K.toSubgroup }
+  inf_le_left H K := show H.toSubgroup ⊓ K.toSubgroup ≤ H.toSubgroup from inf_le_left
+  inf_le_right H K := show H.toSubgroup ⊓ K.toSubgroup ≤ K.toSubgroup from inf_le_right
+  le_inf H K L hK hL :=
+    show H.toSubgroup ≤ K.toSubgroup ⊓ L.toSubgroup from le_inf hK hL
+
 variable (G) in
 /-- `normalClosure` forms a Galois insertion with the coercion to subgroups. -/
 @[to_additive /-- `normalClosure` forms a Galois insertion with the coercion to additive
@@ -85,20 +106,12 @@ protected def gi :
   choice_eq _ _ := rfl
 
 @[to_additive]
-instance : CompleteLattice (NormalSubgroup G) :=
-  fast_instance% CompleteLattice.copy
-    (GaloisInsertion.liftCompleteLattice (NormalSubgroup.gi G))
-    _ rfl
-    { toSubgroup := ⊤ } (toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
-    { toSubgroup := ⊥ } (toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
-    (fun H K ↦ { toSubgroup := H.toSubgroup ⊔ K.toSubgroup })
-      (funext fun H ↦ funext fun K ↦
-        toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
-    (fun H K ↦ { toSubgroup := H.toSubgroup ⊓ K.toSubgroup })
-      (funext fun H ↦ funext fun K ↦
-        toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
-    _ rfl
-    _ rfl
+instance : CompleteLattice (NormalSubgroup G) where
+  __ := (inferInstance : OrderTop (NormalSubgroup G))
+  __ := (inferInstance : OrderBot (NormalSubgroup G))
+  __ := (inferInstance : SemilatticeSup (NormalSubgroup G))
+  __ := (inferInstance : SemilatticeInf (NormalSubgroup G))
+  __ := (NormalSubgroup.gi G).liftCompleteLattice
 
 @[to_additive (attr := simp)]
 theorem toSubgroup_top : ((⊤ : NormalSubgroup G) : Subgroup G) = ⊤ := rfl
