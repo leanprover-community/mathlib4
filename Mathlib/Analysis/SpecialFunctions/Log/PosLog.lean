@@ -113,7 +113,7 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
   grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
 
 @[gcongr]
-lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+lemma posLog_le_posLog (hx : -1 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   monotoneOn_posLog (by grind) (by grind) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
@@ -163,7 +163,7 @@ lemma log_one_add_le_posLog {x : ℝ} : log (1 + x) ≤ log⁺ x + log 2 := by
   calc log (1 + x)
   _ ≤ log⁺ (1 + x) := le_max_right ..
   _ = log⁺ |1 + x| := (posLog_abs _).symm
-  _ ≤ log⁺ (max 1 |x| * 2) := posLog_le_posLog (abs_nonneg _) h₂
+  _ ≤ log⁺ (max 1 |x| * 2) := posLog_le_posLog (neg_one_lt_zero.le.trans (abs_nonneg _)) h₂
   _ = log⁺ x + log 2 := by
     rw [posLog_eq_log (by rw [abs_of_nonneg (by positivity)]; linarith),
       log_mul (by positivity) two_ne_zero, ← posLog_eq_log_max_one (abs_nonneg x), posLog_abs]
@@ -229,10 +229,10 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   _ = log⁺ |∑ t ∈ s, f t| := by
     rw [Real.posLog_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t|) := by
-    apply posLog_le_posLog (by positivity)
+    apply posLog_le_posLog (neg_one_lt_zero.le.trans (abs_nonneg _))
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply posLog_le_posLog (Finset.sum_nonneg fun _ _ ↦ abs_nonneg _)
+    apply posLog_le_posLog (neg_one_lt_zero.le.trans (Finset.sum_nonneg fun _ _ ↦ abs_nonneg _))
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -250,6 +250,7 @@ lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s 
     (f : α → E) :
     log⁺ ‖∑ t ∈ s, f t‖ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ := by
   grw [norm_sum_le, posLog_sum]
+  exact neg_one_lt_zero.le.trans (norm_nonneg _)
 
 /--
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
@@ -264,5 +265,6 @@ monotonicity of `log⁺` and the triangle inequality.
 lemma posLog_norm_add_le {E : Type*} [SeminormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
   grw [norm_add_le, posLog_add, add_rotate]
+  exact neg_one_lt_zero.le.trans (norm_nonneg _)
 
 end Real
