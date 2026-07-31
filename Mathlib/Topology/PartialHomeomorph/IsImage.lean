@@ -75,7 +75,6 @@ protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
 theorem symm_apply_mem_iff (h : e.IsImage s t) (hy : y ∈ e.target) : e.symm y ∈ s ↔ y ∈ t :=
   h.symm hy
 
-@[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
   ⟨fun h => h.symm, fun h => h.symm⟩
 
