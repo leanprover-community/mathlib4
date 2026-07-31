@@ -307,8 +307,22 @@ lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
   (Commute.all x y).geom_sum₂_mul n
 
+/-- `x ^ n - y ^ n` can be expressed as `z * (x - y)` for some `z` in the ring. -/
+def powSubPowFactor (x y : R) (n : ℕ) : { z : R // x ^ n - y ^ n = z * (x - y) } :=
+  ⟨∑ i ∈ range n, x ^ i * y ^ (n - 1 - i), (geom_sum₂_mul x y n).symm⟩
+
 lemma sub_dvd_pow_sub_pow (x y : R) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
   (Commute.all x y).sub_dvd_pow_sub_pow n
+
+/-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring. -/
+lemma sq_dvd_add_pow_sub_pow_sub (x y : R) :
+    ∀ n : ℕ, y ^ 2 ∣ (x + y) ^ n - x ^ n - n * x ^ (n - 1) * y
+  | 0 => ⟨0, by simp⟩
+  | 1 => ⟨0, by simp⟩
+  | n + 2 => by
+    obtain ⟨z, hz⟩ := sq_dvd_add_pow_sub_pow_sub x y (n + 1)
+    exists x * z + (n + 1) * x ^ n + z * y
+    grind
 
 lemma Odd.add_dvd_pow_add_pow (x y : R) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
   have h₁ := geom_sum₂_mul x (-y) n
