@@ -75,19 +75,21 @@ theorem Module.finrank_dvd_finrank_right :
     Module.finrank K A ∣ Module.finrank F A :=
   dvd_of_mul_left_eq (finrank F K) (finrank_mul_finrank ..)
 
-theorem Module.finrank_div_finrank_cancel_right (F K A : Type*)
-    [Semiring F] [Ring K] [AddCommGroup A] [Module F K] [Module K A] [Module F A]
-    [IsScalarTower F K A] [Nontrivial A] [StrongRankCondition F] [StrongRankCondition K]
-    [Module.Free F K] [Module.Free K A] [Module.Finite K A] :
+theorem Module.finrank_div_finrank_cancel_right (h : Module.finrank K A ≠ 0) :
     Module.finrank F A / Module.finrank K A = Module.finrank F K :=
-  Nat.div_eq_of_eq_mul_left ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..).symm
+  Nat.div_eq_of_eq_mul_left h.bot_lt (finrank_mul_finrank ..).symm
 
-theorem Module.finrank_div_finrank_cancel_left (F K A : Type*) [Ring F] [Ring K] [AddCommMonoid A]
-    [Module F K] [Module K A] [Module F A] [IsScalarTower F K A] [Nontrivial K]
-    [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
-    [Module.Finite F K] :
+theorem Module.finrank_div_finrank_cancel_left (h : Module.finrank F K ≠ 0) :
     Module.finrank F A / Module.finrank F K = Module.finrank K A :=
-  Nat.div_eq_of_eq_mul_right ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..).symm
+  Nat.div_eq_of_eq_mul_right h.bot_lt (finrank_mul_finrank ..).symm
+
+theorem Module.finrank_div_finrank_cancel_right_of_nontrivial [Nontrivial A] [Module.Finite K A] :
+    Module.finrank F A / Module.finrank K A = Module.finrank F K :=
+  finrank_div_finrank_cancel_right F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
+
+theorem Module.finrank_div_finrank_cancel_left_of_nontrivial [Nontrivial K] [Module.Finite F K] :
+    Module.finrank F A / Module.finrank F K = Module.finrank K A :=
+  finrank_div_finrank_cancel_left F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
 
 end Tower
 
