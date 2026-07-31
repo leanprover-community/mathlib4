@@ -299,7 +299,7 @@ lemma isTangent_of_mem_tangentsFrom {as : AffineSubspace ℝ P} {s : Sphere P} {
 lemma tangentsFrom_eq_image_orthRadius_inter_polar {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     s.tangentsFrom p = s.orthRadius '' (s ∩ s.polar p) := by
   ext as
-  rw [tangentsFrom, tangentSet, Set.mem_setOf, Set.image_inter s.orthRadius_injective,
+  rw [tangentsFrom, tangentSet, Set.mem_ofPred, Set.image_inter s.orthRadius_injective,
     Set.mem_inter_iff, and_congr_right_iff]
   rintro ⟨p₂, hp₂, rfl⟩
   rw [s.orthRadius_injective.mem_set_image]
@@ -314,7 +314,7 @@ lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
     (hp : dist p s.center < s.radius) : s.tangentsFrom p = ∅ := by
   ext as
   rw [tangentsFrom, tangentSet]
-  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_setOf_eq, Set.mem_empty_iff_false,
+  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred_eq, Set.mem_empty_iff_false,
     iff_false, not_and, forall_exists_index, and_imp]
   rintro p' hp' rfl hpm
   linarith [(isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm]
@@ -327,7 +327,7 @@ lemma tangentsFrom_eq_singleton_orthRadius_of_mem {s : Sphere P} {p : P} (hp : p
     simp_rw [tangentsFrom, tangentSet, hr]
     ext as
     simp only [Metric.sphere_zero, Set.image_singleton, orthRadius_center, Set.mem_singleton_iff,
-      Set.mem_setOf_eq, and_iff_left_iff_imp]
+      Set.mem_ofPred_eq, and_iff_left_iff_imp]
     rintro rfl
     simp
   have hpc : p ≠ s.center := by
