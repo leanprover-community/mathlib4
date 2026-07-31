@@ -171,7 +171,7 @@ end
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
   toFun x := x
   map_mul' _ _ := rfl
@@ -208,7 +208,7 @@ theorem coe_mulHom_id : (NonUnitalRingHom.id α : α →ₙ* α) = MulHom.id α 
 variable [NonUnitalNonAssocSemiring γ]
 
 /-- Composition of non-unital ring homomorphisms is a non-unital ring homomorphism. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : α →ₙ+* γ :=
   { g.toMulHom.comp f.toMulHom, g.toAddMonoidHom.comp f.toAddMonoidHom with }
 
@@ -509,7 +509,7 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
-@[implicit_reducible]
+@[instance_reducible]
 def id (α : Type*) [NonAssocSemiring α] : α →+* α where
   toFun x := x
   map_zero' := rfl
@@ -538,7 +538,7 @@ theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
 variable {_ : NonAssocSemiring γ}
 
 /-- Composition of ring homomorphisms is a ring homomorphism. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
   { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with toFun x := g (f x), map_one' := by simp }
 

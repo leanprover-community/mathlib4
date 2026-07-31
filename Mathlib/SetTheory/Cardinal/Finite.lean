@@ -191,7 +191,7 @@ def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.car
   · simp only [card_eq_zero_of_infinite, ne_eq, not_true_eq_false] at h
 
 theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
-  letI := Fintype.ofSubsingleton a
+  let := Fintype.ofSubsingleton a
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 
 theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempty α :=
@@ -235,14 +235,14 @@ theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
 
 theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
     Nat.card (Sigma β) = ∑ a, Nat.card (β a) := by
-  letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+  let _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, _root_.map_prod]
 
 theorem card_fun [Finite α] : Nat.card (α → β) = Nat.card β ^ Nat.card α := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   rw [Nat.card_pi, Finset.prod_const, Finset.card_univ, ← Nat.card_eq_fintype_card]
 
 @[simp]
@@ -394,8 +394,8 @@ lemma card_fun {α β : Type*} : card (α → β) = card β ^ card α := by
   · simp [(card_eq_zero_iff_empty α).2 α_emp]
   rcases finite_or_infinite α
   · rcases finite_or_infinite β
-    · letI := Fintype.ofFinite α
-      letI := Fintype.ofFinite β
+    · let := Fintype.ofFinite α
+      let := Fintype.ofFinite β
       simp
     · simp only [card_eq_top_of_infinite]
       rw [top_epow]
@@ -407,9 +407,9 @@ lemma card_fun {α β : Type*} : card (α → β) = card β ^ card α := by
       simp [b_0]
     · rw [b_1, one_epow]
       apply le_antisymm
-      · letI := (card_le_one_iff_subsingleton β).1 b_1.le
+      · let := (card_le_one_iff_subsingleton β).1 b_1.le
         exact (card_le_one_iff_subsingleton (α → β)).2 Pi.instSubsingleton
-      · letI := (one_le_card_iff_nonempty β).1 b_1.ge
+      · let := (one_le_card_iff_nonempty β).1 b_1.ge
         exact (one_le_card_iff_nonempty (α → β)).2 Pi.instNonempty
     · rw [epow_top b_2, card_eq_top]
       rw [one_lt_card_iff_nontrivial β] at b_2
