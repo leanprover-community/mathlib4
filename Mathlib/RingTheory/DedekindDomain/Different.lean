@@ -1001,7 +1001,7 @@ lemma isUnramifiedAt_of_separable_minpoly' {P : Ideal B} [hP : P.IsPrime] (hPbot
     (Ideal.dvd_iff_le.mp hPdiv) (aeval_derivative_mem_differentIdeal A K L _ hx')
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hxP
   let p : Ideal A := P.under A
-  haveI : p.IsMaximal := (inferInstance : p.IsPrime).isMaximal (Ideal.under_ne_bot A hPbot)
+  have : p.IsMaximal := (inferInstance : p.IsPrime).isMaximal (Ideal.under_ne_bot A hPbot)
   have hle : p ≤ P.comap (algebraMap A B) := by
     change P.under A ≤ P.comap (algebraMap A B)
     rw [Ideal.under_def]
@@ -1046,12 +1046,10 @@ lemma prod_primesOverFinset_of_unramified [Algebra.Unramified A B] [IsDedekindDo
   convert (pow_one _).symm
   have : p.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp ‹_›
   rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hp] at hP
-  rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_factors_count hpbot' hP.1
-    (Ideal.ne_bot_of_mem_primesOver hp hP)]
   let : P.IsPrime := hP.1
   let : P.LiesOver p := hP.2
-  rw [Ideal.ramificationIdx_eq_ramificationIdx' p P hp]
-  exact Ideal.ramificationIdx'_eq_one P A
+  rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_factors_count p P hpbot']
+  exact Ideal.ramificationIdx_eq_one P A
 
 omit [IsDomain A] in
 /-- If `L / K` is Galois and `B / A` is unramified, then any ideal `I` of `B` fixed by `Gal(L/K)`
