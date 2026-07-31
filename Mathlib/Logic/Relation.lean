@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Logic.ExistsUnique
 public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
@@ -47,6 +48,14 @@ the bundled version, see `Rel`.
   related by `r`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
+
+## Main results
+
+* `Relation.newman`: A terminating, locally confluent relation is confluent.
+* `Relation.normal_form_unique_of_confluent`: Normal forms reachable from a common element are
+  equal in a confluent rewriting system.
+* `Relation.exists_unique_normal_form`: Every element of a terminating, locally confluent
+  rewriting system reduces to a unique normal form.
 -/
 
 @[expose] public section
@@ -914,6 +923,60 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
     cases hba with
     | refl => exact ⟨b, hea, hcb⟩
     | single hba => exact ⟨a, hea, hcb.tail hba⟩
+
+/-- **Newman's lemma**: if the reverse of a relation is well-founded and every pair of one-step
+reductions is joinable, then any two finite reduction sequences from a common source are joinable.
+
+This neither implies nor is implied by `church_rosser`. That theorem assumes the one-step diamond
+condition `∀ a b c, r a b → r a c → ∃ d, ReflGen r b d ∧ ReflTransGen r c d` and makes no
+termination assumption, whereas this one assumes local confluence together with well-foundedness
+of the reverse relation. The two hypothesis sets are incomparable: the diamond condition does not
+imply termination, and termination together with local confluence does not imply the diamond
+condition. -/
+theorem newman {α : Type*} {r : α → α → Prop} (hwf : WellFounded (Function.swap r))
+    (hlocal : ∀ a b c, r a b → r a c → Join (ReflTransGen r) b c) {a b c : α}
+    (hab : ReflTransGen r a b) (hac : ReflTransGen r a c) : Join (ReflTransGen r) b c :=
+  (hwf.induction a (C := fun a ↦ ∀ b c, ReflTransGen r a b → ReflTransGen r a c →
+    Join (ReflTransGen r) b c) fun a ih b c hab hac ↦ by
+      rcases hab.cases_head with rfl | ⟨a₁, ha₁, h₁b⟩
+      · exact ⟨c, hac, .refl⟩
+      rcases hac.cases_head with rfl | ⟨a₂, ha₂, h₂c⟩
+      · exact ⟨b, .refl, hab⟩
+      obtain ⟨d, h₁d, h₂d⟩ := hlocal a a₁ a₂ ha₁ ha₂
+      obtain ⟨e, hbe, hde⟩ := ih a₁ ha₁ b d h₁b h₁d
+      obtain ⟨f, hcf, hef⟩ := ih a₂ ha₂ c e h₂c (h₂d.trans hde)
+      exact ⟨f, hbe.trans hef, hcf⟩) b c hab hac
+
+/-- Two normal forms reachable by finite reduction sequences from the same element are equal if
+the relation is confluent. -/
+theorem normal_form_unique_of_confluent {α : Type*} {r : α → α → Prop}
+    (hconfluent : ∀ a b c, ReflTransGen r a b → ReflTransGen r a c →
+      Join (ReflTransGen r) b c)
+    {a n₁ n₂ : α} (han₁ : ReflTransGen r a n₁) (hn₁ : ∀ b, ¬ r n₁ b)
+    (han₂ : ReflTransGen r a n₂) (hn₂ : ∀ b, ¬ r n₂ b) : n₁ = n₂ := by
+  obtain ⟨d, hn₁d, hn₂d⟩ := hconfluent a n₁ n₂ han₁ han₂
+  have h₁ : d = n₁ := (reflTransGen_iff_eq hn₁).mp hn₁d
+  have h₂ : d = n₂ := (reflTransGen_iff_eq hn₂).mp hn₂d
+  exact h₁.symm.trans h₂
+
+/-- Every element of a relation satisfying the hypotheses of Newman's lemma reduces to a unique
+normal form. -/
+theorem exists_unique_normal_form {α : Type*} {r : α → α → Prop}
+    (hwf : WellFounded (Function.swap r))
+    (hlocal : ∀ a b c, r a b → r a c → Join (ReflTransGen r) b c) (a : α) :
+    ∃! n, ReflTransGen r a n ∧ ∀ b, ¬ r n b := by
+  classical
+  have hexists : ∀ a, ∃ n, ReflTransGen r a n ∧ ∀ b, ¬ r n b := fun a ↦
+    hwf.induction a (C := fun a ↦ ∃ n, ReflTransGen r a n ∧ ∀ b, ¬ r n b) fun a ih ↦ by
+      by_cases h : ∃ b, r a b
+      · obtain ⟨b, hab⟩ := h
+        obtain ⟨n, hbn, hn⟩ := ih b hab
+        exact ⟨n, (ReflTransGen.single hab).trans hbn, hn⟩
+      · exact ⟨a, .refl, fun b hab ↦ h ⟨b, hab⟩⟩
+  obtain ⟨n, han, hn⟩ := hexists a
+  refine ⟨n, ⟨han, hn⟩, ?_⟩
+  rintro m ⟨ham, hm⟩
+  exact normal_form_unique_of_confluent (fun _ _ _ ↦ newman hwf hlocal) ham hm han hn
 
 theorem le_join_of_refl [Std.Refl r] : r ≤ Join r :=
   fun _ b hab ↦ ⟨b, hab, refl b⟩
