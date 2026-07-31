@@ -287,7 +287,7 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace
 
 lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
-    (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
+    (modelWithCornersEuclideanQuadrant n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
