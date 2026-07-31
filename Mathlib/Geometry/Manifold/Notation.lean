@@ -1048,6 +1048,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `fun _ => TotalSpace.mk' ..` using the `T%` elaborator. -/
 @[scoped delab lam] meta def delabLamTPercent : Delab := do
+  whenPPOption getPPNotation do
   let .lam n _ b _ ← getExpr | failure
   guard <| b.isAppOf ``Bundle.TotalSpace.mk'
   let σe := b.getAppArgs[4]!.getAppFn
