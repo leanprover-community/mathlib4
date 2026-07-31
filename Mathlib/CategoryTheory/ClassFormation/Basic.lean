@@ -25,8 +25,34 @@ namespace Action
 variable {V : Type*} {FV : V → V → Type*} {CV : V → Type*}
   [∀ {X Y : V}, FunLike (FV X Y) (CV X) (CV Y)]
   [Category* V] [ConcreteCategory V FV]
-  [HasForget₂ V TopCat] {G : Type*} [Monoid G] [TopologicalSpace G]
+   {G : Type*} [Monoid G]
 
+variable (V) in
+def trivialOnSet (S : Set G) : ObjectProperty (Action V G) :=
+  fun X ↦ ∀ s ∈ S, X.ρ s = 1
+
+set_option backward.isDefEq.respectTransparency false in
+instance (J : Type*) [Category* J] [HasLimitsOfShape J V] (S : Set G) :
+    (trivialOnSet V S).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    intro g hg
+    exact (isLimitOfPreserves (Action.forget _ _) p.isLimit).hom_ext
+      (fun j ↦ by simp [dsimp% (p.π.app j).comm g, dsimp% p.prop_diag_obj j g hg])
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+instance (J : Type*) [Category* J] [HasColimitsOfShape J V] (S : Set G) :
+    (trivialOnSet V S).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨p⟩
+    intro g hg
+    exact (isColimitOfPreserves (Action.forget _ _) p.isColimit).hom_ext (fun j ↦ by
+      simp [← dsimp% (p.ι.app j).comm g, dsimp% p.prop_diag_obj j g hg])
+
+section
+
+variable [HasForget₂ V TopCat] [TopologicalSpace G]
 variable (V G) in
 abbrev isContinuous : ObjectProperty (Action V G) := IsContinuous
 
@@ -36,6 +62,8 @@ instance : (isContinuous V G).IsClosedUnderLimitsOfShape WalkingCospan := sorry
 
 instance (ι : Type*) [Finite ι] :
     (isContinuous V G).IsClosedUnderColimitsOfShape (Discrete ι) := sorry
+
+end
 
 end Action
 
