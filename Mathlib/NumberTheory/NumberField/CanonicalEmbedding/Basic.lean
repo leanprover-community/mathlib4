@@ -125,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-      RingHom.equivRatAlgHom
+      (RingHom.equivRatAlgHom K ℂ)
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert!
@@ -133,7 +133,7 @@ noncomputable def latticeBasis [NumberField K] :
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i => integralBasis K (e i)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
