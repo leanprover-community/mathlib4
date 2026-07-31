@@ -37,6 +37,7 @@ variable {σ : Π x : M, V x}
 
 -- Note how the name of the bound variable `x` resp. `y` would have been preserved,
 -- except for the delaborator collapsing this to `T%` again.
+-- TODO: parentheses here are not strictly necessary; find a way to remove them!
 /-- info: (T% σ') : E → TotalSpace E' (Trivial E E') -/
 #guard_msgs in
 #check T% σ'

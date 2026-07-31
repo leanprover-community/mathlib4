@@ -1054,6 +1054,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let σe := b.getAppArgs[4]!.getAppFn
   guard <| σe.isFVar
   let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+  -- TODO: this always adds parentheses; find a more parsimonious way!
   `((T% $σs)) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
