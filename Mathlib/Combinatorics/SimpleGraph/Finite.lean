@@ -47,7 +47,7 @@ open Finset Function
 
 namespace SimpleGraph
 
-variable {V : Type*} (G : SimpleGraph V) {e : Sym2 V}
+variable {V : Type*} (G H : SimpleGraph V) {e : Sym2 V}
 
 section EdgeFinset
 
@@ -99,7 +99,8 @@ theorem edgeFinset_sup [Fintype (edgeSet (G₁ ⊔ G₂))] [DecidableEq V] :
     (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by simp [edgeFinset]
 
 @[simp]
-theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeFinset ∩ G₂.edgeFinset := by
+theorem edgeFinset_inf [Fintype (G₁ ⊓ G₂).edgeSet] [DecidableEq V] :
+    (G₁ ⊓ G₂).edgeFinset = G₁.edgeFinset ∩ G₂.edgeFinset := by
   simp [edgeFinset]
 
 @[simp]
@@ -184,6 +185,45 @@ theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
 
 theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
   Finset.disjoint_singleton_left.mpr <| notMem_neighborFinset_self _ _
+
+theorem neighborFinset_bot [Fintype ((⊥ : SimpleGraph V).neighborSet v)] :
+    (⊥ : SimpleGraph V).neighborFinset v = ∅ := by
+  ext; simp
+
+@[simp]
+theorem neighborFinset_top [Fintype V] [DecidableEq V] :
+    (⊤ : SimpleGraph V).neighborFinset v = {v}ᶜ := by
+  simp [← Finset.coe_inj]
+
+@[simp]
+theorem neighborFinset_sup [DecidableEq V] {G₁ G₂ : SimpleGraph V}
+    [Fintype ((G₁ ⊔ G₂).neighborSet v)] [Fintype (G₁.neighborSet v)] [Fintype (G₂.neighborSet v)] :
+    (G₁ ⊔ G₂).neighborFinset v = G₁.neighborFinset v ∪ G₂.neighborFinset v := by
+  simp [← Finset.coe_inj]
+
+@[simp]
+theorem neighborFinset_inf [DecidableEq V] {G₁ G₂ : SimpleGraph V}
+    [Fintype ((G₁ ⊓ G₂).neighborSet v)] [Fintype (G₁.neighborSet v)] [Fintype (G₂.neighborSet v)] :
+    (G₁ ⊓ G₂).neighborFinset v = G₁.neighborFinset v ∩ G₂.neighborFinset v := by
+  simp [← Finset.coe_inj]
+
+@[simp]
+theorem neighborFinset_sdiff [DecidableEq V] {G₁ G₂ : SimpleGraph V}
+    [Fintype ((G₁ \ G₂).neighborSet v)] [Fintype (G₁.neighborSet v)] [Fintype (G₂.neighborSet v)] :
+    (G₁ \ G₂).neighborFinset v = G₁.neighborFinset v \ G₂.neighborFinset v := by
+  simp [← Finset.coe_inj]
+
+theorem disjoint_neighborFinset_of_disjoint [Fintype <| H.neighborSet v] (h : Disjoint G H) :
+    Disjoint (G.neighborFinset v) (H.neighborFinset v) := by
+  simp [← Finset.disjoint_coe, disjoint_neighborSet.mpr h v]
+
+theorem neighborFinset_sup_of_disjoint {G₁ G₂ : SimpleGraph V}
+    [Fintype ((G₁ ⊔ G₂).neighborSet v)] [Fintype (G₁.neighborSet v)] [Fintype (G₂.neighborSet v)]
+    (h : Disjoint G₁ G₂) :
+    (G₁ ⊔ G₂).neighborFinset v =
+      (G₁.neighborFinset v).disjUnion (G₂.neighborFinset v)
+        (disjoint_neighborFinset_of_disjoint G₁ G₂ v h) := by
+  simp [← Finset.coe_inj, Finset.coe_disjUnion]
 
 @[simp] lemma neighborFinset_eq_empty : G.neighborFinset v = ∅ ↔ G.IsIsolated v := by
   simp [neighborFinset, IsIsolated, Set.ext_iff]
@@ -287,6 +327,10 @@ theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
 theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
+
+theorem disjoint_incidenceFinset_of_disjoint [DecidableEq V] [Fintype <| H.neighborSet v]
+    (h : Disjoint G H) : Disjoint (G.incidenceFinset v) (H.incidenceFinset v) := by
+  simp [← Finset.disjoint_coe, disjoint_incidenceSet.mpr h v]
 
 /-- The degree of a vertex is at most the number of edges. -/
 theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :
@@ -670,6 +714,20 @@ theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
   refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
   grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
   grw [neighborSet_subset_support, h]
+
+theorem filter_edgeFinset_toFinset_subset [DecidableEq V] (s : Finset V) :
+    {e ∈ G.edgeFinset | e.toFinset ⊆ s} = G.edgeFinset ∩ s.sym2 := by
+  simp [subset_iff, ← mem_sym2_iff, filter_mem_eq_inter]
+
+/-- The edges whose vertices lie in `s` are in bijection with the edges of the induced
+subgraph `G.induce s`. -/
+theorem card_filter_edgeFinset_toFinset_subset [DecidableEq V] (s : Finset V) :
+    #{e ∈ G.edgeFinset | e.toFinset ⊆ s} = #(G.induce ↑s).edgeFinset := by
+  have h := congrArg Finset.card (map_edgeFinset_induce (s := (↑s : Set V)) (G := G))
+  rw [card_map, toFinset_coe] at h
+  rw [filter_edgeFinset_toFinset_subset]
+  convert h.symm using 1
+  congr!
 
 end Support
 

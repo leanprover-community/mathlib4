@@ -262,7 +262,9 @@ lemma IsTangentAt.eq_orthogonalProjection {s : Sphere P} {p : P} {as : AffineSub
   rwa [isTangent_iff_isTangentAt_orthogonalProjection] at h'
 
 /-- The set of all maximal tangent spaces to the sphere `s`. -/
-def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def tangentSet (s : Sphere P) : Set (AffineSubspace ℝ P) :=
   s.orthRadius '' s
 
 lemma mem_tangentSet_iff {as : AffineSubspace ℝ P} {s : Sphere P} :
@@ -297,7 +299,7 @@ lemma isTangent_of_mem_tangentsFrom {as : AffineSubspace ℝ P} {s : Sphere P} {
 lemma tangentsFrom_eq_image_orthRadius_inter_polar {s : Sphere P} {p : P} (hp : p ≠ s.center) :
     s.tangentsFrom p = s.orthRadius '' (s ∩ s.polar p) := by
   ext as
-  rw [tangentsFrom, tangentSet, Set.mem_setOf, Set.image_inter s.orthRadius_injective,
+  rw [tangentsFrom, tangentSet, Set.mem_ofPred, Set.image_inter s.orthRadius_injective,
     Set.mem_inter_iff, and_congr_right_iff]
   rintro ⟨p₂, hp₂, rfl⟩
   rw [s.orthRadius_injective.mem_set_image]
@@ -312,7 +314,7 @@ lemma tangentsFrom_eq_empty_of_dist_lt_radius {s : Sphere P} {p : P}
     (hp : dist p s.center < s.radius) : s.tangentsFrom p = ∅ := by
   ext as
   rw [tangentsFrom, tangentSet]
-  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_setOf_eq, Set.mem_empty_iff_false,
+  simp only [Set.mem_image, Metric.mem_sphere, mem_coe', Set.mem_ofPred_eq, Set.mem_empty_iff_false,
     iff_false, not_and, forall_exists_index, and_imp]
   rintro p' hp' rfl hpm
   linarith [(isTangent_orthRadius_iff_mem.2 hp').radius_le_dist_center hpm]
@@ -325,7 +327,7 @@ lemma tangentsFrom_eq_singleton_orthRadius_of_mem {s : Sphere P} {p : P} (hp : p
     simp_rw [tangentsFrom, tangentSet, hr]
     ext as
     simp only [Metric.sphere_zero, Set.image_singleton, orthRadius_center, Set.mem_singleton_iff,
-      Set.mem_setOf_eq, and_iff_left_iff_imp]
+      Set.mem_ofPred_eq, and_iff_left_iff_imp]
     rintro rfl
     simp
   have hpc : p ≠ s.center := by
@@ -349,7 +351,9 @@ lemma ncard_tangentsFrom_eq_two_of_radius_lt_dist [Fact (Module.finrank ℝ V = 
     ncard_inter_polar_eq_two_of_radius_lt_dist hs hp]
 
 /-- The set of all maximal common tangent spaces to the spheres `s₁` and `s₂`. -/
-def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def commonTangents (s₁ s₂ : Sphere P) : Set (AffineSubspace ℝ P) :=
   s₁.tangentSet ∩ s₂.tangentSet
 
 lemma mem_commonTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere P} :
@@ -484,6 +488,7 @@ lemma IsIntTangent.dist_center {s₁ s₂ : Sphere P} (h : s₁.IsIntTangent s�
   rw [← dist_add_dist_eq_iff, mem_sphere'.1 h₁, mem_sphere'.1 h₂] at h
   simp [← h, dist_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s₂ ↔
     dist s₁.center s₂.center = s₁.radius + s₂.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩
@@ -508,6 +513,7 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
         · rw [div_le_one (by positivity)]
           linarith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.IsIntTangent s₂ ↔
     dist s₁.center s₂.center = s₂.radius - s₁.radius ∧ 0 ≤ s₁.radius ∧ 0 ≤ s₂.radius := by
   refine ⟨fun h ↦ ⟨h.dist_center, ?_⟩, ?_⟩

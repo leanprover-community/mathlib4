@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
+public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # Exponential Power Series

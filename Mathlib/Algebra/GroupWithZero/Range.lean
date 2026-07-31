@@ -176,7 +176,8 @@ noncomputable section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] {f : A →*₀ B}
 
-/- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
+/--
+When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide. -/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
   rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
   apply Submonoid.closure_eq_of_le
@@ -202,6 +203,7 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
   rw [top_eq_univ, range_eq_univ]
@@ -229,7 +231,7 @@ variable [MonoidWithZero A] [CommGroupWithZero B] (f : A →*₀ B)
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩
-  · simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk] at hy
+  · simp only [valueGroup, valueMonoid] at hy
     induction hy using Subgroup.closure_induction with
     | mem _ h =>
       obtain ⟨a, ha⟩ := h

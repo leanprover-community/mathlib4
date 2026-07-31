@@ -303,6 +303,18 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
+@[simp] lemma sqrt_le_self_iff : √x ≤ x ↔ x = 0 ∨ 1 ≤ x := by
+  rw [sqrt_le_iff, ← sub_nonneg (a := x ^ 2), sq, ← mul_sub_one]
+  grind [mul_nonneg_iff]
+
+@[simp] lemma le_sqrt_self_iff : x ≤ √x ↔ x ≤ 1 := by
+  obtain hx | hx := le_or_gt x 0
+  · simp [hx.trans]
+  · rw [le_sqrt' hx, sq, mul_le_iff_le_one_left hx]
+
+@[simp] lemma sqrt_lt_self_iff : √x < x ↔ 1 < x := by simp [← not_le]
+@[simp] lemma lt_sqrt_self_iff : x < √x ↔ x ≠ 0 ∧ x < 1 := by simp [← not_le]
+
 end Real
 
 namespace Mathlib.Meta.Positivity
