@@ -180,6 +180,7 @@ def codimOneSimplex (j : Fin (p + 2)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenera
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.castSucc).val := by
@@ -190,6 +191,7 @@ lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.succ (nonDegenerateEquiv.{u} j).val =
       (codimOneSimplex j.succ).val := by
