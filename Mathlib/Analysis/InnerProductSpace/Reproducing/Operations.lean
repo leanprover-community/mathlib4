@@ -192,6 +192,12 @@ lemma range_projection : Set.range (projection K K') = (generator K K').kerᗮ :
   ext
   simp [Set.range_comp, Set.range_comp, (linearIsometry_surjective K K').range_eq]
 
+theorem norm_sq_kerFun_add (x : X) (v : V) :
+    ‖kerFun (OfKernel (K + K')) x v‖ ^ 2 =
+      ‖kerFun (OfKernel K) x v‖ ^ 2 + ‖kerFun (OfKernel K') x v‖ ^ 2 := by
+  simp [← (projection K K').norm_map (kerFun (OfKernel (K + K')) x v), projection_kerFun,
+    WithLp.prod_norm_sq_eq_of_L2]
+
 end Add
 
 end RKHS
