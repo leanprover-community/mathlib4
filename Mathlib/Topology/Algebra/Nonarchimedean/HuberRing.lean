@@ -33,6 +33,8 @@ pair `(A₀, I)` is a *pair of definition*.
   adic space layers.
 -/
 
+@[expose] public section
+
 namespace HuberRing
 
 variable {A : Type*} [CommRing A] [TopologicalSpace A]
