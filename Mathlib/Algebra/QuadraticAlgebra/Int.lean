@@ -10,12 +10,10 @@ public import Mathlib.Algebra.QuadraticAlgebra.Discr
 /-!
 # Quadratic algebras over `ℤ`
 
-Over `ℤ`, the discriminant is a complete invariant: it sets up a bijection between the
-isomorphism classes of quadratic algebras and the integers `D ≡ 0, 1 mod 4`. We do not bundle
-this bijection into a single `Equiv`; it is witnessed by `nonempty_algEquiv_int_iff` (two
-algebras are isomorphic iff they have the same discriminant), `discr_ofDiscr` (every such `D`
-is realised by the canonical representative `ofDiscr D`) and `algEquivOfDiscr` (every algebra
-is isomorphic to `ofDiscr` of its discriminant).
+Over `ℤ`, the discriminant is a complete invariant: quadratic algebras are in bijection with
+the integers `D ≡ 0, 1 mod 4`, with canonical representatives `ofDiscr D`. This bijection is
+not bundled into an `Equiv`, but witnessed by the results below (together with
+`nonempty_algEquiv_int_iff`).
 
 ## Main definitions
 
@@ -47,7 +45,7 @@ theorem discr_ofDiscr {D : ℤ} (hD : D % 4 = 0 ∨ D % 4 = 1) :
 /-- Every quadratic algebra over `ℤ` is isomorphic to the quadratic ring of its discriminant,
 obtained by translating `ω` by the integer `⌊b / 2⌋`. -/
 @[simps!]
-noncomputable def algEquivOfDiscr (a b : ℤ) :
+def algEquivOfDiscr (a b : ℤ) :
     QuadraticAlgebra ℤ a b ≃ₐ[ℤ] ofDiscr (discr a b) :=
   mapEquiv (discr a b / 4) (discr a b % 4) 1 (b / 2)
     (by
