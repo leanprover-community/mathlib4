@@ -8,7 +8,15 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
 /-!
-# main defintions
+# Operations on RKHS
+This file implements the maps that show how RKHSs created from kernels formed by applying operations
+to a set of kernels relate to the RKHSs of the constituant kernels.
+
+## main definitions
+ - `linearIsometryEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
+    quotient space over `OfKernel K × OfKernel K'`.
+ - `projection`: isometry yielding the elements of `OfKernel K × OfKernel K'` achieving the norm of
+    `OfKernel (K + K')`.
 -/
 
 public noncomputable section
