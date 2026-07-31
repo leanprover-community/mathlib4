@@ -128,7 +128,7 @@ theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
 
 theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
   let _ := (inclusion h).toRingHom.toAlgebra
-  exact Module.finrank_dvd_finrank_right E F L
+  exact Module.finrank_dvd_finrank_right K F E
 
 theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=
   Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_left h)
