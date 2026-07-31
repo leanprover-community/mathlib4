@@ -190,13 +190,13 @@ section Uniqueness
 variable [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 /-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `S`
-with `S ⋆ id = 1` in the convolution monoid equals the antipode. -/
+with `S * id = 1` in the convolution monoid equals the antipode. -/
 theorem eq_antipode_of_convMul_id_eq_one {S : A →ₗ[R] A}
     (h : toConv S * toConv LinearMap.id = 1) : S = antipode R :=
   toConv_injective (left_inv_eq_right_inv h (congrArg toConv mul_antipode_lTensor_comul))
 
 /-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `S`
-with `id ⋆ S = 1` in the convolution monoid equals the antipode. -/
+with `id * S = 1` in the convolution monoid equals the antipode. -/
 theorem eq_antipode_of_id_convMul_eq_one {S : A →ₗ[R] A}
     (h : toConv LinearMap.id * toConv S = 1) : S = antipode R :=
   toConv_injective (left_inv_eq_right_inv (congrArg toConv mul_antipode_rTensor_comul) h).symm
