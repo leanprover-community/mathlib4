@@ -102,50 +102,56 @@ end precedence
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
 -- Applying a section to an argument.
+section
+
+set_option pp.notation false
+
 -- This application is not beta-reduced, because of the parentheses around the T%.
-/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
 
 -- We apply head-beta reduction of the applied form: there is nothing to do here.
-/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
 -- This variant is beta-reduced.
-/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 
-/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
 -- As is this version.
-/-- info: (T% X) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
 -- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
 -- we apply head beta reduction to the application.
-/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
 -- Parentheses around the argument are not required right now.
-/-- info: (T% X) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`(T% X)` is a function into `TotalSpace E`
+`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
 
 hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X))
+
+set_option pp.notation true
 
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
@@ -155,6 +161,18 @@ hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X)) x
+
+
+/--
+error: could not find a `FiberBundle` instance on `TotalSpace E`:
+`(T% X)` is a function into `TotalSpace E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
+#guard_msgs in
+#check (T% (T% X)) x
+
+end
 
 section
 -- Check minimal assumptions to find a model fiber.
