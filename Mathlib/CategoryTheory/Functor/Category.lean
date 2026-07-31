@@ -135,12 +135,10 @@ theorem hcomp_app' {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) (X : C) :
     (α ◫ β).app X = H.map (α.app X) ≫ β.app (G.obj X) := by
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 
