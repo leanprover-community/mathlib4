@@ -77,6 +77,17 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
+variable (x : E) (r : ℝ)
+
+@[simp] theorem star_ball : star (Metric.ball x r) = Metric.ball (star x) r := by
+  simpa using star_isometry.preimage_ball (star x) r
+
+@[simp] theorem star_closedBall : star (Metric.closedBall x r) = Metric.closedBall (star x) r := by
+  simpa using star_isometry.preimage_closedBall (star x) r
+
+@[simp] theorem star_sphere : star (Metric.sphere x r) = Metric.sphere (star x) r := by
+  simpa using star_isometry.preimage_sphere (star x) r
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
@@ -312,20 +323,3 @@ instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A
   norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
 
 end StarSubalgebra
-
-section star_ball
-variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedStarGroup A]
-  (x : A) (s : ℝ)
-
-open Metric
-
-@[simp] theorem star_ball : star (ball x s) = ball (star x) s := by
-  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
-
-@[simp] theorem star_closedBall : star (closedBall x s) = closedBall (star x) s := by
-  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
-
-@[simp] theorem star_sphere : star (sphere x s) = sphere (star x) s := by
-  ext; simp [← norm_star (star _ - _)]
-
-end star_ball
