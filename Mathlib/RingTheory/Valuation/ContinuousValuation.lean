@@ -55,7 +55,9 @@ class ContinuousValuationClass (F : Type*) (A Γ₀ : outParam Type*)
 structure ContinuousValuation (A : Type*) [Ring A] [TopologicalSpace A]
     (Γ₀ : Type*) [LinearOrderedCommGroupWithZero Γ₀] [TopologicalSpace Γ₀]
     [OrderTopology Γ₀] where
+  /-- The underlying valuation. -/
   toValuation : Valuation A Γ₀
+  /-- The valuation is continuous. -/
   continuous_toValuation : Continuous toValuation
 
 namespace ContinuousValuation
