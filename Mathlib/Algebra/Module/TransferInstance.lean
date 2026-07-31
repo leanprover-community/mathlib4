@@ -52,7 +52,7 @@ protected abbrev module : Module R α where
   zero_smul := by simp [e.smul_def, zero_smul]
   add_smul := by simp [e.smul_def, add_smul]
 
-@[deprecated (since := "2026-07-30")] alias Equiv.module := AddEquiv.module
+@[deprecated (since := "2026-07-30")] alias _root_.Equiv.module := AddEquiv.module
 
 variable (R) in
 /-- When `α` is equipped with the `A`-module structure transferred via `e : α ≃+ β`,
@@ -67,7 +67,7 @@ def linearEquiv :
       simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mpr e.apply_eq_iff_eq_symm_apply rfl }
 
-@[deprecated (since := "2026-07-30")] alias Equiv.linearEquiv := AddEquiv.linearEquiv
+@[deprecated (since := "2026-07-30")] alias _root_.Equiv.linearEquiv := AddEquiv.linearEquiv
 
 @[simp]
 lemma linearEquiv_apply (a : α) : e.linearEquiv R a = e a := rfl
