@@ -16,10 +16,11 @@ This file defines poles and polars for spheres in Euclidean spaces.
 ## Main definitions
 
 * `EuclideanGeometry.Sphere.pole`: the inversion in the sphere of the point in an affine subspace
-  closest to the center.
+  closest to the center. This maps an affine subspace (typically of codimension one) to a point.
 
 * `EuclideanGeometry.Sphere.polar`: the affine subspace orthogonal to the radius vector at a point
-  and passing through its inversion in the sphere.
+  and passing through its inversion in the sphere. This maps a point to an affine subspace
+  (typically of codimension one, for a point not the center of the sphere).
 
 ## Main theorems
 
