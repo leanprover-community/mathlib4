@@ -4839,6 +4839,8 @@ public import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 public import Mathlib.GroupTheory.Nilpotent
 public import Mathlib.GroupTheory.NoncommCoprod
 public import Mathlib.GroupTheory.NoncommPiCoprod
+public import Mathlib.GroupTheory.NormalSubgroup.Basic
+public import Mathlib.GroupTheory.NormalSubgroup.ModularLattice
 public import Mathlib.GroupTheory.Order.Min
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.OreLocalization.Basic
