@@ -11,7 +11,7 @@ public import Mathlib.Analysis.InnerProductSpace.Reproducing
 # main defintions
 -/
 
-public section
+public noncomputable section
 
 open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate RKHS
 
@@ -25,8 +25,8 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [Complete
 variable (K K' : Matrix X X (V →L[𝕜] V))
 variable [Fact K.PosSemidef] [Fact K'.PosSemidef]
 
-noncomputable instance : NormedAddCommGroup (OfKernel K) := by infer_instance
-noncomputable instance : InnerProductSpace 𝕜 (OfKernel K) := by infer_instance
+instance : NormedAddCommGroup (OfKernel K) := by infer_instance
+instance : InnerProductSpace 𝕜 (OfKernel K) := by infer_instance
 instance : AddLeftMono (V →L[𝕜] V) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   constructor
@@ -39,7 +39,7 @@ instance : Fact (K + K').PosSemidef :=
   ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
 
 /-- The operator `(f,g) ↦ ↑f + ↑f`, where addition is in `X → V`. -/
-noncomputable def generator : WithLp 2 ((OfKernel K) × (OfKernel K')) →L[𝕜] (X → V) :=
+def generator : WithLp 2 ((OfKernel K) × (OfKernel K')) →L[𝕜] (X → V) :=
   ((coeCLM (H:=OfKernel K) 𝕜).coprod (coeCLM (H:=OfKernel K') 𝕜)) ∘L
     (WithLp.prodContinuousLinearEquiv 2 𝕜 (OfKernel K) (OfKernel K')).toContinuousLinearMap
 
@@ -59,13 +59,13 @@ lemma kerFun_mem_orthogonal (x : X) (v : V) :
   simp_all [generator, ← inner_add_left]
 
 /-- Helper function for `linearIsometryAux`. -/
-private noncomputable def toKerOrthogonal : H₀ (K + K') →ₗ[𝕜] (generator K K').kerᗮ :=
+private def toKerOrthogonal : H₀ (K + K') →ₗ[𝕜] (generator K K').kerᗮ :=
   Finsupp.linearCombination 𝕜 (fun xv =>
     (⟨WithLp.toLp 2 (kerFun (OfKernel K) xv.1 xv.2, kerFun (OfKernel K') xv.1 xv.2),
       kerFun_mem_orthogonal K K' xv.1 xv.2⟩ : (generator K K').kerᗮ))
 
 /-- The map whose extention with `.complL` yields `linearIsometry`. -/
-private noncomputable def linearIsometryAux :
+private def linearIsometryAux :
     H₀ (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker where
   toFun f := Submodule.Quotient.mk (toKerOrthogonal K K' f)
   map_add' := by simp [map_add]
@@ -84,7 +84,7 @@ private noncomputable def linearIsometryAux :
 /-- The RKHS made from a sum of kernels is linearly isometrically isomorphic to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
 `generator`. -/
-noncomputable def linearIsometry :
+def linearIsometry :
     OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker where
   toFun f := (linearIsometryAux K K').toContinuousLinearMap.extend
     UniformSpace.Completion.toComplL f
@@ -101,7 +101,7 @@ noncomputable def linearIsometry :
         (by simp [UniformSpace.Completion.isUniformInducing_coe])]
       simp [(linearIsometryAux K K').norm_map x]
 
-lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
+private lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
     linearIsometry K K' (kerFun (OfKernel (K + K')) x v) =
     Submodule.Quotient.mk (WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)) := by
   simp only [linearIsometry, linearIsometry, LinearIsometry.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
@@ -111,7 +111,7 @@ lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
       (by simp [UniformSpace.Completion.isUniformInducing_coe])]
   simp [linearIsometryAux, toKerOrthogonal]
 
-theorem linearIsometry_surjective : Function.Surjective (linearIsometry K K') := by
+private lemma linearIsometry_surjective : Function.Surjective (linearIsometry K K') := by
   set W := WithLp 2 (OfKernel K × OfKernel K')
   set L : Submodule 𝕜 W := (generator K K').ker
   set T : Submodule 𝕜 W := Submodule.span 𝕜
@@ -166,13 +166,13 @@ theorem linearIsometry_surjective : Function.Surjective (linearIsometry K K') :=
 /-- The RKHS made from a sum of kernels is linearly isometrically equivalent to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
 `generator`. -/
-noncomputable def linearIsometryEquiv :
+def linearIsometryEquiv :
     OfKernel (K + K') ≃ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker :=
   LinearIsometryEquiv.ofSurjective (linearIsometry K K') (linearIsometry_surjective K K')
 
 /-- The map taking every function in `OfKernel (K + K')` to the elements from
 `WithLp 2 ((OfKernel K) × (OfKernel K'))` that minimizes the quotient norm. -/
-noncomputable def projection : OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) :=
+def projection : OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) :=
   ((generator K K').kerᗮ).subtypeₗᵢ.comp (((linearIsometryEquiv K K').trans
     (generator K K').ker.quotientEquivOrthogonal).toLinearIsometry)
 
@@ -188,7 +188,7 @@ theorem projection_kerFun (x : X) (v : V) :
   simp [projection, linearIsometryEquiv, linearIsometry_kerFun_apply_eq_mk,
     kerFun_mem_orthogonal K K' x v]
 
-lemma range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
+theorem range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
   ext
   simp [Set.range_comp, Set.range_comp, (linearIsometry_surjective K K').range_eq]
 
