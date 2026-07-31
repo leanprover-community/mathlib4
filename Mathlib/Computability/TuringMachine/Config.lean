@@ -121,7 +121,7 @@ def Code.eval : Code → List ℕ →. List ℕ
   | Code.case f g => fun v ↦. v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
   | Code.fix f =>
     PFun.fix fun v ↦. (f.eval v).map fun v' =>
-      if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail
+      if v'.headI = 0 then .inl v'.tail else .inr v'.tail
 
 namespace Code
 
@@ -152,7 +152,7 @@ theorem case_eval (f g) :
 theorem fix_eval (f) :
     (fix f).eval =
       PFun.fix fun v ↦. (f.eval v).map fun v' =>
-        if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail := rfl
+        if v'.headI = 0 then .inl v'.tail else .inr v'.tail := rfl
 
 /-- `nil` is the constant nil function: `nil v = []`. -/
 def nil : Code :=
@@ -301,10 +301,10 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
             v.val.tail : List ℕ) ∈
             PFun.fix
               (fun v : List ℕ ↦. Part.bind (cg.eval (v.headI :: v.tail.tail))
-                (fun x => Part.some (if v.tail.headI = 0
-                  then Sum.inl
+                (fun x => .some (if v.tail.headI = 0
+                  then .inl
                     (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail : List ℕ)
-                  else Sum.inr
+                  else .inr
                     (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
               (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail)
                 by
@@ -337,9 +337,9 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
-        (fun v ↦. (cf.eval v).bind fun y => Part.some <|
-          if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
-            else Sum.inr (v.headI.succ :: v.tail)) v₁ →
+        (fun v ↦. (cf.eval v).bind fun y => .some <|
+          if y.headI = 0 then .inl (v.headI.succ :: v.tail)
+            else .inr (v.headI.succ :: v.tail)) v₁ →
         ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
           ∃ a : ℕ,
             (f (a ::ᵥ v) = 0 ∧ ∀ {m : ℕ}, m < a → ¬f (m ::ᵥ v) = 0) ∧ [a] = [v'.headI.pred]
@@ -364,9 +364,9 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       have : (n.succ::v.1 : List ℕ) ∈
         PFun.fix (fun v ↦.
           (cf.eval v).bind fun y =>
-            Part.some <|
-              if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
-                else Sum.inr (v.headI.succ :: v.tail))
+            .some <|
+              if y.headI = 0 then .inl (v.headI.succ :: v.tail)
+                else .inr (v.headI.succ :: v.tail))
             (n::v.val) :=
         PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
       generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
@@ -429,7 +429,7 @@ inductive Cont
 
 /-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
-  | Cont.halt => PFun.id _
+  | Cont.halt => .id _
   | Cont.cons₁ fs as k => fun v ↦.
     Code.eval fs as >>= fun ns => Cont.eval k (v.headI :: ns)
   | Cont.cons₂ ns k => fun v ↦. Cont.eval k (ns.headI :: v)

@@ -80,7 +80,7 @@ namespace PFun
 variable {α β γ δ ε ι : Type*}
 
 instance inhabited : Inhabited (α →. β) :=
-  ⟨fun _ ↦. Part.none⟩
+  ⟨fun _ ↦. .none⟩
 
 instance : FunLike (α →. β) α (Part β) where
   coe := toFun
@@ -150,7 +150,7 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 
 /-- Turn a total function into a partial function. -/
 @[coe]
-protected def lift (f : α → β) : α →. β := fun a ↦. Part.some (f a)
+protected def lift (f : α → β) : α →. β := fun a ↦. .some (f a)
 
 instance coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
@@ -207,7 +207,7 @@ theorem lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔
   show (∃ _ : True, f a = b) ↔ f a = b by simp
 
 /-- The monad `pure` function, the total constant `x` function -/
-protected def pure (x : β) : α →. β := fun _ ↦. Part.some x
+protected def pure (x : β) : α →. β := fun _ ↦. .some x
 
 /-- The monad `bind` function, pointwise `Part.bind` -/
 def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a ↦. (f a).bind fun b => g b a
@@ -494,7 +494,7 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 
 /-- The identity as a partial function -/
 protected def id (α : Type*) : α →. α :=
-  mk Part.some
+  mk .some
 
 @[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=

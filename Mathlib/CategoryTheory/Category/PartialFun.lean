@@ -89,7 +89,7 @@ This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := PartialFun.of { x : X // x ≠ X.point }
-  map {X Y} f := PFun.mk (PFun.toSubtype (· ≠ Y.point) f.toFun ∘ Subtype.val)
+  map {X Y} f := .mk (PFun.toSubtype (· ≠ Y.point) f.toFun ∘ Subtype.val)
   map_id _ :=
     PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
@@ -110,9 +110,7 @@ be computable because `= Option.none` is decidable while the domain of a general
 @[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
   obj X := ⟨Option X, none⟩
-  map f :=
-    { toFun := Option.elim' none fun a => (f.toFun a).toOption
-      map_point := rfl }
+  map f := ⟨Option.elim' none fun a => (f.toFun a).toOption, rfl⟩
   map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
     simp [CategoryStruct.id, Part.some_toOption]
   map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
@@ -136,7 +134,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
         simp only [Part.bind_some]
         change b ∈ ((f.toFun a).bind fun c =>
-            Part.some (⟨some c, some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
+            .some (⟨some c, some_ne_none c⟩ : {x : Option Y // x ≠ none})) ↔
           b ∈ PFun.toSubtype (· ≠ none) (Option.elim' none fun y => (f.toFun y).toOption) (some a)
         refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
         obtain ⟨b | b, hb⟩ := b

@@ -69,7 +69,7 @@ protected inductive RecursiveIn (O : Set (ℕ →. ℕ)) : (ℕ →. ℕ) → Pr
   | comp {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
       Nat.RecursiveIn O fun n ↦. h n >>= f
   | prec {f h : ℕ →. ℕ} (hf : Nat.RecursiveIn O f) (hh : Nat.RecursiveIn O h) :
-      Nat.RecursiveIn O (PFun.mk <| Nat.unpaired fun a n =>
+      Nat.RecursiveIn O (.mk <| Nat.unpaired fun a n =>
         n.rec (f a) fun y IH => do
           let i ← IH
           h (Nat.pair a (Nat.pair y i)))
@@ -194,10 +194,13 @@ lemma of_eq_tot {f : α →. σ} {g : α → σ}
 lemma oracle : ∀ g ∈ O, RecursiveIn O g :=
   fun g hg => iff_nat.2 (.oracle g hg)
 
-protected theorem some : RecursiveIn O (PFun.id α) :=
-  Partrec.some.recursiveIn
+protected theorem id : RecursiveIn O (.id α) :=
+  Partrec.id.recursiveIn
 
-protected theorem none : RecursiveIn O fun _ : α ↦. @Part.none σ :=
+@[deprecated RecursiveIn.id (since := "2026-07-31")]
+protected alias some := RecursiveIn.id
+
+protected theorem none : RecursiveIn O fun _ : α ↦. (.none : Part σ) :=
   Partrec.none.recursiveIn
 
 /-- If every element of `O` is `RecursiveIn O'`, then any function which is
@@ -232,7 +235,7 @@ lemma recursiveIn_empty_iff :
 every partial function `g`. -/
 theorem partrec_iff_forall_recursiveIn_singleton :
     Partrec f ↔ ∀ g, RecursiveIn {g} f :=
-  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (fun _ ↦. Part.none)).partrec_of_const⟩
+  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (fun _ ↦. .none)).partrec_of_const⟩
 
 namespace ComputableIn
 

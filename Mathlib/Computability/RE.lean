@@ -159,7 +159,7 @@ end decide
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
 -/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
-  Partrec fun a ↦. Part.assert (p a) fun _ => Part.some ()
+  Partrec fun a ↦. Part.assert (p a) fun _ => .some ()
 
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
@@ -183,7 +183,7 @@ lemma find {α : Type*} [Primcodable α] {P : α → ℕ → Prop} [DecidableRel
     (hP_comp : ComputablePred (fun p : α × ℕ => P p.1 p.2)) (hP_ex : ∀ x, ∃ n, P x n) :
     Computable (fun x => Nat.find (hP_ex x)) := by
   have hP_decide : Computable₂ (fun x n => decide (P x n)) := hP_comp.decide
-  have h : Partrec fun x ↦. Nat.rfind fun n ↦. Part.some (decide (P x n)) :=
+  have h : Partrec fun x ↦. Nat.rfind fun n ↦. .some (decide (P x n)) :=
     Partrec.rfind hP_decide.partrec₂
   refine h.of_eq_tot fun x ↦ ?_
   simp +contextual [Nat.find_spec]
@@ -218,7 +218,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold REPred
   refine
-    (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
+    (Partrec.cond hf (Decidable.Partrec.const' (.some ())) Partrec.none).of_eq fun n =>
       Part.ext fun a => by cases h : f n <;> simp [h]
 
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and

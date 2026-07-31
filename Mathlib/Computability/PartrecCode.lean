@@ -50,7 +50,7 @@ namespace Nat.Partrec
 
 theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     Nat.Partrec
-      (PFun.mk <| Nat.unpaired fun a m =>
+      (.mk <| Nat.unpaired fun a m =>
         (Nat.rfind fun n ↦.
           (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m))).map (· + m)) :=
   Partrec₂.unpaired_part'.mpr <| by
@@ -66,7 +66,7 @@ theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
           (_root_.Primrec.fst.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)
           (Primrec.nat_add.comp _root_.Primrec.snd <|
             _root_.Primrec.snd.comp <| _root_.Primrec.unpair.comp _root_.Primrec.fst)).to_comp
-      have hG_unpaired : Nat.Partrec (PFun.mk (Nat.unpaired G)) :=
+      have hG_unpaired : Nat.Partrec (.mk (Nat.unpaired G)) :=
         Partrec₂.unpaired_part'.mpr (((Partrec.nat_iff.mpr hf).comp hpair).to₂)
       Partrec₂.unpaired_part'.mp <|
         (Nat.Partrec.rfind hG_unpaired).of_eq fun p => by simp [G, Nat.unpaired]
@@ -473,12 +473,12 @@ def eval : Code → ℕ →. ℕ
   | pair cf cg => fun n ↦. Nat.pair <$> eval cf n <*> eval cg n
   | comp cf cg => fun n ↦. eval cg n >>= eval cf
   | prec cf cg =>
-    PFun.mk <| Nat.unpaired fun a n =>
+    .mk <| Nat.unpaired fun a n =>
       n.rec (eval cf a) fun y IH => do
         let i ← IH
         eval cg (Nat.pair a (Nat.pair y i))
   | rfind' cf =>
-    PFun.mk <| Nat.unpaired fun a m =>
+    .mk <| Nat.unpaired fun a m =>
       (Nat.rfind fun n ↦.
         (fun x => decide (x = 0)) <$> eval cf (Nat.pair a (n + m))).map (· + m)
 

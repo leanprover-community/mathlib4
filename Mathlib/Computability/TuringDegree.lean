@@ -71,7 +71,7 @@ lemma TuringReducible.partrec_of_const {s} (hf : f ≤ᵀ fun _ ↦. s) : Partre
 /-- A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`. -/
 theorem partrec_iff_forall_turingReducible : Partrec f ↔ ∀ g, f ≤ᵀ g :=
-  ⟨fun hf _ => hf.turingReducible, fun hf => hf (fun _ ↦. Part.none) |>.partrec_of_const⟩
+  ⟨fun hf _ => hf.turingReducible, fun hf => hf (fun _ ↦. .none) |>.partrec_of_const⟩
 
 protected theorem TuringReducible.refl (f : ℕ →. ℕ) : f ≤ᵀ f := .oracle _ <| by simp
 protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _
