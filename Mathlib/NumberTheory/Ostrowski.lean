@@ -211,7 +211,7 @@ include hp0 hp1 hmin in
 lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have hp : (1 : ℝ) < p :=
     mod_cast (is_prime_of_minimal_nat_zero_lt_and_lt_one hp0 hp1 hmin).one_lt
-  refine ⟨-logb p (f p), neg_pos.mpr <| logb_neg hp hp0 hp1, by
+  exact ⟨-logb p (f p), neg_pos.mpr <| logb_neg hp hp0 hp1, by
     simpa using (rpow_logb (zero_lt_one.trans hp) hp.ne' hp0).symm⟩
 
 -- ## Non-archimedean case: end goal
