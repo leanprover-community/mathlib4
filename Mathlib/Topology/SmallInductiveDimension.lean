@@ -159,6 +159,7 @@ variable (X) in
 @[simp]
 theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
   smallInductiveDimension_eq_bot.2 ‹_›
+
 theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsInducing f)
     {n : ℕ} (h : HasSmallInductiveDimensionLT Y n) : HasSmallInductiveDimensionLT X n := by
   induction h generalizing X with
