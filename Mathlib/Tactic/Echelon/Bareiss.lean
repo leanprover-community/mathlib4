@@ -227,6 +227,14 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
       r := r + 1
   return { L, swaps, pivot := pivots }
 
+/-- `bareiss_certify msg` proves a certificate condition by `decide +kernel`, wrapping a
+failure into an exception naming the condition `msg`. -/
+scoped elab "bareiss_certify " s:str : tactic => do
+  try
+    Tactic.evalTactic (← `(tactic| decide +kernel))
+  catch e =>
+    throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
+
 /-- Elaborate the `Bareiss.Decomposition` certificate of `M` from the raw decomposition
 data, folding the row scales into `L`, with the kernel checking the four certificate
 conditions. -/
@@ -244,11 +252,17 @@ def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : A
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
                 $(← Term.exprToSyntax pivotE), $(← Term.exprToSyntax rankE),
                 -- switch to an efficient decision of matrix mult once implemented
-                by decide +kernel, by decide +kernel, by decide +kernel,
-                by decide +kernel⟩ :
+                by bareiss_certify "the echelon-pivot condition",
+                by bareiss_certify "the pivot count",
+                by bareiss_certify "lower triangularity of the transform",
+                by bareiss_certify "the nonzero diagonal of the transform"⟩ :
               Bareiss.Decomposition $(← Term.exprToSyntax M)))
-  let e ← Term.elabTermEnsuringType stx none
-  Term.synthesizeSyntheticMVarsNoPostponing
+  -- without the recovery barrier a failing obligation would be logged and patched with
+  -- `sorryAx` instead of thrown
+  let e ← Term.withoutErrToSorry do
+    let e ← Term.elabTermEnsuringType stx none
+    Term.synthesizeSyntheticMVarsNoPostponing
+    pure e
   instantiateMVars e
 
 /-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
