@@ -22,6 +22,9 @@ public import Mathlib.Topology.PartialHomeomorph.IsImage
 Most statements are copied from their `PartialEquiv` versions, although some care is required
 especially when restricting to subsets, as these should be open subsets.
 
+See `Mathlib/Topology/PartialHomeomorph/IsImage.lean` for a version of this file for general
+partial homeomorphisms (without the requirement that source and target are open).
+
 For design notes, see `PartialEquiv.lean`.
 
 ### Local coding conventions
@@ -177,7 +180,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
 @[simps! -fullyApplied apply symm_apply toPartialHomeomorph]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
-  toPartialHomeomorph := h.toPartialHomeomorph.restr
+  toPartialHomeomorph := PartialHomeomorph.IsImage.restr h
   open_source := hs
   open_target := h.isOpen_iff.1 hs
 
@@ -323,7 +326,7 @@ theorem eqOnSource_iff (e e' : OpenPartialHomeomorph X Y) :
   Iff.rfl
 
 theorem eqOnSource_iff_partialHomeomorph (e e' : OpenPartialHomeomorph X Y) :
-    EqOnSource e e' ↔ PartialHomeomorph.EqOnSource e.toPartialHomeomorph e'.toPartialHomeomorph :=
+    EqOnSource e e' ↔ e.toPartialHomeomorph.EqOnSource e'.toPartialEquiv :=
   Iff.rfl
 
 /-- `EqOnSource` is an equivalence relation. -/
