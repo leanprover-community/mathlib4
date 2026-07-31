@@ -759,6 +759,14 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
 @[simp]
 theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := rfl
 
+lemma symm_apply_eq (e : A ≃⋆ₐ[R] B) {x y} :
+    e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+lemma eq_symm_apply (e : A ≃⋆ₐ[R] B) {x y} :
+    y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 

@@ -250,7 +250,7 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
       generalize ord R y = y'
       cases x' <;> cases y'
       on_goal 4 =>
-        simp only [← ENat.coe_add, ENat.recTopCoe_coe, Nat.cast_add (R := ℤ),
+        simp only [← ENat.natCast_add, ENat.recTopCoe_natCast, Nat.cast_add (R := ℤ),
           ofAdd_add, WithZero.coe_mul]
       all_goals simp
     all_goals simp_all [mul_mem_nonZeroDivisors]

@@ -26,7 +26,6 @@ universe w w' u u' v v'
 open CategoryTheory
 open scoped MonoidAlgebra
 
-set_option backward.privateInPublic true in
 /-- The category of representations of monoid `G` and their morphisms. -/
 structure Rep (k : Type u) (G : Type v) [Semiring k] [Monoid G] where
   private mk ::
@@ -68,7 +67,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Rep.{w} k G`. -/
 @[ext]
 structure Hom where
@@ -571,6 +569,8 @@ instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCa
 
 instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
   Limits.reflectsColimits_of_reflectsIsomorphisms
+
+instance : Abelian (Rep.{w} k G) := abelianOfEquivalence (RepToAction k G)
 
 variable {k G} in
 theorem epi_iff_surjective (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=

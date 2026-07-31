@@ -291,7 +291,7 @@ theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
 
 @[simp]
 theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
-  ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
+  ⟨Encodable.encode, Computable.encode, by simp [toNat, Set.ofPred]⟩
 
 @[simp]
 theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=

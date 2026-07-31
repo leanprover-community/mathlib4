@@ -417,10 +417,10 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm'
   exists_isMaximal_dvd_of_dvd_absNorm (Int.prime_iff_natAbs_prime.mpr (by simpa)) _
     (by exact_mod_cast hI)
 
-theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
+theorem finite_setOfPred_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
   obtain hn | hn := Nat.eq_zero_or_pos n
-  · simp only [hn, absNorm_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.finite_singleton]
+  · simp only [hn, absNorm_eq_zero_iff, Set.ofPred_eq_eq_singleton, Set.finite_singleton]
   · let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
     refine Set.Finite.of_finite_image (f := f) ?_ ?_
     · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
@@ -435,26 +435,33 @@ theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
         comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
       congr
 
-theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
+@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_eq := finite_setOfPred_absNorm_eq
+
+theorem finite_setOfPred_absNorm_le [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
   rw [show {I : Ideal S | Ideal.absNorm I ≤ n} =
     (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
-  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
+  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOfPred_absNorm_eq i)
 
-theorem finite_setOf_absNorm_le₀ [CharZero S] (n : ℕ) :
+@[deprecated (since := "2026-07-09")] alias finite_setOf_absNorm_le := finite_setOfPred_absNorm_le
+
+theorem finite_setOfPred_absNorm_le₀ [CharZero S] (n : ℕ) :
     {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
   exact Finite.of_equiv _ (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ absNorm I ≤ n)).symm
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_absNorm_le₀ := finite_setOfPred_absNorm_le₀
 
 theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
     Nat.card {I : Ideal S // absNorm I ≤ n} =
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
   classical
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
   have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
   rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
     (fun I ↦ absNorm I ≤ n))]
   let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕

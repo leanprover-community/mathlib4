@@ -343,17 +343,15 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
-variable (E 𝕜) {s : Set E}
+variable (𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
 variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
--- TVS II.25 Prop3
-theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
-    TotallyBounded (absConvexHull ℝ s) := by
-  rw [← convexHull_union_neg_eq_absConvexHull]
-  apply totallyBounded_convexHull
-  rw [totallyBounded_union]
-  exact ⟨hs, totallyBounded_neg hs⟩
+@[simp]
+lemma totallyBounded_absConvexHull : TotallyBounded (absConvexHull ℝ s) ↔ TotallyBounded s := by
+  simp [← convexHull_union_neg_eq_absConvexHull]
+
+protected alias ⟨_, TotallyBounded.absConvexHull⟩ := totallyBounded_absConvexHull
 
 end
 
@@ -367,5 +365,4 @@ theorem isCompact_closedAbsConvexHull_of_totallyBounded {E : Type*} [AddCommGrou
     [QuasiCompleteSpace ℝ E] {s : Set E} (ht : TotallyBounded s) :
     IsCompact (closedAbsConvexHull ℝ s) := by
   rw [closedAbsConvexHull_eq_closure_absConvexHull]
-  exact isCompact_closure_of_totallyBounded_quasiComplete (𝕜 := ℝ)
-    (totallyBounded_absConvexHull E ht)
+  exact isCompact_closure_of_totallyBounded_quasiComplete (𝕜 := ℝ) ht.absConvexHull

@@ -785,7 +785,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate 
       have B : ∀ y : ℝ≥0, y * y ^ p / y = y ^ p := by
         refine fun y => mul_div_cancel_left_of_imp fun h => ?_
         simp [h, hpq.ne_zero]
-      simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
+      simp only [Set.mem_ofPred_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff₀ hf, one_mul, hpq.mul_eq_add, ←
         rpow_sub' A, add_sub_cancel_right, le_refl, true_and, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_eq_one, rpow_one]
