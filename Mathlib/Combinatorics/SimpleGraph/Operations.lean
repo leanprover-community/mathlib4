@@ -136,11 +136,12 @@ section AddEdge
 /-- The graph with a single `s-t` edge. It is empty iff `s = t`. -/
 def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 
+@[grind =]
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
 lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
-  grind [edge_adj]
+  grind
 
 lemma edge_comm : edge s t = edge t s := by
   rw [edge, edge, Sym2.eq_swap]
@@ -164,7 +165,7 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
   obtain h | h := eq_or_ne v w
   · simp [h]
   · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj]), fun hadj v' w' hvw' ↦ ?_⟩
-    grind [edge_adj, adj_symm]
+    grind [adj_symm]
 
 @[simp]
 lemma edgeSet_edge (v w : V) : (edge v w).edgeSet = {s(v, w)} \ Sym2.diagSet := by simp [edge]
@@ -203,7 +204,7 @@ theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G :
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by
   intro v w hvw
-  grind [hvw.adj_sub, H.spanningCoe_adj, G.sup_adj, SimpleGraph.edge_adj, adj_congr_of_sym2]
+  grind [adj_congr_of_sym2]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
