@@ -91,6 +91,11 @@ lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
   rfl
 
+@[simp]
+lemma Rat.padicValuation_natCast (p : ℕ) [Fact p.Prime] (x : ℕ) :
+    Rat.padicValuation p x = Int.padicValuation p x :=
+  rfl
+
 lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
     Rat.padicValuation p x = 0 ↔ x = 0 := by
   simp
