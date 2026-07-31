@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Analysis.Convex.Hull
 
 /-!
@@ -240,7 +238,7 @@ lemma semilinear_image_extremePoints {L 𝕜' : Type*} [Semiring 𝕜] [PartialO
     f '' extremePoints 𝕜 s = extremePoints 𝕜' (f '' s) := by
   ext b
   obtain ⟨a, rfl⟩ := EquivLike.surjective f b
-  simp [mem_extremePoints, ← semilinear_image_openSegment σ' f hσ]
+  simp [mem_extremePoints, ← semilinear_image_openSegment f _ _ hσ]
 
 section OrderedRing
 variable {L : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
