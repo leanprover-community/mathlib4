@@ -518,7 +518,7 @@ theorem IsTree.exists_ne_and_degree_eq_one [Nontrivial V] [Finite G.edgeSet] [G.
   have ⟨u, v, p, hp, hmax⟩ := exists_isPath_forall_isPath_length_le_length G
   have ⟨u', v', hne⟩ := exists_pair_ne V
   have ⟨p', hp'⟩ := h.connected.exists_isPath u' v'
-  have hnil : ¬p.Nil := by grind [length_eq_zero_iff, not_nil_of_ne]
+  have hnil : ¬p.Nil := by grind
   refine ⟨u, v, hp.nil_iff_eq.not.mp hnil, ?_, ?_⟩ <;>
     rw [degree_eq_one_iff_existsUnique_adj]
   · refine ⟨_, p.adj_snd hnil, fun w hadj ↦ ?_⟩
