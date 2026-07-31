@@ -25,7 +25,7 @@ public noncomputable section
 
 namespace CategoryTheory.Over
 
-open Functor Limits CartesianMonoidalCategory
+open CategoryTheory.Functor Limits CartesianMonoidalCategory
 
 variable {C : Type*} [Category* C] [HasPullbacks C]
 
@@ -200,7 +200,6 @@ instance : (Over.pullback f).Braided := .ofChosenFiniteProducts _
 @[simp]
 lemma η_pullback_left : (OplaxMonoidal.η (Over.pullback f)).left = (pullback.snd (𝟙 _) f) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ε_pullback_left : (LaxMonoidal.ε (Over.pullback f)).left = inv (pullback.snd (𝟙 _) f) := by
   apply IsIso.eq_inv_of_hom_inv_id
@@ -253,7 +252,6 @@ lemma μ_pullback_left_snd' (g₁ : Y ⟶ X) (g₂ : Z ⟶ X) :
       pullback.snd (pullback.fst g₁ g₂ ≫ g₁) f =
         pullback.snd _ _ ≫ pullback.snd _ _ := μ_pullback_left_snd ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preservesTerminalIso_pullback (f : R ⟶ S) :
     preservesTerminalIso (Over.pullback f) =
@@ -312,6 +310,7 @@ instance isCommMonObj_mk_pullbackSnd [MonObj (Over.mk f)] [IsCommMonObj (Over.mk
 abbrev grpObjMkPullbackSnd [GrpObj (Over.mk f)] : GrpObj (Over.mk (pullback.snd f g)) :=
   ((Over.pullback g).mapGrp.obj <| .mk <| .mk f).grp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] monObjMkPullbackSnd_one in
 instance isMonHom_pullbackFst_id_right [MonObj (Over.mk f)] :

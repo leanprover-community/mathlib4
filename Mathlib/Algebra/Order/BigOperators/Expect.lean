@@ -110,15 +110,12 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  {a : α} {s : Finset ι} {f g : ι → α}
-section PosSMulStrictMono
-variable [PosSMulStrictMono ℚ≥0 α]
+  [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α} {a : α}
 
-lemma expect_lt_expect (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
-    𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i := by
-  apply smul_lt_smul_of_pos_left (sum_lt_sum hle hlt)
-  rw [inv_pos, Nat.cast_pos, card_pos]
-  exact hlt.imp (fun _ => And.left)
+lemma expect_lt_expect (hfg : ∀ i ∈ s, f i ≤ g i) (hfg' : ∃ i ∈ s, f i < g i) :
+    𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i :=
+  smul_lt_smul_of_pos_left (sum_lt_sum hfg hfg')
+    (by obtain ⟨i, hi, -⟩ := hfg'; have : s.Nonempty := ⟨i, hi⟩; simpa)
 
 lemma expect_lt (hle : ∀ x ∈ s, f x ≤ a) (hlt : ∃ x ∈ s, f x < a) :
     𝔼 i ∈ s, f i < a := by
@@ -130,10 +127,12 @@ lemma lt_expect (hle : ∀ x ∈ s, a ≤ f x) (hlt : ∃ x ∈ s, a < f x) :
   rw [← expect_const (hlt.imp (fun _ => And.left)) a]
   exact expect_lt_expect hle hlt
 
+lemma expect_pos' (h : ∀ i ∈ s, 0 ≤ f i) (hs : ∃ i ∈ s, 0 < f i) : 0 < 𝔼 i ∈ s, f i :=
+  (expect_const_zero _).symm.trans_lt <| expect_lt_expect h hs
+
 lemma expect_pos (hf : ∀ i ∈ s, 0 < f i) (hs : s.Nonempty) : 0 < 𝔼 i ∈ s, f i :=
   smul_pos (inv_pos.2 <| mod_cast hs.card_pos) <| sum_pos hf hs
 
-end PosSMulStrictMono
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
@@ -221,21 +220,22 @@ open scoped BigOperators
 attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
-meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    let p_pos : Option Q(0 < $e) := ← (do
+    let p_pos : Option Q(0 < $e) ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
+      pure <| some
+        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos

@@ -125,9 +125,6 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
-  degree_integralNormalization
-
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
 theorem leadingCoeff_smul_integralNormalization (p : S[X]) :
@@ -188,7 +185,7 @@ variable [Semiring R] [IsCancelMulZero R]
 @[simp]
 theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
-  nontriviality R using Subsingleton.eq_zero
+  nontriviality R using Subsingleton.eq_zero (α := R[X])
   have : IsDomain R := {}
   by_cases hf : f = 0; · simp [hf]
   ext i

@@ -157,7 +157,7 @@ theorem uniform_oscillation {K : Set E} (comp : IsCompact K)
     {f : E → F} {ε : ENNReal} (hK : ∀ x ∈ K, oscillation f x < ε) :
     ∃ δ > 0, ∀ x ∈ K, ediam (f '' (eball x (ENNReal.ofReal δ))) ≤ ε := by
   simp only [← oscillationWithin_univ_eq_oscillation] at hK
-  convert ← comp.uniform_oscillationWithin hK
+  convert! ← comp.uniform_oscillationWithin hK
   exact inter_univ _
 
 end IsCompact

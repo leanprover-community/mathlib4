@@ -37,6 +37,7 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
         ← Finsupp.range_linearCombination]
   simp [@eq_comm _ x, Function.comp, Finsupp.linearCombination_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
@@ -66,7 +67,7 @@ theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submod
   rintro g sum_eq i
   simp only [Fin.default_eq_zero, Finset.univ_unique,
     Finset.sum_singleton] at sum_eq
-  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
+  convert! (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end Module
 
@@ -100,7 +101,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     apply rank_ih
     intro m v hli
     refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-    convert hli.finCons' x _ ?_
+    convert! hli.finCons' x _ ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
     · intro c y hy hc
@@ -130,7 +131,7 @@ lemma mem_center_iff {A}
     · intros
       exact ⟨h.2 _ _, h.3 _ _⟩
   · intro h
-    rw [center, mem_setOf_eq]
+    rw [center, mem_ofPred_eq]
     constructor
     case comm =>
       intro y

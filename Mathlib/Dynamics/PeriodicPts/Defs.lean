@@ -219,7 +219,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
     unfold IsPeriodicPt IsFixedPt
-    convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
+    convert! (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [Nat.add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le
@@ -440,7 +440,7 @@ theorem iterate_mem_periodicOrbit (hx : x ∈ periodicPts f) (n : ℕ) :
 
 @[simp]
 theorem exists_iterate_apply_eq_of_mem_periodicPts (hx : x ∈ periodicPts f) : ∃ n, f^[n] x = x := by
-  simpa only [← mem_periodicOrbit_iff hx] using iterate_mem_periodicOrbit hx 0
+  simpa only [← mem_periodicOrbit_iff hx] using! iterate_mem_periodicOrbit hx 0
 
 theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit f x := by
   simp [hx]

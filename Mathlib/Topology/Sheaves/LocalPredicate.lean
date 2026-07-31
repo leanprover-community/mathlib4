@@ -100,6 +100,7 @@ structure LocalPredicate extends PrelocalPredicate T where
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V ↦ f (i x : U)), pred f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=
@@ -160,7 +161,7 @@ namespace PrelocalPredicate
 
 theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
-  ⟨U, x.2, 𝟙 _, by convert h⟩
+  ⟨U, x.2, 𝟙 _, by convert! h⟩
 
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is
@@ -264,7 +265,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
       -- This follows, since our original family `sf` satisfies the predicate
-      convert (sf i).property using 1
+      convert! (sf i).property using 1
       exact gl_spec i
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
@@ -294,6 +295,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) :
     (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
   colimit.desc _ (P.cocone x)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma stalkToFiber_ι (P : LocalPredicate T) (x : X) (U : (OpenNhds x)ᵒᵖ)
     (fU : {f //  P.pred f}) :
@@ -318,6 +320,7 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
@@ -361,8 +364,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := ↾(by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩)
-      inv := ↾(by rintro ⟨f, c⟩; exact ⟨f, c⟩) }
+    { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
+      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

@@ -290,11 +290,6 @@ theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
 
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
-
 @[simp]
 theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :
     (sumCompl p).symm x = Sum.inl x :=

@@ -442,6 +442,7 @@ def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
 section
 attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A subtype of a dependent triple which pins down both bases is equivalent to the
 respective fiber. -/
 @[simps! +simpRhs apply]
@@ -455,6 +456,8 @@ def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a �
   _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
   _ ≃ γ a b := Equiv.cast <| by rw [← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
     (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}]
@@ -472,6 +475,8 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
     uniq := by rintro ⟨⟨a', b'⟩, ⟨rfl, rfl⟩⟩; rfl }
   sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) ⟨rfl, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
     (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
@@ -811,6 +816,7 @@ LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For 
 we have to explicitly substitute along `e.symm (e a) = a` in the statement of this lemma. -/
 add_decl_doc Equiv.piCongrLeft'_symm_apply
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This lemma is impractical to state in the dependent case. -/
 @[simp]
 theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :
@@ -823,7 +829,7 @@ around it in the case where `a` is of the form `e.symm b`, so we can use `g b` i
 @[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff_heq]
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
 @[simp]

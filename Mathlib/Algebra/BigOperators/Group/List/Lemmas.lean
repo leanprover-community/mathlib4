@@ -58,14 +58,9 @@ depend on the order of elements. -/
 @[to_additive /-- If elements of a list additively commute with each other, then their sum does not
 depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldr_eq' ?_ _
-  apply Pairwise.forall_of_forall
-  · intro x y h z
-    exact (h z).symm
-  · intros; rfl
-  · apply hc.imp
-    intro a b h z
-    rw [← mul_assoc, ← mul_assoc, h]
+  have : Std.Symm fun x y ↦ ∀ z : M, y * (x * z) = x * (y * z) := { symm x y h z := h z |>.symm }
+  refine h.foldr_eq' (Pairwise.forall_of_forall (fun _ _ _ ↦ rfl) <| hc.imp fun {a b} h z ↦ ?_) 1
+  rw [← mul_assoc, ← mul_assoc, h]
 
 end Monoid
 

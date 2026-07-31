@@ -91,8 +91,9 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
   simp_rw [mongePoint, circumcenter_reindex, centroid_def, reindex]
   obtain rfl : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   congr 3
-  convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
+  convert! Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mongePoint_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
@@ -127,7 +128,7 @@ theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).mongePoint = s.mongePoint := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp_rw [mongePoint]
   rw [← Simplex.centroid, ← Simplex.centroid]
   simp [centroid_restrict, circumcenter_restrict]
@@ -280,7 +281,7 @@ lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3
   simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid_def,
     reindex]
   congr 2
-  convert Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3
+  convert! Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3
   · ext i
     simp
   · simp [Function.comp_assoc]
@@ -337,7 +338,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
       (s.points i₁ -ᵥ ·) '' s.points '' (Set.univ \ {i₁}) := by
     rw [Set.image_image]
     ext x
-    simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_diff_singleton]
+    simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_sdiff_singleton]
     constructor
     · rintro ⟨i, rfl⟩
       use i, ⟨Set.mem_univ _, i.property.symm⟩
@@ -592,8 +593,8 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
       exact h₂₃.symm (hpi h₂)
     exact ⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩
   · right
-    have hs := Set.subset_diff_singleton hps h
-    rw [Set.insert_diff_self_of_notMem ho] at hs
+    have hs := Set.subset_sdiff_singleton hps h
+    rw [Set.insert_sdiff_self_of_notMem ho] at hs
     classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]
@@ -614,7 +615,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     rcases hp₁ with ⟨i, rfl⟩
     have h₁₂₃ := h₁₂₃ i
     repeat' rcases h₁₂₃ with h₁₂₃ | h₁₂₃
-    · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
+    · convert! Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
     · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
@@ -695,7 +696,7 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
       (Triangle.orthocenter_replace_orthocenter_eq_point hj₁₂ hj₁₃ hj₂₃ h₁₂ h₁₃ h₂₃ h₁ h₂.symm
           h₃.symm).symm
   · rw [hs]
-    convert ht₀s using 2
+    convert! ht₀s using 2
     exact Triangle.orthocenter_eq_of_range_eq hs
 
 end EuclideanGeometry

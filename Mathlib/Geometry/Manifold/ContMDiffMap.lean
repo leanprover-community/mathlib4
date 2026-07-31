@@ -53,7 +53,7 @@ variable {M} {M'} {n}
 
 instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
-  coe_injective' := Subtype.coe_injective
+  coe_injective := Subtype.coe_injective
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
 

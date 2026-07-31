@@ -18,7 +18,7 @@ This is `ConditionallyCompleteLinearOrderedField.inducedOrderRingIso`.
 Moreover this isomorphism is unique.
 
 We show all conditionally complete linear ordered fields are
-archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
+archimedean. We also construct the natural map from a linearly ordered field to such a field.
 
 ## Main definitions
 
@@ -126,7 +126,7 @@ theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
-  · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
+  · rw [mem_ofPred_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
     refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
     norm_cast
@@ -135,7 +135,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
     -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
-    rw [mem_setOf_eq, cast_add]
+    rw [mem_ofPred_eq, cast_add]
     exact add_lt_add ha hb
 
 end CutMap
@@ -266,7 +266,7 @@ def inducedOrderRingHom : α →+*o β :=
       suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
         intro x
         obtain h | rfl | h := lt_trichotomy x 0
-        · convert this (-x) (neg_pos.2 h) using 1
+        · convert! this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
         · simp only [mul_zero, map_zero]
@@ -279,6 +279,7 @@ def inducedOrderRingHom : α →+*o β :=
           two_ne_zero (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism of ordered rings between two conditionally complete linearly ordered fields. -/
 def inducedOrderRingIso : β ≃+*o γ :=
   { inducedOrderRingHom β γ with
@@ -288,7 +289,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     map_le_map_iff' := by
       dsimp
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
-      convert inducedMap_mono γ β h <;>
+      convert! inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
         rw [inducedMap_inv_self β γ _] }

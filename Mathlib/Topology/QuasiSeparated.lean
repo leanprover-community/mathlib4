@@ -61,9 +61,9 @@ theorem isQuasiSeparated_univ {α : Type*} [TopologicalSpace α] [QuasiSeparated
 theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated s)
     (h : IsEmbedding f) : IsQuasiSeparated (f '' s) := by
   intro U V hU hU' hU'' hV hV' hV''
-  convert
-    (H (f ⁻¹' U) (f ⁻¹' V)
-      ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image h.continuous
+  convert!
+    (H (f ⁻¹' U) (f ⁻¹' V) ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image
+      h.continuous
   · symm
     rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact Set.inter_subset_left.trans (hU.trans (Set.image_subset_range _ _))
@@ -71,14 +71,14 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
     rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hU hx
   · rw [h.isCompact_iff]
-    convert hU''
+    convert! hU''
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hU.trans (Set.image_subset_range _ _)
   · intro x hx
     rw [← h.injective.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hV hx
   · rw [h.isCompact_iff]
-    convert hV''
+    convert! hV''
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hV.trans (Set.image_subset_range _ _)
 
@@ -104,7 +104,7 @@ lemma Topology.IsOpenEmbedding.quasiSeparatedSpace [QuasiSeparatedSpace β] (h :
 theorem isQuasiSeparated_iff_quasiSeparatedSpace (s : Set α) (hs : IsOpen s) :
     IsQuasiSeparated s ↔ QuasiSeparatedSpace s := by
   rw [← isQuasiSeparated_univ_iff]
-  convert (hs.isOpenEmbedding_subtypeVal.isQuasiSeparated_iff (s := Set.univ)).symm
+  convert! (hs.isOpenEmbedding_subtypeVal.isQuasiSeparated_iff (s := Set.univ)).symm
   simp
 
 instance (priority := 100) T2Space.to_quasiSeparatedSpace [T2Space α] : QuasiSeparatedSpace α :=

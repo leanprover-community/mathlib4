@@ -3,8 +3,10 @@ Copyright (c) 2025 Daniele Bolla. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniele Bolla, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Topology.Connected.PathConnected
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # The "topologist's sine curve" is connected but not path-connected
@@ -21,6 +23,8 @@ This formalization is part of the UniDistance Switzerland bachelor thesis of Dan
 similar result has also been independently formalized by Vlad Tsyrklevich
 (https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/golf.20request.3A.20Topologist's.20sine.20curve).
 -/
+
+@[expose] public section
 
 open Topology Filter Set Real
 
@@ -82,7 +86,7 @@ lemma closure_S : closure S = T := by
       have : ContinuousAt (fun x ↦ sin x⁻¹) x :=
         continuous_sin.continuousAt.comp <| continuousAt_inv₀ h.ne'
       refine tendsto_nhds_unique ?_ hf_lim.2
-      convert this.tendsto.comp hf_lim.1 with n
+      convert! this.tendsto.comp hf_lim.1 with n
       obtain ⟨y, hy⟩ := hf_mem n
       simp [← hy.2]
   · -- Show that every `p ∈ T` is the limit of a sequence in `S`.
@@ -107,7 +111,7 @@ is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
   rw [← closure_S]
   refine (isConnected_Ioi.image _ <| continuousOn_id.prodMk ?_).closure
-  exact continuous_sin.comp_continuousOn <| continuousOn_inv₀.mono fun _ hx ↦ hx.ne'
+  fun_prop (discharger := grind)
 
 /-!
 ## `T` is not path-connected
@@ -181,7 +185,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
       have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
-    simpa only [a, ← hx_eq] using hxI
+    simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
     (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)

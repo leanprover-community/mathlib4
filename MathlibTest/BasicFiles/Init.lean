@@ -40,3 +40,5 @@ run_elab Lean.logInfo m!"{(← Lean.MonadEnv.getEnv).imports}"
 theorem test_type_star (α : Type*) : α = α := rfl
 
 lemma test_lemma : True := trivial
+
+#adaptation_note /-- This ensures that adaptation_note is available. -/

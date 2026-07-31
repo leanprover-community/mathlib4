@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.List.OffDiag
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Finsets in product types
@@ -67,6 +68,14 @@ theorem mk_mem_product (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
 theorem coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
+
+/-- The product `s ×ˢ t` of two finsets, viewed as a subtype, is equivalent to the product of the
+subtypes `s × t`. The `Finset` analogue of `Equiv.Set.prod`. -/
+def _root_.Equiv.Finset.prod (s : Finset α) (t : Finset β) : ↥(s ×ˢ t) ≃ s × t where
+  toFun x := ⟨⟨x.1.1, (mem_product.mp x.2).1⟩, ⟨x.1.2, (mem_product.mp x.2).2⟩⟩
+  invFun x := ⟨⟨x.1.1, x.2.1⟩, mem_product.mpr ⟨x.1.2, x.2.2⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
   simp +contextual [mem_image]
@@ -357,6 +366,16 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+
+/-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
+lemma card_product_filter_lt [LinearOrder α] :
+    #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
+  set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
+  set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
+  have disj : Disjoint u v := by grind [disjoint_left]
+  have union : u.disjUnion v disj = s.offDiag := by grind
+  have swap : #u = #v := Finset.card_equiv (Equiv.prodComm α α) (by grind)
+  grind [Nat.mul_sub_one, offDiag_card, Nat.choose_two_right]
 
 end Diag
 

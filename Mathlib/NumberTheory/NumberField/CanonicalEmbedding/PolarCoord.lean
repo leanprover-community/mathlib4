@@ -401,7 +401,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
       ← two_mul, Finset.prod_const, Finset.card_univ, ← Set.indicator_const_mul,
       ← Set.indicator_comp_right, Function.comp_def, Pi.one_apply, mul_one]
     rw [lintegral_mul_const' _ _ (ne_of_beq_false rfl).symm, mul_comm]
-    erw [setLIntegral_indicator (by convert hm.preimage mixedSpaceOfRealSpace.measurable)]
+    erw [setLIntegral_indicator (by convert! hm.preimage mixedSpaceOfRealSpace.measurable)]
     rw [hA, volume_eq_two_pi_pow_mul_integral_aux hA]
     congr 1
     refine setLIntegral_congr (ae_eq_set_inter (by rfl) (Measure.ae_eq_set_pi fun w _ ↦ ?_))
@@ -430,7 +430,7 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
           using (ha₂ ⟨w, hw⟩).le
       · rw [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw,
           normAtComplexPlaces_apply_isComplex ⟨w, hw⟩]
-    · simpa [Set.mem_setOf_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
+    · simpa [Set.mem_ofPred_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
 
 open scoped Classical in
 /--

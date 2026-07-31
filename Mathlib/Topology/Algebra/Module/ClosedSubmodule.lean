@@ -51,7 +51,7 @@ lemma toSubmodule_injective : Injective (toSubmodule : ClosedSubmodule R M → S
 
 instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
-  coe_injective' _ _ h := toSubmodule_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
 
@@ -368,8 +368,7 @@ lemma mapEquiv_sup_eq (f : M ≃L[R] N) {s t : ClosedSubmodule R M} :
   have : f = f.toLinearEquiv.toLinearMap := by
     exact LinearMap.ext (congrFun rfl)
   rw [← this, ← Submodule.coe_closure, ← Submodule.map_sup, Submodule.map_coe]
-  simp only [Submodule.coe_closure, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
-    ← ContinuousLinearEquiv.image_closure, Set.mem_image]
+  simp [← ContinuousLinearEquiv.image_closure]
 
 end ClosedSubmodule
 

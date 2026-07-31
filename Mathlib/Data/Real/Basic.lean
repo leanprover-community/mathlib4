@@ -32,6 +32,7 @@ assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
+@[wikidata Q12916, wikidata Q2584477]
 structure Real where ofCauchy ::
   /-- The underlying Cauchy completion -/
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
@@ -349,7 +350,7 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
-  convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
+  convert! ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
 instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
@@ -424,13 +425,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_left
   le_sup_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_sup, mk_le]
+    rw [← mk_sup, mk_le]
     exact CauSeq.le_sup_right
   sup_le := by
     intro a b c
@@ -444,13 +445,13 @@ instance : DistribLattice ℝ where
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_left
   inf_le_right := by
     intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    dsimp only; rw [← mk_inf, mk_le]
+    rw [← mk_inf, mk_le]
     exact CauSeq.inf_le_right
   le_inf := by
     intro a b c

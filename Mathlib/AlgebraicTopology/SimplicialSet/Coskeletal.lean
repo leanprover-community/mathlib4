@@ -84,6 +84,7 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact ConcreteCategory.congr_hom (s.w φ) x }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fac_aux₁ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i : ℕ) (hi : i < n) :
@@ -93,6 +94,7 @@ lemma fac_aux₁ {n : ℕ}
   rw [spineToSimplex_arrow]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
@@ -177,6 +179,8 @@ end isPointwiseRightKanExtensionAt
 
 open Truncated
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
@@ -188,7 +192,6 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     obtain ⟨i, rfl⟩ : ∃ j, ⦋j⦌ = i := ⟨_, i.mk_len⟩
     dsimp at hi ⊢
     apply sx.spineInjective
-    dsimp
     ext k
     · dsimp only [spineEquiv, Equiv.coe_fn_mk]
       rw [dsimp% show op f = f.op from rfl]
@@ -255,6 +258,7 @@ instance (C : Type u) [Category.{v} C] :
 recorded by the composite functor `nerveFunctor₂`. -/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : Cat.{v, u}) : (nerveFunctor₂.obj X).IsStrictSegal := by
   dsimp [nerveFunctor₂]
   infer_instance

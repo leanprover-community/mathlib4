@@ -33,6 +33,9 @@ namespace Coyoneda
 
 variable {C : Type u} [Category.{v} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
 @[simps]
@@ -40,6 +43,7 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app _ := ↾fun _ ↦ by cat_disch }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -75,7 +79,7 @@ section
 
 variable {J : Type w} [Category.{t} J]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
@@ -123,7 +127,7 @@ noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
@@ -204,6 +208,12 @@ instance uliftYonedaFunctor_preservesLimits :
   change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
   infer_instance
 
+instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  change PreservesLimitsOfSize.{t, w} (yoneda.obj _ ⋙ uliftFunctor.{w'})
+  infer_instance
+
 instance [LocallySmall.{w'} C] :
     PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
   preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
@@ -215,35 +225,25 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category* J]
+variable (F : Cᵒᵖ ⥤ Type w') [F.IsRepresentable]
 
-instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
-    PreservesLimit G F :=
-  preservesLimit_of_natIso _ F.reprW
-
-variable (J) in
-instance representable_preservesLimitsOfShape :
-    PreservesLimitsOfShape J F where
-
-instance representable_preservesLimits :
-    PreservesLimitsOfSize.{t, w} F where
+instance : PreservesLimitsOfSize.{t, w} F := by
+  suffices PreservesLimitsOfSize (F ⋙ uliftFunctor.{v}) from
+    preservesLimits_of_reflects_of_preserves _ (uliftFunctor.{v})
+  rw [preservesLimitsOfSize_iff_of_natIso (F ⋙ uliftFunctor.{v}).uliftYonedaReprXIso.symm]
+  exact inferInstanceAs <| PreservesLimitsOfSize (yoneda.obj _ ⋙ uliftFunctor)
 
 end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category* J]
+variable (F : C ⥤ Type*) [F.IsCorepresentable]
 
-instance corepresentable_preservesLimit (G : J ⥤ C) :
-    PreservesLimit G F :=
-  preservesLimit_of_natIso _ F.coreprW
-
-variable (J) in
-instance corepresentable_preservesLimitsOfShape :
-    PreservesLimitsOfShape J F where
-
-instance corepresentable_preservesLimits :
-    PreservesLimitsOfSize.{t, w} F where
+instance : PreservesLimitsOfSize.{t, w} F := by
+  suffices PreservesLimitsOfSize (F ⋙ uliftFunctor.{v}) from
+    preservesLimits_of_reflects_of_preserves _ (uliftFunctor.{v})
+  rw [preservesLimitsOfSize_iff_of_natIso (F ⋙ uliftFunctor.{v}).uliftCoyonedaCoreprXIso.symm]
+  exact inferInstanceAs <| PreservesLimitsOfSize (coyoneda.obj _ ⋙ uliftFunctor)
 
 end Corepresentable
 

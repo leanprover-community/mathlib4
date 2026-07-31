@@ -3,7 +3,9 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Analysis.Seminorm
+module
+
+public import Mathlib.Analysis.Seminorm
 
 /-!
 # The lattice of seminorms is not distributive
@@ -18,8 +20,9 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 * https://en.wikipedia.org/wiki/Seminorm#Examples
 -/
 
-open Seminorm
+@[expose] public section
 
+open Seminorm
 open scoped NNReal
 
 namespace Counterexample
@@ -41,7 +44,7 @@ noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
 theorem eq_one : (p ⊔ q1 ⊓ q2) (1, 1) = 1 := by
   suffices ⨅ x : ℝ × ℝ, q1 x + q2 (1 - x) ≤ 1 by simpa
   apply ciInf_le_of_le bddBelow_range_add ((0, 1) : ℝ × ℝ); dsimp [q1, q2]
-  simp only [abs_zero, smul_zero, sub_self, add_zero, zero_le_one]
+  simp
 
 /-- This is a counterexample to the distributivity of the lattice `Seminorm ℝ (ℝ × ℝ)`. -/
 theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by

@@ -143,13 +143,13 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     exact fun i x h ↦ ⟨zero_le, h⟩
   have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := by
     refine fun ⟨i, a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_, b⟩)).subset ?_
-    simp only [αs, hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
+    simp only [αs, hcovby, subset_def, mem_ofPred_eq, mem_image, and_imp, Sigma.forall]
     exact fun j b ⟨_, _⟩ hj ↦ ⟨π hj.le b, by rwa [π_trans], by cases hj; rw [π_refl]⟩
   obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite hfin ha₀inf
   have hr : ∀ i, (f i).1 = i :=
     Nat.rec (by rw [hf0, ha₀]) (fun i ih ↦ by rw [← (hcovby.1 (hf i)).2, ih])
   refine ⟨fun i ↦ by rw [← hr i]; exact (f i).2, fun i j hij ↦ ?_⟩
-  convert (f.monotone hij).2 <;>
+  convert! (f.monotone hij).2 <;>
   simp [hr]
 
 end Graded

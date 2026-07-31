@@ -267,13 +267,8 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
           = lmap f (rmap (List.map (map f)) (parallel.aux2 l)) := by
         simp only [parallel.aux2, rmap, lmap]
         induction l with
-        | nil => simp
-        | cons c l IH =>
-          simp only [List.map_cons, List.foldr_cons, destruct_map, lmap, rmap]
-          rw [IH]
-          cases List.foldr _ _ _
-          · simp
-          · cases destruct c <;> simp
+        | nil => grind
+        | cons => grind [destruct_map, lmap, rmap]
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       rcases parallel.aux2 l with a | l'
@@ -330,8 +325,8 @@ theorem parallel_promises {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~>
 
 theorem mem_parallel {S : WSeq (Computation α)} {a} (H : ∀ s ∈ S, s ~> a) {c} (cs : c ∈ S)
     (ac : a ∈ c) : a ∈ parallel S := by
-  haveI := terminates_of_mem ac
-  haveI := terminates_parallel cs
+  have := terminates_of_mem ac
+  have := terminates_parallel cs
   exact mem_of_promises _ (parallel_promises H)
 
 theorem parallel_congr_lem {S T : WSeq (Computation α)} {a} (H : S.LiftRel Equiv T) :

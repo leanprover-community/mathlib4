@@ -76,6 +76,7 @@ namespace LiftRightAdjoint
 variable {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (U' : A ⥤ C)
 variable (adj₁ : F ⊣ U) (adj₂ : L ⋙ F ⊣ U')
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
@@ -107,7 +108,6 @@ We will show that this equalizer exists and that it forms the object map for a r
 def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
 then this pair has an equalizer.
 -/
@@ -125,6 +125,7 @@ variable [HasCoreflexiveEqualizers C]
 noncomputable def constructRightAdjointObj (Y : B) : C :=
   equalizer (U'.map (F.map (adj₁.unit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `L` is a left adjoint. -/
 @[simps!]
@@ -152,6 +153,7 @@ noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁
       simp
     _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualises adj₁ h X) _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct the right adjoint to `L`, with object map `constructRightAdjointObj`. -/
 noncomputable def constructRightAdjoint (h : ∀ X : B, RegularMono (adj₁.unit.app X)) : B ⥤ C := by
@@ -191,15 +193,15 @@ lemma isLeftAdjoint_triangle_lift_comonadic (F : B ⥤ A) [ComonadicLeftAdjoint 
     [HasCoreflexiveEqualizers C] [(L ⋙ F).IsLeftAdjoint] : L.IsLeftAdjoint := by
   let L' : _ ⥤ _ := L ⋙ Comonad.comparison (comonadicAdjunction F)
   rsuffices : L'.IsLeftAdjoint
-  · let this : (L' ⋙ (Comonad.comparison (comonadicAdjunction F)).inv).IsLeftAdjoint := by
+  · let : (L' ⋙ (Comonad.comparison (comonadicAdjunction F)).inv).IsLeftAdjoint := by
       infer_instance
     refine ((Adjunction.ofIsLeftAdjoint
       (L' ⋙ (Comonad.comparison (comonadicAdjunction F)).inv)).ofNatIsoLeft ?_).isLeftAdjoint
     exact Functor.isoWhiskerLeft L (Comonad.comparison _).asEquivalence.unitIso.symm ≪≫ L.leftUnitor
-  let this : (L' ⋙ Comonad.forget (comonadicAdjunction F).toComonad).IsLeftAdjoint := by
+  let : (L' ⋙ Comonad.forget (comonadicAdjunction F).toComonad).IsLeftAdjoint := by
     refine ((Adjunction.ofIsLeftAdjoint (L ⋙ F)).ofNatIsoLeft ?_).isLeftAdjoint
     exact Functor.isoWhiskerLeft L (Comonad.comparisonForget (comonadicAdjunction F)).symm
-  let this : ∀ X, RegularMono ((Comonad.adj (comonadicAdjunction F).toComonad).unit.app X) := by
+  let : ∀ X, RegularMono ((Comonad.adj (comonadicAdjunction F).toComonad).unit.app X) := by
     intro X
     simp only [Comonad.adj_unit]
     exact ⟨_, _, _, _, Comonad.beckCoalgebraEqualizer X⟩
