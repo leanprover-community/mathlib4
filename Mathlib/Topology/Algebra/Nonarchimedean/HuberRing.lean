@@ -45,10 +45,15 @@ whose subspace topology is the `I`-adic topology for a finitely generated ideal
 A₀ such that the subspace topology on A₀ is I-adic, where I is a finitely
 generated ideal of A₀.") -/
 structure RingOfDefinition (A : Type*) [CommRing A] [TopologicalSpace A] where
+  /-- The subring `A₀` of `A`. -/
   subring : Subring A
+  /-- The subring `A₀` is open in `A`. -/
   isOpen_subring : IsOpen (subring : Set A)
+  /-- The ideal `I` of `A₀`. -/
   I : Ideal subring
+  /-- The ideal `I` is finitely generated. -/
   I_fg : I.FG
+  /-- The subspace topology on `A₀` is the `I`-adic topology. -/
   isIdealAdic : IsAdic I
 
 /-- A topological ring is Huber (f-adic) if it admits a ring of definition.
