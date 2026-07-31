@@ -400,7 +400,6 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.Algebra.Group.GreensRelations.Basic
-public import Mathlib.Algebra.Group.GreensRelations.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Hom.CompTypeclasses
 public import Mathlib.Algebra.Group.Hom.Defs
