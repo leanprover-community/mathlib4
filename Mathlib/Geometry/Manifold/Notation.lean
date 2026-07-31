@@ -505,8 +505,8 @@ where
       | trace[Elab.DiffGeo.MDiff]
           "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
         -- As last alternatives, check if `H` is Euclidean half-space, a Euclidean quadrant,
-        -- a normed space or a normed field.
-        -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
+        -- Euclidean space, a normed space or a normed field.
+        -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace` and friends.
         match H with
         | mkApp2 (.const `EuclideanSpace _) k _n =>
           mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
