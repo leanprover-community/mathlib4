@@ -6,8 +6,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.Identities
 
 /-!
 # Theory of univariate polynomials
@@ -28,27 +28,6 @@ variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : 
   {m n : ℕ}
 
 section Identities
-
-/- @TODO: `powAddExpansion` and `powSubPowFactor` are not specific to polynomials.
-  These belong somewhere else. But not in group_power because they depend on tactic.ring_exp
-
-  Maybe use `Data.Nat.Choose` to prove it.
--/
-/-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
--/
-def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
-    ∀ n : ℕ, { k // (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2 }
-  | 0 => ⟨0, by simp⟩
-  | 1 => ⟨0, by simp⟩
-  | n + 2 => by
-    obtain ⟨z, hz⟩ := (powAddExpansion x y (n + 1))
-    exists x * z + (n + 1) * x ^ n + z * y
-    calc
-      (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
-      _ = (x + y) * (x ^ (n + 1) + ↑(n + 1) * x ^ (n + 1 - 1) * y + z * y ^ 2) := by rw [hz]
-      _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 := by
-        push_cast
-        ring!
 
 variable [CommRing R]
 
@@ -88,16 +67,6 @@ def binomExpansion (f : R[X]) (x y : R) :
   · rw [derivative_eval]
     exact (Finset.sum_mul ..).symm
   · exact (Finset.sum_mul ..).symm
-
-/-- `x^n - y^n` can be expressed as `z * (x - y)` for some `z` in the ring.
--/
-def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x - y) }
-  | 0 => ⟨0, by simp⟩
-  | 1 => ⟨1, by simp⟩
-  | k + 2 => by
-    obtain ⟨z, hz⟩ := @powSubPowFactor x y (k + 1)
-    exists z * x + y ^ (k + 1)
-    linear_combination (norm := ring) x * hz
 
 /-- For any polynomial `f`, `f.eval x - f.eval y` can be expressed as `z * (x - y)`
 for some `z` in the ring.

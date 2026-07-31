@@ -16,6 +16,22 @@ This file contains some "named" commutative ring identities.
 public section
 
 
+/-- `(x + y) ^ n` can be expressed as `x ^ n + n * x ^ (n - 1) * y + k * y ^ 2` for some `k` in the
+ring. -/
+def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
+    ∀ n : ℕ, { k // (x + y) ^ n = x ^ n + n * x ^ (n - 1) * y + k * y ^ 2 }
+  | 0 => ⟨0, by simp⟩
+  | 1 => ⟨0, by simp⟩
+  | n + 2 => by
+    obtain ⟨z, hz⟩ := (powAddExpansion x y (n + 1))
+    exists x * z + (n + 1) * x ^ n + z * y
+    calc
+      (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
+      _ = (x + y) * (x ^ (n + 1) + ↑(n + 1) * x ^ (n + 1 - 1) * y + z * y ^ 2) := by rw [hz]
+      _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 := by
+        push_cast
+        ring!
+
 variable {R : Type*} [CommRing R] {a b x₁ x₂ x₃ x₄ x₅ x₆ x₇ x₈ y₁ y₂ y₃ y₄ y₅ y₆ y₇ y₈ n : R}
 
 /-- Brahmagupta-Fibonacci identity or Diophantus identity, see
