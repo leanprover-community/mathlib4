@@ -1,5 +1,12 @@
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+/-
+Copyright (c) 2026 sfingali. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: sfingali
+-/
+module
+
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
 # Huber (f-adic) rings
