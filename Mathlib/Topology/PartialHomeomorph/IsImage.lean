@@ -146,7 +146,7 @@ theorem symm_eqOn_of_inter_eq_of_eqOn {e' : PartialHomeomorph X Y} (h : e.IsImag
   h.symm_eq_on_of_inter_eq_of_eqOn hs Heq
 
 /-- Restrict an `PartialHomeomorph` to a pair of corresponding sets. -/
-@[simps! -fullyApplied apply symm_apply toPartialEquiv]
+@[simps! -fullyApplied apply symm_apply toPartialEquiv, reducible]
 def restr (h : e.IsImage s t) : PartialHomeomorph X Y where
   toPartialEquiv := h.restr
   continuousOn_toFun := e.continuousOn.mono inter_subset_left
