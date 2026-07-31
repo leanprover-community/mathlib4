@@ -87,7 +87,7 @@ theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
     d ∉ (p - (monomial d c - monomial d' c)).support := by
   classical
   rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
-    if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
+    ite_eq_left rfl, ite_eq_right hdd'.symm, sub_zero, hc, sub_self]
 
 /-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
 leaves the support inside `p.support.erase d ∪ {d'}`. -/

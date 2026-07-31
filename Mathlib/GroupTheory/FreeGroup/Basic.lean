@@ -940,6 +940,7 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
     exact List.recOn L
      rfl
      (fun ⟨⟨⟩, b⟩ tl ih => by
+        simp only [Bool.cond_eq_ite] at ih
         cases b <;> simp [zpow_add, ih] <;> rfl)
   right_inv x :=
     Int.induction_on x (by simp)
