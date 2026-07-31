@@ -91,7 +91,6 @@ lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
   rfl
 
-@[simp]
 lemma Rat.padicValuation_natCast (p : ℕ) [Fact p.Prime] (x : ℕ) :
     Rat.padicValuation p x = Int.padicValuation p x :=
   rfl
