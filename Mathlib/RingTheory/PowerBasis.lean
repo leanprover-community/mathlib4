@@ -99,13 +99,9 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     ext n
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
-  simp only [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum,
-    mem_supported', linearCombination, Finsupp.sum, Algebra.smul_def,
-    LinearMap.id_coe, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
-    Finset.mem_range, Finset.mem_coe]
-  simp_rw [@eq_comm _ y]
-  exact Iff.rfl
+  simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
+    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported',
+    Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
@@ -321,6 +317,9 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
   left_inv _ := pb.algHom_ext <| lift_gen _ _ _
   right_inv y := Subtype.ext <| lift_gen _ _ y.prop
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! -fullyApplied]
@@ -333,7 +332,7 @@ noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
   Fintype.ofEquiv _ pb.liftEquiv'.symm

@@ -221,6 +221,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
   rw [← Set.mem_smul_set_iff_inv_smul_mem, hg]
   exact hy
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
@@ -384,6 +385,7 @@ lemma ofFixingSubgroup_of_inclusion_injective {hst : t ⊆ s} :
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The equivariant map between `SubMulAction.ofStabilizer M a`
 and `ofFixingSubgroup M {a}`. -/

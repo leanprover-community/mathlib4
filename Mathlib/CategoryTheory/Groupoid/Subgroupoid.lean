@@ -127,7 +127,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
   id_mem_of_nonempty_isotropy S d (mem_objs_of_tgt S h)
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
-@[implicit_reducible]
+@[instance_reducible]
 def asWideQuiver : Quiver C :=
   ⟨fun c d => S.arrows c d⟩
 
@@ -250,6 +250,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
     Function.Injective (inclusion h).obj := fun ⟨s, hs⟩ ⟨t, ht⟩ => by
   simpa only [inclusion, Subtype.mk_eq_mk] using id
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
   -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
@@ -381,10 +382,10 @@ by taking preimages.
 -/
 def comap (S : Subgroupoid D) : Subgroupoid C where
   arrows c d := {f : c ⟶ d | φ.map f ∈ S.arrows (φ.obj c) (φ.obj d)}
-  inv hp := by rw [mem_setOf, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp
+  inv hp := by rw [mem_ofPred, inv_eq_inv, φ.map_inv, ← inv_eq_inv]; exact S.inv hp
   mul := by
     intros
-    simp only [mem_setOf, Functor.map_comp]
+    simp only [mem_ofPred, Functor.map_comp]
     apply S.mul <;> assumption
 
 @[gcongr]
@@ -392,9 +393,9 @@ theorem comap_mono (S T : Subgroupoid D) : S ≤ T → comap φ S ≤ comap φ T
   @ST ⟨_, _, _⟩
 
 theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap φ S) where
-  wide c := by rw [comap, mem_setOf, Functor.map_id]; apply Sn.wide
+  wide c := by rw [comap, mem_ofPred, Functor.map_id]; apply Sn.wide
   conj f γ hγ := by
-    simp_rw [inv_eq_inv f, comap, mem_setOf, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
+    simp_rw [inv_eq_inv f, comap, mem_ofPred, Functor.map_comp, Functor.map_inv, ← inv_eq_inv]
     exact Sn.conj _ hγ
 
 @[simp]

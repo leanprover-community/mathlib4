@@ -187,6 +187,7 @@ theorem laverage_union_mem_openSegment (hd : AEDisjoint μ s t) (ht : NullMeasur
   rw [← ENNReal.add_div,
     ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
     (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) :
     ⨍⁻ x in s ∪ t, f x ∂μ ∈ [⨍⁻ x in s, f x ∂μ -[ℝ≥0∞] ⨍⁻ x in t, f x ∂μ] := by
@@ -379,7 +380,7 @@ theorem average_pair [CompleteSpace E]
 
 theorem measure_smul_setAverage (f : α → E) {s : Set α} (h : μ s ≠ ∞) :
     μ.real s • ⨍ x in s, f x ∂μ = ∫ x in s, f x ∂μ := by
-  haveI := Fact.mk h.lt_top
+  have := Fact.mk h.lt_top
   rw [← measure_smul_average, measureReal_restrict_apply_univ]
 
 theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht : NullMeasurableSet t μ)
@@ -387,7 +388,7 @@ theorem average_union {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t) (ht
     ⨍ x in s ∪ t, f x ∂μ =
       (μ.real s / (μ.real s + μ.real t)) • ⨍ x in s, f x ∂μ +
         (μ.real t / (μ.real s + μ.real t)) • ⨍ x in t, f x ∂μ := by
-  haveI := Fact.mk hsμ.lt_top; haveI := Fact.mk htμ.lt_top
+  have := Fact.mk hsμ.lt_top; have := Fact.mk htμ.lt_top
   rw [restrict_union₀ hd ht, average_add_measure hfs hft, measureReal_restrict_apply_univ,
     measureReal_restrict_apply_univ]
 
@@ -400,6 +401,7 @@ theorem average_union_mem_openSegment {f : α → E} {s t : Set α} (hd : AEDisj
   exact mem_openSegment_iff_div.mpr
     ⟨μ.real s, μ.real t, hs₀, ht₀, (average_union hd ht hsμ htμ hfs hft).symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint μ s t)
     (ht : NullMeasurableSet t μ) (hsμ : μ s ≠ ∞) (htμ : μ t ≠ ∞) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) :
@@ -500,11 +502,11 @@ theorem measure_le_setAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf
   replace H : (μ.restrict s) {x | f x ≤ ⨍ a in s, f a ∂μ} = 0 := by
     rwa [restrict_apply₀, inter_comm]
     exact AEStronglyMeasurable.nullMeasurableSet_le hf.1 aestronglyMeasurable_const
-  haveI := Fact.mk hμ₁.lt_top
+  have := Fact.mk hμ₁.lt_top
   refine (integral_sub_average (μ.restrict s) f).not_gt ?_
   refine (setIntegral_pos_iff_support_of_nonneg_ae ?_ ?_).2 ?_
   · refine measure_mono_null (fun x hx ↦ ?_) H
-    simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_setOf_eq, not_le] at hx
+    simp only [Pi.zero_apply, sub_nonneg, mem_compl_iff, mem_ofPred_eq, not_le] at hx
     exact hx.le
   · exact hf.sub (integrableOn_const hμ₁)
   · rwa [pos_iff_ne_zero, inter_comm, ← sdiff_compl, ← sdiff_inter_self_eq_sdiff,
@@ -626,9 +628,9 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   obtain h | h := eq_or_ne (∫⁻ a in s, f a ∂μ) ∞
   · simpa [mul_top, hμ₁, laverage, h, top_div_of_ne_top hμ₁, pos_iff_ne_zero] using hμ
   have := measure_le_setAverage_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hf h)
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   refine this.trans_le (measure_mono ?_)
@@ -649,8 +651,8 @@ theorem measure_setLAverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
   rw [hfg] at hint
   have :=
     measure_setAverage_le_pos hμ hμ₁ (integrable_toReal_of_lintegral_ne_top hg.aemeasurable hint)
-  simp_rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
-  rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
+  simp_rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, hfg']
+  rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀' hs, ←
     measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint)] at this
   refine this.trans_le (measure_mono ?_)
   rintro x ⟨hfx, hx⟩

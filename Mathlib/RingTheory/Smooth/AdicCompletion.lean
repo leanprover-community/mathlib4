@@ -51,6 +51,7 @@ noncomputable def liftAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (I ^ m
         (Ideal.map_quotient_self _)
     FormallySmooth.lift J ⟨m + 1 + 1, this⟩ q
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma factorₐ_comp_liftAdicCompletionAux (m : ℕ) :
     (Ideal.Quotient.factorₐ _ (Ideal.pow_le_pow_right m.le_succ)).comp

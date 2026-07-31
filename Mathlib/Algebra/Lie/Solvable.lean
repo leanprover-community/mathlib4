@@ -114,6 +114,7 @@ theorem derivedSeriesOfIdeal_mono {I J : LieIdeal R L} (h : I ≤ J) (k : ℕ) :
 theorem derivedSeriesOfIdeal_antitone {k l : ℕ} (h : l ≤ k) : D k I ≤ D l I :=
   derivedSeriesOfIdeal_le le_rfl h
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
@@ -370,7 +371,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  · rw [Set.mem_ofPred_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
 
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
