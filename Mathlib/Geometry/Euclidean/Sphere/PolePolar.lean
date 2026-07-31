@@ -27,9 +27,7 @@ This file defines poles and polars for spheres in Euclidean spaces.
 
 -/
 
-@[expose] public section
-
-noncomputable section
+@[expose] public noncomputable section
 
 namespace EuclideanGeometry
 
