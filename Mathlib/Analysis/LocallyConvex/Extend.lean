@@ -19,17 +19,9 @@ subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`.
-* `LinearMap.extendOfNorm`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
+* `LinearMap.extendOfIsBounded`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
   `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
-
-Moreover, we can extend a linear equivalence:
-* `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
-  equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
-  estimates.
-* `LinearEquiv.extendOfIsometry`: Extend `f : E ≃ₗ[𝕜] F` to a linear isometry equivalence
-  `Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
-  and `f` preserves the norm.
 
 -/
 
