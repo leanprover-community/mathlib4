@@ -694,6 +694,18 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
+theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n m : ℕ}
+    {H L : Subgroup G} [Finite L] (hH : Nat.card H = p ^ n) (hL : p ^ m ∣ Nat.card L)
+    (hHL : H ≤ L) (hnm : n ≤ m) :
+    ∃ K : Subgroup G, Nat.card K = p ^ m ∧ H ≤ K ∧ K ≤ L := by
+  have : Fact p.Prime := ⟨hp⟩
+  have hcardeq := Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv.symm ▸ hH
+  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hnm
+  refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
+  · rw [Subgroup.card_map_of_injective L.subtype_injective, hcard]
+  · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
+    exact Subgroup.map_mono hHK
+
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
@@ -701,6 +713,83 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
+
+theorem exists_subgroup_tower' [Finite G] {p n : ℕ} (hp : p.Prime)
+    {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s) (hpgroup : ∀ g ∈ s, IsPGroup p g)
+    (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) (hdvd : p ^ n ∣ Nat.card G) :
+    ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
+  classical
+  have : Fact p.Prime := ⟨hp⟩
+  obtain ⟨m, hmaxchain, hsubset⟩ := hchain.exists_maxChain
+  have : ∀ k : Fin (n + 1), ∃ g ∈ m, Nat.card g = p ^ k.val := by
+    by_contra! hk
+    obtain ⟨k, hk⟩ := hk
+    by_cases hk0 : k = 0
+    · contrapose! hk
+      exact ⟨⊥, hmaxchain.bot_mem, by simp [hk0]⟩
+    let leftset := {j | j < k.val ∧ ∃ g ∈ m, Nat.card g = p ^ j}
+    let rightset := {j | k.val < j ∧ j ≤ n ∧ ∃ g ∈ m, Nat.card g = p ^ j}
+    have hleft : sSup leftset ∈ leftset := by
+      apply Set.Nonempty.csSup_mem
+      · exact ⟨0, by simp [leftset, Fin.pos_of_ne_zero hk0, hmaxchain.bot_mem]⟩
+      · exact (Finset.range k.val).finite_toSet.subset (by grind)
+    obtain ⟨hleft, left, hleftm, hleftcard⟩ := hleft
+    have hright (hr0 : rightset.Nonempty) : sInf rightset ∈ rightset := by
+      apply Set.Nonempty.csInf_mem hr0
+      · apply (Finset.range (n + 1)).finite_toSet.subset
+        grind
+    choose hright hrightn right hrightm hrightcard using hright
+    let right' := if hr0 : rightset.Nonempty then right hr0 else ⊤
+    have hright : p ^ k.val ∣ Nat.card right' := by
+      unfold right'
+      split_ifs with hr0
+      · rw [hrightcard]
+        apply Nat.pow_dvd_pow
+        grind
+      · rw [Subgroup.card_top]
+        refine dvd_trans ?_ hdvd
+        apply Nat.pow_dvd_pow
+        grind
+    have hlr : left ≤ right' := by
+      unfold right'
+      split_ifs with hr0
+      · apply hmaxchain.isChain.le_of_not_gt (hrightm hr0) hleftm
+        intro h
+        have h := card_le_of_le h.le
+        rw [hleftcard, hrightcard, pow_le_pow_iff_right₀ hp.one_lt] at h
+        grind
+      · exact le_top
+    obtain ⟨J, hJcard, hleftJ, hrightJ⟩ :=
+      exists_subgroup_card_pow_prime_le_le hp hleftcard hright hlr hleft.le
+    have hmax := hmaxchain.2
+    contrapose! hmax
+    refine ⟨m.insert J, ?_, Set.subset_insert _ _, ?_⟩
+    · apply hmaxchain.1.insert
+      intro I hIm hIJ
+      by_cases hIleft : I ≤ left
+      · exact Or.inr (hIleft.trans hleftJ)
+      · rw [hmaxchain.isChain.not_le hIm hleftm] at hIleft
+        have hcardleftI := Subgroup.card_lt_of_lt hIleft
+        rw [hleftcard] at hcardleftI
+        sorry
+    · sorry
+  choose f hfm hfcard using this
+  have hf : StrictMono f := by
+    intro a b h
+    apply hmaxchain.isChain.lt_of_not_ge (hfm b) (hfm a)
+    contrapose! h
+    simpa [hfcard, pow_le_pow_iff_right₀ hp.one_lt] using Subgroup.card_le_of_le h
+  refine ⟨.ofStrictMono f hf, ?_, by simpa using hfcard⟩
+  intro g hg
+  obtain ⟨k, hk⟩ := (hpgroup g hg).exists_card_eq
+  simp only [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
+  have hklt : k < n + 1 := by simpa [hk, pow_le_pow_iff_right₀ hp.one_lt] using hcard g hg
+  use ⟨k, hklt⟩
+  rcases hmaxchain.isChain.total (hfm ⟨k, hklt⟩) (hsubset hg) with hfg | hfg
+  · apply Subgroup.eq_of_le_of_card_ge hfg
+    simp [hk, hfcard]
+  · refine (Subgroup.eq_of_le_of_card_ge hfg ?_).symm
+    simp [hk, hfcard]
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
