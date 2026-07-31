@@ -264,10 +264,10 @@ theorem semilinear_image_openSegment [RingHomInvPair σ σ'] (f : L) (x y : E)
   · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, by simpa [← hσ], σ' b, ?_⟩, by simp [map_smulₛₗ]⟩
     simpa [← hσ, ← map_add, hab]
 
-@[simp] theorem linearMap_image_segment (f : L') (a b : E) :
+@[simp] theorem linear_image_segment (f : L') (a b : E) :
     f '' [a -[𝕜] b] = [f a -[𝕜] f b] := semilinear_image_segment _ _ _
 
-@[simp] theorem linearMap_image_openSegment (f : L') (a b : E) :
+@[simp] theorem linear_image_openSegment (f : L') (a b : E) :
     f '' openSegment 𝕜 a b = openSegment 𝕜 (f a) (f b) := semilinear_image_openSegment _ _ _
 
 end
