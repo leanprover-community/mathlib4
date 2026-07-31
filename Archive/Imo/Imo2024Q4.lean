@@ -440,7 +440,7 @@ lemma A'X_eq_mk' :
         cfg.triangleABC.insphere.orthRadius (cfg.triangleABC.touchpoint ∅ 1) := by
       rw [← hAC, AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot]
       simp [← AffineSubspace.coe_eq_bot_iff, ← Set.not_nonempty_iff_eq_empty,
-        AffineSubspace.mk'_nonempty]
+        AffineSubspace.mk'_nonempty, affineSpan_nonempty]
     have ht' := cfg.ω_eq_insphere ▸ cfg.isTangent_mk'_X_parallel_AC
     have ht := ht'.eq_orthRadius_or_eq_orthRadius_pointReflection_of_parallel_orthRadius hpar
       (cfg.triangleABC.touchpoint_mem_insphere _)
@@ -471,7 +471,7 @@ lemma A'X_eq_mk' :
 lemma AC_parallel_A'X : line[ℝ, cfg.A, cfg.C] ∥ line[ℝ, cfg.A', cfg.X] := by
   rw [A'X_eq_mk', AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot]
   simp [← AffineSubspace.coe_eq_bot_iff, ← Set.not_nonempty_iff_eq_empty,
-    AffineSubspace.mk'_nonempty]
+    AffineSubspace.mk'_nonempty, affineSpan_nonempty]
 
 lemma AB_parallel_A'Y : line[ℝ, cfg.A, cfg.B] ∥ line[ℝ, cfg.A', cfg.Y] :=
   cfg.symm.AC_parallel_A'X
@@ -494,7 +494,7 @@ lemma two_zsmul_oangle_A'PB_eq_two_zsmul_oangle_A'XB :
 end Oriented
 
 lemma cospherical_A'PBX : Cospherical ({cfg.A', cfg.P, cfg.B, cfg.X} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   suffices Cospherical ({cfg.A', cfg.P, cfg.X, cfg.B} : Set Pt) by
     convert this using 1
     grind
@@ -566,7 +566,7 @@ lemma two_zsmul_oangle_KIL_add_oangle_YPX_eq_zero :
 end Oriented
 
 theorem result : ∠ cfg.K cfg.I cfg.L + ∠ cfg.Y cfg.P cfg.X = π := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [angle_eq_abs_oangle_toReal cfg.K_ne_I cfg.L_ne_I,
     angle_eq_abs_oangle_toReal cfg.Y_ne_P cfg.X_ne_P]
   exact Real.Angle.abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq
