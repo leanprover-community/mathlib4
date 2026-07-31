@@ -6,6 +6,7 @@ Authors: Diwen Yu
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Order.Copy
 
 /-!
 # Normal subgroups as a complete lattice
@@ -71,33 +72,33 @@ theorem toSubgroup_ofSubgroup (H : Subgroup G) [H.Normal] :
     ((ofSubgroup H : NormalSubgroup G) : Subgroup G) = H :=
   rfl
 
-@[to_additive]
-instance : Top (NormalSubgroup G) :=
-  ⟨{ toSubgroup := ⊤ }⟩
+variable (G) in
+/-- `normalClosure` forms a Galois insertion with the coercion to subgroups. -/
+@[to_additive /-- `normalClosure` forms a Galois insertion with the coercion to additive
+subgroups. -/]
+protected def gi :
+    GaloisInsertion (fun H : Subgroup G ↦ ofSubgroup (Subgroup.normalClosure H))
+      ((↑) : NormalSubgroup G → Subgroup G) where
+  choice H _ := ofSubgroup (Subgroup.normalClosure H)
+  gc _ _ := Subgroup.normalClosure_subset_iff.symm
+  le_l_u _ := Subgroup.le_normalClosure
+  choice_eq _ _ := rfl
 
 @[to_additive]
-instance : Bot (NormalSubgroup G) :=
-  ⟨{ toSubgroup := ⊥ }⟩
-
-@[to_additive]
-instance : Max (NormalSubgroup G) :=
-  ⟨fun H K ↦ { toSubgroup := H.toSubgroup ⊔ K.toSubgroup }⟩
-
-@[to_additive]
-instance : Min (NormalSubgroup G) :=
-  ⟨fun H K ↦ { toSubgroup := H.toSubgroup ⊓ K.toSubgroup }⟩
-
-@[to_additive]
-instance : SupSet (NormalSubgroup G) :=
-  ⟨fun s ↦ { toSubgroup := ⨆ H, ⨆ (_ : H ∈ s), H.toSubgroup }⟩
-
-@[to_additive]
-instance : InfSet (NormalSubgroup G) :=
-  ⟨fun s ↦ {
-    toSubgroup := ⨅ H, ⨅ (_ : H ∈ s), H.toSubgroup
-    isNormal' := Subgroup.normal_iInf_normal fun H ↦
-      Subgroup.normal_iInf_normal fun _ ↦ H.isNormal'
-  }⟩
+instance : CompleteLattice (NormalSubgroup G) :=
+  fast_instance% CompleteLattice.copy
+    (GaloisInsertion.liftCompleteLattice (NormalSubgroup.gi G))
+    _ rfl
+    { toSubgroup := ⊤ } (toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
+    { toSubgroup := ⊥ } (toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
+    (fun H K ↦ { toSubgroup := H.toSubgroup ⊔ K.toSubgroup })
+      (funext fun H ↦ funext fun K ↦
+        toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
+    (fun H K ↦ { toSubgroup := H.toSubgroup ⊓ K.toSubgroup })
+      (funext fun H ↦ funext fun K ↦
+        toSubgroup_injective <| (Subgroup.normalClosure_eq_self _).symm)
+    _ rfl
+    _ rfl
 
 @[to_additive (attr := simp)]
 theorem toSubgroup_top : ((⊤ : NormalSubgroup G) : Subgroup G) = ⊤ := rfl
@@ -114,21 +115,6 @@ theorem toSubgroup_sup (H K : NormalSubgroup G) :
 theorem toSubgroup_inf (H K : NormalSubgroup G) :
     ((H ⊓ K : NormalSubgroup G) : Subgroup G) = H.toSubgroup ⊓ K.toSubgroup :=
   rfl
-
-@[to_additive (attr := simp)]
-theorem toSubgroup_sSup (s : Set (NormalSubgroup G)) :
-    ((sSup s : NormalSubgroup G) : Subgroup G) = ⨆ H, ⨆ (_ : H ∈ s), H.toSubgroup :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem toSubgroup_sInf (s : Set (NormalSubgroup G)) :
-    ((sInf s : NormalSubgroup G) : Subgroup G) = ⨅ H, ⨅ (_ : H ∈ s), H.toSubgroup :=
-  rfl
-
-@[to_additive]
-instance : CompleteLattice (NormalSubgroup G) :=
-  toSubgroup_injective.completeLattice _ .rfl .rfl toSubgroup_sup toSubgroup_inf
-    toSubgroup_sSup toSubgroup_sInf toSubgroup_top toSubgroup_bot
 
 @[to_additive (attr := simp)]
 theorem mem_toSubgroup_iff {H : NormalSubgroup G} {g : G} : g ∈ H.toSubgroup ↔ g ∈ H :=

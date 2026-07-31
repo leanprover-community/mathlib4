@@ -6,13 +6,13 @@ Authors: Diwen Yu
 module
 
 public import Mathlib.GroupTheory.NormalSubgroup.Basic
-public import Mathlib.Order.JordanHolder
+public import Mathlib.Order.ModularLattice
 
 /-!
 # Modular lattice of normal subgroups
 
 This file proves the modular law for the complete lattice of normal subgroups of an arbitrary
-group. Mathlib's abstract construction then supplies its `JordanHolderLattice` instance.
+group. This is the lattice-theoretic input for mathlib's abstract Jordan–Hölder construction.
 -/
 
 @[expose] public section
@@ -24,7 +24,7 @@ variable {G : Type*} [Group G]
 /-- The normal subgroups of an arbitrary group form a modular lattice. -/
 @[to_additive /-- The normal additive subgroups of an arbitrary additive group form a modular
 lattice. -/]
-instance instIsModularLatticeNormalSubgroup : IsModularLattice (NormalSubgroup G) where
+instance : IsModularLattice (NormalSubgroup G) where
   sup_inf_le_assoc_of_le := by
     intro x y z h g hg
     change g ∈ (x.toSubgroup ⊔ y.toSubgroup) ⊓ z.toSubgroup at hg
