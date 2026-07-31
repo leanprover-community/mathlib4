@@ -5,6 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Analysis.Convex.Hull
 
 /-!
@@ -231,19 +233,23 @@ theorem extremePoints_pi (s : ∀ i, Set (M i)) :
 
 end OrderedSemiring
 
+lemma image_extremePointsₛₗ {L 𝕜' : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [Semiring 𝕜']
+    [PartialOrder 𝕜'] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜' F]
+    {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [EquivLike L E F]
+    [SemilinearEquivClass L σ E F] (f : L) (hσ : ∀ a : 𝕜, 0 < σ a ↔ 0 < a) (s : Set E) :
+    f '' extremePoints 𝕜 s = extremePoints 𝕜' (f '' s) := by
+  ext b
+  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
+  simp [mem_extremePoints, ← semilinear_image_openSegment σ' f hσ]
+
 section OrderedRing
-variable {L : Type*} [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable {L : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+  [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
   [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
-    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
-  ext b
-  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
-  have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
-  simp only [mem_extremePoints, (EquivLike.surjective f).forall,
-    (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
+    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) :=
+  image_extremePointsₛₗ f (by simp) s
 
 end OrderedRing
 

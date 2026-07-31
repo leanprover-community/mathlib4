@@ -238,17 +238,50 @@ theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
+section
+variable {𝕜 𝕜' L E F G L' : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [Semiring 𝕜'] [PartialOrder 𝕜']
+  [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜' F] [AddCommMonoid G] [Module 𝕜 G]
+  {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [FunLike L E F] [SemilinearMapClass L σ E F]
+  [FunLike L' E G] [LinearMapClass L' 𝕜 E G]
+
+theorem semilinear_image_segment [RingHomInvPair σ σ'] (f : L) (x y : E)
+    (hσ : ∀ a, 0 ≤ σ a ↔ 0 ≤ a := by simp) :
+    f '' [x -[𝕜] y] = [f x -[𝕜'] f y] := by
+  simp only [subset_antisymm_iff, segment_subset_iff, image_subset_iff, mem_image]
+  simp only [segment, preimage_ofPred_eq, mem_ofPred_eq, map_add, exists_and_left]
+  refine ⟨fun a b ha hb hab ↦ ⟨σ a, by simpa [hσ], σ b, ?_⟩, fun a b ha hb hab ↦ ?_⟩
+  · simp_all [← map_add, ← map_smulₛₗ]
+  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, ?_, σ' b, ?_⟩, ?_⟩ <;> simp_all [← hσ]
+    · simp_all [← map_add]
+    · simp [map_smulₛₗ]
+
+theorem semilinear_image_openSegment [RingHomInvPair σ σ'] (f : L) (x y : E)
+    (hσ : ∀ a, 0 < σ a ↔ 0 < a := by simp) :
+    f '' openSegment 𝕜 x y = openSegment 𝕜' (f x) (f y) := by
+  simp only [subset_antisymm_iff, openSegment_subset_iff, image_subset_iff, mem_image]
+  simp only [openSegment, preimage_ofPred_eq, mem_ofPred_eq, map_add, exists_and_left]
+  refine ⟨fun a b ha hb hab ↦ ⟨σ a, by simpa [hσ], σ b, ?_⟩, fun a b ha hb hab ↦ ?_⟩
+  · simp_all [← map_add, ← map_smulₛₗ]
+  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, ?_, σ' b, ?_⟩, ?_⟩ <;> simp_all [← hσ]
+    · simp_all [← map_add]
+    · simp [map_smulₛₗ]
+
+@[simp] theorem linearMap_image_segment (f : L') (a b : E) :
+    f '' [a -[𝕜] b] = [f a -[𝕜] f b] := semilinear_image_segment _ _ _
+
+@[simp] theorem linearMap_image_openSegment (f : L') (a b : E) :
+    f '' openSegment 𝕜 a b = openSegment 𝕜 (f a) (f b) := semilinear_image_openSegment _ _ _
+
+end
+
 @[simp]
-theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
-  Set.ext fun x => by
-    simp_rw [segment_eq_image_lineMap, mem_image, exists_exists_and_eq_and, AffineMap.apply_lineMap]
+theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] := by
+  simp [segment_eq_image_lineMap, image_image]
 
 @[simp]
 theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
-    f '' openSegment 𝕜 a b = openSegment 𝕜 (f a) (f b) :=
-  Set.ext fun x => by
-    simp_rw [openSegment_eq_image_lineMap, mem_image, exists_exists_and_eq_and,
-      AffineMap.apply_lineMap]
+    f '' openSegment 𝕜 a b = openSegment 𝕜 (f a) (f b) := by
+  simp [openSegment_eq_image_lineMap, image_image]
 
 @[simp]
 theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
