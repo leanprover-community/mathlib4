@@ -456,11 +456,6 @@ theorem continuous_pow (n : ℕ) : Continuous (· ^ n : 𝕔𝔻 → 𝕔𝔻) :
   simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
   fun_prop
 
-instance : NatPowAssoc 𝕔𝔻 where
-  npow_add m n z := mod_cast pow_add (z : ℂ) m n
-  npow_one z := by simp [← coe_inj]
-  npow_zero z := by simp [← coe_inj]
-
 /-- Real part of a point of the unit disc. -/
 def re (z : 𝕔𝔻) : ℝ :=
   Complex.re z
