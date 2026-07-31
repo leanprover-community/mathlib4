@@ -882,6 +882,8 @@ variable [Mono (yonedaEquiv.symm x)]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+/-- If a simplex `x : X _⦋n⦌` is such that `yonedaEquiv.symm x : Δ[n] ⟶ X` is a
+monomorphism, then `Subcomplex.ofSimplex x` is representable by `⦋n⦌`. -/
 noncomputable def ofSimplexRepresentableBy :
     (Subcomplex.ofSimplex x : SSet).RepresentableBy ⦋n⦌ :=
   letI := (isIso_toOfSimplex_iff x).2 inferInstance
