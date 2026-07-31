@@ -777,6 +777,68 @@ end Semiring
 
 end AlgEquiv
 
+namespace RingEquiv
+
+variable {R S : Type*}
+
+/-- Reinterpret a `RingEquiv` as an `ℕ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
+def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S where
+  toEquiv := f
+  __ := f.toRingHom.toNatAlgHom
+
+@[simp]
+lemma coe_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    ⇑f.toNatAlgEquiv = ⇑f := rfl
+
+lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    f.toNatAlgEquiv.toAlgHom = (f : R →+* S).toNatAlgHom := rfl
+
+@[simp]
+lemma symm_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    f.toNatAlgEquiv.symm = f.symm.toNatAlgEquiv := rfl
+
+variable (R) (S) in
+/-- The equivalence between `RingEquiv` and `ℕ`-algebra isomorphisms. -/
+@[simps apply symm_apply]
+def equivNatAlgEquiv [Semiring R] [Semiring S] : (R ≃+* S) ≃ (R ≃ₐ[ℕ] S) where
+  toFun := toNatAlgEquiv
+  invFun := AlgEquiv.toRingEquiv
+
+lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
+    Function.Injective (RingEquiv.toNatAlgEquiv : (R ≃+* S) → _) :=
+  (equivNatAlgEquiv R S).injective
+
+/-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
+def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
+  toEquiv := f
+  __ := f.toRingHom.toIntAlgHom
+
+@[simp]
+lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    ⇑f.toIntAlgEquiv = ⇑f := rfl
+
+lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    f.toIntAlgEquiv.toAlgHom = (f : R →+* S).toIntAlgHom := rfl
+
+@[simp]
+lemma symm_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    f.toIntAlgEquiv.symm = f.symm.toIntAlgEquiv := rfl
+
+variable (R) (S) in
+/-- The equivalence between `RingEquiv` and `ℤ`-algebra isomorphisms. -/
+@[simps apply symm_apply]
+def equivIntAlgEquiv [Ring R] [Ring S] : (R ≃+* S) ≃ (R ≃ₐ[ℤ] S) where
+  toFun := toIntAlgEquiv
+  invFun := AlgEquiv.toRingEquiv
+
+lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
+    Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
+  (equivIntAlgEquiv R S).injective
+
+end RingEquiv
+
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]

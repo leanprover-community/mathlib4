@@ -76,6 +76,10 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : @Std.Refl S Commute :=
   ⟨Commute.refl⟩
 
+@[to_additive]
+instance : @Std.Symm S Commute where
+  symm _ _ := .symm
+
 -- This instance is useful for `Finset.noncommProd`
 @[to_additive]
 instance on_refl {f : G → S} : Std.Refl fun a b => Commute (f a) (f b) :=

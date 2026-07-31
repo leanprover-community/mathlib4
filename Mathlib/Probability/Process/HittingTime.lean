@@ -88,7 +88,7 @@ lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by e
 lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} (n m : ι) :
     hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
-  simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
+  simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.ofPred_true, Set.inter_univ]
   by_cases hnm : n ≤ m <;> simp [hnm] <;> grind
 
 @[simp]
@@ -269,7 +269,7 @@ theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     rotate_left
     · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
     · exact h
-    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq] at h'
+    simp only [Set.mem_inter_iff, Set.mem_Icc, Set.mem_ofPred_eq] at h'
     obtain ⟨j, ⟨⟨hnj, hjm⟩, hj_mem⟩, hji⟩ := h'
     exact ⟨j, ⟨hnj, hji⟩, hj_mem⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
@@ -291,7 +291,7 @@ lemma hittingAfter_lt_iff :
     rotate_left
     · exact ⟨n, by simp [mem_lowerBounds]; grind⟩
     · exact h_exists
-    simp only [Set.mem_setOf_eq] at h'
+    simp only [Set.mem_ofPred_eq] at h'
     obtain ⟨j, hj₁, hj₂⟩ := h'
     exact ⟨j, ⟨hj₁.1, hj₂⟩, hj₁.2⟩
   · obtain ⟨j, hj₁, hj₂⟩ := h'
@@ -447,7 +447,7 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} := by
     ext x
-    simp only [Set.mem_setOf_eq, gt_iff_lt, Set.mem_union, Set.mem_iUnion, Set.mem_inter_iff,
+    simp only [Set.mem_ofPred_eq, gt_iff_lt, Set.mem_union, Set.mem_iUnion, Set.mem_inter_iff,
       exists_and_left, exists_prop]
     specialize hτbdd x
     have h_top : τ x ≠ ⊤ := fun h => by simp [h] at hτbdd
@@ -455,7 +455,7 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
     simp [← or_and_right, le_or_gt]
   have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} = ∅ := by
     ext x
-    simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
+    simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_ofPred_eq, exists_prop,
       Set.mem_empty_iff_false, iff_false, not_exists, not_and, not_le]
     refine fun m hm hτ ↦ hm.trans_le <| le_hittingBtwn ?_ x
     specialize hτbdd x

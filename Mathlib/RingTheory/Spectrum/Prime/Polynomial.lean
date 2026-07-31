@@ -94,7 +94,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     exact hqf this
   · intro H
     rw [← mem_nilradical, nilradical_eq_sInf, Ideal.mem_sInf] at H
-    simp only [Set.mem_setOf_eq, Algebra.TensorProduct.algebraMap_apply,
+    simp only [Set.mem_ofPred_eq, Algebra.TensorProduct.algebraMap_apply,
       Ideal.Quotient.algebraMap_eq, not_forall] at H
     obtain ⟨q, hq, hfq⟩ := H
     have : ∀ a ∈ s, Ideal.Quotient.mk (Ideal.span s) a ⊗ₜ[R] 1 ∈ q := fun a ha ↦ by

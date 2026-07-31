@@ -371,7 +371,7 @@ instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  · rw [Set.mem_ofPred_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
 
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
