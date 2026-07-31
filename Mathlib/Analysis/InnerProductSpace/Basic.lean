@@ -153,9 +153,6 @@ variable {F}
 
 variable {𝕜}
 
-@[deprecated (since := "2025-12-26")] alias sesqFormOfInner := innerₛₗ
-@[deprecated (since := "2025-12-26")] noncomputable alias bilinFormOfRealInner := innerₗ
-
 /-- An inner product with a sum on the left. -/
 theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪∑ i ∈ s, f i, x⟫ = ∑ i ∈ s, ⟪f i, x⟫ :=
@@ -455,7 +452,7 @@ theorem norm_sub_mul_self_real (x y : F) :
 /-- Cauchy–Schwarz inequality with norm -/
 theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜) x, norm_eq_sqrt_re_inner (𝕜 := 𝕜) y]
-  letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
+  let : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   exact InnerProductSpace.Core.norm_inner_le_norm x y
 
 theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
@@ -712,7 +709,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
     rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
     simp only [@norm_sq_eq_re_inner 𝕜] at h
-    letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
+    let : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
     erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E)] at h
     rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
@@ -931,7 +928,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure.
@@ -952,7 +949,7 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     add_left := fun x y z => by
       simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
-      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      let := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
       simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
         re_ofReal_mul] }
@@ -970,7 +967,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
-@[implicit_reducible]
+@[instance_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G

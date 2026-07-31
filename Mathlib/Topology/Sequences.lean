@@ -230,9 +230,9 @@ theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
-  letI : TopologicalSpace X := ⨆ i, t i
+  let : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
-  letI := t i
+  let := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
 protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
@@ -413,13 +413,7 @@ only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
-
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
-
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
 
 end MetrizableSpaceSeqCompact

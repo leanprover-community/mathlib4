@@ -191,6 +191,12 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
+@[simp] lemma recTopCoe_top {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) :
+    recTopCoe top coe ∞ = top := rfl
+
+@[simp] lemma recTopCoe_ofNNReal {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0) :
+    recTopCoe top coe x = coe x := rfl
+
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
 @[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl

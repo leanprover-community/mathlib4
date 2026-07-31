@@ -156,7 +156,7 @@ protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOn
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
-      letI : AddMonoidWithOne R := AddMonoidWithOne.unary
+      let : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 
 theorem one_add_one_eq_two [AddMonoidWithOne R] : 1 + 1 = (2 : R) := by

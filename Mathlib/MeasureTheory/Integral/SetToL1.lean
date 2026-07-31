@@ -384,7 +384,7 @@ end SetToL1S
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 section SetToL1
 
@@ -624,7 +624,7 @@ section Function
 variable {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ} {f g : α → E}
 variable (μ T)
 
-open Classical in
+open scoped Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
 0 if the function is not integrable or if the target space is not complete. -/
 def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
@@ -1408,7 +1408,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
   by_cases hF : CompleteSpace F; swap;
   · simp [setToFun, hF, stronglyMeasurable_const]
   borelize E
-  haveI : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
+  have : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (β × α) E :=
     SimpleFunc.approxOn _ hf.measurable (range (Function.uncurry f) ∪ {0}) 0 (by simp)
@@ -1433,7 +1433,7 @@ theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpa
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [mem_setOf_eq, hfx, indicator_of_mem, this,
+      simp only [mem_ofPred_eq, hfx, indicator_of_mem, this,
         ← setToFun_simpleFunc_eq_setToSimpleFunc hT, f']
       refine
         tendsto_setToFun_of_dominated_convergence hT (fun y => ‖f x y‖ + ‖f x y‖)

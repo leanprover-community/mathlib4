@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.ClickSuggestions.SectionState
-public import Mathlib.Order.Antisymmetrization
 public meta import Lean.Meta.ExprLens
 
 /-!
@@ -43,10 +42,11 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   withLocalDeclD `a α fun a ↦ do
   withLocalDeclD `b α fun b ↦ do
   withNewMCtxDepth do
+  let mut result : Array GrwPos := #[]
   -- Any relation `r` can be proved from `AntisymmRel r`, so we add this as a possible relation
-  let antiSymm := mkApp2 (.const ``AntisymmRel [u]) α relation
-  let mut result : Array GrwPos :=
-    #[{ relName := ``AntisymmRel, relation := antiSymm, symm? := none }]
+  if (← getEnv).contains `AntisymmRel then
+    let antiSymm := mkApp2 (.const `AntisymmRel [u]) α relation
+    result := result.push { relName := `AntisymmRel, relation := antiSymm, symm? := none }
   -- If `relName` is symmetric, then include the reverse as a possible relation (`symm? := none`)
   let symm? ← try
     let dummyVar ← mkFreshExprMVar (mkApp2 relation a b)
@@ -61,7 +61,9 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
   result := result.push { relName, relation, symm? }
   -- For `≤`, we add the relation `<`.
   if relName == ``LE.le then
-    let (mvars, _, le) ← forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels ``le_of_lt))
+    if (← getEnv).contains `le_of_lt then
+      let (mvars, _, le) ←
+        forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels `le_of_lt))
       if ← isDefEq le.appFn!.appFn! relation then
         let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
         result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
