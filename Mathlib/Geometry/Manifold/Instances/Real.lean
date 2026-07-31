@@ -253,7 +253,7 @@ lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
 
 lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
     {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
-    (𝓡∂ n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
+    (𝓡∂ n).symm x = ⟨x, hx⟩ := by
   simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
 
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
