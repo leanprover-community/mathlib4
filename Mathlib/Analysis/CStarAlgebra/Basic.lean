@@ -312,3 +312,20 @@ instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A
   norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
 
 end StarSubalgebra
+
+section star_ball
+variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedStarGroup A]
+  (x : A) (s : ℝ)
+
+open Metric
+
+@[simp] theorem star_ball : star (ball x s) = ball (star x) s := by
+  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
+
+@[simp] theorem star_closedBall : star (closedBall x s) = closedBall (star x) s := by
+  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
+
+@[simp] theorem star_sphere : star (sphere x s) = sphere (star x) s := by
+  ext; simp [← norm_star (star _ - _)]
+
+end star_ball
