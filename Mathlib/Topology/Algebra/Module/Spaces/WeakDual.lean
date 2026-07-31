@@ -61,8 +61,7 @@ functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
-  FunLike, ContinuousLinearMapClass
+deriving TopologicalSpace, Inhabited, FunLike, ContinuousLinearMapClass
 
 namespace WeakDual
 
@@ -74,6 +73,8 @@ multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
 instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
   inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakDual
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
@@ -200,13 +201,19 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd
+deriving TopologicalSpace
 
 section Semiring
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+-- The `SMul` instance exists to avoid an nsmul diamond.
+variable [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝 for WeakSpace 𝕜 E
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
 
 namespace WeakSpace
 

@@ -185,6 +185,7 @@ noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
   d := pageD X data r
   shape pq pq' hpq := dif_neg hpq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex of the `r`th page of the spectral sequence on position `pq'`
 identifies to the short complex given by the differentials of the spectral object.
 Then, the homology of this short complex can be computed using
@@ -579,6 +580,9 @@ variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq')
 
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 unseal spectralSequence in
 /-- The homology data for the short complexes given by the differentials
 of a spectral sequence attached to a spectral object in an abelian category. -/
@@ -612,6 +616,7 @@ lemma spectralSequenceHomologyData_right_p
         X.mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' _ _ _
           (data.le₃₃' hrr' hr pq' hi₃ hi₃') n₀ n₁ n₂ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -622,6 +627,7 @@ lemma spectralSequenceHomologyData_right_homologyIso_eq_left_homologyIso
   ext1
   simp [ShortComplex.HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 unseal spectralSequence in
 lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.spectralSequence data).iso r r' pq' =

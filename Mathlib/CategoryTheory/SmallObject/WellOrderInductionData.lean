@@ -209,6 +209,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
 
 variable [WellFoundedLT J]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When `j` is a limit element, this is the extension to `d.Extension val₀ j`
 of a family of elements in `d.Extension val₀ i` for all `i < j`. -/
 def limit (j : J) (hj : Order.IsSuccLimit j)

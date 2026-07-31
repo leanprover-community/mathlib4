@@ -206,6 +206,7 @@ def restrictedYonedaObj {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
   obj s := OverArrows η s.unop.hom
   map f := ↾fun u ↦ u.map₂ f.unop.left f.unop.w
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functoriality of `restrictedYonedaObj η` in `η`. -/
 @[simps]
@@ -213,6 +214,7 @@ def restrictedYonedaObjMap₁ {F G : Cᵒᵖ ⥤ Type v} {η : F ⟶ A} {μ : G 
     (hε : ε ≫ μ = η) : restrictedYonedaObj η ⟶ restrictedYonedaObj μ where
   app _ := ↾fun u ↦ u.map₁ ε hε
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 This is basically just `yoneda : Over A ⥤ (Over A)ᵒᵖ ⥤ Type (max u v)` restricted in the second
 argument along the forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way
@@ -389,6 +391,7 @@ def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v) (F : (CostructuredArrow yo
   obj X := YonedaCollection F X.unop
   map f := ↾(YonedaCollection.map₂ F f.unop)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Functoriality of `yonedaCollectionPresheaf A F` in `F`. -/
 @[simps]
@@ -414,6 +417,7 @@ def yonedaCollectionPresheafToA (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type
     yonedaCollectionPresheaf A F ⟶ A where
   app _ := ↾(YonedaCollection.yonedaEquivFst)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- This is the reverse direction of the equivalence we're constructing. -/
 @[simps! obj map]
@@ -485,12 +489,14 @@ def unitAuxAux {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     yonedaCollectionPresheaf A (restrictedYonedaObj η) ≅ F :=
   NatIso.ofComponents (fun X => unitAuxAuxAux η X.unop)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Intermediate stage of assembling the unit. -/
 @[simps! hom_left]
 def unitAux (η : Over A) : (restrictedYoneda A ⋙ costructuredArrowPresheafToOver A).obj η ≅ η :=
   Over.isoMk (unitAuxAux η.hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit of the equivalence we're constructing. -/
 def unit (A : Cᵒᵖ ⥤ Type v) : 𝟭 (Over A) ≅ restrictedYoneda A ⋙ costructuredArrowPresheafToOver A :=
@@ -504,11 +510,13 @@ section counit
 
 variable {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X : C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma OverArrows.yonedaCollectionPresheafToA_val_fst (s : yoneda.obj X ⟶ A)
     (p : OverArrows (yonedaCollectionPresheafToA F) s) : p.val.fst = s := by
   simpa [YonedaCollection.yonedaEquivFst_eq] using p.app_val
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Forward direction of the counit. -/
 def counitForward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) :
@@ -581,6 +589,7 @@ def counitAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     F ≅ restrictedYonedaObj (yonedaCollectionPresheafToA F) :=
   NatIso.ofComponents (fun s => counitAuxAux F s.unop) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The counit of the equivalence we're constructing. -/
 def counit (A : Cᵒᵖ ⥤ Type v) :
@@ -593,6 +602,7 @@ end OverPresheafAux
 
 open OverPresheafAux
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `A : Cᵒᵖ ⥤ Type v` is a presheaf, then we have an equivalence between presheaves lying over
 `A` and the category of presheaves on `CostructuredArrow yoneda A`. There is a quasicommutative
@@ -614,6 +624,7 @@ def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ 
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
 is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
 hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the

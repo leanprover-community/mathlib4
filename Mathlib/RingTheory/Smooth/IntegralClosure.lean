@@ -122,6 +122,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
         (AlgHom.id R (integralClosure R B))).toLinearMap)
       (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 /-- Base changing to `MvPolynomial σ R` preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
@@ -160,7 +161,6 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
     (M : Submonoid R) [IsLocalization M S] :
     Function.Bijective (toIntegralClosure R S B) := by
-  classical
   let φ : integralClosure R B →ₐ[R] integralClosure S (S ⊗[R] B) :=
     AlgHom.codRestrict (Algebra.TensorProduct.includeRight.comp (integralClosure R B).val)
       ((integralClosure S (S ⊗[R] B)).restrictScalars R) fun ⟨x, hx⟩ ↦ by

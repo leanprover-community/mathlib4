@@ -3,8 +3,10 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.BoundedOrder.Lattice
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Do not combine `IsOrderedCancelAddMonoid` with `BoundedOrder`
