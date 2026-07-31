@@ -155,6 +155,7 @@ theorem smallInductiveDimension_eq (n : ℕ)
 theorem smallInductiveDimension_eq_bot : smallInductiveDimension X = ⊥ ↔ IsEmpty X := by
   simp_rw [← hasSmallInductiveDimensionLT_zero_iff, ← smallInductiveDimension_lt_iff,
     WithBot.lt_coe_bot.symm, bot_eq_zero', Nat.cast_zero, WithBot.coe_zero]
+
 variable (X) in
 @[simp]
 theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
