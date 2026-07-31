@@ -95,7 +95,8 @@ def privateModule : Linter where run stx := do
         Consider adding `public section` at the beginning of the module, \
         or selectively marking declarations as `public`. Mark a `def` with \
         `@[expose]` if downstream code needs it to be definitionally equal \
-        to its body (e.g. for `unfold`)."
+        to its body (e.g. for `unfold`). Alternatively, \
+        add `@[expose] public section` to mark every definition as exposed."
 
 initialize addLinter privateModule
 
