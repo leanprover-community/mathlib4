@@ -131,11 +131,11 @@ end Initial
 
 end CategoryOfElements
 
-namespace Functor
+namespace Functor.Elements
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
-def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
+def corepresentableByOfIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     CorepresentableBy F E.fst where
   homEquiv :=
     { toFun f := F.map f E.snd
@@ -143,20 +143,20 @@ def CorepresentableBy.ofIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsIn
       left_inv f := Subtype.ext_iff.mp (he.hom_ext (he.to ⟨_, F.map f E.snd⟩) ⟨f, rfl⟩)
       right_inv y := (he.to ⟨_, y⟩).prop }
 
-lemma isCorepresentable.ofHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
+lemma isCorepresentableOfHasInitial (F : C ⥤ Type w) [HasInitial (Elements F)] :
     IsCorepresentable F where
   has_corepresentation :=
     ⟨(⊥_ F.Elements).fst,
-      (Nonempty.intro (CorepresentableBy.ofIsInitial initialIsInitial))⟩
+      (Nonempty.intro (corepresentableByOfIsInitial initialIsInitial))⟩
 
 theorem isCorepresentable_iff_hasInitial (F : C ⥤ Type w) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
-  mp _ := isCorepresentable.ofHasInitial F
+  mp _ := isCorepresentableOfHasInitial F
   mpr _ := inferInstance
 
 /-- An initial object in the category `F.Elements` of a contravariant functor defines a
 representation for that functor. -/
-def RepresentableBy.ofIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
+def representableByOfIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     RepresentableBy F (E.fst.unop) where
   homEquiv :=
     { toFun f := F.map f.op E.snd
@@ -167,17 +167,17 @@ def RepresentableBy.ofIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : 
         simp only [this, Quiver.Hom.unop_op]
       right_inv y := (he.to ⟨_, y⟩).prop }
 
-lemma isRepresentable.ofHasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elements F)] :
+lemma isRepresentableOfHasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elements F)] :
     IsRepresentable F where
   has_representation :=
     ⟨(⊥_ F.Elements).fst.unop,
-      (Nonempty.intro (RepresentableBy.ofIsInitial initialIsInitial))⟩
+      (Nonempty.intro (representableByOfIsInitial initialIsInitial))⟩
 
 theorem isRepresentable_iff_hasInitial (F : Cᵒᵖ ⥤ Type w) :
     HasInitial (Elements F) ↔ IsRepresentable F where
-  mp _ := isRepresentable.ofHasInitial F
+  mp _ := isRepresentableOfHasInitial F
   mpr _ := inferInstance
 
-end Functor
+end Functor.Elements
 
 end CategoryTheory
