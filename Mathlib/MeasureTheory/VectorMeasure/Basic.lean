@@ -146,7 +146,7 @@ theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Dis
 theorem of_biUnion {ι : Type*} {s : Set ι} {f : ι → Set α} (hs : s.Countable)
     (hd : s.Pairwise (Disjoint on f)) (h : ∀ b ∈ s, MeasurableSet (f b)) :
     v (⋃ b ∈ s, f b) = ∑' p : s, v (f p) := by
-  haveI := hs.toEncodable
+  have := hs.toEncodable
   rw [biUnion_eq_iUnion]
   apply of_disjoint_iUnion
   · exact fun x ↦ h x x.2

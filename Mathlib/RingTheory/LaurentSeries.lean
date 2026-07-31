@@ -501,7 +501,7 @@ theorem valuation_single_zpow (s : ℤ) :
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
-/- The coefficients of a power series vanish in degree strictly less than its valuation. -/
+/-- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     (H : Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ)) :
     n < d → coeff n f = 0 := by
@@ -511,7 +511,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, Ideal.span_singleton_dvd_span_singleton_iff_dvd] at H
 
-/- The valuation of a power series is the order of the first non-zero coefficient. -/
+/-- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     Valued.v (f : K⸨X⸩) ≤ exp (-d : ℤ) ↔
       ∀ n : ℕ, n < d → coeff n f = 0 := by
