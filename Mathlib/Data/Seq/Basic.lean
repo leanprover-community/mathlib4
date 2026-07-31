@@ -94,7 +94,7 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using length_le_iff
+  · simpa [length'_of_terminates h, ENat.natCast_le_natCast] using length_le_iff
   · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
 
 set_option backward.isDefEq.respectTransparency false in
@@ -119,7 +119,7 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
-  · simpa [length'_of_terminates h] using lt_length_iff
+  · simpa [length'_of_terminates h, ENat.natCast_lt_natCast] using lt_length_iff
   · simp only [length'_of_not_terminates h, ENat.natCast_lt_top, Option.mem_def, true_iff]
     rw [not_terminates_iff] at h
     rw [← Option.isSome_iff_exists]
