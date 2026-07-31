@@ -92,23 +92,22 @@ variable [LinearOrder α]
 
 /-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
 the vertices between its endpoints. -/
-theorem discrete_intermediate_value_theorem {u v : α} (w : (hasse α).Walk u v) :
-    ∀ x : α, u ≤ x ∧ x ≤ v → x ∈ w.support := by
-  intro x hx
-  by_cases hv : x = v
-  · rw [hv]; exact w.end_mem_support
-  · have ⟨d, hd, _⟩ := w.exists_boundary_dart {y | y ≤ x} hx.left (hv <| le_antisymm hx.right ·)
+theorem mem_support_hasse_of_ge_of_le {u v : α} (w : (hasse α).Walk u v) {x : α}
+    (hu : u ≤ x) (hv : x ≤ v) : x ∈ w.support := by
+  by_cases hx : x = v
+  · rw [hx]; exact w.end_mem_support
+  · have ⟨d, hd, _⟩ := w.exists_boundary_dart {y | y ≤ x} hu (hx <| le_antisymm hv ·)
     rw [show x = d.fst by grind [not_le, d.adj, hasse, CovBy]]
     exact w.dart_fst_mem_support_of_mem_darts hd
 
 /-- A discrete form of the intemediate value theorem – a walk in a linear graph visits all of
 the darts between its endpoints, oriented from the walk's start to its end. -/
-theorem discrete_intermediate_value_theorem_darts {u v : α} (w : (hasse α).Walk u v) :
-    ∀ d : (hasse α).Dart, u ≤ d.fst ∧ d.fst < d.snd ∧ d.snd ≤ v → d ∈ w.darts := by
-  intro d ⟨hud, hd, hvd⟩
+theorem mem_darts_hasse_of_ge_of_le_of_le {u v : α} (w : (hasse α).Walk u v) {d : (hasse α).Dart}
+    (hu : u ≤ d.fst) (hd : d.fst ≤ d.snd) (hv : d.snd ≤ v) : d ∈ w.darts := by
+  replace hd := lt_of_le_of_ne hd d.fst_ne_snd
   have ⟨e, he, _⟩ :=
-    w.exists_boundary_dart {x | x ≤ d.fst} hud
-      (lt_irrefl v <| lt_of_le_of_lt · <| lt_of_lt_of_le hd hvd)
+    w.exists_boundary_dart {x | x ≤ d.fst} hu
+      (lt_irrefl v <| lt_of_le_of_lt · <| lt_of_lt_of_le hd hv)
   convert he
   ext <;> grind [d.adj, e.adj, hasse, CovBy, covBy_iff_lt_iff_le_left]
 
@@ -135,11 +134,10 @@ theorem preconnected_hasse_of_predOrder [PredOrder α] [IsPredArchimedean α] :
 alias hasse_preconnected_of_pred := preconnected_hasse_of_predOrder
 
 theorem isAcyclic_hasse_of_linearOrder : (hasse α).IsAcyclic := by
-  rw [isAcyclic_iff_forall_adj_isBridge]
-  intro u v huv
+  refine isAcyclic_iff_forall_adj_isBridge.mpr fun u v huv ↦ ?_
   wlog hle : u < v with h
-  · rw [show s(u, v) = s(v, u) by simp]
-    exact h _ huv.symm <| lt_of_le_of_ne (le_of_not_gt hle) (ne_of_adj _ huv.symm)
+  · rw [Sym2.eq_swap]
+    exact h _ _ _ huv.symm <| lt_of_le_of_ne (le_of_not_gt hle) (ne_of_adj _ huv.symm)
   rw [isBridge_iff]
   intro ⟨w⟩
   have ⟨d, _⟩ := w.exists_boundary_dart {x | x < v} hle (lt_irrefl v)
@@ -170,6 +168,10 @@ theorem isAcyclic_pathGraph (n : ℕ) : (pathGraph n).IsAcyclic := isAcyclic_has
 
 theorem isTree_pathGraph_add_one (n : ℕ) : (pathGraph (n + 1)).IsTree :=
   ⟨connected_pathGraph_add_one n, isAcyclic_pathGraph (n + 1)⟩
+
+theorem isTree_pathGraph {n : ℕ} : (pathGraph n).IsTree ↔ n ≠ 0 :=
+  ⟨fun h h0 ↦ not_nonempty_iff.mpr Fin.isEmpty (h0 ▸ h.nonempty),
+   fun h0 ↦ Nat.sub_one_add_one h0 ▸ isTree_pathGraph_add_one (n - 1)⟩
 
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
