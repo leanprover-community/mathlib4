@@ -15,7 +15,7 @@ This file contains lemmas about short exact sequences in abelian categories.
 
 ## Main results
 
-* `ShortComplex.Exact.subobjectOrderIso`: a correspondence theorem for a short exact sequence.
+* `ShortComplex.Exact.subobjectOrderIso`: the correspondence theorem for short exact sequences.
 
 -/
 

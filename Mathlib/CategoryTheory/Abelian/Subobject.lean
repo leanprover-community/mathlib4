@@ -21,9 +21,8 @@ particular, `exists_eq_kernelSubobject` and `pullback_eq_kernelSubobject` specia
   cokernels
 * `Abelian.Subobject.epiOrderIso`: for an epimorphism `f : X ⟶ Y`, there is an order-isomorphism
   between subobjects of `Y` and subobjects of `X` containing `kernelSubobject f`
-* `Abelian.Subobject.cokernelOrderIso`: a correspondence theorem: given a subobject `Y` of `X`,
-  there is an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
-  containing `Y`.
+* `Abelian.Subobject.cokernelOrderIso`: given a subobject `Y` of `X`, there is an order-isomorphism
+  between subobjects of `cokernel (Y ↪ X)` and subobjects of `X` containing `Y`.
 
 ## References
 

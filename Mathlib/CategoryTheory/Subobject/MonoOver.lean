@@ -512,6 +512,17 @@ def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback
   ((Over.mapPullbackAdj f).comp imageForgetAdj).restrictFullyFaithful
     (fullyFaithfulForget X) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma factorThruImage_comp_existsPullbackAdj_counit_app_hom_left
+    (f : X ⟶ Y) [HasPullbacks C] (B : MonoOver Y) :
+    factorThruImage (pullback.snd B.arrow f ≫ f) ≫
+        ((existsPullbackAdj f).counit.app B).hom.left = pullback.fst B.arrow f := by
+  have hw : ((existsPullbackAdj f).counit.app B).hom.left ≫ B.arrow =
+      image.ι (pullback.snd B.arrow f ≫ f) :=
+    MonoOver.w ((existsPullbackAdj f).counit.app B)
+  rw [← cancel_mono B.arrow, Category.assoc, hw, image.fac, pullback.condition]
+
 /-- `MonoOver.exists` commutes with composition (up to isomorphism). -/
 def existsComp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacks C] :
     «exists» (f ≫ g) ≅ «exists» f ⋙ «exists» g :=
