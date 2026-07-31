@@ -91,19 +91,14 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
 
 open Walk in
 lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
-  obtain ⟨u, w, _, hwl⟩ := exists_egirth_eq_length.mpr h
-  have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
-    have ⟨p, _⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
-    by_contra! hlt; classical
-    have := p.bypass_isPath.exists_isCycle_length_le_add_of_ne
-      (w.drop (w.length / 2)).reverse.bypass_isPath <| by grind [take_length, length_reverse,
-      length_append, length_bypass_le_length, ENat.natCast_lt_natCast, length_eq_zero_iff,
-      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse]
-    grind [ENat.natCast_lt_natCast, length_bypass_le_length, length_reverse, egirth_le_length,
-      ENat.natCast_le_natCast, length_append, take_length, append_take_drop_eq]
-  calc
-    G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
-    _  ≤ 2 * G.ediam + 1 := by grw [half_g_le_edist, edist_le_ediam]
+  obtain ⟨u, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
+  have ⟨p, hp, _⟩ := (w.take (w.length / 2)).reachable.exists_path_of_dist
+  have half_g_le_edist : w.length / 2 ≤ G.dist u (w.getVert (w.length / 2)) := by
+    by_contra! hlt
+    have := hp.exists_isCycle_length_le_add_of_ne (hw.isPath_take (by lia)) (by grind [take_length])
+    grind [ENat.natCast_le_natCast, take_length, egirth_le_length]
+  have h2 : (w.length : ℕ∞) ≤ 2 * (w.length / 2 :) + 1 := by norm_cast; lia
+  grw [hwl, h2, half_g_le_edist, natCast_dist_le_edist, edist_le_ediam]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
