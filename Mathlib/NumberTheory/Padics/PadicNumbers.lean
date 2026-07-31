@@ -112,8 +112,7 @@ lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
 @[simp]
 lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
     Int.padicValuation p p = exp (-1) := by
-  rw [← Rat.padicValuation_natCast]
-  exact Rat.padicValuation_self p
+  rw [← Rat.padicValuation_natCast, Rat.padicValuation_self]
 
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
