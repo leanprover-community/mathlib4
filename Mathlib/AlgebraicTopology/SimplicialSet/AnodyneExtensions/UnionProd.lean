@@ -403,6 +403,8 @@ lemma simplex_mem_nonDegenerate :
   rw [nonDegenerate_iff_strictMono_objEquiv, Equiv.apply_symm_apply]
   exact hx.strictMono_φ hd
 
+
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma δ_simplex :
     (Δ[m + 1] ⊗ Δ[n]).δ (min x hd).castSucc (hx.simplex hd) = (x.cast hd).simplex := by
