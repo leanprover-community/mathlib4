@@ -80,10 +80,6 @@ literal `M`, as matched by `matchRankLit?`. Everything here is past the commitme
 failures are refusals of a committed attempt, and throw. -/
 def normalizeRank (e M : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
-  let some _ ← synthInstance? (← mkAppM ``CommRing #[R])
-    | throwError "expected the element type to be a commutative ring"
-  let some _ ← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])
-    | throwError "expected the element type to be a domain"
   let decomp ← (mkBareissDecomposition M m n R entries).run'
   let pf ← mkAppM ``Bareiss.Decomposition.rank_eq #[decomp]
   let rankE ← mkAppM ``Bareiss.Decomposition.rank #[decomp]
@@ -97,11 +93,12 @@ end Mathlib.Tactic.Echelon
 open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
-Bareiss decomposition, and skips other `rank` terms. -/
+Bareiss decomposition. Other `rank` terms, and element types the Bareiss method does not
+apply to, are skipped. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
-  match ← matchRankLit? e with
-  | some (M, m, n, R, entries) => return .done (← normalizeRank e M m n R entries)
-  | none => return .continue
+  let some (M, m, n, R, entries) ← matchRankLit? e | return .continue
+  if (← bareissObstruction? R).isSome then return .continue
+  return .done (← normalizeRank e M m n R entries)
 
 /-- `eval_rank` reduces `Matrix.rank` of a closed matrix literal to a literal and tries to
 close the goal. -/
@@ -112,5 +109,11 @@ elab (name := evalRank) "eval_rank" : tactic => do
   -- `normalizeRank` propagates verbatim
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank]))
   if (← Tactic.getUnsolvedGoals).any (· == goal) then
+    -- diagnose the skip: a rank literal over an unsupported element type reports the
+    -- method's obstruction; otherwise there was no rank literal to work on
+    if let some rankApp := (← goal.getType).find? (·.isAppOfArity ``Matrix.rank 6) then
+      if let some (_, _, _, R, _) ← matchRankLit? rankApp then
+        if let some why ← bareissObstruction? R then
+          throwError why
     throwError "eval_rank: no closed `Matrix.rank` literal found in the goal"
   Tactic.evalTactic (← `(tactic| try omega))

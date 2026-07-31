@@ -163,7 +163,7 @@ example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
 example (A : Matrix (Fin 2) (Fin 2) ℚ) (h : A.rank = 2) :
     Matrix.rank (R := ℚ) !![1, 0; 0, 1] = A.rank := by
   simp only [norm_rank]
-  exact h.symm
+  omega
 
 /-- error: expected the element type to be a commutative ring -/
 #guard_msgs in
@@ -190,8 +190,13 @@ the kernel
 example : Matrix.rank (R := ℚ[X]) !![1, 2; 2, 4] = 1 := by eval_rank
 
 /--
-error: the entry does not evaluate to a numeral
-  X
+error: cannot verify the rank certificate: equality in the element type does not reduce in the kernel
+  ℚ[X]
 -/
 #guard_msgs in
 example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
+
+-- in a larger simp set, an unsupported element type is skipped rather than aborting the
+-- whole `simp` call (the skip is exactly why the argument goes unused)
+set_option linter.unusedSimpArgs false in
+example : Matrix.rank (R := ℝ) !![1, 0; 0, 1] = 2 ∨ True := by simp [norm_rank]
