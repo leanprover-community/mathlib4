@@ -336,6 +336,10 @@ lemma IsLeftQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
 lemma IsRightQuasiInverse.equiv {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsRightQuasiInverse v) : v ∘ₗ u ≈ .id := h
 
+lemma _root_.LinearEquiv.isQuasiInverse (e : V ≃ₗ[K] V₂) :
+    e.symm.IsQuasiInverse e := by
+  simp [IsQuasiInverse, IsLeftQuasiInverse, IsRightQuasiInverse]
+
 @[symm]
 lemma IsQuasiInverse.symm {u : V₃ →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
     (h : u.IsQuasiInverse v) : v.IsQuasiInverse u :=
@@ -456,12 +460,16 @@ lemma IsQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V�
     (w ∘ₗ v).IsQuasiInverse u :=
   ⟨hw.1, IsRightQuasiInverse.of_comp_right hv.1 hw.2⟩
 
+lemma isQuasiInverse_subtype_projectionOnto_iff {S T : Submodule K V} (hST : IsCompl S T) :
+    IsQuasiInverse S.subtype (S.projectionOnto T hST) ↔ IsNoetherian K T := by
+  rw [IsQuasiInverse, and_iff_left (by simp [IsRightQuasiInverse, projectionOnto_comp_subtype]),
+    IsLeftQuasiInverse, ← projection,
+    FiniteRangeSetoid.projection_equiv_id_iff_isNoetherian hST]
+
 lemma isQuasiInverse_subtype_projectionOnto {S T : Submodule K V} [IsNoetherian K T]
     (hST : IsCompl S T) :
-    IsQuasiInverse S.subtype (S.projectionOnto T hST) := by
-  constructor
-  · grw [IsLeftQuasiInverse, ← FiniteRangeSetoid.projection_equiv_id hST, projection]
-  · simp [IsRightQuasiInverse, projectionOnto_comp_subtype]
+    IsQuasiInverse S.subtype (S.projectionOnto T hST) :=
+  isQuasiInverse_subtype_projectionOnto_iff hST |>.mpr inferInstance
 
 end QuasiInverse
 

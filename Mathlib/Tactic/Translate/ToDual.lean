@@ -256,8 +256,10 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]

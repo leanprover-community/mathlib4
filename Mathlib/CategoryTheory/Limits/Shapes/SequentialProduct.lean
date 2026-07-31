@@ -219,6 +219,7 @@ variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [∀ n, Epi (f n)]
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma functorMap_epi (n : ℕ) : Epi (functorMap f n) := by
   rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
   apply +allowSynthFailures epi_comp

@@ -202,8 +202,8 @@ lemma range_toContinuousMap :
 instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
-  rw [range_toContinuousMap, setOf_and]
-  apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
+  rw [range_toContinuousMap, ofPred_and]
+  apply isClosed_setOfPred_lipschitzWith L |>.preimage continuous_coeFun |>.inter
   simp_rw [mem_closedBall_iff_norm]
   exact isClosed_le (by fun_prop) (by fun_prop)
 
