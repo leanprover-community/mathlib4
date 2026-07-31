@@ -72,7 +72,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx' p P = Nat.find h := by
-  convert! Nat.sSup_def h
+  convert! Nat.sSup_def (s := {n | map f p ≤ P ^ n}) h
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_find := ramificationIdx'_eq_find
 

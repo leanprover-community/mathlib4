@@ -136,7 +136,7 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
   let N := s →₀ R
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)
   have hf : Function.Surjective f := by
-    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, Subtype.range_val]
+    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination, Subtype.range_coe_subtype]
     convert! hs
   have (I : Ideal R) (hI : I.IsMaximal) :=
     letI := H I hI

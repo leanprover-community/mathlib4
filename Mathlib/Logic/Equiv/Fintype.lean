@@ -146,9 +146,7 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
-  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply,
-    sumCompl_symm_apply_of_neg hx]
-  rfl
+  simp [extendSubtype, subtypeCongr, hx]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) :=

@@ -134,7 +134,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
       intro s h
       rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
-      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
+      exact mem_image_of_mem _ (mem_image_of_mem Finset.card h)
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]

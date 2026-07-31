@@ -128,11 +128,10 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
     rw [Measure.map_apply (by fun_prop)]
     swap
-    · refine MeasurableSet.inter ?_ ?_
-      · change MeasurableSet {p : E × E | ‖p.1‖ ≤ a}
-        exact measurableSet_le (by fun_prop) (by fun_prop)
-      · change MeasurableSet {p : E × E | b < ‖p.2‖}
-        exact measurableSet_lt (by fun_prop) (by fun_prop)
+    · change MeasurableSet ({p : E × E | ‖p.1‖ ≤ a} ∩ {p : E × E | b < ‖p.2‖})
+      refine MeasurableSet.inter ?_ ?_
+      · exact measurableSet_le (by fun_prop) (by fun_prop)
+      · exact measurableSet_lt (by fun_prop) (by fun_prop)
     congr 1
     simp only [Set.preimage_ofPred_eq, ContinuousLinearMap.rotation_apply, Real.cos_neg,
       Real.cos_pi_div_four, Real.sin_neg, Real.sin_pi_div_four, neg_smul, neg_neg]
@@ -421,7 +420,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
     rw [← ae_iff_prob_eq_one ?_] at ha
-    · rw [eventuallyEq_comm, ae_eq_univ]
+    · rw [eventuallyEqSet_comm, ae_eq_univ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]

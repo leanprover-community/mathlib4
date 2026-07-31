@@ -724,8 +724,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_sdiff w).1
-      exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    · exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 @[deprecated (since := "2026-07-09")]
 alias isClopen_setOf_meromorphicOrderAt_eq_top := isClopen_setOfPred_meromorphicOrderAt_eq_top

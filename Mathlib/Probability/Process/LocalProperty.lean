@@ -193,7 +193,8 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
-  mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
+  mono := ae_of_all _ <| fun ω n m hnm ↦
+    iInf_le_iInf_of_subset (s := {j | j ≥ m}) (t := {j | j ≥ n}) fun k hk ↦ hnm.trans hk
   tendsto_top := by
     filter_upwards [hτ.tendsto_top] with ω hω
     replace hω := hω.liminf_eq
@@ -249,7 +250,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp [Set.ofPred] at *
+    simp at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
     simp_rw [lt_inf_iff, Set.ofPred_and]
@@ -279,10 +280,10 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
   obtain ⟨T, hT, h⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux' hτ hσ
   choose nk hnk using h
   refine ⟨mkStrictMonoAux nk, T, mkStrictMonoAux_strictMono nk, hT,
-    fun n ↦ le_trans (EventuallyLE.measure_le ?_) (hnk n)⟩
+    fun n ↦ le_trans (EventuallySubset.measure_le ?_) (hnk n)⟩
   filter_upwards [(hσ n).mono] with ω hω
   specialize hω (le_mkStrictMonoAux nk n)
-  simp [Set.ofPred]
+  simp
   grind
 
 lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction

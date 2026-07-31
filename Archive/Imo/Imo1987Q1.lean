@@ -37,7 +37,7 @@ set_option backward.isDefEq.respectTransparency false in
 def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, Perm ({x}ᶜ : Set α) :=
   calc
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
-      setProdEquivSigma _
+      setProdEquivSigma {σx : α × Perm α | σx.2 σx.1 = σx.1}
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
       sigmaCongrRight fun x => Equiv.subtypeEquivRight (by simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl

@@ -448,7 +448,8 @@ theorem finite_setOfPred_absNorm_le [CharZero S] (n : ℕ) :
 theorem finite_setOfPred_absNorm_le₀ [CharZero S] (n : ℕ) :
     {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset
+      (t := {I | I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
   exact Finite.of_equiv _ (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ absNorm I ≤ n)).symm
 
 @[deprecated (since := "2026-07-09")]
@@ -459,9 +460,11 @@ theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
   classical
   have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset
+      (t := {I | I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
   have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
-    (finite_setOfPred_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+    (finite_setOfPred_absNorm_le n).subset
+      (t := {I | I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n}) fun _ ⟨_, h⟩ ↦ h
   rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
     (fun I ↦ absNorm I ≤ n))]
   let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕

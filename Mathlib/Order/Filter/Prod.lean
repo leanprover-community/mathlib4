@@ -115,7 +115,12 @@ theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
         ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
-  simpa only [Set.prod_subset_iff] using! @mem_prod_iff α β p f g
+  constructor
+  · intro h
+    obtain ⟨t₁, ht₁, t₂, ht₂, hsub⟩ := mem_prod_iff.1 h
+    exact ⟨(· ∈ t₁), ht₁, (· ∈ t₂), ht₂, fun {x} hx {y} hy ↦ hsub (Set.mk_mem_prod hx hy)⟩
+  · rintro ⟨pa, hpa, pb, hpb, h⟩
+    exact mem_prod_iff.2 ⟨{x | pa x}, hpa, {y | pb y}, hpb, fun x hx ↦ h hx.1 hx.2⟩
 
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
   tendsto_inf_left tendsto_comap

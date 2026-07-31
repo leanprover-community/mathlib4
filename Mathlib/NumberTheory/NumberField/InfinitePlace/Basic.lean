@@ -449,7 +449,8 @@ theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
   classical
   convert!
     Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
-      (disjoint_isReal_isComplex K) using 1
+      (Pi.disjoint_iff.mpr fun w ↦ Prop.disjoint_iff.mpr fun ⟨h1, h2⟩ ↦
+        not_isReal_iff_isComplex.mpr h2 h1) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
 set_option backward.isDefEq.respectTransparency.types false in

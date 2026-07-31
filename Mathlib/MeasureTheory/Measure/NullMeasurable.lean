@@ -201,7 +201,9 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact sdiff_subset_iff.1 (subset_toMeasurable _ _)
-  · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
+  · have : toMeasurable μ (s \ t) =ᵐ[μ] ∅ := by
+      rw [ae_eq_empty, measure_toMeasurable]
+      exact ae_le_set.1 hst.le
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by

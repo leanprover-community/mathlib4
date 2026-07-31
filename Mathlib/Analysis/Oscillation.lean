@@ -136,7 +136,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
   have S_antitone : ∀ (r₁ r₂ : ℝ), r₁ ≤ r₂ → S r₂ ⊆ S r₁ :=
     fun r₁ r₂ hr x ⟨a, ar₂, ha⟩ ↦ ⟨a, lt_of_le_of_lt hr ar₂, ha⟩
   obtain ⟨δ, δ0, hδ⟩ : ∃ r > 0, K ⊆ S r := by
-    obtain ⟨T, Tb, Tfin, hT⟩ := comp.elim_finite_subcover_image S_open S_cover
+    obtain ⟨T, Tb, Tfin, hT⟩ := comp.elim_finite_subcover_image (b := Ioi 0) S_open S_cover
     by_cases T_nonempty : T.Nonempty
     · use Tfin.isWF.min T_nonempty, Tb (Tfin.isWF.min_mem T_nonempty)
       intro x hx

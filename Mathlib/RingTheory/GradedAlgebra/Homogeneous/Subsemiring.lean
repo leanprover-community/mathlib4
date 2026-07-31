@@ -133,7 +133,7 @@ theorem Subsemiring.isHomogeneous_iff_forall_subset :
   Iff.rfl
 
 theorem Subsemiring.isHomogeneous_iff_subset_iInter :
-    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R :=
-  subset_iInter_iff.symm
+    SetLike.IsHomogeneous 𝒜 R ↔ (R : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' R := by
+  simp [Subsemiring.isHomogeneous_iff_forall_subset]
 
 end IsHomogeneousSubsemiringDefs

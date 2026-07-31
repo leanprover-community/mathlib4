@@ -112,12 +112,12 @@ Lower topology.
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
   convert! isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
-  ext R
-  simp only [preimage_compl, mem_ofPred_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
+  simp only [preimage_compl, mem_ofPred_eq, mem_iff_mem, IsLower.lowerBasis, mem_image,
+    exists_exists_and_eq_and]
   constructor <;> intro ha
   · obtain ⟨a, ha'⟩ := ha
     use {a}
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
+    rw [← ha', ← Function.Injective.preimage_image Subtype.val_injective (hull T a)ᶜ]
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
       Subtype.image_preimage_coe, sdiff_self_inter, preimage_sdiff, Subtype.coe_preimage_self,
       true_and]

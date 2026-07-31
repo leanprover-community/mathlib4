@@ -130,7 +130,7 @@ theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
   rw [hittingAfter, if_pos ⟨k, hk₂, h⟩]
-  exact_mod_cast csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
+  exact_mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hk₂, h⟩
 
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
@@ -163,7 +163,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
-  · exact_mod_cast le_csInf h fun b hb => hb.1
+  · exact_mod_cast le_csInf (s := {i | n ≤ i ∧ u i ω ∈ s}) h fun b hb => hb.1
   · simp
 
 theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -181,7 +181,7 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
   simp_rw [hittingBtwn, if_pos h_exists]
   have h_nonempty : (Set.Icc n m ∩ {i : ι | u i ω ∈ s}).Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
-    exact ⟨k, Set.mem_inter hk₁ hk₂⟩
+    exact ⟨k, hk₁, hk₂⟩
   have h_mem := csInf_mem h_nonempty
   rw [Set.mem_inter_iff] at h_mem
   exact h_mem.2
@@ -191,7 +191,7 @@ lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j
   rw [hittingAfter, if_pos h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
-    exact ⟨k, Set.mem_inter hk₁ hk₂⟩
+    exact ⟨k, hk₁, hk₂⟩
   exact (csInf_mem h_nonempty).2
 
 theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
@@ -218,7 +218,7 @@ lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
   rw [hittingAfter, if_pos h_exists]
-  exact_mod_cast csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
+  exact_mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hin, his⟩
 
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :

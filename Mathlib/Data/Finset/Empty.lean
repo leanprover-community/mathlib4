@@ -157,7 +157,8 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
 theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by grind
+theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by
+  rw [← coe_empty, coe_inj]
 
 @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by

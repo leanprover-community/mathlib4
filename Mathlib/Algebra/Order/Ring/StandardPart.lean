@@ -478,13 +478,8 @@ theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f
       exact hs.le.trans (f.monotone' hs'.le)
   · rw [stdPart_of_mk_ne_zero hx.ne]
     have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
-    obtain h | h := le_or_gt 0 x
-    · convert! Real.sInf_empty.symm
-      rw [Set.eq_empty_iff_forall_notMem]
-      exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
-    · convert! Real.sInf_univ.symm
-      rw [Set.eq_univ_iff_forall]
-      exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
+    obtain hx | hx := le_total 0 x <;>
+      simp [(lt_of_mk_lt_mk_of_nonneg hr _).not_gt, lt_of_mk_lt_mk_of_nonpos hr, *]
 
 theorem stdPart_eq_sSup (f : ℝ →+*o K) (x : K) : stdPart x = sSup {r | f r < x} := by
   rw [← neg_inj, ← stdPart_neg, stdPart_eq_sInf f, ← Real.sInf_neg]

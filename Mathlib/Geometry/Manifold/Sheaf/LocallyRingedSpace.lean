@@ -77,9 +77,10 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
     have hV : V₀ = Set.range (Set.inclusion hUV) := by
       convert! (Set.range_inclusion hUV).symm
-      ext y
-      change _ ↔ y ∈ Subtype.val ⁻¹' Subtype.val '' V₀
+      rename_i y
+      change _ ↔ y ∈ Subtype.val ⁻¹' (Subtype.val '' V₀)
       rw [Set.preimage_image_eq _ Subtype.coe_injective]
+      exact Set.mem_iff_mem
     clear_value V
     subst hV
     have hxV : x ∈ (V : Set M) := by
