@@ -7,10 +7,15 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-! # Short Exact Sequences in Abelian Categories
 
 This file contains lemmas about short exact sequences in abelian categories.
+
+## Main results
+
+* `ShortComplex.Exact.subobjectOrderIso`: a correspondence theorem for a short exact sequence.
 
 -/
 
@@ -37,3 +42,19 @@ lemma shortExact_map_iff [PreservesFiniteColimits F] [PreservesFiniteLimits F] :
   ⟨reflects_shortExact_of_faithful F, fun h ↦ ShortComplex.ShortExact.map_of_exact h F⟩
 
 end CategoryTheory.ShortExact
+
+namespace CategoryTheory.ShortComplex
+
+universe v₁ u₁
+
+variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
+variable {S : ShortComplex C}
+
+/-- The correspondence theorem for short exact sequences: the subobjects of the final object are
+order-isomorphic to the subobjects of the middle object containing the first object. -/
+noncomputable def Exact.subobjectOrderIso (hS : S.Exact) [Mono S.f] [Epi S.g] :
+    Subobject S.X₃ ≃o Set.Ici (Subobject.mk S.f) :=
+  (Abelian.Subobject.epiOrderIso S.g).trans (OrderIso.setCongr _ _
+    (by rw [← Limits.imageSubobject_mono S.f, (exact_iff_image_eq_kernel S).mp hS]))
+
+end CategoryTheory.ShortComplex

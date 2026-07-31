@@ -752,13 +752,9 @@ lemma exists_eq_mk_of_mono (f : X ⟶ Y) [Mono f] (X' : Subobject X) :
   rw [map_mk]
 
 theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobject X) :
-    («exists» f).obj X₁ ≤ («exists» f).obj X₂ ↔ X₁ ≤ X₂ := by
-  constructor
-  · intro h
-    simp only [exists_eq_mk_of_mono] at h
-    exact le_of_comm (ofMkLEMk _ _ h) (by rw [← cancel_mono f, Category.assoc, ofMkLEMk_comp])
-  · intro h
-    exact («exists» f).monotone h
+    («exists» f).obj X₁ ≤ («exists» f).obj X₂ ↔ X₁ ≤ X₂ :=
+  Quotient.inductionOn₂' X₁ X₂ (fun _ _ ↦
+    ⟨fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).preimage h⟩, fun ⟨h⟩ ↦ ⟨(MonoOver.exists f).map h⟩⟩)
 
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
@@ -781,8 +777,7 @@ theorem pullback_exists_eq_self_of_mono (f : X ⟶ Y) [Mono f] [HasPullbacks C]
 
 theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) [HasPullbacks C] :
     («exists» (f ≫ g)).obj x = («exists» g).obj ((«exists» f).obj x) :=
-  (existsPullbackAdj (f ≫ g)).gc.l_unique
-    ((existsPullbackAdj f).gc.compose (existsPullbackAdj g).gc) (pullback_comp f g)
+  Quotient.inductionOn' x (fun _ ↦ Quotient.sound ⟨(MonoOver.existsComp f g).app _⟩)
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`

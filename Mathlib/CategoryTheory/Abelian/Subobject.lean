@@ -19,8 +19,10 @@ particular, `exists_eq_kernelSubobject` and `pullback_eq_kernelSubobject` specia
 
 * subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
   cokernels
-* a correspondence theorem: Given a subobject `Y` of `X`, `Abelian.Subobject.cokernelOrderIso` is
-  an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
+* `Abelian.Subobject.epiOrderIso`: for an epimorphism `f : X ⟶ Y`, there is an order-isomorphism
+  between subobjects of `Y` and subobjects of `X` containing `kernelSubobject f`
+* `Abelian.Subobject.cokernelOrderIso`: a correspondence theorem: given a subobject `Y` of `X`,
+  there is an order-isomorphism between subobjects of `cokernel (Y ↪ X)` and subobjects of `X`
   containing `Y`.
 
 ## References
@@ -85,6 +87,35 @@ instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 
+end CategoryTheory.Abelian
+
+section MonoOver
+
+namespace CategoryTheory.MonoOver
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+instance {X Y : C} (f : X ⟶ Y) [Epi f] (Y' : MonoOver Y) :
+    IsIso ((existsPullbackAdj f).counit.app Y') := by
+  letI : Epi ((existsPullbackAdj f).counit.app Y').hom.left :=
+    epi_of_epi_fac (factorThruImage_comp_existsPullbackAdj_counit_app_hom_left f Y')
+  letI : Mono ((existsPullbackAdj f).counit.app Y').hom.left := mono_of_mono_fac (MonoOver.w _)
+  rw [isIso_iff_isIso_hom_left]
+  apply isIso_of_mono_of_epi
+
+/-- Pullback along an epimorphism in an abelian category is fully faithful. -/
+def fullyFaithfulPullbackOfEpi {X Y : C} (f : X ⟶ Y) [Epi f] : (pullback f).FullyFaithful :=
+  letI := NatIso.isIso_of_isIso_app (existsPullbackAdj f).counit
+  (existsPullbackAdj f).fullyFaithfulROfIsIsoCounit
+
+end CategoryTheory.MonoOver
+
+end MonoOver
+
+namespace CategoryTheory.Abelian
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
 namespace Subobject
 
 section
@@ -110,11 +141,9 @@ lemma pullback_mk_eq_kernelSubobject {A : C} (g : A ⟶ Y) [Mono g] :
   rw [← imageSubobject_mono, imageSubobject_eq_kernelSubobject, pullback_kernelSubobject]
 
 theorem exists_pullback_eq_self_of_epi [Epi f] (Y' : Subobject Y) :
-    («exists» f).obj ((Subobject.pullback f).obj Y') = Y' := by
-  rw [exists_eq_imageSubobject, ← (isPullback f Y').w]
-  let : Epi (pullbackπ f Y') := epi_fst_of_isLimit _ _ (isPullback f Y').isLimit
-  let : StrongEpi (pullbackπ f Y') := strongEpi_of_epi _
-  rw [imageSubobject_epi_comp, imageSubobject_mono, mk_arrow]
+    («exists» f).obj ((Subobject.pullback f).obj Y') = Y' :=
+  Quotient.inductionOn' Y' (fun _ ↦
+    Quotient.sound ⟨asIso ((MonoOver.existsPullbackAdj f).counit.app _)⟩)
 
 theorem pullback_le_pullback_iff_of_epi (Y₁ Y₂ : Subobject Y) [Epi f] :
     (Subobject.pullback f).obj Y₁ ≤ (Subobject.pullback f).obj Y₂ ↔ Y₁ ≤ Y₂ := by
@@ -160,18 +189,24 @@ theorem exists_pullback_eq_inf (Y' : Subobject Y) :
 
 end
 
-/-- Given a subobject `Y` of `X`, there is an order-isomorphism between subobjects
-of `X/Y := cokernel (Y ↪ X)` and subobjects of `X` containing `Y`. -/
-noncomputable
-def cokernelOrderIso {X : C} (Y : Subobject X) :
-    Subobject (cokernel Y.arrow) ≃o Set.Ici Y where
-  toFun p := ⟨(Subobject.pullback (cokernel.π Y.arrow)).obj p, by
+/-- For an epimorphism `f : X ⟶ Y`, there is an order-isomorphism between subobjects of `Y`
+and subobjects of `X` containing `kernelSubobject f`. -/
+def epiOrderIso {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Subobject Y ≃o Set.Ici (kernelSubobject f) where
+  toFun p := ⟨(Subobject.pullback f).obj p, by
     rw [pullback_eq_kernelSubobject]
-    exact le_kernelSubobject _ _ (by simp)⟩
-  invFun q := («exists» (cokernel.π Y.arrow)).obj q
-  left_inv p := exists_pullback_eq_self_of_epi (cokernel.π Y.arrow) p
-  right_inv := fun ⟨q, hq⟩ ↦ SetCoe.ext (pullback_exists_eq_self_of_epi _ _
-    (by rwa [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]))
-  map_rel_iff' := pullback_le_pullback_iff_of_epi _ _ _
+    exact kernelSubobject_comp_le f _⟩
+  invFun q := («exists» f).obj q
+  left_inv p := exists_pullback_eq_self_of_epi f p
+  right_inv := fun ⟨q, hq⟩ ↦ SetCoe.ext (pullback_exists_eq_self_of_epi f q hq)
+  map_rel_iff' := pullback_le_pullback_iff_of_epi ..
+
+/-- The correspondence theorem for subobjects in an abelian category: given a subobject `Y` of `X`,
+there is an order-isomorphism between subobjects of `X/Y := cokernel (Y ↪ X)` and subobjects of `X`
+containing `Y`. -/
+def cokernelOrderIso {X : C} (Y : Subobject X) :
+    Subobject (cokernel Y.arrow) ≃o Set.Ici Y :=
+  (epiOrderIso (cokernel.π Y.arrow)).trans (OrderIso.setCongr _ _
+    (by rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]))
 
 end CategoryTheory.Abelian.Subobject

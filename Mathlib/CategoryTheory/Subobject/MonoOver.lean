@@ -504,12 +504,44 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
     · apply imageMonoIsoSource (Z.arrow ≫ f)
     · apply imageMonoIsoSource_hom_self)
 
-/-- `exists` is adjoint to `pullback` when images exist -/
+instance full_exists (f : X ⟶ Y) [Mono f] : Functor.Full («exists» f) :=
+  Functor.Full.of_iso (existsIsoMap f).symm
+
+/-- `exists` is left adjoint to `pullback` when images exist -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   ((Over.mapPullbackAdj f).comp imageForgetAdj).restrictFullyFaithful
     (fullyFaithfulForget X) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
+/-- `MonoOver.exists` commutes with composition (up to isomorphism). -/
+def existsComp (f : X ⟶ Y) (g : Y ⟶ Z) [HasPullbacks C] :
+    «exists» (f ≫ g) ≅ «exists» f ⋙ «exists» g :=
+  ((conjugateIsoEquiv (existsPullbackAdj (f ≫ g))
+    ((existsPullbackAdj f).comp (existsPullbackAdj g))).symm (pullbackComp f g)).symm
+
 end Exists
+
+section HasStrongEpiMonoFactorisations
+
+variable [HasStrongEpiMonoFactorisations C]
+
+/-- Given a strong epi-mono factorization of `f : Over X` as `e ≫ m`, the image of `f` is
+isomorphic to `MonoOver.mk m`. -/
+@[simps!]
+def imageObjIso (f : Over X)
+    {Z : C} (e : f.left ⟶ Z) [StrongEpi e] (m : Z ⟶ X) [Mono m] (fac : e ≫ m = f.hom) :
+    image.obj f ≅ MonoOver.mk m :=
+  MonoOver.isoMk (image.isoStrongEpiMono e m fac).symm
+    (image.isoStrongEpiMono_inv_comp_mono e m fac)
+
+/-- Given `p : X ⟶ Y`, `f : MonoOver X`, and a strong-epi-mono factorization of
+`f.arrow ≫ p` as `e ≫ m`, `(exists p).obj f` is isomorphic to `MonoOver.mk m`. -/
+@[simps!]
+def existsObjIso (p : X ⟶ Y) (f : MonoOver X)
+    {Z : C} (e : f.obj.left ⟶ Z) [StrongEpi e] (m : Z ⟶ Y) [Mono m] (fac : e ≫ m = f.arrow ≫ p) :
+    («exists» p).obj f ≅ MonoOver.mk m :=
+  imageObjIso (Over.mk (f.arrow ≫ p)) e m fac
+
+end HasStrongEpiMonoFactorisations
 
 end MonoOver
 

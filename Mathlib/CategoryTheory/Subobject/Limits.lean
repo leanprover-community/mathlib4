@@ -384,8 +384,8 @@ theorem imageSubobject_epi_comp [HasStrongEpiMonoFactorisations C] {X Y X' : C}
     (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
     imageSubobject (e ≫ f) = imageSubobject f :=
   mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
-  ((image.isoStrongEpiMono e f rfl).symm ≪≫
-    (image.isoStrongEpiMono (𝟙 _) f (Category.id_comp _))) (by simp)
+    ((image.isoStrongEpiMono e f rfl).symm ≪≫
+      (image.isoStrongEpiMono (𝟙 _) f (Category.id_comp _))) (by simp)
 
 lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBinaryCoproducts C]
     {A : C} (X Y : Subobject A) :
@@ -396,7 +396,8 @@ lemma _root_.CategoryTheory.Subobject.mk_mono_eq_imageSubobject [HasStrongEpiMon
     {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)
     [StrongEpi e] [Mono m] :
     mk m = imageSubobject f :=
-  mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm) (by simp)
+  mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm)
+    (image.isoStrongEpiMono_hom_comp_ι e m comm)
 
 section
 
