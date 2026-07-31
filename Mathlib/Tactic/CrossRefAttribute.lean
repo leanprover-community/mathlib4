@@ -45,7 +45,7 @@ inductive Database where
 
 namespace Database
 
-/-- The URL for an external database entry. -/
+/-- The URL for an external database entry, where `id` is the `id` recorded in `Tag`. -/
 def url : Database → String → String
   | .kerodon, id => s!"https://kerodon.net/tag/{id}"
   | .lmfdb, id => s!"https://www.lmfdb.org/knowledge/show/{id}"
