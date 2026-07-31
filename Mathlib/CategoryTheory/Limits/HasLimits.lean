@@ -142,6 +142,7 @@ def limit (F : J ⥤ C) [HasLimit F] :=
   (limit.cone F).pt
 
 /-- The projection from the limit object to a value of the functor. -/
+@[implicit_reducible]
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
@@ -704,6 +705,7 @@ def colimit (F : J ⥤ C) [HasColimit F] :=
   (colimit.cocone F).pt
 
 /-- The coprojection from a value of the functor to the colimit object. -/
+@[implicit_reducible]
 def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
 

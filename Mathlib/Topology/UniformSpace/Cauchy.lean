@@ -176,7 +176,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
-    simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
       subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
