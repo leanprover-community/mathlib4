@@ -145,6 +145,37 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   convert! zero_div (G₀ := ℝ) _
   ring
 
+/-- The difference between the second intersections of two spheres along a common direction. -/
+theorem Sphere.secondInter_vsub_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v := by
+  rw [Sphere.secondInter, Sphere.secondInter, vadd_vsub_vadd_cancel_right, ← sub_smul,
+    ← vsub_sub_vsub_cancel_left s₁.center s₂.center p, inner_sub_right]
+  congr 1
+  ring
+
+/-- The difference between the second intersections of two spheres along a common unit direction. -/
+theorem Sphere.secondInter_vsub_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v := by
+  have hvv : ⟪v, v⟫ = (1 : ℝ) := by simp [hv]
+  rw [secondInter_vsub_secondInter, hvv, div_one]
+
+/-- The distance between the second intersections of two spheres along a common direction. -/
+theorem Sphere.dist_secondInter_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖ := by
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  rw [dist_eq_norm_vsub V, secondInter_vsub_secondInter, norm_smul, Real.norm_eq_abs,
+    abs_div, abs_mul, abs_two, real_inner_self_eq_norm_sq,
+    abs_of_nonneg (by positivity : (0 : ℝ) ≤ ‖v‖ ^ 2)]
+  field_simp
+
+/-- The distance between the second intersections of two spheres along a common unit direction. -/
+theorem Sphere.dist_secondInter_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| := by
+  rw [dist_secondInter_secondInter, hv, div_one]
+
 set_option backward.isDefEq.respectTransparency false in
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
