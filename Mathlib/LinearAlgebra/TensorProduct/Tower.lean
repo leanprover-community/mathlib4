@@ -519,6 +519,7 @@ section rightComm
 variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
   [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (S) in
 /-- A tensor product analogue of `mul_right_comm`.
 

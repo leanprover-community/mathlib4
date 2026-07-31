@@ -257,7 +257,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
     rw [← homOfLE_comp bot_le (Order.le_succ j), hf.F.map_comp]
     exact W.comp_mem _ _ hj' (hf.map_mem j hj)
   | isSuccLimit j hj hj' =>
-    letI : OrderBot (Set.Iio j) :=
+    let : OrderBot (Set.Iio j) :=
       { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
         bot_le j := bot_le }
     exact MorphismProperty.colimitsOfShape_le _

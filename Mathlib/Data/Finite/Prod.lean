@@ -25,8 +25,8 @@ variable {α β : Type*}
 namespace Finite
 
 instance [Finite α] [Finite β] : Finite (α × β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   infer_instance
 
 instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
@@ -47,8 +47,8 @@ lemma Prod.finite_iff [Nonempty α] [Nonempty β] : Finite (α × β) ↔ Finite
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   classical
-  haveI := Fintype.ofFinite (PLift α)
-  haveI := fun a => Fintype.ofFinite (PLift (β a))
+  have := Fintype.ofFinite (PLift α)
+  have := fun a => Fintype.ofFinite (PLift (β a))
   exact
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
@@ -57,7 +57,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
   rcases isEmpty_or_nonempty (α ↪ β) with _ | h
   · infer_instance
   · refine h.elim fun f => ?_
-    haveI : Finite α := Finite.of_injective _ f.injective
+    have : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 
 instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
