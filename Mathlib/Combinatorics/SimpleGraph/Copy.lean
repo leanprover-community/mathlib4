@@ -168,14 +168,8 @@ protected def top (f : W ↪ V) : Copy H (⊤ : SimpleGraph V) :=
 /-- The copy of `H` in `H.map ·`. -/
 protected abbrev map (f : W ↪ V) : Copy H (H.map f) := (Embedding.map f H).toCopy
 
-/-- The copy of `G.map ·` in `G`. -/
-protected abbrev map' (f : V ≃ W) : Copy (G.map f) G := (Iso.map f G).symm.toCopy
-
 /-- The copy of `G.comap ·` in `G`. -/
 protected abbrev comap (f : W ↪ V) : Copy (G.comap f) G := (Embedding.comap f G).toCopy
-
-/-- The copy of `H` in `H.comap ·`. -/
-protected abbrev comap' (f : V ≃ W) : Copy H (H.comap f) := (Iso.comap f H).symm.toCopy
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
