@@ -215,7 +215,7 @@ Authors: Name LastName
 -- The required second line is configurable via the `linter.style.header.license` option.
 /--
 info: Text: `Released under Apache 2.0 license as described in the file LICENSE.`
-Range: (73, 140)
+Range: (49, 116)
 Message: 'Second copyright line should be "Released under the Custom License."'
 -/
 #guard_msgs in
