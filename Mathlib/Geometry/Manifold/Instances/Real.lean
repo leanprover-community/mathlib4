@@ -254,8 +254,7 @@ lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
 lemma modelWithCornersEuclideanHalfSpace_symm_apply_of_le {n : ℕ} [NeZero n]
     {x : EuclideanSpace ℝ (Fin n)} (hx : 0 ≤ x 0) :
     (𝓡∂ n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
-  rw [modelWithCornersEuclideanHalfSpace_symm_apply]
-  simp [hx]
+  simp [modelWithCornersEuclideanHalfSpace_symm_apply, hx]
 
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
@@ -289,8 +288,7 @@ lemma modelWithCornersEuclideanQuadrant_symm_apply {n : ℕ} (x : EuclideanSpace
 lemma modelWithCornersEuclideanQuadrant_symm_apply_of_le {n : ℕ}
     {x : EuclideanSpace ℝ (Fin n)} (hx : ∀ i, 0 ≤ x i) :
     (modelWithCornersEuclideanQuadrant n).symm x = ⟨toLp 2 x, by simp [hx]⟩ := by
-  rw [modelWithCornersEuclideanQuadrant_symm_apply]
-  simp [hx]
+  simp [modelWithCornersEuclideanQuadrant_symm_apply, hx]
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
