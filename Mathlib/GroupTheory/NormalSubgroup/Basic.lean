@@ -19,12 +19,12 @@ structure inherited from `Subgroup`.
 /-- A normal subgroup of an arbitrary group. -/
 @[ext]
 structure NormalSubgroup (G : Type*) [Group G] extends Subgroup G where
-  isNormal' : toSubgroup.Normal := by infer_instance
+  normal : toSubgroup.Normal := by infer_instance
 
 /-- A normal additive subgroup of an arbitrary additive group. -/
 @[ext]
 structure NormalAddSubgroup (G : Type*) [AddGroup G] extends AddSubgroup G where
-  isNormal' : toAddSubgroup.Normal := by infer_instance
+  normal : toAddSubgroup.Normal := by infer_instance
 
 attribute [to_additive] NormalSubgroup
 
@@ -55,7 +55,7 @@ instance : Coe (NormalSubgroup G) (Subgroup G) where
   coe H := H.toSubgroup
 
 @[to_additive]
-instance (H : NormalSubgroup G) : H.toSubgroup.Normal := H.isNormal'
+instance (H : NormalSubgroup G) : H.toSubgroup.Normal := H.normal
 
 /-- Bundle a subgroup carrying a normality instance. -/
 @[to_additive /-- Bundle an additive subgroup carrying a normality instance. -/]
