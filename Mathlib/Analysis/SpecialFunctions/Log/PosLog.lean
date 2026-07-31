@@ -87,6 +87,21 @@ theorem posLog_eq_log (hx : 1 ≤ |x|) : log⁺ x = log x := by
   rw [← log_abs]
   apply log_nonneg hx
 
+/-- The function `log⁺` is monotone on the interval [-1,∞). -/
+theorem posLog_monotoneOn : MonotoneOn log⁺ (Set.Ici (-1)) := by
+  intro x hx y _ hxy
+  grind [posLog_eq_zero_iff, posLog_nonneg, posLog_eq_log, log_le_log]
+
+/-- The function `log⁺` is antitone on the interval (-∞,1]. -/
+theorem posLog_antitoneOn : AntitoneOn log⁺ (Set.Iic 1) := by
+  intro x hx y hy hxy
+  rw [← posLog_neg x, ← posLog_neg y]
+  exact posLog_monotoneOn (by grind) (by grind) (neg_le_neg hxy)
+
+@[deprecated posLog_monotoneOn (since := "2026-07-31")]
+theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) :=
+  posLog_monotoneOn.mono (Set.Ici_subset_Ici.2 (by norm_num))
+
 /-- The function `log⁺` equals `log` for all natural numbers. -/
 theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   by_cases hn : n = 0
@@ -101,20 +116,9 @@ theorem abs_log_eq_posLog_add_posLog_inv (x : ℝ) : |log x| = log⁺ x + log⁺
 theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
   grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
 
-/-- The function `log⁺` is monotone on the positive axis. -/
-theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
-  intro x hx y hy hxy
-  simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
-  by_cases! h : log x ≤ 0
-  · tauto
-  · right
-    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
-    simp only [this, and_true, ge_iff_le]
-    linarith
-
 @[gcongr]
 lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
-  monotoneOn_posLog hx (hx.trans hxy) hxy
+  posLog_monotoneOn (by grind) (by grind) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
 @[simp] lemma posLog_pow (n : ℕ) (x : ℝ) : log⁺ (x ^ n) = n * log⁺ x := by
@@ -152,11 +156,8 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
 
 /-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
 lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) := by
-  rw [posLog_apply]
-  apply max_le (Real.log_nonneg (by linarith))
-  rcases hx.eq_or_lt with rfl | hx'
-  · simp
-  · exact Real.log_le_log hx' (by linarith)
+  rw [← posLog_eq_log (x := 1 + x) (by grind)]
+  exact posLog_monotoneOn (by grind) (by grind) (lt_one_add x).le
 
 /-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
 lemma log_one_add_le_posLog {x : ℝ} (hx : 0 ≤ x) :
@@ -229,10 +230,10 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   _ = log⁺ |∑ t ∈ s, f t| := by
     rw [Real.posLog_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t|) := by
-    apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
+    apply posLog_le_posLog (by positivity)
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [mul_nonneg])
+    apply posLog_le_posLog (Finset.sum_nonneg fun _ _ ↦ abs_nonneg _)
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
