@@ -95,10 +95,7 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
 
 /-- Presentation of `|log|` in terms of the positive part of the logarithm. -/
 theorem abs_log_eq_posLog_add_posLog_inv (x : ℝ) : |log x| = log⁺ x + log⁺ x⁻¹ := by
-  have h₁ := half_mul_log_add_log_abs (x := x)
-  have h₂ := half_mul_log_add_log_abs (x := x⁻¹)
-  rw [log_inv, abs_neg] at h₂
-  linarith
+  grind [half_mul_log_add_log_abs (x := x), log_inv x ▸ half_mul_log_add_log_abs (x := x⁻¹)]
 
 /-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
 theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
@@ -163,18 +160,13 @@ lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) 
 
 /-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
 lemma log_one_add_le_posLog {x : ℝ} (hx : 0 ≤ x) :
-    log (1 + x) ≤ log⁺ x + log 2 := by
-  rw [posLog_eq_log_max_one hx]
+    log (1 + x) ≤ log⁺ x + log 2 :=
   calc
     _ ≤ log (max 1 x * 2) := by
-        apply Real.log_le_log (by linarith)
-        rcases le_total x 1 with h | h
-        · rw [max_eq_left h]
-          linarith
-        · rw [max_eq_right h]
-          linarith
-    _ = log (max 1 x) + log 2 :=
-        Real.log_mul (by positivity) two_ne_zero
+      apply Real.log_le_log (by linarith)
+      grind
+    _ = log (max 1 x) + log 2 := log_mul (by positivity) two_ne_zero
+    _ = log⁺ x + log 2 := by rw [posLog_eq_log_max_one hx]
 
 /-- The positive part of the logarithm is bounded by the absolute value: `log⁺ x ≤ |x|`. -/
 lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
@@ -182,7 +174,7 @@ lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
   · rw [(posLog_eq_zero_iff x).2 h]
     exact abs_nonneg x
   · rw [← posLog_abs, posLog_eq_log (by rw [abs_abs]; exact h.le)]
-    linarith [Real.log_le_sub_one_of_pos (lt_trans one_pos h : (0:ℝ) < |x|)]
+    linarith [log_le_sub_one_of_pos (lt_trans one_pos h)]
 
 /-!
 ## Estimates for Products
