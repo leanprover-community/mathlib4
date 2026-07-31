@@ -272,7 +272,7 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 
-/-- Defines how comparisons and binary equality are computed in the base type. These are seperated
+/-- Defines how comparisons and binary equality are computed in the base type. These are separated
 from RingCompute because they can often be defined without using instance caches. -/
 structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type) where
   /-- Returns whether two coefficients are equal -/
