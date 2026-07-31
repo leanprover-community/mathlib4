@@ -119,8 +119,6 @@ class IsRootSystem : Prop where
   span_root_eq_top : span R (range P.root) = ⊤
   span_coroot_eq_top : span R (range P.coroot) = ⊤
 
-@[deprecated (since := "2025-12-14")] alias RootSystem := IsRootSystem
-
 attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
@@ -211,6 +209,7 @@ lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.
     P.pairing k l = P.pairing i l + P.pairing j l := by
   simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {P} in
 lemma pairing_eq_add_of_root_eq_smul_add_smul
     {i j k l : ι} {x y : R} (h : P.root k = x • P.root i + y • P.root l) :
@@ -400,9 +399,10 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
   rw [pairing, ← reflectionPerm_coroot, root_coroot_eq_pairing, pairing_same, two_smul,
     sub_add_cancel_left, map_neg, root_coroot_eq_pairing]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps, implicit_reducible] def indexNeg : InvolutiveNeg ι where
+@[simps, instance_reducible] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
@@ -524,6 +524,7 @@ lemma reflectionPerm_eq_reflectionPerm_iff_of_isSMulRegular (h2 : IsSMulRegular 
   replace h2 : IsSMulRegular (M → M) 2 := IsSMulRegular.pi fun _ ↦ h2
   exact h2 <| P.two_nsmul_reflection_eq_of_perm_eq i j h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma reflectionPerm_eq_reflectionPerm_iff_of_span :
     P.reflectionPerm i = P.reflectionPerm j ↔
     ∀ x ∈ span R (range P.root), P.reflection i x = P.reflection j x := by
@@ -544,9 +545,6 @@ lemma reflectionPerm_eq_reflectionPerm_iff [P.IsRootSystem] (i j : ι) :
   refine ⟨fun h ↦ ?_, fun h ↦ Equiv.ext fun k ↦ P.root.injective <| by simp [h]⟩
   ext x
   exact (P.reflectionPerm_eq_reflectionPerm_iff_of_span i j).mp h x <| by simp
-
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff := reflectionPerm_eq_reflectionPerm_iff
 
 @[simp] lemma toPerfPair_comp_root : P.toPerfPair ∘ P.root = P.root' := rfl
 
@@ -570,6 +568,7 @@ def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
   ext
@@ -658,6 +657,7 @@ section Map
 
 variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Push forward a root pairing along linear equivalences, also reindexing the (co)roots. -/
 protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     RootPairing ι₂ R M₂ N₂ where

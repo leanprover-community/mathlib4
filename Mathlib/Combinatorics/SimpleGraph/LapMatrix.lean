@@ -55,7 +55,7 @@ theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
-  rw [sum_boole, Set.toFinset_setOf]
+  rw [sum_boole, Set.toFinset_ofPred]
 
 variable [DecidableEq V]
 
@@ -196,6 +196,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congrFun h0 i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _

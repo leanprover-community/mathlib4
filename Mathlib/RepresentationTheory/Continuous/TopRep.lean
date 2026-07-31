@@ -14,6 +14,11 @@ public import Mathlib.RepresentationTheory.Continuous.Basic
 
 This file defines the category `TopRep k G` of topological representations of a monoid `G` over a
 topological ring `k`, and shows that it is equivalent to the category `Action (TopModuleCat k) G`.
+
+For a topological group `G` we define the invariants functor `TopRep.invariantsFunctor`, the
+coinduction functor `TopRep.coind₁Functor`, the restriction functor `TopRep.resFunctor` along a
+group homomorphism `φ : H →* G`, and the morphism `TopRep.invariantsResMap φ f` between invariant
+submodules induced by a morphism `f : res φ X ⟶ Y`.
 -/
 
 @[expose] public section
@@ -22,8 +27,7 @@ universe w u v
 
 /-- The category of topological representations of a monoid `G` over a topological ring `k`, and
 their morphisms. -/
-structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
-    [IsTopologicalRing k] [Monoid G] where
+structure TopRep (k : Type u) (G : Type v) [Ring k] [TopologicalSpace k] [Monoid G] where
   private mk ::
   /-- the underlying type of an object in `TopRep k G` -/
   V : Type w
@@ -38,7 +42,7 @@ structure TopRep (k : Type u) (G : Type v) [TopologicalSpace k] [Ring k]
 namespace TopRep
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [Ring k]
-  [IsTopologicalRing k] [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
+  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
   [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y}
@@ -66,7 +70,6 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `TopRep k G`. -/
 @[ext]
 structure Hom (A B : TopRep k G) where
@@ -155,7 +158,7 @@ instance : Preadditive (TopRep k G) where
 section Linear
 
 variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing k]
-  [IsTopologicalRing k] [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
+  [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
   [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
   {σ : ContRepresentation k G Y} {A B C : TopRep k G}
@@ -183,6 +186,7 @@ end Linear
 
 section equivAction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
@@ -192,8 +196,9 @@ def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
 /-- The functor sending an object in `Action (TopModuleCat k) G` to the corresponding topological
 representation. -/
 def fromActionTopModFunc : Action (TopModuleCat.{w} k) G ⥤ TopRep k G where
-  obj X := .of <| (TopModuleCat.endRingEquiv X.V).toMonoidHom.comp X.ρ
-  map {X Y} f := ofHom ⟨f.hom.hom, fun g ↦ by simpa using congr(TopModuleCat.Hom.hom $(f.comm g))⟩
+  obj X := .of <| .ofMonoidHom <| (TopModuleCat.endRingEquiv X.V).toMonoidHom.comp X.ρ
+  map {X Y} f := ofHom ⟨f.hom.hom, fun g ↦ by
+    simpa [← toMonoidHom_apply] using congr(TopModuleCat.Hom.hom $(f.comm g))⟩
 
 /-- The unit isomorphism of the equivalence `TopRepIsoActionTop`. -/
 def toActionFromAction (X : TopRep.{w} k G) :
@@ -235,8 +240,7 @@ abbrev invariantsFunctor : TopRep k G ⥤ TopModuleCat k where
 
 instance : (invariantsFunctor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
-    (invariantsFunctor k G).Linear k where
+instance {k : Type u} [CommRing k] [TopologicalSpace k] : (invariantsFunctor k G).Linear k where
 
 /-- The top rep induced by the coinduced representation. -/
 abbrev coind₁ (A : TopRep k G) : TopRep k G := of A.ρ.coind₁
@@ -246,16 +250,52 @@ variable (k G) in
 The `G` action is defined by `g • f := x ↦ g • f (g⁻¹ * x)`. -/
 abbrev coind₁Functor : TopRep k G ⥤ TopRep k G where
   obj := coind₁
-  map φ := ofHom <| ContRepresentation.coind₁Map _ _ φ.hom
+  map φ := ofHom <| ContRepresentation.coind₁Map φ.hom
 
 instance : (TopRep.coind₁Functor k G).Additive where
 
-instance {k : Type u} [CommRing k] [TopologicalSpace k] [IsTopologicalRing k] :
-    (coind₁Functor k G).Linear k where
+instance {k : Type u} [CommRing k] [TopologicalSpace k] : (coind₁Functor k G).Linear k where
 
 /-- The constant function `rep ⟶ C(G, rep)` as a natural transformation. -/
 @[implicit_reducible, simps]
 def coind₁ι : 𝟭 (TopRep k G) ⟶ coind₁Functor k G where
   app rep := ofHom rep.ρ.coind₁ι
+
+/-- The restriction of a topological representation along a monoid homomorphism. -/
+abbrev res {H : Type*} [Monoid H] (φ : H →* G) (A : TopRep k G) : TopRep k H := of (A.ρ.restrict φ)
+
+/-- The functor taking a topological `G`-representation to a topological `H`-representation
+along a monoid homomorphism `φ : H →* G`. -/
+abbrev resFunctor {H : Type*} [Monoid H] (φ : H →* G) :
+    TopRep k G ⥤ TopRep k H where
+  obj := res φ
+  map f := ofHom <| f.hom.restrict φ
+
+section invariantsResMap
+
+variable {G H : Type*} [Group G]
+
+@[simp]
+lemma resFunctor_map_hom [Monoid H] (φ : H →* G) {A B : TopRep k G} (f : A ⟶ B) :
+    ((resFunctor φ).map f).hom = f.hom.restrict φ := rfl
+
+variable [Group H]
+
+/-- The morphism between invariant submodules induced by a morphism `res φ X ⟶ Y` of
+topological `H`-representations, where `φ : H →* G` is a group homomorphism. -/
+def invariantsResMap (φ : H →* G) {X : TopRep k G} {Y : TopRep k H} (f : res φ X ⟶ Y) :
+    X.invariants ⟶ Y.invariants :=
+  TopModuleCat.ofHom (f.hom.mapInvariantsOfRes φ)
+
+lemma invariantsResMap_comp {X : TopRep k G} {Y Y' : TopRep k H} (φ : H →* G)
+    (f : res φ X ⟶ Y) (g : Y ⟶ Y') :
+    invariantsResMap φ (f ≫ g) = invariantsResMap φ f ≫ (invariantsFunctor k H).map g := rfl
+
+lemma invariantsResMap_map_comp {X X' : TopRep k G} {Y : TopRep k H} (φ : H →* G)
+    (f : X ⟶ X') (g : res φ X' ⟶ Y) :
+    invariantsResMap φ ((resFunctor φ).map f ≫ g) =
+      (invariantsFunctor k G).map f ≫ invariantsResMap φ g := rfl
+
+end invariantsResMap
 
 end TopRep

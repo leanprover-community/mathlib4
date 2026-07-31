@@ -58,7 +58,7 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toMulPosStrictMono :
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsOrderedMonoid :
-   IsOrderedMonoid α where
+    IsOrderedMonoid α where
   mul_le_mul_left a b hab c := by
     obtain rfl | hc := eq_or_ne c 0
     · simp
@@ -98,6 +98,7 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
   top_add' a := by ext; simp [bot_eq_zero]
   isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]
@@ -192,18 +193,6 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   mul_lt_mul_of_pos_left := by
     simpa [← ofAdd_add, ← toDual_add]
       using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
-
-@[deprecated "Use simp" (since := "2025-11-17")]
-theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
-    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
-
-@[deprecated bot_eq_zero (since := "2025-11-17")]
-theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
-    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
@@ -538,23 +527,23 @@ variable {G : Type*} [Preorder G] {a b : G}
 
 variable [AddGroup G] {x y : Gᵐ⁰}
 
-@[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
-  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
-
-@[simp] lemma log_lt_log (hx : x ≠ 0) (hy : y ≠ 0) : log x < log y ↔ x < y := by
-  lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; simp [log]
-
 lemma log_le_iff_le_exp (hx : x ≠ 0) : log x ≤ a ↔ x ≤ exp a := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← toAdd_unzero_eq_log hx, ← le_ofAdd_iff hx, exp]
 
 lemma log_lt_iff_lt_exp (hx : x ≠ 0) : log x < a ↔ x < exp a := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← toAdd_unzero_eq_log hx, ← lt_ofAdd_iff hx, exp]
+
+@[simp] lemma log_le_log (hx : x ≠ 0) (hy : y ≠ 0) : log x ≤ log y ↔ x ≤ y := by
+  rw [log_le_iff_le_exp hx, exp_log hy]
+
+@[simp] lemma log_lt_log (hx : x ≠ 0) (hy : y ≠ 0) : log x < log y ↔ x < y := by
+  rw [log_lt_iff_lt_exp hx, exp_log hy]
 
 lemma le_log_iff_exp_le (hx : x ≠ 0) : a ≤ log x ↔ exp a ≤ x := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← log_le_log exp_ne_zero hx, log_exp]
 
 lemma lt_log_iff_exp_lt (hx : x ≠ 0) : a < log x ↔ exp a < x := by
-  lift x to Multiplicative G using hx; simpa [log, exp] using .rfl
+  rw [← log_lt_log exp_ne_zero hx, log_exp]
 
 lemma le_exp_of_log_le (hxa : log x ≤ a) : x ≤ exp a := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [← log_le_iff_le_exp, *]

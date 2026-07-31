@@ -70,9 +70,6 @@ variable [LE α]
 theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   CovariantClass.elim _ bc
 
-@[deprecated (since := "2025-11-27")]
-alias mul_le_mul_left' := mul_le_mul_right
-
 @[to_additive le_of_add_le_add_left]
 theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
   MulLeftReflectLE.le_of_mul_le_mul_left' bc
@@ -80,9 +77,6 @@ theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b �
 @[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
   i.elim a bc
-
-@[deprecated (since := "2025-11-27")]
-alias mul_le_mul_right' := mul_le_mul_left
 
 @[to_additive le_of_add_le_add_right]
 theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a ≤ c * a) :
@@ -292,8 +286,8 @@ alias mul_right_cancel'' := mul_right_cancel
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
     a₂ * b₂ ≤ a₁ * b₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
-  haveI := mulLeftMono_of_mulLeftStrictMono α
-  haveI := mulRightMono_of_mulRightStrictMono α
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, ha, hb, true_and]
   refine ⟨fun ha ↦ h.not_gt ?_, fun hb ↦ h.not_gt ?_⟩
@@ -302,8 +296,8 @@ alias mul_right_cancel'' := mul_right_cancel
 @[to_additive] theorem mul_eq_mul_iff_eq_and_eq [MulLeftStrictMono α]
     [MulRightStrictMono α] {a b c d : α} (hac : a ≤ c) (hbd : b ≤ d) :
     a * b = c * d ↔ a = c ∧ b = d := by
-  haveI := mulLeftMono_of_mulLeftStrictMono α
-  haveI := mulRightMono_of_mulRightStrictMono α
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rw [le_antisymm_iff, eq_true (mul_le_mul' hac hbd), true_and, mul_le_mul_iff_of_ge hac hbd]
 
 @[to_additive]
@@ -1139,7 +1133,7 @@ variable [PartialOrder α]
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `LeftCancelSemigroup`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`
 (i.e. `c + a < c + b → a < b`) is a `AddLeftCancelSemigroup`. -/]
 def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] : LeftCancelSemigroup α where
@@ -1148,7 +1142,7 @@ def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] : LeftCancelSemigr
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `RightCancelSemigroup`. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddRightCancelSemigroup`
 (`a + c < b + c → a < b`) is a `AddRightCancelSemigroup`. -/]
 def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] : RightCancelSemigroup α where

@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
+public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -70,7 +73,41 @@ def loopAlgebraEquivLaurent :
 
 namespace LoopAlgebra
 
-open Classical in
+open DirectSum in
+noncomputable instance [DecidableEq A] [AddCommMonoid A] :
+    GradedLieAlgebra (fun a : A ↦ (decomposeTensor (AddMonoidAlgebra.grade R) L a)) where
+  bracket_mem i j xi xj hi hj := by
+    rw [decomposeTensor_apply] at hi hj ⊢
+    obtain ⟨xi, rfl⟩ := hi
+    obtain ⟨xj, rfl⟩ := hj
+    induction xi using TensorProduct.induction_on with
+    | zero => simp
+    | tmul x y =>
+      simp only [LinearMap.rTensor_tmul, Submodule.subtype_apply]
+      induction xj using TensorProduct.induction_on with
+      | zero => simp
+      | tmul u v =>
+        obtain ⟨x, hx⟩ := x
+        obtain ⟨u, hu⟩ := u
+        use ⟨x * u, SetLike.mul_mem_graded hx hu⟩ ⊗ₜ ⁅y, v⁆
+        simp
+      | add u v hu hv =>
+        rw [LinearMap.map_add, lie_add]
+        obtain ⟨u', hu'⟩ := hu
+        obtain ⟨v', hv'⟩ := hv
+        use u' + v'
+        simp [← hu', ← hv']
+    | add x y hx hy =>
+      rw [LinearMap.map_add, add_lie]
+      obtain ⟨u, hu⟩ := hx
+      obtain ⟨v, hv⟩ := hy
+      use u + v
+      simp [← hu, ← hv]
+  decompose' := (tensorDecomposition (fun a : A ↦ AddMonoidAlgebra.grade R a) L).decompose'
+  left_inv := (tensorDecomposition _ L).left_inv
+  right_inv := (tensorDecomposition _ L).right_inv
+
+open scoped Classical in
 /-- A linear isomorphism to finitely supported functions. -/
 def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
   TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
@@ -86,6 +123,7 @@ lemma toFinsupp_single_tmul (c : A) (z : L) :
   simp [← toFinsupp_symm_single]
 
 open Finsupp in
+set_option backward.isDefEq.respectTransparency false in
 /-- The residue pairing on the loop algebra.  When `A = ℤ` and the elements are viewed as Laurent
 polynomials with coefficients in `L`, the pairing is interpreted as `(f, g) ↦ Res f dg`. -/
 @[simps]
@@ -121,7 +159,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
   val := (residuePairing R A L Φ).compr₂ (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
   property := by
     refine Cohomology.mem_twoCochain_iff.mpr fun f ↦ ?_
-    letI F := toFinsupp R A L
+    let F := toFinsupp R A L
     suffices ((F f).sum fun a v ↦ a • Φ (F f (-a)) v) = 0 by simpa
     classical
     set s := (F f).support ∪ (F f).support.image (Equiv.neg A) with hs
