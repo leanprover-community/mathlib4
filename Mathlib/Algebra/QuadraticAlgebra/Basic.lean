@@ -182,6 +182,11 @@ instance : StarRing (QuadraticAlgebra R a b) where
     simp only [re_star, re_mul, im_mul, im_star, mul_neg, neg_mul, neg_neg] <;> ring
   star_add _ _ := QuadraticAlgebra.ext (by simp only [re_star, re_add, im_add]; ring) (neg_add _ _)
 
+/-- `z - star z` is a multiple of the difference `ω - star ω`. -/
+theorem sub_star (z : QuadraticAlgebra R a b) :
+    z - star z = z.im • (ω - star ω) := by
+  ext <;> simp <;> ring
+
 end star
 
 section norm
@@ -311,14 +316,15 @@ variable [CommRing R]
 attribute [local grind =] re_add im_add im_star re_star re_smul im_smul RingHom.id_apply
   algebraMap_re algebraMap_im
 
-/-- the trace in a quadratic algebra, as an `R`-linear map. -/
+/-- The trace in a quadratic algebra, as an `R`-linear map. -/
 def trace : QuadraticAlgebra R a b →ₗ[R] R where
   toFun z := 2 * z.re + b * z.im
   map_add' := by grind
   map_smul' := by grind [smul_eq_mul]
 
-theorem trace_def (z : QuadraticAlgebra R a b) :
-    trace z = 2 * z.re + b * z.im := rfl
+variable (z : QuadraticAlgebra R a b)
+
+theorem trace_def : trace z = 2 * z.re + b * z.im := rfl
 
 @[simp]
 theorem trace_algebraMap (r : R) :
@@ -342,30 +348,25 @@ theorem trace_one : trace (1 : QuadraticAlgebra R a b) = 2 := by
   simp [trace_def]
 
 @[simp]
-theorem trace_star (z : QuadraticAlgebra R a b) : trace (star z) = trace z := by
+theorem trace_star : trace (star z) = trace z := by
   grind [trace_def]
 
 /-- `z + star z` is the trace of `z`. -/
-theorem algebraMap_trace_eq_add_star (z : QuadraticAlgebra R a b) :
+theorem algebraMap_trace_eq_add_star :
     algebraMap R (QuadraticAlgebra R a b) (trace z) = z + star z := by
   ext <;> grind [trace_def]
 
 /-- The conjugate of `z` is `trace z - z`. -/
-theorem star_eq (z : QuadraticAlgebra R a b) :
+theorem star_eq :
     star z = algebraMap R (QuadraticAlgebra R a b) (trace z) - z := by
   rw [algebraMap_trace_eq_add_star, add_sub_cancel_left]
 
-/-- `z - star z` is a multiple of the different `ω - star ω`. -/
-theorem sub_star (z : QuadraticAlgebra R a b) :
-    z - star z = z.im • (ω - star ω) := by
-  ext <;> simp <;> ring
-
 /-- Every element of a quadratic algebra satisfies its characteristic equation. -/
-theorem sq_sub_trace_smul_add_norm_eq_zero (z : QuadraticAlgebra R a b) :
+theorem sq_sub_trace_smul_add_norm_eq_zero :
     z ^ 2 - trace z • z + algebraMap R _ (norm z) = 0 := by
   rw [Algebra.smul_def, algebraMap_trace_eq_add_star, algebraMap_norm_eq_mul_star]; ring
 
-theorem sq_eq_trace_smul_sub_norm (z : QuadraticAlgebra R a b) :
+theorem sq_eq_trace_smul_sub_norm :
     z ^ 2 = trace z • z - algebraMap R _ (norm z) := by
   rw [← sub_eq_zero, ← sub_add, sq_sub_trace_smul_add_norm_eq_zero]
 
