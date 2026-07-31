@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
-public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.Strict.Extreme
 
 import Mathlib.Analysis.Convex.Strict.Extreme
 import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
@@ -209,49 +209,6 @@ theorem CStarAlgebra.mul_partial_isometry {x : A} (hx : x ∈ extremePoints ℝ 
     apply_rules [Tendsto.sub, Tendsto.add, hu.tendsto_mul_left, hu.tendsto_mul_right,
       Tendsto.mul_const, Tendsto.const_mul]
   simpa [h, sub_eq_zero, eq_comm (a := (0 : A)), eq_comm (a := a)] using h_tendsto
-
--- TODO: move section to earlier file
-section star_balls
-variable {𝕜 E : Type*} [Semiring 𝕜] [StarRing 𝕜] [PartialOrder 𝕜] [StarOrderedRing 𝕜]
-  [AddCommMonoid E] [StarAddMonoid E] [SMul 𝕜 E] [StarModule 𝕜 E]
-
-open Metric Set
-
-@[simp] lemma star_segment (x y : E) : star (segment 𝕜 x y) = segment 𝕜 (star x) (star y) := by
-  suffices ∀ x y : E, segment 𝕜 x y ⊆ star (segment 𝕜 (star x) (star y)) from
-    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
-  refine fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by simpa, by simpa, ?_, ?_⟩
-  · simp [← star_add, hbc]
-  simpa [← star_add, ← star_smul]
-
-@[simp] lemma star_openSegment (x y : E) :
-    star (openSegment 𝕜 x y) = openSegment 𝕜 (star x) (star y) := by
-  suffices ∀ x y : E, openSegment 𝕜 x y ⊆ star (openSegment 𝕜 (star x) (star y)) from
-    le_antisymm (by simpa [star_subset] using this x y) (by simpa using this (star x) (star y))
-  refine fun x y a ⟨b, c, hb, hc, hbc, ha⟩ ↦ ⟨star b, star c, by simpa, by simpa, ?_, ?_⟩
-  · simp [← star_add, hbc]
-  simpa [← star_add, ← star_smul]
-
-@[simp] theorem star_extremePoints (s : Set E) :
-    star (extremePoints 𝕜 s) = extremePoints 𝕜 (star s) := by
-  suffices ∀ s : Set E, extremePoints 𝕜 s ⊆ star (extremePoints 𝕜 (star s)) from
-    le_antisymm (by simpa [star_subset] using this s) (by simpa using this (star s))
-  refine fun s a ⟨ha, h⟩ ↦ ⟨by simpa, fun _ h₁ _ h₂ ↦ ?_⟩
-  simpa [← mem_star, ← star_inj (y := star a)] using h h₁ h₂
-
-variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedStarGroup A]
-
-@[simp] theorem star_ball (x : A) (s : ℝ) : star (ball x s) = ball (star x) s := by
-  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
-
-@[simp] theorem star_closedBall (x : A) (s : ℝ) :
-    star (closedBall x s) = closedBall (star x) s := by
-  ext; simp [dist_eq_norm, ← norm_star (star _ - _)]
-
-@[simp] theorem star_sphere (x : A) (s : ℝ) : star (sphere x s) = sphere (star x) s := by
-  ext; simp [← norm_star (star _ - _)]
-
-end star_balls
 
 /-- When `x` is an extreme point of the closed unit ball in an a priori non-unital C⋆-algebra,
 then `star x * x + x * star x - x * star x * star x * x` is a left identity.
