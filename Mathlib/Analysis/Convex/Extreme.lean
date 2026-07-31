@@ -233,10 +233,10 @@ theorem extremePoints_pi (s : ∀ i, Set (M i)) :
 
 end OrderedSemiring
 
-lemma image_extremePointsₛₗ {L 𝕜' : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [Semiring 𝕜']
+lemma semilinear_image_extremePoints {L 𝕜' : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [Semiring 𝕜']
     [PartialOrder 𝕜'] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜' F]
     {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [EquivLike L E F]
-    [SemilinearEquivClass L σ E F] (f : L) (hσ : ∀ a : 𝕜, 0 < σ a ↔ 0 < a) (s : Set E) :
+    [SemilinearEquivClass L σ E F] (f : L) (s : Set E) (hσ : ∀ a : 𝕜, 0 < σ a ↔ 0 < a := by simp) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜' (f '' s) := by
   ext b
   obtain ⟨a, rfl⟩ := EquivLike.surjective f b
@@ -248,8 +248,7 @@ variable {L : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
-    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) :=
-  image_extremePointsₛₗ f (by simp) s
+    f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := semilinear_image_extremePoints f s
 
 end OrderedRing
 
