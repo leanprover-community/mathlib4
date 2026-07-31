@@ -136,11 +136,11 @@ scoped infixl:2 " on " => onFun
 
 /-- For a two-argument function `f`, `dflip f` is the same function but taking the arguments
 in the reverse order. `dflip f y x = f x y`. -/
-def dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
-@[deprecated dflip (since := "2026-07-30")] abbrev swap := @dflip
+@[deprecated dflip (since := "2026-07-30")] abbrev swap {φ : α → β → Sort u₃} := dflip (φ := φ)
 
 theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
 
