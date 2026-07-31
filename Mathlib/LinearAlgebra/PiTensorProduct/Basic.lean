@@ -316,8 +316,9 @@ if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the 
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
     p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) = x := by
-  simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toPiTensorProduct]
+  simp only [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toPiTensorProduct]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
 -/
 lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
@@ -337,7 +338,7 @@ respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
     (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
-  simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
+  simp only [lifts, Set.mem_ofPred_eq, AddCon.coe_add]
   rw [hp, hq]
 
 /-- If an element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`,
@@ -492,7 +493,7 @@ theorem map_range_eq_span_tprod :
       Submodule.span R {t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
-  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]
+  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_ofPred_eq]
 
 /-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`.
 This is `TensorProduct.mapIncl` for an arbitrary family of modules.
@@ -643,6 +644,7 @@ theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] 
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
     lift.tprod, add_apply, LinearMap.add_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
@@ -661,6 +663,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
   map_add' x y := piTensorHomMapFun₂_add x y
   map_smul' x y := piTensorHomMapFun₂_smul x y
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
     piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
@@ -836,6 +839,7 @@ section tmulEquivDep
 
 variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type. If `N` is a constant family of
 modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/

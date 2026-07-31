@@ -430,7 +430,7 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     [IsFiniteMeasure μ] (C : Set (Set α)) (hμν : ∀ s ∈ C, μ s = ν s) {m : MeasurableSpace α}
     (h : m ≤ m₀) (hA : m = MeasurableSpace.generateFrom C) (hC : IsPiSystem C)
     (h_univ : μ Set.univ = ν Set.univ) {s : Set α} (hs : MeasurableSet[m] s) : μ s = ν s := by
-  haveI : IsFiniteMeasure ν := by
+  have : IsFiniteMeasure ν := by
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top

@@ -93,6 +93,7 @@ end AlgHom
 
 namespace AlgEquiv
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Make an isomorphism in `Under R` from an algebra isomorphism. -/
 def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f : A ≃ₐ[R] B) :

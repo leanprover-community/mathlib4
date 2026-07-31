@@ -42,12 +42,11 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The Geck construction yields a basis of the Lie algebra it constructs. -/
 def basis :
-    LieAlgebra.Basis b.support K (lieAlgebra b) where
+    LieAlgebra.Basis b.support (cartanSubalgebra' b) where
   A := b.cartanMatrix
   h i := ⟨h i, h_mem_lieAlgebra i⟩
   e i := ⟨e i, e_mem_lieAlgebra i⟩
   f i := ⟨f i, f_mem_lieAlgebra i⟩
-  cartan := cartanSubalgebra' b
   cartan_eq_lieSpan := by
     rw [cartanSubalgebra', cartanSubalgebra_eq_lieSpan, ← LieSubalgebra.comap_lieSpan_range_eq]
     rfl
@@ -88,14 +87,13 @@ def basis :
 
 @[simp] lemma basis_A_eq : (basis b).A = b.cartanMatrix := rfl
 
-instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
-  inferInstanceAs (basis b).cartan.IsCartanSubalgebra
+instance : (cartanSubalgebra' b).IsCartanSubalgebra := (basis b).isCartanSubalgebra
 
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
 `RootPairing.GeckConstruction.lieAlgebra`. -/
 def equivRootSystem [IsAlgClosed K] :
-    P.Equiv (rootSystem (basis b).cartan) :=
+    P.Equiv (rootSystem (cartanSubalgebra' b)) :=
   b.equivOfCartanMatrixEq _ (basis b).baseSupportEquiv <| by simp [(basis b).cartanMatrix_base_eq]
 
 end RootPairing.GeckConstruction

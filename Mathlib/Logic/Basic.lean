@@ -481,7 +481,7 @@ theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
-  eqRec_heq_iff_heq.mpr h
+  eqRec_heq_iff.mpr h
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -765,15 +765,15 @@ noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
 
 /-- Any relation `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value

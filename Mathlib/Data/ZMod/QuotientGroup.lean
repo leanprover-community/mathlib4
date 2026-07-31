@@ -144,7 +144,7 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
-    haveI : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
+    have : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 

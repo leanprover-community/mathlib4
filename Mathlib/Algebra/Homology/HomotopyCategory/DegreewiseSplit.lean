@@ -216,6 +216,7 @@ noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
   r := (snd φ).v n n (add_zero n)
   id := by simp [ext_from_iff φ _ _ rfl]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma cocycleOfDegreewiseSplit_triangleRotateShortComplexSplitting_v (p : ℤ) :

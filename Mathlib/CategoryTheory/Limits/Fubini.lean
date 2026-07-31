@@ -129,7 +129,7 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-open scoped Prod in
+open scoped CategoryTheory.Prod in
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/
@@ -526,6 +526,7 @@ theorem colimitUncurryIsoColimitCompColim_ι_ι_inv {j} {k} :
     IsColimit.uniqueUpToIso]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem colimitUncurryIsoColimitCompColim_ι_hom {j} {k} :

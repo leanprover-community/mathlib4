@@ -185,7 +185,7 @@ theorem count_le_one_of_centralizer_le_alternating
     even_two, Even.mul_left, Even.neg_pow, one_pow, one_mul]
   apply Odd.neg_one_pow
   apply odd_of_centralizer_le_alternatingGroup h
-  have this : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
+  have : (k : Perm α).cycleType.card * 2 = (k : Perm α).support.card := by
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by

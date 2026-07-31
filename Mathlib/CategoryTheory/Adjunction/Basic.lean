@@ -85,7 +85,7 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe w v₁ v₂ v₃ u₁ u₂ u₃
@@ -158,7 +158,6 @@ namespace Adjunction
 
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The hom set equivalence associated to an adjunction. -/
 @[to_dual none, simps (attr := to_dual none) -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
@@ -184,7 +183,6 @@ def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
 -- it may be advisable to add a local simp attribute to these lemmas.
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.existingAttributeWarning false in
 @[ext, to_dual ext_counit]
 lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
@@ -215,7 +213,6 @@ theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by s
 @[to_dual none]
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, to_dual none]
 lemma homEquiv_symm_unit (X : C) : dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
   simp
@@ -310,7 +307,6 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
@@ -410,7 +406,6 @@ variable {F : C ⥤ D} {G : D ⥤ C}
 
 attribute [local simp] CoreHomEquivUnitCounit.homEquiv_unit CoreHomEquivUnitCounit.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
 equivalence, unit and counit natural transformations together with proofs of the equalities
@@ -427,7 +422,6 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
     rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
   ext
   rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
@@ -500,7 +494,6 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
 @[simps]
 def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
@@ -545,6 +538,7 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -553,6 +547,7 @@ def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.
     G ⋙ yoneda ≅ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv Y.unop X).toIso.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ coyoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -561,6 +556,7 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
 This states that `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -576,7 +572,6 @@ section
 variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ C} {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of adjunctions. -/
 @[to_dual self (reorder := C E, 2 6, F I, G H, adj₁ adj₂), simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=

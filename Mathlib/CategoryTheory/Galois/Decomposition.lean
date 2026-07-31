@@ -39,7 +39,7 @@ universe u₁ u₂ w
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{u₂} C]
 
@@ -58,6 +58,7 @@ non-trivial subobjects which have strictly smaller fiber and conclude by the ind
 
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
@@ -201,7 +202,6 @@ which has at index `x : F.obj X` the element `g x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
-set_option backward.privateInPublic true in
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
   rw [← piComparison_comp_π]
@@ -243,9 +243,11 @@ set_option backward.privateInPublic true in
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :

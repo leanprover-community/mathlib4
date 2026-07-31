@@ -168,6 +168,7 @@ theorem map_equivMapOfInjective_symm_apply (f : M →ₛₗ[σ₁₂] M₂) (i :
     i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
+@[implicit_reducible]
 def comap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
@@ -452,8 +453,7 @@ end OrderIso
 --TODO(Mario): is there a way to prove this from order properties?
 theorem map_inf_eq_map_inf_comap [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M}
     {p' : Submodule R₂ M₂} : map f p ⊓ p' = map f (p ⊓ comap f p') :=
-  le_antisymm (by rintro _ ⟨⟨x, h₁, rfl⟩, h₂⟩; exact ⟨_, ⟨h₁, h₂⟩, rfl⟩)
-    (le_inf (map_mono inf_le_left) (map_le_iff_le_comap.2 inf_le_right))
+  .symm <| SetLike.coe_injective <| image_inter_preimage _ _ _
 
 @[simp]
 theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
@@ -518,11 +518,11 @@ protected theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h
 
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = ⨅ _ : a ≠ 0, p.comap f := by
-  classical by_cases h : a = 0 <;> simp [h, comap_smul]
+  by_cases h : a = 0 <;> simp [h, comap_smul]
 
 theorem map_smul' (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) :
     p.map (a • f) = ⨆ _ : a ≠ 0, map f p := by
-  classical by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
+  by_cases h : a = 0 <;> simp [h, Submodule.map_smul]
 
 end Submodule
 
@@ -538,8 +538,8 @@ of `t.subtype`. -/
 def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p where
   toFun x := ⟨x, x.2⟩
   invFun x := ⟨⟨x, hpq x.2⟩, x.2⟩
-  left_inv x := by simp only [SetLike.eta]
-  right_inv x := by simp only [SetLike.eta]
+  left_inv x := by simp
+  right_inv x := by simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -693,11 +693,13 @@ theorem comap_domRestrict (p : Submodule R₂ M₂) (f : M₂ →ₛₗ[σ₂₁
     comap (domRestrict f p) p' = comap p.subtype (comap f p') :=
   comap_comp p.subtype f p'
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
     {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
     map (f.restrict h) p' = comap q.subtype (map f (map p.subtype p')) := by
   rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ →ₛₗ[σ₂₁] M}
     (h : ∀ x ∈ p, f x ∈ q) (p') :
     comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
@@ -720,6 +722,7 @@ variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.
 

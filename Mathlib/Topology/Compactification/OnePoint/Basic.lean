@@ -135,9 +135,6 @@ theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = uni
 theorem insert_infty_range_coe : insert ∞ (range (@some X)) = univ :=
   insert_none_range_some _
 
-@[deprecated "Use simp" (since := "2025-11-22")]
-theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅ := by simp
-
 @[simp]
 theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
   compl_range_some X
@@ -589,7 +586,7 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     exact (isClosed_compl_iff.mpr hU₂).isCompact
   let e : OnePoint X ≃ Y :=
     { toFun := fun p ↦ p.elim y f
-      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
+      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f by simpa [hy]).choose
       left_inv := fun p ↦ by
         induction p using OnePoint.rec with
         | infty => simp

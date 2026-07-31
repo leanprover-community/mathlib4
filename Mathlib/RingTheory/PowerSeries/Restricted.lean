@@ -100,7 +100,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
   use max 1 (max' (image (fun i ↦ ‖coeff i f‖ * c ^ i) (range (N + 1))) (by simp))
-  simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
+  simp only [Set.mem_ofPred_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
   rcases le_total i N with h | h
   · right
@@ -121,7 +121,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
     ((isRestricted_iff_abs c f).mp hf))
   obtain ⟨b, hb, gBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
     ((isRestricted_iff_abs c g).mp hg))
-  simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff]
+  simp only [convergenceSet, Set.mem_ofPred_eq, forall_exists_index, forall_apply_eq_imp_iff]
     at fBound1 gBound1
   simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
     PowerSeries.coeff_mul] at ⊢ hf hg

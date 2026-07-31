@@ -125,10 +125,11 @@ def uniqueAlgEquiv [Subsingleton M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma uniqueAlgEquiv_symm_apply [Subsingleton M] (a : A) :
-    (uniqueAlgEquiv R M).symm a = single 1 a := by classical ext; simp [uniqueAlgEquiv]
+    (uniqueAlgEquiv R M).symm a = single 1 a := by ext; simp [uniqueAlgEquiv]
 
 -- We want this lemma to fire before `uniqueAlgEquiv_symm_apply`.
 @[to_additive (dont_translate := A) (attr := simp↓ high)]
@@ -163,6 +164,7 @@ def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
     curryAlgEquiv R (single (m, n) a) = single m (single n a) := by simp [curryAlgEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_symm_single (m : M) (n : N) (a : A) :
     (curryAlgEquiv R).symm (single m <| single n a) = (single (m, n) a) := by
@@ -230,6 +232,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
     (single_one_left : φ₁.comp singleOneAlgHom = φ₂.comp singleOneAlgHom) : φ₁ = φ₂ :=
   algHom_ext (congr($single_one_right ·)) single_one_left
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A M) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism `R[M] →ₐ[R] A`. -/
 def lift : (M →* A) ≃ (R[M] →ₐ[R] A) where
@@ -278,6 +281,7 @@ theorem lift_mapRingHom_algebraMap [CommSemiring S] [Algebra S A]
 @[deprecated (since := "2026-06-18")]
 alias lift_mapRangeRingHom_algebraMap := lift_mapRingHom_algebraMap
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- If `f : M → N` is a monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an algebra
 homomorphism between their monoid algebras. -/
@@ -288,9 +292,11 @@ def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
   toRingHom := mapDomainRingHom A f
   commutes' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A) (attr := simp)]
 lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
     mapDomainAlgHom R A (g.comp f) = (mapDomainAlgHom R A g).comp (mapDomainAlgHom R A f) := by
@@ -315,6 +321,7 @@ lemma coeff_domCongr (e : M ≃* N) (f : A[M]) (n : N) :
 @[to_additive]
 theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomainAlgHom R A e := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma domCongr_support (e : M ≃* N) (x : A[M]) :
     (domCongr R A e x).coeff.support = x.coeff.support.map e := by simp [domCongr, equivMapDomain]
@@ -593,6 +600,7 @@ lemma algHom_ext' ⦃φ₁ φ₂ : A[M] →ₐ[R] B⦄
     (single_one_left : φ₁.comp singleZeroAlgHom = φ₂.comp singleZeroAlgHom) : φ₁ = φ₂ :=
   algHom_ext (congr($single_one_right ·)) single_one_left
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R M A) in
 /-- Any monoid homomorphism `M →* A` can be lifted to an algebra homomorphism
 `R[M] →ₐ[R] A`. -/
@@ -676,6 +684,7 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
@@ -684,6 +693,7 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
   toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
   commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
