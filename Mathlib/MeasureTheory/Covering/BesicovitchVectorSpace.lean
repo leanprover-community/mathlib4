@@ -160,7 +160,7 @@ theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   · refine ⟨5 ^ finrank ℝ E, ?_⟩
     rintro _ ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
-  · simp only [mem_setOf_eq, Ne]
+  · simp only [mem_ofPred_eq, Ne]
     exact ⟨s, rfl, hs, h's⟩
 
 variable (E)

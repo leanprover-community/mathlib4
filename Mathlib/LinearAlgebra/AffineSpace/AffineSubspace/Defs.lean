@@ -470,7 +470,6 @@ def affineSpan (s : Set P) : AffineSubspace k P where
         (vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints k hp₁ hp₂))
 
 /-- The affine span, converted to a set, is `spanPoints`. -/
-@[simp]
 theorem coe_affineSpan (s : Set P) : (affineSpan k s : Set P) = spanPoints k s :=
   rfl
 
@@ -501,7 +500,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 @[simp]
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
-  simp [mem_add, spanPoints]
+  simp [mem_add, coe_affineSpan, spanPoints]
   grind
 
 variable {k}

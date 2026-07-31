@@ -67,7 +67,6 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
@@ -260,7 +259,7 @@ attribute [instance] AddCommGrpCat.str CommGrpCat.str
 initialize_simps_projections AddCommGrpCat (carrier → coe, -str)
 initialize_simps_projections CommGrpCat (carrier → coe, -str)
 
-/-- `Ab` is an abbreviation for `AddCommGroup`, for the sake of mathematicians' sanity. -/
+/-- `Ab` is an abbreviation for `AddCommGrpCat`, for the sake of mathematicians' sanity. -/
 abbrev Ab := AddCommGrpCat
 
 namespace CommGrpCat
@@ -284,7 +283,6 @@ structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
@@ -473,7 +471,7 @@ end CommGrpCat
 
 namespace AddCommGrpCat
 
--- Note that because `ℤ : Type 0`, this forces `G : AddCommGroup.{0}`,
+-- Note that because `ℤ : Type 0`, this forces `G : AddCommGrpCat.{0}`,
 -- so we write this explicitly to be clear.
 -- TODO generalize this, requiring a `ULiftInstances.lean` file
 /-- Any element of an abelian group gives a unique morphism from `ℤ` sending
@@ -506,7 +504,7 @@ def MulEquiv.toGrpIso {X Y : GrpCat} (e : X ≃* Y) : X ≅ Y where
   hom := GrpCat.ofHom e.toMonoidHom
   inv := GrpCat.ofHom e.symm.toMonoidHom
 
-/-- Build an isomorphism in the category `AddGroup` from an `AddEquiv` between `AddGroup`s. -/
+/-- Build an isomorphism in the category `AddGrpCat` from an `AddEquiv` between `AddGroup`s. -/
 add_decl_doc AddEquiv.toAddGrpIso
 
 /-- Build an isomorphism in the category `CommGrpCat` from a `MulEquiv`
@@ -527,15 +525,15 @@ namespace CategoryTheory.Iso
 def groupIsoToMulEquiv {X Y : GrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `addEquiv` from an isomorphism in the category `AddGroup` -/
+/-- Build an `addEquiv` from an isomorphism in the category `AddGrpCat` -/
 add_decl_doc addGroupIsoToAddEquiv
 
-/-- Build a `MulEquiv` from an isomorphism in the category `CommGroup`. -/
+/-- Build a `MulEquiv` from an isomorphism in the category `CommGrpCat`. -/
 @[to_additive (attr := simps!)]
 def commGroupIsoToMulEquiv {X Y : CommGrpCat} (i : X ≅ Y) : X ≃* Y :=
   MonoidHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
-/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGroup`. -/
+/-- Build an `AddEquiv` from an isomorphism in the category `AddCommGrpCat`. -/
 add_decl_doc addCommGroupIsoToAddEquiv
 
 end CategoryTheory.Iso
