@@ -42,6 +42,14 @@ lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := by grind
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 
+/-! #### Squares modulo `4` and `8` -/
+
+lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
+  rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
+
+theorem sq_mod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
+  obtain ⟨m, rfl⟩ := hx; grind
+
 lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
   grind
 
