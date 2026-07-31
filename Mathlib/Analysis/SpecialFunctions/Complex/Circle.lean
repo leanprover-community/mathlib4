@@ -117,7 +117,9 @@ lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ioc a b) :=
   exp_injOn_of_forall_sub_mem_Ioo <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
 
 /-- The image under `Circle.exp` of the interval of angles `(-r, r)`. -/
-def centeredArc (r : ℝ) : Set Circle :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def centeredArc (r : ℝ) : Set Circle :=
   exp '' {x | |x| < r}
 
 theorem bijOn_exp_Ioo_centeredArc {r : ℝ} (hr : r ≤ π) :
@@ -225,6 +227,7 @@ lemma coe_path (x y : Circle) : (path x y : _ → _) =
   ext t
   rw [path_apply, comp_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma path_self (x : Circle) : path x x = Path.refl x := by
   ext a

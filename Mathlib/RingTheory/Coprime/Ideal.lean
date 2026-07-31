@@ -34,7 +34,7 @@ When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
     (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
-  haveI : DecidableEq ι := Classical.decEq ι
+  have : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
   refine h.cons_induction ?_ ?_ <;> clear t h
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true]

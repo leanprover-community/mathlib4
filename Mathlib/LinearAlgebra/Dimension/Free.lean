@@ -61,7 +61,10 @@ theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
   convert! lift_rank_mul_lift_rank F K A <;> rw [lift_id]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
-$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
+$\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
+
+See `Module.finrank_mul_finrank'` for a variant over a tower of domains that assumes the rings are
+module-finite rather than the modules being free. -/
 theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
@@ -219,14 +222,11 @@ theorem FiniteDimensional.nonempty_linearEquiv_iff_finrank_eq [Module.Finite R M
     [Module.Finite R M'] : Nonempty (M ≃ₗ[R] M') ↔ finrank R M = finrank R M' :=
   ⟨fun ⟨h⟩ => h.finrank_eq, fun h => nonempty_linearEquiv_of_finrank_eq h⟩
 
-variable (M M')
-
+variable (M M') in
 /-- Two finite and free modules are isomorphic if they have the same (finite) rank. -/
 noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M']
     (cond : finrank R M = finrank R M') : M ≃ₗ[R] M' :=
   Classical.choice <| FiniteDimensional.nonempty_linearEquiv_of_finrank_eq cond
-
-variable {M M'}
 
 namespace Module
 
@@ -286,6 +286,24 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
     · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
+theorem nonempty_linearEquiv_iff_rank_eq_one :
+    Nonempty (R ≃ₗ[R] M) ↔ Module.rank R M = 1 := by
+  simp [nonempty_linearEquiv_iff_lift_rank_eq, eq_comm]
+
+/-- See also `finrank_eq_one_iff` -/
+theorem nonempty_linearEquiv_iff_finrank_eq_one :
+    Nonempty (R ≃ₗ[R] M) ↔ finrank R M = 1 := by
+  simp [nonempty_linearEquiv_iff_rank_eq_one, finrank]
+
+alias ⟨_, nonempty_linearEquiv_of_finrank_eq_one⟩ := nonempty_linearEquiv_iff_finrank_eq_one
+
+theorem nonempty_algEquiv_iff_finrank_eq_one
+    {R S : Type*} [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [Free R S] : Nonempty (R ≃ₐ[R] S) ↔ finrank R S = 1 := by
+  rw [← nonempty_linearEquiv_iff_finrank_eq_one]
+  exact ⟨fun ⟨e⟩ ↦ ⟨e⟩, fun ⟨e⟩ ↦
+    ⟨.ofBijective (Algebra.ofId R S) (bijective_algebraMap_of_linearEquiv e)⟩⟩
+
 variable (R M)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R M)`. -/
@@ -314,17 +332,11 @@ theorem Basis.nonempty_unique_index_of_finrank_eq_one
     Nonempty (Unique ι) := by
   -- why isn't this an instance?
   have : Nontrivial R := nontrivial_of_invariantBasisNumber R
-  haveI : Module.Finite R M :=
+  have : Module.Finite R M :=
     Module.finite_of_finrank_pos (Nat.lt_of_sub_eq_succ d1)
   have : Finite ι := Module.Finite.finite_basis b
   have : Fintype ι := Fintype.ofFinite ι
   rwa [Module.finrank_eq_card_basis b, Fintype.card_eq_one_iff_nonempty_unique] at d1
-
-theorem nonempty_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
-    Nonempty (R ≃ₗ[R] M) := by
-  let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
-  have : Unique ι := (b.nonempty_unique_index_of_finrank_eq_one d1).some
-  exact ⟨((b.equivFun).trans (LinearEquiv.funUnique ι R R)).symm⟩
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
@@ -349,6 +361,7 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
     (d1 : Module.finrank R M = 1) (u : M →ₗ[R] M) :
     ∃! c : R, u = c • LinearMap.id := by

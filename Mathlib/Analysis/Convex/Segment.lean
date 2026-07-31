@@ -61,12 +61,12 @@ def openSegment (x y : E) : Set E :=
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [segment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [segment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
       (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
-  simp only [openSegment, image, Prod.exists, mem_setOf_eq, and_assoc]
+  simp only [openSegment, image, Prod.exists, mem_ofPred_eq, and_assoc]
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=
   Set.ext fun _ =>
@@ -216,20 +216,24 @@ theorem openSegment_eq_image' (x y : E) :
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
+set_option backward.isDefEq.respectTransparency false in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
   convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
   convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
@@ -417,6 +421,7 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/
@@ -557,13 +562,13 @@ theorem segment_eq_uIcc (x y : 𝕜) : [x -[𝕜] y] = uIcc x y :=
 /-- A point is in an `Icc` iff it can be expressed as a convex combination of the endpoints. -/
 theorem Convex.mem_Icc (h : x ≤ y) :
     z ∈ Icc x y ↔ ∃ a b, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← segment_eq_Icc h, segment, mem_setOf_eq, smul_eq_mul, exists_and_left]
+  simp only [← segment_eq_Icc h, segment, mem_ofPred_eq, smul_eq_mul, exists_and_left]
 
 /-- A point is in an `Ioo` iff it can be expressed as a strict convex combination of the endpoints.
 -/
 theorem Convex.mem_Ioo (h : x < y) :
     z ∈ Ioo x y ↔ ∃ a b, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_setOf_eq]
+  simp only [← openSegment_eq_Ioo h, openSegment, smul_eq_mul, exists_and_left, mem_ofPred_eq]
 
 /-- A point is in an `Ioc` iff it can be expressed as a semistrict convex combination of the
 endpoints. -/
