@@ -198,6 +198,10 @@ protected theorem Homeomorph.hasSmallInductiveDimensionLE (f : X ≃ₜ Y) (n : 
     HasSmallInductiveDimensionLE X n ↔ HasSmallInductiveDimensionLE Y n :=
   f.hasSmallInductiveDimensionLT (n + 1)
 
+instance {p : X → Prop} (n : ℕ) [h : HasSmallInductiveDimensionLT X n] :
+    HasSmallInductiveDimensionLT (Subtype p) n :=
+  Topology.IsInducing.subtypeVal.hasSmallInductiveDimensionLT h
+
 /-- The small inductive dimension is preserved by homeomorphisms. -/
 protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
     smallInductiveDimension X = smallInductiveDimension Y := by
