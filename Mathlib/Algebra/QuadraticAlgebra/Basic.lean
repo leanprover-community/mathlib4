@@ -314,8 +314,8 @@ attribute [local grind =] re_add im_add im_star re_star re_smul im_smul RingHom.
 /-- the trace in a quadratic algebra, as an `R`-linear map. -/
 def trace : QuadraticAlgebra R a b →ₗ[R] R where
   toFun z := 2 * z.re + b * z.im
-  map_add' _ _ := by grind
-  map_smul' _ _ := by grind [smul_eq_mul]
+  map_add' := by grind
+  map_smul' := by grind [smul_eq_mul]
 
 theorem trace_def (z : QuadraticAlgebra R a b) :
     trace z = 2 * z.re + b * z.im := rfl
