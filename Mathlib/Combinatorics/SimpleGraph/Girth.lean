@@ -127,6 +127,9 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
   ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
 
+lemma natCast_girth_le_egirth : G.girth ≤ G.egirth :=
+  ENat.natCast_toNat_le_self _
+
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
@@ -148,6 +151,11 @@ lemma exists_girth_eq_length :
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
   simp_all only [girth, ENat.toNat_natCast]
   tauto
+
+lemma girth_le_two_mul_ediam_add_one : G.girth ≤ 2 * G.ediam + 1 := by
+  by_cases h : G.IsAcyclic
+  · simp [girth_eq_zero.mpr h]
+  · exact le_trans natCast_girth_le_egirth <| egirth_le_two_mul_ediam_add_one h
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
