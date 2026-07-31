@@ -96,13 +96,29 @@ end CategoryTheory.BraidedCategory
 
 namespace CategoryTheory.ExactPairing
 
-lemma rightMate_swap_rightMate {X X' Y Y' : C}
+lemma rightAdjointMate_swap_rightAdjointMate {X X' Y Y' : C}
     (pX : ExactPairing X X') (pY : ExactPairing Y Y') (f : X ⟶ Y) :
-    (exactPairing_swap Y Y').rightMate (exactPairing_swap X X') (pX.rightMate pY f) = f := by
+    letI := pX.hasRightDual
+    letI := pY.hasRightDual
+    letI := (exactPairing_swap Y Y').hasRightDual
+    letI := (exactPairing_swap X X').hasRightDual
+    rightAdjointMate (rightAdjointMate f) = f := by
+  letI := pX.hasRightDual
+  letI := pY.hasRightDual
+  letI := (exactPairing_swap Y Y').hasRightDual
+  letI := (exactPairing_swap X X').hasRightDual
   apply (exactPairing_swap Y Y').rightHom_ext
-  rw [rightMate_comp_evaluation]
-  simp only [exactPairingSwap_evaluation, braiding_naturality_right_assoc,
-    rightMate_comp_evaluation, ← braiding_naturality_left_assoc]
+  have h_outer := @CategoryTheory.rightAdjointMate_comp_evaluation C _ _ Y' X'
+    (exactPairing_swap Y Y').hasRightDual (exactPairing_swap X X').hasRightDual
+    (@rightAdjointMate C _ _ X Y pX.hasRightDual pY.hasRightDual f)
+  have h_inner := @CategoryTheory.rightAdjointMate_comp_evaluation C _ _ X Y
+    pX.hasRightDual pY.hasRightDual f
+  dsimp only [ExactPairing.hasRightDual, HasRightDual.exact,
+    HasRightDual.rightDual] at h_outer h_inner
+  rw [h_outer]
+  simp only [exactPairingSwap_evaluation, braiding_naturality_right_assoc]
+  rw [h_inner]
+  simp only [← braiding_naturality_left_assoc]
 
 end CategoryTheory.ExactPairing
 
