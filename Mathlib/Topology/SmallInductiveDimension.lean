@@ -32,7 +32,7 @@ In this file we formalize this notion, and characterize the cases `n = 0` and `n
 
 @[expose] public section
 
-open Set TopologicalSpace
+open Set Topology TopologicalSpace
 
 /--
 For a topological space, the property of having small inductive dimension less than `n : ℕ`  is
@@ -44,7 +44,7 @@ class inductive HasSmallInductiveDimensionLT.{u} :
   ∀ (X : Type u) [TopologicalSpace X], ℕ → Prop where
   | zero {X : Type u} [TopologicalSpace X] [IsEmpty X] : HasSmallInductiveDimensionLT X 0
   | succ {X : Type u} [TopologicalSpace X] (n : ℕ) (s : Set (Set X)) (hs : IsTopologicalBasis s)
-      (h : ∀ U ∈ s, HasSmallInductiveDimensionLT ↑(frontier U) n) :
+      (h : ∀ U ∈ s, HasSmallInductiveDimensionLT (frontier U) n) :
       HasSmallInductiveDimensionLT X (n + 1)
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -54,12 +54,8 @@ variable (X) in
 abbrev HasSmallInductiveDimensionLE (n : ℕ) :=
   HasSmallInductiveDimensionLT X (n + 1)
 
-variable (X) in
-/-- The small inductive dimension of a topological space. -/
-noncomputable def smallInductiveDimension : WithBot ℕ∞ :=
-  sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasSmallInductiveDimensionLT X i}
-
-lemma hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
+@[simp]
+theorem hasSmallInductiveDimensionLT_zero_iff : HasSmallInductiveDimensionLT X 0 ↔ IsEmpty X :=
   ⟨fun h ↦ by cases h; assumption, fun _ ↦ .zero⟩
 
 @[deprecated (since := "2026-06-21")]
