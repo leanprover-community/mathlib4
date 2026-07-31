@@ -327,7 +327,7 @@ theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0�
     le_of_tendsto_of_tendsto (mkMetric'.tendsto_pre _ s)
       (ENNReal.Tendsto.const_mul (mkMetric'.tendsto_pre _ s) (Or.inr hc))
       (mem_of_superset (Ioo_mem_nhdsGT hr0) fun r' hr' => ?_)
-  simp only [mem_setOf_eq, mkMetric'.pre]
+  simp only [mem_ofPred_eq, mkMetric'.pre]
   rw [← smul_eq_mul, ← smul_apply, smul_boundedBy hc]
   refine le_boundedBy.2 (fun t => (boundedBy_le _).trans ?_) _
   simp only [smul_eq_mul, Pi.smul_apply, extend, iInf_eq_if]
@@ -1076,6 +1076,7 @@ section RealAffine
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace P]
 variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Mapping a set of reals along a line segment scales the measure by the length of a segment.
 
 This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
@@ -1087,6 +1088,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
     nndist_eq_nnnorm_vsub' E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]
 theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by

@@ -50,6 +50,7 @@ lemma commute_cast (a : α) (q : ℚ≥0) : Commute a q := (cast_commute ..).sym
 
 lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma cast_divNat_of_ne_zero (a : ℕ) {b : ℕ} (hb : (b : α) ≠ 0) :
     divNat a b = (a / b : α) := by
   rcases e : divNat a b with ⟨⟨n, d, h, c⟩, hn⟩
@@ -175,6 +176,7 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[simp, norm_cast] lemma cast_neg (q : ℚ) : ↑(-q) = (-q : α) := by simp [cast_def, neg_div]
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma cast_sub_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p - q) = (p - q : α) := by simp [sub_eq_add_neg, cast_add_of_ne_zero, hp, hq]
 

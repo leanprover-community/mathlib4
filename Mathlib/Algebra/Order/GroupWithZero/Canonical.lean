@@ -98,6 +98,7 @@ instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
   top_add' a := by ext; simp [bot_eq_zero]
   isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero (α := α)]

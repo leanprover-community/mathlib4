@@ -73,6 +73,7 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
@@ -80,7 +81,7 @@ def Gamma0 : Subgroup SL(2, ℤ) where
   one_mem' := by simp
   mul_mem' {a} {b} ha hb := by
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_mul, Set.mem_setOf_eq] at *
+    simp only [coe_mul, Set.mem_ofPred_eq] at *
     simp [h, ha, hb]
   inv_mem' {a} ha := by
     simpa [SL2_inv_expl a] using ha

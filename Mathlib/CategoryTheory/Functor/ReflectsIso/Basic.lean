@@ -23,7 +23,7 @@ public section
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C : Type*} [Category* C]
   {D : Type*} [Category* D]

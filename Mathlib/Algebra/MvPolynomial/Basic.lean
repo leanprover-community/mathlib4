@@ -513,6 +513,7 @@ section Coeff
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ (AddMonoidAlgebra.coeff p) m
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
@@ -589,6 +590,16 @@ theorem coeff_monomial [DecidableEq σ] (m n) (a) :
     coeff m (monomial n a : MvPolynomial σ R) = if n = m then a else 0 :=
   Finsupp.single_apply
 
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ}
+    (h : ∀ d ∈ φ.support, d = d₀) : φ = monomial d₀ (coeff d₀ φ) := by
+  classical
+  ext d
+  rcases eq_or_ne d d₀ with rfl | hd
+  · rw [coeff_monomial, if_pos rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial, if_neg fun e ↦ hd e.symm]
+
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff m (C a : MvPolynomial σ R) = if 0 = m then a else 0 :=
@@ -638,6 +649,7 @@ theorem coeff_X_same (i : σ) :
     coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
   classical rw [coeff_X, if_pos rfl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a * coeff m p := by
   classical

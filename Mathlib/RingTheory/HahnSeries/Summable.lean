@@ -152,7 +152,7 @@ instance : SMul M (SummableFamily Γ R β) :=
         intro g
         refine (t.finite_co_support g).subset ?_
         intro i hi
-        simp only [Pi.smul_apply, coeff_smul, ne_eq, Set.mem_setOf_eq] at hi
+        simp only [Pi.smul_apply, coeff_smul, ne_eq, Set.mem_ofPred_eq] at hi
         simp only [Function.mem_support, ne_eq]
         exact right_ne_zero_of_smul hi } ⟩
 
@@ -168,6 +168,7 @@ end SMul
 instance : AddCommMonoid (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (fun _ _ => coe_smul' _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coefficient function of a summable family, as a finsupp on the parameter type. -/
 @[simps]
 def coeff (s : SummableFamily Γ R α) (g : Γ) : α →₀ R where
@@ -212,6 +213,7 @@ theorem hsum_add {s t : SummableFamily Γ R α} : (s + t).hsum = s.hsum + t.hsum
   simp only [coeff_hsum, coeff_add, add_apply]
   exact finsum_add_distrib (s.finite_co_support _) (t.finite_co_support _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_hsum_eq_sum_of_subset {s : SummableFamily Γ R α} {g : Γ} {t : Finset α}
     (h : { a | (s a).coeff g ≠ 0 } ⊆ t) : s.hsum.coeff g = ∑ i ∈ t, (s i).coeff g := by
   simp only [coeff_hsum, finsum_eq_sum _ (s.finite_co_support _)]
@@ -284,7 +286,7 @@ def smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R) (s : Summable
     exact Exists.intro i <| right_ne_zero_of_smul hi
   finite_co_support' g := by
     refine Set.Finite.subset (s.finite_co_support g) fun i hi => ?_
-    simp_all only [coeff_smul, ne_eq, Set.mem_setOf_eq, Function.mem_support]
+    simp_all only [coeff_smul, ne_eq, Set.mem_ofPred_eq, Function.mem_support]
     exact right_ne_zero_of_smul hi
 
 theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
@@ -375,7 +377,7 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     ((s.finite_co_support' gh.1).prod (t.finite_co_support' gh.2)).toFinset := by
   intro _ hab
   simp_all only [Function.mem_support, ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
   exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
 theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)
@@ -401,7 +403,7 @@ theorem isPWO_iUnion_support_prod_smul {s : α → R⟦Γ⟧} {t : β → V⟦Γ
     intro ab
     refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd fun a ↦
       Set.VAddAntidiagonal.finite_of_isPWO (s ab.1).isPWO_support (t ab.2).isPWO_support a)
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     contrapose! hx
     rw [mem_support, not_not, HahnModule.coeff_smul, hx, sum_empty]
   refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
@@ -417,7 +419,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
     t.isPWO_iUnion_support g)).finite_toSet.biUnion'
     (fun gh _ => hasFiniteSupport_smul s t gh)).subset _
   exact fun ab hab => by
-    simp only [ne_eq, Set.mem_setOf_eq] at hab
+    simp only [ne_eq, Set.mem_ofPred_eq] at hab
     obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero hab
     simp only [mem_coe, mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
       Function.mem_support, exists_prop, Prod.exists]
@@ -461,9 +463,10 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   have hsupp := smul_support_subset_prod s t gh
   simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
     Function.mem_support, Set.Finite.coe_toFinset, support_subset_iff, Set.mem_prod,
-    Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
+    Set.mem_ofPred_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_hsum {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
     (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (smul s t).hsum = (of R).symm (s.hsum • (of R) (t.hsum)) := by
@@ -624,9 +627,9 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
       (by
         intro b h
         by_cases hb : b ∈ Set.range f
-        · simp only [Ne, Set.mem_setOf_eq, dif_pos hb] at h
+        · simp only [Ne, Set.mem_ofPred_eq, dif_pos hb] at h
           exact ⟨Classical.choose hb, h, Classical.choose_spec hb⟩
-        · simp only [Ne, Set.mem_setOf_eq, dif_neg hb, coeff_zero, not_true_eq_false] at h)
+        · simp only [Ne, Set.mem_ofPred_eq, dif_neg hb, coeff_zero, not_true_eq_false] at h)
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
@@ -681,7 +684,7 @@ theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrder Γ] [IsOrder
 theorem co_support_zero [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Semiring R] (g : Γ) :
     {a | ¬((0 : R⟦Γ⟧) ^ a).coeff g = 0} ⊆ {0} := by
-  simp only [Set.subset_singleton_iff, Set.mem_setOf_eq]
+  simp only [Set.subset_singleton_iff, Set.mem_ofPred_eq]
   intro n hn
   by_contra h'
   simp_all only [ne_eq, not_false_eq_true, zero_pow, coeff_zero, not_true_eq_false]

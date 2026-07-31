@@ -338,7 +338,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
         hx.frequently.mp (by simp)
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
-        rw [eventually_iff, mem_cofinite, compl_setOf] at hx
+        rw [eventually_iff, mem_cofinite, compl_ofPred] at hx
         exact hfin.inter_of_finite_sdiff (hx.image x |>.subset (by grind))
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]

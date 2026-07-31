@@ -110,6 +110,7 @@ instance {𝒰 : X.OpenCover} [IsReduced X] (i : 𝒰.I₀) : IsReduced (𝒰.X 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IsReduced ·) :=
   ⟨fun e _ ↦ isReduced_of_isOpenImmersion e.inv⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
   intro x
@@ -213,6 +214,7 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
   rintro rfl
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `X` is reduced and has finitely many irreducible components, then the stalks at the generic
 points of the irreducible components are fields. -/
 lemma isField_stalk_of_closure_mem_irreducibleComponents
@@ -360,6 +362,7 @@ open IrreducibleCloseds Set in
 lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpenImmersion f] :
     Order.coheight (f.base x) = Order.coheight x := f.isOpenEmbedding.coheight_eq
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
@@ -367,6 +370,7 @@ lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
     specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Order in
 @[stacks 02IZ]
 lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :

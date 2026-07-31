@@ -226,7 +226,7 @@ theorem set_support_apply_mem {p : Perm α} {a : α} :
 
 theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by
   intro x
-  simp only [Set.mem_setOf_eq, Ne]
+  simp only [Set.mem_ofPred_eq, Ne]
   intro hx H
   simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
 
@@ -576,6 +576,7 @@ theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
     ⟨fun _ hz => (mem_support_swap_mul_imp_mem_support_ne hz).left, fun h =>
       absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_support_swap {x y : α} (hxy : x ≠ y) : #(swap x y).support = 2 :=
   show #(swap x y).support = #⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
     congr_arg card <| by simp [support_swap hxy, *, Finset.ext_iff]

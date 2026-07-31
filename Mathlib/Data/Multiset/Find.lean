@@ -30,7 +30,7 @@ and is like `Multiset.choose`, but `Option`-valued. -/
     rw [eqRec_eq_cast, cast_eq_iff_heq]
     refine Function.hfunext ?_ (fun hp₁ hp₂ _ ↦ heq_of_eq ?_)
     · congr!
-      exact Quotient.sound h
+      exact congrArg _ (Quotient.sound h)
     refine List.find?_eq_find?_of_perm h ?_
     simpa using hp₁
 
@@ -98,7 +98,8 @@ theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePre
     (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
     s.find? p₁ hp₁ = s.find? p₂
       (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
-  induction s using Quotient.ind with simp +contextual [h]
+  induction s using Quotient.ind
+  exact List.find?_congr fun x hx ↦ by simp [h x (by simpa using hx)]
 
 theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp.setSubsingleton = some (s.choose p hp) := by

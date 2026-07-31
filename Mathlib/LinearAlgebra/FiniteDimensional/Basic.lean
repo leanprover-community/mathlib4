@@ -124,6 +124,7 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
@@ -147,6 +148,7 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSingleton_apply (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V) (hv : v ≠ 0)
     (i : ι) : basisSingleton ι h v hv i = v := by
@@ -498,7 +500,7 @@ lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Rin
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
   __ := ‹IsDomain K›
@@ -519,7 +521,7 @@ lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDom
   let _ := divisionRingOfFiniteDimensional F K; H.isUnit
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with

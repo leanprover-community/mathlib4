@@ -180,6 +180,7 @@ variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)
 
 open Representation
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsSemisimpleRepresentation ρ := by
   rw [isSemisimpleRepresentation_iff_isSemisimpleModule_asModule]
   infer_instance
