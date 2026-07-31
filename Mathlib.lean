@@ -7719,6 +7719,7 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
+public import Mathlib.Topology.Algebra.Nonarchimedean.Spa
 public import Mathlib.Topology.Algebra.Nonarchimedean.TotallyDisconnected
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Archimedean
