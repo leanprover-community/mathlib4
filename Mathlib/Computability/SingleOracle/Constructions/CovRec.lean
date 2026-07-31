@@ -676,7 +676,7 @@ theorem nMod4_eq_3 {n} (hno : n.bodd = true) (hn2o : n.div2.bodd = true) : n%4=3
     (@PFun.lift ℕ ℕ fun x ↦ (eval O o x).get (ho x)) = eval O o := by
   ext a b : 1
   simp_all only [PFun.coe_val, Part.some_get]
-
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_replace_oracle_prop {O o c} (ho : code_total O o) :
     eval O (replace_oracle o c) = eval (fun x ↦ (eval O o x).get (ho x)) c := by
   unfold replace_oracle

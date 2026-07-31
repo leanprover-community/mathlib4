@@ -56,6 +56,7 @@ has to be "decoded".
 (Note that `K0` encodes Part.none with 0, and Part.some x with x+1.)
 -/
 def c_jump_decode (c : Code) := c_ite c c_diverge (c_pred.comp c)
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 @[simp, ev_simps] theorem c_jump_decode_ev {O : ℕ → ℕ} {c : Code} {x : ℕ} (hc : code_total O c) :
     eval O (c_jump_decode c) x =
@@ -77,6 +78,7 @@ open Classical in
   exact c_jump_decode_ev hc
 end jump_decode
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 We can retrieve the value of `O x` from `(K0 O) x` by
 decoding it with `c_jump_decode`.
@@ -89,6 +91,7 @@ theorem le_K0 (O : ℕ → ℕ) :  O ≤ᵀᶠ (K0 O) := by
   simpa [compute_total, q, ev_simps, Seq.seq] using by exact rfl
 theorem le_jump (O : ℕ → ℕ) : O ≤ᵀᶠ O⌜ := le_K0 O
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 We use the fact that `K O x = K0 O ⟪x, x⟫`.
@@ -98,6 +101,7 @@ theorem K_le_K0 (O : ℕ → ℕ) : (K O) ≤ᵀᶠ (K0 O) := by
   use oracle.comp <| pair c_id c_id
   simpa [ev_simps, Seq.seq] using by exact rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 We wish to calculate `K0 O x` i.e. `eval O x.left x.r` with access to `K`.
@@ -118,6 +122,7 @@ theorem K_eq_K0 {O : ℕ → ℕ} : (K O)  ≡ᵀᶠ (K0 O) := ⟨K_le_K0 O,K0_l
 theorem K0_eq_K {O : ℕ → ℕ} : (K0 O) ≡ᵀᶠ (K O) := K_eq_K0.symm
 theorem le_K (O : ℕ → ℕ) : O ≤ᵀᶠ (K O) := .trans (le_K0 O) (K0_le_K O)
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 To show that the jump of `O` is not reducible to `O`,

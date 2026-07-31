@@ -49,6 +49,7 @@ def dovetailn (c : Code) : Code :=
   (c_evaln.comp₃ (pair left (left.comp right)) (c_const c) (right.comp right))
   (c_const 1)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in -- why does hdvt give a warning?
 theorem dovetailn_ev_0 {O : ℕ → ℕ} {c : Code} {x : ℕ} (h : (eval O (dovetailn c) x).Dom) :
 let (eq := hdvt) dvt := (eval O (dovetailn c) x).get h
@@ -95,6 +96,7 @@ lemma Part.not_none_iff_dom {α} {o : Part α} : (o ≠ Part.none) ↔ (o.Dom) :
     intro a_1
     subst a_1
     exact a
+set_option backward.isDefEq.respectTransparency false in
 theorem dovetailn_ev_1' {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     eval O (dovetailn c) x=Part.none ↔ ∀ s y, evaln O s c ⟪x, y⟫ ≠ Option.some 0 := by
   constructor

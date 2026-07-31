@@ -24,6 +24,7 @@ namespace Oracle.Single.Code
 section diverge
 /-- `c_diverge` is a code which diverges on all inputs. -/
 def c_diverge := rfind' (c_const 1)
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem c_diverge_ev {O x} : eval O c_diverge x = Part.none := by
   simp only [c_diverge, ev_simps]
   apply Part.eq_none_iff.mpr
@@ -35,6 +36,7 @@ section ifz1
 /-- `c_ifz1 c a b` evalutes code `c`; if it is zero, it returns `a`, otherwise `b`. -/
 def c_ifz1 (c : Code) (a b : ℕ) :=
   c_add.comp₂ (c_mul.comp₂ (c_const b) (c_sg.comp c)) (c_mul.comp₂ (c_const a) (c_sg'.comp c))
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 @[simp, ev_simps] theorem c_ifz1_ev {O c a b x} (hc : code_total O c) :
     eval O (c_ifz1 c a b) x = if (eval O c x=Part.some 0) then Part.some a else Part.some b := by
@@ -72,6 +74,7 @@ end ite
 section if_le_te'
 -- like c_if_le_te, but allows either branch to diverge
 def c_if_le_te' (c1 c2 c3 c4 : Code) := c_ite (c_sub.comp₂ c1 c2) c3 c4
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem c_if_le_te'_ev {O c1 c2 c3 c4 x}
     (hc1 : code_total O c1) (hc2 : code_total O c2) :
     eval O (c_if_le_te' c1 c2 c3 c4) x =
@@ -92,6 +95,7 @@ end if_le_te'
 section if_eq_te'
 -- like c_if_eq_te, but allows either branch to diverge
 def c_if_eq_te' (c1 c2 c3 c4 : Code) := c_ite (c_dist.comp₂ c1 c2) c3 c4
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 @[simp, ev_simps] theorem c_if_eq_te'_ev {O c1 c2 c3 c4 x}
     (hc1 : code_total O c1) (hc2 : code_total O c2) :
@@ -112,6 +116,7 @@ end if_eq_te'
 section ifdom
 /-- `c_ifdom c a` evaluates code `c`, then code `a`. -/
 def c_ifdom (c a : Code) := c_add.comp₂ (zero.comp c) a
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 @[simp, ev_simps] theorem c_ifdom_ev {O c a x} :
     eval O (c_ifdom c a) x = if (eval O c x).Dom then (eval O a x) else Part.none := by
@@ -136,6 +141,7 @@ section eval₁
 /-- `eval₁` is a wrapper for `eval`, which packs the code and input into one argument. -/
 def eval₁ (O : ℕ → ℕ) : ℕ →. ℕ := fun ex => eval O ex.left.n2c ex.right
 def c_eval₁ := c_eval
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem c_eval₁_ev {O : ℕ → ℕ} : eval O c_eval₁ = eval₁ O := by
   unfold eval₁
   simp [c_eval₁]
@@ -175,6 +181,7 @@ theorem Rin.ite {O : ℕ → ℕ} {f g : ℕ →. ℕ} {c : ℕ → ℕ}
   funext x
   simp [c_ite_ev hcct]
   simp [hcc, hca, hcb]
+set_option backward.isDefEq.respectTransparency false in
 theorem Rin.evalRecInO' {O : ℕ → ℕ} {f : ℕ →. ℕ} (h : RecursiveIn O f) :
     RecursiveIn O (fun x => (f x) >>= (eval₁ O)) := by
   simp only [Part.bind_eq_bind]

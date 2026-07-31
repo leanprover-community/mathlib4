@@ -51,6 +51,7 @@ def comp₂ := fun c1 c2 c3 : Code => c1.comp (pair c2 c3)
 @[simp, evp_simps] theorem comp₂_evp {O c1 c2 c3} :
     evalp O (comp₂ c1 c2 c3) = fun x => evalp O c1 ⟪evalp O c2 x, evalp O c3 x⟫ := by
   simp only [comp₂, evp_simps];
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem comp₂_ev {O c1 c2 c3} :
     eval O (comp₂ c1 c2 c3) = fun x => ⟪eval O c2 x, eval O c3 x⟫ >>= (eval O c1) := by
   simp [eval, comp₂, Seq.seq]
@@ -67,6 +68,7 @@ def comp₄ := fun c1 c2 c3 c4 c5 : Code => c1.comp₂ (pair c2 c3) (pair c4 c5)
 @[simp, evp_simps] theorem comp₄_evp {O c1 c2 c3 c4 c5} : evalp O (comp₄ c1 c2 c3 c4 c5) = fun x ↦
   evalp O c1 ⟪evalp O c2 x, evalp O c3 x, evalp O c4 x, evalp O c5 x⟫ := by
   simp only [comp₄, evp_simps]
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem comp₄_ev {O c1 c2 c3 c4 c5} : eval O (comp₄ c1 c2 c3 c4 c5) =
   fun x => ⟪eval O c2 x, eval O c3 x, eval O c4 x, eval O c5 x⟫
    >>= (eval O c1) := by
@@ -84,6 +86,7 @@ def comp₃ := fun c1 c2 c3 c4 : Code => c1.comp₂ c2 (pair c3 c4)
     evalp O (comp₃ c1 c2 c3 c4) = fun x ↦
     evalp O c1 ⟪evalp O c2 x, evalp O c3 x, evalp O c4 x⟫ := by
   simp only [comp₃, evp_simps]
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem comp₃_ev {c1 c2 c3 c4} {O : ℕ → ℕ} : eval O (comp₃ c1 c2 c3 c4) = fun x ↦
   ⟪eval O c2 x, eval O c3 x, eval O c4 x⟫ >>= (eval O c1) := by
     simp [comp₃, eval, comp₂, Seq.seq]

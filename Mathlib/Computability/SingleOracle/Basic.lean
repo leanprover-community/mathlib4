@@ -145,6 +145,7 @@ theorem prim_total {O : ℕ → ℕ} {c} (h : code_prim c) : code_total O c := b
 | prec cf cg => unpaired fun z n =>
   n.rec (evalp O cf z) fun y IH => (evalp O cg) (z.pair (y.pair IH))
 | rfind' _   => fun _ ↦ 0
+set_option backward.isDefEq.respectTransparency false in
 theorem evalp_eq_eval {O : ℕ → ℕ} {c} (h : code_prim c) : evalp O c = eval O c := by
   induction h with
   | zero => exact rfl

@@ -31,14 +31,14 @@ theorem RecursiveIn.nat_iff {O : Set (ℕ →. ℕ)} {f : ℕ →. ℕ} :
   simp [_root_.RecursiveIn, map_id']
 theorem unpaired {O : Set (ℕ →. ℕ)} {f : ℕ → ℕ →. α} :
     RecursiveIn O (Nat.unpaired f) ↔ RecursiveIn₂ O f :=
-  ⟨fun h => by simpa using
-    RecursiveIn.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp.computableIn,
+  ⟨fun h => h,
     fun h => h.comp Primrec.unpair.to_comp.computableIn⟩
 theorem RecursiveIn₂.unpaired' {O : Set (ℕ →. ℕ)} {f : ℕ → ℕ →. ℕ} :
     Nat.RecursiveIn O (Nat.unpaired f) ↔ RecursiveIn₂ O f :=
   RecursiveIn.nat_iff.symm.trans unpaired
 protected theorem Nat.RecursiveIn.some {O : Set (ℕ →. ℕ)} : Nat.RecursiveIn O some :=
   (Nat.Partrec.of_primrec Primrec.id).recursiveIn
+set_option backward.isDefEq.respectTransparency false in
 protected theorem RecursiveIn.bind {O : Set (ℕ →. ℕ)} {f : α →. β} {g : α → β →. σ}
     (hf : RecursiveIn O f) (hg : RecursiveIn₂ O g) :
     RecursiveIn O fun a => (f a).bind (g a) :=

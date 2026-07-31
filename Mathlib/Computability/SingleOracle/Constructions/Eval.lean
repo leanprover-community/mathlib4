@@ -384,7 +384,6 @@ theorem c_evaln_evp_aux_nMod4 {O x n s} :
           let i ← n2o (pc_c_sM1 (left) (Nat.pair elem.left (elem.right-1)))
           n2o (pc_mr_s (left) (Nat.pair elem.left (Nat.pair (elem.right-1) i)))
       elem.right : Option ℕ)
-
     let opt_rfind' elem := o2n (do
       guard (elem ≤ s)
       (unpaired fun a m => do
@@ -762,6 +761,7 @@ end evaln
 section eval
 namespace Oracle.Single.Code
 def c_eval := (c_rfindOpt (c_evaln.comp₃ (right.comp left) (left.comp left) right))
+set_option backward.isDefEq.respectTransparency false in
 @[simp, ev_simps] theorem c_eval_ev {O : ℕ → ℕ} {c x : ℕ} :
     eval O c_eval (Nat.pair c x) = eval O c.n2c x := by
   simp only [c_eval, comp₃, comp₂]
