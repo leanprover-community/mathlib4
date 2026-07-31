@@ -256,7 +256,7 @@ end CommSemiring
 
 section CommRing
 
-variable (A B : Type*) [CommRing A] [Ring B]
+variable (A B : Type*) [CommSemiring A] [Semiring B]
   [Algebra A B] [FaithfulSMul A B] {p : Ideal A}
 
 @[simp]
@@ -389,7 +389,7 @@ abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : prime
   ⟨P, ⟨hPp, hp⟩⟩
 
 variable {p} in
-theorem ne_bot_of_mem_primesOver {S : Type*} [Ring S] [Algebra R S]
+theorem ne_bot_of_mem_primesOver {S : Type*} [Semiring S] [Algebra R S]
     [FaithfulSMul R S] {p : Ideal R} (hp : p ≠ ⊥) {P : Ideal S} (hP : P ∈ p.primesOver S) :
     P ≠ ⊥ := by have : P.LiesOver p := hP.2; exact ne_bot_of_liesOver_of_ne_bot hp P
 
