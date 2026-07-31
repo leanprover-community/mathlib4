@@ -160,70 +160,79 @@ end basic
 section rank
 
 variable [IsDomain B] [Finite G] {A : Type*} [CommRing A] [IsDomain A] [Ring.HasFiniteQuotients A]
-  [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] {p : Ideal A}
+  [Algebra A B] [Module.Finite A B] [Module.Flat A B] [IsGaloisGroup G A B] (p : Ideal A)
   [P.LiesOver p]
 
 /-! ### Ring-level degree formulas -/
 
 /-- The degree `[B : C]` of `B` over the decomposition ring `C` equals the product of the
 ramification index and the inertia degree of `p` in `B`. -/
--- TODO: this should also hold for `p = ⊥`, then `P = ⊥`, `A` and `B` are fields and `C = B`.
-theorem IsDecompositionRing.finrank_top [FaithfulSMul C B] [P.IsPrime]
-    [P.IsDecompositionRing G C] (hp : p ≠ ⊥) :
+theorem IsDecompositionRing.finrank_top [FaithfulSMul C B] [P.IsPrime] [P.IsDecompositionRing G C] :
     Module.finrank C B = p.ramificationIdxIn B * p.inertiaDegIn B := by
-  have : p.IsPrime := isPrime_of_liesOver P p
-  have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) C B, card_stabilizer_eq p]
+  by_cases hp : p = ⊥
+  · have : P.LiesOver (⊥ : Ideal A) := hp ▸ ‹P.LiesOver p›
+    have hP : P = ⊥ := eq_bot_of_liesOver_bot A P
+    rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G, hP,
+      ramificationIdx_bot_eq_one, inertiaDeg_bot_eq_finrank, one_mul,
+      ← IsGaloisGroup.card_eq_finrank' (stabilizer G P) C B, hP, stabilizer_bot, Subgroup.card_top,
+      ← IsGaloisGroup.card_eq_finrank' G A B]
+  · have : p.IsPrime := isPrime_of_liesOver P p
+    have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
+    rw [← IsGaloisGroup.card_eq_finrank' (stabilizer G P) C B, card_stabilizer_eq p]
 
 /-- The degree `[B : C]` of `B` over the inertia ring `C` equals the ramification index of `p`
 in `B`. -/
-theorem IsInertiaRing.finrank_top [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C]
-    (hp : p ≠ ⊥) :
+theorem IsInertiaRing.finrank_top [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C] :
     Module.finrank C B = p.ramificationIdxIn B := by
-  have : p.IsPrime := isPrime_of_liesOver P p
-  have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
-  rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) C B, card_inertia_eq_ramificationIdxIn p]
+  by_cases hp : p = ⊥
+  · have : FaithfulSMul G B := IsGaloisGroup.faithful A
+    have : P.LiesOver (⊥ : Ideal A) := hp ▸ ‹P.LiesOver p›
+    have hP : P = ⊥ := eq_bot_of_liesOver_bot A P
+    rw [ramificationIdxIn_eq_ramificationIdx p P G, hP, ramificationIdx_bot_eq_one,
+      ← IsGaloisGroup.card_eq_finrank' (inertia G P) C B, hP, inertia_bot, Subgroup.card_eq_one]
+  · have : p.IsPrime := isPrime_of_liesOver P p
+    have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
+    rw [← IsGaloisGroup.card_eq_finrank' (inertia G P) C B, card_inertia_eq_ramificationIdxIn p]
 
 variable [Algebra A C] [IsScalarTower A C B]
 
 /-- The degree `[C : A]` of the decomposition ring `C` over `A` equals the number of prime ideals
 of `B` lying over `p`. -/
-theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsDecompositionRing G C]
-    (hp : p ≠ ⊥) :
+theorem IsDecompositionRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsDecompositionRing G C] :
     Module.finrank A C = (p.primesOver B).ncard := by
   have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P C hp,
+    Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P C p,
     ← IsGaloisGroup.card_eq_finrank' G A B,
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
 /-- The degree `[C : A]` of the inertia ring `C` over `A` equals the product of the number of
 prime ideals of `B` lying over `p` and the inertia degree of `p` in `B`. -/
-theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C]
-    (hp : p ≠ ⊥) :
+theorem IsInertiaRing.finrank_bot [FaithfulSMul C B] [P.IsPrime] [P.IsInertiaRing G C] :
     Module.finrank A C = (p.primesOver B).ncard * p.inertiaDegIn B := by
   have : p.IsPrime := isPrime_of_liesOver P p
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   rw [← mul_left_inj' (c := Module.finrank C B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C hp,
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C p,
     ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
+
 
 /-- The degree `[C' : C]` of the inertia ring `C'` over the decomposition ring `C` equals the
 inertia degree of `p` in `B`. -/
 theorem IsInertiaRing.finrank_decompositionRing (C' : Type*) [CommRing C'] [Algebra C' B]
     [FaithfulSMul C B] [FaithfulSMul C' B] [Algebra C C'] [IsScalarTower C C' B]
-    [P.IsPrime] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] (hp : p ≠ ⊥) :
+    [P.IsPrime] [P.IsDecompositionRing G C] [P.IsInertiaRing G C'] :
     Module.finrank C C' = p.inertiaDegIn B := by
   have : IsDomain C' := (FaithfulSMul.algebraMap_injective C' B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
   have : Module.Finite C' B := Module.Finite.right C C' B
   rw [← mul_left_inj' (c := Module.finrank C' B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C' hp,
-    IsDecompositionRing.finrank_top G P C hp, mul_comm (p.ramificationIdxIn B)]
+    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P C' p,
+    IsDecompositionRing.finrank_top G P C p, mul_comm (p.ramificationIdxIn B)]
 
 end rank
 
@@ -232,7 +241,7 @@ section splitting
 /-! ### Splitting of a prime in a decomposition ring -/
 
 variable {A : Type*} [CommRing A] [Algebra A B] [Algebra A C] [IsScalarTower A C B]
-  {p : Ideal A} [P.LiesOver p] (𝓟 : Ideal C) [P.LiesOver 𝓟] [P.IsDecompositionRing G C]
+  (p : Ideal A) [P.LiesOver p] (𝓟 : Ideal C) [P.LiesOver 𝓟] [P.IsDecompositionRing G C]
 
 namespace IsDecompositionRing
 
@@ -249,7 +258,7 @@ variable [Finite G] [IsGaloisGroup G A B] [IsDomain A] [IsDomain B] [FaithfulSMu
   [𝓟.IsPrime] [P.IsPrime]
 
 include G P in
-private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
+private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
     ramificationIdxIn 𝓟 B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟 B = p.inertiaDegIn B := by
   have : IsDomain C := (FaithfulSMul.algebraMap_injective C B).isDomain
   have : Module.Finite C B := Module.Finite.right A C B
@@ -264,35 +273,35 @@ private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq (hp : p ≠ ⊥) :
   · have := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn 𝓟 B (stabilizer G P)
     rw [primesOver_eq_singleton G P, Set.ncard_singleton, one_mul] at this
     rw [this, IsGaloisGroup.card_eq_finrank' (stabilizer G P) C B,
-      IsDecompositionRing.finrank_top G P C hp]
+      IsDecompositionRing.finrank_top G P C p]
 
 include G P in
 /-- The ramification index of `𝓟` in `B` equals the ramification index of `p` in `B`. -/
-theorem ramificationIdxIn_eq (hp : p ≠ ⊥) :
+theorem ramificationIdxIn_eq :
     ramificationIdxIn 𝓟 B = p.ramificationIdxIn B :=
-  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P C 𝓟 hp).1
+  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P C p 𝓟).1
 
 include G P in
 /-- The inertia degree of `𝓟` in `B` equals the inertia degree of `p` in `B`. -/
-theorem inertiaDegIn_eq (hp : p ≠ ⊥) :
+theorem inertiaDegIn_eq :
     inertiaDegIn 𝓟 B = p.inertiaDegIn B :=
-  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P C 𝓟 hp).2
+  (ramificationIdxIn_eq_and_inertiaDegIn_eq G P C p 𝓟).2
 
-include G P in
+include G P p in
 /-- `𝓟` is unramified over `A`. -/
-theorem ramificationIdx_eq (hp : p ≠ ⊥) :
+theorem ramificationIdx_eq :
     𝓟.ramificationIdx A = 1 := by
   have := ramificationIdx_tower (R := A) 𝓟 P
-  rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P C 𝓟 hp,
+  rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟 P (stabilizer G P), ramificationIdxIn_eq G P C p 𝓟,
     ramificationIdxIn_eq_ramificationIdx p P G, right_eq_mul₀ (ramificationIdx_pos P A).ne'] at this
 
-include G P in
+include G P p in
 /-- The inertia degree of `𝓟` over `A` equals `1`. -/
-theorem inertiaDeg_eq (hp : p ≠ ⊥) :
+theorem inertiaDeg_eq :
     𝓟.inertiaDeg A = 1 := by
   have : Module.Finite C B := Module.Finite.right A C B
   have := inertiaDeg_tower (R := A) 𝓟 P
-  rwa [← inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDegIn_eq G P C 𝓟 hp,
+  rwa [← inertiaDegIn_eq_inertiaDeg p P G, ← inertiaDegIn_eq G P C p 𝓟,
     ← inertiaDegIn_eq_inertiaDeg 𝓟 P (stabilizer G P),
     right_eq_mul₀ <| inertiaDegIn_ne_zero (stabilizer G P)] at this
 

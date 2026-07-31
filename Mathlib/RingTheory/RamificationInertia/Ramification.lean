@@ -101,6 +101,16 @@ theorem ramificationIdx_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one := ramificationIdx_eq_one
 
+@[simp]
+theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationIdx R = 1 := by
+  let Sq := Localization.AtPrime (⊥ : Ideal S)
+  rw [ramificationIdx_def, IsScalarTower.algebraMap_eq R S Sq, ← Ideal.map_map, Ideal.under,
+    map_comap_bot, map_bot, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def,
+    show (⊥ : Ideal Sq) = IsLocalRing.maximalIdeal Sq by
+      rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]]
+  exact IsLocalRing.maximalIdeal.isMaximal Sq
+
 variable {q R} in
 theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
     [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :

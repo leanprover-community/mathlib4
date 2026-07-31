@@ -1186,4 +1186,11 @@ variable {G} in
 lemma inertia_map_subtype (H : Subgroup G) : (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
   rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
 
+variable {I} in
+@[simp]
+lemma inertia_bot [FaithfulSMul G M] : (⊥ : AddSubgroup M).inertia G = ⊥ := by
+  refine eq_bot_iff.mpr fun σ hσ ↦ Subgroup.mem_bot.mpr <| eq_of_smul_eq_smul fun (x : M) ↦ ?_
+  rw [one_smul, ← sub_eq_zero]
+  exact (mem_inertia).mp hσ x
+
 end AddSubgroup
