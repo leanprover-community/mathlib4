@@ -48,11 +48,14 @@ variable {A : Type*} [CommRing A] [TopologicalSpace A] (Aplus : Subring A)
 "`Spa A = {v ∈ Cont(A) ; v(f) ≤ 1 for all f ∈ A⁺}`"). -/
 structure SpaPoint (A : Type*) [CommRing A] [TopologicalSpace A]
     (Aplus : Subring A) where
+  /-- The value group of the valuation. -/
   Γ₀ : Type*
   [instLinearOrderedCommGroupWithZero : LinearOrderedCommGroupWithZero Γ₀]
   [instTopologicalSpace : TopologicalSpace Γ₀]
   [instOrderTopology : OrderTopology Γ₀]
+  /-- The continuous valuation defining the point. -/
   v : ContinuousValuation A Γ₀
+  /-- The point condition: `v(f) ≤ 1` for all `f ∈ A⁺`. -/
   le_one : ∀ f ∈ Aplus, v f ≤ 1
 
 attribute [instance] SpaPoint.instLinearOrderedCommGroupWithZero
