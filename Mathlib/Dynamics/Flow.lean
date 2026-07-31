@@ -165,7 +165,7 @@ section AddMonoid
 variable [AddMonoid τ] (ϕ : Flow τ α)
 
 /-- Convert a flow to an additive monoid action. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toAddAction : AddAction τ α where
   vadd := ϕ
   add_vadd := ϕ.map_add'

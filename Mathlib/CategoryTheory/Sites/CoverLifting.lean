@@ -102,11 +102,17 @@ lemma Functor.IsCocontinuous.iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
     F.IsCocontinuous J K ↔ G.IsCocontinuous J K :=
   ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
 
+lemma CoverPreserving.of_comp_of_isCocontinuous {F : C ⥤ D} (G : D ⥤ E)
+    (h : CoverPreserving J L (F ⋙ G)) [G.IsCocontinuous K L] [G.Full] [G.Faithful] :
+    CoverPreserving J K F where
+  cover_preserve {U} S hS := by
+    refine K.superset_covering ?_ (G.cover_lift K _ (h.cover_preserve hS))
+    rw [Sieve.functorPushforward_comp, Sieve.functorPullback_functorPushforward_eq G]
+
 section
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Adjunction.isCocontinuous_iff_coverPreserving (adj : F ⊣ G) :
     F.IsCocontinuous J K ↔ CoverPreserving K J G := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ ⟨?_⟩⟩
@@ -178,6 +184,7 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
           r.w := by simpa using G.congr_map w =≫ f
           .. })
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
@@ -226,6 +233,7 @@ lemma fac' (j : StructuredArrow (op X) G.op) :
     lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF α s j.hom.unop := by
   apply IsLimit.fac
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by

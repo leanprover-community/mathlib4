@@ -118,9 +118,6 @@ variable [Ring R] [LinearOrder R] [FloorRing R] {z : ℤ} {a b : R}
 
 section floor
 
-@[deprecated floor_lt (since := "2025-12-26")]
-theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
-
 @[simp]
 theorem floor_le_neg_one_iff : ⌊a⌋ ≤ -1 ↔ a < 0 := by
   simpa using floor_le_iff (z := -1)
@@ -577,9 +574,6 @@ end fract
 /-! #### Ceil -/
 
 section ceil
-
-@[deprecated lt_ceil (since := "2025-12-26")]
-theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
 
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by

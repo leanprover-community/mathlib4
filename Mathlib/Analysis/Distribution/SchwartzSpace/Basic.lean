@@ -732,7 +732,7 @@ end bilin
 section smul
 
 variable (F) in
-open Classical in
+open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
 where `g` is a function of temperate growth. -/
 def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
@@ -1202,6 +1202,15 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
 
+theorem toBoundedContinuousFunctionCLM_injective :
+    Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+
+instance : T3Space 𝓢(E, F) :=
+  suffices T2Space 𝓢(E, F) from inferInstance
+  .of_injective_continuous (toBoundedContinuousFunctionCLM_injective ℝ ..)
+    (ContinuousLinearMap.continuous _)
+
 end BoundedContinuousFunction
 
 section ZeroAtInfty
@@ -1378,7 +1387,7 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := MemLp.exist_eLpNorm_sub_le hp hp'.out (Lp.memLp f) hε
   use (hg₁.toSchwartzMap hg₂).toLp p μ
-  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
+  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᵐ[μ] (f : E → F) - g := by
     filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp p μ]
     simp
   simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,

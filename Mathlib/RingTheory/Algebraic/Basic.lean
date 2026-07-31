@@ -142,18 +142,22 @@ theorem isAlgebraic_one [Nontrivial R] : IsAlgebraic R (1 : A) := by
   rw [← map_one (algebraMap R A)]
   exact isAlgebraic_algebraMap 1
 
-theorem isAlgebraic_nat [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
+theorem isAlgebraic_natCast [Nontrivial R] (n : ℕ) : IsAlgebraic R (n : A) := by
   rw [← map_natCast (_ : R →+* A) n]
   exact isAlgebraic_algebraMap (Nat.cast n)
 
-theorem isAlgebraic_int [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
+theorem isAlgebraic_intCast [Nontrivial R] (n : ℤ) : IsAlgebraic R (n : A) := by
   rw [← map_intCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Int.cast n)
 
-theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A] (n : ℚ) :
-    IsAlgebraic R (n : A) := by
+theorem isAlgebraic_ratCast (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Algebra R A]
+    (n : ℚ) : IsAlgebraic R (n : A) := by
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
+
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_nat := isAlgebraic_natCast
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_int := isAlgebraic_intCast
+@[deprecated (since := "2026-07-14")] alias isAlgebraic_rat := isAlgebraic_ratCast
 
 theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [CommRing R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
@@ -382,7 +386,7 @@ lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
     IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
   by_cases hx : x = 0
   · simp [hx]
-  letI := invertibleOfNonzero hx
+  let := invertibleOfNonzero hx
   exact IsAlgebraic.invOf_iff (R := R) (x := x)
 
 alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
@@ -413,8 +417,8 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
 theorem IsAlgebraic.tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : IsAlgebraic A x) : IsAlgebraic B x := by
-  letI : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
-  haveI : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
+  let : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
+  have : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
   exact h.extendScalars (Subalgebra.inclusion_injective hle)
 
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
