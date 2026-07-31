@@ -140,7 +140,7 @@ abbrev dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ 
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
-@[deprecated dflip (since := "2026-07-30")] abbrev swap {φ : α → β → Sort u₃} := dflip (φ := φ)
+@[deprecated dflip (since := "2026-07-30")] abbrev swap := @dflip
 
 theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
 
@@ -149,7 +149,7 @@ theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ d
 
 theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
 
-@[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_dflip_comm (f : β → β → φ)
+@[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_swap_comm (f : β → β → φ)
     (g : α → β) : (dflip f on g) = dflip (f on g) := onFun_dflip f g
 
 @[simp] theorem bicompl_dflip (f : φ → δ → ζ) (g : α → φ) (h : β → δ) : bicompl (dflip f) h g =
