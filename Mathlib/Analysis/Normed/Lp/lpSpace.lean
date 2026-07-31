@@ -511,7 +511,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using! h
-    have : (¬f i = 0) = False := congr_fun this i
+    have : ¬¬f i = 0 := Set.eq_empty_iff_forall_notMem.mp this i
     tauto
   · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]

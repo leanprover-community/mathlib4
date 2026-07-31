@@ -27,7 +27,7 @@ In this file we construct the transfer homomorphism.
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
@@ -44,7 +44,7 @@ variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
 @[to_additive /-- The difference of two left transversals -/]
-noncomputable def diff : A :=
+def diff : A :=
   let α := S.2.leftQuotientEquiv
   let β := T.2.leftQuotientEquiv
   let _ := H.fintypeQuotientOfFiniteIndex
@@ -86,7 +86,7 @@ variable (H) in
 /-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
   in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
   representative `g₀` of `q₀`. -/
-noncomputable def transferFunction : G ⧸ H → G := fun q =>
+def transferFunction : G ⧸ H → G := fun q =>
   g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
 
 lemma transferFunction_apply (q : G ⧸ H) :
@@ -145,7 +145,7 @@ open MulAction Subgroup Subgroup.leftTransversals
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
 @[to_additive /-- Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
-noncomputable def transfer [FiniteIndex H] : G →* A :=
+def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
     map_one' := by rw [one_smul, diff_self]
@@ -228,7 +228,7 @@ theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
 
 variable (G) in
 /-- The transfer homomorphism `G →* center G`. -/
-noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
+def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
@@ -245,7 +245,7 @@ include hP
 
 open scoped IsMulCommutative in
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
-noncomputable def transferSylow [P.FiniteIndex] : G →* P :=
+def transferSylow [P.FiniteIndex] : G →* P :=
   haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   transfer (MonoidHom.id P)
 

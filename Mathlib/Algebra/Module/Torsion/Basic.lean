@@ -938,10 +938,8 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
 
 end Ideal.Quotient
 
-namespace AddMonoid
-
-theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
+theorem isAddTorsion_iff_isTorsion_nat [AddCommMonoid M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℕ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
@@ -949,8 +947,11 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 
-theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
-    AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_nat :=
+  isAddTorsion_iff_isTorsion_nat
+
+theorem isAddTorsion_iff_isTorsion_int [AddCommGroup M] :
+    IsAddTorsion M ↔ Module.IsTorsion ℤ M := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
@@ -960,7 +961,8 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     obtain ⟨n, hn⟩ := @h x
     exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 
-end AddMonoid
+@[deprecated (since := "2026-07-01")] alias AddMonoid.isTorsion_iff_isTorsion_int :=
+  isAddTorsion_iff_isTorsion_int
 
 namespace AddSubgroup
 

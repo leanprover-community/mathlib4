@@ -82,7 +82,7 @@ lemmas about `midpoint`.
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 
 variable {X : Type*} [TopologicalSpace X]
@@ -155,7 +155,7 @@ theorem subset_right_C (c : CU P) : c.C ⊆ c.right.C :=
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
-noncomputable def approx : ℕ → CU P → X → ℝ
+def approx : ℕ → CU P → X → ℝ
   | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 
@@ -237,7 +237,7 @@ theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
 * `0 ≤ f x ≤ 1` for all `x`;
 * `f` equals zero on `c.C` and equals one outside of `c.U`;
 -/
-protected noncomputable def lim (c : CU P) (x : X) : ℝ :=
+protected def lim (c : CU P) (x : X) : ℝ :=
   ⨆ n, c.approx n x
 
 theorem tendsto_approx_atTop (c : CU P) (x : X) :

@@ -228,4 +228,7 @@ def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
   inv.app X := FinPartOrd.ofHom OrderHom.id
 
 /-- The generating arrow `i ⟶ i+1` in the category `Fin n` -/
-def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)
+def Fin.homSucc {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)
+
+@[deprecated (since := "2026-07-18")]
+alias Fin.hom_succ := Fin.homSucc

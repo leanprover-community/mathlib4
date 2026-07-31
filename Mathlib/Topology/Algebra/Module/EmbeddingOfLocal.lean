@@ -106,11 +106,10 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   -- Let `w ∈ W` be arbitrary.
   intro w w_in_W
   -- Because `V` is a `t₁`-neighborhood of `0`, we have `c ^ n • w ∈ V` for some natural number `n`.
-  obtain ⟨n, hn⟩ : ∃ n : ℕ, c ^ n • w ∈ V := by
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, c ^ n • w ∈ V :=
     let := t₁
-    have : Tendsto (fun k : ℕ ↦ c ^ k • w) atTop (𝓝 0) :=
-      zero_smul 𝕜₁ w ▸ (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁).smul_const w
-    exact this.eventually_mem V_mem |>.exists
+    tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc₁ |>.zero_smul_const w
+      |>.eventually_mem V_mem |>.exists
   -- We will conclude by reducing `c ^ n • w ∈ V` to `w = c ^ 0 • w ∈ V` inductively.
   suffices c ^ 0 • w ∈ V by simpa
   apply Nat.decreasingInduction (motive := fun (k : ℕ) _ ↦ c^k • w ∈ V) ?_ hn n.zero_le

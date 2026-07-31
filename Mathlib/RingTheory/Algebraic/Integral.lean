@@ -547,8 +547,7 @@ theorem lift_rank_of_isFractionRing :
   rw [IsLocalization.rank_eq R' R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
-theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
-  simpa using! congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
+@[deprecated (since := "2026-07-13")] alias finrank_of_isFractionRing := IsFractionRing.finrank_eq
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :

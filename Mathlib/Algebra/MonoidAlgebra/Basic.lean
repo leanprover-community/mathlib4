@@ -212,7 +212,7 @@ values on the functions `single m 1` and `single 1 a`.
 See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
 equality of `MonoidHom`s because `of` doesn't additivise. -/
 @[to_additive (dont_translate := R A B) (attr := ext high) /--
-A `R`-algebra homomorphism from `R[M]` is uniquely defined by its
+A `R`-algebra homomorphism from `A[M]` is uniquely defined by its
 values on the functions `single m 1` and `single 1 a`.
 
 See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an

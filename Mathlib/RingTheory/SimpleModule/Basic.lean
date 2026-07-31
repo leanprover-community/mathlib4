@@ -16,7 +16,6 @@ public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.SetTheory.Cardinal.NatCard
-
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!

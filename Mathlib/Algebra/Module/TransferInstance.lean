@@ -63,6 +63,16 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
       simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 
+@[simp]
+lemma linearEquiv_apply (a : α) [AddCommMonoid β] [Module R β] :
+    e.linearEquiv R a = e a := rfl
+
+@[simp]
+lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
+    letI := Equiv.addCommMonoid e
+    letI := Equiv.module R e
+    (e.linearEquiv R).symm b = e.symm b := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/

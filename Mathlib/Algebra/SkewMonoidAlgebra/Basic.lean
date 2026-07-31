@@ -811,7 +811,7 @@ instance [AddMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k] [SMulZeroClass S�
 
 instance [AddMonoid k] [SMulZeroClass S₁ k] [SMulZeroClass S₂ k] [SMulCommClass S₁ S₂ k] :
     SMulCommClass S₁ S₂ (SkewMonoidAlgebra k G) :=
-  ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofCoeff_smul, smul_comm _ _ _]⟩
+  ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofCoeff_smul, smul_comm]⟩
 
 instance [AddMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k] [IsCentralScalar S k] :
     IsCentralScalar S (SkewMonoidAlgebra k G) :=
@@ -897,7 +897,7 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
   let F : G × G → k := fun p ↦ if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
   calc
     (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
-    _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [← Finset.sum_product _ _ _]
+    _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
     _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G ↦ p.1 * p.2 = x,
       f.coeff p.1 * p.1 • g.coeff p.2 := (Finset.sum_filter _ _).symm
     _ = ∑ p ∈ s.filter fun p : G × G ↦ p.1 ∈ f.support ∧ p.2 ∈ g.support,
@@ -923,7 +923,7 @@ theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
   let F : G × G → k := fun p ↦ if p.1 * p.2 = x then f.coeff p.1 * p.1 • g.coeff p.2 else 0
   calc
     (f * g).coeff x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := coeff_mul f g x
-    _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [← Finset.sum_product _ _ _]
+    _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
     _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G ↦ p.1 * p.2 = x,
       f.coeff p.1 * p.1 • g.coeff p.2 := (Finset.sum_filter _ _).symm
     _ = ∑ p ∈ s.filter fun p : G × G ↦ p.1 ∈ f.support ∧ p.2 ∈ g.support,

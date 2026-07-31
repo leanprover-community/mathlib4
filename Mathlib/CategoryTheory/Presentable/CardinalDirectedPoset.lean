@@ -339,11 +339,11 @@ protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :
   obtain ⟨X, f, hf⟩ :=
     IsCardinalPresentable.exists_hom_of_isColimit κ' (isColimitCoconeWithTop J κ')
       (ObjectProperty.homMk (PartOrdEmb.ofHom WithTop.coeOrderHom))
-  replace hf : OrderEmbedding.subtype X.1 ∘ f = WithTop.coeOrderHom := by
+  replace hf : OrderEmbedding.subtype (· ∈ X.1) ∘ f = WithTop.coeOrderHom := by
     ext x
     exact ConcreteCategory.congr_hom hf x
   refine X.2.1.of_injective f (Function.Injective.of_comp
-    (f := OrderEmbedding.subtype X.1) ?_)
+    (f := OrderEmbedding.subtype (· ∈ X.1)) ?_)
   dsimp at hf ⊢
   rw [hf]
   exact WithTop.coe_injective

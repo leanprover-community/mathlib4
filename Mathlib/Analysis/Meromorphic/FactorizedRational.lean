@@ -55,7 +55,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
   constructor <;> intro h
   · simp_all only [mem_mulSupport, ne_eq, mem_support]
     by_contra hCon
-    simp_all [zpow_zero]
+    simp_all
   · simp_all only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]

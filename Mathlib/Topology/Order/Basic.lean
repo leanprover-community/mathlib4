@@ -117,6 +117,10 @@ theorem isOpen_lt' [OrderTopology α] (a : α) : IsOpen { b : α | a < b } :=
 @[to_dual]
 theorem isOpen_Ioi' [OrderTopology α] (a : α) : IsOpen (Ioi a) := isOpen_lt' a
 
+@[to_dual self]
+theorem isOpen_Ioo' [OrderTopology α] (a b : α) : IsOpen (Ioo a b) :=
+  IsOpen.inter (isOpen_Ioi' a) (isOpen_Iio' b)
+
 @[to_dual gt_mem_nhds]
 theorem lt_mem_nhds [OrderTopology α] {a b : α} (h : a < b) : ∀ᶠ x in 𝓝 b, a < x :=
   (isOpen_lt' _).mem_nhds h

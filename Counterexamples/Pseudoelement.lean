@@ -3,8 +3,10 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Abelian.Pseudoelements
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Abelian.Pseudoelements
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
@@ -29,12 +31,11 @@ given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
+@[expose] public noncomputable section
 
 open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat LinearMap
 
 namespace Counterexample
-
-noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
 
@@ -65,8 +66,6 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
     simp_rw [biprod.lift_snd]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
--- Porting note: locally disable instance to avoid inferred/synthesized clash
-attribute [-instance] AddCommGroup.toIntModule in
 /-- `x` is not pseudoequal to `y`. -/
 theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   intro h
@@ -119,7 +118,5 @@ theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
         pseudoApply (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = pseudoApply biprod.fst y ∧
           pseudoApply biprod.snd x = pseudoApply biprod.snd y :=
   ⟨⟦x⟧, ⟦y⟧, mk'_x_ne_mk'_y, fst_mk'_x_eq_fst_mk'_y, snd_mk'_x_eq_snd_mk'_y⟩
-
-end
 
 end Counterexample

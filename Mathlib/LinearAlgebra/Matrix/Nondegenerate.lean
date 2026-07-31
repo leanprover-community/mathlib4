@@ -38,7 +38,9 @@ def SeparatingRight : Prop :=
 def SeparatingLeft : Prop :=
   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0)
 
-/-- A matrix `M` is nondegenerate if it is both left-separating and right-separating. -/
+/-- A matrix `M` is nondegenerate if it is both left-separating and right-separating.
+
+See also `Matrix.Nonsingular`. -/
 @[mk_iff]
 structure Nondegenerate (M : Matrix m n R) : Prop where
   separatingLeft : SeparatingLeft M

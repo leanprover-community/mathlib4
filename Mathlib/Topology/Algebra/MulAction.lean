@@ -201,9 +201,47 @@ instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M
 
 end SMul
 
+section SMulZeroClass
+
+variable [Zero X] [SMulZeroClass M X] [ContinuousSMul M X]
+
+protected theorem Filter.Tendsto.smul_zero {f : α → M} {g : α → X} {l : Filter α} {c : M}
+    (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
+  smul_zero c (A := X) ▸ hf.smul hg
+
+end SMulZeroClass
+
+section SMulWithZero
+
+variable [Zero M] [Zero X] [SMulWithZero M X] [ContinuousSMul M X]
+
+protected theorem Filter.Tendsto.zero_smul {f : α → M} {g : α → X} {l : Filter α} {a : X}
+    (hf : Tendsto f l (𝓝 0)) (hg : Tendsto g l (𝓝 a)) :
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
+  zero_smul M a ▸ hf.smul hg
+
+protected theorem Filter.Tendsto.zero_smul_const {f : α → M} {l : Filter α}
+    (hf : Tendsto f l (𝓝 0)) (a : X) :
+    Tendsto (fun x ↦ f x • a) l (𝓝 0) :=
+  hf.zero_smul tendsto_const_nhds
+
+end SMulWithZero
+
 section Monoid
 
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
+
+@[to_additive]
+protected theorem Filter.Tendsto.one_smul {f : α → M} {g : α → X} {l : Filter α} {a : X}
+    (hf : Tendsto f l (𝓝 1)) (hg : Tendsto g l (𝓝 a)) :
+    Tendsto (fun x ↦ f x • g x) l (𝓝 a) :=
+  one_smul M a ▸ hf.smul hg
+
+@[to_additive]
+protected theorem Filter.Tendsto.one_smul_const {f : α → M} {l : Filter α}
+    (hf : Tendsto f l (𝓝 1)) (a : X) : Tendsto (fun x ↦ f x • a) l (𝓝 a) :=
+  hf.one_smul tendsto_const_nhds
 
 @[to_additive]
 instance Units.continuousSMul : ContinuousSMul Mˣ X :=

@@ -235,9 +235,11 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   let idx := dim * i + j
   let entry := arrayEntries.getD idx q(0)
   let ce ← certEval entry
-  have : $lhs =Q $entry := ⟨⟩
-  let h : Q($lhs = $entry) := q(rfl)
-  let cert := ce.chainProof h
+  let getD : Q($α) := q(Array.getD $A ($dimLit * $i + $j) 0)
+  let hGet : Q($lhs = $getD) := q(BirdDet.get_eq $dimLit $A $i $j)
+  have : $getD =Q $entry := ⟨⟩
+  let hGetD : Q($getD = $entry) := q(rfl)
+  let cert := ce.chainProof q(Eq.trans $hGet $hGetD)
   modify fun s => {s with entryCache := s.entryCache.insert (i, j) cert}
   return cert
 
@@ -316,10 +318,12 @@ partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
       --   sumFrom n (i + 1) fun k => F_t i k * get n A k j
       let tailSumCert ← certTail t' i j (i + 1)
       let rhsCert ← certAdd diagProdCert tailSumCert
+      let hStep := q(BirdDet.stepEntry_eq $dimLit $A $(ctx.iterStepEntry t') $i $j)
+      let stepCert := rhsCert.chainProof hStep
       let hIter := q(Function.iterate_succ_apply'
         (BirdDet.stepEntry $dimLit $A) $t' (BirdDet.get $dimLit $A))
       let h := q(congrArg (fun F : ℕ → ℕ → $α ↦ F $i $j) $hIter)
-      pure (rhsCert.chainProof h)
+      pure (stepCert.chainProof h)
   modify fun s =>
     {s with iterStepEntryCache := s.iterStepEntryCache.insert (t, i, j) cert}
   return cert

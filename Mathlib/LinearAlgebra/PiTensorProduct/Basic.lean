@@ -301,7 +301,7 @@ lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
   induction p using FreeAddMonoid.inductionOn' with
   | zero => rfl
-  | add_of b a ih =>
+  | of_add b a ih =>
     rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih, ← tprodCoeff_eq_smul_tprod]
     rfl
 

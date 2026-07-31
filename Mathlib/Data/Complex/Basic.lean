@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Tactic.Ring
+public import Mathlib.Util.Qq
 
 /-!
 # The complex numbers
@@ -635,6 +636,19 @@ lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
   conv_lhs => rw [← Nat.div_add_mod n 4]
   simp [pow_add, pow_mul, I_pow_four]
 
+open Qq in
+/-- Reduce `Complex.I ^ n` to `Complex.I ^ (n % 4)` when `n` is a literal natural number at
+least `4`. Combined with `Nat.reduceMod` this normalises every literal power of `I` to one of
+`I ^ 0`, `I ^ 1`, `I ^ 2`, `I ^ 3`, which the existing `@[simp]` lemmas dispatch. -/
+simproc I_pow_eq_pow_mod' (I ^ _) := .ofQ fun u a e =>
+  match u, a, e with
+  | 1, ~q(ℂ), ~q(I ^ ($n : ℕ)) => do
+    let some n' := n.nat? | return .continue
+    if n' < 4 then return .continue
+    -- we don't reduce `n % 4`, further, since `Nat.reduceMod` will handle that
+    return .visit <| .mk q(I ^ ($n % 4)) <| .some q(I_pow_eq_pow_mod $n)
+  | _, _, _ => return .continue
+
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
   rfl
@@ -728,6 +742,10 @@ theorem div_I (z : ℂ) : z / I = -(z * I) :=
 @[simp]
 theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
+
+lemma I_zpow_eq_zpow_mod (m : ℤ) : I ^ m = I ^ (m % 4) := by
+  conv_lhs => rw [← Int.mul_ediv_add_emod m 4]
+  simp [zpow_add₀, zpow_mul, zpow_ofNat]
 
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ := by simp
 
