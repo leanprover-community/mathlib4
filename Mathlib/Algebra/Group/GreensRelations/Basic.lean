@@ -3,12 +3,14 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Finite.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Finite.Defs
 
 /-!
 # Green's Relations: Definitions and Basic Properties
@@ -37,6 +39,7 @@ regular elements and regular D-classes.
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
+public section
 
 variable {S : Type*} [Semigroup S]
 

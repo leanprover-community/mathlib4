@@ -3,8 +3,10 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-import GreensRelations.MulSeq
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Algebra.Group.GreensRelations.MulSeq
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Main Theorems of Green's Relations
@@ -12,6 +14,7 @@ import Mathlib.Data.Fintype.Card
 This file proves the major structural theorems regarding Green's relations,
 including Green's theorem (bijections between H-classes) and regular D-class characterizations.
 -/
+public section
 
 variable {S : Type*} [Semigroup S]
 
