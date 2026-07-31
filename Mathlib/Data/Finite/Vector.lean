@@ -20,6 +20,5 @@ instance List.Vector.finite [Finite α] {n : ℕ} : Finite (Vector α n) := by
   infer_instance
 
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
-  classical
   have := Fintype.ofFinite α
   infer_instance

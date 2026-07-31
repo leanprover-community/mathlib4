@@ -234,7 +234,6 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
-  classical
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then
     obtain ⟨s, ⟨b⟩⟩ := H
     rw [← det_toMatrix b]
@@ -251,6 +250,7 @@ theorem det_comp (f g : M →ₗ[A] M) :
 theorem det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
   LinearMap.det.map_one
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying a map by a scalar `c` multiplies its determinant by `c ^ dim M`. -/
 @[simp]
 theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
@@ -343,6 +343,7 @@ theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Fin
     exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the determinant of a map vanishes, then the map is not injective. -/
 theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
     ⊥ < ker f := by
@@ -364,17 +365,13 @@ theorem det_eq_zero_iff_ker_ne_bot [IsDomain R] [Free R M] [Module.Finite R M] {
     rw [← det_toMatrix b, ← Matrix.exists_mulVec_eq_zero_iff]
     refine ⟨fun i => b.repr v i, by simpa, by simpa [toMatrix_mulVec_repr]⟩
 
-/--
-If the determinant of a map vanishes, then the map is not onto.
-TODO: This should only require `[IsDomain R] [Free R M]`, which we get if we generalize
-`Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`, which includes
-`LinearMap.ker_eq_bot_iff_range_eq_top`.
--/
-theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
+/-- If the determinant of a map vanishes, then the map is not onto. -/
+theorem range_lt_top_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M}
     (hf : f.det = 0) : range f < ⊤ := by
-  have : Module.Finite 𝕜 M := by simp [finite_of_det_ne_one (f := f), hf]
-  rw [lt_top_iff_ne_top, ne_eq, ← ker_eq_bot_iff_range_eq_top, ← ne_eq, ← bot_lt_iff_ne_bot]
-  exact bot_lt_ker_of_det_eq_zero hf
+  rw [lt_top_iff_ne_top]
+  intro h
+  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective h
+  simpa [hf] using congr_arg LinearMap.det hg
 
 /-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
 @[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by
@@ -597,6 +594,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 namespace Module.Basis
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where
@@ -736,6 +734,7 @@ theorem det_map' (b : Basis ι R M) (f : M ≃ₗ[R] M') :
 
 end Module.Basis
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M

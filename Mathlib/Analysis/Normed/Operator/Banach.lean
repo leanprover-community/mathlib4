@@ -364,6 +364,7 @@ lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range
     (f.equivRange hinj hclo).toLinearEquiv.symm =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by

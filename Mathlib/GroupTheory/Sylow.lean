@@ -120,6 +120,34 @@ theorem coe_ofCard [Finite G] {p : ℕ} [Fact p.Prime] (H : Subgroup G)
     (card_eq : Nat.card H = p ^ (Nat.card G).factorization p) : ofCard H card_eq = H :=
   rfl
 
+theorem eq_top_of_zero (H : Sylow 0 G) : (H : Subgroup G) = ⊤ :=
+  (H.is_maximal' (.zero _) le_top).symm
+
+theorem eq_bot_of_one (H : Sylow 1 G) : (H : Subgroup G) = ⊥ :=
+  have := isPGroup_one_iff_subsingleton.mp H.isPGroup'
+  eq_bot_of_subsingleton _
+
+/-- The type of Sylow `p`-subgroups depends only on the prime factors of `p`. -/
+def equivProdPrimeFactors (h : p ≠ 0) : Sylow p G ≃ Sylow (p.primeFactors.prod id) G where
+  toFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mp H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr hQ }
+  invFun H := { H with
+    isPGroup' := isPGroup_iff_isPGroup_prod_primeFactors h |>.mpr H.isPGroup',
+    is_maximal' hQ := H.is_maximal' <| isPGroup_iff_isPGroup_prod_primeFactors h |>.mp hQ }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp]
+theorem coe_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow p G) :
+    (equivProdPrimeFactors h H : Subgroup G) = H :=
+  rfl
+
+@[simp]
+theorem coe_symm_equivProdPrimeFactors_apply (h : p ≠ 0) (H : Sylow (p.primeFactors.prod id) G) :
+    (equivProdPrimeFactors h |>.symm H : Subgroup G) = H :=
+  rfl
+
 variable (P : Sylow p G)
 
 variable {K : Type*} [Group K] (ϕ : K →* G) {N : Subgroup G}
@@ -315,27 +343,26 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
     IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
-    classical
-      have H := fun {R : Sylow p G} {S : orbit G P} =>
-        calc
-          S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
-            forall_congr' fun a => Subtype.ext_iff
-          _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
-          _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
-      suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
-        exact Exists.elim this fun R hR => by
-          rw [← Sylow.ext (H.mp hR)]
-          exact R.2
-      apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
+    have H := fun {R : Sylow p G} {S : orbit G P} =>
       calc
-        1 = Nat.card (fixedPoints P (orbit G P)) := ?_
-        _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
-        _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
-      rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (orbit G P))), eq_comm]
-      congr
-      rw [Set.eq_singleton_iff_unique_mem]
-      exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
+        S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
+          forall_congr' fun a => Subtype.ext_iff
+        _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
+        _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
+    suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
+      exact Exists.elim this fun R hR => by
+        rw [← Sylow.ext (H.mp hR)]
+        exact R.2
+    apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
+    refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
+    calc
+      1 = Nat.card (fixedPoints P (orbit G P)) := ?_
+      _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
+      _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
+    rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (orbit G P))), eq_comm]
+    congr
+    rw [Set.eq_singleton_iff_unique_mem]
+    exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
 
 variable (p) (G)
 
@@ -495,6 +522,7 @@ theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
 
 end mapSurjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
@@ -751,7 +779,7 @@ theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : 
   simp [Finset.card_sdiff, ← Nat.card_eq_fintype_card, hH]
 
 /-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }
