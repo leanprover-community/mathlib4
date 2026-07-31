@@ -5,6 +5,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
@@ -248,6 +249,23 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
+variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
+  [Preorder R] [Zero R] [IsOrderedModule R ℝ]
+
+instance : IsOrderedSMul R (Seminorm 𝕜 E) where
+  smul_le_smul_left p q hpq c := by
+    rw [le_def] at hpq ⊢
+    intro x
+    simp only [smul_apply]
+    have hp : (c • (1 : ℝ≥0)) • p x = c • p x := by simp
+    have hq : (c • (1 : ℝ≥0)) • q x = c • q x := by simp
+    grw [← hp, smul_le_smul_of_nonneg_left (hpq x) (by positivity), hq]
+  smul_le_smul_right a b hab p := by
+    rw [le_def]
+    intro x
+    simp only [smul_apply]
+    grw [smul_le_smul_of_nonneg_right hab (by positivity)]
+
 end SMul
 
 end AddGroup
@@ -324,6 +342,7 @@ theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
 theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
+@[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
 theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
