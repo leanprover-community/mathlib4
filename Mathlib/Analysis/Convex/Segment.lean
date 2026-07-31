@@ -250,10 +250,9 @@ theorem semilinear_image_segment [RingHomInvPair σ σ'] (f : L) (x y : E)
   simp only [subset_antisymm_iff, segment_subset_iff, image_subset_iff, mem_image]
   simp only [segment, preimage_ofPred_eq, mem_ofPred_eq, map_add, exists_and_left]
   refine ⟨fun a b ha hb hab ↦ ⟨σ a, by simpa [hσ], σ b, ?_⟩, fun a b ha hb hab ↦ ?_⟩
-  · simp_all [← map_add, ← map_smulₛₗ]
-  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, ?_, σ' b, ?_⟩, ?_⟩ <;> simp_all [← hσ]
-    · simp_all [← map_add]
-    · simp [map_smulₛₗ]
+  · simpa [← map_add, ← map_smulₛₗ, hab, hσ]
+  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, by simpa [← hσ], σ' b, ?_⟩, by simp [map_smulₛₗ]⟩
+    simpa [← hσ, ← map_add, hab]
 
 theorem semilinear_image_openSegment [RingHomInvPair σ σ'] (f : L) (x y : E)
     (hσ : ∀ a, 0 < σ a ↔ 0 < a := by simp) :
@@ -261,10 +260,9 @@ theorem semilinear_image_openSegment [RingHomInvPair σ σ'] (f : L) (x y : E)
   simp only [subset_antisymm_iff, openSegment_subset_iff, image_subset_iff, mem_image]
   simp only [openSegment, preimage_ofPred_eq, mem_ofPred_eq, map_add, exists_and_left]
   refine ⟨fun a b ha hb hab ↦ ⟨σ a, by simpa [hσ], σ b, ?_⟩, fun a b ha hb hab ↦ ?_⟩
-  · simp_all [← map_add, ← map_smulₛₗ]
-  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, ?_, σ' b, ?_⟩, ?_⟩ <;> simp_all [← hσ]
-    · simp_all [← map_add]
-    · simp [map_smulₛₗ]
+  · simpa [← map_add, ← map_smulₛₗ, hab, hσ]
+  · refine ⟨σ' a • x + σ' b • y, ⟨σ' a, by simpa [← hσ], σ' b, ?_⟩, by simp [map_smulₛₗ]⟩
+    simpa [← hσ, ← map_add, hab]
 
 @[simp] theorem linearMap_image_segment (f : L') (a b : E) :
     f '' [a -[𝕜] b] = [f a -[𝕜] f b] := semilinear_image_segment _ _ _
