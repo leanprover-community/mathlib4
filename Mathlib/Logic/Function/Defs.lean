@@ -144,10 +144,10 @@ in the reverse order. `swap f y x = f x y`. -/
 
 theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
 
-@[simp] theorem dflip_dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip (dflip f) = f := rfl
-@[simp] theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ dflip = id := rfl
+theorem dflip_dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip (dflip f) = f := rfl
+theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ dflip = id := rfl
 
-@[simp] theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
+theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
 
 @[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_dflip_comm (f : β → β → φ)
     (g : α → β) : (dflip f on g) = dflip (f on g) := onFun_dflip f g
