@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Group.GreensRelations.Green
 This file proves structural theorems regarding Green's relations that specifically
 require a finite semigroup, such as the equivalence of D and J, and conditions
 for H-classes to be subgroups.
+
+## References
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 public section
 

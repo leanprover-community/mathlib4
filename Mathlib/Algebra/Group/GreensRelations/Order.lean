@@ -20,7 +20,7 @@ on the quotient types `GreenLClass`, `GreenRClass`, `GreenJClass`, and `GreenDCl
 * `GreenDClass.instPartialOrder`: Partial order on D-classes in a finite semigroup, via `D = J`.
 
 ## References
-* [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 public section
 

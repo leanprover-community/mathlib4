@@ -22,7 +22,7 @@ required to prove the main theorems of Green's relations.
 
 ## References
 
-* [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
+* [T. Colcombet, *The Factorization Forest Theorem*][colcombet2008]
 -/
 public section
 
