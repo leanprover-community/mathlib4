@@ -7,9 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Bareiss.Defs
 
+public meta import Mathlib.LinearAlgebra.Matrix.Notation
 public meta import Mathlib.Util.Qq
-
-meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 import Mathlib.Tactic.NormNum.Basic
 
@@ -41,41 +40,6 @@ namespace Mathlib.Tactic.Echelon
 def mkMatrixLit {u : Level} (R : Q(Type u)) (rows : Array (Array Expr)) : Expr :=
   Matrix.mkLiteralQ (α := R) (m := rows.size) (n := (rows.getD 0 #[]).size)
     (.of fun i j => show Q($R) from (rows[i.1]!)[j.1]!)
-
-/- TODO: once `!![…]` elaborates to `Matrix.ofArray`, the following parsers need a
-corresponding adaptation. -/
-/-- Parse a `![a, b, …]` vector literal into its entries. -/
-partial def parseVec? (e : Expr) : Option (Array Expr) :=
-  go #[] e
-where
-  go (acc : Array Expr) (e : Expr) : Option (Array Expr) :=
-    match_expr e.cleanupAnnotations with
-    | Matrix.vecEmpty _ => some acc
-    | Matrix.vecCons _ _ head tail => go (acc.push head) tail
-    | _ => none
-
-/-- Parse a `!![…]` matrix literal into its rows of entry expressions. -/
-def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
-  match_expr M.cleanupAnnotations with
-  | DFunLike.coe _ _ _ _ f v =>
-    match_expr f.cleanupAnnotations with
-    | Matrix.of _ _ _ => (parseVec? v).bind (·.mapM parseVec?)
-    | _ => none
-  | _ => none
-
-/-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
-entries. Commits into computation if this succeeds. -/
-def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
-  let some entries := parseMatrix? M | return none
-  let_expr Matrix finM finN R := ← inferType M | return none
-  let_expr Fin mE := finM.cleanupAnnotations | return none
-  let_expr Fin nE := finN.cleanupAnnotations | return none
-  -- the counts appear as `OfNat` numerals or as raw literals; `Expr.nat?` matches only the
-  -- former
-  let some m := mE.nat?.orElse fun _ => mE.rawNatLit? | return none
-  let some n := nE.nat?.orElse fun _ => nE.rawNatLit? | return none
-  unless entries.size == m && entries.all (·.size == n) do return none
-  return some (m, n, R, entries)
 
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
@@ -169,13 +133,25 @@ def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
     if r.isAppOf ``Decidable.isFalse then return false
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
-/-- Raw data of a Bareiss decomposition on integer valuess. -/
+/-- Read the rational values of the matrix entries; throws when an entry does not
+evaluate to a readable numeral. -/
+def readEntryValues (isDivRing charZero : Bool) (entries : Array (Array Expr)) :
+    MetaM (Array (Array Rat)) :=
+  entries.mapM fun row => row.mapM fun e => entryRat isDivRing charZero e
+
+/-- Scale each row integral by the lcm of its denominators. Returns the integer matrix
+together with the row scales, which are later folded back into `L`. -/
+def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array Nat :=
+  let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
+  (((ratRows.zip scales).map fun (row, s) => row.map fun v => (mkRat s 1 * v).num), scales)
+
+/-- Raw data of a Bareiss decomposition on integer values. -/
 structure BareissData where
   /-- The lower-triangular transform. -/
   L : Array (Array Int)
-  /-- The row transpositions in the order performed: the pair `(r, p)` exchanges the rows
-  at positions `r < p` of the current arrangement when the pivot of step `r` is found at
-  position `p`. The row permutation `σ` is later constructed by their product. -/
+  /-- Stores the swaps instead of row re-indexing, since in common cases swaps are infrequent
+  and therefore produce a smaller term needed to be checked by the kernel.
+    The row permutation `σ` is later constructed by their product. -/
   swaps : Array (Nat × Nat)
   /-- The pivot columns. The `k`-th entry is the column of the pivot
   in row `k` of the final echelon form. -/
@@ -251,43 +227,16 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
       r := r + 1
   return { L, swaps, pivot := pivots }
 
-/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
-matched dimensions, element type, and entries (from `matchMatrixLit?`): parse the entries'
-values, scale fractional rows integral, eliminate, fold the scaling back into `L`, and
-elaborate the certificate with the kernel checking its four conditions. Failures here are
-refusals of a committed attempt, and throw. -/
-def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
-    (entries : Array (Array Expr)) : TermElabM Expr := do
-  let u ← getDecLevel R
-  have R : Q(Type u) := R
-  let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
-  -- in a `CharZero` ring the integer values decide their own zero tests, and fraction
-  -- entries read faithfully as rationals.
-  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
-  -- against the concrete `R` can provide, so the probe synthesizes it first.
-  let charZero ← do
-    match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
-    | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
-    | none => pure false
-  let ratRows ← entries.mapM fun row => row.mapM fun e => entryRat isDivRing charZero e
-  -- scale each row integral by its denominator lcm; the scaling is folded into `L` below
-  let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
-  let values : Array (Array Int) :=
-    (ratRows.zip scales).map fun (row, s) => row.map fun v => (mkRat s 1 * v).num
-  -- verification runs in the kernel: probe one zero test so that element types without
-  -- kernel-decidable equality refuse early with a clean error (drop the probe once a
-  -- non-kernel verification route exists)
-  try
-    discard <| isZeroInR R 1
-  catch e =>
-    throwError "cannot verify the rank certificate: {e.toMessageData}"
-  let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
+/-- Elaborate the `Bareiss.Decomposition` certificate of `M` from the raw decomposition
+data, folding the row scales into `L`, with the kernel checking the four certificate
+conditions. -/
+def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : Array Nat)
+    (d : BareissData) : TermElabM Expr := do
   -- `L * (D·M).submatrix σ id = E` gives `(L·D_σ) * (M.submatrix σ id) = E`: scale column
   -- `j` of `L` by the factor of the row that ends up in position `j`
   let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range m)
   let scaledL := d.L.map fun row =>
     row.mapIdx fun j a => a * (scales.getD (order.getD j 0) 1 : Int)
-  -- constructing the main Bareiss certificate from internal raw data
   let L := mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
   let σ ← mkPerm m d.swaps
   let pivotE ← mkPivotLit m n d.pivot
@@ -301,6 +250,35 @@ def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
   let e ← Term.elabTermEnsuringType stx none
   Term.synthesizeSyntheticMVarsNoPostponing
   instantiateMVars e
+
+/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
+matched dimensions, element type, and entries (from `matchMatrixLit?`): analyze the ring,
+read the entries' values, scale fractional rows integral, eliminate, and elaborate the
+certificate. Failures here are refusals of a committed attempt, and throw. -/
+def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
+    (entries : Array (Array Expr)) : TermElabM Expr := do
+  let u ← getDecLevel R
+  have R : Q(Type u) := R
+  let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
+  -- in a `CharZero` ring the integer values decide their own zero tests, and fraction
+  -- entries read faithfully as rationals.
+  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
+  -- against the concrete `R` can provide, so the probe synthesizes it first.
+  let charZero ← do
+    match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
+    | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
+    | none => pure false
+  let ratRows ← readEntryValues isDivRing charZero entries
+  let (values, scales) := scaleRowsIntegral ratRows
+  -- verification runs in the kernel: probe one zero test so that element types without
+  -- kernel-decidable equality refuse early with a clean error (drop the probe once a
+  -- non-kernel verification route exists)
+  try
+    discard <| isZeroInR R 1
+  catch e =>
+    throwError "cannot verify the rank certificate: {e.toMessageData}"
+  let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
+  mkCertificate R M m n scales d
 
 end Mathlib.Tactic.Echelon
 
