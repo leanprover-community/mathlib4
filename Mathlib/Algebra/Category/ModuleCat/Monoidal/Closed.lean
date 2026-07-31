@@ -9,9 +9,12 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Linear.Yoneda
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
+meta import Lean.PostprocessTraces
 /-!
 # The monoidal closed structure on `Module R`.
 -/
+
+open Lean.PostprocessTraces
 
 @[expose] public section
 
@@ -76,12 +79,42 @@ theorem ihom_ev_app (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext'
   apply monoidalClosed_uncurry
 
+/-!
+# Issue (Low Severity)
+
+Uncontroversial fix available.
+-/
+
 set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
 `R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/
 theorem ihom_coev_app (M N : ModuleCat.{u} R) :
+    (ihom.coev M).app N = ModuleCat.ofHom₂ (TensorProduct.mk _ _ _).flip :=
+  rfl
+
+/-!
+# Fix
+
+Make `TensorProduct` implicit-reducible and remove `respectTransparency false`.
+-/
+
+set_option linter.style.longLine false
+postprocess_traces
+  filterSubtrees (fun x => ofClass `Meta.synthInstance x <&&> containsString "Module R (TensorProduct" x)
+  >=> filterSubtrees (fun x => ofClass `Meta.isDefEq.assign.checkTypes x <&&> failed x)
+in
+attribute [local implicit_reducible] TensorProduct in
+set_option linter.style.setOption false in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+/-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
+define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
+`R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/
+example (M N : ModuleCat.{u} R) :
     (ihom.coev M).app N = ModuleCat.ofHom₂ (TensorProduct.mk _ _ _).flip :=
   rfl
 

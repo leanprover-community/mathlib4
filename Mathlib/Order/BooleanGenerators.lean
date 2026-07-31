@@ -95,7 +95,7 @@ lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T 
       apply sSup_le_sSup
       apply _root_.le_sSup
       use c, hc, hC _ hc, (le_sSup hc).trans ha
-    · simp only [Set.sSup_eq_sUnion, sSup_le_iff, Set.mem_sUnion, Set.mem_setOf_eq,
+    · simp only [Set.sSup_eq_sUnion, sSup_le_iff, Set.mem_sUnion, Set.mem_ofPred_eq,
         forall_exists_index, and_imp]
       rintro a T b hbC hb hbS rfl haT
       apply (le_sSup haT).trans

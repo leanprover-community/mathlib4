@@ -116,7 +116,7 @@ instance linear_functor
     (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] :
     letI := linear R r hr; Functor.Linear R (functor r) := by
-  letI := linear R r hr; exact { }
+  let := linear R r hr; exact { }
 
 end Quotient
 

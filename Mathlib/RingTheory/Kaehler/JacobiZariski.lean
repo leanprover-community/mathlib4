@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.RingTheory.Flat.Basic
+meta import Lean.PostprocessTraces
 
 /-!
 
@@ -50,6 +51,7 @@ is stronger than the `Tor`-vanishing conditions required in the full statement o
 for `Tor` modules is available.
 
 -/
+
 
 @[expose] public section
 
@@ -232,12 +234,12 @@ restriction to `ker(I/I² → ⊕ S dyᵢ)` is the connecting homomorphism in th
 noncomputable
 def δAux :
     Q.Ring →ₗ[R] T ⊗[S] Ω[S⁄R] :=
-  Finsupp.lsum R (R := R) fun f ↦
-    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap
+  Finsupp.lsum R (R := R) (fun f ↦
+    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).toLinearMap
 
 lemma δAux_monomial (n r) :
-    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r :=
-  Finsupp.lsum_single _ _ _ _
+    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r := by simp [δAux]
 
 @[simp]
 lemma δAux_X (i) :
@@ -267,7 +269,7 @@ variable {Q} {Q'} in
 lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s => simp [MvPolynomial.algebraMap_eq, δAux_C]
@@ -284,13 +286,14 @@ lemma δAux_toAlgHom (f : Hom Q Q') (x) :
     rw [add_left_comm]
     rfl
 
-set_option backward.isDefEq.instanceTypes false in
+/-! # Issue -/
+
 set_option backward.isDefEq.respectTransparency false in
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction x using MvPolynomial.induction_on with
   | C s =>
@@ -316,6 +319,99 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         LinearMap.coe_inr, Basis.baseChange_apply, one_smul, LinearMap.baseChange_tmul,
         toKaehler_cotangentSpaceBasis, add_left_inj, LinearMap.coe_inl]
       rfl
+
+/-! ## Explanation
+
+The `mul_X` `simp only` rewrites `1 ⊗ₜ (X n • D p)` with `TensorProduct.tmul_smul`, whose
+`[CompatibleSMul …]` hypothesis is synthesized. The only candidate `CompatibleSMul.isScalarTower`
+reproduces a `Module _ T` slot in an instance-typed mvar; the direct check then compares
+`Module (Q.comp P).Ring T =?= Module (Q.comp P).toExtension.Ring T` at `.instances`, where the
+semireducible `Generators.toExtension` does not unfold, so the candidate value (spelled at
+`(Q.comp P).toExtension.Ring`) is rejected. Under `"markOrSynth"` the mvar is re-synthesized at its
+own type — which returns the same instance — and the following unification succeeds, so `tmul_smul`
+fires. Same `Ring`/`toExtension.Ring` boundary as the remaining site in
+`Mathlib/RingTheory/Extension/Cotangent/Basis.lean`; the rejected mvar is data-valued (`Module`),
+so a Prop-exemption would not apply even though `CompatibleSMul` is a Prop.
+-/
+
+open Lean.PostprocessTraces
+
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+set_option linter.style.longLine false in
+/--
+trace: [Meta.synthInstance] ✅️ CompatibleSMul (Q.comp P).Ring (Q.comp P).Ring T Ω[(Q.comp P).Ring⁄R]
+  [Meta.synthInstance.apply] ✅️ apply @CompatibleSMul.isScalarTower to CompatibleSMul (Q.comp P).Ring (Q.comp P).Ring T
+        Ω[(Q.comp P).Ring⁄R]
+    [Meta.synthInstance.tryResolve] ✅️ CompatibleSMul (Q.comp P).Ring (Q.comp P).Ring T
+          Ω[(Q.comp P).Ring⁄R] ≟ CompatibleSMul (Q.comp P).Ring (Q.comp P).Ring T Ω[(Q.comp P).Ring⁄R]
+      [Meta.isDefEq] ✅️ [instances] CompatibleSMul (Q.comp P).Ring (Q.comp P).Ring T
+            Ω[(Q.comp P).Ring⁄R] =?= CompatibleSMul ?m.270 ?m.271 ?m.274 ?m.275
+        [Meta.isDefEq] ✅️ [instances] toModule =?= ?m.279
+          [Meta.isDefEq.assign.checkTypes] ✅️ (?m.279 : Module (Q.comp P).Ring
+                T) := (toModule : Module (Q.comp P).toExtension.Ring T)
+            [Meta.isDefEq] ❌️ [instances] Module (Q.comp P).Ring T =?= Module (Q.comp P).toExtension.Ring T (truncated)
+            [Meta.synthInstance] ✅️ Module (Q.comp P).Ring T (truncated)
+            [Meta.isDefEq] ✅️ [instances] toModule =?= toModule
+---
+warning: declaration uses `sorry`
+-/
+#guard_msgs in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance.apply x)
+    <&&> (containsString "CompatibleSMul.isScalarTower" x))
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x)
+    <&&> (containsString "toExtension.Ring T" x) <&&> succeeded x)
+  >=> dropSubtrees (ofClass `Meta.isDefEq.onFailure)
+  >=> elideBelow (fun x => (failed x) <&&> (containsString "toExtension.Ring T" x))
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x)
+    <&&> (containsString "Module (Q.comp P).Ring T" x))
+  >=> dropSubtrees (fun x => (containsString "[default]" x))
+in
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.unusedSimpArgs false in
+set_option linter.style.setOption false in
+example (x : (Q.comp P).Ring) :
+    δAux R Q ((Q.ofComp P).toAlgHom x) =
+      P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
+        (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
+  induction x using MvPolynomial.induction_on with
+  | C s => sorry
+  | add x₁ x₂ hx₁ hx₂ => sorry
+  | mul_X p n IH =>
+    set_option trace.Meta.synthInstance true in
+    set_option trace.Meta.isDefEq true in
+    set_option trace.Meta.isDefEq.printTransparency true in
+    set_option trace.Meta.isDefEq.assign.checkTypes true in
+    simp only [map_mul, Hom.toAlgHom_X, ofComp_val, δAux_mul,
+      ← @IsScalarTower.algebraMap_smul Q.Ring T, algebraMap_apply, Hom.algebraMap_toAlgHom,
+      algebraMap_self, map_aeval, RingHomCompTriple.comp_eq, comp_val, RingHom.id_apply,
+      IH, Derivation.leibniz, tmul_add, tmul_smul, ← cotangentSpaceBasis_apply, coe_eval₂Hom,
+      ← @IsScalarTower.algebraMap_smul (Q.comp P).Ring T, aeval_X, map_smul, Prod.snd_add,
+      Prod.smul_snd, map_add]
+    sorry
 
 lemma map_comp_cotangentComplex_baseChange :
     (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T ∘ₗ
@@ -393,6 +489,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δAux (x : Q.ker) (hx) :
     δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
@@ -416,11 +513,13 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_C {r : S} (hr : C r ∈ Q.ker) :
     δ Q P ⟨Extension.Cotangent.mk ⟨C r, hr⟩, Extension.Cotangent.mk_C_mem_ker_cotangentComplex ..⟩
       = 1 ⊗ₜ[S] D R S r := by
   rw [δ_eq_δAux, δAux_C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_eq_δ : δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -438,7 +537,7 @@ lemma exact_map_δ :
 set_option backward.isDefEq.respectTransparency false in
 lemma δ_map (f : Hom Q' Q) (x) :
     δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
-  letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
+  let : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   change δ _ _ ⟨_, _⟩ = δ _ _ _
@@ -462,6 +561,7 @@ lemma exact_map_δ' (f : Hom W Q) :
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 lemma liftBaseChange_range_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
@@ -476,6 +576,7 @@ lemma liftBaseChange_range_le :
     x_in, RingHom.map_zero]
   exact Ideal.zero_mem _
 
+set_option backward.isDefEq.respectTransparency.types false in
 private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
     LinearMap.liftBaseChange T (Extension.Cotangent.map (Q.toComp P).toExtensionHom)
       ((LinearMap.lTensor T Extension.h1Cotangentι) z) ∈
@@ -485,6 +586,7 @@ private lemma auxMemKer (z : T ⊗[S] P.toExtension.H1Cotangent) :
   | tmul x y => simp [← Extension.CotangentSpace.map_cotangentComplex]
   | add x y hx hy => simpa using Submodule.add_mem _ hx hy
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- When $T$ is flat over $S$, the left bottom part of the snake lemma diagram used in
 the construction of the connecting homomorphism `Algebra.Generators.H1Cotangent.δ`

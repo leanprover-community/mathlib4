@@ -205,6 +205,7 @@ lemma induction_on_level {n : ℕ} {p : (x : Hollom) → x ∈ level n → Prop}
   rintro x y _ rfl
   exact h _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For each `n`, there is an order embedding from ℕ × ℕ (which has the product order) to the Hollom
 partial order.
@@ -218,6 +219,7 @@ lemma embed_apply (n : ℕ) (x y : ℕ) : embed n (x, y) = h(x, y, n) := rfl
 
 lemma embed_strictMono {n : ℕ} : StrictMono (embed n) := (embed n).strictMono
 
+set_option backward.isDefEq.respectTransparency false in
 lemma level_eq_range (n : ℕ) : level n = Set.range (embed n) := by
   simp [level, Set.range, embed]
 
@@ -243,7 +245,7 @@ This corresponds to 5.8 (i) in the [hollom2025].
 -/
 lemma ordConnected_level {n : ℕ} : (level n).OrdConnected := by
   rw [Set.ordConnected_iff]
-  simp only [level_eq, Set.mem_setOf_eq, Set.subset_def, Set.mem_Icc, and_imp, Hollom.forall,
+  simp only [level_eq, Set.mem_ofPred_eq, Set.subset_def, Set.mem_Icc, and_imp, Hollom.forall,
     Prod.forall, forall_eq, toHollom_le_toHollom_iff_fixed_right]
   intro a b c d ac bd e f g h1 h2
   exact le_antisymm (le_of_toHollom_le_toHollom h1) (le_of_toHollom_le_toHollom h2)
@@ -415,7 +417,7 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   -- In fact, we only need it to be nonempty, and find a point.
   obtain ⟨x, hxy⟩ := this.nonempty
   induction hxy.1.2 using induction_on_level with | h x y =>
-  simp only [Set.mem_sdiff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_setOf_eq,
+  simp only [Set.mem_sdiff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_ofPred_eq,
     not_le, D] at hxy
   -- Take the point `(x, y, n + 1)` in `C` that avoids `D`. As `(u, v, n)` is also in the chain `C`,
   -- they must be comparable.
@@ -812,6 +814,7 @@ variable {n : ℕ}
 
 lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A helper lemma to show `square_subset_R`.  In particular shows that if `C ∩ level n` is finite, the
 set of points `x` such that `x` is at least as large as every element of `C ∩ level n` contains an
@@ -840,7 +843,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   simp +contextual only [sup_le_iff, embed, RelEmbedding.coe_mk,
     Function.Embedding.coeFn_mk, Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff,
     Prod.forall, Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk,
-    Set.mem_setOf_eq, forall_exists_index, Prod.mk.injEq,
+    Set.mem_ofPred_eq, forall_exists_index, Prod.mk.injEq,
     toHollom_le_toHollom_iff_fixed_right, Set.mem_sdiff, and_true, ← max_add_add_right,
     Hollom.ext_iff]
   -- After simplifying, direct calculations show the subset relation as required.
@@ -853,6 +856,7 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
     specialize hab _ _ hfg
     lia
 
+set_option backward.isDefEq.respectTransparency false in
 lemma square_subset_R (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ R n C \ (C ∩ level n) := by
   filter_upwards [square_subset_above h] with a ha
@@ -870,7 +874,7 @@ lemma not_R_hits_same {x : Hollom} (hx : x ∈ R n C) (hx' : x ∉ C ∩ level n
   apply f.incomp_apply _ (hx.2 _ hfx).symm
   exact ne_of_mem_of_not_mem hfx hx'
 
-open Classical in
+open scoped Classical in
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of
 `C ∩ level (n + 1)`, expressed as `(x₀, y₀, n + 1)`.
@@ -912,7 +916,7 @@ lemma x0_y0_mem (h : (C ∩ level (n + 1)).Nonempty) : h(x0 n C, y0 n C, n + 1) 
 lemma x0_y0_min (hC : IsChain (· ≤ ·) C) {a b : ℕ} (h : h(a, b, n + 1) ∈ C) :
     h(x0 n C, y0 n C, n + 1) ≤ h(a, b, n + 1) := x0y0_min (a, b) hC h
 
-open Classical in
+open scoped Classical in
 /--
 Construction of the set `S`, which has the following key properties:
 * It is a subset of `R`.
@@ -935,6 +939,7 @@ lemma S_subset_R : S n C ⊆ R n C := by
 
 lemma S_subset_level : S n C ⊆ level n := S_subset_R.trans R_subset_level
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Assuming `C ∩ level n` is finite, and `C ∩ level (n + 1)` is finite, that there exists cofinitely
 many `a` such that `{(x, y, n) | x ≥ a ∧ y ≥ a} ⊆ S \ (C ∩ level n)`.
@@ -956,7 +961,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     rw [eventually_atTop, level_eq]
     refine ⟨max b c, ?_⟩
     simp only [sup_le_iff, embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_inter_iff, Set.mem_setOf_eq, and_imp, «forall», Prod.forall,
+      Set.mem_inter_iff, Set.mem_ofPred_eq, and_imp, «forall», Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
       Prod.mk.injEq, Hollom.ext_iff]
     rintro d hbd hcd _ _ _ e f hde hdf rfl rfl rfl g h _ hgh rfl
@@ -1027,18 +1032,18 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   cases (C ∩ level (n + 1)).finite_or_infinite
   -- In the case that `C ∩ level (n + 1)` is finite, this is immediate from the definition of `S`.
   case inl h =>
-    rw [S, if_pos h, Set.mem_setOf_eq] at hx
+    rw [S, if_pos h, Set.mem_ofPred_eq] at hx
     intro hy
     refine f.incomp_apply ?_ (hx.2 _ hy).symm
     have := R_subset_level hx.1
-    simp only [level_eq, Set.mem_setOf_eq] at this
+    simp only [level_eq, Set.mem_ofPred_eq] at this
     intro h
     simp [level_eq, h, this] at hy
   -- So suppose it is infinite
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`
     induction S_subset_level hx using induction_on_level with | h x y =>
-    simp only [S, if_neg h, Set.mem_setOf_eq] at hx
+    simp only [S, if_neg h, Set.mem_ofPred_eq] at hx
     intro hp
     set fp := f h(x, y, n) with hfp
     clear_value fp

@@ -515,10 +515,12 @@ theorem compMeasurable_toGerm [MeasurableSpace β] [BorelSpace β] [PseudoMetriz
     (compMeasurable g hg f).toGerm = f.toGerm.map g :=
   induction_on f fun f _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂_toGerm (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : (comp₂ g hg f₁ f₂).toGerm = f₁.toGerm.map₂ g f₂.toGerm :=
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     [PseudoMetrizableSpace γ] [SecondCountableTopologyEither β γ]
     [MeasurableSpace γ] [BorelSpace γ] [PseudoMetrizableSpace δ] [SecondCountableTopology δ]
@@ -647,6 +649,7 @@ def const (b : β) : α →ₘ[μ] β :=
 theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function.const α b :=
   coeFn_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the measure is nonzero, we can strengthen `coeFn_const` to get an equality. -/
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by

@@ -65,6 +65,7 @@ noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = 
     else
       (mapBifunctorObjSingle₀ObjIsInitial F X Y a ha).to _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
@@ -105,6 +106,7 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
@@ -180,6 +182,7 @@ noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ =
     else
       (mapBifunctorObjObjSingle₀IsInitial F Y X a ha).to _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorRightUnitorCofan_inj (j : J) :
@@ -223,6 +226,7 @@ noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :

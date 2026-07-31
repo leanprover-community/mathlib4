@@ -85,6 +85,7 @@ instance (α : Type*) [LT α] [h : DecidableLT α] : DecidableLT (αᵒᵈ) :=
 instance (α : Type*) [LE α] [h : DecidableLE α] : DecidableLE (αᵒᵈ) :=
   fun a b ↦ h b a
 
+set_option backward.isDefEq.respectTransparency false in
 instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   le_total a b := le_total (α := α) b a
   min_def := max_def' (α := α)

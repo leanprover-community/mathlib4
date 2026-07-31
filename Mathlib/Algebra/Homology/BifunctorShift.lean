@@ -132,6 +132,7 @@ variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive] (y : ℤ)
   [HasMapBifunctor K₁ K₂ F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `mapBifunctorShift₂Iso`. -/
 @[simps! hom_f_f inv_f_f]

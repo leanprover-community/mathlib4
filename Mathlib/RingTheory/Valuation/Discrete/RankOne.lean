@@ -80,6 +80,7 @@ section WithZeroMulInt
 
 variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : Function.Surjective v)
     (x : R) : (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,

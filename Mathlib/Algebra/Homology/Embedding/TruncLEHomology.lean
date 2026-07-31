@@ -30,8 +30,6 @@ sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
 
 @[expose] public section
 
-set_option backward.isDefEq.instanceTypes false
-
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex

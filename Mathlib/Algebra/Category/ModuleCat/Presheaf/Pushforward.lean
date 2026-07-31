@@ -23,8 +23,6 @@ we show that they interact with the composition of morphisms similarly as pseudo
 
 @[expose] public section
 
-set_option backward.isDefEq.instanceTypes false
-
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
 open CategoryTheory Functor
@@ -110,9 +108,30 @@ lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
       (((pushforward φ).obj M).map f).hom m = M.map (F.map f.unop).op m := rfl
 
+/-! # Issue (Low Severity) -/
+
+set_option backward.isDefEq.instanceTypes false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `pushforward_obj_map_apply`. -/
 @[simp]
 lemma pushforward_obj_map_apply' (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
+      DFunLike.coe
+        (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_]
+          ↑((ModuleCat.restrictScalars (S.map f).hom).obj ((ModuleCat.restrictScalars _).obj _)))
+        (((pushforward φ).obj M).map f).hom m = M.map (F.map f.unop).op m := rfl
+
+/-!
+# Fix
+
+Add implicit-reducibility attrs, remove `respectTransparency.types false`
+-/
+
+attribute [local implicit_reducible]
+  pushforward
+  PresheafOfModules.restrictScalars PresheafOfModules.restrictScalarsObj
+in
+example (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
       DFunLike.coe
         (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_]
@@ -123,9 +142,26 @@ lemma pushforward_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
     (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
 
+/-! # Issue 2 (Low Severity, same fix) -/
+
+set_option backward.isDefEq.instanceTypes false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `@[simp]`-normal form of `pushforward_map_app_apply`. -/
 @[simp]
 lemma pushforward_map_app_apply' {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
+    (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
+    DFunLike.coe
+      (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_] ↑((ModuleCat.restrictScalars _).obj _))
+      (((pushforward φ).map α).app X).hom m = α.app (Opposite.op (F.obj X.unop)) m := rfl
+
+/-! # Fix -/
+
+attribute [local implicit_reducible]
+  pushforward
+  PresheafOfModules.restrictScalars PresheafOfModules.restrictScalarsObj
+in
+/-- `@[simp]`-normal form of `pushforward_map_app_apply`. -/
+example {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (X : Cᵒᵖ)
     (m : (ModuleCat.restrictScalars (φ.app X).hom).obj (M.obj (Opposite.op (F.obj X.unop)))) :
     DFunLike.coe
       (F := ↑((ModuleCat.restrictScalars _).obj _) →ₗ[_] ↑((ModuleCat.restrictScalars _).obj _))

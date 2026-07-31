@@ -5,13 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
-public import Mathlib.Order.Interval.Set.WithBotTop
 public import Mathlib.Order.DirectedInverseSystem
-
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
@@ -87,7 +83,6 @@ set_option quotPrecheck false
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.ToType
 
-set_option backward.privateInPublic true in
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
@@ -122,13 +117,12 @@ def leastExt : ι → ι :=
   wellFounded_lt.fix fun i ih ↦
     let s := range fun j : Iio i ↦ b (ih j j.2)
     wellFounded_lt.min {k | b k ∉ adjoin F s} <| by
-      rw [← compl_setOf, nonempty_compl]; by_contra!
-      simp_rw [eq_univ_iff_forall, mem_setOf] at this
+      rw [← compl_ofPred, nonempty_compl]; by_contra!
+      simp_rw [eq_univ_iff_forall, mem_ofPred] at this
       have := adjoin_le_iff.mpr (range_subset_iff.mpr this)
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
-      let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
       have := mk_Iio_lt i (by simp)
       rw [mk_toType, card_ord] at this
@@ -190,7 +184,7 @@ theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext
   simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
-    algHomEquivSigma, AlgHom.restrictDomain, Subalgebra.inclusion, Set.inclusion, equivOfEq,
+    algHomEquivSigma, AlgHom.domRestrict, Subalgebra.inclusion, Set.inclusion, equivOfEq,
     Subalgebra.equivOfEq]
 
 instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
@@ -281,7 +275,8 @@ lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration i = ⊥ := 
     rw [← range_coe] at hi; exact (hi inferInstance).elim
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 
-open Classical in
+set_option backward.isDefEq.respectTransparency.types false in
+open scoped Classical in
 /-- If `i` is a limit, the type of embeddings of `E⟮<i⟯` into `Ē` is
 the limit of the types of embeddings of `E⟮<j⟯` for `j < i`. -/
 def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
@@ -327,7 +322,7 @@ variable {F E}
 
 theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
     (rank_inf : ℵ₀ ≤ Module.rank F E) : #(Field.Emb F E) = 2 ^ Module.rank F E := by
-  haveI := Fact.mk rank_inf
+  have := Fact.mk rank_inf
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
   apply le_antisymm
   · rw [← power_eq_two_power rank_inf natCast_le_aleph0 rank_inf]

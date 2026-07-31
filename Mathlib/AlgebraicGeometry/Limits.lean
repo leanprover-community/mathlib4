@@ -15,6 +15,8 @@ public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: 
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.
 
+meta import Lean.PostprocessTraces
+
 /-!
 # (Co)Limits of Schemes
 
@@ -32,6 +34,8 @@ We construct various limits and colimits in the category of schemes.
 * Spec preserves finite coproducts.
 
 -/
+
+open Lean.PostprocessTraces
 
 @[expose] public section
 
@@ -112,7 +116,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  haveI : IsEmpty X := f.base.hom.1.isEmpty
+  have : IsEmpty X := f.base.hom.1.isEmpty
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
@@ -232,9 +236,149 @@ noncomputable instance [Small.{u} σ] : CoproductsOfShapeDisjoint Scheme.{u} σ 
 instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
+/-! # Issue -/
+
+set_option linter.style.longLine false in
+#adaptation_note
+/--
+instanceTypes-related fix:
+
+Was:
+```lean
+set_option backward.isDefEq.respectTransparency.types false in
+instance : MonoCoprod Scheme.{u} :=
+  .mk' fun X Y ↦
+    ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+```
+
+Why?
+The inline inferInstanceAs leads to a two-step transitive unification:
+`(BinaryCofan.mk ..).inl =?= coprod.inl (params obtained by unification from LHS) =?=
+  coprod.inl (from inl_of_binaryCoproductDisjoint's type)`.
+The first comparison happens at a higher transparency than the second. Seems fragile.
+The first unification has leeway regarding how the expression should look.
+The second comparison happens at instance transparency.
+-/
 instance : MonoCoprod Scheme.{u} :=
   .mk' fun X Y ↦
     ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl (X := X)⟩
+
+/-! ## Explanation -/
+
+-- Without the `(X := X)` pin, `inferInstanceAs <| Mono coprod.inl` synthesizes via
+-- `Mono.inl_of_binaryCoproductDisjoint`, which reduces to assigning an instance-typed mvar
+-- `(?m : HasBinaryCoproduct ((pair X Y).obj {left}) Y) := (instHasColimit (pair X Y) : HasColimit
+-- (pair X Y))`.
+-- Under `"markOrSynth"` (as under `"mark"`) the direct `.instances` check fails — `(pair X Y).obj
+-- {left}` does not reduce to `X` at instance transparency — so re-synthesis runs, succeeds, but
+-- returns an instance for the *reduced* type; unifying it back against the original then fails,
+-- and the assignment is rejected. So the problem form still fails to synthesize (the demo below
+-- reproduces the failure); the real declaration above fixes it up front by pinning `(X := X)`.
+-- Note: an alternative fix is to make `pair` implicit-reducible. In that case, this instance
+-- would still fail to synthesize, but *a different* instance would succeed.
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+set_option linter.style.longLine false in
+/--
+error: failed to synthesize
+  Mono coprod.inl
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+---
+trace: [Meta.synthInstance] ❌️ Mono coprod.inl
+  [Meta.synthInstance.apply] ❌️ apply @Mono.inl_of_binaryCoproductDisjoint to Mono coprod.inl
+    [Meta.synthInstance.tryResolve] ❌️ Mono coprod.inl ≟ Mono coprod.inl
+      [Meta.isDefEq] ❌️ [instances] Mono coprod.inl =?= Mono coprod.inl
+        [Meta.isDefEq] ❌️ [instances] coprod.inl =?= coprod.inl
+          [Meta.isDefEq] ❌️ [implicit] Scheme.IsLocallyDirected.instHasColimit (pair X Y) =?= ?m.49
+            [Meta.isDefEq.assign.checkTypes] ❌️ (?m.49 : HasBinaryCoproduct ((pair X Y).obj { as := WalkingPair.left })
+                  Y) := (Scheme.IsLocallyDirected.instHasColimit (pair X Y) : HasColimit (pair X Y))
+              [Meta.isDefEq] ❌️ [instances] HasBinaryCoproduct ((pair X Y).obj { as := WalkingPair.left })
+                    Y =?= HasColimit (pair X Y)
+                [Meta.isDefEq] ❌️ [instances] HasColimit
+                      (pair ((pair X Y).obj { as := WalkingPair.left }) Y) =?= HasColimit (pair X Y)
+                  [Meta.isDefEq] ❌️ [instances] pair ((pair X Y).obj { as := WalkingPair.left }) Y =?= pair X Y
+                    [Meta.isDefEq] ❌️ [instances] (pair X Y).obj { as := WalkingPair.left } =?= X
+                      [Meta.isDefEq] ❌️ [instances] (pair X Y).1 { as := WalkingPair.left } =?= X
+                        [Meta.isDefEq.onFailure] ❌️ (pair X Y).1 { as := WalkingPair.left } =?= X
+                    [Meta.isDefEq.onFailure] ❌️ pair ((pair X Y).obj { as := WalkingPair.left }) Y =?= pair X Y
+                  [Meta.isDefEq.onFailure] ❌️ HasColimit
+                        (pair ((pair X Y).obj { as := WalkingPair.left }) Y) =?= HasColimit (pair X Y)
+              [Meta.synthInstance] ✅️ HasBinaryCoproduct ((pair X Y).obj { as := WalkingPair.left }) Y (truncated)
+              [Meta.isDefEq] ❌️ [implicit] Scheme.IsLocallyDirected.instHasColimit
+                    (pair X
+                      Y) =?= Scheme.IsLocallyDirected.instHasColimit
+                    (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+                [Meta.isDefEq] ❌️ [implicit] HasColimit
+                      (pair X Y) =?= HasColimit (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+                  [Meta.isDefEq] ❌️ [implicit] pair X Y =?= pair ((pair X Y).obj { as := WalkingPair.left }) Y
+                    [Meta.isDefEq] ❌️ [implicit] X =?= (pair X Y).obj { as := WalkingPair.left }
+                      [Meta.isDefEq] ❌️ [implicit] X =?= (pair X Y).1 { as := WalkingPair.left }
+                        [Meta.isDefEq.onFailure] ❌️ X =?= (pair X Y).1 { as := WalkingPair.left }
+                    [Meta.isDefEq.onFailure] ❌️ pair X Y =?= pair ((pair X Y).obj { as := WalkingPair.left }) Y
+                  [Meta.isDefEq.onFailure] ❌️ HasColimit
+                        (pair X Y) =?= HasColimit (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+          [Meta.isDefEq] ❌️ [instances] colimit.ι (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+                {
+                  as :=
+                    WalkingPair.left } =?= colimit.ι (pair ((pair X Y).obj { as := WalkingPair.left }) ?m.47)
+                { as := WalkingPair.left }
+            [Meta.isDefEq] ❌️ [implicit] Scheme.IsLocallyDirected.instHasColimit (pair X Y) =?= ?m.49
+              [Meta.isDefEq.assign.checkTypes] ❌️ (?m.49 : HasBinaryCoproduct
+                    ((pair X Y).obj { as := WalkingPair.left })
+                    Y) := (Scheme.IsLocallyDirected.instHasColimit (pair X Y) : HasColimit (pair X Y))
+                [Meta.isDefEq] ❌️ [instances] HasBinaryCoproduct ((pair X Y).obj { as := WalkingPair.left })
+                      Y =?= HasColimit (pair X Y)
+                  [Meta.isDefEq] ❌️ [instances] HasColimit
+                        (pair ((pair X Y).obj { as := WalkingPair.left }) Y) =?= HasColimit (pair X Y)
+                    [Meta.isDefEq] ❌️ [instances] pair ((pair X Y).obj { as := WalkingPair.left }) Y =?= pair X Y
+                      [Meta.isDefEq] ❌️ [instances] (pair X Y).obj { as := WalkingPair.left } =?= X
+                        [Meta.isDefEq] ❌️ [instances] (pair X Y).1 { as := WalkingPair.left } =?= X
+                          [Meta.isDefEq.onFailure] ❌️ (pair X Y).1 { as := WalkingPair.left } =?= X
+                      [Meta.isDefEq.onFailure] ❌️ pair ((pair X Y).obj { as := WalkingPair.left }) Y =?= pair X Y
+                    [Meta.isDefEq.onFailure] ❌️ HasColimit
+                          (pair ((pair X Y).obj { as := WalkingPair.left }) Y) =?= HasColimit (pair X Y)
+                [Meta.synthInstance] ✅️ HasBinaryCoproduct ((pair X Y).obj { as := WalkingPair.left }) Y (truncated)
+                [Meta.isDefEq] ❌️ [implicit] Scheme.IsLocallyDirected.instHasColimit
+                      (pair X
+                        Y) =?= Scheme.IsLocallyDirected.instHasColimit
+                      (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+                  [Meta.isDefEq] ❌️ [implicit] HasColimit
+                        (pair X Y) =?= HasColimit (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+                    [Meta.isDefEq] ❌️ [implicit] pair X Y =?= pair ((pair X Y).obj { as := WalkingPair.left }) Y
+                      [Meta.isDefEq] ❌️ [implicit] X =?= (pair X Y).obj { as := WalkingPair.left }
+                        [Meta.isDefEq] ❌️ [implicit] X =?= (pair X Y).1 { as := WalkingPair.left }
+                          [Meta.isDefEq.onFailure] ❌️ X =?= (pair X Y).1 { as := WalkingPair.left }
+                      [Meta.isDefEq.onFailure] ❌️ pair X Y =?= pair ((pair X Y).obj { as := WalkingPair.left }) Y
+                    [Meta.isDefEq.onFailure] ❌️ HasColimit
+                          (pair X Y) =?= HasColimit (pair ((pair X Y).obj { as := WalkingPair.left }) Y)
+-/
+#guard_msgs in
+postprocess_traces
+  filterSubtrees (containsString "apply @CategoryTheory.Mono.inl_of_binaryCoproductDisjoint to")
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x) <&&> (failed x))
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> (succeeded x))
+in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+set_option backward.isDefEq.respectTransparency.types false in
+example : MonoCoprod Scheme.{u} :=
+  .mk' fun X Y ↦
+    ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]
@@ -547,7 +691,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
-    letI := (RingHom.fst R S).toAlgebra
+    let := (RingHom.fst R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
@@ -555,7 +699,7 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq,
       Scheme.Hom.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
-    letI := (RingHom.snd R S).toAlgebra
+    let := (RingHom.snd R S).toAlgebra
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
       IsOpenImmersion.of_isLocalization (0, 1)
     infer_instance
@@ -615,7 +759,7 @@ lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
 instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
   classical
-  letI := (Pi.evalRingHom R i).toAlgebra
+  let := (Pi.evalRingHom R i).toAlgebra
   have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
     apply IsLocalization.away_of_isIdempotentElem_of_mul
     · ext j; by_cases h : j = i <;> aesop

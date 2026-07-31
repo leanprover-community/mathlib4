@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
+
 In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
@@ -184,6 +185,7 @@ open Real
 
 attribute [-instance] Real.decidableEq
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
@@ -318,7 +320,7 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
-open Classical in
+open scoped Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 

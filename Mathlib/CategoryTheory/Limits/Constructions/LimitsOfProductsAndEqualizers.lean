@@ -32,9 +32,6 @@ Show the analogous results for functors which reflect or create (co)limits.
 
 @[expose] public section
 
-
-set_option backward.isDefEq.instanceTypes false
-
 open CategoryTheory
 
 open Opposite
@@ -403,6 +400,7 @@ noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J �
   have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
@@ -557,10 +555,10 @@ theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts
 lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] (G : C ⥤ D) [PreservesColimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesFiniteColimits G := by
-  haveI : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
-  haveI : PreservesColimitsOfShape (Discrete WalkingPair) G :=
+  have : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
+  have : PreservesColimitsOfShape (Discrete WalkingPair) G :=
     preservesBinaryCoproducts_of_preservesInitial_and_pushouts G
-  haveI : PreservesColimitsOfShape (WalkingParallelPair) G :=
+  have : PreservesColimitsOfShape (WalkingParallelPair) G :=
       (preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts G)
   refine
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_

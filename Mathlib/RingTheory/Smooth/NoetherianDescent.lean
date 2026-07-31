@@ -141,7 +141,6 @@ lemma coeffs_q_subset (i) :
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
   grind [subalgebra, Algebra.subset_adjoin]
 
-set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]

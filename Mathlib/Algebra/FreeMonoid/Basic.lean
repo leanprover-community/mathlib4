@@ -381,6 +381,7 @@ theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 @[to_additive]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
     map f (map g x) = map (f ∘ g) x := by

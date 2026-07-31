@@ -320,7 +320,6 @@ lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C 
     -- We take the greatest `n` such that there is a `j : cell C n` and show that this fulfills
     -- the necessary conditions.
     have _ := Fintype.ofFinite (Σ n, cell C n)
-    classical
     let A := (Finset.univ : Finset (Σ n, cell C n)).image Sigma.fst
     use A.max' (Finset.image_nonempty.2 Finset.univ_nonempty) + 1
     intro m _

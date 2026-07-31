@@ -41,8 +41,6 @@ This file defines the space of complete types over a first-order theory.
 @[expose] public section
 
 
-set_option backward.isDefEq.instanceTypes false
-
 universe u v w w'
 
 open Cardinal Set FirstOrder
@@ -114,11 +112,13 @@ theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈
     exact ⟨ht, hf⟩, (p.mem_or_not_mem φ).resolve_left⟩
 
 @[simp]
-theorem compl_setOf_mem {φ : L[[α]].Sentence} :
+theorem compl_setOfPred_mem {φ : L[[α]].Sentence} :
     { p : T.CompleteType α | φ ∈ p }ᶜ = { p : T.CompleteType α | φ.not ∈ p } :=
   ext fun _ => (not_mem_iff _ _).symm
 
-theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
+@[deprecated (since := "2026-07-09")] alias compl_setOf_mem := compl_setOfPred_mem
+
+theorem setOfPred_subset_eq_empty_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = ∅ ↔
       ¬((L.lhomWithConstants α).onTheory T ∪ S).IsSatisfiable := by
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
@@ -131,36 +131,46 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   rintro ⟨p, hp⟩
   exact p.isMaximal.1.mono (union_subset p.subset hp)
 
-theorem setOf_mem_eq_univ_iff (φ : L[[α]].Sentence) :
+@[deprecated (since := "2026-07-09")]
+alias setOf_subset_eq_empty_iff := setOfPred_subset_eq_empty_iff
+
+theorem setOfPred_mem_eq_univ_iff (φ : L[[α]].Sentence) :
     { p : T.CompleteType α | φ ∈ p } = Set.univ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
-  rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_setOf_mem, ← setOf_subset_eq_empty_iff]
+  rw [models_iff_not_satisfiable, ← compl_empty_iff, compl_setOfPred_mem,
+    ← setOfPred_subset_eq_empty_iff]
   simp
 
-theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq_univ_iff := setOfPred_mem_eq_univ_iff
+
+theorem setOfPred_subset_eq_univ_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = Set.univ ↔
       ∀ φ, φ ∈ S → (L.lhomWithConstants α).onTheory T ⊨ᵇ φ := by
   have h : { p : T.CompleteType α | S ⊆ ↑p } = ⋂₀ ((fun φ => { p | φ ∈ p }) '' S) := by
     ext
     simp [subset_def]
-  simp_rw [h, sInter_eq_univ, ← setOf_mem_eq_univ_iff]
+  simp_rw [h, sInter_eq_univ, ← setOfPred_mem_eq_univ_iff]
   refine ⟨fun h φ φS => h _ ⟨_, φS, rfl⟩, ?_⟩
   rintro h _ ⟨φ, h1, rfl⟩
   exact h _ h1
 
+@[deprecated (since := "2026-07-09")] alias setOf_subset_eq_univ_iff := setOfPred_subset_eq_univ_iff
+
 theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
   rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne, not_iff_comm,
-    ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOf_subset_eq_empty_iff]
+    ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOfPred_subset_eq_empty_iff]
   simp
 
 instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
 
-theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
+theorem iInter_setOfPred_subset {ι : Type*} (S : ι → L[[α]].Theory) :
     ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
       { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
-  simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
+  simp only [mem_iInter, mem_ofPred_eq, iUnion_subset_iff]
+
+@[deprecated (since := "2026-07-09")] alias iInter_setOf_subset := iInter_setOfPred_subset
 
 theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentence} :
     t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
@@ -212,7 +222,7 @@ lemma typesWith_top : T.typesWith (α := α) ⊤ = Set.univ :=
   univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
 
 lemma typesWith_not (φ : L[[α]].Sentence) : T.typesWith ∼φ = (T.typesWith φ)ᶜ := by
-  exact Eq.symm compl_setOf_mem
+  exact Eq.symm compl_setOfPred_mem
 
 end CompleteType
 
@@ -226,6 +236,11 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
 
 section
 
+/-!
+# Issue (Mid Severity)
+-/
+
+set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
@@ -236,6 +251,29 @@ theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
   refine
     (@Formula.realize_equivSentence_symm_con _
       ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ M.struc _ φ).trans
+      (_root_.trans (_root_.trans ?_ (p.isMaximal.isComplete.realize_sentence_iff φ M))
+        (p.isMaximal.mem_iff_models φ).symm)
+  rfl
+
+/-!
+# Fix
+
+Add `implicit_reducible` attributes, and `cast` the `M.struct` instance to the correct expected
+type.
+
+`cast rfl` is a quick and dirty fix. It would be better to find a more sustainable solution.
+-/
+
+attribute [local implicit_reducible] ModelType.reduct ModelType.subtheoryModel in
+example (p : T.CompleteType α) :
+    ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
+  obtain ⟨M⟩ := p.isMaximal.1
+  refine ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), ?_⟩
+  refine SetLike.ext fun φ => ?_
+  simp only [CompleteType.mem_typeOf]
+  refine
+    (@Formula.realize_equivSentence_symm_con _
+      ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ (cast rfl M.struc) _ φ).trans
       (_root_.trans (_root_.trans ?_ (p.isMaximal.isComplete.realize_sentence_iff φ M))
         (p.isMaximal.mem_iff_models φ).symm)
   rfl

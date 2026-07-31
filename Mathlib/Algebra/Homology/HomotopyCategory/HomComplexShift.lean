@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Tactic.Linarith
+meta import Lean.PostprocessTraces
 
 /-! # Shifting cochains
 
@@ -32,8 +33,6 @@ appearing in the introduction of
 -/
 
 @[expose] public section
-
-set_option backward.isDefEq.instanceTypes false
 
 assert_not_exists TwoSidedIdeal
 
@@ -118,6 +117,7 @@ lemma shift_v (a : ℤ) (p q : ℤ) (hpq : p + n = q) (p' q' : ℤ)
   subst hp' hq'
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma shift_v' (a : ℤ) (p q : ℤ) (hpq : p + n = q) :
     (γ.shift a).v p q hpq = γ.v (p + a) (q + a) (by lia) := by
@@ -293,9 +293,144 @@ lemma rightShift_smul (a n' : ℤ) (hn' : n' + a = n) (x : R) :
   dsimp
   simp only [rightShift_v _ a n' hn' p q hpq _ rfl, smul_v, Linear.smul_comp]
 
-set_option backward.isDefEq.respectTransparency false in
+/-! # Issue -/
+
+-- fixed by making `shiftFunctor` implicit-reducible, so that `respectTransparency types`
+-- can be removed
+set_option allowUnsafeReducibility true
+attribute [local implicit_reducible] shiftFunctor in
 @[simp]
 lemma leftShift_smul (a n' : ℤ) (hn' : n + a = n') (x : R) :
+    (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
+  ext p q hpq
+  dsimp
+  simp only [leftShift_v _ a n' hn' p q hpq (p + a) (by lia), smul_v, Linear.comp_smul,
+    smul_comm x]
+
+/-! ## Explanation -/
+
+open Lean.PostprocessTraces
+
+/-- Truncate every trace subtree below `depth`. -/
+private meta partial def maxDepth (depth : Nat) : TracePostprocessor := fun trees =>
+  let rec truncateTree (t : TraceTree) (depth : Nat) : TraceTree :=
+    match t with
+    | .leaf msg => TraceTree.leaf msg
+    | .node data msg children wrap =>
+      match depth with
+      | 0 => .node data m!"{msg} (truncated)" #[] wrap
+      | depth' + 1 => .node data msg (children.map (truncateTree · depth')) wrap
+  return trees.map (truncateTree · depth)
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+-- The dual of `filterSubtrees`: drop matching subtrees (used to remove `onFailure` duplicates).
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+-- Without the `implicit_reducible shiftFunctor` lever the closing `simp only` fails. `leftShift`
+-- carries a sign `u : ℤˣ`, so `simp` fires `smul_comm x`, forcing synthesis of
+-- `SMulCommClass R ℤˣ (K.X (p + a) ⟶ L.X q)`. The only candidate `Units.smulCommClass_right` must
+-- reproduce its `SMul R _` argument, and unifying its conclusion assigns that mvar the goal's
+-- shift-spelled `SMul R (((shiftFunctor …).obj K).X p ⟶ L.X q)`. The direct `.instances` type
+-- check against the mvar's `SMul R (K.X (p + a) ⟶ L.X q)` fails (the semireducible shift functor
+-- does not unfold there); under `markOrSynth` the fallback synthesizes the mvar's own type
+-- (`✅ … (truncated)`) but the candidate is still not defeq to it at `.instances`, so the
+-- assignment is rejected, `SMulCommClass` is unsynthesizable, `smul_comm x` never fires and the
+-- goal `u • x • f = x • u • f` is left unsolved.
+set_option linter.style.longLine false in
+set_option linter.unusedSimpArgs false in
+/--
+error: unsolved goals
+C : Type u
+inst✝³ : Category.{v, u} C
+inst✝² : Preadditive C
+R : Type u_1
+inst✝¹ : Ring R
+inst✝ : Linear R C
+K L M : CochainComplex C ℤ
+n : ℤ
+γ γ₁ γ₂ : Cochain K L n
+a n' : ℤ
+hn' : n + a = n'
+x : R
+p q : ℤ
+hpq : p + n' = q
+⊢ (a * n' + a * (a - 1) / 2).negOnePow • x • (K.shiftFunctorObjXIso a p (p + a) ⋯).hom ≫ γ.v (p + a) q ⋯ =
+    x • (a * n' + a * (a - 1) / 2).negOnePow • (K.shiftFunctorObjXIso a p (p + a) ⋯).hom ≫ γ.v (p + a) q ⋯
+---
+trace: [Meta.synthInstance] ❌️ SMulCommClass R ℤˣ (K.X (p + a) ⟶ L.X q)
+  [Meta.synthInstance.apply] ❌️ apply @Units.smulCommClass_right to SMulCommClass R ℤˣ (K.X (p + a) ⟶ L.X q)
+    [Meta.synthInstance.tryResolve] ❌️ SMulCommClass R ℤˣ (K.X (p + a) ⟶ L.X q) ≟ SMulCommClass ?m.77 ?m.78ˣ ?m.79
+      [Meta.isDefEq] ❌️ [instances] SMulCommClass R ℤˣ (K.X (p + a) ⟶ L.X q) =?= SMulCommClass ?m.77 ?m.78ˣ ?m.79
+        [Meta.isDefEq] ❌️ [instances] DistribMulAction.toDistribSMul.toSMul =?= ?m.81
+          [Meta.isDefEq.assign.checkTypes] ❌️ (?m.81 : SMul R
+                (K.X (p + a) ⟶
+                  L.X
+                    q)) := (DistribMulAction.toDistribSMul.toSMul : SMul R
+                (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q))
+            [Meta.isDefEq] ❌️ [instances] SMul R
+                  (K.X (p + a) ⟶
+                    L.X q) =?= SMul R (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q)
+              [Meta.isDefEq] ✅️ [instances] R =?= R (truncated)
+              [Meta.isDefEq] ❌️ [instances] K.X (p + a) ⟶
+                    L.X q =?= ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q (truncated)
+            [Meta.synthInstance] ✅️ SMul R (K.X (p + a) ⟶ L.X q) (truncated)
+            [Meta.isDefEq] ❌️ [instances] DistribMulAction.toDistribSMul.toSMul =?= DistribMulAction.toDistribSMul.toSMul
+              [Meta.isDefEq] ❌️ [instances] DistribMulAction.toDistribSMul.toSMulZeroClass.1 =?= DistribMulAction.toDistribSMul.toSMulZeroClass.1 (truncated)
+          [Meta.isDefEq.assign.checkTypes] ❌️ (?m.81 : SMul R
+                (K.X (p + a) ⟶
+                  L.X
+                    q)) := ((Linear.homModule (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p)
+                    (L.X
+                      q)).toSemigroupAction.1 : SMul R
+                (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q))
+            [Meta.isDefEq] ❌️ [instances] SMul R
+                  (K.X (p + a) ⟶
+                    L.X q) =?= SMul R (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q)
+              [Meta.isDefEq] ✅️ [instances] R =?= R (truncated)
+              [Meta.isDefEq] ❌️ [instances] K.X (p + a) ⟶
+                    L.X q =?= ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p ⟶ L.X q (truncated)
+            [Meta.synthInstance] ✅️ SMul R (K.X (p + a) ⟶ L.X q) (truncated)
+            [Meta.isDefEq] ❌️ [instances] (Linear.homModule
+                      (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p)
+                      (L.X q)).toSemigroupAction.1 =?= DistribMulAction.toDistribSMul.toSMul
+              [Meta.isDefEq] ❌️ [instances] (Linear.homModule
+                        (((CategoryTheory.shiftFunctor (CochainComplex C ℤ) a).obj K).X p)
+                        (L.X q)).toSemigroupAction.1 =?= DistribMulAction.toDistribSMul.toSMulZeroClass.1 (truncated)
+-/
+#guard_msgs in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+set_option backward.isDefEq.respectTransparency false in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance.apply x)
+    <&&> (containsString "smulCommClass_right" x) <&&> failed x)
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x) <&&> failed x)
+  >=> maxDepth 7
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> succeeded x)
+  >=> dropSubtrees (fun x => ofClass `Meta.isDefEq.onFailure x)
+in
+example (a n' : ℤ) (hn' : n + a = n') (x : R) :
     (x • γ).leftShift a n' hn' = x • γ.leftShift a n' hn' := by
   ext p q hpq
   dsimp
@@ -585,6 +720,7 @@ def equivHomShift :
     (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp {K' : CochainComplex C ℤ}
     (g : K' ⟶ K) (f : K ⟶ L⟦n⟧) :
     equivHomShift (g ≫ f) = Cocycle.precomp (equivHomShift f) g := by
@@ -596,6 +732,7 @@ lemma equivHomShift_symm_precomp
     equivHomShift.symm (z.precomp g) = g ≫ equivHomShift.symm z :=
   equivHomShift.injective (by simp [equivHomShift_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equivHomShift_comp_shift (f : K ⟶ L⟦n⟧) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
     equivHomShift (f ≫ g⟦n⟧') = Cocycle.postcomp (equivHomShift f) g := by
   ext p q rfl

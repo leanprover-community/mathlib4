@@ -163,8 +163,8 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
     [HasSmallLocalizedHom.{w} W Y Z] [HasSmallLocalizedHom.{w} W X Z]
     (α : SmallHom.{w} W X Y) (β : SmallHom.{w} W Y Z) :
     equiv W L (α.comp β) = equiv W L α ≫ equiv W L β := by
-  letI := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
-  letI := small_of_hasSmallLocalizedHom.{w} W W.Q Y Z
+  let := small_of_hasSmallLocalizedHom.{w} W W.Q X Y
+  let := small_of_hasSmallLocalizedHom.{w} W W.Q Y Z
   obtain ⟨α, rfl⟩ := (equivShrink _).surjective α
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]

@@ -54,6 +54,7 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 @[instance_reducible]
@@ -158,7 +159,7 @@ def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMon
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
     IsRegularMonoCategory C where
   regularMonoOfMono f _ := by
-    haveI := normalMonoOfMono f
+    have := normalMonoOfMono f
     infer_instance
 
 end
@@ -178,6 +179,7 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 @[instance_reducible]
@@ -326,7 +328,7 @@ def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
     IsRegularEpiCategory C where
   regularEpiOfEpi f _ := by
-    haveI := normalEpiOfEpi f
+    have := normalEpiOfEpi f
     infer_instance
 
 end CategoryTheory

@@ -222,9 +222,11 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
     _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
+@[fun_prop]
 theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.2 :=
   (LipschitzWith.prod_fst.vadd LipschitzWith.prod_snd).uniformContinuous
 
+@[fun_prop]
 theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 

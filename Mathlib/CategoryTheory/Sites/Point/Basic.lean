@@ -343,7 +343,7 @@ lemma toPresheafFiber_presheafFiberCompIso_hom_app
     (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     Φ.toPresheafFiber X x (P ⋙ F) ≫ (Φ.presheafFiberCompIso F).hom.app P =
       F.map (Φ.toPresheafFiber X x P) := by
-  haveI := Functor.Final.preservesColimitsOfShape_of_final
+  have := Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   simp only [presheafFiberCompIso]
   exact ι_preservesColimitIso_inv F ((CategoryOfElements.π Φ.fiber).op ⋙ P) _

@@ -271,6 +271,7 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal]
@@ -304,7 +305,7 @@ scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
 
 end SMul
 
-open scoped SMul
+open scoped Complex.SMul
 
 section SMul
 

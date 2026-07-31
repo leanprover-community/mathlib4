@@ -105,6 +105,7 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
@@ -523,6 +524,8 @@ lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffAt[s] x) :
   simp [mvfderivWithin, mfderivWithin_neg hs]
   rfl
 
+set_option allowUnsafeReducibility true in
+attribute [local semireducible] TangentSpace in
 @[simp, to_fun mvfderivWithin_fun_smul]
 lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffAt[s] x) :
@@ -578,6 +581,8 @@ lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (h
   ext v
   simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
 
+set_option allowUnsafeReducibility true in
+attribute [local semireducible] TangentSpace in
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by

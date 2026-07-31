@@ -47,6 +47,10 @@ noncomputable def equivPiTensorComplSingletonTensor (i₀ : ι) :
 
 variable (i₀ : ι)
 
+/-!
+# Issue (Low Severity)
+-/
+
 set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -61,6 +65,33 @@ lemma equivPiTensorComplSingletonTensor_tprod (i₀ : ι) (m : ∀ i, M i) :
     (fun i ↦ M ((Equiv.subtypeNeSumPUnit.{0} i₀) i))]
   exact (LinearEquiv.lTensor_tmul _ _ _ _).trans (by congr; simp)
 
+/-!
+# Fix
+
+Again the `respectTransparency` interaction. Getting rid of that would help.
+-/
+attribute [local implicit_reducible]
+  Equiv.trans
+  Equiv.optionSubtype
+  Equiv.optionEquivSumPUnit
+  Equiv.refl
+  Set.singleton
+  Option.casesOn'
+  Equiv.optionSubtypeNe
+  Sum.elim
+in
+example (i₀ : ι) (m : ∀ i, M i) :
+    equivPiTensorComplSingletonTensor R M i₀ (⨂ₜ[R] i, m i) =
+      (⨂ₜ[R] (j : ((Set.singleton i₀)ᶜ : Set ι)), m j) ⊗ₜ m i₀:= by
+  dsimp [equivPiTensorComplSingletonTensor]
+  have : (reindex R M (Equiv.subtypeNeSumPUnit.{0} i₀).symm) (⨂ₜ[R] (i : ι), m i) =
+      ⨂ₜ[R] j, m ((Equiv.subtypeNeSumPUnit.{0} i₀) j) := by
+    simp_rw [reindex_tprod (R := R) (s := M), Equiv.symm_symm]
+  rw [dsimp% this, dsimp% tmulEquivDep_symm_apply R
+    (fun i ↦ M ((Equiv.subtypeNeSumPUnit.{0} i₀) i))]
+  exact (LinearEquiv.lTensor_tmul _ _ _ _).trans (by congr; simp)
+
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma equivPiTensorComplSingletonTensor_symm_tmul (i₀ : ι)
     (m : ∀ (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) (x : M i₀) :
@@ -84,6 +115,7 @@ section AddCommMonoid
 variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [AddCommMonoid N] [Module R N] {g : ⦃i : ι⦄ → (j : γ i) → M i}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
     {φ φ' : (⨂[R] i, M i) →ₗ[R] N}

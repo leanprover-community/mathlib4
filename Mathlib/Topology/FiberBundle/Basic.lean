@@ -272,6 +272,7 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An arbitrary homeomorphism between any fiber and the model fiber.
 This is useful to transfer topological properties of the model fiber. -/
 noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
@@ -491,6 +492,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
   rw [trivChange, mem_prod]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Associate to a trivialization index `i : ι` the corresponding trivialization, i.e., a bijection
 between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is `F` but read in the
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
@@ -661,6 +663,7 @@ theorem localTriv_apply (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem localTrivAt_apply (p : Z.TotalSpace) : (Z.localTrivAt p.1) p = ⟨p.1, p.2⟩ := by
   rw [localTrivAt, localTriv_apply, coordChange_self]
@@ -777,13 +780,13 @@ theorem isOpen_source (e : Pretrivialization F (π F E)) :
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
   refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
   ext ⟨x, hx⟩
-  simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
+  simp only [mem_preimage, Pretrivialization.setSymm, domRestrict, e.mem_target, e.mem_source,
     e'.proj_symm_apply hx]
 
 theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivialization F (π F E))
     (he' : e' ∈ a.pretrivializationAtlas) :
     IsOpen (e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source) := by
-  letI := a.totalSpaceTopology
+  let := a.totalSpaceTopology
   obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_symm_of_mem_pretrivializationAtlas he')
     e.source (a.isOpen_source e)
   rw [inter_comm, hu2]
@@ -822,7 +825,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
 @[continuity]
 theorem continuous_totalSpaceMk (b : B) :
     Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
-  letI := a.totalSpaceTopology
+  let := a.totalSpaceTopology
   let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
   rw [e.toOpenPartialHomeomorph.continuous_iff_continuous_comp_left
       (a.totalSpaceMk_preimage_source b)]
@@ -831,10 +834,10 @@ theorem continuous_totalSpaceMk (b : B) :
 theorem inducing_totalSpaceMk_of_inducing_comp (b : B)
     (h : IsInducing (a.pretrivializationAt b ∘ TotalSpace.mk b)) :
     @IsInducing _ _ _ a.totalSpaceTopology (TotalSpace.mk b) := by
-  letI := a.totalSpaceTopology
-  rw [← restrict_comp_codRestrict (a.mem_pretrivializationAt_source b)] at h
+  let := a.totalSpaceTopology
+  rw [← domRestrict_comp_codRestrict (a.mem_pretrivializationAt_source b)] at h
   apply IsInducing.of_codRestrict (a.mem_pretrivializationAt_source b)
-  refine h.of_comp ?_ (continuousOn_iff_continuous_restrict.mp
+  refine h.of_comp ?_ (continuousOn_iff_continuous_domRestrict.mp
     (a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)).continuousOn)
   exact (a.continuous_totalSpaceMk b).codRestrict (a.mem_pretrivializationAt_source b)
 
@@ -858,8 +861,8 @@ def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
     trivialization_mem_atlas' := fun x ↦ ⟨_, a.pretrivialization_mem_atlas x, rfl⟩ }
 
 theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π F E) := by
-  letI := a.totalSpaceTopology
-  letI := a.toFiberBundle
+  let := a.totalSpaceTopology
+  let := a.toFiberBundle
   exact FiberBundle.continuous_proj F E
 
 instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
@@ -875,7 +878,7 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
       ContinuousOn (f ∘ (a.pretrivializationAt b).toPartialEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
     @ContinuousOn _ _ a.totalSpaceTopology _ f (π F E ⁻¹' s) := by
-  letI := a.totalSpaceTopology
+  let := a.totalSpaceTopology
   intro z hz
   let e : Trivialization F (π F E) :=
     a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas z.proj)

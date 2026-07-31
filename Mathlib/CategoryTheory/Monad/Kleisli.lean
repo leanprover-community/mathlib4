@@ -166,6 +166,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
   map {X} {_} f := U.δ.app X.of ≫ U.map f.of
   map_id _ := U.right_counit _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=

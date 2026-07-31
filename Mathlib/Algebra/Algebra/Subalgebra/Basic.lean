@@ -645,6 +645,9 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
     [Algebra R E] [Algebra R F] (f : E →ₐ[R] F) : E ≃ₐ[R] f.range :=
   ofInjective f f.toRingHom.injective
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
@@ -1019,14 +1022,14 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B
 @[simps coe toSubsemiring]
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero]
-  one_mem' := by simp only [Set.mem_setOf_eq, map_one]
+  zero_mem' := by simp only [Set.mem_ofPred_eq, map_zero]
+  one_mem' := by simp only [Set.mem_ofPred_eq, map_one]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_add, map_add, hx, hy]
+    rw [Set.mem_ofPred_eq, map_add, map_add, hx, hy]
   mul_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
-    rw [Set.mem_setOf_eq, map_mul, map_mul, hx, hy]
+    rw [Set.mem_ofPred_eq, map_mul, map_mul, hx, hy]
   algebraMap_mem' x := by
-    simp only [Set.mem_setOf_eq, AlgHomClass.commutes]
+    simp only [Set.mem_ofPred_eq, AlgHomClass.commutes]
 
 @[simp]
 theorem mem_equalizer (φ ψ : A →ₐ[R] B) (x : A) : x ∈ equalizer φ ψ ↔ φ x = ψ x :=

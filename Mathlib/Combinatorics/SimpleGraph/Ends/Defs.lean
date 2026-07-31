@@ -44,7 +44,7 @@ theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine ConnectedComponent.ind₂ ?_
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
-  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
+  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_ofPred_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 
 theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔ C = D :=
@@ -185,6 +185,7 @@ theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
@@ -241,7 +242,7 @@ instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K 
     have : Finite (Set.range touch) := by
       refine @Subtype.finite _ (Set.Finite.to_subtype ?_) _
       apply Set.Finite.ofFinset (K.biUnion (fun v => G.neighborFinset v))
-      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_setOf_eq, implies_true]
+      simp only [Finset.mem_biUnion, mem_neighborFinset, Set.mem_ofPred_eq, implies_true]
     -- hence `touch` has a finite domain
     apply Finite.of_injective_finite_range touch_inj
 
@@ -251,6 +252,7 @@ variable (G)
 
 open CategoryTheory
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/
@@ -271,9 +273,9 @@ protected def «end» :=
 
 theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
-    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
+    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h) vnL) := by
   rw [← sec h, hs]
-  apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
+  apply ComponentCompl.hom_mk _ (le_of_op_hom h)
 
 theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
     C.supp.Infinite ↔ C ∈ G.componentComplFunctor.eventualRange K := by

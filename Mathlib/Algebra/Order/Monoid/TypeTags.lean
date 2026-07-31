@@ -18,24 +18,7 @@ instance Multiplicative.isOrderedMonoid [AddCommMonoid α] [Preorder α] [IsOrde
     IsOrderedMonoid (Multiplicative α) :=
   { mul_le_mul_left := @IsOrderedAddMonoid.add_le_add_left α _ _ _ }
 
-@[instance_reducible, expose]
-def Additive.preorderAdditiveToPreorder : ∀ [Preorder (Additive α)], Preorder α :=
-  fun {inst} => inst
-
-@[instance_reducible, expose]
-def Additive.partialOrderAdditiveToPartialOrder : ∀ [PartialOrder (Additive α)], PartialOrder α :=
-  fun {inst} => inst
-
-@[instance_reducible, expose]
-def Additive.leAdditiveOfLE : ∀ [LE (Additive α)], LE α :=
-  fun {inst} => inst
-
--- attribute [local instance] Additive.preorderAdditiveToPreorder in
--- instance Additive.isOrderedAddMonoid [CommMonoid α] [Preorder (Additive α)] [IsOrderedMonoid α] :
---     IsOrderedAddMonoid (Additive α) :=
---   { add_le_add_left := @IsOrderedMonoid.mul_le_mul_left α _ _ _ }
-
-instance Additive.isOrderedAddMonoid' [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
+instance Additive.isOrderedAddMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedAddMonoid (Additive α) :=
   { add_le_add_left := @IsOrderedMonoid.mul_le_mul_left α _ _ _ }
 

@@ -272,20 +272,10 @@ theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
 
-@[to_additive (attr := deprecated smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff]
-
 @[to_additive]
 theorem smul_inter_nonempty_iff' {s t : Set α} {x : α} :
     (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
   simp_rw [smul_inter_nonempty_iff, div_eq_mul_inv]
-
-@[to_additive (attr := deprecated smul_inter_nonempty_iff' (since := "2025-12-10"))]
-theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
-  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff']
 
 @[to_additive]
 theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
@@ -298,18 +288,19 @@ theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
 
-@[to_additive (attr := deprecated op_smul_inter_nonempty_iff (since := "2025-12-10"))]
-theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty, op_smul_inter_nonempty_iff]
-
 @[to_additive (attr := simp)]
 theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
   (Function.Surjective.iSup_congr _ inv_surjective) fun _ ↦ rfl
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
-  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_ofPred_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_ofPred, ← iUnion_inv_smul, ← preimage_smul, preimage]
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_smul_eq_setOf_exists := iUnion_smul_eq_ofPred_exists
+
+@[deprecated (since := "2026-07-09")]
+alias iUnion_vadd_eq_setOf_exists := iUnion_vadd_eq_ofPred_exists
 
 @[to_additive (attr := simp)]
 lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by

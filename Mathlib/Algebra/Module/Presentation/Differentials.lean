@@ -84,6 +84,12 @@ lemma hom₁_single (r : σ) :
     hom₁ pres (Finsupp.single r 1) = Extension.Cotangent.mk ⟨pres.relation r, by simp⟩ := by
   simp [hom₁]
 
+/-!
+# Issue (Low Severity)
+
+Fixed by making `Generators.toExtension` implicit-reducible and removing `respectTransparency false`
+-/
+
 set_option backward.isDefEq.instanceTypes false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -112,6 +118,37 @@ lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
   refine ⟨Finsupp.single r 1, ?_⟩
   simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
   rfl
+
+/-!
+# Fix
+-/
+
+attribute [local implicit_reducible] Generators.toExtension in
+set_option backward.defeqAttrib.useBackward true in
+example : Function.Surjective (hom₁ pres) := by
+  let φ : (σ →₀ S) →ₗ[pres.Ring] pres.toExtension.Cotangent :=
+    { toFun := hom₁ pres
+      map_add' := by simp
+      map_smul' := by simp }
+  change Function.Surjective φ
+  have h₁ := Algebra.Extension.Cotangent.mk_surjective (P := pres.toExtension)
+  have h₂ : Submodule.span pres.Ring
+      (Set.range (fun r ↦ (⟨pres.relation r, by simp⟩ : pres.ker))) = ⊤ := by
+    refine Submodule.map_injective_of_injective (f := Submodule.subtype pres.ker)
+      Subtype.coe_injective ?_
+    rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_span,
+      Submodule.coe_subtype, Ideal.submodule_span_eq]
+    simp only [← pres.span_range_relation_eq_ker]
+    congr
+    aesop
+  rw [← LinearMap.range_eq_top] at h₁ ⊢
+  rw [← top_le_iff, ← h₁, LinearMap.range_eq_map, ← h₂]
+  dsimp
+  rw [Submodule.map_span_le]
+  rintro _ ⟨r, rfl⟩
+  simp only [LinearMap.mem_range]
+  refine ⟨Finsupp.single r 1, ?_⟩
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -152,6 +189,7 @@ lemma differentials.comm₂₃ :
       pres.differentialsSolution.π :=
   comm₂₃' pres
 
+set_option backward.isDefEq.respectTransparency.types false in
 open differentials in
 lemma differentialsSolution_isPresentation :
     pres.differentialsSolution.IsPresentation := by

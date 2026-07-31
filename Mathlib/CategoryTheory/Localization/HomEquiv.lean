@@ -74,7 +74,7 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   let G' := Φ.localizedFunctor L₁ L₂
   let e' := CatCommSq.iso Φ.functor L₁ L₂ G'
   change e'.hom.app X ≫ G'.map f ≫ e'.inv.app Y = _
-  letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
+  let : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
   have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
     ext
@@ -141,6 +141,7 @@ lemma homEquiv_refl (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₁ L₁ f = f := by
   apply LocalizerMorphism.id_homMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homEquiv_trans (f : L₁.obj X ⟶ L₁.obj Y) :
     homEquiv W L₂ L₃ (homEquiv W L₁ L₂ f) = homEquiv W L₁ L₃ f := by

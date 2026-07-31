@@ -158,12 +158,12 @@ attribute [instance 1] HasCoreflexiveEqualizers.has_eq
 
 theorem hasCoequalizer_of_common_section [HasReflexiveCoequalizers C] {A B : C} {f g : A ⟶ B}
     (r : B ⟶ A) (rf : r ≫ f = 𝟙 _) (rg : r ≫ g = 𝟙 _) : HasCoequalizer f g := by
-  letI := IsReflexivePair.mk' r rf rg
+  let := IsReflexivePair.mk' r rf rg
   infer_instance
 
 theorem hasEqualizer_of_common_retraction [HasCoreflexiveEqualizers C] {A B : C} {f g : A ⟶ B}
     (r : B ⟶ A) (fr : f ≫ r = 𝟙 _) (gr : g ≫ r = 𝟙 _) : HasEqualizer f g := by
-  letI := IsCoreflexivePair.mk' r fr gr
+  let := IsCoreflexivePair.mk' r fr gr
   infer_instance
 
 /-- If `C` has coequalizers, then it has reflexive coequalizers. -/
@@ -537,6 +537,9 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 
 variable (F : WalkingReflexivePair ⥤ C)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
 @[simps! functor_obj_pt inverse_obj_pt]
@@ -545,6 +548,7 @@ def reflexiveCoforkEquivCofork :
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
     (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
@@ -553,6 +557,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
   rw [ReflexiveCofork.π, Cofork.π]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_inverse_obj_π
@@ -564,6 +569,7 @@ lemma reflexiveCoforkEquivCofork_inverse_obj_π
   rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/

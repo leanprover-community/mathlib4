@@ -57,8 +57,8 @@ instance OrderDual.instMulArchimedean [CommGroup G] [PartialOrder G] [IsOrderedM
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (one_lt_inv'.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-attribute [local instance] Additive.partialOrderAdditiveToPartialOrder in
-instance Additive.instArchimedean [CommGroup G] [PartialOrder (Additive G)] [MulArchimedean G] :
+-- attribute [local instance] Additive.partialOrderAdditiveToPartialOrder in
+instance Additive.instArchimedean [CommGroup G] [PartialOrder G] [MulArchimedean G] :
     Archimedean (Additive G) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 
@@ -197,7 +197,7 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] [E
 natural-number powers of every y greater than one. -/
 theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
   have h : ∃ n : ℕ, x < y ^ n := pow_unbounded_of_one_lt _ hy
-  classical exact
+  exact
       let n := Nat.find h
       have hn : x < y ^ n := Nat.find_spec h
       have hnp : 0 < n :=
@@ -225,7 +225,6 @@ variable [ExistsAddOfLE K]
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
 but with ≤ and < the other way around. -/
 theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
-  classical
   have he : ∃ m : ℤ, y ^ m ≤ x := by
     obtain ⟨N, hN⟩ := pow_unbounded_of_one_lt x⁻¹ hy
     use -N

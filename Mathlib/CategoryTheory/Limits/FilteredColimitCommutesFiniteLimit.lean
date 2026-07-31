@@ -54,7 +54,7 @@ is just a variant of `limit_ext'`. -/
 
 variable (F : J × K ⥤ Type v)
 
-open Prod
+open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
@@ -67,6 +67,7 @@ only that there are finitely many objects.
 
 variable [Finite J]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This follows the proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/

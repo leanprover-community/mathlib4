@@ -39,7 +39,6 @@ to show that the two vanishing conditions `d_app` are equivalent).
 
 @[expose] public section
 
-set_option backward.isDefEq.instanceTypes false
 
 universe v u v₁ v₂ u₁ u₂
 
@@ -80,6 +79,13 @@ variable (d : M.Derivation φ)
 @[simp] lemma d_one (X : Dᵒᵖ) : d.d (X := X) 1 = 0 := by
   simpa using d.d_mul (X := X) 1 1
 
+/-!
+# Issue (Low Severity)
+
+Has uncontroversial fix.
+-/
+
+set_option backward.isDefEq.instanceTypes false in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
@@ -90,6 +96,26 @@ def postcomp (f : M ⟶ N) : N.Derivation φ where
   d_app {X} a := by
     dsimp
     erw [d_app]
+    rw [map_zero]
+
+/-!
+# Fix
+
+Two harmless implicit_reducible annotations.
+Can even get rid of `erw`.
+-/
+set_option allowUnsafeReducibility true
+attribute [local implicit_reducible]
+  ModuleCat.restrictScalars
+  ModuleCat.RestrictScalars.obj'
+in
+set_option backward.defeqAttrib.useBackward true in
+example (f : M ⟶ N) : N.Derivation φ where
+  d := (f.app _).hom.toAddMonoidHom.comp d.d
+  d_map {X Y} g x := by simpa using naturality_apply f g (d.d x)
+  d_app {X} a := by
+    dsimp
+    rw [d_app]
     rw [map_zero]
 
 /-- The universal property that a derivation `d : M.Derivation φ` must
@@ -140,6 +166,7 @@ lemma d_app (d : M.Derivation' φ') {X : Dᵒᵖ} (a : S'.obj X) :
     d.d (φ'.app X a) = 0 :=
   Derivation.d_app d _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The derivation relative to the morphism of commutative rings `φ'.app X` induced by
 a derivation relative to a morphism of presheaves of commutative rings. -/
 noncomputable def app (d : M.Derivation' φ') (X : Dᵒᵖ) : (M.obj X).Derivation (φ'.app X) :=

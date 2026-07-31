@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
   [Category* E]
@@ -285,7 +285,7 @@ variable {E}
 
 theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
-  haveI := essSurj L W
+  have := essSurj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 
@@ -421,7 +421,7 @@ instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
 lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
     (hW : W ≤ MorphismProperty.isomorphisms C) [IsEquivalence L] :
     L.IsLocalization W := by
-  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  have : (𝟭 C).IsLocalization W := for_id W hW
   exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
 
 end IsLocalization
@@ -438,6 +438,7 @@ same `MorphismProperty C`, this is an equivalence of categories `D₁ ≌ D₂`.
 def uniq : D₁ ≌ D₂ :=
   (equivalenceFromModel L₁ W').symm.trans (equivalenceFromModel L₂ W')
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
   dsimp [uniq, Equivalence.trans]
   ext <;> aesop

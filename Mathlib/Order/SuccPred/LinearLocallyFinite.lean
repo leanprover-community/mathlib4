@@ -339,6 +339,7 @@ section OrderIso
 
 variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `toZ` defines an `OrderIso` between `ι` and its range. -/
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
@@ -350,6 +351,7 @@ instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := 
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If the order has neither bot nor top, `toZ` defines an `OrderIso` between `ι` and `ℤ`. -/
 noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι] [hι : Nonempty ι] :
     ι ≃o ℤ where
@@ -373,6 +375,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
       simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
   map_rel_iff' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
 def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
   toFun i := (toZ ⊥ i).toNat
@@ -389,6 +392,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
     simp only [Equiv.coe_fn_mk, Int.toNat_le]
     rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
 `Finset.range n` for some `n`. -/
 def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :

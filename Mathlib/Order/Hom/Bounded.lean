@@ -431,6 +431,7 @@ theorem coe_comp_orderHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β
     (f.comp g : OrderHom α γ) = (f : OrderHom β γ).comp g :=
   rfl
 
+-- TODO: This fails
 @[to_dual (attr := simp)]
 theorem coe_comp_topHom (f : BoundedOrderHom β γ) (g : BoundedOrderHom α β) :
     (f.comp g : TopHom α γ) = (f : TopHom β γ).comp g :=

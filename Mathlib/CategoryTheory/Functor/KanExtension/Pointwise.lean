@@ -233,6 +233,7 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (L F) in
 /-- The cocones for `CostructuredArrow.proj L Y ⋙ F`, as a functor from `LeftExtension L F`. -/
@@ -257,12 +258,14 @@ lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
     {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
     HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     {X : C} (h : E.IsPointwiseLeftKanExtensionAt (L.obj X)) [L.Full] [L.Faithful] :
     IsIso (E.hom.app X) := by
   simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise left Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -272,6 +275,7 @@ def isPointwiseLeftKanExtensionAtOfIso'
   IsColimit.ofIsoColimit (hY.whiskerEquivalence (CostructuredArrow.mapIso e.symm))
     (Cocone.ext (E.right.mapIso e))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The condition of being a pointwise left Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
 def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
@@ -285,6 +289,7 @@ namespace IsPointwiseLeftKanExtensionAt
 
 variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include h in
 lemma hom_ext' {T : H} {f g : E.right.obj Y ⟶ T}
@@ -292,6 +297,7 @@ lemma hom_ext' {T : H} {f g : E.right.obj Y ⟶ T}
       E.hom.app X ≫ E.right.map φ ≫ f = E.hom.app X ≫ E.right.map φ ≫ g) : f = g :=
   h.hom_ext (fun j ↦ by simpa using hfg j.hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma comp_homEquiv_symm {Z : H}
@@ -313,6 +319,7 @@ lemma ι_isoColimit_inv (g : CostructuredArrow L Y) :
     colimit.ι _ g ≫ h.isoColimit.inv = E.hom.app g.left ≫ E.right.map g.hom :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_isoColimit_hom (g : CostructuredArrow L Y) :
@@ -371,6 +378,7 @@ def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
       ext X
       simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma IsPointwiseLeftKanExtension.hom_ext
     {G : LeftExtension L F} {f₁ f₂ : E ⟶ G} : f₁ = f₂ := by
@@ -452,6 +460,7 @@ lemma IsPointwiseRightKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_π_app_of_isInitial _ StructuredArrow.mkIdInitial
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The condition of being a pointwise right Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
@@ -461,6 +470,7 @@ def isPointwiseRightKanExtensionAtOfIso'
   IsLimit.ofIsoLimit (hY.whiskerEquivalence (StructuredArrow.mapIso e.symm))
     (Cone.ext (E.left.mapIso e))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The condition of being a pointwise right Kan extension at an object `Y` is
 unchanged by replacing `Y` by an isomorphic object `Y'`. -/
 def isPointwiseRightKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :

@@ -132,13 +132,13 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
-  open Fin.CommRing in inferInstance
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) where
+  out := by simp
 
 end Fin
 
 /-- The integers modulo `n : ℕ`. -/
-@[to_additive_dont_translate, implicit_reducible]
+@[to_additive_dont_translate]
 def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)

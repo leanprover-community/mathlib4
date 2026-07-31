@@ -13,6 +13,8 @@ public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
+meta import Lean.PostprocessTraces
+
 /-!
 # Cardinals that are suitable for the small object argument
 
@@ -58,8 +60,6 @@ pushouts of coproducts of morphisms in `I`.
 -/
 
 @[expose] public section
-
-set_option backward.isDefEq.instanceTypes false
 
 universe w v v' u u'
 
@@ -120,9 +120,9 @@ lemma preservesColimit {A B X Y : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y)
 lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasCoproducts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
@@ -135,6 +135,7 @@ noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
   haveI := hasPushouts I κ
   SuccStruct.ofNatTrans (ε I.homFamily)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For the successor structure `succStruct I κ` on `Arrow C ⥤ Arrow C`,
 the morphism from an object to its successor induces
 morphisms in `C` which consists in attaching `I`-cells. -/
@@ -156,13 +157,18 @@ isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
+/-! # Issue (Low Severity) -/
+
+-- Works with "markOrSynth" if `Arrow` and `Arrow.Hom` are made implicit-reducible.
+set_option backward.isDefEq.instanceTypes false in
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
-  haveI := locallySmall I κ
-  haveI := isSmall I κ
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
   intro _ _ _ ⟨F⟩ f
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
@@ -171,6 +177,113 @@ lemma succStruct_prop_le_propArrow :
   · rw [MorphismProperty.isomorphisms.iff]
     dsimp [succStruct]
     infer_instance
+
+/-! ## Explanation -/
+
+-- The opening `intro _ _ _ ⟨F⟩ f` destructures `(succStruct I κ).prop f✝`, which unfolds to an
+-- `ofHoms` whose carrier `Arrow C ⥤ Arrow C` is exposed as `Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C)`.
+-- The `⟨F⟩` pattern re-elaborates `ofHoms.mk F`, and its `Functor.category` instance needs the base
+-- `[Category (Arrow C)]`; that becomes an instance-typed mvar whose type is read off the goal at
+-- the `Comma (𝟭 C) (𝟭 C)` spelling. The candidate `instCategoryArrow` (spelled at the `Arrow`
+-- synonym) is rejected (trace below): the direct `.instances` check can't cross
+-- `Comma (𝟭 C) (𝟭 C) =?= Arrow C`
+-- (`Arrow` is a plain semireducible `def`), and under `markOrSynth` the re-synthesis fallback finds
+-- `commaCategory`, which is not defeq to `instCategoryArrow` at `.instances` either. So the mvar is
+-- never solved and `ofHoms.mk F` fails to unify. Same `Comma`/`Arrow`-vs-`Cat.of` carrier boundary
+-- as `Mathlib/CategoryTheory/Filtered/CostructuredArrow.lean`, here introduced by destructuring
+-- rather than a `simp only`.
+
+section InstanceTypesDemo
+
+open Lean.PostprocessTraces
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+set_option linter.style.longLine false in
+/--
+error: Type mismatch
+  ofHoms.mk F
+has type
+  ofHoms ?m.69 (?m.69 F)
+but is expected to have type
+  (succStruct I κ).prop f✝
+---
+error: No goals to be solved
+---
+trace: [Meta.synthInstance] ❌️ Category.{max u v, max u v} (Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C))
+  [Meta.synthInstance.apply] ❌️ apply @Functor.category to Category.{max u v, max u v}
+        (Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C))
+    [Meta.synthInstance.tryResolve] ❌️ Category.{max u v, max u v}
+          (Comma (𝟭 C) (𝟭 C) ⥤
+            Comma (𝟭 C) (𝟭 C)) ≟ Category.{max ?u.61 ?u.60, max (max (max ?u.62 ?u.61) ?u.60) ?u.59} (?m.74 ⥤ ?m.76)
+      [Meta.isDefEq] ❌️ [instances] Category.{max u v, max u v}
+            (Comma (𝟭 C) (𝟭 C) ⥤
+              Comma (𝟭 C) (𝟭 C)) =?= Category.{max ?u.61 ?u.60, max (max (max ?u.62 ?u.61) ?u.60) ?u.59} (?m.74 ⥤ ?m.76)
+        [Meta.isDefEq] ❌️ [instances] Comma (𝟭 C) (𝟭 C) ⥤ Comma (𝟭 C) (𝟭 C) =?= ?m.74 ⥤ ?m.76
+          [Meta.isDefEq] ❌️ [implicit] instCategoryArrow =?= ?m.75
+            [Meta.isDefEq.assign.checkTypes] ❌️ (?m.75 : Category.{?u.59, max u v}
+                  (Comma (𝟭 C) (𝟭 C))) := (instCategoryArrow : Category.{v, max u v} (Arrow C))
+              [Meta.isDefEq] ❌️ [instances] Category.{?u.59, max u v}
+                    (Comma (𝟭 C) (𝟭 C)) =?= Category.{v, max u v} (Arrow C)
+                [Meta.isDefEq] ❌️ [instances] Comma (𝟭 C) (𝟭 C) =?= Arrow C
+                  [Meta.isDefEq] ❌️ [instances] @Comma =?= Arrow
+                  [Meta.isDefEq.onFailure] ❌️ Comma (𝟭 C) (𝟭 C) =?= Arrow C
+                [Meta.isDefEq.onFailure] ❌️ Category.{?u.59, max u v}
+                      (Comma (𝟭 C) (𝟭 C)) =?= Category.{v, max u v} (Arrow C)
+              [Meta.synthInstance] ✅️ Category.{v, max u v} (Comma (𝟭 C) (𝟭 C)) (truncated)
+              [Meta.isDefEq] ❌️ [implicit] instCategoryArrow =?= commaCategory (truncated)
+            [Meta.isDefEq.assign.checkTypes] ❌️ (?m.75 : Category.{?u.59, max u v}
+                  (Comma (𝟭 C)
+                    (𝟭
+                      C))) := ({ toQuiver := instQuiverArrow, id := instCategoryArrow._aux_1,
+                  comp := @instCategoryArrow._aux_3 C inst✝³, id_comp := ⋯, comp_id := ⋯,
+                  assoc := ⋯ } : Category.{v, max u v} (Arrow C))
+              [Meta.isDefEq] ❌️ [instances] Category.{?u.59, max u v}
+                    (Comma (𝟭 C) (𝟭 C)) =?= Category.{v, max u v} (Arrow C)
+                [Meta.isDefEq] ❌️ [instances] Comma (𝟭 C) (𝟭 C) =?= Arrow C
+                  [Meta.isDefEq] ❌️ [instances] @Comma =?= Arrow
+                  [Meta.isDefEq.onFailure] ❌️ Comma (𝟭 C) (𝟭 C) =?= Arrow C
+                [Meta.isDefEq.onFailure] ❌️ Category.{?u.59, max u v}
+                      (Comma (𝟭 C) (𝟭 C)) =?= Category.{v, max u v} (Arrow C)
+              [Meta.synthInstance] ✅️ Category.{v, max u v} (Comma (𝟭 C) (𝟭 C)) (truncated)
+              [Meta.isDefEq] ❌️ [implicit] { toQuiver := instQuiverArrow, id := instCategoryArrow._aux_1,
+                    comp := @instCategoryArrow._aux_3 C inst✝³, id_comp := ⋯, comp_id := ⋯,
+                    assoc := ⋯ } =?= commaCategory (truncated)
+-/
+#guard_msgs in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance.apply x) <&&>
+    containsString "Functor.category" x)
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x) <&&> failed x)
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> succeeded x)
+  >=> elideBelow (fun x => (ofClass `Meta.isDefEq x) <&&> containsString "commaCategory" x)
+in
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+example :
+    (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
+  have := locallySmall I κ
+  have := isSmall I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  set_option trace.Meta.synthInstance true in
+  set_option trace.Meta.isDefEq true in
+  set_option trace.Meta.isDefEq.printTransparency true in
+  set_option trace.Meta.isDefEq.assign.checkTypes true in
+  intro _ _ _ ⟨F⟩ f
+  all_goals sorry
+
+end InstanceTypesDemo
 
 /-- The functor `κ.ord.ToType ⥤ Arrow C ⥤ Arrow C` corresponding to the
 iterations of the successor structure `succStruct I κ`. -/
@@ -234,6 +347,7 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToTyp
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationObjRightIso I κ f).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
@@ -262,7 +376,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by
-    have this := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
+    have := NatTrans.congr_app ((succStruct I κ).iterationFunctor_map_succ j (not_isMax j)) f
     dsimp at this
     dsimp [iterationFunctor]
     rw [id_comp, this, assoc, Iso.inv_hom_id_app, comp_id]
@@ -302,6 +416,7 @@ the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma πObj_ιIteration_app_right :
     πObj I κ f ≫ ((ιIteration I κ).app f).right =
@@ -383,9 +498,9 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
-  haveI := hasColimitsOfShape_discrete I κ
-  haveI := hasPushouts I κ
-  haveI := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  have := preservesColimit I κ i hi _ (relativeCellComplexιObj I κ f)
   intro g b sq
   obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
     (isColimitOfPreserves (coyoneda.obj (Opposite.op A))
@@ -450,6 +565,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/

@@ -151,7 +151,7 @@ lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
 
 variable {X : C}
 
-open Classical in
+open scoped Classical in
 /-- Assuming `G : C` is a generator, `X : C`, and `A : Subobject X`,
 this is a subobject of `X` which is `⊤` if `A = ⊤`, and otherwise
 it is a larger subobject given by the lemma `exists_larger_subobject`.
@@ -203,6 +203,8 @@ lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot 
   top_mem_range_transfiniteIterate (largerSubobject hG) A₀ (lt_largerSubobject hG) (by simp)
     (fun h ↦ by simpa [hasCardinalLT_iff_cardinal_mk_lt] using hJ.of_injective _ h)
 
+set_option linter.style.maxHeartbeats false in
+set_option synthInstance.maxHeartbeats 30000 in
 lemma exists_ordinal (A₀ : Subobject X) :
     ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
@@ -242,6 +244,7 @@ instance : (functor hG A₀ J).IsWellOrderContinuous where
     simp only [Subobject.mk_arrow]
     exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {J} in
 /-- For any `j`, the map `(functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)`

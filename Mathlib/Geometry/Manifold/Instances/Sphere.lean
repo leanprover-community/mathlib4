@@ -16,6 +16,7 @@ public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Tactic.Module
+meta import Lean.PostprocessTraces
 
 /-!
 # Manifold structure on the sphere
@@ -65,6 +66,7 @@ naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model sp
 
 Relate the stereographic projection to the inversion of the space.
 -/
+
 
 @[expose] public section
 
@@ -232,6 +234,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   · field_simp
     linear_combination 4 * (a - 1) * pythag
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
     innerSL_apply_apply, Submodule.orthogonalProjectionOnto_mem_subspace_eq_self]
@@ -306,7 +309,7 @@ theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := b
 
 lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
     Topology.IsOpenEmbedding (stereographic hv).symm :=
-  (stereographic hv).symm.to_isOpenEmbedding (by simp)
+  (stereographic hv).symm.isOpenEmbedding (by simp)
 
 end StereographicProjection
 
@@ -340,10 +343,12 @@ def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
             (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toOpenPartialHomeomorph
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).source = {v}ᶜ := by simp [stereographic']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     (stereographic' n v).target = Set.univ := by simp [stereographic']
@@ -410,7 +415,8 @@ instance EuclideanSpace.instIsManifoldSphere
         OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
         PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
-        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
+        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq,
+        Set.preimage_ofPred_eq]
       simp only [id, comp_apply, OpenPartialHomeomorph.coe_toPartialEquiv_symm,
         innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
@@ -469,7 +475,8 @@ theorem contMDiff_neg_sphere {m : ℕ∞ω} {n : ℕ} [Fact (finrank ℝ E = n +
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
-set_option backward.isDefEq.instanceTypes false in
+/-! # Issue -/
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
@@ -478,8 +485,103 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   simp only [EmbeddingLike.map_eq_zero_iff]
   apply stereographic_neg_apply
 
+/-! ## Explanation -/
+
+open Lean.PostprocessTraces
+
+-- All three sites share one spelling desync: `coe_neg_sphere : ↑(-v) = -↑v` is `rfl` at default
+-- transparency (the sphere's `Neg` is `Subtype.map Neg.neg _`), but the two spellings are NOT
+-- defeq at `.instances`. Rewriting with it (a simp lemma, also in `mfld_simps`) desyncs type
+-- indices (rewritten to `-↑v`) from instance arguments inside the term (still typed at `↑(-v)`).
+-- Here, after `dsimp [stereographic']`, `simp only [EmbeddingLike.map_eq_zero_iff]` synthesizes the
+-- `≃ₗᵢ`'s `EquivLike`, whose `LinearIsometryEquiv.instEquivLike` candidate reads the carrier
+-- `↥(ℝ ∙ -↑v)ᗮ` off the type and leaves an instance-typed `SeminormedAddCommGroup ↥(ℝ ∙ -↑v)ᗮ` mvar
+-- that has to swallow the old-spelling `↥(ℝ ∙ ↑(-v))ᗮ`-typed value. The direct `.instances` check
+-- fails (`-↑v =?= ↑(-v)` stalls); `"mark"` would reject and the simp lemma would never apply
+-- ("`simp` made no progress") — `"markOrSynth"` re-synthesizes at `↥(ℝ ∙ -↑v)ᗮ` and unifies,
+-- rescuing the rewrite. The `E ↔ TangentSpace` defeq abuse these proofs are known for is guarded by
+-- the adjacent `respectTransparency false`; this `instanceTypes` site is the sphere-coercion
+-- desync.
+
+-- `coe_neg_sphere` is `rfl` at default transparency, but not at `.instances`.
+example (v : sphere (0 : E) 1) : (↑(-v) : E) = -↑v := rfl
+
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+set_option linter.style.longLine false in
+/--
+trace: [Meta.synthInstance] ✅️ EmbeddingLike (↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n)) (↥(ℝ ∙ -↑v)ᗮ)
+      (EuclideanSpace ℝ (Fin n))
+  [Meta.synthInstance.apply] ✅️ apply @LinearIsometryEquiv.instEquivLike to EquivLike
+        (↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n)) (↥(ℝ ∙ -↑v)ᗮ) (EuclideanSpace ℝ (Fin n))
+    [Meta.synthInstance.tryResolve] ✅️ EquivLike (↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n)) (↥(ℝ ∙ -↑v)ᗮ)
+          (EuclideanSpace ℝ
+            (Fin n)) ≟ EquivLike (↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n)) (↥(ℝ ∙ -↑v)ᗮ) (EuclideanSpace ℝ (Fin n))
+      [Meta.isDefEq] ✅️ [instances] EquivLike (↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n)) ?m.64
+            ?m.65 =?= EquivLike (?m.69 ≃ₛₗᵢ[?m.73] ?m.70) ?m.69 ?m.70
+        [Meta.isDefEq] ✅️ [instances] ↥(ℝ ∙ -↑v)ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) =?= ?m.69 ≃ₛₗᵢ[?m.73] ?m.70
+          [Meta.isDefEq] ✅️ [instances] NormedAddCommGroup.toSeminormedAddCommGroup =?= ?m.77
+            [Meta.isDefEq.assign.checkTypes] ✅️ (?m.77 : SeminormedAddCommGroup
+                  ↥(ℝ ∙ -↑v)ᗮ) := (NormedAddCommGroup.toSeminormedAddCommGroup : SeminormedAddCommGroup ↥(ℝ ∙ ↑(-v))ᗮ)
+              [Meta.isDefEq] ❌️ [instances] SeminormedAddCommGroup
+                    ↥(ℝ ∙ -↑v)ᗮ =?= SeminormedAddCommGroup ↥(ℝ ∙ ↑(-v))ᗮ (truncated)
+              [Meta.synthInstance] ✅️ SeminormedAddCommGroup ↥(ℝ ∙ -↑v)ᗮ (truncated)
+              [Meta.isDefEq] ✅️ [instances] NormedAddCommGroup.toSeminormedAddCommGroup =?= (ℝ ∙
+                        -↑v)ᗮ.seminormedAddCommGroup (truncated)
+---
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended for development and not for final code. If you intend to submit this contribution to the Mathlib project, please remove 'set_option trace.Meta.synthInstance'.
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+postprocess_traces
+  dropSubtrees (fun x => (ofClass `Meta.synthInstance x) <&&> containsString "ZeroHomClass" x)
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x)
+    <&&> containsString "SeminormedAddCommGroup ↥(ℝ ∙ ↑(-v))ᗮ)" x)
+  >=> elideBelow (fun x => (ofClass `Meta.isDefEq x) <&&> failed x
+    <&&> containsString "SeminormedAddCommGroup ↥(ℝ ∙ -↑v)ᗮ =?= SeminormedAddCommGroup" x)
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> succeeded x
+    <&&> containsString "SeminormedAddCommGroup ↥(ℝ ∙ -↑v)ᗮ" x)
+  >=> elideBelow (fun x => (ofClass `Meta.isDefEq x) <&&> succeeded x
+    <&&> containsString "toSeminormedAddCommGroup =?= (ℝ ∙" x)
+in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+example {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+    stereographic' n (-v) v = 0 := by
+  dsimp [stereographic']
+  set_option trace.Meta.synthInstance true in
+  set_option trace.Meta.isDefEq true in
+  set_option trace.Meta.isDefEq.printTransparency true in
+  set_option trace.Meta.isDefEq.assign.checkTypes true in
+  simp only [EmbeddingLike.map_eq_zero_iff]
+  apply stereographic_neg_apply
+
+-- Same `coe_neg_sphere` desync as `stereographic'_neg`; here the inner `convert!` bridges the two
+-- spellings with a cast and the closing `simp` hits the rejected assignment (rescued by
+-- `"markOrSynth"`). See the Explanation above. (`convert!` rolls back its own traces, so the
+-- decisive `checkTypes` shows up on the follow-up `simp`.)
 -- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
-set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
@@ -521,8 +623,9 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     rw [Submodule.neg_mem_iff]
     exact Submodule.mem_span_singleton_self (v : E)
 
+-- Same `coe_neg_sphere` desync as `stereographic'_neg`, via the inner `convert!` + closing `simp`
+-- (rescued by `"markOrSynth"`). See the Explanation above.
 -- TODO: rephrase this using `mvfderiv`, avoiding the defeq abuse
-set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/

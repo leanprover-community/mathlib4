@@ -389,6 +389,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) (A) in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
@@ -403,6 +404,7 @@ lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
     {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
     reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -422,20 +424,24 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
   simp [reindexₐ, reindexₗ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Applying a non-unital ⋆-algebra homomorphism to every entry of a matrix is itself a
 ⋆-algebra homomorphism on matrices. -/
 @[simps]
@@ -457,6 +463,7 @@ theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring 
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
 def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
@@ -557,6 +564,7 @@ lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
 
 variable [Fintype n]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open WithCStarModule in
 lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}
     {w : C⋆ᵐᵒᵈ(A, m → A)} : ⟪toCLM Mᴴ v, w⟫_A = ⟪v, toCLM M w⟫_A := by
@@ -565,6 +573,7 @@ lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(
   rw [Finset.sum_comm]
   simp_rw [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma inner_toCLM_conjTranspose_right {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
     {w : C⋆ᵐᵒᵈ(A, n → A)} : ⟪v, toCLM Mᴴ w⟫_A = ⟪toCLM M v, w⟫_A := by
   apply Eq.symm

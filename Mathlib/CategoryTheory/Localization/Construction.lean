@@ -219,7 +219,7 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : G.Full := Quotient.full_functor _
+    have : G.Full := Quotient.full_functor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
@@ -329,6 +329,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
           natTransExtension_app, NatTransExtension.app_eq]
         rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit isomorphism of the equivalence of categories `whiskeringLeftEquivalence W D`. -/
 @[simps!]
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=

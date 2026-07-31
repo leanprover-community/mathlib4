@@ -33,7 +33,7 @@ which lifts `F`.
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category* C₁] [Category* C₂]
   [Category* D₁] [Category* D₂] [Category* E] [Category* E']
@@ -164,6 +164,7 @@ noncomputable def lift₂NatTrans (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
     (liftNatTrans (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F₁)
       (uncurry.obj F₂) (uncurry.obj F₁') (uncurry.obj F₂') (uncurry.map τ))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem lift₂NatTrans_app_app (τ : F₁ ⟶ F₂) (X₁ : C₁) (X₂ : C₂) :

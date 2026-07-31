@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+meta import Lean.PostprocessTraces
 
 /-!
 # The index of a linear map
@@ -65,9 +66,118 @@ public lemma index_of_surjective (hf : Surjective f) :
   rw [index_eq_finrank_sub, range_eq_top.mpr hf]
   simp [finrank_eq_zero_of_subsingleton]
 
-set_option backward.isDefEq.instanceTypes false in
+/-! # Issue -/
+
+set_option allowUnsafeReducibility true in
+attribute [local implicit_reducible] ker in
 @[simp] public lemma index_id :
     (id : M →ₗ[R] M).index = 0 := by
+  nontriviality R
+  rw [index_eq_finrank_sub, range_id]
+  simp [finrank_eq_zero_of_subsingleton]
+
+/-! ## Explanation -/
+
+open Lean.PostprocessTraces
+
+/-- Truncate every trace subtree below `depth`. -/
+private meta partial def maxDepth (depth : Nat) : TracePostprocessor := fun trees =>
+  let rec truncateTree (t : TraceTree) (depth : Nat) : TraceTree :=
+    match t with
+    | .leaf msg => TraceTree.leaf msg
+    | .node data msg children wrap =>
+      match depth with
+      | 0 => .node data m!"{msg} (truncated)" #[] wrap
+      | depth' + 1 => .node data msg (children.map (truncateTree · depth')) wrap
+  return trees.map (truncateTree · depth)
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+-- The dual of `filterSubtrees`: drop matching subtrees (used to remove `onFailure` duplicates).
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+-- Without the `implicit_reducible ker` lever the closing `simp` fails. After `range_id`, the
+-- `@[simp]` `rfl`-lemma `ker_id` rewrites the carrier `↥(ker id)` to `↥⊥` but simp keeps the old
+-- `id.ker.*` instance arguments; discharging `Module.Free R ↥⊥` (needed by
+-- `finrank_eq_zero_of_subsingleton`) then tries `Free.of_subsingleton`, which assigns the
+-- inherited `id.ker.addCommMonoid` to its `AddCommMonoid ↥⊥` mvar. The direct `.instances` check
+-- `AddCommMonoid ↥⊥ =?= AddCommMonoid ↥id.ker` fails (neither `ker` nor `id` unfolds there);
+-- under `markOrSynth` the fallback synthesizes `↥⊥`'s own `AddCommMonoid` (`✅ … (truncated)`) but
+-- the candidate is still not defeq to it at `.instances`, so the assignment is rejected, `Free`
+-- is unsynthesizable, `finrank R ↥⊥` is left unrewritten and `simp` fails to close the goal.
+set_option linter.style.longLine false in
+/--
+error: unsolved goals
+M : Type u_1
+N : Type u_2
+inst✝⁵ : AddCommGroup M
+inst✝⁴ : AddCommGroup N
+R : Type u_3
+inst✝³ : Ring R
+inst✝² : Module R M
+inst✝¹ : Module R N
+f : M →ₗ[R] N
+inst✝ : StrongRankCondition R
+a✝ : Nontrivial R
+⊢ finrank R ↥⊥ = 0
+---
+trace: [Meta.synthInstance] ❌️ Free R ↥⊥
+  [Meta.synthInstance.apply] ❌️ apply Free.of_subsingleton to Free R ↥⊥
+    [Meta.synthInstance.tryResolve] ❌️ Free R ↥⊥ ≟ Free ?m.72 ?m.73
+      [Meta.isDefEq] ❌️ [instances] Free R ↥⊥ =?= Free ?m.72 ?m.73
+        [Meta.isDefEq] ❌️ [implicit] id.ker.addCommMonoid =?= ?m.75
+          [Meta.isDefEq.assign.checkTypes] ❌️ (?m.75 : AddCommMonoid
+                ↥⊥) := (id.ker.addCommMonoid : AddCommMonoid ↥id.ker)
+            [Meta.isDefEq] ❌️ [instances] AddCommMonoid ↥⊥ =?= AddCommMonoid ↥id.ker
+              [Meta.isDefEq] ❌️ [instances] ↥⊥ =?= ↥id.ker (truncated)
+            [Meta.synthInstance] ✅️ AddCommMonoid ↥⊥ (truncated)
+            [Meta.isDefEq] ❌️ [implicit] id.ker.addCommMonoid =?= ⊥.addCommMonoid
+              [Meta.isDefEq] ❌️ [implicit] id.ker =?= ⊥ (truncated)
+              [Meta.isDefEq] ❌️ [implicit] AddSubmonoidClass.toAddCommMonoid
+                    id.ker =?= AddSubmonoidClass.toAddCommMonoid ⊥ (truncated)
+          [Meta.isDefEq.assign.checkTypes] ❌️ (?m.75 : AddCommMonoid
+                ↥⊥) := ({ toAddMonoid := AddSubmonoidClass.toAddMonoid id.ker, add_comm := ⋯ } : AddCommMonoid ↥id.ker)
+            [Meta.isDefEq] ❌️ [instances] AddCommMonoid ↥⊥ =?= AddCommMonoid ↥id.ker
+              [Meta.isDefEq] ❌️ [instances] ↥⊥ =?= ↥id.ker (truncated)
+            [Meta.synthInstance] ✅️ AddCommMonoid ↥⊥ (truncated)
+            [Meta.isDefEq] ❌️ [implicit] { toAddMonoid := AddSubmonoidClass.toAddMonoid id.ker,
+                  add_comm := ⋯ } =?= ⊥.addCommMonoid
+              [Meta.isDefEq] ❌️ [implicit] { toAddMonoid := AddSubmonoidClass.toAddMonoid id.ker,
+                    add_comm := ⋯ } =?= AddSubmonoidClass.toAddCommMonoid ⊥ (truncated)
+-/
+#guard_msgs in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+set_option backward.isDefEq.respectTransparency.types false in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance.apply x)
+    <&&> (containsString "Free.of_subsingleton" x) <&&> failed x)
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x) <&&> failed x)
+  >=> maxDepth 7
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> succeeded x)
+  >=> dropSubtrees (fun x => ofClass `Meta.isDefEq.onFailure x)
+in
+example : (id : M →ₗ[R] M).index = 0 := by
   nontriviality R
   rw [index_eq_finrank_sub, range_id]
   simp [finrank_eq_zero_of_subsingleton]
@@ -98,6 +208,7 @@ public lemma index_eq_of_finiteDimensional [FiniteDimensional k M] [FiniteDimens
   have h₃ := f.ker.finrank_quotient_add_finrank
   lia
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Submodule in
 @[simp] public lemma index_comp {P : Type*} [AddCommGroup P] [Module k P] (g : N →ₗ[k] P)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]

@@ -389,6 +389,9 @@ theorem _root_.Fintype.card_Ioi (a : α) [Fintype (Set.Ioi a)] :
     Fintype.card (Set.Ioi a) = #(Ioi a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] [Fintype α] : Ici (1 : α) = univ := by ext; simp
+
 end LocallyFiniteOrderTop
 
 section OrderTop
@@ -807,7 +810,7 @@ using `WithBot.some` and then insert `⊥`. -/]
 def insertTop : Finset α ↪o Finset (WithTop α) :=
   OrderEmbedding.ofMapLEIff
     (fun s => cons ⊤ (s.map Embedding.coeWithTop) <| by simp)
-    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+    (fun s t => by rw [cons_subset_cons, map_subset_map])
 
 @[to_dual (attr := simp)]
 theorem some_mem_insertTop {s : Finset α} {a : α} : ↑a ∈ insertTop s ↔ a ∈ s := by

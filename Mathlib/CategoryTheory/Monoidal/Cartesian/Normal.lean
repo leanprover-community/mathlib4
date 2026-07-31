@@ -78,7 +78,8 @@ lemma isNormalHom_iff [IsMonHom φ] [Mono φ] : Normal φ ↔ ∃ ψ : G ⊗ H �
 
 /-- If `φ` is mono, it is a normal group homomorphism if and only if for all `X` the image of
 `H(X)` in `G(X)` is a normal subgroup. -/
-@[to_additive]
+@[to_additive /-- If `φ` is mono, it is a normal additive group homomorphism if and only if for all
+`X` the image of `H(X)` in `G(X)` is a normal additive subgroup. -/]
 theorem normal_iff_normal_monoidHom [IsMonHom φ] [Mono φ] :
     Normal φ ↔ ∀ (X : C), (monoidHom φ X).range.Normal := by
   rw [isNormalHom_iff]

@@ -242,6 +242,7 @@ lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.
     colimit.ι G ((CostructuredArrow.proj L X.base).obj X.fiber) := by
   simp [colimitIsoColimitGrothendieck]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
     colimit.ι G X ≫ (colimitIsoColimitGrothendieck L G).hom =

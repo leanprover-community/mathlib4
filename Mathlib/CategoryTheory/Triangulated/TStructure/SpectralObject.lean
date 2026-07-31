@@ -59,7 +59,7 @@ section
 
 variable (a b c : EInt) (hab : a ≤ b) (hbc : b ≤ c)
 
-open Functor in
+open CategoryTheory.Functor in
 /-- The connecting homomorphism (as a natural transformation) for the spectral
 objects attached to the objects of a triangulated equipped with a t-structure. -/
 @[simps!]

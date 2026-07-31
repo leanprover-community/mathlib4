@@ -39,7 +39,6 @@ theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
   rw [isSemisimpleModule_iff]
   exact OrderIso.complementedLattice_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
-set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddCommGroup M]
     [Module k[G] M] :

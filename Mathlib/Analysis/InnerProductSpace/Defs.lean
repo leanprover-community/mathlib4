@@ -427,7 +427,7 @@ omit c in
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    let : NormedSpace 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 
@@ -494,7 +494,7 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
   norm_nonneg x := norm_nonneg x
   norm_eq_zero_iff x := norm_eq_zero
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    let : NormedSpace 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 
@@ -515,7 +515,7 @@ lemma topology_eq
     simp
   have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by
     ext v
-    simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
+    simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_ofPred_eq, p]
     change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
     conv_lhs => rw [show (1 : ℝ) = √1 by simp]
     rw [sqrt_lt_sqrt_iff]

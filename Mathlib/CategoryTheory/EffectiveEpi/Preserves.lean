@@ -110,6 +110,7 @@ instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limit
     rw [← isRegularEpi_iff_effectiveEpi]
     apply IsRegularEpiCategory.regularEpiOfEpi
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 Applying a functor which preserves pullbacks and effective epimorphisms to a regular epi diagram

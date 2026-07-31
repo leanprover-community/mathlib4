@@ -297,7 +297,7 @@ instance : Inhabited (Comonad C) :=
 
 end Comonad
 
-open Iso Functor
+open Iso CategoryTheory.Functor
 
 variable {C}
 

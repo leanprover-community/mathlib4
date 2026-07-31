@@ -45,7 +45,6 @@ instance : CoeSort Frm (Type _) :=
 
 attribute [coe] Frm.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where

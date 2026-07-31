@@ -204,6 +204,7 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
       assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
@@ -212,6 +213,7 @@ The identity monad morphism induces the identity functor from the category of al
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
@@ -220,6 +222,7 @@ def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` and `g` are two equal morphisms of monads, then the functors of algebras induced by them
 are isomorphic.
 We define it like this as opposed to using `eqToIso` so that the components are nicer to prove
@@ -230,6 +233,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
 categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.

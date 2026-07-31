@@ -247,6 +247,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
   convert! G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- **Turán's theorem**, forward direction.
 
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
@@ -344,6 +345,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by lia,
       Nat.mul_add_mod_self_left]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma card_edgeFinset_turanGraph_add :
     #(turanGraph (n + r) r).edgeFinset =
     #(turanGraph n r).edgeFinset + n * (r - 1) + r.choose 2 := by

@@ -35,7 +35,6 @@ theorem irreducible_iff_isSimpleModule_asModule :
   rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
-set_option backward.isDefEq.instanceTypes false in
 set_option backward.isDefEq.respectTransparency false in
 theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Module k[G] M] :
     IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by

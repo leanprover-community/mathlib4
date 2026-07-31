@@ -9,6 +9,8 @@ public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
+meta import Lean.PostprocessTraces
+
 /-!
 
 # Galois Group as a profinite group
@@ -52,6 +54,9 @@ In a field extension `K/k`
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
 
 -/
+
+
+open Lean.PostprocessTraces
 
 @[expose] public section
 
@@ -190,8 +195,8 @@ lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (proj L g x).val = (proj L' g ⟨x, h x.2⟩).val := by
   induction L with | _ L => ?_
   induction L' with | _ L' => ?_
-  letI : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
-  letI : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  let : Algebra L L' := RingHom.toAlgebra (Subsemiring.inclusion h)
+  let : IsScalarTower k L L' := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← finGaloisGroupFunctor_map_proj_eq_proj g h.hom]
   change (algebraMap L' K (algebraMap L L' (AlgEquiv.restrictNormal (proj (mk L') g) L x))) = _
   rw [AlgEquiv.restrictNormal_commutes (proj (mk L') g) L]
@@ -295,7 +300,8 @@ lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k
   exact ⟨fun ⟨L, _, hL, hsub⟩ ↦ ⟨{ toIntermediateField := L, isGalois := ⟨⟩ }, hsub⟩,
     fun ⟨L, hL⟩ ↦ ⟨L, inferInstance, inferInstance, hL⟩⟩
 
-set_option backward.isDefEq.instanceTypes false in
+/-! # Issue -/
+
 lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
   let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
@@ -306,7 +312,121 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
   simpa using! FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
 
-set_option backward.isDefEq.instanceTypes false in
+/-! ## Explanation
+
+The final `simpa` rewrites with `EmbeddingLike.apply_eq_iff_eq`, triggering synthesis of
+`EmbeddingLike (Gal(K/k) ≃* ↥(limitConePtAux …)) …` via `MulEquiv.instEquivLike`. Unifying the
+candidate's conclusion assigns the instance-typed `?inst : Mul ↥(limitConePtAux …)` from the goal's
+`≃*` type; the direct check `Mul ↥(…) =?= Mul ↥(…)` fails at `.instances` because the two `↥`
+carriers hide the ambient product group at two spellings —
+`(forget₂ FiniteGrp ProfiniteGrp).obj ((finGaloisGroupFunctor k K).obj j)` vs
+`(asProfiniteGaloisGroupFunctor k K).obj j` — whose reconciliation needs the `Functor.comp` delta
+that `.instances` does not provide (it stalls at
+`ofFiniteGrp =?= (asProfiniteGaloisGroupFunctor k K).1`).
+Under `"markOrSynth"` the mvar is re-synthesized at its own type — `#synth` below shows it returns
+exactly the rejected `(limitConePtAux …).mul` — and the following unification succeeds at
+`.implicit`, where `Functor.comp` unfolds. Same hidden-index pattern as
+`Mathlib/CategoryTheory/Filtered/CostructuredArrow.lean`; the rejected mvar is data-valued (`Mul`).
+-/
+
+-- The instance that the toolchain rejects is exactly what instance synthesis returns for the
+-- mvar's type.
+/-- info: (limitConePtAux (asProfiniteGaloisGroupFunctor k K)).mul -/
+#guard_msgs in
+#synth Mul ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))
+
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+set_option linter.style.longLine false in
+/--
+trace: [Meta.synthInstance] ✅️ EmbeddingLike (Gal(K/k) ≃* ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))) Gal(K/k)
+      ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))
+  [Meta.synthInstance.apply] ✅️ apply @MulEquiv.instEquivLike to EquivLike
+        (Gal(K/k) ≃* ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))) Gal(K/k)
+        ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))
+    [Meta.synthInstance.tryResolve] ✅️ EquivLike (Gal(K/k) ≃* ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K)))
+          Gal(K/k)
+          ↥(limitConePtAux
+              (asProfiniteGaloisGroupFunctor k
+                K)) ≟ EquivLike (Gal(K/k) ≃* ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))) Gal(K/k)
+          ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))
+      [Meta.isDefEq] ✅️ [instances] EquivLike (Gal(K/k) ≃* ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K))) ?m.131
+            ?m.132 =?= EquivLike (?m.134 ≃* ?m.135) ?m.134 ?m.135
+        [Meta.isDefEq] ✅️ [instances] Gal(K/k) ≃*
+              ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K)) =?= ?m.134 ≃* ?m.135
+          [Meta.isDefEq] ✅️ [implicit] (limitConePtAux (asProfiniteGaloisGroupFunctor k K)).mul =?= ?m.137
+            [Meta.isDefEq] (limitConePtAux
+                    (asProfiniteGaloisGroupFunctor k K)).mul [nonassignable] =?= ?m.137 [assignable]
+            [Meta.isDefEq.assign.checkTypes] ✅️ (?m.137 : Mul
+                  ↥(limitConePtAux
+                      (asProfiniteGaloisGroupFunctor k
+                        K))) := ((limitConePtAux
+                    (asProfiniteGaloisGroupFunctor k
+                      K)).mul : Mul ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K)))
+              [Meta.isDefEq] ❌️ [instances] Mul
+                    ↥(limitConePtAux
+                        (asProfiniteGaloisGroupFunctor k
+                          K)) =?= Mul ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K)) (truncated)
+              [Meta.synthInstance] ✅️ Mul ↥(limitConePtAux (asProfiniteGaloisGroupFunctor k K)) (truncated)
+              [Meta.isDefEq] ✅️ [implicit] (limitConePtAux
+                      (asProfiniteGaloisGroupFunctor k
+                        K)).mul =?= (limitConePtAux (asProfiniteGaloisGroupFunctor k K)).mul (truncated)
+---
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended for development and not for final code. If you intend to submit this contribution to the Mathlib project, please remove 'set_option trace.Meta.synthInstance'.
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance x) <&&>
+    (containsString "EmbeddingLike" x) <&&> succeeded x)
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq x) <&&> (containsString ".mul =?= ?m" x))
+  >=> dropSubtrees (ofClass `Meta.isDefEq.onFailure)
+  >=> elideBelow (fun x => (failed x) <&&> (containsString "Mul" x))
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x)
+    <&&> (do return !(← containsString "EmbeddingLike" x)))
+  >=> elideBelow (fun x => (containsString "[implicit]" x)
+    <&&> (do return !(← containsString "?m" x)))
+in
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+example [IsGalois k K] (L : FiniteGaloisIntermediateField k K) :
+    IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
+  let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
+  suffices mulEquivToLimit k K '' L.1.fixingSubgroup = Set.preimage Subtype.val fix1 by
+    rw [this]
+    exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
+  ext x
+  obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
+  simpa using! FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
+
+-- Same root cause as `isOpen_mulEquivToLimit_image_fixingSubgroup` above (see the explanation
+-- there): the `simp only [krullTopology_mem_nhds_one_iff_of_isGalois, …]` and the reference to
+-- that lemma again unify the bundled group structure of the limit cone point at `.instances`,
+-- rescued by re-synthesis under `"markOrSynth"`. Here the decisively rejected instance is
+-- `Pi.group` for the ambient product group.
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
   simp only [map_one, krullTopology_mem_nhds_one_iff_of_isGalois, ← MulEquiv.coe_toEquiv_symm,

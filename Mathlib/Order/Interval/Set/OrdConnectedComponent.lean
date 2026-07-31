@@ -66,7 +66,7 @@ theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
 
 theorem ordConnectedComponent_inter (s t : Set α) (x : α) :
     ordConnectedComponent (s ∩ t) x = ordConnectedComponent s x ∩ ordConnectedComponent t x := by
-  simp [ordConnectedComponent, setOf_and]
+  simp [ordConnectedComponent, ofPred_and]
 
 theorem mem_ordConnectedComponent_comm :
     y ∈ ordConnectedComponent s x ↔ x ∈ ordConnectedComponent s y := by

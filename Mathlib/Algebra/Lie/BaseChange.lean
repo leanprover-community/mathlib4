@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.Algebra.Lie.TensorProduct
 
+meta import Lean.PostprocessTraces
+
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
 
@@ -25,9 +27,9 @@ scalars.
 lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 -/
 
-@[expose] public section
+open Lean.PostprocessTraces
 
-set_option backward.isDefEq.instanceTypes false
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -122,6 +124,7 @@ instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   lie_add x y z := by simp only [bracket_def, map_add]
   leibniz_lie := bracket_leibniz_lie R A L M
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
@@ -150,8 +153,6 @@ end ExtendScalars
 
 namespace RestrictScalars
 
-open RestrictScalars
-
 variable [h : LieRing L]
 
 instance : LieRing (RestrictScalars R A L) :=
@@ -159,8 +160,88 @@ instance : LieRing (RestrictScalars R A L) :=
 
 variable [CommRing A] [LieAlgebra A L]
 
+/-! # Issue -/
+
 set_option backward.isDefEq.respectTransparency false in
 instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
+  lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
+    (RestrictScalars.addEquiv R A L y) :)
+
+/-! ## Explanation -/
+
+private meta partial def elideBelow (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.mapM go
+where
+  go (t : TraceTree) : Lean.CoreM TraceTree := do
+    match t with
+    | .leaf msg => return .leaf msg
+    | .node data msg children wrap =>
+      if ← p t then
+        return .node data m!"{msg} (truncated)" #[] wrap
+      else
+        return .node data msg (← children.mapM go) wrap
+
+-- The dual of `filterSubtrees`: drop matching subtrees (used to remove `onFailure` duplicates).
+private meta partial def dropSubtrees (p : TracePattern) : TracePostprocessor :=
+  fun trees => trees.filterMapM go
+where
+  go (t : TraceTree) : Lean.CoreM (Option TraceTree) := do
+    if ← p t then
+      return none
+    match t with
+    | .leaf msg => return some (.leaf msg)
+    | .node data msg children wrap => return some (.node data msg (← children.filterMapM go) wrap)
+
+-- `RestrictScalars R A L := L` is a semireducible synonym carrying a *different* `Module R`
+-- structure. Synthesizing the `Module R (RestrictScalars R A L)` parent of `LieAlgebra` via
+-- `RestrictScalars.module` assigns its `AddCommMonoid` argument across the synonym: the direct
+-- `.instances` type check `AddCommMonoid L =?= AddCommMonoid (RestrictScalars R A L)` fails (the
+-- synonym does not unfold there). Under `markOrSynth` the fallback synthesizes the mvar's own
+-- type (`✅ AddCommMonoid L`) and unifies the candidate with it at `.default`, which succeeds and
+-- rescues the assignment. Under plain `mark` there is no fallback and the structure elaborator
+-- reports `Fields missing: add_smul, zero_smul`.
+set_option linter.style.longLine false in
+/--
+trace: [Meta.synthInstance] ✅️ Module R (RestrictScalars R A L)
+  [Meta.synthInstance.apply] ✅️ apply RestrictScalars.module to Module R (RestrictScalars R A L)
+    [Meta.synthInstance.tryResolve] ✅️ Module R (RestrictScalars R A L) ≟ Module R (RestrictScalars R A L)
+      [Meta.isDefEq] ✅️ [instances] Module R
+            (RestrictScalars R A L) =?= Module ?m.12 (RestrictScalars ?m.12 ?m.13 ?m.14)
+        [Meta.isDefEq] ✅️ [default] (instLieRingRestrictScalars R A
+                L).toAddCommMonoid =?= instAddCommMonoidRestrictScalars R A L
+          [Meta.isDefEq] ✅️ [default] { toAddMonoid := (instLieRingRestrictScalars R A L).toAddMonoid,
+                add_comm := ⋯ } =?= ?m.16
+            [Meta.isDefEq.assign.checkTypes] ✅️ (?m.16 : AddCommMonoid
+                  L) := ({ toAddMonoid := (instLieRingRestrictScalars R A L).toAddMonoid,
+                  add_comm := ⋯ } : AddCommMonoid (RestrictScalars R A L))
+              [Meta.isDefEq] ❌️ [instances] AddCommMonoid L =?= AddCommMonoid (RestrictScalars R A L)
+                [Meta.isDefEq] ❌️ [instances] L =?= RestrictScalars R A L
+              [Meta.synthInstance] ✅️ AddCommMonoid L (truncated)
+              [Meta.isDefEq] ✅️ [default] { toAddMonoid := (instLieRingRestrictScalars R A L).toAddMonoid,
+                    add_comm := ⋯ } =?= h.toAddCommMonoid (truncated)
+---
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended for development and not for final code. If you intend to submit this contribution to the Mathlib project, please remove 'set_option trace.Meta.isDefEq'.
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+postprocess_traces
+  filterSubtrees (fun x => (ofClass `Meta.synthInstance.apply x) <&&>
+    (containsString "RestrictScalars.module" x))
+  >=> filterSubtrees (fun x => (ofClass `Meta.isDefEq.assign.checkTypes x) <&&>
+    (containsString "AddCommMonoid" x))
+  >=> elideBelow (fun x => (ofClass `Meta.synthInstance x) <&&> succeeded x <&&>
+    containsString "AddCommMonoid L" x)
+  >=> elideBelow (fun x => (ofClass `Meta.isDefEq x) <&&> succeeded x <&&>
+    containsString "h.toAddCommMonoid" x)
+  >=> dropSubtrees (fun x => ofClass `Meta.isDefEq.onFailure x)
+in
+set_option trace.Meta.isDefEq true in
+set_option trace.Meta.isDefEq.printTransparency true in
+set_option trace.Meta.isDefEq.assign.checkTypes true in
+set_option trace.Meta.synthInstance true in
+set_option backward.isDefEq.respectTransparency false in
+example [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) :)
 
@@ -185,6 +266,7 @@ variable (N : LieSubmodule R L M)
 
 open LieModule
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
 pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.

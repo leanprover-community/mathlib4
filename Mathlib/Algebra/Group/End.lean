@@ -106,15 +106,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
-@[pull_end, push_end← ]
+@[pull_end, push_end ←]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -126,7 +126,7 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[pull_end← , push_end]
+@[pull_end ←, push_end]
 lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
@@ -410,6 +410,7 @@ private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f
   | 0, _ => Iff.rfl
   | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[simp]
@@ -469,6 +470,7 @@ theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
   intro x y h
   rw [Perm.ext_iff] at h ⊢

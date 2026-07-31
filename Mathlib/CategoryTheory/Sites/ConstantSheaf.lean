@@ -35,7 +35,7 @@ essential image of the constant sheaf functor.
 
 namespace CategoryTheory
 
-open Limits Opposite Category Functor Sheaf Adjunction
+open Limits Opposite Category CategoryTheory.Functor Sheaf Adjunction
 
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category* D]

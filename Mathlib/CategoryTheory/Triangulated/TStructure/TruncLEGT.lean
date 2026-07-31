@@ -94,6 +94,7 @@ lemma truncLEIsoTruncLT_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncLEIsoTruncLT a b h).hom.app X ≫ (t.truncLTι b).app X = (t.truncLEι a).app X :=
   congr_app (t.truncLEIsoTruncLT_hom_ι a b h) X
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_inv_ι (a b : ℤ) (h : a + 1 = b) :
@@ -161,6 +162,7 @@ lemma π_truncGTIsoTruncGE_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncGTπ a).app X ≫ (t.truncGTIsoTruncGE a b h).hom.app X = (t.truncGEπ b).app X :=
   congr_app (t.π_truncGTIsoTruncGE_hom a b h) X
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_inv (a b : ℤ) (h : a + 1 = b) :
@@ -187,6 +189,7 @@ category `C` and `a + 1 = b`. -/
 noncomputable def triangleLEGE (a b : ℤ) (h : a + 1 = b) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι a) (t.truncGEπ b) (t.truncGEδLE a b h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism of triangles `t.triangleLEGE a b h ≅ t.triangleLTGE b`
 when `a + 1 = b`. -/
@@ -218,6 +221,7 @@ category `C` and `n : ℤ`. -/
 noncomputable def triangleLEGT (n : ℤ) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι n) (t.truncGTπ n) (t.truncGTδLE n)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `t.triangleLEGT a ≅ t.triangleLEGE a b h`
 when `a + 1 = b`. -/

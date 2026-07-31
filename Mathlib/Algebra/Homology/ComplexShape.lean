@@ -88,7 +88,7 @@ def refl (ι : Type*) : ComplexShape ι where
 
 /-- The reverse of a `ComplexShape`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def symm (c : ComplexShape ι) : ComplexShape ι where
   Rel i j := c.Rel j i
   next_eq w w' := c.prev_eq w w'
@@ -133,7 +133,7 @@ instance subsingleton_next (c : ComplexShape ι) (i : ι) : Subsingleton { j // 
   congr
   exact c.next_eq rij rik
 
-open Classical in
+open scoped Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/

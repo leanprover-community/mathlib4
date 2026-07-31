@@ -107,6 +107,7 @@ lemma contMDiff_subtype_coe_Icc : CMDiff n (fun (z : Icc x y) ↦ (z : ℝ)) := 
     rw [max_eq_left hw, max_eq_left]
     linarith
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc : CMDiff[Icc x y] n (Set.projIcc x y h.out.le) := by
   intro z hz

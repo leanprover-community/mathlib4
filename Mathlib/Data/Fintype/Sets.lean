@@ -176,10 +176,12 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
   rw [← coe_inj, coe_toFinset, coe_univ]
 
 @[simp]
-theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
+theorem toFinset_ofPred [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
     Set.toFinset {x | p x} = Finset.univ.filter p := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")] alias toFinset_setOf := toFinset_ofPred
 
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
     s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp
@@ -250,6 +252,7 @@ instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
 theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
@@ -280,6 +283,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 
 @[simp] lemma finsetEquivSet_apply (s : Finset α) : finsetEquivSet s = s := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
     finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 

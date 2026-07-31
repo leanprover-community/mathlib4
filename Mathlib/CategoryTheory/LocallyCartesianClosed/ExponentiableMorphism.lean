@@ -32,7 +32,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category MonoidalCategory Functor Adjunction
+open Category MonoidalCategory CategoryTheory.Functor Adjunction
 
 open ChosenPullbacksAlong
 

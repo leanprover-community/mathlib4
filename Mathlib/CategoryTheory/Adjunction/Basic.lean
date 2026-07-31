@@ -85,13 +85,14 @@ set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option linter.translate.warnInvalid false in
 /-- `F ⊣ G` represents the data of an adjunction between two functors
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
@@ -119,11 +120,8 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
     dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 to_dual_name_hint Left Right
-set_option linter.translateOverwrite false
-set_option linter.translateGenerateName false
 
-attribute [to_dual existing counit] Adjunction.unit
-attribute [to_dual existing right_triangle_components] Adjunction.left_triangle_components
+attribute [to_dual existing] Adjunction.unit Adjunction.left_triangle_components
 attribute [to_dual self (reorder := C D, 2 4, F G,
   unit counit, left_triangle_components right_triangle_components)] Adjunction.mk
 attribute [to_dual self (reorder := C D, 2 4, F G,
@@ -540,6 +538,7 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -548,6 +547,7 @@ def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.
     G ⋙ yoneda ≅ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv Y.unop X).toIso.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ coyoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -556,6 +556,7 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
 This states that `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -568,11 +569,11 @@ def compUliftCoyonedaIso (adj : F ⊣ G) :
 
 section
 
-variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
+variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ C} {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
 /-- Composition of adjunctions. -/
-@[simps! -isSimp unit counit, stacks 0DV0]
+@[to_dual self (reorder := C E, 2 6, F I, G H, adj₁ adj₂), simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
@@ -581,13 +582,12 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
     counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
-@[simp, reassoc]
-lemma comp_unit_app (X : C) :
+lemma comp_unit_app (X : C) : dsimp%
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
-@[simp, reassoc]
-lemma comp_counit_app (X : E) :
+@[to_dual existing (attr := simp, reassoc)]
+lemma comp_counit_app (X : E) : dsimp%
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
 

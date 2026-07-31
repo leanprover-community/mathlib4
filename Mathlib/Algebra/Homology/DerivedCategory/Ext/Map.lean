@@ -102,6 +102,9 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     ← Functor.map_comp_assoc]
   simp
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
@@ -132,7 +135,6 @@ noncomputable def Abelian.Ext.mapExactFunctor [HasExt.{w} C] [HasExt.{w'} D] {X 
     ((F.mapCochainComplexSingleFunctor 0).app X) ((F.mapCochainComplexSingleFunctor 0).app Y) f
 
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
 lemma Abelian.Ext.mapExactFunctor_hom
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} {n : ℕ} (e : Ext X Y n) :
@@ -206,6 +208,7 @@ end
 
 namespace Abelian.Ext
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mapExactFunctor_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     (mk₀ f).mapExactFunctor F = mk₀ (F.map f) := by
   dsimp [Ext.mapExactFunctor, mk₀]

@@ -35,6 +35,11 @@ variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
+/-!
+# Issue (Low Severity)
+-/
+
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.instanceTypes false in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
@@ -45,7 +50,76 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
   rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
-  simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+    RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
+    ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
+  constructor
+  · intro n
+    have hn : Valued.v (R := (WithVal (Rat.padicValuation p))) (p ^ n) =
+      exp (-n : ℤ) := by
+      simp only [← WithVal.val_apply_equiv, map_pow, map_natCast, Rat.padicValuation_self,
+        Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
+    use Units.mk0 (Valued.v.restrict (p ^ n)) (by
+      simp [Valuation.restrict_def, Nat.Prime.ne_zero Fact.out])
+    intro x y h
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap, Units.val_mk0, Valuation.restrict_lt_iff, hn] at h
+    change Rat.padicValuation p (x' - y') < exp _ at h
+    rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
+    · rw [map_sub, ← hx, ← hy]
+      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      split_ifs with H
+      · simp
+      · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
+        simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
+          zpow_right_mono₀ (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+    · simp [Nat.Prime.ne_zero Fact.out]
+  · intro γ
+    use (log ((embedding γ.val) * exp (-1))).natAbs
+    intro x y h
+    set x' := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap, Valuation.restrict_lt_iff_lt_embedding]
+    change Rat.padicValuation p (x' - y') < embedding γ.1
+    rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
+    · change padicNorm p (x' - y') ≤ _ at h
+      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      split_ifs with H
+      · simp only [exp_neg]
+        exact embedding_unit_pos _
+      · rw [← lt_log_iff_exp_lt (embedding_unit_ne_zero _)]
+        simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le,
+          Int.lt_iff_add_one_le]
+    · simp [Nat.Prime.ne_zero Fact.out]
+
+/-!
+# Fix
+
+Get rid of `respectTransparency`.
+-/
+
+attribute [local implicit_reducible]
+  Rat.padicValuation
+  Valuation.restrict
+  coe
+  exp
+  Multiplicative.ofAdd
+  Additive.ofMul
+  Multiplicative.toAdd
+in
+open MonoidWithZeroHom.ValueGroup₀ in
+example : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
+    (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
+  have hp0' : 0 < (p : ℚ) := by simp [Nat.Prime.pos Fact.out]
+  have hp0 : 0 < (p : ℝ)⁻¹ := by simp [Nat.Prime.pos Fact.out]
+  have hp1' : 1 < (p : ℚ) := by simp [Nat.Prime.one_lt Fact.out]
+  have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
+  rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
+    (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
+  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
@@ -179,7 +253,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
   | hp =>
     rw [Set.ext fun _ ↦ Iff.comm]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
-    apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
+    apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
   | ih a =>

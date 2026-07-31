@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Limits Opposite
 
 universe w v u
@@ -26,6 +25,9 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C]
 
+/-! # Issue (Low Severity) -/
+
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.instanceTypes false in
 set_option backward.defeqAttrib.useBackward true in
 /-- In an abelian category, the subobjects and quotient objects of an object `X` are

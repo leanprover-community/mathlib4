@@ -900,8 +900,7 @@ theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c�
   subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
 
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
-private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
-    MonadLiftT (OptionT m) (OptionT m') where
+private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
 /-- There are several special cases when exponentiating monomials:
@@ -1082,7 +1081,7 @@ theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e)
 
 theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e)
     (hb : a' ^ e * (nat_lit 1).rawCast = b) :
-    a = b + 0 := by simp [← hone, ←hb, *]
+    a = b + 0 := by simp [← hone, ← hb, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
