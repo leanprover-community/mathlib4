@@ -189,6 +189,7 @@ theorem principalEmbedding_trans_factorEmbedding (f : β ↪o α) :
     principalEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `DedekindCut.principal` as an `OrderIso`.
 
 This provides the second half of the **fundamental theorem of concept lattices**: every complete
@@ -202,6 +203,7 @@ def principalIso : α ≃o DedekindCut α where
   right_inv x := by simp [factorEmbedding]
   __ := principalEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 theorem principalIso_symm_apply (A : DedekindCut α) : principalIso.symm A = sSup A.left :=
   (factorEmbedding_apply ..).trans <| by simp
 

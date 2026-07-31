@@ -120,7 +120,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
     (ConjAct.toConjAct k) • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
     simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, c_mem]
-  have this := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
+  have := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
   rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
@@ -128,7 +128,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
-@[implicit_reducible]
+@[instance_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
@@ -174,12 +174,12 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by simp
   mul_mem' hσ hτ := by
-    simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
-    simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
+    simp only [Subtype.forall, Set.mem_ofPred_eq, coe_mul, Function.comp_apply]
+    simp only [Subtype.forall, Set.mem_ofPred_eq] at hσ hτ
     intro c hc
     rw [hσ, hτ]
   inv_mem' hσ := by
-    simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
+    simp only [Subtype.forall, Set.mem_ofPred_eq] at hσ ⊢
     intro c hc
     rw [← hσ _ (by simp)]
     simp
@@ -345,6 +345,7 @@ theorem ofPermHomFun_one (x : α) : (ofPermHomFun a 1) x = x := by
   · rw [ofPermHomFun_apply_of_mem_fixedPoints a _ hx]
   · rw [ofPermHomFun_apply_of_cycleOf_mem a _ hc hm, OneMemClass.coe_one, coe_one, id_eq, hm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `a : g.Basis` and a permutation of `g.cycleFactorsFinset` that
   preserve the lengths of the cycles, a permutation of `α` that
   moves the `Basis` and commutes with `g` -/
@@ -458,6 +459,7 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -465,7 +467,7 @@ theorem nat_card_range_toPermHom :
   set sc := fun (c : g.cycleFactorsFinset) ↦ #c.val.support with hsc
   suffices Fintype.card (toPermHom g).range =
     Fintype.card { k : Perm g.cycleFactorsFinset | sc ∘ k = sc } by
-    simp only [Nat.card_eq_fintype_card, this, Set.coe_setOf, DomMulAct.stabilizer_card', hsc,
+    simp only [Nat.card_eq_fintype_card, this, Set.coe_ofPred, DomMulAct.stabilizer_card', hsc,
       Finset.univ_eq_attach]
     simp_rw [← CycleType.count_def]
     apply Finset.prod_congr _ (fun _ _ => rfl)
@@ -476,7 +478,7 @@ theorem nat_card_range_toPermHom :
   simp only [Fintype.card_eq_nat_card]
   congr
   ext
-  rw [mem_range_toPermHom_iff', Set.mem_setOf_eq]
+  rw [mem_range_toPermHom_iff', Set.mem_ofPred_eq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -488,6 +490,7 @@ def kerParam : (Perm (Function.fixedPoints g)) ×
   MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     {v : (c : g.cycleFactorsFinset) → Subgroup.zpowers c.val} {x : α} :
     kerParam g (u, v) x =
@@ -596,6 +599,7 @@ open Function
 variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sign_kerParam_apply_apply :
     sign (kerParam g ⟨k, v⟩) = sign k * ∏ c, sign (v c).val := by
   rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
@@ -648,7 +652,7 @@ theorem card_isConj_mul_eq :
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
   convert! MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
-    simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
+    simp only [Set.mem_ofPred_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/
@@ -682,7 +686,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     classical
     obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
     convert! card_isConj_mul_eq g
-    simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
+    simp_rw [Set.coe_ofPred, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case
     rw [(card_of_cycleType_eq_zero_iff α).mpr hm, zero_mul]

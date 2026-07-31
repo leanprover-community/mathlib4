@@ -148,7 +148,7 @@ lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
     (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
     MemHolder s f := by
   obtain ⟨C, hX⟩ := hX
-  letI := PseudoEMetricSpace.toPseudoMetricSpace
+  let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
   have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
   exact hf.of_le hs
@@ -171,7 +171,7 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
-  letI := PseudoEMetricSpace.toPseudoMetricSpace
+  let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
   have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
   exact MemHolder.of_le hf hs

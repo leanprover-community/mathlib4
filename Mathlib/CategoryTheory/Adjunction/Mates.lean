@@ -48,7 +48,7 @@ set_option backward.defeqAttrib.useBackward true
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 namespace CategoryTheory
 
-open Category Functor Adjunction NatTrans TwoSquare
+open Category CategoryTheory.Functor Adjunction NatTrans TwoSquare
 
 section mateEquiv
 
@@ -58,7 +58,6 @@ variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁`
 and `L₂ ⊣ R₂` respectively).
 
@@ -133,8 +132,7 @@ theorem mateEquiv_counit_symm (α : TwoSquare R₁ H G R₂) (d : D) :
   exact (mateEquiv_counit adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) d)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/- A component of a transposed version of the mates correspondence. -/
+/-- A component of a transposed version of the mates correspondence. -/
 theorem unit_mateEquiv (α : TwoSquare G L₁ L₂ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (mateEquiv adj₁ adj₂ α).app _ =
       adj₂.unit.app _ ≫ R₂.map (α.app _) := by
@@ -168,7 +166,6 @@ variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L�
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The mates equivalence commutes with vertical composition. -/
 theorem mateEquiv_vcomp (α : TwoSquare G₁ L₁ L₂ H₁) (β : TwoSquare G₂ L₂ L₃ H₂) :
     (mateEquiv adj₁ adj₃) (α ≫ₕ β) = (mateEquiv adj₁ adj₂ α) ≫ᵥ (mateEquiv adj₂ adj₃ β) := by
@@ -208,7 +205,6 @@ variable {L₃ : B ⥤ C} {R₃ : C ⥤ B} {L₄ : E ⥤ F} {R₄ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The mates equivalence commutes with horizontal composition of squares. -/
 theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L₄ K) :
     (mateEquiv (adj₁.comp adj₃) (adj₂.comp adj₄)) (α ≫ᵥ β) =
@@ -298,6 +294,7 @@ theorem conjugateEquiv_counit_symm (α : R₁ ⟶ R₂) (d : D) :
     conv_lhs => rw [← (conjugateEquiv adj₁ adj₂).right_inv α]
     exact (conjugateEquiv_counit adj₁ adj₂ ((conjugateEquiv adj₁ adj₂).symm α) d)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A component of a transposed form of the conjugation definition. -/
 theorem unit_conjugateEquiv (α : L₂ ⟶ L₁) (c : C) :
@@ -333,6 +330,7 @@ theorem conjugateEquiv_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (α : 𝟭 
     (conjugateEquiv adj Adjunction.id α).app c = α.app (R.obj c) ≫ adj.counit.app c := by
   simp [conjugateEquiv, mateEquiv, Adjunction.id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem conjugateEquiv_adjunction_id_symm {L R : C ⥤ C} (adj : L ⊣ R) (α : R ⟶ 𝟭 C) (c : C) :
     ((conjugateEquiv adj Adjunction.id).symm α).app c = adj.unit.app c ≫ α.app (L.obj c) := by
@@ -346,6 +344,7 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
@@ -446,6 +445,7 @@ variable {F₁ : A ⥤ C} {U₁ : C ⥤ A} {F₂ : B ⥤ D} {U₂ : D ⥤ B}
 variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : F₁ ⊣ U₁) (adj₄ : F₂ ⊣ U₂)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When all four functors in a square are left adjoints, the mates operation can be iterated:
 
@@ -467,6 +467,7 @@ theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
   ext d
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
     (mateEquiv adj₁ adj₂).symm ((mateEquiv adj₄ adj₃).symm α) =
@@ -479,6 +480,7 @@ end IteratedmateEquiv
 
 variable {G : A ⥤ C} {H : B ⥤ D}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C}
@@ -497,6 +499,7 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     comp_id] at vcompb
   simpa [mateEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with this composition, essentially by `mateEquiv_vcomp`. -/
 theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A}

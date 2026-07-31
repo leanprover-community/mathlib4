@@ -71,7 +71,7 @@ Look at this docstring!
 open Lean in
 run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Foo.Baz.baz5).get!}"
 
-@[alias_in Baz] public def Foo.Bar.baz6 : Nat := 1
+@[alias_in Baz] def Foo.Bar.baz6 : Nat := 1
 
 /-- error: The `alias_in` attribute cannot be used for private declarations. -/
 #guard_msgs in
