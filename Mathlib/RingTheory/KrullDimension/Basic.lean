@@ -42,7 +42,7 @@ lemma Ring.krullDimLE_iff {n : ℕ} :
 lemma ringKrullDim_eq_bot_iff_subsingleton : ringKrullDim R = ⊥ ↔ Subsingleton R := by
   refine ⟨fun h ↦ ?_, fun h ↦ krullDim_eq_bot⟩
   contrapose! h
-  exact ENat.WithBot.ne_bot_iff_zero_le.mpr krullDim_nonneg
+  exact WithBot.coe_bot_le.mp krullDim_nonneg
 
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] : ringKrullDim R = ⊥ :=
