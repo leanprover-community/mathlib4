@@ -3,10 +3,8 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-module
-
-public import Mathlib.Algebra.Group.GreensRelations.Classes
-public import Mathlib.Data.Fintype.Pigeonhole
+import GreensRelations.Basic
+import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
 # Multiplication Sequences and Helper Lemmas
@@ -24,8 +22,6 @@ required to prove the main theorems of Green's relations.
 
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
-
-public section
 
 variable {S : Type*} [Semigroup S]
 
@@ -49,24 +45,10 @@ lemma rightMulSeq_mul_pull (c : S) (m : ℕ) (x u : S) :
   | succ m ih =>
     simp only [rightMulSeq, ih, mul_assoc]
 
-/-- Extracting a right multiplication from the base of a `rightMulSeq`. -/
-lemma rightMulSeq_pull_c (c : S) (n : ℕ) (x : S) :
-    rightMulSeq x c (n + 1) = rightMulSeq (x * c) c n := by
-  induction n with
-  | zero => rfl
-  | succ n ih => exact congrArg (· * c) ih
-
 /-- The sequence defined by repeatedly multiplying `a` by `c` on the left. -/
 def leftMulSeq (c a : S) : ℕ → S
   | 0 => a
   | n + 1 => c * leftMulSeq c a n
-
-/-- Right multiplication can be pulled out of a `leftMulSeq`. -/
-lemma leftMulSeq_mul_pull (c : S) (m : ℕ) (x v : S) :
-    leftMulSeq c (x * v) m = leftMulSeq c x m * v := by
-  induction m with
-  | zero => rfl
-  | succ m ih => exact (congrArg (c * ·) ih).trans (mul_assoc ..).symm
 
 /-- Extracting a left multiplication from the base of a `leftMulSeq`. -/
 lemma leftMulSeq_pull_c (c : S) (n : ℕ) (x : S) :
@@ -93,13 +75,6 @@ lemma leftMulSeq_isGreenLeftDvd (c a : S) (m : ℕ) :
     rcases ih with h | ⟨w, hw⟩
     · exact Or.inr ⟨c, by rw [leftMulSeq, h]⟩
     · exact Or.inr ⟨c * w, by rw [leftMulSeq, hw, mul_assoc]⟩
-
-/-- Left divisibility is preserved by left multiplication. -/
-lemma isGreenLeftDvd_mul_left (a b x : S) (h : IsGreenLeftDvd a b) :
-    IsGreenLeftDvd (x * a) b := by
-  rcases h with rfl | ⟨w, rfl⟩
-  · exact Or.inr ⟨x, rfl⟩
-  · exact Or.inr ⟨x * w, by simp [mul_assoc]⟩
 
 /-- Left and right multiplication sequences commute. -/
 lemma leftMulSeq_rightMulSeq_comm (c x d : S) (i k : ℕ) :
@@ -155,13 +130,6 @@ lemma greenR_of_eq_mul_mul [Finite S] {b c d : S} (h : b = c * b * d) : IsGreenR
 /-- Green's L relation holds when a left multiplier is dropped from an already L-related element. -/
 lemma isGreenL_of_isGreenL_mul {b x z : S} (h : IsGreenL b (x * (z * b))) : IsGreenL b (z * b) :=
   ⟨IsGreenLeftDvd.trans h.left (Or.inr ⟨x, rfl⟩), Or.inr ⟨z, rfl⟩⟩
-
-open MulOpposite in
-/-- Green's R relation holds when a right multiplier
-  is dropped from an already R-related element. -/
-lemma isGreenR_of_isGreenR_mul {b u y : S} (h : IsGreenR b ((b * u) * y)) : IsGreenR b (b * u) := by
-  rw [isGreenR_iff_isGreenL_op] at h ⊢
-  grind [op_mul, mul_assoc, isGreenR_iff_isGreenL_op, isGreenL_of_isGreenL_mul]
 
 /-- If `b = x * z * b * d`, then `b` is L-related to `z * b`. -/
 lemma isGreenL_of_eq_mul_mul_mul [Finite S] {b x z d : S} (h : b = (x * z) * b * d) :

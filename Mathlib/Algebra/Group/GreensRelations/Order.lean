@@ -3,9 +3,7 @@ Copyright (c) 2026 Re'em Melamed-Katz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Re'em Melamed-Katz
 -/
-module
-
-public import Mathlib.Algebra.Group.GreensRelations.Theorems
+import GreensRelations.Finite
 
 /-!
 # Green's Relations Partial Orders
@@ -22,8 +20,6 @@ on the quotient types `GreenLClass`, `GreenRClass`, `GreenJClass`, and `GreenDCl
 ## References
 * [T. Colcombet, *The Factorization Forest Theorem*][colombet2008]
 -/
-
-public section
 
 variable {S : Type*} [Semigroup S]
 
@@ -55,7 +51,6 @@ instance : PartialOrder (GreenLClass S) where
 
 end GreenLClass
 
-
 namespace GreenRClass
 
 /-- `IsGreenRightDvd` is well-defined with respect to Green's R relation. -/
@@ -84,7 +79,6 @@ instance : PartialOrder (GreenRClass S) where
 
 end GreenRClass
 
-
 namespace GreenJClass
 
 /-- `IsGreenJRel` is well-defined with respect to Green's J relation. -/
@@ -112,7 +106,6 @@ instance : PartialOrder (GreenJClass S) where
     exact mk_eq_mk_iff.mpr ⟨hab, hba⟩
 
 end GreenJClass
-
 
 namespace GreenDClass
 
