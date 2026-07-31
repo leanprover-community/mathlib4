@@ -88,19 +88,15 @@ theorem posLog_eq_log (hx : 1 ≤ |x|) : log⁺ x = log x := by
   apply log_nonneg hx
 
 /-- The function `log⁺` is monotone on the interval [-1,∞). -/
-theorem posLog_monotoneOn : MonotoneOn log⁺ (Set.Ici (-1)) := by
+theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici (-1)) := by
   intro x hx y _ hxy
   grind [posLog_eq_zero_iff, posLog_nonneg, posLog_eq_log, log_le_log]
 
 /-- The function `log⁺` is antitone on the interval (-∞,1]. -/
-theorem posLog_antitoneOn : AntitoneOn log⁺ (Set.Iic 1) := by
+theorem antitoneOn_posLog : AntitoneOn log⁺ (Set.Iic 1) := by
   intro x hx y hy hxy
   rw [← posLog_neg x, ← posLog_neg y]
-  exact posLog_monotoneOn (by grind) (by grind) (neg_le_neg hxy)
-
-@[deprecated posLog_monotoneOn (since := "2026-07-31")]
-theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) :=
-  posLog_monotoneOn.mono (Set.Ici_subset_Ici.2 (by norm_num))
+  exact monotoneOn_posLog (by grind) (by grind) (neg_le_neg hxy)
 
 /-- The function `log⁺` equals `log` for all natural numbers. -/
 theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
@@ -118,7 +114,7 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
 
 @[gcongr]
 lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
-  posLog_monotoneOn (by grind) (by grind) hxy
+  monotoneOn_posLog (by grind) (by grind) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
 @[simp] lemma posLog_pow (n : ℕ) (x : ℝ) : log⁺ (x ^ n) = n * log⁺ x := by
@@ -131,12 +127,12 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   simp [posLog_eq_log this, posLog_eq_log hx.le]
 
 /-- The function `log⁺` commutes with real powers with nonnegative base and exponent. -/
-@[simp] theorem posLog_rpow {x α : ℝ} (hx : 0 ≤ x) (hα : 0 ≤ α) : log⁺ (x ^ α) = α * log⁺ x := by
-  rcases hx.eq_or_lt with rfl | h₁x
-  · rcases eq_or_ne α 0 with rfl | h₁α
-    · simp
-    · simp [zero_rpow h₁α]
-  · rw [posLog_apply, posLog_apply, log_rpow h₁x, mul_max_of_nonneg _ _ hα, mul_zero]
+@[simp] theorem posLog_rpow {x α : ℝ} (hx : -1 ≤ x) (hα : 0 ≤ α) : log⁺ (x ^ α) = α * log⁺ x := by
+  rcases le_or_gt x 0 with h | h
+  · have h₁ : |x| ≤ 1 := abs_le.2 ⟨hx, h.trans zero_le_one⟩
+    rw [(posLog_eq_zero_iff x).2 h₁, mul_zero, (posLog_eq_zero_iff _).2]
+    exact (abs_rpow_le_abs_rpow x α).trans (rpow_le_one (abs_nonneg x) h₁ hα)
+  · rw [posLog_apply, posLog_apply, log_rpow h, mul_max_of_nonneg _ _ hα, mul_zero]
 
 /-- The function `log⁺` is continuous. -/
 @[fun_prop] theorem continuous_posLog : Continuous log⁺ := by
@@ -156,18 +152,21 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
 
 /-- For nonnegative `x`, the positive part of the logarithm is bounded by `log (1 + x)`. -/
 lemma posLog_le_log_one_add {x : ℝ} (hx : 0 ≤ x) : log⁺ x ≤ log (1 + x) := by
-  rw [← posLog_eq_log (x := 1 + x) (by grind)]
-  exact posLog_monotoneOn (by grind) (by grind) (lt_one_add x).le
+  rw [posLog_eq_log_max_one hx]
+  exact log_le_log (by positivity) (max_le (by linarith) (by linarith))
 
 /-- Converse to `posLog_le_log_one_add` up to the additive constant `log 2`. -/
-lemma log_one_add_le_posLog {x : ℝ} (hx : 0 ≤ x) :
-    log (1 + x) ≤ log⁺ x + log 2 :=
-  calc
-    _ ≤ log (max 1 x * 2) := by
-      apply Real.log_le_log (by linarith)
-      grind
-    _ = log (max 1 x) + log 2 := log_mul (by positivity) two_ne_zero
-    _ = log⁺ x + log 2 := by rw [posLog_eq_log_max_one hx]
+lemma log_one_add_le_posLog {x : ℝ} : log (1 + x) ≤ log⁺ x + log 2 := by
+  have h₁ : (1 : ℝ) ≤ max 1 |x| := le_max_left ..
+  have h₂ : |1 + x| ≤ max 1 |x| * 2 := by
+    linarith [abs_add_le 1 x, le_max_right 1 |x|, abs_one (α := ℝ)]
+  calc log (1 + x)
+  _ ≤ log⁺ (1 + x) := le_max_right ..
+  _ = log⁺ |1 + x| := (posLog_abs _).symm
+  _ ≤ log⁺ (max 1 |x| * 2) := posLog_le_posLog (abs_nonneg _) h₂
+  _ = log⁺ x + log 2 := by
+    rw [posLog_eq_log (by rw [abs_of_nonneg (by positivity)]; linarith),
+      log_mul (by positivity) two_ne_zero, ← posLog_eq_log_max_one (abs_nonneg x), posLog_abs]
 
 /-- The positive part of the logarithm is bounded by the absolute value: `log⁺ x ≤ |x|`. -/
 lemma posLog_le_abs (x : ℝ) : log⁺ x ≤ |x| := by
