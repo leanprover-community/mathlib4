@@ -117,7 +117,7 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
   grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_apply]
 
 @[gcongr]
-lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+lemma posLog_le_posLog (hx : -1 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   posLog_monotoneOn (by grind) (by grind) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
