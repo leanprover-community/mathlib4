@@ -68,12 +68,12 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
     lift_rank_mul_lift_rank, toNat_lift]
 
 theorem Module.finrank_dvd_finrank_left :
-    Module.finrank F K ∣ Module.finrank F A :=
-  dvd_of_mul_right_eq (finrank K A) (finrank_mul_finrank ..)
+    Module.finrank K A ∣ Module.finrank F A :=
+  Dvd.intro_left (finrank F K) (finrank_mul_finrank ..)
 
 theorem Module.finrank_dvd_finrank_right :
-    Module.finrank K A ∣ Module.finrank F A :=
-  dvd_of_mul_left_eq (finrank F K) (finrank_mul_finrank ..)
+    Module.finrank F K ∣ Module.finrank F A :=
+  Dvd.intro (finrank K A) (finrank_mul_finrank ..)
 
 theorem Module.finrank_div_finrank_cancel_right (h : Module.finrank K A ≠ 0) :
     Module.finrank F A / Module.finrank K A = Module.finrank F K :=
