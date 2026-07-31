@@ -100,9 +100,7 @@ lemma ofSimplex_le_filtration {i j : Fin (p + 1)} (hij : i ≤ j) :
 variable (p) in
 lemma filtration_zero :
     filtration.{u} (0 : Fin (p + 1)) = .ofSimplex (nonDegenerateEquiv 0).val :=
-  le_antisymm
-    (by simpa [filtration] using Subcomplex.mem_ofSimplex_obj (nonDegenerateEquiv 0).val)
-    (ofSimplex_le_filtration.{u} (by rfl))
+  le_antisymm (by simp [filtration]) (ofSimplex_le_filtration.{u} (by rfl))
 
 variable (p) in
 lemma filtration_last :
@@ -141,6 +139,7 @@ def codimOneSimplex (j : Fin (p + 2)) : (Δ[p] ⊗ Δ[1] : SSet.{u}).nonDegenera
       (stdSimplex.objEquiv_symm_id_mem_nonDegenerate p)⟩
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.castSucc (nonDegenerateEquiv.{u} j).1 =
       (codimOneSimplex j.castSucc).1 := by
@@ -150,6 +149,7 @@ lemma δ_castSucc_nonDegenerateEquiv (j : Fin (p + 1)) :
     rw [stdSimplex.δ_objMk₁_of_lt _ _ (by simp), Fin.pred_succ]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_succ_nonDegenerateEquiv (j : Fin (p + 1)) :
     (Δ[p] ⊗ Δ[1]).δ j.succ (nonDegenerateEquiv.{u} j).1 =
       (codimOneSimplex j.succ).1 := by
