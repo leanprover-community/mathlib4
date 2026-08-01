@@ -26,20 +26,14 @@ section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α]
 
 /-- Supremum of `a i`, `i : ι`, is equal to the supremum over finite suprema of `a`. -/
-theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α}
-    (ha : BddAbove (range a)) :
+theorem ciSup_eq_ciSup_finset [OrderBot α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
     ⨆ i, a i = ⨆ F : Finset ι, F.sup a := by
-  have hbdd : BddAbove (Set.range fun F : Finset ι => F.sup a) := by
-    refine ⟨⨆ i, a i, ?_⟩
-    rintro _ ⟨F, rfl⟩
-    exact Finset.sup_le fun i _ => le_ciSup ha i
   refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup hbdd {i})
+  · exact ciSup_le fun i => (Finset.le_sup (by simp)).trans (le_ciSup ha.range_finsetSup {i})
   · exact ciSup_le fun F => Finset.sup_le fun i _ => le_ciSup ha i
 
 /-- Infimum of `a i`, `i : ι`, is equal to the infimum over finite infima of `a`. -/
-theorem ciInf_eq_ciInf_finset [OrderTop α] [Nonempty ι] {a : ι → α}
-    (ha : BddBelow (range a)) :
+theorem ciInf_eq_ciInf_finset [OrderTop α] [Nonempty ι] {a : ι → α} (ha : BddBelow (range a)) :
     ⨅ i, a i = ⨅ F : Finset ι, F.inf a :=
   ciSup_eq_ciSup_finset (α := αᵒᵈ) ha
 
