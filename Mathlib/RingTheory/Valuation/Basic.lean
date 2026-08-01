@@ -827,8 +827,8 @@ noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClas
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : (MonoidWithZeroHom.ofClass v) r ≠ 0)
     (hs : (MonoidWithZeroHom.ofClass v) s ≠ 0)
-    (hr' : (MonoidWithZeroHom.ofClass w) r ≠ 0 := h.eq_zero_ofClass.ne.1 hr)
-    (hs' : (MonoidWithZeroHom.ofClass w) s ≠ 0 := h.eq_zero_ofClass.ne.1 hs) :
+    (hr' : (MonoidWithZeroHom.ofClass w) r ≠ 0 := h.ofClass_eq_zero.ne.1 hr)
+    (hs' : (MonoidWithZeroHom.ofClass w) s ≠ 0 := h.ofClass_eq_zero.ne.1 hs) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
       valueGroup.mk (.ofClass w) r s hr' hs' := by
   rw [valueGroup₀Fun, dif_neg (by simp)]
