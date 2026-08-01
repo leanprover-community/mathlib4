@@ -211,6 +211,9 @@ theorem IsPath.nil_iff_eq {u v : V} {p : G.Walk u v} (hp : p.IsPath) : p.Nil ↔
   rintro rfl
   exact isPath_iff_nil.mp hp
 
+theorem _root_.SimpleGraph.Adj.isPath_toWalk (h : G.Adj u v) : h.toWalk.IsPath := by
+  simp [h.ne]
+
 theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsPath := by
   simpa [isPath_def] using h
 
@@ -366,6 +369,19 @@ theorem IsCycle.isPath_dropLast {p : G.Walk u u} (h : p.IsCycle) : p.dropLast.Is
 theorem IsPath.dropLast (hp : p.IsPath) : p.dropLast.IsPath :=
   hp.take _
 
+theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) :
+    (p.drop n).IsPath := by
+  replace h : (p.drop 1).IsPath := h.isPath_tail
+  rw [← Nat.add_sub_of_le hn, drop_add_eq]
+  simp [h.drop (n - 1)]
+
+theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
+    (p.take n).IsPath := by
+  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
+  suffices ((p.take (p.length - 1)).take n).IsPath by
+    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
+  exact h.take n
+
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Finite G.edgeSet] :
@@ -413,7 +429,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   induction p generalizing n m with
   | nil => simp_all
   | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
+    simp only [length_cons, Set.mem_ofPred_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
     · lia
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
@@ -431,7 +447,7 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
     p.getVert i = u ↔ i = 0 := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases h' : i ≤ p.length
-  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
+  · apply hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by rw [Set.mem_ofPred]; lia)
     simp [h]
   · rw [p.getVert_of_length_le (le_of_not_ge h')] at h
     subst h
@@ -460,7 +476,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     rw [cons_isPath_iff]
     refine ⟨ih (by
       intro n hn m hm hnm
-      simp only [Set.mem_setOf_eq] at hn hm
+      simp only [Set.mem_ofPred_eq] at hn hm
       have := hinj
         (by rw [length_cons]; lia : n + 1 ≤ (q.cons h).length)
         (by rw [length_cons]; lia : m + 1 ≤ (q.cons h).length)
@@ -503,7 +519,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   rw [← p.cons_tail_eq hpc.not_nil] at hpc
   intro n hn m hm hnm
   rw [← SimpleGraph.Walk.length_tail_add_one
-    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
+    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_ofPred] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by lia : n - 1 ≤ p.tail.length) (by lia : m - 1 ≤ p.tail.length)
     (by simp_all)
@@ -512,11 +528,11 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Set.mem_setOf_eq] at *
+  simp only [Set.mem_ofPred_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; lia)
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
+    (by simp only [Walk.length_reverse, Set.mem_ofPred_eq]; lia)
     (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by lia, hnm,
       show p.length - (p.length - m) = m by lia])
   lia
@@ -532,8 +548,8 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; lia)
-    (by simp only [Set.mem_setOf_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by simp only [Set.mem_ofPred_eq]; lia)
+    (by simp only [Set.mem_ofPred_eq]; lia) (h.symm ▸ (Walk.getVert_length p).symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
@@ -543,8 +559,8 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   · rw [p.getVert_of_length_le (by lia : p.length ≤ i + 1),
       hpc.getVert_endpoint_iff (by lia)] at h'
     lia
-  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; lia)
-    (by simp only [Set.mem_setOf_eq]; lia) h'
+  have := hpc.getVert_injOn' (by simp only [Set.mem_ofPred_eq, Nat.sub_le_iff_le_add]; lia)
+    (by simp only [Set.mem_ofPred_eq]; lia) h'
   lia
 
 theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
@@ -630,7 +646,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt_length hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by simp)
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_ofPred]; lia) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
@@ -974,68 +990,100 @@ end Walk
 
 namespace Walk
 
-variable {G G'}
-variable (f : G →g G') {u v : V} (p : G.Walk u v)
-variable {p f}
+variable {G G'} {f : G →g G'} {u v : V} {p : G.Walk u v}
 
-theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
-    (p.map f).IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    rw [Walk.cons_isPath_iff] at hp
-    simp only [map_cons, cons_isPath_iff, ih hp.1, support_map, List.mem_map, not_exists, not_and,
-      true_and]
-    intro x hx hf
-    cases hinj hf
-    exact hp.2 hx
+protected theorem IsTrail.of_map (hp : (p.map f).IsTrail) : p.IsTrail := by
+  rw [isTrail_def]
+  rw [isTrail_def, edges_map] at hp
+  exact hp.of_map
 
-protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih => grind [map_cons, Walk.cons_isPath_iff, support_map]
-
-theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
-  ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
-
-theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
+theorem isTrail_map_iff_of_injective (hinj : Function.Injective f) :
     (p.map f).IsTrail ↔ p.IsTrail := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, isTrail_cons, ih, isTrail_cons]
-    apply and_congr_right'
-    rw [← Sym2.map_mk, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
+  rw [isTrail_def, isTrail_def, edges_map, List.nodup_map_iff <| Sym2.map.injective hinj]
 
-alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
+@[deprecated (since := "2026-06-16")]
+alias map_isTrail_iff_of_injective := isTrail_map_iff_of_injective
 
-theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
+alias ⟨_, IsTrail.map⟩ := isTrail_map_iff_of_injective
+
+@[deprecated (since := "2026-06-16")] alias map_isTrail_of_injective := IsTrail.map
+
+protected theorem IsPath.of_map (hp : (p.map f).IsPath) : p.IsPath := by
+  rw [isPath_def]
+  rw [isPath_def, support_map] at hp
+  exact hp.of_map
+
+theorem isPath_map_iff_of_injective (hinj : Function.Injective f) :
+    (p.map f).IsPath ↔ p.IsPath := by
+  rw [isPath_def, isPath_def, support_map, List.nodup_map_iff hinj]
+
+@[deprecated (since := "2026-06-16")]
+alias map_isPath_iff_of_injective := isPath_map_iff_of_injective
+
+alias ⟨_, IsPath.map⟩ := isPath_map_iff_of_injective
+
+@[deprecated (since := "2026-06-16")] alias map_isPath_of_injective := IsPath.map
+
+protected theorem IsCircuit.of_map {p : G.Walk u u} (hp : (p.map f).IsCircuit) : p.IsCircuit := by
+  rw [isCircuit_def, ne_eq, eq_nil_iff_nil]
+  rw [isCircuit_def, ne_eq, eq_nil_iff_nil, nil_map_iff] at hp
+  exact hp.imp_left .of_map
+
+theorem isCircuit_map_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
+    (p.map f).IsCircuit ↔ p.IsCircuit := by
+  rw [isCircuit_def, isCircuit_def, isTrail_map_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+    eq_nil_iff_nil, nil_map_iff]
+
+alias ⟨_, IsCircuit.map⟩ := isCircuit_map_iff_of_injective
+
+protected theorem IsCycle.of_map {p : G.Walk u u} (hp : (p.map f).IsCycle) : p.IsCycle := by
+  rw [isCycle_def, ne_eq, eq_nil_iff_nil]
+  rw [isCycle_def, ne_eq, eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail] at hp
+  exact hp.imp .of_map <| .imp_right <| .of_map f
+
+theorem isCycle_map_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+  rw [isCycle_def, isCycle_def, isTrail_map_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
     eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
-alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
+@[deprecated (since := "2026-06-16")]
+alias map_isCycle_iff_of_injective := isCycle_map_iff_of_injective
+
+alias ⟨_, IsCycle.map⟩ := isCycle_map_iff_of_injective
 
 @[simp]
-theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isTrail_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsTrail ↔ p.IsTrail :=
-  map_isTrail_iff_of_injective Function.injective_id
+  isTrail_map_iff_of_injective Function.injective_id
 
-alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
+@[deprecated (since := "2026-06-16")] alias mapLe_isTrail := isTrail_mapLe
+
+alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := isTrail_mapLe
 
 @[simp]
-theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
+theorem isPath_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
     (p.mapLe h).IsPath ↔ p.IsPath :=
-  map_isPath_iff_of_injective Function.injective_id
+  isPath_map_iff_of_injective Function.injective_id
 
-alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := mapLe_isPath
+@[deprecated (since := "2026-06-16")] alias mapLe_isPath := isPath_mapLe
+
+alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := isPath_mapLe
 
 @[simp]
-theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
-    (p.mapLe h).IsCycle ↔ p.IsCycle :=
-  map_isCycle_iff_of_injective Function.injective_id
+theorem isCircuit_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+    (p.mapLe h).IsCircuit ↔ p.IsCircuit :=
+  isCircuit_map_iff_of_injective Function.injective_id
 
-alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := mapLe_isCycle
+alias ⟨IsCircuit.of_mapLe, IsCircuit.mapLe⟩ := isCircuit_mapLe
+
+@[simp]
+theorem isCycle_mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
+    (p.mapLe h).IsCycle ↔ p.IsCycle :=
+  isCycle_map_iff_of_injective Function.injective_id
+
+@[deprecated (since := "2026-06-16")] alias mapLe_isCycle := isCycle_mapLe
+
+alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := isCycle_mapLe
 
 end Walk
 
@@ -1047,7 +1095,7 @@ variable {G G'}
 @[simps]
 protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G.Path u v) :
     G'.Path (f u) (f v) :=
-  ⟨Walk.map f p, Walk.map_isPath_of_injective hinj p.2⟩
+  ⟨Walk.map f p, p.isPath.map hinj⟩
 
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
@@ -1073,6 +1121,7 @@ namespace Walk
 variable {G} {u v : V} {H : SimpleGraph V}
 variable {p : G.Walk u v}
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
   induction p with
@@ -1081,6 +1130,7 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
     (q.transfer H hq).IsCycle := by
   cases q with

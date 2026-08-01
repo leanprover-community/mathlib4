@@ -149,7 +149,7 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) := by
   classical
   have ⟨I, b⟩ := Module.Free.exists_basis R M
-  letI : LinearOrder I := linearOrderOfSTO WellOrderingRel
+  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
   exact Module.Free.of_basis (b.exteriorPower n)
 
 variable [Nontrivial R]

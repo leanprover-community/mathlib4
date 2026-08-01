@@ -27,25 +27,31 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Conjugation by the square root of an element, i.e. `sqrt c * a * sqrt c`. -/
 @[expose]
 noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
   toLinearMap := .mulLeftRight ℝ (sqrt c, sqrt c)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma toLinearMap_conjSqrt (c : A) :
     (conjSqrt c).toLinearMap = .mulLeftRight ℝ (sqrt c, sqrt c) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma conjSqrt_apply {c a : A} : conjSqrt c a = sqrt c * a * sqrt c := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma conjSqrt_of_not_nonneg {c a : A} (hc : ¬0 ≤ c) : conjSqrt c a = 0 := by
   simp [conjSqrt_apply, sqrt_of_not_nonneg hc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
   intro a b hab
   by_cases hc : 0 ≤ c
   · exact IsSelfAdjoint.conjugate_le_conjugate hab (by cfc_tac)
   · simp [conjSqrt_of_not_nonneg hc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[gcongr]
 lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
   conjSqrt_monotone h
@@ -61,6 +67,7 @@ lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by
   rw [conjSqrt_apply]
   by_cases ha : IsSelfAdjoint a <;> grind
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[grind _=_]
 lemma ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     (conjSqrt c a)⁻¹ʳ = conjSqrt c⁻¹ʳ a⁻¹ʳ := by
@@ -69,6 +76,7 @@ lemma ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
   · have : ¬IsUnit (conjSqrt c a) := by grind [conjSqrt_apply, IsUnit.mul_left_iff]
     simp [inverse_non_unit a ha, inverse_non_unit _ this]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[grind =]
 lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt c⁻¹ʳ (conjSqrt c a) = a := by
@@ -78,15 +86,18 @@ lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by c
     have : Commute (sqrt c) (sqrt c⁻¹ʳ)
     finish
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[grind =]
 lemma conjSqrt_conjSqrt_ringInverse (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt c (conjSqrt c⁻¹ʳ a) = a := by
   grind [conjSqrt_ringInverse_conjSqrt _ _ hc.ringInverse]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[grind =]
 lemma conjSqrt_one (c : A) (hc : 0 ≤ c := by cfc_tac) : conjSqrt c 1 = c := by
   rw [conjSqrt_apply, mul_one, sqrt_mul_sqrt_self _]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[grind =]
 lemma conjSqrt_ringInverse_self (c : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     conjSqrt c⁻¹ʳ c = 1 := by
