@@ -94,6 +94,9 @@ variable (x : E) (r : ℝ)
 @[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
   star_isometry.edist_eq x y
 
+@[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
+  star_isometry.nndist_eq x y
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
