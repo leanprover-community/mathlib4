@@ -315,12 +315,11 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   classical
-  have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
-    suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
+  have : t ∈ generatePiSystem (⋃ b : s, (g ∘ Subtype.val) b) := by
+    suffices h1 : ⋃ b : s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
     simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists]
-    rfl
-  rcases @mem_generatePiSystem_iUnion_elim α (Subtype s) (g ∘ Subtype.val)
+  rcases @mem_generatePiSystem_iUnion_elim α s (g ∘ Subtype.val)
       (fun b => h_pi b.val b.property) t this with
     ⟨T, ⟨f, ⟨rfl, h_t'⟩⟩⟩
   refine
