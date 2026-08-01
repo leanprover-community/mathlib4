@@ -163,7 +163,7 @@ theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
     _ = _ := by norm_cast
 
 theorem deriv_Gamma_one_eq_integral_log : deriv Gamma 1 = ∫ t in Ioi 0, log t * exp (-t) := by
-  simpa using (hasDerivAt_Gamma (by norm_num : 0 < (1 : ℝ))).deriv
+  simp [(hasDerivAt_Gamma (one_pos (α := ℝ))).deriv]
 
 theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
     IntegrableOn (fun t ↦ log (log t) * t ^ (-s)) (Ioi 1) := by
