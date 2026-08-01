@@ -58,6 +58,22 @@ theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t 
 theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
+@[to_dual iInf₂_eq_iInf_diagonal]
+theorem iSup₂_eq_iSup_diagonal
+    (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
+  apply le_antisymm
+  · apply sSup_le
+    rintro _ ⟨i, rfl⟩
+    apply sSup_le
+    rintro _ ⟨j, rfl⟩
+    obtain ⟨k, hk⟩ := h i j
+    exact hk.trans (le_sSup ⟨k, rfl⟩)
+  · apply sSup_le
+    rintro _ ⟨k, rfl⟩
+    exact (le_sSup (s := range (f k)) ⟨k, rfl⟩).trans
+      (le_sSup (s := range fun i ↦ ⨆ j, f i j) ⟨k, rfl⟩)
+
 end
 
 open OrderDual
@@ -288,26 +304,6 @@ theorem iSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : 
 @[to_dual]
 theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   iSup_le <| le_iSup _ ∘ h
-
-@[to_dual iInf₂_eq_iInf_diagonal]
-theorem iSup₂_eq_iSup_diagonal [CompleteSemilatticeSup α]
-    (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
-    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
-  apply le_antisymm
-  · apply sSup_le
-    intro _ hx
-    obtain ⟨i, rfl⟩ := hx
-    apply sSup_le
-    intro _ hx
-    obtain ⟨j, rfl⟩ := hx
-    obtain ⟨k, hk⟩ := h i j
-    exact hk.trans <| le_sSup (mem_range_self k)
-  · apply sSup_le
-    intro _ hx
-    obtain ⟨k, rfl⟩ := hx
-    exact (le_sSup (show f k k ∈ range (f k) from mem_range_self k)).trans <|
-      le_sSup (show sSup (range (f k)) ∈ range (fun i ↦ sSup (range (f i))) from
-        mem_range_self k)
 
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
