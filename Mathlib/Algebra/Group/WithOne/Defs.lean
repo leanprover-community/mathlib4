@@ -85,6 +85,10 @@ instance inhabited : Inhabited (WithOne α) :=
 instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
+@[to_additive]
+instance [IsEmpty α] : Subsingleton (WithOne α) :=
+  inferInstanceAs <| Subsingleton (Option α)
+
 /-- The canonical map from `α` into `WithOne α` -/
 @[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=

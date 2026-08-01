@@ -137,7 +137,7 @@ theorem tendsto_norm_le_div_atTop₀ :
   · filter_upwards [eventually_ge_atTop 0] with s hs
     have : Fintype {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} := by
       simp_rw [← Nat.le_floor_iff hs]
-      refine @Fintype.ofFinite _ (finite_setOf_absNorm_le₀ ⌊s⌋₊)
+      refine @Fintype.ofFinite _ (finite_setOfPred_absNorm_le₀ ⌊s⌋₊)
     let e := fun C : ClassGroup (𝓞 K) ↦ Equiv.subtypeSubtypeEquivSubtypeInter
       (fun I : (Ideal (𝓞 K))⁰ ↦ absNorm I.1 ≤ s) (fun I ↦ ClassGroup.mk0 I = C)
     simp_rw [← Nat.card_congr (e _), Nat.card_eq_fintype_card, Fintype.subtype_card]

@@ -65,7 +65,7 @@ lemma doublyStochastic_eq_rowStochastic_inf_colStochastic :
     doublyStochastic R n = rowStochastic R n ⊓ colStochastic R n := by
   ext M
   simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
-    Set.mem_setOf_eq, doublyStochastic]
+    Set.mem_ofPred_eq, doublyStochastic]
   grind
 
 lemma mem_doublyStochastic_iff_mem_rowStochastic_and_mem_colStochastic {M : Matrix n n R} :
