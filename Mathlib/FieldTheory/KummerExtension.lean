@@ -101,10 +101,6 @@ theorem X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
     (hn : Irreducible (X ^ n - C (AdjoinRoot.root (X ^ m - C a)))) :
     Irreducible (X ^ (n * m) - C a) := by
-  have hm' : m ≠ 0 := by
-    rintro rfl
-    rw [pow_zero, ← C.map_one, ← map_sub] at hm
-    exact not_irreducible_C _ hm
   simpa [pow_mul] using irreducible_comp hm (by simpa using hn)
 
 -- TODO: generalize to even `n`
