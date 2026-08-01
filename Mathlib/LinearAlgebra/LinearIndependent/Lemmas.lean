@@ -873,11 +873,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         rwa [hst] at this
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
-        eq_empty_of_subset_empty <|
-          -- Porting note: `-subset_inter_iff` required.
-          Subset.trans
-            (by simp [inter_subset_inter, -subset_inter_iff])
-            (le_of_eq hst)
+        eq_empty_of_subset_empty <| by grw [← hst, ← Finset.subset_insert]
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
           let ⟨u, hust, hsu, Eq⟩ := ih _ hs' hst this
@@ -910,7 +906,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, or_imp]),
+    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set V} (ht : t.Finite)
