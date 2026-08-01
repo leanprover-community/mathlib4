@@ -177,4 +177,24 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
     _ = 0 := by
       rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
 
+open ENNReal
+
+instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
+  by_contra
+  obtain ⟨a, ha⟩ : ∃ a, 0 < (κ a) univ := by
+    suffices ∀ C < ∞, ∃ a, C < (κ a) univ from this 0 (by simp)
+    by_contra! h
+    have : IsFiniteKernel κ := ⟨h⟩
+    have : IsSFiniteKernel κ := inferInstance
+    contradiction
+  have h := DFunLike.congr_fun κ.parallelComp_self_comp_copy a
+  simp_all only [not_false_eq_true, parallelComp_of_not_isSFiniteKernel_left, zero_comp, zero_apply]
+  replace h := DFunLike.congr_fun h Set.univ
+  rw [comp_apply'] at h
+  · simp_rw [copy_apply, Measure.dirac_apply' _ MeasurableSet.univ, indicator_univ] at h
+    simp only [Measure.coe_zero, Pi.zero_apply, Pi.one_apply, MeasureTheory.lintegral_const,
+      one_mul] at h
+    exact ha.ne h
+  exact MeasurableSet.univ
+
 end ProbabilityTheory.Kernel
