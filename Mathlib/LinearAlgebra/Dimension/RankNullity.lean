@@ -104,8 +104,7 @@ theorem LinearMap.lift_rank_comap (f : M →ₗ[R] M') (p : Submodule R M') :
 
 theorem LinearMap.rank_comap (f : M →ₗ[R] M₁) (p : Submodule R M₁) :
     Module.rank R (comap f p) = Module.rank R (f.range ⊓ p :) + Module.rank R f.ker := by
-  convert lift_rank_comap f p using 0
-  simp_rw [lift_id]
+  simpa using lift_rank_comap f p
 
 theorem LinearMap.lift_rank_map_add_rank_ker_inf (f : M →ₗ[R] M') (p : Submodule R M) :
     lift.{u} (Module.rank R (map f p)) + lift.{v} (Module.rank R (f.ker ⊓ p :)) =
