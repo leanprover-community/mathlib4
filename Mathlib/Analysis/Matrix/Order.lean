@@ -88,7 +88,7 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
-instance : OrderClosedTopology (Matrix n n 𝕜) where
+instance instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
   isClosed_le' := by
     change IsClosed {p : Matrix n n 𝕜 × Matrix n n 𝕜 | (p.2 - p.1).PosSemidef}
     have : {p : Matrix n n 𝕜 × Matrix n n 𝕜 | (p.2 - p.1).PosSemidef} =
@@ -103,6 +103,8 @@ instance : OrderClosedTopology (Matrix n n 𝕜) where
     · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
       simp only [Finsupp.sum]
       fun_prop
+
+scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
 
 variable [Fintype n]
 
