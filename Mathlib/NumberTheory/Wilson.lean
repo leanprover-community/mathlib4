@@ -20,6 +20,8 @@ This could be generalized to similar results about finite abelian groups.
 
 ## Main results
 
+* `ZMod.wilsons_lemma`: the value of `(p - 1)!` modulo a prime `p`.
+* `Nat.prime_iff_fac_equiv_neg_one`: that value characterises primality.
 * `ZMod.factorial_eq_neg_one_pow_mul_half_factorial_sq` expresses `(p - 1)!` using the square of
   the half-factorial when `p` is odd.
 * `ZMod.half_factorial_sq_eq_neg_one` gives the half-factorial as an explicit square root of `-1`
@@ -45,9 +47,7 @@ open scoped Nat
 namespace ZMod
 
 /-- If `p` is odd, pairing each factor above `(p - 1) / 2` with its negative gives
-`(p - 1)! = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)!) ^ 2` in `ZMod p`.
-
-The identity only needs the modulus to be odd; primality is not required. -/
+`(p - 1)! = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)!) ^ 2` in `ZMod p`. -/
 theorem factorial_eq_neg_one_pow_mul_half_factorial_sq (p : ℕ) (hp : Odd p) :
     ((p - 1)! : ZMod p) =
       (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)! : ZMod p) ^ 2 := by
@@ -96,11 +96,8 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
   · rintro a -; simp only [cast_id, natCast_val]
 
 /-- Let `p` be prime with `p % 4 ≠ 3`. Then `((p - 1) / 2)!` is a specified square root of `-1`
-in `ZMod p`.
-
-This gives an explicit witness, namely the half-factorial itself, rather than merely asserting
-that some square root exists. -/
-theorem half_factorial_sq_eq_neg_one (p : ℕ) [Fact p.Prime] (hp : p % 4 ≠ 3) :
+in `ZMod p`. -/
+theorem half_factorial_sq_eq_neg_one (hp : p % 4 ≠ 3) :
     (((p - 1) / 2)! : ZMod p) ^ 2 = -1 := by
   by_cases hp_two : p = 2
   · subst p
