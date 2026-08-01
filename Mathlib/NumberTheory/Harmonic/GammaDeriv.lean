@@ -100,8 +100,8 @@ lemma eulerMascheroniConstant_eq_neg_integral_log :
 
 /-- An integral representation of the Euler–Mascheroni constant, valid for any `s > 1`. -/
 lemma eulerMascheroniConstant_eq_neg_integral_log_log {s : ℝ} (hs : 1 < s) :
-    γ = -((s - 1) * (∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1)) := by
-  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs]
+    γ = -log (s - 1) + -((s - 1) * ∫ (t : ℝ) in Ioi 1, log (log t) * t ^ (-s)) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs, neg_add_rev]
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
