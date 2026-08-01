@@ -5,8 +5,9 @@ Authors: Stefan Kebekus using Claude Code
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # The Borel Growth Lemma
@@ -39,7 +40,7 @@ most `2⁻ⁿ`, so that `volume E` is bounded by `∑ 2⁻ⁿ = 2 < ∞`.
 - Lemma 3.7 in Section VI.3 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Set
 
@@ -73,7 +74,7 @@ theorem MonotoneOn.eventually_le_two_mul {S : ℝ → ℝ} {a : ℝ}
       rw [show Nat.find h₄ - 1 + 1 = Nat.find h₄ by omega] at h₆
       exact not_lt.1 h₆
   -- Two points of a slice are at distance at most `(2 ^ n)⁻¹`
-  have hkey : ∀ n, ∀ x ∈ En n, ∀ y ∈ En n, x ≤ y → y - x ≤ (2 ^ n)⁻¹ := by
+  have hkey : ∀ n, ∀ x ∈ En n, ∀ y ∈ En n, y - x ≤ (2 ^ n)⁻¹ := by
     intro n x hx y hy hxy
     obtain ⟨⟨h₁x, h₂x⟩, h₃x, -⟩ := hx
     obtain ⟨⟨h₁y, -⟩, -, h₄y⟩ := hy
