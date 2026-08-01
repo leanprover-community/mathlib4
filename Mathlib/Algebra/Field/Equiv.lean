@@ -32,4 +32,4 @@ protected theorem MulEquiv.isField (hB : IsField B) (e : A ≃* B) : IsField A :
   IsLocalHom.isField e.injective hB
 
 protected theorem MulEquiv.isField_congr (e : A ≃* B) : IsField A ↔ IsField B :=
-  ⟨e.isField, e.isField⟩
+  ⟨e.symm.isField, e.isField⟩
