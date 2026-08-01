@@ -135,7 +135,7 @@ namespace Functor.Elements
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
-def corepresentableBy_of_isInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
+def corepresentableByOfIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     CorepresentableBy F E.fst where
   homEquiv :=
     { toFun f := F.map f E.snd
@@ -147,7 +147,7 @@ lemma isCorepresentable_of_hasInitial (F : C ⥤ Type w) [HasInitial (Elements F
     IsCorepresentable F where
   has_corepresentation :=
     ⟨(⊥_ F.Elements).fst,
-      (Nonempty.intro (corepresentableBy_of_isInitial initialIsInitial))⟩
+      (Nonempty.intro (corepresentableByOfIsInitial initialIsInitial))⟩
 
 theorem hasInitial_iff_isCorepresentable (F : C ⥤ Type w) :
     HasInitial (Elements F) ↔ IsCorepresentable F where
@@ -156,7 +156,7 @@ theorem hasInitial_iff_isCorepresentable (F : C ⥤ Type w) :
 
 /-- An initial object in the category `F.Elements` of a contravariant functor defines a
 representation for that functor. -/
-def representableBy_of_isInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
+def representableByOfIsInitial {F : Cᵒᵖ ⥤ Type w} {E : Elements F} (he : IsInitial E) :
     RepresentableBy F (E.fst.unop) where
   homEquiv :=
     { toFun f := F.map f.op E.snd
@@ -171,7 +171,7 @@ lemma isRepresentable_of_hasInitial (F : Cᵒᵖ ⥤ Type w) [HasInitial (Elemen
     IsRepresentable F where
   has_representation :=
     ⟨(⊥_ F.Elements).fst.unop,
-      (Nonempty.intro (representableBy_of_isInitial initialIsInitial))⟩
+      (Nonempty.intro (representableByOfIsInitial initialIsInitial))⟩
 
 theorem hasInitial_iff_isRepresentable (F : Cᵒᵖ ⥤ Type w) :
     HasInitial (Elements F) ↔ IsRepresentable F where
