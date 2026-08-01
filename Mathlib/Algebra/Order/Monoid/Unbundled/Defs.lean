@@ -377,6 +377,9 @@ theorem Covariant.act_rel_act_of_rel (co : Covariant M N μ r) (m : M) {a b : N}
     r (μ m a) (μ m b) :=
   co _ ab
 
+@[deprecated Covariant.act_rel_act_of_rel (since := "2026-08-01")]
+alias act_rel_act_of_rel := Covariant.act_rel_act_of_rel
+
 @[to_additive]
 theorem Group.covariant_iff_contravariant [Group N] :
     Covariant N N (· * ·) r ↔ Contravariant N N (· * ·) r := by
@@ -444,9 +447,15 @@ theorem Covariant.act_rel_of_rel_of_act_rel (co : Covariant M N μ r)
     (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
   _root_.trans (co.act_rel_act_of_rel m ab) rl
 
+@[deprecated Covariant.act_rel_of_rel_of_act_rel (since := "2026-08-01")]
+alias act_rel_of_rel_of_act_rel := Covariant.act_rel_of_rel_of_act_rel
+
 theorem Covariant.rel_act_of_rel_of_rel_act (co : Covariant M N μ r)
     (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
   _root_.trans rr (co.act_rel_act_of_rel _ ab)
+
+@[deprecated Covariant.rel_act_of_rel_of_rel_act (since := "2026-08-01")]
+alias rel_act_of_rel_of_rel_act := Covariant.rel_act_of_rel_of_rel_act
 
 end Trans
 
@@ -462,6 +471,8 @@ theorem Covariant.act_rel_act_of_rel_of_rel (co : Covariant N N mu r)
     r (mu a c) (mu b d) :=
   _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r co' c _ _ ab) (act_rel_act_of_rel co b cd)
 
+@[deprecated Covariant.act_rel_act_of_rel_of_rel (since := "2026-08-01")]
+alias act_rel_act_of_rel_of_rel := Covariant.act_rel_act_of_rel_of_rel
 
 end MEqN
 
@@ -489,6 +500,15 @@ theorem rel_act_of_act_rel_act_of_rel_act (contra : Contravariant M N μ r)
 end Trans
 
 end Contravariant
+
+@[deprecated Contravariant.rel_of_act_rel_act (since := "2026-08-01")]
+alias rel_of_act_rel_act := Contravariant.rel_of_act_rel_act
+
+@[deprecated Contravariant.act_rel_of_act_rel_of_rel_act_rel (since := "2026-08-01")]
+alias act_rel_of_act_rel_of_rel_act_rel := Contravariant.act_rel_of_act_rel_of_rel_act_rel
+
+@[deprecated Contravariant.rel_act_of_act_rel_act_of_rel_act (since := "2026-08-01")]
+alias rel_act_of_act_rel_act_of_rel_act := Contravariant.rel_act_of_act_rel_act_of_rel_act
 
 section Monotone
 
