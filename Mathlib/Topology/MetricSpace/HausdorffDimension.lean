@@ -521,10 +521,11 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
 
 end Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
+  [NormedSpace ℝ F]
 
-theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
+theorem dense_compl_of_dimH_lt_finrank [FiniteDimensional ℝ E] {s : Set E}
+    (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
   rw [← sdiff_eq, sdiff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
@@ -533,69 +534,83 @@ theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E)
 /-!
 ### Hausdorff dimension and differentiable maps
 
-Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff dimension.
+Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff dimension. In fact,
+they satisfy the Luzin N property with respect to the Hausdorff measure `μH[d]` for every
+`0 ≤ d`: they send `μH[d]`-null sets to `μH[d]`-null sets
+(`DifferentiableOn.hausdorffMeasure_image_eq_zero`).
 -/
 
+section Differentiable
 
-/-- If `f` is differentiable on a set `s` in a finite-dimensional real normed space, then
-`dimH (f '' t) ≤ dimH t` for any `t ⊆ s`. -/
-theorem DifferentiableOn.dimH_image_le {f : E → F} {t : Set E} (hf : DifferentiableOn ℝ f t) :
-    dimH (f '' t) ≤ dimH t := by
-  -- `P (n, k)` collects the points of `t` near which `f` grows at rate at most `n` at scale
-  -- `(n + 1)⁻¹`, intersected with the ball of radius `(n + 1)⁻¹ / 2` around the `k`-th point of
-  -- a dense sequence. Then `f` is `n`-Lipschitz on each piece, and the pieces cover `t`.
-  let P (n k : ℕ) : Set E :=
-    {x ∈ t | ∀ y ∈ t, dist y x ≤ (n + 1 : ℝ)⁻¹ → dist (f y) (f x) ≤ n * dist y x} ∩
-      Metric.ball (denseSeq E k) ((n + 1 : ℝ)⁻¹ / 2)
-  have hcover : t ⊆ ⋃ i, ⋃ k, P i k := by
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {t : Set E}
+
+/-- If `f` is differentiable on a set `t` with `μH[d] t = 0` for some `0 ≤ d`, then
+`μH[d] (f '' t) = 0`. -/
+theorem DifferentiableOn.hausdorffMeasure_image_eq_zero [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace F] [BorelSpace F] (hf : DifferentiableOn 𝕜 f t) {d : ℝ} (hd : 0 ≤ d)
+    (ht : μH[d] t = 0) : μH[d] (f '' t) = 0 := by
+  obtain ⟨c, hcc, htc⟩ := isSeparable_of_hausdorffMeasure_ne_top (ht.trans_ne ENNReal.zero_ne_top)
+  let P (n : ℕ) (y : E) : Set E :=
+    {x ∈ t | ∀ z ∈ t, dist z x ≤ (n + 1 : ℝ)⁻¹ → dist (f z) (f x) ≤ n * dist z x} ∩
+      Metric.ball y ((n + 1 : ℝ)⁻¹ / 2)
+  have hcover : t ⊆ ⋃ n, ⋃ y ∈ c, P n y := by
     intro x hx
     obtain ⟨C, hC⟩ := (hf x hx).isBigO_sub.bound
     simp only [← dist_eq_norm, Metric.nhdsWithin_basis_ball.eventually_iff] at hC
     obtain ⟨δ, hδ₀, hδ⟩ := hC
     obtain ⟨n, hn⟩ := exists_nat_gt (max C δ⁻¹)
     have hnδ : (n + 1 : ℝ)⁻¹ < δ := by rw [inv_lt_comm₀ (by positivity) hδ₀]; grind
-    obtain ⟨k, hk⟩ := (denseRange_denseSeq E).exists_dist_lt x
+    obtain ⟨y, hyc, hy⟩ := Metric.mem_closure_iff.1 (htc hx) _
       (by positivity : (0 : ℝ) < (n + 1 : ℝ)⁻¹ / 2)
-    refine mem_iUnion.2 ⟨⟨n, k⟩, ⟨hx, fun y hy hyx ↦ ?_⟩, Metric.mem_ball.2 hk⟩
+    refine mem_iUnion_of_mem n (mem_biUnion hyc ⟨⟨hx, fun z hz hzx ↦ ?_⟩, Metric.mem_ball.2 hy⟩)
     calc
-      dist (f y) (f x) ≤ C * dist y x := hδ ⟨Metric.mem_ball.2 (hyx.trans_lt hnδ), hy⟩
-      _ ≤ n * dist y x := by grw [((le_max_left _ _).trans_lt hn).le]
-  have hlip (n k : ℕ) : LipschitzOnWith n f (P n k) := by
-    refine LipschitzOnWith.of_dist_le_mul fun y ⟨⟨hyt, _⟩, hyb⟩ z ⟨⟨_, hzP⟩, hzb⟩ ↦ hzP y hyt ?_
-    linarith [dist_triangle_right y z (denseSeq E k), Metric.mem_ball.1 hyb, Metric.mem_ball.1 hzb]
-  calc dimH (f '' t) ≤ dimH (f '' ⋃ i, P i) := dimH_mono (image_mono hcover)
-    _ = ⨆ i, dimH (f '' P i) := by rw [image_iUnion, dimH_iUnion]
-    _ ≤ ⨆ i, dimH (P i) := iSup_mono fun i ↦ (hlip i).dimH_image_le
-    _ ≤ dimH t := iSup_le fun i ↦ dimH_mono fun x hx ↦ hx.1.1
+      dist (f z) (f x) ≤ C * dist z x := hδ ⟨Metric.mem_ball.2 (hzx.trans_lt hnδ), hz⟩
+      _ ≤ n * dist z x := by grw [((le_max_left _ _).trans_lt hn).le]
+  have hlip (n : ℕ) (y : E) : LipschitzOnWith n f (P n y) :=
+    .of_dist_le_mul fun z ⟨⟨hzt, _⟩, hzb⟩ w ⟨⟨_, hwP⟩, hwb⟩ ↦ hwP z hzt <| by
+      linarith [dist_triangle_right z w y, Metric.mem_ball.1 hzb, Metric.mem_ball.1 hwb]
+  refine measure_mono_null (image_mono hcover) ?_
+  simp only [image_iUnion, measure_iUnion_null_iff, measure_biUnion_null_iff hcc]
+  intro n y _
+  have hP : μH[d] (P n y) = 0 := measure_mono_null (fun x hx ↦ hx.1.1) ht
+  simpa [hP] using (hlip n y).hausdorffMeasure_image_le hd
 
-/-- Let `f` be a function defined on a finite-dimensional real normed space. If `f` is `C¹`-smooth
-on a set `s`, then the Hausdorff dimension of `f '' s` is less than or equal to the Hausdorff
-dimension of `s`. -/
-theorem ContDiffOn.dimH_image_le {f : E → F} {s t : Set E} (hf : ContDiffOn ℝ 1 f s)
-    (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t :=
-  (hf.differentiableOn one_ne_zero).dimH_image_le ht
+/-- If `f` is differentiable on a set `t`, then `dimH (f '' t) ≤ dimH t`. -/
+theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
+    dimH (f '' t) ≤ dimH t := by
+  borelize E F
+  exact dimH_le fun d hd ↦ not_lt.1 fun hlt ↦ ENNReal.zero_ne_top <|
+    (hf.hausdorffMeasure_image_eq_zero d.coe_nonneg (hausdorffMeasure_of_dimH_lt hlt)).symm.trans hd
+
+/-- If `f` is `C¹`-smooth on a set `t`, then `dimH (f '' t) ≤ dimH t`. -/
+theorem ContDiffOn.dimH_image_le (hf : ContDiffOn 𝕜 1 f t) : dimH (f '' t) ≤ dimH t :=
+  (hf.differentiableOn one_ne_zero).dimH_image_le
+
+end Differentiable
 
 /-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite-dimensional
 real normed space is at most the dimension of its domain as a vector space over `ℝ`. -/
-theorem ContDiff.dimH_range_le {f : E → F} (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
+theorem ContDiff.dimH_range_le [FiniteDimensional ℝ E] {f : E → F} (h : ContDiff ℝ 1 f) :
+    dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
-    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le Subset.rfl
+    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 
 /-- A particular case of Sard's Theorem. Let `f : E → F` be a map between finite-dimensional real
 vector spaces. Suppose that `f` is `C¹` smooth on a set `s` of Hausdorff dimension strictly
 less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
 theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
-    {s t : Set E} (h : ContDiffOn ℝ 1 f s) (ht : t ⊆ s)
+    {t : Set E} (h : ContDiffOn ℝ 1 f t)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
-  dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le ht).trans_lt htF
-
+  dense_compl_of_dimH_lt_finrank <| h.dimH_image_le.trans_lt htF
 
 /-- A particular case of Sard's Theorem. If `f` is a `C¹` smooth map from a real vector space to a
 real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
 in `F`. -/
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
+theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ E]
+    [FiniteDimensional ℝ F] {f : E → F}
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
 

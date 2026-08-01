@@ -599,6 +599,20 @@ theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) 
   rcases h.eq_or_lt with (rfl | h); · exact le_rfl
   rcases hausdorffMeasure_zero_or_top h s with hs | hs <;> simp [hs]
 
+/-- A set `s` with `μH[d] s ≠ ∞` for some `d` is separable. -/
+theorem isSeparable_of_hausdorffMeasure_ne_top {d : ℝ} {s : Set X} (h : μH[d] s ≠ ∞) :
+    IsSeparable s := by
+  rw [hausdorffMeasure_apply] at h
+  obtain ⟨c, -, hcc, hsc⟩ := EMetric.subset_countable_closure_of_almost_dense_set s fun ε hε ↦ by
+    have H := (le_iSup₂ ε hε).trans_lt h.lt_top
+    simp only [iInf_lt_iff] at H
+    obtain ⟨t, hst, htd, -⟩ := H
+    refine ⟨range fun m : {n // (t n).Nonempty} ↦ m.2.some, countable_range _, fun x hx ↦ ?_⟩
+    obtain ⟨n, hn⟩ := mem_iUnion.1 (hst hx)
+    exact mem_biUnion (mem_range_self ⟨n, x, hn⟩)
+      (mem_closedEBall.2 ((edist_le_ediam_of_mem hn (Nonempty.some_mem _)).trans (htd n)))
+  exact ⟨c, hcc, hsc⟩
+
 variable (X) in
 theorem nullSingletonClass_hausdorff {d : ℝ} (hd : 0 < d) :
     NullSingletonClass (hausdorffMeasure d : Measure X) := by
