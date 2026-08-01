@@ -157,9 +157,9 @@ theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
   convert (ofReal_re ?_).symm
   calc
     _ = ∫ (t : ℝ) in Ioi 0, ↑(t ^ (s - 1) * (log t * exp (-t))) := by
-      refine setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ ?_)
-      simp only [mem_Ioi] at hx
-      norm_cast; rw [← ofReal_cpow hx.le]; norm_cast
+      refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
+      rw_mod_cast [← ofReal_cpow (mem_Ioi.mp hx).le]
+      norm_cast
     _ = _ := by norm_cast
 
 theorem deriv_Gamma_one_eq_integral_log : deriv Gamma 1 = ∫ t in Ioi 0, log t * exp (-t) := by
