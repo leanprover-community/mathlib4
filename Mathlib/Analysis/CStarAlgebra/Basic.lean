@@ -79,13 +79,13 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
 
 variable (x : E) (r : ℝ)
 
-@[simp] lemma star_ball : star (Metric.ball x r) = Metric.ball (star x) r := by
+@[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
   simpa using star_isometry.preimage_ball (star x) r
 
-@[simp] lemma star_closedBall : star (Metric.closedBall x r) = Metric.closedBall (star x) r := by
+@[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
   simpa using star_isometry.preimage_closedBall (star x) r
 
-@[simp] lemma star_sphere : star (Metric.sphere x r) = Metric.sphere (star x) r := by
+@[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
   simpa using star_isometry.preimage_sphere (star x) r
 
 @[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
