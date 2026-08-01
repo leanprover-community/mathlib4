@@ -1084,8 +1084,7 @@ theorem codeSupp_case (f g k) :
 @[simp]
 theorem codeSupp_fix (f k) :
     codeSupp (Code.fix f) k = trStmts₁ (trNormal (Code.fix f) k) ∪ codeSupp f (Cont'.fix f k) := by
-  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm,
-    Finset.union_left_idem]
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm]
 
 @[simp]
 theorem contSupp_cons₁ (fs k) :

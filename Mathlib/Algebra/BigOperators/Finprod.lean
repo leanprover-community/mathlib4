@@ -509,7 +509,7 @@ theorem finprod_mem_eq_prod_of_subset (f : α → M) {s : Set α} {t : Finset α
 @[to_additive]
 theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport f).Finite) :
     ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
-  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
+  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]

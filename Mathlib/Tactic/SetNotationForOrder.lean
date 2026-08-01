@@ -162,6 +162,7 @@ def elabBinSetNotation (x y : Term) (opaqueAux orderOp orderCls setOp setCls : N
   let app ← `($(mkCIdent opaqueAux) $x $y)
   let e ← elabApp app expectedType?
   let mkApp3 f α x y := e | throwError "unexpected result {e} when elaborating {app}"
+  let us := f.consumeMData.constLevels!
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop` from the file `Lean.Elab.App`.
   if ← isMVarApp α then
@@ -174,8 +175,8 @@ def elabBinSetNotation (x y : Term) (opaqueAux orderOp orderCls setOp setCls : N
         The notation will elaborate to a different constant depending on \
         whether the type is tagged with `@[use_set_notation_for_order]`."
   let (op, cls) := if ← useSetNotationFor α then (orderOp, orderCls) else (setOp, setCls)
-  let inst ← mkInstMVar <| .app (.const cls f.constLevels!) α
-  let op := mkApp2 (.const op f.constLevels!) α inst
+  let inst ← mkInstMVar <| .app (.const cls us) α
+  let op := mkApp2 (.const op us) α inst
   -- Add the operation (e.g. `LE.le : Set Nat → Set Nat → Prop`) as a hover on the whole term
   addTermInfo' (← getRef) op (isDisplayableTerm := true)
   return mkApp2 op x y

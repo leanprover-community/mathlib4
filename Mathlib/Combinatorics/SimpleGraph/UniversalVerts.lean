@@ -74,7 +74,6 @@ lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
   simp [-deleteUniversalVerts_verts, ← Set.sdiff_inter_sdiff,
     ← Set.image_sdiff Subtype.val_injective,
     sdiff_eq_left.mpr <| Set.disjoint_of_subset_right h (disjoint_image_val_universalVerts _),
-    Set.inter_sdiff_distrib_right, ← Set.image_inter Subtype.val_injective,
     Set.ncard_image_of_injective _ Subtype.val_injective, K.even_ncard_supp_sdiff_rep hrep]
 
 end SimpleGraph
