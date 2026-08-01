@@ -23,6 +23,12 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
+
+## Main statements
+
+* `HopfAlgebra.eq_antipode_of_convMul_id_eq_one`, `HopfAlgebra.eq_antipode_of_id_convMul_eq_one` :
+  the antipode is the unique one-sided convolution inverse of the identity. In particular, a
+  bialgebra admits at most one Hopf algebra structure.
 -/
 
 public section
@@ -37,6 +43,18 @@ variable {R A C : Type*} [CommSemiring R]
 namespace HopfAlgebra
 section Semiring
 variable [Semiring A] [HopfAlgebra R A]
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `S`
+with `S * id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one {S : A →ₗ[R] A}
+    (h : toConv S * toConv LinearMap.id = 1) : S = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h (congrArg toConv mul_antipode_lTensor_comul))
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `S`
+with `id * S = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul_eq_one {S : A →ₗ[R] A}
+    (h : toConv LinearMap.id * toConv S = 1) : S = antipode R :=
+  toConv_injective (left_inv_eq_right_inv (congrArg toConv mul_antipode_rTensor_comul) h).symm
 
 lemma antipode_comp_mul_comp_comm :
     antipode R ∘ₗ .mul' R A ∘ₗ (TensorProduct.comm R A A).toLinearMap =
