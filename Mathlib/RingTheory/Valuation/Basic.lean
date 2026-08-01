@@ -895,6 +895,10 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     simp [orderMonoidIso, valueGroup₀Fun_spec h (hs := ha),
       w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
 
+lemma orderMonoidIso_spec₀ (h : v.IsEquiv w) (a : R) :
+    h.orderMonoidIso (restrict₀ (.ofClass v) a) = restrict₀ (.ofClass w) a :=
+  orderMonoidIso_spec h a
+
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
     h.orderMonoidIso.symm = h'.orderMonoidIso := by
   rfl
