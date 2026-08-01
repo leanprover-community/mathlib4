@@ -174,7 +174,7 @@ theorem tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i,
 theorem tendsto_finset_sup_iSup {ι} (a : ι → α) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
   simpa [Finset.sup_eq_iSup, ← iSup_eq_iSup_finset a] using
-    tendsto_atTop_iSup (Finset.monotone_sup (f := a))
+    tendsto_atTop_iSup (Finset.monotone_sup a)
 
 theorem tendsto_atBot_iSup (h_anti : Antitone f) : Tendsto f atBot (𝓝 (⨆ i, f i)) :=
   tendsto_atBot_ciSup h_anti (OrderTop.bddAbove _)

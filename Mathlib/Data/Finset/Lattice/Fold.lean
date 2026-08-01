@@ -159,7 +159,7 @@ theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f �
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 
-theorem monotone_sup : Monotone fun s : Finset β => s.sup f := fun _ _ h => sup_mono h
+theorem monotone_sup (f : β → α) : Monotone fun s : Finset β => s.sup f := fun _ _ h => sup_mono h
 
 @[to_dual]
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
