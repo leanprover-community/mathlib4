@@ -99,15 +99,13 @@ section Irreducible
 
 theorem X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
-    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = X ^ m - C a),
-      Irreducible (X ^ n - C (AdjoinSimple.gen K x))) :
+    (hn : Irreducible (X ^ n - C (AdjoinRoot.root (X ^ m - C a)))) :
     Irreducible (X ^ (n * m) - C a) := by
   have hm' : m ≠ 0 := by
     rintro rfl
     rw [pow_zero, ← C.map_one, ← map_sub] at hm
     exact not_irreducible_C _ hm
-  simpa [pow_mul] using irreducible_comp (monic_X_pow_sub_C a hm') (monic_X_pow n) hm
-    (by simpa only [Polynomial.map_pow, map_X] using hn)
+  simpa [pow_mul] using irreducible_comp hm (by simpa using hn)
 
 -- TODO: generalize to even `n`
 theorem X_pow_sub_C_irreducible_of_odd
@@ -118,18 +116,17 @@ theorem X_pow_sub_C_irreducible_of_odd
   | one => simpa using irreducible_X_sub_C a
   | prime_mul p n hp IH =>
     rw [mul_comm]
-    apply X_pow_mul_sub_C_irreducible
-      (X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _)))
-    intro E _ _ x hx
-    have : IsIntegral K x := not_not.mp fun h ↦ by
-      simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+    have irred := X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _))
+    apply X_pow_mul_sub_C_irreducible irred
+    have := Fact.mk irred
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
-    rw [← map_pow, hb, ← adjoin.powerBasis_gen this,
-      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly]
-    simp [minpoly_gen, hx, hp.ne_zero.symm, (Nat.odd_mul.mp hn).1.neg_pow]
+    rw [← map_pow, hb, ← AdjoinRoot.powerBasis_gen irred.ne_zero,
+      Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly, AdjoinRoot.powerBasis_dim,
+      minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hp.ne_zero),
+      natDegree_X_pow_sub_C, coeff_sub, coeff_C_zero, coeff_X_pow, if_neg hp.ne_zero.symm,
+      zero_sub, (Nat.odd_mul.mp hn).1.neg_pow, one_pow, neg_one_mul, neg_neg]
 
 theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
