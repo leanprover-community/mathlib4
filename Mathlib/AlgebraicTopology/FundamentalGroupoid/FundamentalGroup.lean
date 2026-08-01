@@ -85,8 +85,6 @@ def mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
     FundamentalGroup U x →* FundamentalGroup V ⟨x, h x.property⟩ :=
   map (ContinuousMap.inclusion h) x
 
-/-- Helper for Exercise 62.4: the subset-induced map is the fundamental-group
-map of the bundled continuous inclusion. -/
 lemma mapOfSubset_eq_map_inclusion {U V : Set X} (h : U ⊆ V) (x : U) :
     mapOfSubset h x = map (ContinuousMap.inclusion h) x := rfl
 
