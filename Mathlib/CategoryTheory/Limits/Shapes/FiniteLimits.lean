@@ -73,7 +73,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasLimitsOfShape J C) :
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
-    haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
+    have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
@@ -117,7 +117,7 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasColimitsOfShape J C) :
     HasFiniteColimits C where
   out := fun J hJ hhJ => by
-    haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
+    have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                            (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
@@ -224,7 +224,7 @@ class HasFiniteWidePullbacks : Prop where
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
     HasLimitsOfShape (WidePullbackShape J) C := by
-  haveI := @HasFiniteWidePullbacks.out C _ _ J
+  have := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 
 /-- A category `HasFiniteWidePushouts` if it has all colimits of shape `WidePushoutShape J` for
@@ -236,7 +236,7 @@ class HasFiniteWidePushouts : Prop where
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
     HasColimitsOfShape (WidePushoutShape J) C := by
-  haveI := @HasFiniteWidePushouts.out C _ _ J
+  have := @HasFiniteWidePushouts.out C _ _ J
   infer_instance
 
 /-- Finite wide pullbacks are finite limits, so if `C` has all finite limits,

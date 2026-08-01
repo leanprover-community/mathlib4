@@ -224,6 +224,7 @@ we have `Module k[G] (restrictScalars k k[G] M)`.
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofModule_asAlgebraHom_apply_apply (r : k[G])
     (m : RestrictScalars k k[G] M) :
@@ -309,6 +310,7 @@ section Subrepresentation
 variable {k G V : Type*} [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
 @[simps]
@@ -495,9 +497,9 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 lemma asAlgebraHom_ofMulAction_smul_eq_mul (x y : k[G]) :
     (ofMulAction k G G).asAlgebraHom x y = x * y := by
   induction x using induction_on with
-  | hM g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
-  | hadd x y hx hy => simp [hx, hy, add_mul]
-  | hsmul r x hx => simp [← hx]
+  | of g => ext; simp [MonoidAlgebra.coeff_single_mul_apply]
+  | add x y hx hy => simp [hx, hy, add_mul]
+  | smul r x hx => simp [← hx]
 
 @[deprecated (since := "2026-06-18")]
 alias ofMulAction_self_smul_eq_mul := asAlgebraHom_ofMulAction_smul_eq_mul
@@ -630,6 +632,7 @@ local notation ρV " ⊗ " ρW => tprod ρV ρW
 theorem tprod_apply (g : G) : (ρV ⊗ ρW) g = TensorProduct.map (ρV g) (ρW g) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (ρV.tprod 1).asModule from x ⊗ₜ y) = (r • show ρV.asModule from x) ⊗ₜ y := by
   change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
@@ -638,6 +641,7 @@ theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_one_tprod_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (1 ⊗ ρW).asModule from x ⊗ₜ y) = x ⊗ₜ (r • show ρW.asModule from y) := by
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _

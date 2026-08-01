@@ -137,7 +137,7 @@ instance imageToKernel_epi_of_zero_of_mono [HasKernels V] [HasZeroObject V] [Mon
 instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
     Epi (imageToKernel f (0 : B ⟶ C) (by simp)) := by
   simp only [imageToKernel_zero_right]
-  haveI := epi_image_of_epi f
+  have := epi_image_of_epi f
   rw [← imageSubobject_arrow]
   infer_instance
 

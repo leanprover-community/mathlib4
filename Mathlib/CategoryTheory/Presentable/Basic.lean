@@ -344,17 +344,15 @@ end
 
 section
 
-variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-
 /-- A category has `κ`-filtered colimits if it has colimits of shape `J`
 for any `κ`-filtered category `J`. -/
-class HasCardinalFilteredColimits : Prop where
-  hasColimitsOfShape (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  hasColimitsOfShape (C) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
-attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
-
-instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
+    HasCardinalFilteredColimits.{w} C κ where
 
 end
 
