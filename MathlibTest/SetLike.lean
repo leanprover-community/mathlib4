@@ -22,16 +22,17 @@ end Delab
 
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - 2 • y + z ^ m ∈ S := by
-  aesop
+  have : 2 ∈ S := by grind [ofNat_mem]
+  membership
 
 example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - y + z ^ m ∈ Subring.closure S := by
-  aesop
+  membership
 
 example [CommRing R] [Ring A] [Algebra R A]
     (r : R) (a b c : A) (n : ℕ) :
     -b + (algebraMap R A r) + a ^ n * c ∈ Algebra.adjoin R {a, b, c} := by
-  aesop
+  grind [membership]
 
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
@@ -47,10 +48,14 @@ example [Monoid M] (x y z w : M) (n : ℕ) : (x * y) ^ n * w ∈ Submonoid.closu
 example [Group M] (x : M) (n : ℤ) : x ^ n ∈ Subgroup.closure {x} := by
   aesop
 
+attribute [grind →] Set.mem_of_subset_of_mem
+
 example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₂ := by
-  aesop
+  have : x ∈ S₂ := by grind
+  have : y ∈ S₂ := by sorry
+  membership
 
 example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
