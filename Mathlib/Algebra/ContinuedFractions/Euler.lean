@@ -224,7 +224,7 @@ theorem nums_euler :
     (euler h ρ).nums n =
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
   simp only [← nums_euler_aux (h := h)]
-  rw [Finset.sum_range_sub, zeroth_num_eq_h, euler_h, add_sub_cancel]
+  erw [Finset.sum_range_sub, zeroth_num_eq_h, euler_h, add_sub_cancel]
 
 /-- **Euler's continued fraction formula**: the convergents of an Euler continued fraction
 are given by the formula
@@ -316,7 +316,7 @@ theorem convs_eq_sum_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
       rw [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
       rw [hj]
       simp
-    · haveI := toEuler_s_zero (g := g)
+    · have := toEuler_s_zero (g := g)
       rw [← hρ, euler_s_zero] at this
       obtain ⟨⟨a₀, b₀⟩, hg1⟩ : ∃ gp, g.s.get? 0 = some gp :=
         Option.ne_none_iff_exists'.mp hj
@@ -332,7 +332,7 @@ theorem convs_eq_sum_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
       rw [← terminatedAt_toEuler, ← hρ, terminatedAt_euler] at hj
       rw [hj]
       simp
-    · haveI := toEuler_s_succ (n := j) (g := g)
+    · have := toEuler_s_succ (n := j) (g := g)
       rw [← hρ, euler_s_succ] at this
       obtain ⟨⟨aₙ, bₙ⟩, hg1⟩ : ∃ gp, g.s.get? (j + 1) = some gp :=
         Option.ne_none_iff_exists'.mp hj
