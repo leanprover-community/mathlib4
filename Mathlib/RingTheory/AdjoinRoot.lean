@@ -513,15 +513,16 @@ section Irreducible
 variable [Field K] {f : K[X]}
 
 theorem isField_iff_irreducible : IsField (AdjoinRoot f) ↔ Irreducible f := by
-  unfold AdjoinRoot
-  suffices h : IsField (K[X] ⧸ Ideal.span {f}) → f ≠ 0 by
-    rw [← and_iff_right h, ← and_iff_right Irreducible.ne_zero, ← and_congr_right_iff]
+  suffices h : IsField (AdjoinRoot f) → f ≠ 0 by
+    rw [← and_iff_right_of_imp h, ← and_iff_right_of_imp Irreducible.ne_zero, and_congr_right_iff]
     intro hf0
+    unfold AdjoinRoot
     rw [Ideal.irreducible_iff_isMaximal_span_singleton hf0,
       Ideal.Quotient.maximal_ideal_iff_isField_quotient]
     rfl
+  change IsField (K[X] ⧸ Ideal.span {f}) → f ≠ 0
   intro field hf0
-  rw [hf0, Ideal.span_singleton_zero] at h
+  rw [hf0, Ideal.span_singleton_zero] at field
   apply Polynomial.not_isField K
   exact MulEquiv.isField field (RingEquiv.quotientBot K[X]).symm
 
