@@ -408,19 +408,18 @@ instance : SMul S (QuadraticMap R M N) :=
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
-@[simp, norm_cast]
-theorem coeFn_smul (a : S) (Q : QuadraticMap R M N) : ⇑(a • Q) = a • ⇑Q :=
-  rfl
+instance : IsSMulApply S (QuadraticMap R M N) M N where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_apply (a : S) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a • Q x :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coeFn_smul := FunLike.coe_smul
 
-instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) where
-  smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
+@[deprecated (since := "2026-07-27")] protected alias smul_apply := smul_apply
 
-instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticMap R M N) where
-  smul_assoc _s _t _q := ext fun _ => smul_assoc _ _ _
+instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) :=
+  FunLike.smulCommClass
+
+instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticMap R M N) :=
+  FunLike.isScalarTower
 
 end SMul
 
@@ -429,13 +428,12 @@ instance : Zero (QuadraticMap R M N) :=
       toFun_smul := fun a _ => by simp only [smul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
-@[simp, norm_cast]
-theorem coeFn_zero : ⇑(0 : QuadraticMap R M N) = 0 :=
-  rfl
+instance : IsZeroApply (QuadraticMap R M N) M N where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (x : M) : (0 : QuadraticMap R M N) x = 0 :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coeFn_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-27")] protected alias zero_apply := zero_apply
 
 instance : Inhabited (QuadraticMap R M N) :=
   ⟨0⟩
@@ -450,64 +448,33 @@ instance : Add (QuadraticMap R M N) :=
         ⟨B + B', fun x y => by
           simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
-@[simp, norm_cast]
-theorem coeFn_add (Q Q' : QuadraticMap R M N) : ⇑(Q + Q') = Q + Q' :=
-  rfl
+instance : IsAddApply (QuadraticMap R M N) M N where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem add_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q + Q') x = Q x + Q' x :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coeFn_add := FunLike.coe_add
 
-instance : AddCommMonoid (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+@[deprecated (since := "2026-07-27")] protected alias add_apply := add_apply
 
-/-- `@CoeFn (QuadraticMap R M)` as an `AddMonoidHom`.
+instance : AddCommMonoid (QuadraticMap R M N) := fast_instance% FunLike.addCommMonoid
 
-This API mirrors `AddMonoidHom.coeFn`. -/
-@[simps apply]
-def coeFnAddMonoidHom : QuadraticMap R M N →+ M → N where
-  toFun := DFunLike.coe
-  map_zero' := coeFn_zero
-  map_add' := coeFn_add
+@[deprecated (since := "2026-07-27")] alias coeFnAddMonoidHom := FunLike.coeAddMonoidHom
+
+@[deprecated (since := "2026-07-27")] alias coeFnAddMonoidHom_apply := FunLike.coeAddMonoidHom_apply
 
 /-- Evaluation on a particular element of the module `M` is an additive map on quadratic maps. -/
 @[simps! apply]
 def evalAddMonoidHom (m : M) : QuadraticMap R M N →+ N :=
-  (Pi.evalAddMonoidHom _ m).comp coeFnAddMonoidHom
+  (Pi.evalAddMonoidHom _ m).comp (FunLike.coeAddMonoidHom _ _ _)
 
-section Sum
+@[deprecated (since := "2026-07-27")] alias coeFn_sum := FunLike.coe_sum
 
-@[simp, norm_cast]
-theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) :
-    ⇑(∑ i ∈ s, Q i) = ∑ i ∈ s, ⇑(Q i) :=
-  map_sum coeFnAddMonoidHom Q s
-
-@[simp]
-theorem sum_apply {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) (x : M) :
-    (∑ i ∈ s, Q i) x = ∑ i ∈ s, Q i x :=
-  map_sum (evalAddMonoidHom x : _ →+ N) Q s
-
-end Sum
+@[deprecated (since := "2026-07-27")] protected alias sum_apply := sum_apply
 
 instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] :
-    DistribMulAction S (QuadraticMap R M N) where
-  mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
-  one_smul Q := ext fun x => by simp only [QuadraticMap.smul_apply, one_smul]
-  smul_add a Q Q' := by
-    ext
-    simp only [add_apply, smul_apply, smul_add]
-  smul_zero a := by
-    ext
-    simp only [zero_apply, smul_apply, smul_zero]
+    DistribMulAction S (QuadraticMap R M N) := fast_instance% FunLike.distribMulAction
 
 instance [Semiring S] [Module S N] [SMulCommClass S R N] :
-    Module S (QuadraticMap R M N) where
-  zero_smul Q := by
-    ext
-    simp only [zero_apply, smul_apply, zero_smul]
-  add_smul a b Q := by
-    ext
-    simp only [add_apply, smul_apply, add_smul]
+    Module S (QuadraticMap R M N) := fast_instance% FunLike.module
 
 end SemiringOperators
 
@@ -523,28 +490,24 @@ instance : Neg (QuadraticMap R M N) :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
-@[simp, norm_cast]
-theorem coeFn_neg (Q : QuadraticMap R M N) : ⇑(-Q) = -Q :=
-  rfl
+instance : IsNegApply (QuadraticMap R M N) M N where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem neg_apply (Q : QuadraticMap R M N) (x : M) : (-Q) x = -Q x :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coeFn_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-07-27")] protected alias neg_apply := neg_apply
 
 instance : Sub (QuadraticMap R M N) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
-@[simp, norm_cast]
-theorem coeFn_sub (Q Q' : QuadraticMap R M N) : ⇑(Q - Q') = Q - Q' :=
-  rfl
+instance : IsSubApply (QuadraticMap R M N) M N where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-theorem sub_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q - Q') x = Q x - Q' x :=
-  rfl
+@[deprecated (since := "2026-07-27")] alias coeFn_sub := FunLike.coe_sub
 
-instance : AddCommGroup (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
-    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
+@[deprecated (since := "2026-07-27")] protected alias sub_apply := sub_apply
+
+instance : AddCommGroup (QuadraticMap R M N) := fast_instance% FunLike.addCommGroup
 
 end RingOperators
 
@@ -573,7 +536,6 @@ section Comp
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module R P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compose the quadratic map with a linear function on the right. -/
 def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
   toFun x := Q (f x)
@@ -586,7 +548,6 @@ def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
 theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.comp f) x = Q (f x) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps +simpRhs]
 def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
@@ -1465,7 +1426,7 @@ end
 theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
     (w : ι → S) (v : ι → R) :
     weightedSumSquares R w v = ∑ i : ι, w i • (v i * v i) :=
-  QuadraticMap.sum_apply _ _ _
+  sum_apply _ _ _
 
 /-- On an orthogonal basis, the basis representation of `Q` is just a sum of squares. -/
 theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M]

@@ -88,7 +88,7 @@ theorem isChain_destutter' (l : List α) (a : α) : (l.destutter' R a).IsChain R
     simp_rw [destutter'_cons, apply_ite (IsChain R ·), IH, ite_true_right] at IH2
     simp_rw [destutter'_cons, apply_ite (IsChain R ·),
       apply_ite (IsChain R <| a :: ·), IH, isChain_cons_cons,
-      ite_true_right, ite_prop_iff_and, imp_and]
+      if_true_right, ite_prop_iff_and, imp_and]
     exact ⟨⟨⟨Function.swap <| fun _ => id, fun _ => IH2 c b⟩,
       Function.swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
 

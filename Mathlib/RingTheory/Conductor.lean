@@ -63,11 +63,9 @@ theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
-    [IsScalarTower R S L] [IsDomain S] [IsTorsionFree S L] {x : S} {y : L} :
+    [IsScalarTower R S L] [FaithfulSMul S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
       y * (algebraMap S L) z ∈ R[algebraMap S L x] := by
-  cases subsingleton_or_nontrivial L
-  · rw [Subsingleton.elim (coeSubmodule L _) ⊤, Subsingleton.elim (Algebra.adjoin R _) ⊤]; simp
   trans ∀ z, y * (algebraMap S L) z ∈ (R[x]).map (IsScalarTower.toAlgHom R S L)
   · simp only [coeSubmodule, Submodule.mem_map, linearMap_apply, Subalgebra.mem_map,
       IsScalarTower.coe_toAlgHom']
