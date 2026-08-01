@@ -35,7 +35,7 @@ and bounded at infinity.
   the Taylor series of its `cuspFunction`), bundled as a `PowerSeries`.
 * `UpperHalfPlane.hasSum_qExpansion`: the `q`-expansion evaluated at `𝕢 n τ` sums to `f τ`, for
   `τ` in the upper half plane.
-* `ModularForm.qExpansionRingHom` defines the ring homomorphism from the graded ring of
+* `ModularForm.qExpansionAlgHom` defines the `ℂ`-algebra homomorphism from the graded ring of
   modular forms to power series given by taking `q`-expansions.
 * `UpperHalfPlane.qExpansion_coeff_unique` shows that q-expansion coefficients are uniquely
   determined.
@@ -645,18 +645,42 @@ def qExpansionAddHom (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) :
   map_zero' := qExpansion_zero h
   map_add' f g := ModularForm.qExpansion_add hh hΓ f g
 
-open scoped DirectSum in
-/-- The qExpansion map as a map from the graded ring of modular forms to power series over `ℂ`. -/
-def qExpansionRingHom (h) [Γ.HasDetPlusMinusOne] (hh : 0 < h)
-    (hΓ : h ∈ Γ.strictPeriods) : (⨁ k, ModularForm Γ k) →+* PowerSeries ℂ :=
-  DirectSum.toSemiring (qExpansionAddHom hh hΓ) ModularForm.qExpansion_one
-    (ModularForm.qExpansion_mul hh hΓ)
+@[simp]
+lemma qExpansionAddHom_apply (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (k : ℤ)
+    (f : ModularForm Γ k) : qExpansionAddHom hh hΓ k f = qExpansion h f := rfl
+
+/-- The `q`-expansion map is injective on modular forms of a fixed weight. -/
+lemma qExpansion_injective (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ} :
+    Function.Injective (fun f : ModularForm Γ k ↦ qExpansion h f) :=
+  (injective_iff_map_eq_zero (qExpansionAddHom hh hΓ k)).2
+    fun f hf ↦ (ModularForm.qExpansion_eq_zero_iff hh hΓ f).1 hf
 
 @[simp]
-lemma qExpansionRingHom_apply [Γ.HasDetPlusMinusOne] (hh : 0 < h)
+lemma qExpansion_inj (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k : ℤ}
+    {f g : ModularForm Γ k} : qExpansion h f = qExpansion h g ↔ f = g :=
+  (qExpansion_injective hh hΓ).eq_iff
+
+open scoped DirectSum in
+/-- The qExpansion map as a `ℂ`-algebra map from the graded ring of modular forms to power series
+over `ℂ`. -/
+def qExpansionAlgHom (h) [Γ.HasDetOne] (hh : 0 < h)
+    (hΓ : h ∈ Γ.strictPeriods) : (⨁ k, ModularForm Γ k) →ₐ[ℂ] PowerSeries ℂ :=
+  DirectSum.toAlgebra ℂ _
+    (fun _ ↦
+      { toFun f := qExpansion h f
+        map_add' f g := ModularForm.qExpansion_add hh hΓ f g
+        map_smul' c f := ModularForm.qExpansion_smul hh hΓ c f })
+    ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ)
+
+@[simp]
+lemma qExpansionAlgHom_apply [Γ.HasDetOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (k : ℤ) (f : ModularForm Γ k) :
-    qExpansionRingHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
-  DirectSum.toSemiring_of ..
+    qExpansionAlgHom h hh hΓ (DirectSum.of _ k f) = qExpansion h f :=
+  DirectSum.toSemiring_of _ ModularForm.qExpansion_one (ModularForm.qExpansion_mul hh hΓ) k f
+
+@[deprecated (since := "2026-08-01")] alias qExpansionRingHom := qExpansionAlgHom
+
+@[deprecated (since := "2026-08-01")] alias qExpansionRingHom_apply := qExpansionAlgHom_apply
 
 lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (a b : ℤ) (f : ModularForm Γ a) (g : ModularForm Γ b) :
@@ -667,8 +691,8 @@ lemma qExpansion_of_mul [Γ.HasDetPlusMinusOne] (hh : 0 < h)
 lemma qExpansion_of_pow [Γ.HasDetPlusMinusOne] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : ModularForm Γ k) (n : ℕ) :
     qExpansion h ((((DirectSum.of _ k f)) ^ n) (n * k)) = (qExpansion h f) ^ n := by
-  have := (qExpansionRingHom h hh hΓ).map_pow (DirectSum.of _ k f) n
-  simpa [DirectSum.ofPow]
+  rw [DirectSum.ofPow, DirectSum.of_eq_of_gradedMonoid_eq (ModularForm.gnpow_eq_pow f n),
+    DirectSum.of_eq_same, ModularForm.qExpansion_pow hh hΓ]
 
 /-- Specialized version of `UpperHalfPlane.hasSum_qExpansion` for modular forms, with many
 arguments filled in automatically. -/
