@@ -552,7 +552,9 @@ def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtyp
   left_inv x := by simp
   right_inv x := by simp
   map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+@[simps! apply_coe symm_apply]
+def comapSubtypeEquivOfLe {p q : Submodule R M} (hpq : p ≤ q) : comap q.subtype p ≃ₗ[R] p :=
+  submoduleOfEquivOfLe hpq
 
 end Module
 
