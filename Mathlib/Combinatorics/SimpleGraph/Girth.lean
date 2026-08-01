@@ -123,9 +123,6 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
   ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
 
-lemma natCast_girth_le_egirth : G.girth ≤ G.egirth :=
-  ENat.natCast_toNat_le_self _
-
 lemma natCast_diam_eq_ediam_iff : G.diam = G.ediam ↔ G.ediam ≠ ⊤ :=
   ENat.natCast_toNat_eq_self
 
