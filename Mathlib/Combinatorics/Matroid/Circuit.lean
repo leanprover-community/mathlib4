@@ -107,7 +107,7 @@ lemma isCircuit_iff_forall_ssubset : M.IsCircuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, 
   exact fun h ↦ ⟨fun h' I hIC ↦ ((not_dep_iff (hIC.subset.trans h.subset_ground)).1 (h' hIC)),
     fun h I hIC ↦ (h hIC).not_dep⟩
 
-lemma isCircuit_antichain : IsAntichain (· ⊆ ·) (setOf M.IsCircuit) :=
+lemma isCircuit_antichain : IsAntichain (· ⊆ ·) (Set.ofPred M.IsCircuit) :=
   fun _ hC _ hC' hne hss ↦ hne <| (IsCircuit.minimal hC').eq_of_subset hC.dep hss
 
 lemma IsCircuit.eq_of_not_indep_subset (hC : M.IsCircuit C) (hX : ¬ M.Indep X) (hXC : X ⊆ C) :
@@ -256,7 +256,7 @@ lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (h
   · simp [show ∃ x ⊆ I, e ∈ M.closure x ∧ e ∉ x from ⟨I, by simp [hecl, heI]⟩]
   · rw [hI.closure_sInter_eq_biInter_closure_of_forall_subset ⟨I, by simpa⟩ (by simp +contextual)]
     simp
-  simp only [mem_sInter, mem_setOf_eq, and_imp]
+  simp only [mem_sInter, mem_ofPred_eq, and_imp]
   exact fun f hf hecl ↦ (hf _ (sdiff_subset.trans aux) hecl).2 rfl
 
 lemma Indep.mem_fundCircuit_iff (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :

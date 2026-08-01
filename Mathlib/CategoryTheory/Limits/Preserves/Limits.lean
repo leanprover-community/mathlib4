@@ -78,7 +78,6 @@ instance : IsIso (limit.post F G) :=
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial w.r.t. `F`. -/
 @[simps!]
@@ -149,7 +148,6 @@ instance : IsIso (colimit.post F G) :=
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial w.r.t. `F`. -/
 @[simps!]

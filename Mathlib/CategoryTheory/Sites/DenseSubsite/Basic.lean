@@ -175,6 +175,9 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
   simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
     α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
@@ -302,7 +305,7 @@ noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.obj �
 
 end Types
 
-open Types
+open IsCoverDense.Types
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K] {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 
@@ -506,6 +509,7 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
@@ -706,6 +710,7 @@ noncomputable def sheafifyHomEquivOfIsEquivalence
   ((G.sheafPushforwardContinuous A J K).asEquivalence.symm.toAdjunction.homEquiv _ _).trans
     (((sheafificationAdjunction J A).homEquiv _ _).trans IsCoverDense.restrictHomEquivHom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma sheafifyHomEquivOfIsEquivalence_naturality_left
     {P₁ P₂ : Dᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) {Q : Sheaf K A}
@@ -728,6 +733,7 @@ lemma sheafifyHomEquivOfIsEquivalence_naturality_left
     apply adj₁.homEquiv_naturality_left
   · apply adj₂.homEquiv_naturality_left
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma sheafifyHomEquivOfIsEquivalence_naturality_right
     {P : Dᵒᵖ ⥤ A} {Q₁ Q₂ : Sheaf K A}

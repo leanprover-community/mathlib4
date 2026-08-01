@@ -15,7 +15,7 @@ order type of the ordinals. These are related via `Cardinal.univ.ord = Ordinal.u
 `Ordinal.univ.card = Cardinal.univ`.
 
 The cardinal `Cardinal.univ` is strongly inaccessible. This reflects the fact that in ZFC, the
-cardinals form a proper class. See `IsInaccessible.univ` for a proof.
+cardinals form a proper class. See `Cardinal.IsInaccessible.univ` for a proof.
 
 ## Implementation notes
 

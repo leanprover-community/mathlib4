@@ -216,15 +216,16 @@ theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R)
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)
     (Finsupp.single_left_injective one_ne_zero)
 
-private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
+private lemma finite_setOfPred_bounded (α) [Finite α] (n : ℕ) :
+    Finite {f : α →₀ ℕ | ∀ a, f a ≤ n} :=
   ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage DFunLike.coe_injective.injOn).to_subtype
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
-  have := finite_setOf_bounded σ N
+  have := finite_setOfPred_bounded σ N
   Module.Finite.of_basis (basisRestrictSupport R _)
 
 instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
-  have := finite_setOf_bounded σ N
+  have := finite_setOfPred_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢
     exact this.subset fun n hn i ↦ (eq_or_ne (n i) 0).elim

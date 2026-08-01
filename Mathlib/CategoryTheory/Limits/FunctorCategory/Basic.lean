@@ -85,12 +85,14 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     { app := fun j => { app := fun k => (c k).cone.π.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
   Cone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stitching together limiting cones gives a limiting cone. -/
 def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     IsLimit (combineCones F c) :=
@@ -140,12 +142,14 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCocone (combineCocones F c) ≅ (c k).cocone :=
   Cocone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stitching together colimiting cocones gives a colimiting cocone. -/
 def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) :
     IsColimit (combineCocones F c) :=
@@ -170,6 +174,7 @@ noncomputable def pointwiseCocone [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
       change (F.flip.obj x).map f ≫ _ = _
       rw [colimit.w] }
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- `pointwiseCocone` is indeed a colimit cocone. -/
 noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) :
@@ -291,6 +296,7 @@ theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ 
   ext d
   simp [limitCompWhiskeringLeftIsoCompLimit]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_inv_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)

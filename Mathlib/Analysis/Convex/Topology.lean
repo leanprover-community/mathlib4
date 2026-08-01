@@ -220,6 +220,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
 `interior s`. -/
@@ -514,6 +515,7 @@ variable {𝕜 V P : Type*}
   [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
   [TopologicalSpace P] [IsTopologicalAddTorsor P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed interior of a simplex is compact. -/
 theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
   suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''

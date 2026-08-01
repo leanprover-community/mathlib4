@@ -197,7 +197,7 @@ end TruncatedWittVector
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
 macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
   `(tactic|
-    { show _ = WittVector.truncateFun n _
+    { change _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective
       iterate rw [WittVector.out_truncateFun]
       first
