@@ -610,57 +610,57 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
+theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
+    Irreducible (f.comp g) ↔ Irreducible f ∧
+      Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f)) := by
+  suffices h : Irreducible (f.comp g) → Irreducible f by
+    rw [← and_iff_right_of_imp h, and_congr_right_iff]
+    intro hf
+    have : Fact (Irreducible f) := ⟨hf⟩
+    rw [← AdjoinRoot.isField_iff_irreducible, ← AdjoinRoot.isField_iff_irreducible,
+      MulEquiv.isField_congr (AdjoinRoot.compAlgEquiv f g).toMulEquiv]
+  intro hfg
+  have hg0 : g.natDegree ≠ 0 := by
+    contrapose! hfg
+    rw [natDegree_eq_zero] at hfg
+    obtain ⟨r, rfl⟩ := hfg
+    simp [not_irreducible_C]
+  constructor
+  · rw [isUnit_iff]
+    rintro ⟨r, hr, rfl⟩
+    apply hfg.not_isUnit
+    rw [C_comp, isUnit_C]
+    exact hr
+  · intro a b hf
+    have hg : f.comp g = a.comp g * b.comp g := by simp [hf]
+    refine (hfg.isUnit_or_isUnit hg).imp (fun ha => ?_) (fun hb => ?_)
+    · rw [isUnit_iff] at ha
+      obtain ⟨r, hr, ha⟩ := ha
+      have hga := congrArg Polynomial.natDegree ha.symm
+      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
+        or_iff_left hg0, natDegree_eq_zero] at hga
+      obtain ⟨x, rfl⟩ := hga
+      rw [C_comp, C_inj] at ha
+      rw [← ha, isUnit_C]
+      exact hr
+    · rw [isUnit_iff] at hb
+      obtain ⟨r, hr, hb⟩ := hb
+      have hgb := congrArg Polynomial.natDegree hb.symm
+      rw [natDegree_C, natDegree_comp, Nat.mul_eq_zero,
+        or_iff_left hg0, natDegree_eq_zero] at hgb
+      obtain ⟨x, rfl⟩ := hgb
+      rw [C_comp, C_inj] at hb
+      rw [← hb, isUnit_C]
+      exact hr
+
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
-theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
-    (hf : Irreducible f)
-    (hg : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = f),
-      Irreducible (g.map (algebraMap _ _) - C (AdjoinSimple.gen K x))) :
-    Irreducible (f.comp g) := by
-  have hf' : natDegree f ≠ 0 :=
-    fun e ↦ not_irreducible_C (f.coeff 0) (eq_C_of_natDegree_eq_zero e ▸ hf)
-  have hg' : natDegree g ≠ 0 := by
-    have := Fact.mk hf
-    intro e
-    apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    -- Needed to specialize `map_sub` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
-    rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
-    apply hg (AdjoinRoot f)
-    rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
-  have H₁ : f.comp g ≠ 0 := fun h ↦ by simpa [hf', hg', natDegree_comp] using congr_arg natDegree h
-  have H₂ : ¬ IsUnit (f.comp g) := fun h ↦
-    by simpa [hf', hg', natDegree_comp] using natDegree_eq_zero_of_isUnit h
-  have ⟨p, hp₁, hp₂⟩ := WfDvdMonoid.exists_irreducible_factor H₂ H₁
-  suffices natDegree p = natDegree f * natDegree g from (associated_of_dvd_of_natDegree_le hp₂ H₁
-    (this.trans natDegree_comp.symm).ge).irreducible hp₁
-  have := Fact.mk hp₁
-  let Kx := AdjoinRoot p
-  let := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
-  have key₁ : f = minpoly K (aeval (root p) g) := by
-    refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
-    rw [← aeval_comp]
-    exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
-  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f := by
-    rw [adjoin.finrank, ← key₁]
-    exact IsIntegral.of_finite _ _
-  have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
-      minpoly K⟮aeval (root p) g⟯ (root p) :=
-    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
-      (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
-  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g := by
-    trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
-    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤ := by
-        apply restrictScalars_injective K
-        rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
-          adjoin_root_eq_top p, restrictScalars_adjoin]
-        simp
-      rw [← finrank_top', ← this, adjoin.finrank]
-      exact IsIntegral.of_finite _ _
-    · simp [← key₂]
-  have := Module.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
-  rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
+theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hf : Irreducible f)
+    (hg : Irreducible (g.map (AdjoinRoot.of f) - C (AdjoinRoot.root f))) :
+    Irreducible (f.comp g) :=
+  Polynomial.irreducible_comp_iff.2 ⟨hf, hg⟩
 
 end AdjoinIntegralElement
 
