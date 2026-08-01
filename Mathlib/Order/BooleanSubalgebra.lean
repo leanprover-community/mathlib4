@@ -346,10 +346,10 @@ variable {s : Set α}
 
 lemma mem_closure {x : α} : x ∈ closure s ↔ ∀ ⦃L : BooleanSubalgebra α⦄, s ⊆ L → x ∈ L := mem_sInf
 
-@[simp, aesop safe 20 (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike]), membership .]
 lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 @[simp] lemma closure_le : closure s ≤ L ↔ s ⊆ L := ⟨subset_closure.trans, fun h ↦ sInf_le h⟩

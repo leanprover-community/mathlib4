@@ -568,11 +568,11 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[simp, aesop safe 20 (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike]), membership .]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R hx
 
 @[simp]
