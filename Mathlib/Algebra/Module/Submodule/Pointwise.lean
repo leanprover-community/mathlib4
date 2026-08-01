@@ -246,11 +246,10 @@ theorem smul_le_self_of_tower {α : Type*} [Monoid α] [SMul α R] [DistribMulAc
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx
 
-theorem smul_pointwise_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
+theorem smul_eq_self_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
     {u : α} (hu : IsUnit u) : u • N = N := by
   refine le_antisymm (N.smul_le_self_of_tower u) ?_
-  rcases hu with ⟨u, rfl⟩
-  grw [← (u.val • N).smul_le_self_of_tower u⁻¹.val, ← mul_smul, Units.inv_mul, one_smul]
+  grw [← (u • N).smul_le_self_of_tower hu.unit⁻¹.val, ← mul_smul, IsUnit.val_inv_mul, one_smul]
 
 theorem mul_smul_pointwise_eq_of_isUnit [SMul α R] [IsScalarTower α R M] {N : Submodule R M}
     {u : α} (hu : IsUnit u) (v : α) : (u * v) • N = v • N := by
