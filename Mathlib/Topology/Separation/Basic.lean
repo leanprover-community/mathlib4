@@ -259,6 +259,8 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
     ⟨s, hxs, (hxy.mem_open_iff hso).1 hxs, hs⟩
 
 variable (X) in
+-- since this instance is usually the desired instance, its priority is not lowered
+-- see Note [lower instance priority]
 instance [T0Space X] [Nontrivial X] : NontrivialTopology X := by
   obtain ⟨a, b, hab⟩ := exists_pair_ne X
   exact nontrivial_iff_exists_not_inseparable.mpr ⟨a, b, mt Inseparable.eq hab⟩
