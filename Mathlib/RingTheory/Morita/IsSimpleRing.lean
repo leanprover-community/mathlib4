@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 /-!
-## Simple modules over simple rings
+# Simple modules over simple rings
 
 ## Main results
 
