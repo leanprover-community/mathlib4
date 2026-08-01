@@ -110,6 +110,7 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
   rfl
 
 /-- The composition of continuous maps, as a continuous map. -/
+@[implicit_reducible]
 def comp (f : C(β, γ)) (g : C(α, β)) : C(α, γ) where
   toFun := f ∘ g
 

@@ -38,7 +38,7 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J × K ⥤ C)
 
-open CategoryTheory.prod Prod
+open CategoryTheory.prod CategoryTheory.Prod
 
 theorem map_id_left_eq_curry_map {j : J} {k k' : K} {f : k ⟶ k'} :
     F.map (𝟙 j ×ₘ f) = ((curry.obj F).obj j).map f :=

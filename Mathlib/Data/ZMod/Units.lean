@@ -119,7 +119,7 @@ theorem coe_int_mul_inv_eq_one {n : ℕ} {x : ℤ} (h : IsCoprime x n) :
   by_cases hn : n = 0
   · simp only [hn, Nat.cast_zero, isCoprime_zero_right] at h
     rcases Int.isUnit_eq_one_or h with h | h <;> simp [h]
-  haveI : NeZero n := ⟨hn⟩
+  have : NeZero n := ⟨hn⟩
   rw [← natCast_zmod_val x]
   apply coe_mul_inv_eq_one
   rwa [Int.isCoprime_iff_gcd_eq_one, ← Int.gcd_emod, ← val_intCast] at h

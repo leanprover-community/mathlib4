@@ -34,6 +34,7 @@ namespace AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   (s : Spec (.of Ω) ⟶ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale f]
     {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ S)
     (x : X) (hx : f x = s default) :
@@ -56,6 +57,7 @@ lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale
 instance : IsCofiltered (Etale.forget S ⋙ coyoneda.obj (op (Over.mk s))).Elements :=
   Functor.isCofiltered_elements _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A morphism `s : Spec (.of Ω) ⟶ S` where `Ω` is a separably closed field
 defines a point for the small étale site of `S`. -/
@@ -120,7 +122,6 @@ lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
     (X.hom.fiberToSpecResidueField _) (Spec.map a) y (by subsingleton)
   refine ⟨Over.homMk (l ≫ X.hom.fiberι t) ?_, rfl⟩
   simp [X.hom.fiber_fac, reassoc_of% hl]
-  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isConservative_pointSmallEtale

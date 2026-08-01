@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Generator.Type
+public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Types.Set
 
 /-!
@@ -29,7 +29,6 @@ namespace HasCardinalLT
 variable (X : Type u) (κ : Cardinal.{u})
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {X κ} in
 lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ where
@@ -99,6 +98,7 @@ def cocone : Cocone (Set.functor X κ) where
   pt := X
   ι.app _ := ↾(Subtype.val)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
 when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is
@@ -144,6 +144,27 @@ instance (X : Type u) : IsPresentable.{u} X := by
   have : Fact κ.IsRegular := ⟨hκ⟩
   have := hX.isCardinalPresentable
   exact isPresentable_of_isCardinalPresentable X κ
+
+lemma isStrongGenerator_punit :
+    (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
+  rw [ObjectProperty.isStrongGenerator_iff]
+  refine ⟨isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
+  · rw [mono_iff_injective] at hi₁
+    rw [isIso_iff_bijective]
+    refine ⟨hi₁, fun y ↦ ?_⟩
+    obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (↾fun _ ↦ y)
+    exact ⟨f .unit, ConcreteCategory.congr_hom hf .unit⟩
+
+instance (κ : Cardinal.{u}) [Fact κ.IsRegular] :
+    IsCardinalLocallyPresentable (Type u) κ := by
+  rw [IsCardinalLocallyPresentable.iff_exists_isStrongGenerator]
+  exact ⟨.singleton PUnit, inferInstance, isStrongGenerator_punit, by
+    simp only [ObjectProperty.singleton_le_iff,
+      CategoryTheory.isCardinalPresentable_iff, isCardinalPresentable_iff]
+    exact hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
+
+instance : IsLocallyPresentable.{u} (Type u) where
+  exists_cardinal := ⟨_, Cardinal.fact_isRegular_aleph0, inferInstance⟩
 
 end Types
 

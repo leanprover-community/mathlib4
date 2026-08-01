@@ -213,13 +213,13 @@ theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
   Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
   Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
@@ -255,6 +255,13 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
+/-- Given an injective map `f : α → β` such that `β` has cardinality one more
+than `α`, there exists a unique element of `β` not in the image of `f`. -/
+theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
+    (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
+    simpa using existsUnique_notMem_image_of_injOn_of_card_eq_add_one
+      (s := .univ) (t := .univ) (Set.injOn_of_injective hf) (by simp) (by simpa)
+
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
   let ⟨_y, hy⟩ := not_forall.1 h'
@@ -263,6 +270,7 @@ theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Inject
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
@@ -352,12 +360,6 @@ alias ⟨_root_.Function.Injective.surjective_of_finite,
     _root_.Function.Surjective.injective_of_finite⟩ :=
   injective_iff_surjective_of_equiv
 
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Injective.surjective_of_fintype := Injective.surjective_of_finite
-
-@[deprecated (since := "2025-11-28")]
-alias _root_.Function.Surjective.injective_of_fintype := Surjective.injective_of_finite
-
 end Finite
 
 @[simp]
@@ -403,7 +405,7 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     rw [Fintype.card_of_subtype (Set.toFinset { x | p x }ᶜ), Set.toFinset_compl,
       Finset.card_compl, Fintype.card_of_subtype] <;>
     · intro
-      simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf]
+      simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_ofPred]
 
 theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
     [Fintype { x // q x }] : Fintype.card { x // p x } ≤ Fintype.card { x // q x } :=
@@ -437,8 +439,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   cases nonempty_fintype α
   have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
-      simp_rw [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
-        Finset.subset_iff, mem_filter_univ]
+      simp_rw [lt_iff_le_not_ge, Finset.subset_iff, mem_filter_univ]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩

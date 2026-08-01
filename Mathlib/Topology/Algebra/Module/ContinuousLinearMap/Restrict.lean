@@ -129,6 +129,11 @@ theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂
   f.toLinearMap.ker_codRestrict p h
 
 @[simp]
+theorem subtypeL_comp_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    p.subtypeL ∘SL f.codRestrict p h = f :=
+  rfl
+
+@[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
     (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
     g.domRestrict p ∘SL f.codRestrict p h = g ∘SL f :=

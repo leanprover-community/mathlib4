@@ -56,7 +56,7 @@ theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : 
 /-- Every filter is a CardinalInterFilter with c = ℵ₀ -/
 theorem _root_.Filter.cardinalInterFilter_aleph0 (l : Filter α) : CardinalInterFilter l ℵ₀ where
   cardinal_sInter_mem := by
-    simp_all only [lt_aleph0_iff_subtype_finite, setOf_mem_eq, sInter_mem,
+    simp_all only [lt_aleph0_iff_subtype_finite, ofPred_mem_eq, sInter_mem,
       implies_true]
 
 /-- Every CardinalInterFilter with c > ℵ₀ is a CountableInterFilter -/
@@ -107,13 +107,13 @@ theorem cardinal_bInter_mem {S : Set ι} (hS : #S < c)
 
 theorem eventually_cardinal_forall {p : α → ι → Prop} (hic : #ι < c) :
     (∀ᶠ x in l, ∀ i, p x i) ↔ ∀ i, ∀ᶠ x in l, p x i := by
-  simp only [Filter.Eventually, setOf_forall]
+  simp only [Filter.Eventually, ofPred_forall]
   exact cardinal_iInter_mem hic
 
 theorem eventually_cardinal_ball {S : Set ι} (hS : #S < c)
     {p : α → ∀ i ∈ S, Prop} :
     (∀ᶠ x in l, ∀ i hi, p x i hi) ↔ ∀ i hi, ∀ᶠ x in l, p x i hi := by
-  simp only [Filter.Eventually, setOf_forall]
+  simp only [Filter.Eventually, ofPred_forall]
   exact cardinal_bInter_mem hS
 
 theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
@@ -198,13 +198,13 @@ def ofCardinalUnion (l : Set (Set α)) (hc : 2 < c)
     (hUnion : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
     (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
   refine .ofCardinalInter {s | sᶜ ∈ l} hc (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
-  · rw [mem_setOf_eq, compl_sInter]
+  · rw [mem_ofPred_eq, compl_sInter]
     apply hUnion (compl '' S) (lt_of_le_of_lt mk_image_le hSc)
     intro s hs
     rw [mem_image] at hs
     rcases hs with ⟨t, ht, rfl⟩
     apply hSp ht
-  · rw [mem_setOf_eq]
+  · rw [mem_ofPred_eq]
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 

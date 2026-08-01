@@ -55,7 +55,6 @@ lemma sfiniteSeq_zero (n : ℕ) : sfiniteSeq (0 : Measure α) n = 0 :=
 This lemma is superseded by the instance below. -/
 lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
-  classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
   refine ⟨_, fun n ↦ ?_, (sum_extend_zero hf m).symm⟩
   rcases em (n ∈ range f) with ⟨i, rfl⟩ | hn
@@ -148,15 +147,15 @@ open scoped Classical in
 noncomputable def spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) : ℕ :=
   Nat.find <| iUnion_eq_univ_iff.1 (iUnion_spanningSets μ) x
 
-open scoped Classical in
 theorem measurableSet_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] :
-    Measurable (spanningSetsIndex μ) :=
-  measurable_find _ <| measurableSet_spanningSets μ
+    Measurable (spanningSetsIndex μ) := by
+  classical
+  exact measurable_find _ <| measurableSet_spanningSets μ
 
-open scoped Classical in
 theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] (n : ℕ) :
-    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n :=
-  preimage_find_eq_disjointed _ _ _
+    spanningSetsIndex μ ⁻¹' {n} = disjointed (spanningSets μ) n := by
+  classical
+  exact preimage_find_eq_disjointed _ _ _
 
 theorem spanningSetsIndex_eq_iff (μ : Measure α) [SigmaFinite μ] {x : α} {n : ℕ} :
     spanningSetsIndex μ x = n ↔ x ∈ disjointed (spanningSets μ) n := by
@@ -285,7 +284,7 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpa
       ⊆ ⋃ n, { i : ι | 0 < sfiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
-    simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
+    simp only [mem_iUnion, mem_ofPred_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
     rw [sum_apply₀] at hi
     · simp_rw [con] at hi
       simp at hi
@@ -361,7 +360,7 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
-  exact HasSubset.Subset.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
+  exact LE.le.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
 
 set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
@@ -594,7 +593,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
   refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
-  haveI : SigmaFinite μ := h
+  have : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ
   have hs_meas : ∀ i, MeasurableSet[⊥] (s i) := measurableSet_spanningSets μ

@@ -113,6 +113,7 @@ def hasEvalIdeal : Ideal (σ → S) where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
@@ -139,7 +140,6 @@ set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries inferInstance
 
-set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom

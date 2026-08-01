@@ -58,6 +58,7 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary construction for `finAntidiagonal` that bundles a proof of lawfulness
 (`mem_finAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion` makes
 this computationally much more efficient than using `Finset.biUnion`. -/
@@ -91,6 +92,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
         · intro hf
           exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
@@ -107,6 +109,7 @@ choosing an identification `s ≃ Fin s.card` and proving that the end result do
 choice.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
 def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
@@ -123,6 +126,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
   induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
@@ -162,8 +166,8 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
     (antidiagonal n : Set (μ × μ)).PairwiseDisjoint fun p ↦
       map (addRightEmbedding fun j ↦ if j = i then p.1 else 0) (s.piAntidiag p.2) := by
   rintro ⟨a, b⟩ hab ⟨c, d⟩ hcd
-  simp only [ne_eq, antidiagonal_congr' hab hcd, disjoint_left, mem_map, mem_piAntidiag,
-    addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
+  simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
+    mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
   exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
 

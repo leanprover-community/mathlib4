@@ -113,7 +113,7 @@ theorem bliminf_true (f : Filter β) (u : β → α) : (bliminf u f fun _ => Tru
 
 lemma blimsup_eq_limsup {f : Filter β} {u : β → α} {p : β → Prop} :
     blimsup u f p = limsup u (f ⊓ 𝓟 {x | p x}) := by
-  simp only [blimsup_eq, limsup_eq, eventually_inf_principal, mem_setOf_eq]
+  simp only [blimsup_eq, limsup_eq, eventually_inf_principal, mem_ofPred_eq]
 
 lemma bliminf_eq_liminf {f : Filter β} {u : β → α} {p : β → Prop} :
     bliminf u f p = liminf u (f ⊓ 𝓟 {x | p x}) :=
@@ -296,7 +296,7 @@ theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {
   simp_rw [liminf_eq, hv.eventually_iff]
   congr 1
   ext x
-  simp only [mem_setOf_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
+  simp only [mem_ofPred_eq, iInter_coe_set, mem_iUnion, mem_iInter, mem_Iic, Subtype.exists,
     exists_prop]
 
 theorem HasBasis.liminf_eq_sSup_univ_of_empty {f : ι → α} {v : Filter ι}
@@ -444,11 +444,12 @@ theorem bliminf_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊤ → (p x ↔ q x)) : bliminf u f p = bliminf u f q :=
   blimsup_congr' (α := αᵒᵈ) h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasBasis.blimsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (hf : f.HasBasis p s) {q : β → Prop} :
     blimsup u f q = ⨅ (i) (_ : p i), ⨆ a ∈ s i, ⨆ (_ : q a), u a := by
   simp only [blimsup_eq_limsup, (hf.inf_principal _).limsup_eq_iInf_iSup, mem_inter_iff, iSup_and,
-    mem_setOf_eq]
+    mem_ofPred_eq]
 
 theorem blimsup_eq_iInf_biSup {f : Filter β} {p : β → Prop} {u : β → α} :
     blimsup u f p = ⨅ s ∈ f, ⨆ (b) (_ : p b ∧ b ∈ s), u b := by
@@ -615,7 +616,7 @@ theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bli
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,
-    Set.preimage_setOf_eq, e.le_symm_apply]
+    Set.preimage_ofPred_eq, e.le_symm_apply]
 
 theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
     e (bliminf u f p) = bliminf (e ∘ u) f p :=
@@ -640,7 +641,7 @@ variable [CompleteDistribLattice α] {f : Filter β} {p q : β → Prop} {u : β
 lemma limsup_sup_filter {g} : limsup u (f ⊔ g) = limsup u f ⊔ limsup u g := by
   refine le_antisymm ?_
     (sup_le (limsup_le_limsup_of_le le_sup_left) (limsup_le_limsup_of_le le_sup_right))
-  simp_rw [limsup_eq, sInf_sup_eq, sup_sInf_eq, mem_setOf_eq, le_iInf₂_iff]
+  simp_rw [limsup_eq, sInf_sup_eq, sup_sInf_eq, mem_ofPred_eq, le_iInf₂_iff]
   intro a ha b hb
   exact sInf_le ⟨ha.mono fun _ h ↦ h.trans le_sup_left, hb.mono fun _ h ↦ h.trans le_sup_right⟩
 
@@ -649,7 +650,7 @@ lemma liminf_sup_filter {g} : liminf u (f ⊔ g) = liminf u f ⊓ liminf u g :=
 
 @[simp]
 theorem blimsup_or_eq_sup : (blimsup u f fun x => p x ∨ q x) = blimsup u f p ⊔ blimsup u f q := by
-  simp only [blimsup_eq_limsup, ← limsup_sup_filter, ← inf_sup_left, sup_principal, setOf_or]
+  simp only [blimsup_eq_limsup, ← limsup_sup_filter, ← inf_sup_left, sup_principal, ofPred_or]
 
 @[simp]
 theorem bliminf_or_eq_inf : (bliminf u f fun x => p x ∨ q x) = bliminf u f p ⊓ bliminf u f q :=
@@ -741,10 +742,10 @@ lemma mem_limsup_iff_frequently_mem : (a ∈ limsup s 𝓕) ↔ (∃ᶠ i in �
 
 theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
-  simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
+  simp only [blimsup_eq, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
   refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose h
-  · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
+  · simp only [mem_sInter, mem_ofPred_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
   · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
 
@@ -971,7 +972,7 @@ theorem gt_mem_sets_of_limsInf_gt : f.IsBounded (· ≥ ·) → b < f.limsInf �
 
 section Classical
 
-open Classical in
+open scoped Classical in
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some
 index `k` such that `f` is bounded below on `s k` (if there exists one).
@@ -1011,7 +1012,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · have : j = liminf_reparam f s p j := by simp only [m, liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
-      · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
+      · simp only [m, mem_ofPred_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
         simp only [hj, empty_subset]
     · apply iUnion_subset (fun j ↦ ?_)
       exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (liminf_reparam f s p j)
@@ -1031,7 +1032,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · exact (hZ j0 hj0).elim
   simp_rw [hv.liminf_eq_sSup_iUnion_iInter, A, B, sSup_iUnion_Iic]
 
-open Classical in
+open scoped Classical in
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
@@ -1077,7 +1078,7 @@ theorem HasBasis.limsup_eq_ciInf_ciSup {v : Filter ι}
     limsup f v = ⨅ (j : Subtype p), ⨆ (i : s (limsup_reparam f s p j)), f i :=
   HasBasis.liminf_eq_ciSup_ciInf (α := αᵒᵈ) hv hs H
 
-open Classical in
+open scoped Classical in
 /-- Writing a limsup as an infimum of supremum, in a (possibly non-complete) conditionally complete
 linear order. A reparametrization trick is needed to avoid taking the supremum of sets which are
 not bounded below. -/

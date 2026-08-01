@@ -59,7 +59,7 @@ noncomputable instance : OrderBot (Lifts F E K) where
   bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E)⟩
   bot_le L := ⟨bot_le, fun x ↦ by
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
-    simp_rw [AlgHom.comp_apply, AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply]
+    simp_rw [AlgHom.comp_apply, AlgEquiv.coe_toAlgHom, AlgEquiv.apply_symm_apply]
     exact L.emb.commutes x⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
@@ -193,7 +193,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
       AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
-  simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push Not at ϕ_max
+  simp_rw [Set.mem_ofPred, IsExtendible] at ϕ_max; push Not at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)
   classical
   have ⟨θ, hθϕ, hθ⟩ := ϕ_ext ({α} ∪ Finset.univ.biUnion S)
@@ -238,8 +238,8 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
   refine ⟨φ.emb.comp (inclusion <| (le_extendScalars_iff hfφ.1 <| adjoin L S).mp <|
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
-  letI := (inclusion hfφ.1).toAlgebra
-  letI : SMul L φ.carrier := Algebra.toSMul
+  let := (inclusion hfφ.1).toAlgebra
+  let : SMul L φ.carrier := Algebra.toSMul
   have : IsScalarTower L φ.carrier E := ⟨fun x y ↦ smul_assoc x (y : E)⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
@@ -249,6 +249,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hK in
 theorem exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
@@ -264,7 +265,7 @@ theorem exists_algHom_adjoin_of_splits' :
       refine Eq.trans congr($hφ y) ?_
       simp only [AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
-  letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
+  let : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
   convert! (hK s hs).2

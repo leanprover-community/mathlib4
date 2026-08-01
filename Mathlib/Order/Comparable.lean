@@ -174,7 +174,7 @@ theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
 end Preorder
 
 /-- A partial order where any two elements are comparable is a linear order. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Relation.linearOrderOfSymmGen [PartialOrder α]
     [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, Relation.SymmGen (· ≤ ·) a b) : LinearOrder α where
@@ -184,7 +184,7 @@ def Relation.linearOrderOfSymmGen [PartialOrder α]
   toDecidableLT := decLT
 
 /-- A partial order where any two elements are comparable is a linear order. -/
-@[deprecated linearOrderOfSymmGen (since := "2026-01-25"), implicit_reducible]
+@[deprecated linearOrderOfSymmGen (since := "2026-01-25"), instance_reducible]
 def linearOrderOfComprel [PartialOrder α]
     [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
     (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α :=

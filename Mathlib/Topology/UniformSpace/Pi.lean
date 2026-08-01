@@ -130,7 +130,7 @@ protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
       Filter.comap_comap, comp_def, const, Prod.eta, comap_id']
   -- Hence, it suffices to show that its range, the diagonal, is closed in `Π i, (X, u i)`.
   simp_rw [@completeSpace_iff_isComplete_range _ _ (_) (_) _ this, range_const_eq_diagonal,
-    setOf_forall]
+    ofPred_forall]
   -- The separation of `t` ensures that this is the case in `Π i, (X, t)`, hence the result
   -- since the topology associated to each `u i` is finer than `t`.
   have : Pi.topologicalSpace (t₂ := fun i ↦ (u i).toTopologicalSpace) ≤

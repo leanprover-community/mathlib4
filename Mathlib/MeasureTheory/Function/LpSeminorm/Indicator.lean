@@ -60,13 +60,13 @@ lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s
 
 lemma eLpNorm_indicator_le (f : α → ε) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae' <| .of_forall fun x ↦ ?_
-  rw [enorm_indicator_eq_indicator_enorm]
-  exact s.indicator_le_self _ x
+  apply eLpNorm_mono_enorm
+  simp_rw [enorm_indicator_eq_indicator_enorm]
+  exact s.indicator_le_self _
 
 lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
-  refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
+  refine essSup_mono_ae (.of_forall fun x => ?_)
   simp_rw [enorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 
@@ -83,7 +83,7 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0)
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
   push Not at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
-  rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
+  rw [Set.mem_ofPred_eq, Set.indicator_of_mem hx_mem]
 
 lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (hp_top : p ≠ ∞) :
     eLpNorm (s.indicator fun _ => c) p μ = ‖c‖ₑ * μ s ^ (1 / p.toReal) :=

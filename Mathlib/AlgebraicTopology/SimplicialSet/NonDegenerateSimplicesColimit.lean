@@ -29,7 +29,7 @@ variable (X : SSet.{u})
 
 /-- If `X : SSet`, this is the functor `X.N ⥤ SSet` which sends a
 nondegenerate simplex of `X` to the subcomplex of `X` that it generates. -/
-@[expose, simps! obj]
+@[expose, simps! obj map]
 public def functorN : X.N ⥤ SSet.{u} :=
   X.orderEmbeddingN.monotone.functor ⋙ Subcomplex.toSSetFunctor
 
@@ -55,6 +55,7 @@ lemma multicoequalizerDiagram :
 
 variable {X}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `SSet.isColimitCoconeN`. -/
 noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
@@ -76,6 +77,7 @@ noncomputable abbrev desc (s : Cocone X.functorN) : X ⟶ s.pt :=
         exact (Subfunctor.mem_equalizer_iff (x := ⟨_, hz⟩) ..).mpr
           ((H x (N.mk _ z.prop) hz.1).trans (H y (N.mk _ z.prop) hz.2).symm))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma fac (s : Cocone X.functorN) (x : X.N) :
     x.subcomplex.ι ≫ desc s = s.ι.app x := by

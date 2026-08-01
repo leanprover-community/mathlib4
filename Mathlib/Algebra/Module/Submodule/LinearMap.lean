@@ -167,12 +167,12 @@ theorem codRestrict_apply (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M
 @[simp]
 theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M →ₛₗ[σ₁₃] p) = codRestrict p (g.comp f) fun _ => h _ :=
-  ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
-  ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem domRestrict_comp_codRestrict (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂)
@@ -185,6 +185,7 @@ section
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
   (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
 `p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
 noncomputable def codLift :
@@ -224,6 +225,7 @@ theorem restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q :
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_sub {R R₂ M M₂ : Type*}
     [Ring R] [Ring R₂] {σ₁₂ : R →+* R₂} [AddCommGroup M] [AddCommGroup M₂]
     [Module R M] [Module R₂ M₂] {p : Submodule R M} {q : Submodule R₂ M₂} {f g : M →ₛₗ[σ₁₂] M₂}
@@ -277,9 +279,6 @@ theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M
       from { toFun := DFunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
-
-@[deprecated (since := "2025-11-24")]
-alias coeFn_sum := coe_sum
 
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
