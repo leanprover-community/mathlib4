@@ -65,11 +65,11 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 0 < p
   -- Substitute `u = x ^ p`, reducing to convergence of the `Γ`-integral at `(s + 1) / p`.
   have ht : (0 : ℝ) < (s + 1) / p := div_pos (by linarith) hp
   refine ((integrableOn_Ioi_comp_rpow_iff' _ hp.ne').mpr
-    (Real.GammaIntegral_convergent ht)).congr_fun (fun x hx => ?_) measurableSet_Ioi
-  have hx0 : (0 : ℝ) < x := mem_Ioi.mp hx
-  dsimp only
-  rw [smul_eq_mul, mul_comm (exp (-x ^ p)), ← mul_assoc, ← Real.rpow_mul hx0.le,
-    ← Real.rpow_add hx0, show p - 1 + p * ((s + 1) / p - 1) = s by field_simp; ring]
+    (GammaIntegral_convergent ht)).congr_fun (fun x hx => ?_) measurableSet_Ioi
+  simp only [smul_eq_mul]
+  rw [mul_comm (exp (-x ^ p)), ← mul_assoc, ← rpow_mul hx.le, ← rpow_add hx]
+  field_simp
+  ring_nf
 
 theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 0 < p) (hb : 0 < b) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
