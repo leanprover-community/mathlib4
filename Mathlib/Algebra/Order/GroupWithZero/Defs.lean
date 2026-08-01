@@ -213,30 +213,28 @@ theorem MulPosReflectLE.to_contravariant_pos_mul_le [MulPosReflectLE α] :
   fun a _ _ bc => MulPosReflectLE.elim a.2 bc
 
 instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
-    PosMulMono α where mul_le_mul_of_nonneg_left _ _ _ _ h := MulLeftMono.elim _ h
+    PosMulMono α where mul_le_mul_of_nonneg_left _ _ _ _ := covariant_mul_le _
 
 instance (priority := 100) MulRightMono.toMulPosMono [MulRightMono α] :
-    MulPosMono α where mul_le_mul_of_nonneg_right _ _ _ _ h := MulRightMono.elim _ h
+    MulPosMono α where mul_le_mul_of_nonneg_right _ _ _ _ := covariant_swap_mul_le _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulStrictMono [MulLeftStrictMono α] :
-    PosMulStrictMono α where mul_lt_mul_of_pos_left _ _ _ _ h := MulLeftStrictMono.elim _ h
+    PosMulStrictMono α where mul_lt_mul_of_pos_left _ _ _ _ := covariant_mul_lt _
 
 instance (priority := 100) MulRightStrictMono.toMulPosStrictMono [MulRightStrictMono α] :
-    MulPosStrictMono α where mul_lt_mul_of_pos_right _ _ _ _ h := MulRightStrictMono.elim _ h
+    MulPosStrictMono α where mul_lt_mul_of_pos_right _ _ _ _ := covariant_swap_mul_lt _
 
 instance (priority := 100) MulLeftMono.toPosMulReflectLT [MulLeftReflectLT α] :
-    PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
+    PosMulReflectLT α where elim _ _ _ _ := contravariant_mul_lt _
 
 instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α] :
-    MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
+    MulPosReflectLT α where elim _ _ _ _ := contravariant_swap_mul_lt _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
-    PosMulReflectLE α where
-  elim _ _ _ _ h := MulLeftReflectLE.le_of_mul_le_mul_left' _ h
+    PosMulReflectLE α where elim _ _ _ _ := contravariant_mul_le _
 
 instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
-    MulPosReflectLE α where
-  elim _ _ _ _ h := MulRightReflectLE.le_of_mul_le_mul_right' _ h
+    MulPosReflectLE α where elim _ _ _ _ := contravariant_swap_mul_le _
 
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (hbc : b ≤ c) (ha : 0 ≤ a) : a * b ≤ a * c :=

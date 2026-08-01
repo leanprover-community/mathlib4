@@ -149,7 +149,7 @@ instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder 
 
 instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) where
-  le_of_add_le_add_left _ _ _ H i := le_of_add_le_add_left <| H i
+  le_of_add_le_add_left H i := le_of_add_le_add_left <| H i
 
 section Module
 variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]

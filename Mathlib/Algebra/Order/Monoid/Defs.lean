@@ -79,13 +79,13 @@ variable [CommMonoid α]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
     [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
-  le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left
+  le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left _ _ _
 
 variable [PartialOrder α] [IsOrderedCancelMonoid α]
 
 @[to_additive]
 instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le MulLeftReflectLE.le_of_mul_le_mul_left'
+  elim := contravariant_lt_of_contravariant_le contravariant_mul_le
 
 @[to_additive]
 theorem IsOrderedCancelMonoid.toMulRightReflectLT : MulRightReflectLT α :=

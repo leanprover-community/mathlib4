@@ -22,7 +22,7 @@ namespace OrderDual
 
 @[to_additive]
 instance mulLeftReflectLE [LE α] [Mul α] [c : MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ :=
-  ⟨Contravariant.flip c.1⟩
+  ⟨Contravariant.flip (μ := (· * ·)) (fun _ ↦ c.1) _⟩
 
 @[to_additive]
 instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
@@ -30,7 +30,7 @@ instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒ�
 
 @[to_additive]
 instance mulRightReflectLE [LE α] [Mul α] [c : MulRightReflectLE α] : MulRightReflectLE αᵒᵈ :=
-  ⟨Contravariant.flip c.1⟩
+  ⟨Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ c.1) _⟩
 
 @[to_additive]
 instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=
