@@ -118,13 +118,22 @@ set_option backward.isDefEq.respectTransparency false in -- This is needed for `
 @[to_dual none, reassoc]
 lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_dual none, reassoc]
 lemma r_w : h.r.left ≫ f = g ≫ h.r.right := h.r.w
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
+set_option linter.translate.warnInvalid false in
 /-- The top of a retract diagram of morphisms determines a retract of objects. -/
 @[to_dual (attr := simps!)
 /-- The bottom of a retract diagram of morphisms determines a retract of objects. -/]
 def left : Retract X Z := h.map Arrow.leftFunc
+
+attribute [to_dual existing] left_i left_r
 
 @[to_dual (attr := reassoc (attr := simp))]
 lemma retract_left : h.i.left ≫ h.r.left = 𝟙 X := h.left.retract

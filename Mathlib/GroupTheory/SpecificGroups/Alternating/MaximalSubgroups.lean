@@ -260,7 +260,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le h0
       (hBsc.ssubset_of_ne (by aesop)) -- uses Step 1
       hG.le hB
- -- Step 3 : A block contained in `s` is a subsingleton
+  -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
       B.Subsingleton :=
     have : IsPreprimitive (stabilizer G s) s :=
@@ -268,6 +268,8 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl {s : Set α}
     hB.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs
   -- Step 4 : sᶜ ⊆ B : A block which is not a subsingleton contains `sᶜ`.
   suffices IsMultiplyPretransitive (↥(alternatingGroup α)) α (s.ncard + 1) by
+    have : ¬ B ⊆ s := fun h ↦ hB' (hB_not_le_s B hB h)
+    have : ¬ B ⊆ sᶜ := fun h ↦ hB' (hB_not_le_sc B hB h)
     apply hB.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
       hG.le <;> grind
   have := isMultiplyPretransitive α

@@ -471,7 +471,7 @@ theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).In
   fun _ _ ↦ by simp [algebraMap_eq]
 
 instance : IsTorsionFree R ℍ[R,c₁,c₂,c₃] :=
- (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
+  (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
 
 section
 
@@ -752,6 +752,7 @@ protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
 
 instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
 instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]

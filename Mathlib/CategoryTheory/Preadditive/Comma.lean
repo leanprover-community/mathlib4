@@ -108,6 +108,12 @@ lemma Arrow.Hom.add_left (α β : u ⟶ v) : (α + β).left = α.left + β.left 
 lemma Arrow.Hom.add_right (α β : u ⟶ v) : (α + β).right = α.right + β.right := rfl
 
 @[simp]
+lemma Arrow.Hom.sub_left (α β : u ⟶ v) : (α - β).left = α.left - β.left := rfl
+
+@[simp]
+lemma Arrow.Hom.sub_right (α β : u ⟶ v) : (α - β).right = α.right - β.right := rfl
+
+@[simp]
 lemma Arrow.Hom.zero_left : (0 : u ⟶ v).left = 0 := rfl
 
 @[simp]

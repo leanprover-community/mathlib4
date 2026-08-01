@@ -82,6 +82,7 @@ theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
     a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup
 
+set_option linter.translate.warnInvalid false in
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 @[to_dual]
@@ -158,7 +159,7 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
+@[instance_reducible]
 def of [Frame α] : MinimalAxioms α where
   __ := ‹Frame α›
   inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
@@ -198,7 +199,7 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
+@[instance_reducible]
 def of [Coframe α] : MinimalAxioms α where
   __ := ‹Coframe α›
   iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
@@ -224,7 +225,7 @@ variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
   inf_sSup_le_iSup_inf a s := inf_sSup_eq.le
@@ -309,7 +310,7 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
       _ = _ := by simp [sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/
-@[implicit_reducible]
+@[instance_reducible]
 def of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }
 
 end MinimalAxioms
