@@ -158,7 +158,7 @@ open scoped NonUnitalContinuousFunctionalCalculus in
 lemma inrNonUnitalStarAlgHom_comp_cfcₙHom_eq_cfcₙAux (a : A) (ha : p a) :
     letI _ := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
     (inrNonUnitalStarAlgHom 𝕜 A).comp (cfcₙHom ha) = cfcₙAux hp₁ a ha := by
-  letI _ := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
+  let _ := RCLike.nonUnitalContinuousFunctionalCalculus hp₁
   apply ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id _ _ _
     (Unitization.continuous_inr.comp <| cfcₙHom_continuous ha)
     (continuous_cfcₙAux hp₁ a ha)

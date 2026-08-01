@@ -35,7 +35,7 @@ with a `CategoryWithFibrations` instance (and similarly for cofibrations and wea
 equivalences), and that the three properties of morphisms (fibrations, cofibrations,
 weak equivalences) in `C` coincide with the inverse images by `e.functor : C ⥤ D`
 of the corresponding properties of morphisms in `D`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ModelCategory.transport
     {C D : Type*} [Category* C] [Category* D] [ModelCategory D]
     [CategoryWithCofibrations C] [CategoryWithFibrations C]

@@ -77,14 +77,14 @@ theorem monotone_primeCounting : Monotone primeCounting :=
 
 @[simp]
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
-  count_nth_of_infinite infinite_setOf_prime _
+  count_nth_of_infinite infinite_setOfPred_prime _
 
 /-- The `n`th prime is greater or equal to `n + 2`. -/
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+  nth_prime_zero_eq_two ▸ (nth_strictMono infinite_setOfPred_prime).add_le_nat n 0
 
 theorem surjective_primeCounting' : Function.Surjective π' :=
-  Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
+  Nat.surjective_count_of_infinite_setOfPred infinite_setOfPred_prime
 
 theorem surjective_primeCounting : Function.Surjective π := by
   suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
@@ -103,7 +103,7 @@ theorem tendsto_primeCounting : Tendsto π atTop atTop :=
 
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
-  nth_mem_of_infinite infinite_setOf_prime _
+  nth_mem_of_infinite infinite_setOfPred_prime _
 
 @[simp]
 lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 := by

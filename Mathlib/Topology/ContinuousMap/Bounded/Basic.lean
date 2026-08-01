@@ -207,7 +207,7 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
 theorem nndist_eq : nndist f g = sInf { C | ∀ x : α, nndist (f x) (g x) ≤ C } :=
   Subtype.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
-    simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nndist]
+    simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nndist]
 
 theorem nndist_set_exists : ∃ C, ∀ x : α, nndist (f x) (g x) ≤ C :=
   Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
@@ -277,9 +277,7 @@ instance [Inhabited β] : Inhabited (α →ᵇ β) :=
 theorem lipschitz_eval_const (x : α) : LipschitzWith 1 fun f : α →ᵇ β => f x :=
   LipschitzWith.mk_one fun _ _ => dist_coe_le_dist x
 
-@[deprecated (since := "2025-11-29")]
-alias lipschitz_evalx := lipschitz_eval_const
-
+@[fun_prop]
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
   uniformContinuous_pi.2 fun x => (lipschitz_eval_const x).uniformContinuous
 
@@ -293,12 +291,6 @@ instance : ContinuousEval (α →ᵇ β) α β where
 
 /-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
 instance : ContinuousEvalConst (α →ᵇ β) α β := inferInstance
-
-@[deprecated (since := "2025-11-29")] protected alias continuous_eval_const :=
-  ContinuousEvalConst.continuous_eval_const
-
-@[deprecated (since := "2025-11-29")] protected alias continuous_eval :=
-  ContinuousEval.continuous_eval
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
@@ -356,15 +348,19 @@ theorem continuous_compContinuous {δ : Type*} [TopologicalSpace δ] (g : C(δ, 
     Continuous fun f : α →ᵇ β => f.compContinuous g :=
   (lipschitz_compContinuous g).continuous
 
-/-- Restrict a bounded continuous function to a set. -/
-def restrict (f : α →ᵇ β) (s : Set α) : s →ᵇ β :=
+/-- Restrict the domain of a bounded continuous function to a set. -/
+def domRestrict (f : α →ᵇ β) (s : Set α) : s →ᵇ β :=
   f.compContinuous <| (ContinuousMap.id _).restrict s
 
 @[simp]
-theorem coe_restrict (f : α →ᵇ β) (s : Set α) : ⇑(f.restrict s) = f ∘ (↑) := rfl
+theorem coe_domRestrict (f : α →ᵇ β) (s : Set α) : ⇑(f.domRestrict s) = f ∘ (↑) := rfl
 
 @[simp]
-theorem restrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.restrict s x = f x := rfl
+theorem domRestrict_apply (f : α →ᵇ β) (s : Set α) (x : s) : f.domRestrict s x = f x := rfl
+
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias coe_restrict := coe_domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
 
 /-- Composition (in the target) of a bounded continuous function with a Lipschitz map again
 gives a bounded continuous function. -/
@@ -392,6 +388,7 @@ theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
         _ ≤ C * dist f g := by gcongr; apply dist_coe_le_dist
 
 /-- The composition operator (in the target) with a Lipschitz map is uniformly continuous. -/
+@[fun_prop]
 theorem uniformContinuous_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     UniformContinuous (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
   (lipschitz_comp H).uniformContinuous
@@ -436,7 +433,7 @@ theorem extend_of_empty [IsEmpty α] (f : α ↪ δ) (g : α →ᵇ β) (h : δ 
 @[simp]
 theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂ : δ →ᵇ β) :
     dist (g₁.extend f h₁) (g₂.extend f h₂) =
-      max (dist g₁ g₂) (dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ)) := by
+      max (dist g₁ g₂) (dist (h₁.domRestrict (range f)ᶜ) (h₂.domRestrict (range f)ᶜ)) := by
   refine le_antisymm ((dist_le <| le_max_iff.2 <| Or.inl dist_nonneg).2 fun x => ?_) (max_le ?_ ?_)
   · rcases em (∃ y, f y = x) with (⟨x, rfl⟩ | hx)
     · simp only [extend_apply]
@@ -444,8 +441,8 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
     · simp only [extend_apply' hx]
       lift x to ((range f)ᶜ : Set δ) using hx
       calc
-        dist (h₁ x) (h₂ x) = dist (h₁.restrict (range f)ᶜ x) (h₂.restrict (range f)ᶜ x) := rfl
-        _ ≤ dist (h₁.restrict (range f)ᶜ) (h₂.restrict (range f)ᶜ) := dist_coe_le_dist x
+        dist (h₁ x) (h₂ x) = dist (h₁.domRestrict (range f)ᶜ x) (h₂.domRestrict (range f)ᶜ x) := rfl
+        _ ≤ dist (h₁.domRestrict (range f)ᶜ) (h₂.domRestrict (range f)ᶜ) := dist_coe_le_dist x
         _ ≤ _ := le_max_right _ _
   · refine (dist_le dist_nonneg).2 fun x => ?_
     rw [← extend_apply f g₁ h₁, ← extend_apply f g₂ h₂]

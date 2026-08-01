@@ -262,9 +262,6 @@ lemma rootForm_nondegenerate [P.IsRootSystem] :
   simpa [(rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
     LinearMap.separatingLeft_iff_ker_eq_bot] using P.disjoint_rootSpan_ker_rootForm
 
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
-
 end IsDomain
 
 section Field
@@ -391,7 +388,7 @@ private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.r
     ⟨fun i ↦ Units.mk0 (2 / P.RootForm (P.root i) (P.root i))
       (by simp [two_ne_zero, IsAnisotropic.rootForm_root_ne_zero]),
      fun i ↦ by simp [coroot_eq_polarizationEquiv_apply_root]⟩
-  have : (s.restrict P.coroot) = P.PolarizationEquiv.toLinearMap ∘ (f • (s.restrict P.root)) := by
+  have : s.domRestrict P.coroot = P.PolarizationEquiv.toLinearMap ∘ (f • s.domRestrict P.root) := by
     ext; simp [hf, polarizationEquiv_apply]
   rw [← linearIndependent_restrict_iff, this,
     LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
@@ -442,9 +439,6 @@ lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
 lemma rootForm_anisotropic [P.IsRootSystem] :
     P.RootForm.toQuadraticMap.Anisotropic :=
   fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by simp
-
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.rootForm_anisotropic := rootForm_anisotropic
 
 end LinearOrderedCommRing
 

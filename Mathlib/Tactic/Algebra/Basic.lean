@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public meta import Lean.Meta.Tactic.NormCast
-public import Mathlib.Tactic.Algebra.Lemmas
+public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
 public import Mathlib.Tactic.Ring.RingNF
 
 /-!
@@ -34,7 +34,7 @@ The main limitation of the current implementation is that it does not handle rat
 when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
 with polynomials, but would be an issue when working with a number field over its ring of integers.
 
-When inferring the base ring, we assum that any two rings `R` and `S` that appear are comparable,
+When inferring the base ring, we assume that any two rings `R` and `S` that appear are comparable,
 in the sense that either `R` is an `S`-algebra or `S` is an `R`-algebra.
 
 -/
