@@ -309,11 +309,11 @@ lemma degenerate_eq_top_iff (n : ℕ) :
   constructor
   · intro h
     ext x
-    simp only [Set.inf_eq_inter, Set.mem_inter_iff, and_iff_right_iff_imp]
+    simp only [Set.mem_inter_iff, and_iff_right_iff_imp]
     intro hx
     simp [← A.mem_degenerate_iff ⟨x, hx⟩, h, Set.top_eq_univ, Set.mem_univ]
   · intro h
-    simp only [Set.inf_eq_inter, Set.inter_eq_right] at h
+    simp only [Set.inter_eq_right] at h
     ext x
     simpa [A.mem_degenerate_iff] using h x.prop
 

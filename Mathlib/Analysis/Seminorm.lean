@@ -667,14 +667,14 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup, ih]
 
 theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Nonempty) (e : E)
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
   | cons _ _ _ hs ih =>
-    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
+    simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, ih]
 
 @[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=

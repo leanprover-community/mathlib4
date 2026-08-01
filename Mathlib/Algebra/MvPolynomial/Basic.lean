@@ -719,7 +719,7 @@ theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolyn
 open scoped symmDiff in
 theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support ∆ q.support ⊆ (p + q).support := by
-  rw [symmDiff_def, Finset.sup_eq_union]
+  rw [symmDiff_def]
   apply Finset.union_subset
   · exact support_sdiff_support_subset_support_add p q
   · rw [add_comm]

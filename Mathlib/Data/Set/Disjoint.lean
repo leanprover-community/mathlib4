@@ -66,10 +66,8 @@ lemma disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :
 lemma disjoint_of_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (h : Disjoint s₂ t₂) : Disjoint s₁ t₁ :=
   h.mono hs ht
 
-@[simp]
 lemma disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := disjoint_sup_left
 
-@[simp]
 lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := disjoint_sup_right
 
 @[simp] lemma disjoint_empty (s : Set α) : Disjoint s ∅ := disjoint_bot_right

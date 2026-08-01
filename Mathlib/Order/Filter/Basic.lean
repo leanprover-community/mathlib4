@@ -406,7 +406,7 @@ theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
 
 protected lemma disjoint_iff {f g : Filter α} : Disjoint f g ↔ ∃ s ∈ f, ∃ t ∈ g, Disjoint s t := by
-  simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, inf_eq_inter, bot_eq_empty,
+  simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, bot_eq_empty,
     @eq_comm _ ∅]
 
 theorem disjoint_of_disjoint_of_mem {f g : Filter α} {s t : Set α} (h : Disjoint s t) (hs : s ∈ f)
@@ -556,7 +556,7 @@ theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Di
 theorem inf_principal {s t : Set α} : 𝓟 s ⊓ 𝓟 t = 𝓟 (s ∩ t) :=
   le_antisymm
     (by simp only [le_principal_iff, mem_inf_iff]; exact ⟨s, Subset.rfl, t, Subset.rfl, rfl⟩)
-    (by simp [le_inf_iff, inter_subset_left, inter_subset_right])
+    (by simp)
 
 @[simp]
 theorem sup_principal {s t : Set α} : 𝓟 s ⊔ 𝓟 t = 𝓟 (s ∪ t) :=

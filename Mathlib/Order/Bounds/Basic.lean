@@ -605,8 +605,8 @@ theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
   Iff.rfl
 
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
-  simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
-    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
+  simp [Ici_inter_Iic.symm, bddBelow_iff_subset_Ici, bddAbove_iff_subset_Iic, exists_and_left,
+    exists_and_right]
 
 /-!
 #### Univ

@@ -220,9 +220,8 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     rw [cthickening_of_nonpos hi, cthickening_of_nonpos hi']
   have hp : p = fun i => p i ∧ 0 < r i ∨ p i ∧ r i ≤ 0 := by
     ext i; simp [← and_or_left, lt_or_ge 0 (r i)]
-  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
-  simp only [sup_eq_union]
-  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup,
+    blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
     blimsup_congr (Eventually.of_forall h₂)]
   exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
 

@@ -529,7 +529,7 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   classical
   refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
-  simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
+  simp_rw [Set.subset_def, mem_inter_iff, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
   have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
