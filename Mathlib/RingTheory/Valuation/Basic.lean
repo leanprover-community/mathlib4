@@ -807,6 +807,7 @@ section LinearOrderedCommGroupWithZero
 
 variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
   [LinearOrderedCommGroupWithZero Γ''₀]
+
 section Ring
 
 variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀} {u : Valuation R Γ''₀}
@@ -891,32 +892,29 @@ theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
   · rw [← restrict_eq_zero_iff] at ha
     rwa [ha, map_zero, Eq.comm, ← h_res.eq_zero]
   · rw [(v.restrict_eq_mk ha)]
-    convert! valueGroup₀Fun_spec (h := h) (hs := ha) (r := 1) (by simp)
-    exact w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)
+    simp [orderMonoidIso, valueGroup₀Fun_spec h (hs := ha),
+      w.restrict_eq_mk ((eq_zero h.symm).ne.mpr ha)]
 
 theorem orderMonoidIso_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
     h.orderMonoidIso.symm = h'.orderMonoidIso := by
   rfl
 
--- set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem orderMonoidIso_eq_refl (h : v.IsEquiv v) :
     h.orderMonoidIso = .refl _ := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso]
-    sorry
+  · simp [orderMonoidIso, valueGroup₀Fun_spec h]
 
-#exit
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem orderMonoidIso_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
     h.orderMonoidIso.trans h'.orderMonoidIso = (h.trans h').orderMonoidIso := by
   ext x
   obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
   · simp
-  · simp [orderMonoidIso, valueGroup₀Fun_spec]
+  · simp [orderMonoidIso, valueGroup₀Fun_spec h, valueGroup₀Fun_spec h',
+      valueGroup₀Fun_spec (trans h h')]
 
 end IsEquiv
 
