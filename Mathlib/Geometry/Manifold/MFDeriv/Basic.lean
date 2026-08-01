@@ -959,6 +959,10 @@ theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt% f x f') (h₁ : f�
   apply h.congr_of_eventuallyEq _ (mem_of_mem_nhds h₁ :)
   rwa [nhdsWithin_univ]
 
+theorem HasMFDerivAt.congr_of_eventuallyEq_abuse (h : HasMFDerivAt% f x f') (h₁ : f₁ =ᶠ[𝓝 x] f) :
+    HasMFDerivAt% f₁ x f' :=
+  HasMFDerivAt.congr_of_eventuallyEq h h₁
+
 theorem mdifferentiableWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x = f x) :
     MDiffAt[s] f₁ x ↔ MDiffAt[s] f x :=
   differentiableWithinAt_localInvariantProp.liftPropWithinAt_congr_iff h₁ hx
