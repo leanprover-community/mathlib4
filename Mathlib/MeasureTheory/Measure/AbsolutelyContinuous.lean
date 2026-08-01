@@ -184,14 +184,10 @@ protected theorem AEDisjoint.of_absolutelyContinuous
     (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
     AEDisjoint ν s t := h' h
 
-protected theorem AEDisjoint.of_le
-    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
-    AEDisjoint ν s t :=
-  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
-
-@[gcongr, mono]
-theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
-  h.absolutelyContinuous.ae_le
+theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ν.ae_le_iff_absolutelyContinuous.2 hle)⟩
 
 end MeasureTheory
 

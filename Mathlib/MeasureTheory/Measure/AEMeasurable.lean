@@ -50,19 +50,15 @@ lemma aemeasurable_of_map_neZero {μ : Measure α}
 
 namespace AEMeasurable
 
-lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=
-  ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
-
-theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
-  mono_ac h h'.absolutelyContinuous
-
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
     AEMeasurable f (μ.restrict s) :=
   ht.mono_measure (restrict_mono h le_rfl)
 
 @[fun_prop]
-protected theorem mono' (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
+protected theorem mono_ac (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
   ⟨h.mk f, h.measurable_mk, h' h.ae_eq_mk⟩
+
+@[deprecated (since := "2026-08-01")] alias mono' := AEMeasurable.mono_ac
 
 theorem ae_mem_imp_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) :
     ∀ᵐ x ∂μ, x ∈ s → f x = h.mk f x :=
@@ -170,7 +166,7 @@ theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ
 @[fun_prop]
 theorem comp_quasiMeasurePreserving {ν : Measure δ} {f : α → δ} {g : δ → β} (hg : AEMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEMeasurable (g ∘ f) μ :=
-  (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
+  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
 
 theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : (μ.map f).map g = μ.map (g ∘ f) := by

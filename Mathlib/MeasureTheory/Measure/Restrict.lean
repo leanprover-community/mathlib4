@@ -144,6 +144,9 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
+theorem ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
+  ae_mono restrict_le_self
+
 variable (μ)
 
 theorem restrict_eq_self (h : s ⊆ t) : μ.restrict t s = μ s :=
@@ -629,11 +632,8 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
   ae_restrict_iff'₀ hs.nullMeasurableSet
 
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
-    f =ᵐ[μ.restrict s] g := by
-  -- note that we cannot use `ae_restrict_iff` since we do not require measurability
-  refine hfg.filter_mono ?_
-  rw [Measure.ae_le_iff_absolutelyContinuous]
-  exact absolutelyContinuous_restrict
+    f =ᵐ[μ.restrict s] g :=
+  hfg.filter_mono ae_restrict_le
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
@@ -714,9 +714,6 @@ theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ �
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := a ∉ t)]
   rfl
 
-lemma ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
-  ae_mono restrict_le_self
-
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
 
@@ -775,12 +772,12 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
       rw [Measure.restrict_apply₀' hs]
       simp
     have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
-      h.mono_ac absolutelyContinuous_restrict
+      h.mono restrict_le_self
     simpa using A.union B
 
 lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.mono_ac absolutelyContinuous_restrict⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono restrict_le_self⟩
   obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
     h.exists_measurable_subset_ae_eq
   have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
