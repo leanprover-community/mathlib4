@@ -69,7 +69,7 @@ lemma directSum_simple_module_over_simple_algebra [IsArtinianRing k] (M : Type v
     [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
     (_ : Module A S) (_ : IsScalarTower k A S) (_ : IsSimpleModule A S) (ι : Type v),
     Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
-  let : IsArtinianRing A := IsArtinianRing.of_finite k A
+  have : IsArtinianRing A := IsArtinianRing.of_finite k A
   obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring A M
   let : Module k S := Module.compHom S (algebraMap k A)
   have : IsScalarTower k A S := .of_algebraMap_smul fun _ _ ↦ rfl
