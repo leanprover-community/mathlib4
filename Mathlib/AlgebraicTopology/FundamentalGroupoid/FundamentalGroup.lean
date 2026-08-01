@@ -80,6 +80,16 @@ abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x
 @[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
   (FundamentalGroupoid.map f).mapEnd _
 
+/-- The homomorphism on fundamental groups induced by an inclusion of subspaces. -/
+def mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
+    FundamentalGroup U x →* FundamentalGroup V ⟨x, h x.property⟩ :=
+  map (ContinuousMap.inclusion h) x
+
+/-- Helper for Exercise 62.4: the subset-induced map is the fundamental-group
+map of the bundled continuous inclusion. -/
+lemma mapOfSubset_eq_map_inclusion {U V : Set X} (h : U ⊆ V) (x : U) :
+    mapOfSubset h x = map (ContinuousMap.inclusion h) x := rfl
+
 /-- The homomorphism on fundamental groups induced by inclusion into the ambient space. -/
 def mapOfSubtype {U : Set X} (x : U) : FundamentalGroup U x →* FundamentalGroup X x :=
   map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x
