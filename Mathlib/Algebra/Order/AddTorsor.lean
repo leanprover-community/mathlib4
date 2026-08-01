@@ -74,6 +74,16 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : IsLeftOrderedSMul G P wh
   smul_le_smul_left := IsOrderedSMul.smul_le_smul_left
 
 @[to_additive]
+instance [Mul G] [LE G] [MulLeftMono G] :
+    IsLeftOrderedSMul G G where
+  smul_le_smul_left _ _ := mul_le_mul_right
+
+@[to_additive]
+instance [Mul G] [LT G] [MulLeftStrictMono G] :
+    IsLeftStrictOrderedSMul G G where
+  smul_lt_smul_left _ _ := mul_lt_mul_right
+
+@[to_additive]
 instance [CommMonoid G] [Preorder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
   smul_le_smul_left _ _ := mul_le_mul_right
   smul_le_smul_right _ _ := mul_le_mul_left
@@ -121,6 +131,12 @@ instance [CommMonoid G] [Preorder G] [IsOrderedCancelMonoid G] : IsOrderedCancel
 lemma IsOrderedCancelSMul.contravariant_le [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
     Contravariant G P (· • ·) (· ≤ ·) :=
   IsOrderedCancelSMul.le_of_smul_le_smul_left
+
+@[to_additive]
+instance (priority := 200) [LE G] [LinearOrder P] [SMul G P] [IsOrderedCancelSMul G P] :
+    IsLeftStrictOrderedSMul G P where
+  smul_lt_smul_left _ _ h a :=
+    (covariant_lt_iff_contravariant_le.mpr IsOrderedCancelSMul.contravariant_le) a h
 
 namespace SMul
 

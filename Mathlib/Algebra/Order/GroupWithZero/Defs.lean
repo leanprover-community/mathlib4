@@ -176,33 +176,73 @@ theorem PosMulMono.to_covariant_nonneg_mul_le [PosMulMono α] :
     Covariant α≥0 α (fun x y => x * y) (· ≤ ·) :=
   fun a _b _c hbc ↦ PosMulMono.mul_le_mul_of_nonneg_left a.2 hbc
 
+@[deprecated PosMulMono.to_covariant_nonneg_mul_le (since := "2026-08-01")]
+theorem PosMulMono.to_covariantClass_nonneg_mul_le [PosMulMono α] :
+    CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·) :=
+  ⟨PosMulMono.to_covariant_nonneg_mul_le⟩
+
 theorem MulPosMono.to_covariant_nonneg_mul_le [MulPosMono α] :
     Covariant α≥0 α (fun x y => y * x) (· ≤ ·) :=
   fun a _b _c hbc ↦ MulPosMono.mul_le_mul_of_nonneg_right a.2 hbc
+
+@[deprecated MulPosMono.to_covariant_nonneg_mul_le (since := "2026-08-01")]
+theorem MulPosMono.to_covariantClass_nonneg_mul_le [MulPosMono α] :
+    CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·) :=
+  ⟨MulPosMono.to_covariant_nonneg_mul_le⟩
 
 theorem PosMulMono.to_covariant_pos_mul_le [PosMulMono α] :
     Covariant α>0 α (fun x y => x * y) (· ≤ ·) :=
   fun a _b _c hbc ↦ PosMulMono.mul_le_mul_of_nonneg_left a.2.le hbc
 
+@[deprecated PosMulMono.to_covariant_pos_mul_le (since := "2026-08-01")]
+theorem PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
+    CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
+  ⟨PosMulMono.to_covariant_pos_mul_le⟩
+
 theorem MulPosMono.to_covariant_pos_mul_le [MulPosMono α] :
     Covariant α>0 α (fun x y => y * x) (· ≤ ·) :=
   fun a _b _c hbc ↦ MulPosMono.mul_le_mul_of_nonneg_right a.2.le hbc
+
+@[deprecated MulPosMono.to_covariant_pos_mul_le (since := "2026-08-01")]
+theorem MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
+    CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
+  ⟨MulPosMono.to_covariant_pos_mul_le⟩
 
 theorem PosMulStrictMono.to_covariant_pos_mul_lt [PosMulStrictMono α] :
     Covariant α>0 α (fun x y => x * y) (· < ·) :=
   fun a _b _c hbc ↦ PosMulStrictMono.mul_lt_mul_of_pos_left a.2 hbc
 
+@[deprecated PosMulStrictMono.to_covariant_pos_mul_lt (since := "2026-08-01")]
+theorem PosMulStrictMono.to_covariantClass_pos_mul_le [PosMulStrictMono α] :
+    CovariantClass α>0 α (fun x y => x * y) (· < ·) :=
+  ⟨PosMulStrictMono.to_covariant_pos_mul_lt⟩
+
 theorem MulPosStrictMono.to_covariant_pos_mul_lt [MulPosStrictMono α] :
     Covariant α>0 α (fun x y => y * x) (· < ·) :=
   fun a _b _c hbc ↦ MulPosStrictMono.mul_lt_mul_of_pos_right a.2 hbc
+
+@[deprecated MulPosStrictMono.to_covariant_pos_mul_lt (since := "2026-08-01")]
+theorem MulPosStrictMono.to_covariantClass_pos_mul_le [MulPosStrictMono α] :
+    CovariantClass α>0 α (fun x y => y * x) (· < ·) :=
+  ⟨MulPosStrictMono.to_covariant_pos_mul_lt⟩
 
 theorem PosMulReflectLT.to_contravariant_pos_mul_lt [PosMulReflectLT α] :
     Contravariant α>0 α (fun x y => x * y) (· < ·) :=
   fun a _ _ bc ↦ PosMulReflectLT.elim a.2.le bc
 
+@[deprecated PosMulReflectLT.to_contravariant_pos_mul_lt (since := "2026-08-01")]
+theorem PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
+    ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
+  ⟨PosMulReflectLT.to_contravariant_pos_mul_lt⟩
+
 theorem MulPosReflectLT.to_contravariant_pos_mul_lt [MulPosReflectLT α] :
     Contravariant α>0 α (fun x y => y * x) (· < ·) :=
   fun a _ _ bc => MulPosReflectLT.elim a.2.le bc
+
+@[deprecated MulPosReflectLT.to_contravariant_pos_mul_lt (since := "2026-08-01")]
+theorem MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
+    ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
+  ⟨MulPosReflectLT.to_contravariant_pos_mul_lt⟩
 
 theorem PosMulReflectLE.to_contravariant_pos_mul_le [PosMulReflectLE α] :
     Contravariant α>0 α (fun x y => x * y) (· ≤ ·) :=

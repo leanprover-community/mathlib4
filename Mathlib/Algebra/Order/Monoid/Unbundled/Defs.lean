@@ -90,6 +90,42 @@ See the `ContravariantClass` doc-string for its meaning. -/
 def Contravariant : Prop :=
   ∀ (m) {n₁ n₂}, r (μ m n₁) (μ m n₂) → r n₁ n₂
 
+/-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
+`CovariantClass` says that "the action `μ` preserves the relation `r`."
+
+More precisely, the `CovariantClass` is a class taking two Types `M N`, together with an "action"
+`μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the assertion that
+for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
+`(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)`,
+obtained from `(n₁, n₂)` by acting upon it by `m`.
+
+If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) (μ m n₂)`.
+-/
+@[deprecated "Use `Covariant` or custom typeclasses instead" (since := "2026-08-01")]
+structure CovariantClass : Prop where
+  /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
+  `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)` -/
+  protected elim : Covariant M N μ r
+
+/-- Given an action `μ` of a Type `M` on a Type `N` and a relation `r` on `N`, informally, the
+`ContravariantClass` says that "if the result of the action `μ` on a pair satisfies the
+relation `r`, then the initial pair satisfied the relation `r`."
+
+More precisely, the `ContravariantClass` is a class taking two Types `M N`, together with an
+"action" `μ : M → N → N` and a relation `r : N → N → Prop`.  Its unique field `elim` is the
+assertion that for all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
+pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
+`r` also holds for the pair `(n₁, n₂)`.
+
+If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `ContravariantClass.elim m h : r n₁ n₂`.
+-/
+@[deprecated "Use `Contravariant` or custom typeclasses instead" (since := "2026-08-01")]
+structure ContravariantClass : Prop where
+  /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
+  pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
+  `r` also holds for the pair `(n₁, n₂)`. -/
+  protected elim : Contravariant M N μ r
+
 /-- Typeclass for monotonicity of multiplication on the left,
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
@@ -350,6 +386,15 @@ theorem Group.covariant_iff_contravariant [Group N] :
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
     exact h a⁻¹ bc
 
+set_option linter.deprecated false in
+@[to_additive]
+theorem Group.covconv [Group N] (h : CovariantClass N N (· * ·) r) :
+    ContravariantClass N N (· * ·) r :=
+  ⟨Group.covariant_iff_contravariant.mp h.elim⟩
+
+attribute [deprecated Group.covariant_iff_contravariant (since := "2026-08-01")] Group.covconv
+attribute [deprecated AddGroup.covariant_iff_contravariant (since := "2026-08-01")] AddGroup.covconv
+
 @[to_additive]
 instance (priority := 100) Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N] [MulLeftMono N] :
     MulLeftReflectLE N where
@@ -369,6 +414,16 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
 
+set_option linter.deprecated false in
+@[to_additive]
+theorem Group.covconv_swap [Group N] (h : CovariantClass N N (swap (· * ·)) r) :
+    ContravariantClass N N (swap (· * ·)) r :=
+  ⟨Group.covariant_swap_iff_contravariant_swap.mp h.elim⟩
+
+attribute [deprecated Group.covariant_swap_iff_contravariant_swap (since := "2026-08-01")]
+  Group.covconv_swap
+attribute [deprecated AddGroup.covariant_swap_iff_contravariant_swap (since := "2026-08-01")]
+  AddGroup.covconv_swap
 
 @[to_additive]
 instance (priority := 100) Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
@@ -512,6 +567,11 @@ theorem covariant_flip_iff [h : Std.Commutative mu] :
 theorem contravariant_flip_iff [h : Std.Commutative mu] :
     Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by unfold flip; simp_rw [h.comm]
 
+@[deprecated covariant_le_iff_contravariant_lt (since := "2026-08-01")]
+theorem contravariant_lt_of_covariant_le [LinearOrder N]
+    (h : CovariantClass N N mu (· ≤ ·)) : ContravariantClass N N mu (· < ·) :=
+  ⟨covariant_le_iff_contravariant_lt.mp h.elim⟩
+
 @[to_additive]
 instance mulLeftReflectLT_of_mulLeftMono [Mul N] [LinearOrder N] [MulLeftMono N] :
     MulLeftReflectLT N where
@@ -521,6 +581,11 @@ instance mulLeftReflectLT_of_mulLeftMono [Mul N] [LinearOrder N] [MulLeftMono N]
 instance mulRightReflectLT_of_mulRightMono [Mul N] [LinearOrder N] [MulRightMono N] :
     MulRightReflectLT N where
   elim := covariant_le_iff_contravariant_lt.mp covariant_swap_mul_le
+
+@[deprecated covariant_lt_iff_contravariant_le (since := "2026-08-01")]
+theorem covariant_lt_of_contravariant_le [LinearOrder N]
+    (h : ContravariantClass N N mu (· ≤ ·)) : CovariantClass N N mu (· < ·) :=
+  ⟨covariant_lt_iff_contravariant_le.mpr h.elim⟩
 
 @[to_additive]
 theorem mulLeftMono_of_mulLeftReflectLT [Mul N] [LinearOrder N] [MulLeftReflectLT N] :
@@ -542,6 +607,15 @@ instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRig
     MulRightStrictMono N where
   elim := covariant_lt_iff_contravariant_le.mpr contravariant_swap_mul_le
 
+set_option linter.deprecated false in
+@[to_additive]
+theorem covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+    (h : CovariantClass N N (· * ·) r) : CovariantClass N N (swap (· * ·)) r :=
+  ⟨covariant_flip_iff.mpr h.elim⟩
+
+attribute [deprecated covariant_flip_iff (since := "2026-08-01")]
+  covariant_swap_mul_of_covariant_mul covariant_swap_add_of_covariant_add
+
 @[to_additive]
 instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
     MulRightMono N where
@@ -551,6 +625,16 @@ instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
 instance mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLeftStrictMono N] :
     MulRightStrictMono N where
   elim := covariant_flip_iff.mpr covariant_mul_lt
+
+set_option linter.deprecated false in
+@[to_additive]
+theorem contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+    (h : ContravariantClass N N (· * ·) r) :
+    ContravariantClass N N (swap (· * ·)) r :=
+  ⟨contravariant_flip_iff.mpr h.elim⟩
+
+attribute [deprecated contravariant_flip_iff (since := "2026-08-01")]
+  contravariant_swap_mul_of_contravariant_mul contravariant_swap_add_of_contravariant_add
 
 @[to_additive]
 instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
