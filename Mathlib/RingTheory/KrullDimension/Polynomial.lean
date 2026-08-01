@@ -137,4 +137,4 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} :
   nontriviality R
   by_cases! Finite ι
   · simp [ringKrullDim_of_isNoetherianRing_of_finite, ENat.card_eq_coe_natCard]
-  · simp [ENat.WithBot.ne_bot_iff_zero_le, ringKrullDim_nonneg_of_nontrivial]
+  · simp [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]

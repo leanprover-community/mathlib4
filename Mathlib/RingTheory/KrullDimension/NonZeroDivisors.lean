@@ -121,7 +121,7 @@ i.e. `dim R[X₁, ...] = ∞`. -/
 lemma ringKrullDim_of_infinite [Nontrivial R] {σ : Type*} [Infinite σ] :
     ringKrullDim (MvPolynomial σ R) = ⊤ := by
   have := ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (R := R) σ
-  simp_all [ENat.WithBot.ne_bot_iff_zero_le, ringKrullDim_nonneg_of_nontrivial]
+  simpa [WithBot.coe_bot_le.mp ringKrullDim_nonneg_of_nontrivial]
 
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
