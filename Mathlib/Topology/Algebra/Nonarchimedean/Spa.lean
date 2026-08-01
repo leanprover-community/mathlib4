@@ -251,3 +251,13 @@ theorem continuous_comap {B : Type*} [CommRing B] [TopologicalSpace B] [Decidabl
   exact isOpen_rationalSubset (A := B) (Aplus := Bplus) (φ s) (T.image φ) (hTopen' T hTopen)
 
 end SpaPoint
+
+/-- The ideal-transfer premise of `continuous_comap` is witnessed by the
+identity morphism: `T.image id = T`, so the premise reduces to the source
+hypothesis. This makes `continuous_comap` non-vacuous (Spa(id) is continuous). -/
+theorem hTopen'_of_id (T : Finset A) [DecidableEq A] :
+    IsOpen ((Ideal.span (T : Set A)) : Set A) →
+      IsOpen ((Ideal.span (T.image (RingHom.id A) : Set A)) : Set A) := by
+  intro hT
+  -- T.image (RingHom.id A) = T: the image under the identity is the same finset
+  simpa [Finset.image_id, RingHom.id] using hT
