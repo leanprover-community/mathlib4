@@ -97,24 +97,24 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
 
 theorem LinearMap.lift_rank_comap (f : M →ₗ[R] M') (p : Submodule R M') :
     lift.{v} (Module.rank R (comap f p)) =
-      lift.{u} (Module.rank R (f.range ⊓ p :)) + lift.{v} (Module.rank R f.ker) := by
+      lift.{u} (Module.rank R (p ⊓ f.range :)) + lift.{v} (Module.rank R f.ker) := by
   convert ← (f.submoduleComap p).lift_rank_range_add_rank_ker.symm <;> apply LinearEquiv.rank_eq
   · rw [range_submoduleComap]; apply submoduleOfEquivInf
   · rw [ker_submoduleComap]; exact submoduleOfEquivOfLe (by simp)
 
 theorem LinearMap.rank_comap (f : M →ₗ[R] M₁) (p : Submodule R M₁) :
-    Module.rank R (comap f p) = Module.rank R (f.range ⊓ p :) + Module.rank R f.ker := by
+    Module.rank R (comap f p) = Module.rank R (p ⊓ f.range :) + Module.rank R f.ker := by
   simpa using lift_rank_comap f p
 
 theorem LinearMap.lift_rank_map_add_rank_ker_inf (f : M →ₗ[R] M') (p : Submodule R M) :
-    lift.{u} (Module.rank R (map f p)) + lift.{v} (Module.rank R (f.ker ⊓ p :)) =
+    lift.{u} (Module.rank R (map f p)) + lift.{v} (Module.rank R (p ⊓ f.ker :)) =
       lift.{v} (Module.rank R p) := by
   convert ← (f.submoduleMap p).lift_rank_range_add_rank_ker <;> apply LinearEquiv.rank_eq
   · rw [range_submoduleMap]; exact topEquiv
   · rw [ker_submoduleMap]; apply submoduleOfEquivInf
 
 theorem LinearMap.rank_map_add_rank_ker_inf (f : M →ₗ[R] M₂) (p : Submodule R M) :
-    Module.rank R (map f p) + Module.rank R (f.ker ⊓ p :) = Module.rank R p := by
+    Module.rank R (map f p) + Module.rank R (p ⊓ f.ker :) = Module.rank R p := by
   convert lift_rank_map_add_rank_ker_inf f p using 0
   simp_rw [lift_id]
 
