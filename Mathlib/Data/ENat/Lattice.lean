@@ -245,9 +245,8 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp
-  · rw [ENat.iSup_add]
-    simp_rw [ENat.add_iSup]
+  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp_rw [ENat.iSup_add, ENat.add_iSup]
     exact iSup₂_eq_iSup_diagonal (fun i j ↦ f i + g j) h
 
 lemma iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → ℕ∞}
