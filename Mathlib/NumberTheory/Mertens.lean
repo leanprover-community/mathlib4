@@ -323,9 +323,11 @@ theorem M_bounds :
           integrable_const_div_mul_log_sq _ (by rfl),
           inv_div_log_sq_nonneg ht (by norm_num), le_first (by grind)]
 
+/-- Expresses the error term `E₂` in terms of `E₁`. -/
 theorem E₂_eq {x : ℝ} (hx : 2 ≤ x) :
     E₂ x = (log x)⁻¹ * E₁ x - ∫ t in .Ioi x, (t⁻¹ / (log t)^2) * E₁ t := by
   -- a weird bug - if I move `hcont` too far into the proof, the `grind` discharger breaks.
+  -- discussion https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Strange.20.60fun_prop.60.20behavior
   have hcont : ContinuousOn (fun t ↦  -t⁻¹ / log t ^ 2) (.Icc 2 x) := by
     fun_prop (disch := grind [log_ne_zero])
   have : 0 < log x := log_pos (by linarith)
