@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.MeasureTheory.Function.JacobianOneDim
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 # Derivative of the Gamma function
