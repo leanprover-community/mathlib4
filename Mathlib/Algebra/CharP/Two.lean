@@ -72,9 +72,9 @@ example : (37 : R) = 1 := by simp
 
 end AddMonoidWithOne
 
-section Semiring
+section NonAssocSemiring
 
-variable [Semiring R] [CharP R 2]
+variable [NonAssocSemiring R] [CharP R 2]
 
 @[scoped simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_mul x, two_eq_zero, zero_mul]
@@ -90,11 +90,11 @@ protected theorem add_cancel_left (a b : R) : a + (a + b) = b := by
 protected theorem add_cancel_right (a b : R) : a + b + b = a := by
   rw [add_assoc, add_self_eq_zero, add_zero]
 
-end Semiring
+end NonAssocSemiring
 
-section Ring
+section NonAssocRing
 
-variable [Ring R] [CharP R 2]
+variable [NonAssocRing R] [CharP R 2]
 
 @[scoped simp]
 theorem neg_eq (x : R) : -x = x := by
@@ -135,7 +135,33 @@ theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
 theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
   simp [intCast_eq_ite, Int.even_iff]
 
-end Ring
+end NonAssocRing
+
+section NonAssocCommSemiring
+
+variable [NonAssocCommSemiring R] [CharP R 2]
+
+theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
+  rw [mul_add, add_mul, add_mul, mul_comm y, add_assoc, CharTwo.add_cancel_left]
+
+/-- See `frobenius` for the Frobenius map. -/
+private def mulSelfAddMonoidHom : R →+ R where
+  toFun x := x * x
+  map_zero' := mul_zero 0
+  map_add' := add_mul_self
+
+theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum :=
+  map_list_sum mulSelfAddMonoidHom _
+
+theorem multiset_sum_mul_self (l : Multiset R) :
+    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum :=
+  map_multiset_sum mulSelfAddMonoidHom _
+
+theorem sum_mul_self (s : Finset ι) (f : ι → R) :
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i :=
+  map_sum mulSelfAddMonoidHom _ _
+
+end NonAssocCommSemiring
 
 section CommSemiring
 
@@ -143,9 +169,6 @@ variable [CommSemiring R] [CharP R 2]
 
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
   simp [add_pow_two]
-
-theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
-  rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 
 /-- See `frobenius` for the Frobenius map. -/
 private def sqAddMonoidHom : R →+ R where
@@ -156,20 +179,11 @@ private def sqAddMonoidHom : R →+ R where
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   map_list_sum sqAddMonoidHom _
 
-theorem list_sum_mul_self (l : List R) : l.sum * l.sum = (List.map (fun x => x * x) l).sum := by
-  simp_rw [← pow_two, list_sum_sq]
-
 theorem multiset_sum_sq (l : Multiset R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   map_multiset_sum sqAddMonoidHom _
 
-theorem multiset_sum_mul_self (l : Multiset R) :
-    l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
-
 theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   map_sum sqAddMonoidHom _ _
-
-theorem sum_mul_self (s : Finset ι) (f : ι → R) :
-    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 
 end CommSemiring
 
@@ -197,7 +211,7 @@ end CharTwo
 
 section ringChar
 
-variable [Ring R]
+variable [NonAssocRing R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
   refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
