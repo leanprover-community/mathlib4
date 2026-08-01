@@ -189,6 +189,14 @@ theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ)
   obtain ⟨t, ht, hst⟩ := h
   exact ⟨t, ht, hst.filter_mono (ν.ae_le_iff_absolutelyContinuous.2 hle)⟩
 
+theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
+    (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
+  (μ.tendsto_ae_map hf).mono_right h2.ae_le h
+
+theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
+    g ∘ f =ᵐ[μ] g' ∘ f :=
+  ae_eq_comp' hf h Measure.AbsolutelyContinuous.rfl
+
 end MeasureTheory
 
 namespace MeasurableEmbedding

@@ -114,6 +114,8 @@ theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg
     g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
   h.ae hg
 
+@[deprecated (since := "2026-08-01")] alias ae_eq_comp := ae_eq
+
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
   preimage_null_of_map_null h.aemeasurable (h.2 hs)
