@@ -539,39 +539,30 @@ Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff 
 
 /-- If `f` is differentiable on a set `s` in a finite-dimensional real normed space, then
 `dimH (f '' t) ≤ dimH t` for any `t ⊆ s`. -/
-theorem DifferentiableOn.dimH_image_le {f : E → F} {s t : Set E} (hf : DifferentiableOn ℝ f s)
-    (ht : t ⊆ s) : dimH (f '' t) ≤ dimH t := by
+theorem DifferentiableOn.dimH_image_le {f : E → F} {t : Set E} (hf : DifferentiableOn ℝ f t) : 
+    dimH (f '' t) ≤ dimH t := by
   -- `P (n, k)` collects the points of `t` near which `f` grows at rate at most `n` at scale
   -- `(n + 1)⁻¹`, intersected with the ball of radius `(n + 1)⁻¹ / 2` around the `k`-th point of
   -- a dense sequence. Then `f` is `n`-Lipschitz on each piece, and the pieces cover `t`.
-  set P : ℕ × ℕ → Set E := fun (n, k) ↦
+  let P (n k : ℕ) : Set E := 
     {x ∈ t | ∀ y ∈ t, dist y x ≤ (n + 1 : ℝ)⁻¹ → dist (f y) (f x) ≤ n * dist y x} ∩
       Metric.ball (denseSeq E k) ((n + 1 : ℝ)⁻¹ / 2)
-  have hcover : t ⊆ ⋃ i, P i := by
+  have hcover : t ⊆ ⋃ i, ⋃ k, P i k := by
     intro x hx
-    obtain ⟨C, -, hC⟩ := (hf.mono ht x hx).hasFDerivWithinAt.isBigO_sub.exists_pos
-    rw [Asymptotics.isBigOWith_iff, Metric.nhdsWithin_basis_ball.eventually_iff] at hC
+    obtain ⟨C, hC⟩ := (hf x hx).isBigO_sub.bound
+    simp only [← dist_eq_norm, Metric.nhdsWithin_basis_ball.eventually_iff] at hC
     obtain ⟨δ, hδ₀, hδ⟩ := hC
     obtain ⟨n, hn⟩ := exists_nat_gt (max C δ⁻¹)
-    have hnδ : (n + 1 : ℝ)⁻¹ < δ := by
-      rw [inv_lt_comm₀ (by positivity) hδ₀]
-      exact ((le_max_right _ _).trans_lt hn).trans (lt_add_one _)
+    have hnδ : (n + 1 : ℝ)⁻¹ < δ := by rw [inv_lt_comm₀ (by positivity) hδ₀]; grind
     obtain ⟨k, hk⟩ := (denseRange_denseSeq E).exists_dist_lt x
       (by positivity : (0 : ℝ) < (n + 1 : ℝ)⁻¹ / 2)
     refine mem_iUnion.2 ⟨⟨n, k⟩, ⟨hx, fun y hy hyx ↦ ?_⟩, Metric.mem_ball.2 hk⟩
-    calc dist (f y) (f x) = ‖f y - f x‖ := dist_eq_norm _ _
-      _ ≤ C * ‖y - x‖ := hδ ⟨Metric.mem_ball.2 (hyx.trans_lt hnδ), hy⟩
-      _ ≤ n * dist y x := by
-        rw [← dist_eq_norm]
-        gcongr
-        exact ((le_max_left _ _).trans_lt hn).le
-  have hlip : ∀ i : ℕ × ℕ, LipschitzOnWith i.1 f (P i) := by
-    rintro ⟨n, k⟩
-    refine LipschitzOnWith.of_dist_le_mul ?_
-    rintro y ⟨⟨hyt, -⟩, hyb⟩ z ⟨⟨-, hzP⟩, hzb⟩
-    exact hzP y hyt <| by
-      linarith [dist_triangle_right y z (denseSeq E k), Metric.mem_ball.1 hyb,
-        Metric.mem_ball.1 hzb]
+    calc
+      dist (f y) (f x) ≤ C * dist y x := hδ ⟨Metric.mem_ball.2 (hyx.trans_lt hnδ), hy⟩
+      _ ≤ n * dist y x := by grw [((le_max_left _ _).trans_lt hn).le]
+  have hlip (n k : ℕ) : LipschitzOnWith n f (P n k) := by
+    refine LipschitzOnWith.of_dist_le_mul fun y ⟨⟨hyt, _⟩, hyb⟩ z ⟨⟨_, hzP⟩, hzb⟩ ↦ hzP y hyt ?_
+    linarith [dist_triangle_right y z (denseSeq E k), Metric.mem_ball.1 hyb, Metric.mem_ball.1 hzb]
   calc dimH (f '' t) ≤ dimH (f '' ⋃ i, P i) := dimH_mono (image_mono hcover)
     _ = ⨆ i, dimH (f '' P i) := by rw [image_iUnion, dimH_iUnion]
     _ ≤ ⨆ i, dimH (P i) := iSup_mono fun i ↦ (hlip i).dimH_image_le
