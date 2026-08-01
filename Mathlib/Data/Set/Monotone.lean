@@ -209,7 +209,7 @@ theorem strictMonoOn_of_rightInvOn_of_mapsTo [Preorder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : StrictMonoOn φ t)
     (φψs : RightInvOn ψ φ s) (ψts : MapsTo ψ s t) : StrictMonoOn ψ s := by
   intro x xs y ys l
-  grw [← hφ.lt_iff_lt (ψts xs) (ψts ys), φψs xs, φψs ys, l]
+  rwa [← hφ.lt_iff_lt (ψts xs) (ψts ys), φψs xs, φψs ys]
 
 theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : AntitoneOn φ t)
