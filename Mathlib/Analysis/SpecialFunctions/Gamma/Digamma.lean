@@ -76,7 +76,7 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
     logDeriv_comp (by assumption) (by fun_prop),
     (by rfl : (sin <| π * ·) = sin ∘ (π * ·)),
     logDeriv_comp (by fun_prop) (by fun_prop)] at this
-  · simp [digamma_def] at this ⊢; grind 
+  · simp [digamma_def] at this ⊢; grind
   · grind [sin_eq_zero_iff]
   · exact Gamma_ne_zero h1snat
 
