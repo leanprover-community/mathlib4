@@ -85,14 +85,14 @@ def mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
     FundamentalGroup U x →* FundamentalGroup V ⟨x, h x.property⟩ :=
   map (ContinuousMap.inclusion h) x
 
-lemma mapOfSubset_eq_map_inclusion {U V : Set X} (h : U ⊆ V) (x : U) :
+lemma coe_mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
     mapOfSubset h x = map (ContinuousMap.inclusion h) x := rfl
 
 /-- The homomorphism on fundamental groups induced by inclusion into the ambient space. -/
 def mapOfSubtype {U : Set X} (x : U) : FundamentalGroup U x →* FundamentalGroup X x :=
   map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x
 
-lemma mapOfSubtype_eq_map {U : Set X} (x : U) :
+lemma coe_mapOfSubtype {U : Set X} (x : U) :
     mapOfSubtype x = map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x := rfl
 
 lemma mapOfSubtype_comp_mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
