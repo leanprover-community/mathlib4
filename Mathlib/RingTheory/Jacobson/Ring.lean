@@ -435,7 +435,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
   let P' := comap (C : R →+* R[X]) P
   have hP'_prime : P'.IsPrime := comap_isPrime C P
   obtain ⟨⟨m, hmem_P⟩, hm⟩ :=
-    Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P polynomial_not_isField)
+    Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P (Polynomial.not_isField R))
   have hm' : m ≠ 0 := by
     simpa [Submodule.coe_eq_zero] using hm
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P (C : R →+* R[X]) le_rfl
@@ -478,8 +478,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
     ((Ideal.Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   refine (isIntegral_quotientMap_iff _).mp ?_
   let P' : Ideal R := P.comap C
-  obtain ⟨pX, hpX, hp0⟩ :=
-    exists_nonzero_mem_of_ne_bot (ne_of_lt (bot_lt_of_maximal P polynomial_not_isField)).symm hP'
+  obtain ⟨pX, hpX, hp0⟩ := exists_nonzero_mem_of_ne_bot
+    (ne_of_lt (bot_lt_of_maximal P (Polynomial.not_isField R))).symm hP'
   let a : R ⧸ P' := (pX.map (Ideal.Quotient.mk P')).leadingCoeff
   let M : Submonoid (R ⧸ P') := Submonoid.powers a
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
