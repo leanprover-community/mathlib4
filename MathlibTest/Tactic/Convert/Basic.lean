@@ -2,6 +2,7 @@ module
 import Mathlib.Tactic.Convert
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Notation.Pi.Defs
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -61,7 +62,7 @@ end convert_to
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert h
+  convert! h
   · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
     exact test_sorry
   · guard_target = n = 2
@@ -69,15 +70,7 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert (config := .unfoldSameFun) h
-  guard_target = n + n = 2 * n
-  exact test_sorry
-
--- `convert! (config := .unfoldSameFun)` does the same thing as `convert (config := .unfoldSameFun)`
--- (at least for now)
-example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
-    prime (n + n + 1) := by
-  convert! (config := .unfoldSameFun) h
+  convert h
   guard_target = n + n = 2 * n
   exact test_sorry
 
@@ -160,5 +153,11 @@ example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P a) : P (semireducibl
 
 example (P : ℕ → Prop) {a b : ℕ} (hab : b = a) (h : P (semireducibleId a)) : P b := by
   convert! h
+
+-- Test that overapplications are supported
+example (f g h k : Nat → Nat) (H : (f + g) 1 = 0) : (h + k) 1 = 0 := by
+  convert H
+  guard_target =ₛ h = f
+  all_goals exact test_sorry
 
 end Tests

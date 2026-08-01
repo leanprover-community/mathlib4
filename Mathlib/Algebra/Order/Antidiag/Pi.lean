@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
+public import Mathlib.Algebra.Group.Pi.Lemmas
 
 /-!
 # Antidiagonal of functions as finsets
@@ -72,16 +73,10 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
     { val := (antidiagonal n).disjiUnion
         (fun ab => (aux d ab.2).1.map {
             toFun := Fin.cons (ab.1)
-            inj' := Fin.cons_right_injective _ })
-        (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
-          simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
-          obtain ⟨ai, hai, hij'⟩ := hti
-          obtain ⟨aj, haj, rfl⟩ := htj
-          rw [Fin.cons_inj] at hij'
-          ext
-          · exact hij'.1
-          · obtain ⟨-, rfl⟩ := hij'
-            rw [← (aux d i.2).prop ai |>.mp hai, ← (aux d j.2).prop ai |>.mp haj])
+            inj' := Fin.cons_right_injective _ }) <| by
+        intro i _ j _ hij
+        simp only [Finset.disjoint_left, Finset.mem_map, Embedding.coeFn_mk]
+        grind [Fin.cons_inj]
       property := fun f => by
         simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
           (aux d _).prop, Fin.sum_univ_succ]
@@ -112,7 +107,8 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
   refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
     (fun e ↦ (finAntidiagonal s.card n).map ⟨fun f i ↦ if hi : i ∈ s then f (e ⟨i, hi⟩) else 0, ?_⟩)
     fun e₁ e₂ ↦ ?_
-  · rintro f g hfg
+  · rw [Injective]
+    rintro f g hfg
     ext i
     simpa using congr_fun hfg (e.symm i)
   · ext f
@@ -162,8 +158,8 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
     (antidiagonal n : Set (μ × μ)).PairwiseDisjoint fun p ↦
       map (addRightEmbedding fun j ↦ if j = i then p.1 else 0) (s.piAntidiag p.2) := by
   rintro ⟨a, b⟩ hab ⟨c, d⟩ hcd
-  simp only [ne_eq, antidiagonal_congr' hab hcd, disjoint_left, mem_map, mem_piAntidiag,
-    addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
+  simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
+    mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
   exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
 
@@ -177,8 +173,7 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
   constructor
   · rintro ⟨hn, hf⟩
     refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
-    have := fun h₁ h₂ ↦ (hf j h₁).resolve_left h₂
-    aesop (add simp [update])
+    grind
   · rintro ⟨a, _, hn, g, ⟨rfl, hg⟩, rfl⟩
     have := hg i
     aesop (add simp [sum_add_distrib])
@@ -202,16 +197,14 @@ end CanonicallyOrderedAddCommMonoid
 section Nat
 variable [DecidableEq ι]
 
-/-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
-pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
+open Pointwise
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by
   ext; simp [Nat.mem_antidiagonalTuple]
 
 lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    n •ℕ piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
+    n • piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   ext f
   refine mem_smul_finset.trans ?_
   simp only [mem_filter, mem_piAntidiag, and_assoc]
@@ -229,18 +222,16 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
   grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    (piAntidiag s m).map
-      ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+    (piAntidiag s m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
         {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
 
 lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    n •ℕ (piAntidiag univ m) = {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
+    n • piAntidiag univ m = {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
   simpa using nsmul_piAntidiag (univ : Finset ι) m hn
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    (piAntidiag (univ : Finset ι) m).map
-        ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+    (piAntidiag (univ : Finset ι) m).map ⟨(n • ·), nsmul_right_injective hn⟩ =
       {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 

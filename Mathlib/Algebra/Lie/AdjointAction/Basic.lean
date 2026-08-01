@@ -30,6 +30,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Commuting elements have commuting adjoint actions. -/
 theorem LieAlgebra.commute_ad_of_commute {a b : A} (h : Commute a b) :
     Commute (LieAlgebra.ad R A a) (LieAlgebra.ad R A b) := by

@@ -187,9 +187,6 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
-theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
-  continuous_const.intervalIntegrable a b
-
 theorem intervalIntegrable_one_div (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => 1 / f x) μ a b :=
   (continuousOn_const.div hf h).intervalIntegrable
@@ -226,7 +223,6 @@ hypothesis on the interval, but assuming the measure is the volume.
 theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 /--
 The real logarithm is interval integrable (with respect to the volume measure) on every interval.
 See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
@@ -248,8 +244,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
       norm_num at *
       simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
-      simp at *
-      exact (log_nonpos_iff hs₁.le).mpr hs₂.le
+      grind [Pi.neg_apply, log_nonpos_iff]
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono

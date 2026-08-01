@@ -96,7 +96,7 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
     (huv : u ≠ v) : k ≤ G.degree u := by
   classical
   by_contra! hh
-  rw [← card_incidenceSet_eq_degree, ← ENat.coe_lt_coe, Set.coe_fintypeCard] at hh
+  rw [← card_incidenceSet_eq_degree, ← ENat.natCast_lt_natCast, Set.coe_fintypeCard] at hh
   obtain ⟨w, _⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
@@ -114,9 +114,9 @@ lemma isEdgeReachable_add_one (hk : k ≠ 0) :
     exact ENat.add_lt_add_iff_right ENat.one_ne_top |>.mpr hk
   obtain rfl | ⟨e, he⟩ := s.eq_empty_or_nonempty
   · simpa using (h s(u, u)).reachable hk
-  · rw [← Set.insert_diff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
+  · rw [← Set.insert_sdiff_self_of_mem he, Set.insert_eq, ← deleteEdges_deleteEdges]
     refine h e <| ENat.add_lt_add_iff_right ENat.one_ne_top |>.mp ?_
-    rwa [Set.encard_diff_singleton_add_one he]
+    rwa [Set.encard_sdiff_singleton_add_one he]
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
@@ -134,7 +134,7 @@ lemma isBridge_iff_not_isEdgeReachable_two (huv : G.Adj u v) :
   refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
   by_cases! hs₁ : s.encard ≠ (1 : ℕ)
   · apply G.isEdgeReachable_one.mpr huv.reachable
-    exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
+    exact lt_of_le_of_ne (ENat.lt_natCast_add_one_iff.mp hs₂) hs₁
   obtain ⟨x, rfl⟩ := s.encard_eq_one.mp hs₁
   obtain rfl | hx := eq_or_ne s(u, v) x
   · exact hr
