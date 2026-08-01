@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2022 John Nicol. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: John Nicol
+Authors: John Nicol, Haobo Ma, Wenlin Zhang
 -/
 module
 
+public import Mathlib.Data.ZMod.Factorial
 public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
@@ -16,6 +17,13 @@ The heavy lifting is mostly done by the previous `wilsons_lemma`,
 but here we also prove the other logical direction.
 
 This could be generalized to similar results about finite abelian groups.
+
+## Main results
+
+* `ZMod.factorial_eq_neg_one_pow_mul_half_factorial_sq` expresses `(p - 1)!` using the square of
+  the half-factorial when `p` is odd.
+* `ZMod.half_factorial_sq_eq_neg_one` gives the half-factorial as an explicit square root of `-1`
+  modulo a prime not congruent to three modulo four.
 
 ## References
 
@@ -35,6 +43,26 @@ open Finset Nat FiniteField ZMod
 open scoped Nat
 
 namespace ZMod
+
+/-- If `p` is odd, pairing each factor above `(p - 1) / 2` with its negative gives
+`(p - 1)! = (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)!) ^ 2` in `ZMod p`.
+
+The identity only needs the modulus to be odd; primality is not required. -/
+theorem factorial_eq_neg_one_pow_mul_half_factorial_sq (p : ℕ) (hp : Odd p) :
+    ((p - 1)! : ZMod p) =
+      (-1) ^ ((p - 1) / 2) * (((p - 1) / 2)! : ZMod p) ^ 2 := by
+  set m := (p - 1) / 2 with hm
+  obtain ⟨k, hk⟩ := hp
+  have hp_eq : p = 2 * m + 1 := by omega
+  calc
+    ((p - 1)! : ZMod p) =
+        ((p - 1 - m)! : ZMod p) * ((p - 1).descFactorial m : ZMod p) := by
+      rw [← Nat.cast_mul, Nat.factorial_mul_descFactorial (by omega)]
+    _ = (m.factorial : ZMod p) * ((-1) ^ m * (m.factorial : ZMod p)) := by
+      rw [show p - 1 - m = m by omega, ZMod.cast_descFactorial (by omega)]
+    _ = (-1) ^ m * (m.factorial : ZMod p) ^ 2 := by
+      rw [pow_two]
+      ac_rfl
 
 variable (p : ℕ) [Fact p.Prime]
 
@@ -66,6 +94,31 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
       simpa only [val_cast_of_lt hb.right, val_zero] using h
     · simp only [val_cast_of_lt hb.right, Units.val_mk0]
   · rintro a -; simp only [cast_id, natCast_val]
+
+/-- Let `p` be prime with `p % 4 ≠ 3`. Then `((p - 1) / 2)!` is a specified square root of `-1`
+in `ZMod p`.
+
+This gives an explicit witness, namely the half-factorial itself, rather than merely asserting
+that some square root exists. -/
+theorem half_factorial_sq_eq_neg_one (p : ℕ) [Fact p.Prime] (hp : p % 4 ≠ 3) :
+    (((p - 1) / 2)! : ZMod p) ^ 2 = -1 := by
+  by_cases hp_two : p = 2
+  · subst p
+    have h : (1 : ZMod 2) = -1 := by decide +revert
+    change (1 : ZMod 2) ^ 2 = -1
+    rw [pow_two, mul_one]
+    exact h
+  have hodd : Odd p := by
+    exact (Fact.out (p := p.Prime)).odd_of_ne_two hp_two
+  have hpair := factorial_eq_neg_one_pow_mul_half_factorial_sq p hodd
+  have hEven : Even ((p - 1) / 2) := by
+    rw [Nat.even_iff]
+    have hp_mod_two : p % 2 = 1 := Nat.odd_iff.mp hodd
+    omega
+  have hwil : ((p - 1)! : ZMod p) = -1 := ZMod.wilsons_lemma p
+  rw [hwil] at hpair
+  rw [hEven.neg_one_pow, one_mul] at hpair
+  exact hpair.symm
 
 @[simp]
 theorem prod_Ico_one_prime : ∏ x ∈ Ico 1 p, (x : ZMod p) = -1 := by
