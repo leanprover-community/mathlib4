@@ -284,7 +284,7 @@ theorem singleton_prod_singleton (x : α) (y : β) :
 
 open Topology
 
-/-- The compacts neigbourhoods of a compact -/
+/-- The compacts neighbourhoods of a compact -/
 def compactNhds (K : Compacts α) : Set (Compacts α) :=
   {K' | ∀ (x : K), (K': Set α) ∈ 𝓝 x.val}
 
@@ -301,7 +301,7 @@ lemma exists_open_set_nhds_of_mem_compactsNhds {K K' : Compacts α} (h : K' ∈ 
     ∃ U : Opens α, (K : Set α) ⊆ U ∧ (U : Set α) ⊆ K' :=
   exists_open_set_nhds_of_compactsNhds ⟨K', h⟩
 
-/-- The compact neigbourhood induced by the existence of an open subset between two compacts -/
+/-- The compact neighbourhood induced by the existence of an open subset between two compacts -/
 def compactNhdsMkOfOpens {K : Compacts α} (L : Compacts α) (U : Opens α)
     (h1 : (K : Set α) ⊆ U) (h2 : (U : Set α) ⊆ L) :
     K.compactNhds :=
@@ -322,7 +322,7 @@ instance (K : Compacts α) : IsCodirectedOrder K.openNhds where
   ⟨Subtype.mk_le_mk.2 inf_le_left, Subtype.mk_le_mk.2 inf_le_right⟩⟩
 
 instance (K : Compacts α) : Top K.openNhds := ⟨⊤, Set.subset_univ _⟩
--- in particular `K.openNhds` is not empty and thus the induced catgory is cofiltered
+-- in particular `K.openNhds` is not empty and thus the induced category is cofiltered
 
 instance : Bot (⊥ : Compacts α).openNhds := ⟨⊥, fun _ h ↦ h⟩
 
@@ -378,14 +378,14 @@ namespace Opens
 /-- The set of compacts inside an open subset -/
 def compactsInside (U : Opens α) : Set (Compacts α) := {K | (K : Set α) ⊆ U}
 
-/-- For `K` a compact subset insde an open subset `U`, `U` has a structure of open neighbourhood
+/-- For `K` a compact subset inside an open subset `U`, `U` has a structure of open neighbourhood
 of `K` -/
 def openNhdsOfCompactsInside {U : Opens α} (K : U.compactsInside) : (K.val).openNhds :=
   ⟨U, K.property⟩
 
 end Opens
 
-/-- For `U` an open neighbourhood of `K`, `K` has a structure of compact insde `U` -/
+/-- For `U` an open neighbourhood of `K`, `K` has a structure of compact inside `U` -/
 def Compacts.compactsInsideOfOpenNhds {K : Compacts α} (U : K.openNhds) : (U.val).compactsInside :=
   ⟨K, U.property⟩
 
