@@ -45,7 +45,7 @@ variable {A : Type*} [CommRing A] [TopologicalSpace A] (Aplus : Subring A)
 
 /-- A point of the adic spectrum `Spa(A, A⁺)`: a continuous valuation
 `v : A → Γ₀` with `v(f) ≤ 1` for all `f ∈ A⁺` (Wedhorn, Def. 7.23, p. 62:
-"`Spa A = {v ∈ Cont(A) ; v(f) ≤ 1 for all f ∈ A⁺}`"). -/
+"`Spa A = {v ∈ Cont(A); v(f) ≤ 1 for all f ∈ A⁺}`"). -/
 structure SpaPoint (A : Type*) [CommRing A] [TopologicalSpace A]
     (Aplus : Subring A) where
   /-- The value group of the valuation. -/
@@ -87,7 +87,7 @@ theorem isOpen_rationalSubset (s : A) (T : Finset A)
   exact TopologicalSpace.isOpen_generateFrom_of_mem ⟨s, T, hT, rfl⟩
 
 /-- The rational subset `R(f/1)` is the set of points with `|f| ≤ 1`
-(Wedhorn, Rem. 7.30(4), p. 63: "`R(f/1) = {x ∈ Spa A ; |f(x)| ≤ 1}` is an
+(Wedhorn, Rem. 7.30(4), p. 63: "`R(f/1) = {x ∈ Spa A; |f(x)| ≤ 1}` is an
 open rational subset for all `f ∈ A`"). -/
 theorem mem_rationalSubset_one {f : A} (v : SpaPoint A Aplus) :
     v ∈ rationalSubset (A := A) (Aplus := Aplus) (1 : A) {f} ↔ v.v f ≤ 1 := by
