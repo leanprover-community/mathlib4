@@ -260,11 +260,8 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
 
 variable (X) in
 instance [T0Space X] [Nontrivial X] : NontrivialTopology X := by
-  rw [← not_indiscrete_iff]
-  intro
   obtain ⟨a, b, hab⟩ := exists_pair_ne X
-  apply hab
-  exact (Inseparable.all a b).eq
+  exact nontrivial_iff_exists_not_inseparable.mpr ⟨a, b, mt Inseparable.eq hab⟩
 
 theorem subsingleton_iff_indiscreteTopology [T0Space X] :
     Subsingleton X ↔ IndiscreteTopology X := by
