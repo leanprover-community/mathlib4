@@ -39,7 +39,7 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.setCongr <| by simp only [SetCoe.forall]; simp)
+      sigmaCongrRight fun x => Equiv.subtypeEquivRight (by simp)
     _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -56,7 +56,7 @@ fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 
-instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (setOf _)
+instance {k : ℕ} : Fintype (fiber α k) := inferInstanceAs <| Fintype (Set.ofPred _)
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=

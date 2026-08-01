@@ -63,13 +63,13 @@ def support (L : SummationFilter β) : Set β := {b | ∀ᶠ s in L.filter, b �
 lemma support_eq_limsInf (L : SummationFilter β) :
     support L = limsInf (L.filter.map (↑)) := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simpa [support, limsInf, setOf_subset] using
+  simpa [support, limsInf, ofPred_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,
       fun hL x hx ↦ singleton_subset_iff.mp <| hL _ <| by simpa using hx⟩
 
 lemma support_eq_univ_iff {L : SummationFilter β} :
     L.support = univ ↔ L.filter ≤ atTop := by
-  simp only [support, Set.eq_univ_iff_forall, Set.mem_setOf]
+  simp only [support, Set.eq_univ_iff_forall, Set.mem_ofPred]
   refine ⟨fun h s hs ↦ ?_, fun h b ↦ .filter_mono h ?_⟩
   · obtain ⟨t, ht⟩ := mem_atTop_sets.mp hs
     have := (Filter.biInter_finset_mem t).mpr fun b hb ↦ h b

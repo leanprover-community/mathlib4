@@ -45,7 +45,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
   have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
   rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
-  simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+  simp only [Set.mem_ofPred_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
     ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
@@ -179,7 +179,7 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
   | hp =>
     rw [Set.ext fun _ ↦ Iff.comm]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
-    apply withValUniformEquiv.toHomeomorph.isClosed_setOf_iff (q := fun x ↦ ‖x‖ ≤ 1)
+    apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)
     simpa [Metric.closedBall] using IsUltrametricDist.isClopen_closedBall (0 : ℚ_[p]) one_ne_zero
   | ih a =>

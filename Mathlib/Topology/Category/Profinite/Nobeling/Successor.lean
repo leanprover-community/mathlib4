@@ -114,14 +114,16 @@ theorem contained_C1 : contained (π (C1 C ho) (ord I · < o)) o :=
 
 theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
   ext x
-  simp only [C0, C1, Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq,
+  simp only [C0, C1, Set.mem_union, Set.mem_inter_iff, Set.mem_ofPred_eq,
     ← and_or_left, and_iff_left_iff_imp, Bool.dichotomy (x (term I ho)), implies_true]
 
 /--
 The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
 this set.
 -/
-def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def C' := C0 C ho ∩ π (C1 C ho) (ord I · < o)
 
 include hC in
 theorem isClosed_C' : IsClosed (C' C ho) :=
@@ -214,7 +216,7 @@ theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x
     rw [← not_imp_not] at hsC
     simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
     exact (hsC hi).symm
-  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+  · simp only [C0, Set.mem_inter_iff, Set.mem_ofPred_eq] at hx
     rw [eq_comm, ord_term ho] at hi
     rw [← hx.2, hi]
 
@@ -296,7 +298,7 @@ def MaxProducts : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
 include hsC in
 theorem union_succ : GoodProducts C = GoodProducts (π C (ord I · < o)) ∪ MaxProducts C ho := by
   ext l
-  simp only [GoodProducts, MaxProducts, Set.mem_union, Set.mem_setOf_eq]
+  simp only [GoodProducts, MaxProducts, Set.mem_union, Set.mem_ofPred_eq]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases hh : term I ho ∈ l.val
     · exact Or.inr ⟨h, hh⟩
@@ -583,7 +585,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     dsimp only [eval]
     rw [Products.eval_πs C (Products.prop_of_isGood _ _ q.prop)]
     refine ⟨q.val, ⟨?_, rfl⟩⟩
-    simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
+    simp only [Products.lt_iff_lex_lt, Set.mem_ofPred_eq]
     exact good_lt_maxProducts C hsC ho q l
   · apply Submodule.finsuppSum_mem
     intro q hq
@@ -592,7 +594,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rw [Finsupp.mem_supported] at hmmem
     rw [← Finsupp.mem_support_iff] at hq
     refine ⟨⟨term I ho :: q.val, isChain_cons_of_lt C hsC ho l q (hmmem hq)⟩, ⟨?_, rfl⟩⟩
-    simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
+    simp only [Products.lt_iff_lex_lt, Set.mem_ofPred_eq]
     rw [max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.cons ((Products.lt_iff_lex_lt q l.val.Tail).mp (hmmem hq))
 
