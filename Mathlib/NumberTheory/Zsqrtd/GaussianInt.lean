@@ -139,7 +139,7 @@ theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by simp) _
 
 @[simp]
-theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← @Int.cast_inj ℝ _ _ _]; simp
+theorem norm_eq_zero {x : ℤ[i]} : norm x = 0 ↔ x = 0 := by rw [← Int.cast_inj (α := ℝ)]; simp
 
 theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
   rw [lt_iff_le_and_ne, Ne, eq_comm, norm_eq_zero]; simp [norm_nonneg]
