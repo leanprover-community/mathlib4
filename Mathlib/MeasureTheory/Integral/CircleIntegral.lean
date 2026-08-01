@@ -212,20 +212,13 @@ theorem sub (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
 
 /-- Sums of circle integrable functions are circle integrable. -/
 @[fun_prop]
+@[to_fun (attr := fun_prop)]
 protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (∑ i ∈ s, f i) c R := by
   rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
     = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
-
-/-- Sums of circle integrable functions are circle integrable. -/
-@[fun_prop]
-theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
-    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
-    CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
-  convert! CircleIntegrable.sum s h
-  simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
 @[fun_prop]
@@ -242,14 +235,9 @@ nonrec theorem neg (hf : CircleIntegrable f c R) : CircleIntegrable (-f) c R :=
   hf.neg
 
 /-- If `f` is circle integrable, then so are its scalar multiples. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop) const_fun_smul]
 theorem const_smul {f : ℂ → A} (h : CircleIntegrable f c R) : CircleIntegrable (a • f) c R :=
   IntervalIntegrable.const_mul h _
-
-/-- If `f` is circle integrable, then so are its scalar multiples. -/
-@[fun_prop]
-theorem const_fun_smul {f : ℂ → A} (h : CircleIntegrable f c R) :
-    CircleIntegrable (fun z ↦ a • f z) c R := const_smul h
 
 variable
   {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
