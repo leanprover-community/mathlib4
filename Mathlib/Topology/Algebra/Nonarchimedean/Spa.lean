@@ -109,4 +109,73 @@ theorem mem_rationalSubset_one {f : A} (v : SpaPoint A Aplus) :
       rw [hv1] at h0
       exact one_ne_zero h0
 
+/-- Wedhorn, Rem. 7.30(3), p. 63: `R(T/s) = R(T ∪ {s}/s)` — one may always
+assume `s ∈ T`. -/
+theorem rationalSubset_insert_self (s : A) (T : Finset A) [DecidableEq A] :
+    rationalSubset (A := A) (Aplus := Aplus) s T =
+      rationalSubset (A := A) (Aplus := Aplus) s (insert s T) := by
+  ext v
+  constructor
+  · rintro ⟨hT, hs⟩
+    refine ⟨?_, hs⟩
+    intro t ht
+    rcases Finset.mem_insert.mp ht with rfl | ht
+    · rfl
+    · exact hT t ht
+  · rintro ⟨hT, hs⟩
+    exact ⟨fun t ht => hT t (by simp [ht]), hs⟩
+
+/-- Wedhorn, Rem. 7.30(4), p. 63: for `s` a unit, `R(T/s)` is always a rational
+subset, hence open — since `R(T/s) = R(T ∪ {s}/s)` and the ideal `(T ∪ {s})·A`
+contains the unit `s` and is therefore the whole ring. -/
+theorem isOpen_rationalSubset_of_unit (s : A) (T : Finset A) [DecidableEq A]
+    (hs : IsUnit s) :
+    IsOpen (rationalSubset (A := A) (Aplus := Aplus) s T) := by
+  rw [rationalSubset_insert_self]
+  apply isOpen_rationalSubset
+  -- the ideal spanned by T ∪ {s} contains the unit s, hence is ⊤, which is open
+  have hspan_eq : Ideal.span ((insert s T : Finset A) : Set A) = ⊤ := by
+    rcases hs with ⟨u, hu⟩
+    -- s ∈ span; and 1 = s * ↑u⁻¹ ∈ span
+    have hmem_s : s ∈ Ideal.span ((insert s T : Finset A) : Set A) := by
+      exact Ideal.subset_span (by simp)
+    have h1 : (1 : A) = s * (↑(u⁻¹ : Aˣ) : A) := by
+      calc
+        (1 : A) = ↑u * ↑(u⁻¹ : Aˣ) := by
+          simp
+        _ = s * ↑(u⁻¹ : Aˣ) := by rw [hu]
+    have hone_mem : (1 : A) ∈ Ideal.span ((insert s T : Finset A) : Set A) := by
+      rw [h1]
+      exact Ideal.mul_mem_right (↑(u⁻¹ : Aˣ)) _ hmem_s
+    exact (Ideal.eq_top_iff_one _).mpr hone_mem
+  rw [hspan_eq]
+  exact isOpen_univ
+
+/-- Wedhorn, Rem. 7.30(5), p. 63, one direction: `R(T₁/s₁) ∩ R(T₂/s₂) ⊆
+R(T₁T₂/s₁s₂)`, where `T₁T₂ = {t₁t₂ | tᵢ ∈ Tᵢ}`. (The reverse inclusion needs
+the ordered-group cancellation for the value group and is stated separately —
+see the project notes.) -/
+theorem rationalSubset_inter_subset (s₁ : A) (T₁ : Finset A) (s₂ : A)
+    (T₂ : Finset A) [DecidableEq A] :
+    rationalSubset (A := A) (Aplus := Aplus) s₁ T₁ ∩
+        rationalSubset (A := A) (Aplus := Aplus) s₂ T₂ ⊆
+      rationalSubset (A := A) (Aplus := Aplus) (s₁ * s₂)
+        (T₁.product T₂ |>.image fun p : A × A => p.1 * p.2) := by
+  rintro v ⟨⟨hT1, hs1⟩, ⟨hT2, hs2⟩⟩
+  constructor
+  · intro t ht
+    rcases Finset.mem_image.mp ht with ⟨p, hp, rfl⟩
+    rcases Finset.mem_product.mp hp with ⟨hp1, hp2⟩
+    -- v(p.1 * p.2) = v p.1 * v p.2 ≤ v s₁ * v s₂ = v (s₁ * s₂)
+    have hmul1 : v.v (p.1 * p.2) = v.v p.1 * v.v p.2 := map_mul v.v p.1 p.2
+    have hmul2 : v.v (s₁ * s₂) = v.v s₁ * v.v s₂ := map_mul v.v s₁ s₂
+    rw [hmul1, hmul2]
+    exact mul_le_mul' (hT1 p.1 hp1) (hT2 p.2 hp2)
+  · intro h0
+    -- v (s₁ * s₂) ≠ 0
+    have hne : v.v (s₁ * s₂) ≠ 0 := by
+      rw [map_mul]
+      exact mul_ne_zero hs1 hs2
+    exact hne h0
+
 end SpaPoint
