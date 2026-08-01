@@ -7,8 +7,6 @@ module
 
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Length
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
