@@ -127,7 +127,7 @@ theorem card_nfpFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
     {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
     (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
     (nfpFamily f o).card ≤ max c o.card := by
-  haveI : Small.{u} ι := small_of_lift_mk_le_lift hι
+  have : Small.{u} ι := small_of_lift_mk_le_lift hι
   replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
   set σ := equivShrink (List ι) |>.symm
   rw [nfpFamily, ← Equiv.iSup_comp σ]
