@@ -80,6 +80,10 @@ abbrev fromPath {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x
 @[simps!] def map (f : C(X, Y)) (x : X) : FundamentalGroup X x →* FundamentalGroup Y (f x) :=
   (FundamentalGroupoid.map f).mapEnd _
 
+/-- The homomorphism on fundamental groups induced by inclusion into the ambient space. -/
+def mapOfSubtype {U : Set X} (x : U) : FundamentalGroup U x →* FundamentalGroup X x :=
+  map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x
+
 variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
 
 /-- The homomorphism from π₁(X, x) to π₁(Y, y) induced by a continuous map `f` with `f x = y`. -/
