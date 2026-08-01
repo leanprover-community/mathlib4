@@ -191,8 +191,8 @@ theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
 theorem deriv_Gamma_one_eq_integral_log_log {s : ℝ} (hs : 1 < s) :
     deriv Gamma 1 = (s - 1) * (∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1) := by
   rw [deriv_Gamma_one_eq_integral_log, ← mul_zero (s - 1),
-      ← integral_comp_mul_left_Ioi' _ _ (by linarith), ← log_one,
-      ← integral_comp_log_Ioi _ zero_lt_one, smul_eq_mul]
+    ← integral_comp_mul_left_Ioi' _ _ (by linarith), ← log_one,
+    ← integral_comp_log_Ioi _ zero_lt_one, smul_eq_mul]
   have hs' : s - 1 ≠ 0 := by linarith
   calc
     _ = (s - 1) * ∫ (t : ℝ) in Ioi 1, (log (log t) + log (s - 1)) * t ^ (-s) := by
