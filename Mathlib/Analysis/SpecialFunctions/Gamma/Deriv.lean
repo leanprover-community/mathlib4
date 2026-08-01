@@ -211,7 +211,7 @@ theorem deriv_Gamma_one_eq_integral_log_log {s : ℝ} (hs : 1 < s) :
         convert! integral_Ioi_rpow_of_lt (a := -s) (c := 1) (by linarith) zero_lt_one using 1
         simp; grind
       exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
-    _ = _ := by field_simp
+    _ = _ := by grind
 
 @[fun_prop]
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
