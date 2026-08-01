@@ -66,7 +66,7 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
 theorem hasDerivAt_Gamma {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt Gamma (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
   have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
-  apply (hasDerivAt_GammaIntegral (by simpa using hs)).congr_of_eventuallyEq
+  apply (hasDerivAt_GammaIntegral hs).congr_of_eventuallyEq
   filter_upwards [this.mem_nhds hs] with a using Gamma_eq_integral
 
 @[fun_prop]
