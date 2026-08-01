@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Wide pullbacks
@@ -37,12 +36,14 @@ namespace CategoryTheory.Limits
 variable (J : Type w)
 
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePullbackShape := Option J
 
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/
+@[implicit_reducible]
 def WidePushoutShape := Option J
 
 instance : Inhabited (WidePushoutShape J) where
@@ -79,13 +80,14 @@ open Lean Elab Tactic
 /- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
 aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash : TacticM Unit := do
+meta def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
       (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
@@ -103,6 +105,7 @@ theorem hom_id (X : WidePullbackShape J) : Hom.id X = 𝟙 X :=
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a functor out of the wide pullback shape given a J-indexed collection of arrows to a
 fixed object.
 -/
@@ -114,11 +117,15 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
     · apply 𝟙 _
     · exact arrows j
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
   NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cone over a wide cospan. -/
 @[simps]
 def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : ∀ j, X ⟶ F.obj (some j))
@@ -132,6 +139,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
     WidePullbackShape J ≌ WidePullbackShape J' where
@@ -204,13 +212,14 @@ instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
 open Lean Elab Tactic
 -- Pointing note: experimenting with manual scoping of aesop tactics; only this worked
 /-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash' : TacticM Unit := do
+meta def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
       (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
@@ -242,11 +251,15 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · cases g
       simp only [hom_id, Category.comp_id]; congr
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
   NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cocone over a wide span. -/
 @[simps]
 def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι : ∀ j, F.obj (some j) ⟶ X)
@@ -260,6 +273,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
         naturality := fun j j' f => by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
@@ -337,12 +351,12 @@ variable {X : C} (f : X ⟶ B) (fs : ∀ j : J, X ⟶ objs j) (w : ∀ j, fs j �
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_π (j : J) : lift f fs w ≫ π arrows j = fs _ := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem lift_base : lift f fs w ≫ base arrows = f := by
-  simp only [limit.lift_π, WidePullbackShape.mkCone_pt, WidePullbackShape.mkCone_π_app]
+  simp only [limit.lift_π, WidePullbackShape.mkCone_π_app]
 
 theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
     (∀ j : J, g ≫ π arrows j = fs j) → g ≫ base arrows = f → g = lift f fs w := by
@@ -386,9 +400,11 @@ def π (s : WidePullbackCone f) (i : ι) : s.pt ⟶ Y i :=
 def base (s : WidePullbackCone f) : s.pt ⟶ X :=
   (Cone.π s).app none
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma condition (s : WidePullbackCone f) (i : ι) : s.π i ≫ f i = s.base := by
-  simpa using ((Cone.π s).naturality (.term i)).symm
+  simpa using! ((Cone.π s).naturality (.term i)).symm
 
 /-- Construct a wide pullback cone from the projections. -/
 @[simps! pt]
@@ -473,6 +489,7 @@ lemma reindex_π {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} (s :
     {ι' : Type*} (e : ι' ≃ ι) (i : ι') :
     (s.reindex e).π i = s.π (e i) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing a pullback cone preserves being limiting. -/
 def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}
@@ -517,12 +534,12 @@ variable {X : C} (f : B ⟶ X) (fs : ∀ j : J, objs j ⟶ X) (w : ∀ j, arrows
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_desc (j : J) : ι arrows j ≫ desc f fs w = fs _ := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_ι_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem head_desc : head arrows ≫ desc f fs w = f := by
-  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_pt, WidePushoutShape.mkCocone_ι_app]
+  simp only [colimit.ι_desc, WidePushoutShape.mkCocone_ι_app]
 
 theorem eq_desc_of_comp_eq (g : widePushout _ _ arrows ⟶ X) :
     (∀ j : J, ι arrows j ≫ g = fs j) → head arrows ≫ g = f → g = desc f fs w := by

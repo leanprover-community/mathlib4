@@ -6,9 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.ULift
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Logic.UnivLE
 public import Mathlib.Logic.Small.Basic
 
@@ -182,6 +180,7 @@ noncomputable def inverse : ShrinkHoms C ⥤ C where
   obj X := fromShrinkHoms X
   map {X Y} f := (equivShrink (fromShrinkHoms X ⟶ fromShrinkHoms Y)).symm f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ShrinkHoms C`, when `C` is locally small.
 -/
@@ -290,7 +289,7 @@ instance [Small.{w} C] [LocallySmall.{w} C] :
   refine small_of_injective (f := φ) ?_
   rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
   obtain rfl : s = s' := congr_arg Sigma.fst h
-  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  simp only [Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
   obtain rfl : t = t' := h.1
   obtain rfl : f = f' := by simpa using h
   rfl

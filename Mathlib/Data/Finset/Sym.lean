@@ -64,7 +64,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     simp_all
-  · simpa [map_eq_image] using sym2_cons a s ha
+  · simpa [map_eq_image] using! sym2_cons a s ha
 
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
   val_injective <| s.val.sym2_map _
@@ -206,13 +206,14 @@ lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
       rw [← hi]
       exact (hd e he).choose_spec.1
     · simp only [Sym.map_map, Function.comp_apply, g']
-      convert Sym.attach_map_coe d with ⟨x, hx⟩ hx'
+      convert! Sym.attach_map_coe d with ⟨x, hx⟩ hx'
       exact (hd x hx).choose_spec.2
   · rw [← hd', Sym.mem_map] at hd
     obtain ⟨a, ha, rfl⟩ := hd
     exact ⟨a, hb a ha, rfl⟩
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
@@ -275,7 +276,7 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   for `0 ≤ i ≤ n`. -/
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
-  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
+  toFun m := ⟨_, (m.1.filterNe a).2, by convert! sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by

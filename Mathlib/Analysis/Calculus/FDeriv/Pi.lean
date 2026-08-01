@@ -23,8 +23,8 @@ theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :
   rw [hasFDerivAt_pi]
   intro j
   rcases eq_or_ne j i with rfl | hij
-  · simpa using hasFDerivAt_id _
-  · simpa [hij] using hasFDerivAt_const _ _
+  · simpa using! hasFDerivAt_id _
+  · simpa [hij] using! hasFDerivAt_const _ _
 
 @[fun_prop]
 theorem hasFDerivAt_single {i : ι} (y : E i) :

@@ -161,6 +161,7 @@ end SubringClass
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
+@[wikidata Q929536]
 structure Subring (R : Type u) [NonAssocRing R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/
@@ -179,7 +180,7 @@ lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).In
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+  coe_injective := SetLike.coe_injective.comp toSubsemiring_injective
 
 lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
@@ -222,6 +223,7 @@ instance : SubringClass (Subring R) R where
   neg_mem {s} := s.neg_mem'
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
 
 @[simp]

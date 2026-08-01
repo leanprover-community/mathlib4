@@ -23,11 +23,11 @@ them to construct monoidal, braided, and symmetric structures on
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-open scoped MonoidalCategory ComonObj
+open scoped MonoidalCategory
 
 variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 

@@ -49,11 +49,11 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
@@ -100,6 +100,8 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /--
 Pull back a `HasExactLimitsOfShape J` along a functor which preserves and reflects finite colimits
@@ -142,7 +144,7 @@ lemma HasExactColimitsOfShape.of_codomain_equivalence (J : Type*) [Category* J] 
     [Category* D] (e : C ≌ D) [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
     haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
     HasExactColimitsOfShape J D := by
-  haveI : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
+  have : HasColimitsOfShape J D := Adjunction.hasColimitsOfShape_of_equivalence e.inverse
   refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
   refine preservesLimit_of_natIso K (?_ : e.congrRight.inverse ⋙ colim ⋙ e.functor ≅ colim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
@@ -166,7 +168,7 @@ lemma HasExactLimitsOfShape.of_codomain_equivalence (J : Type*) [Category* J] {D
     [Category* D] (e : C ≌ D) [HasLimitsOfShape J C] [HasExactLimitsOfShape J C] :
     haveI : HasLimitsOfShape J D := Adjunction.hasLimitsOfShape_of_equivalence e.inverse
     HasExactLimitsOfShape J D := by
-  haveI : HasLimitsOfShape J D := Adjunction.hasLimitsOfShape_of_equivalence e.inverse
+  have : HasLimitsOfShape J D := Adjunction.hasLimitsOfShape_of_equivalence e.inverse
   refine ⟨⟨fun _ _ _ => ⟨@fun K => ?_⟩⟩⟩
   refine preservesColimit_of_natIso K (?_ : e.congrRight.inverse ⋙ lim ⋙ e.functor ≅ lim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
@@ -241,7 +243,7 @@ instance (priority := 100) [HasCoproducts.{w} C] [AB4OfSize.{w} C] :
     haveI : HasCoproducts.{0} C := hasCoproducts_shrink
     AB4OfSize.{0} C := AB4OfSize_shrink C
 
-/-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
+/-- A category `C` which has products is said to have `AB4Star` (in literature AB4\*)
 provided that products are exact. -/
 @[pp_with_univ, stacks 079B]
 class AB4StarOfSize [HasProducts.{w} C] where
@@ -249,7 +251,7 @@ class AB4StarOfSize [HasProducts.{w} C] where
 
 attribute [instance] AB4StarOfSize.ofShape
 
-/-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
+/-- A category `C` which has products is said to have `AB4Star` (in literature AB4\*)
 provided that products are exact. -/
 abbrev AB4Star [HasProducts C] := AB4StarOfSize.{v} C
 
@@ -310,10 +312,10 @@ lemma AB5OfSize_of_univLE [HasFilteredColimitsOfSize.{w₂, w₂'} C] [UnivLE.{w
     [UnivLE.{w', w₂'}] [AB5OfSize.{w₂, w₂'} C] :
     haveI : HasFilteredColimitsOfSize.{w, w'} C := hasFilteredColimitsOfSize_of_univLE.{w}
     AB5OfSize.{w, w'} C := by
-  haveI : HasFilteredColimitsOfSize.{w, w'} C := hasFilteredColimitsOfSize_of_univLE.{w}
+  have : HasFilteredColimitsOfSize.{w, w'} C := hasFilteredColimitsOfSize_of_univLE.{w}
   constructor
   intro J _ _
-  haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
+  have := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
     Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactColimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
     Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
@@ -344,10 +346,10 @@ lemma AB5StarOfSize_of_univLE [HasCofilteredLimitsOfSize.{w₂, w₂'} C] [UnivL
     [UnivLE.{w', w₂'}] [AB5StarOfSize.{w₂, w₂'} C] :
     haveI : HasCofilteredLimitsOfSize.{w, w'} C := hasCofilteredLimitsOfSize_of_univLE.{w}
     AB5StarOfSize.{w, w'} C := by
-  haveI : HasCofilteredLimitsOfSize.{w, w'} C := hasCofilteredLimitsOfSize_of_univLE.{w}
+  have : HasCofilteredLimitsOfSize.{w, w'} C := hasCofilteredLimitsOfSize_of_univLE.{w}
   constructor
   intro J _ _
-  haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
+  have := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
     Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactLimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
     Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
@@ -467,7 +469,7 @@ lemma AB4Star.of_AB5Star [HasCofilteredLimitsOfSize.{w, w} C] [AB5StarOfSize.{w,
   ofShape _ := hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op _ _
 
 /--
-A category with finite biproducts and finite limits has countable AB4* if sequential limits are
+A category with finite biproducts and finite limits has countable AB4\* if sequential limits are
 exact.
 -/
 lemma CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [HasExactLimitsOfShape ℕᵒᵖ C]
@@ -500,7 +502,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat_and_finite [HasCountableCoprod
 
 /--
 Checking exactness of limits of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for
-countable AB4*.
+countable AB4\*.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProducts C]
     [HasFiniteColimits C] [∀ (J : Type) [Finite J], HasExactLimitsOfShape (Discrete J) C]
@@ -516,7 +518,6 @@ lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProd
 
 section EpiMono
 
-open Functor
 
 section
 
@@ -540,7 +541,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCounta
   exact fun _ ↦ inferInstance
 
 /--
-Checking exact limits of shape `Discrete ℕ` is enough for countable AB4*, provided that the
+Checking exact limits of shape `Discrete ℕ` is enough for countable AB4\*, provided that the
 category has finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]

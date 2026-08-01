@@ -111,11 +111,10 @@ namespace Subgroup
 
 variable {s : Set G} {g : G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance zpowers_isMulCommutative (g : G) : IsMulCommutative (zpowers g) :=
-  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
-      rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
-        zpow_mul_comm]⟩⟩
+  ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ ↦ by simp [← h₁, ← h₂, zpow_mul_comm]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by

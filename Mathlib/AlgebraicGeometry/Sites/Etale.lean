@@ -45,14 +45,47 @@ lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   intro X Y f hf
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The small étale site of a scheme is the Grothendieck topology on the
 category of schemes étale over `X` induced from the étale topology on `Scheme.{u}`. -/
 def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
   X.smallGrothendieckTopology (P := @Etale)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pretopology generating the small étale site. -/
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @Etale) (P := @Etale)
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+lemma ofArrows_mem_smallEtaleTopology_iff
+    {X : Scheme.{u}} {W : X.Etale} {ι : Type*}
+    {Z : ι → X.Etale} (f : ∀ i, Z i ⟶ W) :
+    Sieve.ofArrows _ f ∈ smallEtaleTopology _ _ ↔
+      ⋃ i, Set.range (f i).left = .univ := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ (mem_smallGrothendieckTopology _ _).2 ?_⟩
+  · obtain ⟨U, _, _, hU⟩ := (mem_smallGrothendieckTopology _ _).1 hf
+    ext y
+    simp only [Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
+    obtain ⟨i, ⟨u, rfl⟩⟩ := ((ofArrows_mem_precoverage_iff _).1 U.mem₀).1 y
+    obtain ⟨_, b, _, ⟨j⟩, fac⟩ := hU _ _ ⟨i⟩
+    replace fac : b.left ≫ (f j).left = U.f i :=
+      (Etale.forget _ ⋙ CategoryTheory.Over.forget _).congr_map fac
+    exact ⟨j, b.left u, by simp [← fac]⟩
+  · have (w : W.left) : ∃ (i : ι), w ∈ Set.range (f i).left := by
+      have := Set.mem_univ w
+      simpa [← hf]
+    choose i z hz using this
+    let V : Cover (precoverage @Etale) W.left :=
+      Cover.mkOfCovers W.left (fun w ↦ (Z (i w)).left)
+        (fun w ↦ (f (i w)).left) (fun w ↦ ⟨_, _, hz w⟩) inferInstance
+    let : Cover.Over X V :=
+      { over w := ⟨(Z (i w)).hom⟩
+        isOver_map w := by cat_disch }
+    have (w : W.left) : Etale (V.X w ↘ X) := (Z (i w)).prop
+    refine ⟨V, inferInstance, inferInstance, ?_⟩
+    rintro _ _ ⟨w⟩
+    refine ⟨_, 𝟙 _, _, ⟨i w⟩, by cat_disch⟩
 
 instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @Etale)) (i : 𝒰.I₀) : Etale (𝒰.f i) :=
   𝒰.map_prop i

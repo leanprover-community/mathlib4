@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
+
 Given a finite root pairing, we define a canonical map from weight space to coweight space, and the
 corresponding bilinear form. This form is symmetric and Weyl-invariant, and if the base ring is
 linearly ordered, then the form is root-positive, positive-semidefinite on the weight space, and
@@ -219,6 +220,11 @@ lemma CoPolarizationIn_eq (x : P.corootSpan S) :
 commutative ring, where the root-coroot pairing takes values in that ring. -/
 def RootFormIn : LinearMap.BilinForm S (P.rootSpan S) :=
   ∑ i, (P.coroot'In S i).smulRight (P.coroot'In S i)
+
+omit [Module S N] [IsScalarTower S R N] in
+lemma rootFormIn_isSymm :
+    (P.RootFormIn S).IsSymm := by
+  simp [LinearMap.isSymm_def, mul_comm, RootFormIn]
 
 omit [Module S N] [IsScalarTower S R N] in
 @[simp]

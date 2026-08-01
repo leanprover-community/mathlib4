@@ -82,7 +82,7 @@ theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻�
 theorem mem_comap {K : Subgroup N} {f : G →* N} {x : G} : x ∈ K.comap f ↔ f x ∈ K :=
   Iff.rfl
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem comap_mono {f : G →* N} {K K' : Subgroup N} : K ≤ K' → comap f K ≤ comap f K' :=
   preimage_mono
 
@@ -158,11 +158,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
     x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
   Set.mem_image_equiv
 
--- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[to_additive (attr := simp 1100, nolint simpNF)]
+@[to_additive (attr := simp 1100)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
     f x ∈ K.map f ↔ x ∈ K :=
   hf.mem_set_image
@@ -373,21 +369,20 @@ theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H 
 variable (H : Subgroup G)
 
 @[to_additive]
-instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) :=
-  ⟨⟨by
-      rintro ⟨-, a, ha, rfl⟩ ⟨-, b, hb, rfl⟩
-      rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← map_mul, ← map_mul]
-      exact congr_arg f (Subtype.ext_iff.mp (mul_comm (⟨a, ha⟩ : H) ⟨b, hb⟩))⟩⟩
+instance [IsMulCommutative G] : IsMulCommutative H :=
+  IsMulCommutative.of_setLike_mul_comm fun a _ b _ ↦ mul_comm' a b
+
+@[to_additive]
+instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) := by
+  refine .of_setLike_mul_comm ?_
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
+  simpa [map_mul] using congr(f $(setLike_mul_comm ha hb))
 
 @[to_additive]
 theorem comap_injective_isMulCommutative {f : G' →* G} (hf : Injective f) [IsMulCommutative H] :
     IsMulCommutative (H.comap f) :=
-  ⟨⟨fun a b =>
-      Subtype.ext
-        (by
-          have := mul_comm (⟨f a, a.2⟩ : H) (⟨f b, b.2⟩ : H)
-          rwa [Subtype.ext_iff, coe_mul, coe_mul, coe_mk, coe_mk, ← map_mul, ← map_mul,
-            hf.eq_iff] at this)⟩⟩
+  .of_setLike_mul_comm fun a (ha : f a ∈ H) b (hb : f b ∈ H) ↦ hf <| by
+    simpa using setLike_mul_comm ha hb
 
 @[to_additive]
 instance subgroupOf_isMulCommutative [IsMulCommutative H] : IsMulCommutative (H.subgroupOf K) :=
@@ -398,6 +393,7 @@ end Subgroup
 namespace MulEquiv
 variable {H : Type*} [Group H]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their inverse images.
@@ -424,6 +420,7 @@ lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMo
 @[to_additive (attr := simp)]
 lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.

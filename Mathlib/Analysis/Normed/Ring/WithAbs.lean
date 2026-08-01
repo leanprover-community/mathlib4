@@ -56,7 +56,8 @@ section Semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
 
-instance : Semiring (WithAbs v) := Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
+instance : Semiring (WithAbs v) :=
+  fast_instance% Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
 
 lemma ofAbs_toAbs (x : R) : ofAbs (toAbs v x) = x := rfl
 @[simp] lemma toAbs_ofAbs (x : WithAbs v) : toAbs v (ofAbs x) = x := rfl
@@ -177,7 +178,7 @@ instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).
 
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
-  (equiv v).normedRing
+  fast_instance% (equiv v).normedRing
 
 lemma norm_eq_apply_ofAbs (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v x.ofAbs := rfl
 lemma norm_toAbs_eq (v : AbsoluteValue R ℝ) (x : R) : ‖toAbs v x‖ = v x := rfl
@@ -216,7 +217,7 @@ theorem smul_left_def [SMul R T] (x : WithAbs v) (t : T) :
 instance [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
   eq_of_smul_eq_smul h := ofAbs_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul T R] : SMul T (WithAbs v) := (equiv v).smul T
+instance [SMul T R] : SMul T (WithAbs v) := Equiv.smul T { toFun := ofAbs, invFun := toAbs v }
 
 theorem smul_right_def [SMul T R] (t : T) (x : WithAbs v) :
     t • x = toAbs v (t • x.ofAbs) := rfl
@@ -237,10 +238,8 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
     [IsScalarTower P R T] : IsScalarTower P (WithAbs v) T where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
-@[implicit_reducible]
-def moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
-  .compHom T (equiv v).toRingHom
+instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
+  fast_instance% .compHom T (equiv v).toRingHom
 
 @[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
 
@@ -254,8 +253,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv [Semiring T] [Module R T] (v : AbsoluteValue T S) :
-    WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
 
 variable {v}
 
@@ -269,16 +267,12 @@ section algebra
 variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 
 variable (T) in
-/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
-@[implicit_reducible]
-def algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
-  .compHom T (equiv v).toRingHom
+instance algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
+  fast_instance% .compHom T (equiv v).toRingHom
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
     algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_injective (v : AbsoluteValue R S)
     (h : Function.Injective (algebraMap R T)) :
     Function.Injective (algebraMap (WithAbs v) T) :=
@@ -288,13 +282,12 @@ instance (v : AbsoluteValue T S) : Algebra R (WithAbs v) :=
   fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
-    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x):= rfl
+    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x) := rfl
 
 theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
   (toAbs_injective v).comp h
 
-attribute [local instance] algebraLeft in
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 

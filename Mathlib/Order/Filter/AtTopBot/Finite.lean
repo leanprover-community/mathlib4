@@ -62,12 +62,11 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
-    push_neg at hn_min
+    push Not at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩
   use n, hnN
   grind
 
--- see Note [nolint_ge]
 /-- If `u` is a sequence which is unbounded below,
 then after any point, it reaches a value strictly smaller than all previous values.
 -/
@@ -106,7 +105,7 @@ theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 
   rw [← Nat.div_add_mod b n]
   have hlt := Nat.mod_lt b hn.bot_lt
   refine hN _ hlt _ ?_
-  rw [ge_iff_le, Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
+  rw [Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
   exact (Finset.le_sup (f := (n * N ·)) (Finset.mem_range.2 hlt)).trans hb
 
 /-- Given an antitone basis `s : ℕ → Set α` of a filter, extract an antitone subbasis `s ∘ φ`,
@@ -137,7 +136,7 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
   obtain (rfl | c0) := c.eq_zero_or_pos
   · simp [Nat.two_mul, ← Nat.add_assoc, Nat.add_right_comm _ 1, Nat.factorial_pos]
   refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
-  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
+  convert_to! (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
   · rw [← pow_mul, ← pow_add]
     congr 1
     lia

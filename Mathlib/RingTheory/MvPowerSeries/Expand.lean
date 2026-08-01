@@ -136,19 +136,20 @@ theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i
     contradiction
   simp [meq]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem support_expand_subset (φ : MvPowerSeries σ R) :
     (expand p hp φ).support ⊆ φ.support.image (p • ·) := by
   intro d hd
   have : ∀ i, p ∣ d i := fun _ => by_contra fun hc => hd (coeff_expand_of_not_dvd p hp φ hc)
-  letI m := d.mapRange (fun n => n / p) (Nat.zero_div p)
+  let m := d.mapRange (fun n => n / p) (Nat.zero_div p)
   have eq_aux : p • m = d := (Finsupp.ext fun a => Nat.eq_mul_of_div_eq_right (this a) rfl).symm
   rw [Function.mem_support, ← eq_aux, ← coeff_apply (expand p hp φ), coeff_expand_smul,
     coeff_apply] at hd
   exact ⟨m, hd, eq_aux⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem support_expand (φ : MvPowerSeries σ R) :
     (expand p hp φ).support = φ.support.image (p • ·) := by
-  classical
   refine (support_expand_subset p hp φ).antisymm ?_
   intro d hd
   obtain ⟨n, hn₁, hn₂⟩ := hd
@@ -199,7 +200,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
   by_cases! h : ∀ i, p ∣ d i
   · obtain ⟨m, hm⟩ : ∃ m, p • m = d := ⟨d.mapRange (fun a ↦ a / p) (by simp),
       by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
-    by_cases! h_le : m ≤ n
+    by_cases h_le : m ≤ n
     · rw [← hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
         MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
     · have not_le : ¬ p • m ≤ p • n := by
@@ -213,7 +214,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
         if_neg h_le]
   · obtain ⟨i, hi⟩ := h
     rw [MvPolynomial.coeff_expand_of_not_dvd _ hi]
-    by_cases! hd : d ≤ p • n
+    by_cases hd : d ≤ p • n
     · rw [coeff_trunc', if_pos hd, coeff_expand_of_not_dvd _ hp _ hi]
     rw [coeff_trunc', if_neg hd]
 
@@ -235,16 +236,14 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
   rw [eq_iff_frequently_trunc'_eq, Filter.frequently_atTop]
   intro n
   use (p • n)
-  refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
+  refine ⟨le_self_nsmul zero_le hp, ?_⟩
   · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
       simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
-      ext m
-      simp only [MvPolynomial.coeff_coe, MvPolynomial.coeff_map, coeff_map]
     rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
       (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
-        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
+        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul zero_le hp)]
 
 theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
     map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by

@@ -46,7 +46,8 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
+@[instance_reducible]
+def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
@@ -62,18 +63,21 @@ theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a
 
 end LieRing
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 section AssociativeModule
 
 variable {M : Type w} [AddCommGroup M] [Module A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can regard a module over an associative ring `A` as a Lie ring module over `A` with Lie
 bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -93,6 +97,7 @@ section LieAlgebra
 
 variable {R : Type u} [CommRing R] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
 instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A where
@@ -123,6 +128,14 @@ instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
+-- TODO: fix this
+/-- Unfortunately we now have two brackets which are not equal at reducible transparency, even
+though they are equal at default transparency. We can use this lemma on rare occasions when this
+matters. -/
+theorem Module.End.instLieRingModule_eq :
+    LinearMap.instLieRingModule (L := Module.End R M) (M := M) (N := M) = lieRingSelfModule :=
+  rfl
+
 end AssociativeRepresentation
 
 namespace AlgHom
@@ -130,6 +143,7 @@ namespace AlgHom
 variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
 functorial. -/
 def toLieHom : A →ₗ⁅R⁆ B :=
@@ -162,6 +176,8 @@ end AlgHom
 end LieAlgebra
 
 end OfAssociative
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AdjointAction
 
@@ -224,6 +240,7 @@ lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ 
     x = y :=
   (toEnd_eq_iff R L M).mp <| LinearMap.ext h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
     toEnd R L M x = 0 ↔ x = 0 := by
@@ -357,6 +374,7 @@ end LieSubmodule
 
 open LieAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LieAlgebra.ad_eq_lmul_left_sub_lmul_right (A : Type v) [Ring A] [Algebra R A] :
     (ad R A : A → Module.End R A) = LinearMap.mulLeft R - LinearMap.mulRight R := by
   ext a b; simp [LieRing.of_associative_ring_bracket]
@@ -369,6 +387,7 @@ theorem LieSubalgebra.ad_comp_incl_eq (K : LieSubalgebra R L) (x : K) :
 
 end AdjointAction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A subalgebra of an associative algebra is a Lie subalgebra of the associated Lie algebra. -/
 def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [Algebra R A]
     (A' : Subalgebra R A) : LieSubalgebra R A :=
@@ -386,7 +405,6 @@ variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 variable (e : M₁ ≃ₗ[R] M₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
 def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
   { e.conj with
@@ -411,6 +429,7 @@ variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
 variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
 variable (e : A₁ ≃ₐ[R] A₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/
 def toLieEquiv : A₁ ≃ₗ⁅R⁆ A₂ :=
   { e.toLinearEquiv with

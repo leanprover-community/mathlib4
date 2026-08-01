@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 # Existence of conical terminal objects
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u u'
 

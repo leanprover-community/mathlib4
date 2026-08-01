@@ -36,7 +36,7 @@ to define the nilpotency of `r : R`.
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 

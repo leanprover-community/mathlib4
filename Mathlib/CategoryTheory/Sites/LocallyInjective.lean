@@ -80,7 +80,7 @@ lemma equalizerSieve_mem [IsLocallyInjective J φ]
 lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.app X)) :
     IsLocallyInjective J φ where
   equalizerSieve_mem {X} x y h := by
-    convert J.top_mem X.unop
+    convert! J.top_mem X.unop
     ext Y f
     simp only [equalizerSieve_apply, op_unop, Sieve.top_apply, iff_true]
     apply hφ
@@ -88,8 +88,7 @@ lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injecti
 
 instance [IsIso φ] : IsLocallyInjective J φ :=
   isLocallyInjective_of_injective J φ (fun X => Function.Bijective.injective (by
-    rw [← isIso_iff_bijective]
-    change IsIso ((forget D).map (φ.app X))
+    rw [bijective_iff_isIso_ofHom]
     infer_instance))
 
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
@@ -114,7 +113,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
     refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
-      simpa using ha
+      simpa using! ha
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
@@ -179,7 +178,7 @@ section
 
 open GrothendieckTopology.Plus
 
-instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
+instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
     IsLocallyInjective J (J.toPlus P) where
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
@@ -187,7 +186,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
 set_option backward.isDefEq.respectTransparency false in
-instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
+instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :
     IsLocallyInjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]

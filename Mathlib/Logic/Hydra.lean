@@ -64,7 +64,6 @@ theorem cutExpand_le_invImage_lex [DecidableEq α] [Std.Irrefl r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')
-  classical
   refine ⟨a, fun b h ↦ ?_, ?_⟩ <;> simp_rw [toFinsupp_apply]
   · apply_fun count b at he
     simpa only [count_add, count_singleton, if_neg h.2, add_zero, count_eq_zero.2 (hr b h.1)]
@@ -84,7 +83,7 @@ theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand
   exists₂_congr fun _ _ ↦ and_congr Iff.rfl <| by rw [add_assoc, add_assoc, add_left_cancel_iff]
 
 lemma cutExpand_add_right {s' s} (t) : CutExpand r (s' + t) (s + t) ↔ CutExpand r s' s := by
-  convert cutExpand_add_left t using 2 <;> apply add_comm
+  convert! cutExpand_add_left t using 2 <;> apply add_comm
 
 theorem cutExpand_add_single {a' a : α} (s : Multiset α) (h : r a' a) :
     CutExpand r (s + {a'}) (s + {a}) :=

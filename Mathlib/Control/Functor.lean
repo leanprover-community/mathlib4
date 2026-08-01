@@ -43,6 +43,7 @@ theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
 
+set_option linter.overlappingInstances false in
 theorem Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
     (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →
@@ -172,9 +173,11 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 variable [LawfulFunctor F] [LawfulFunctor G]
 variable {α β γ : Type v}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp only [Comp.map, id_map, id_map']; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, functor_norm, Function.comp_def]

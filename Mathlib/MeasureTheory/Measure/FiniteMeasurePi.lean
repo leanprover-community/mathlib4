@@ -104,7 +104,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro - ⟨s, rfl, smeas, hs⟩
     exact MeasurableSet.univ_pi smeas
-  · letI : ∀ i, PseudoMetricSpace (α i) :=
+  · let : ∀ i, PseudoMetricSpace (α i) :=
       fun i ↦ TopologicalSpace.pseudoMetrizableSpacePseudoMetric (α i)
     intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
@@ -121,7 +121,7 @@ theorem continuous_pi [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTo
       _ ⊆ u := by rwa [← ball_pi _ εpos]
   · rintro - ⟨s, rfl, smeas, hs⟩
     simp only [pi_pi]
-    apply tendsto_finset_prod _ (fun i hi ↦ ?_)
+    apply tendsto_finsetProd _ (fun i hi ↦ ?_)
     exact tendsto_measure_of_null_frontier_of_tendsto (Tendsto.apply_nhds (fun ⦃U⦄ a ↦ a) i) (hs i)
 
 end ProbabilityMeasure

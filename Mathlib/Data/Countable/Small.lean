@@ -14,7 +14,7 @@ public import Mathlib.Data.Countable.Defs
 That is, any countable type is equivalent to a type in any universe.
 -/
 
-@[expose] public section
+public section
 
 universe w v
 

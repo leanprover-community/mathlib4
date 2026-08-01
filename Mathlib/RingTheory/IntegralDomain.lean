@@ -51,7 +51,7 @@ theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancellative monoid with zero is a group with zero. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
@@ -93,7 +93,7 @@ section Ring
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
@@ -105,7 +105,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -120,7 +120,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
-  haveI : DecidableEq R := Classical.decEq _
+  have : DecidableEq R := Classical.decEq _
   calc
     _ ≤ #(nthRoots n (f g₀)).toFinset :=
       card_le_card_of_injOn f (by aesop (add safe unfold Set.MapsTo)) hf.injOn
@@ -188,7 +188,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
     obtain ⟨x, hx⟩ := IsCyclic.exists_monoid_generator (α := MonoidHom.range f.toHomUnits)
     have hx1 : (x.1 : R) - 1 ≠ 0 := by
       rw [sub_ne_zero]
-      contrapose! hf
+      contrapose hf
       ext g
       obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       simpa [hf, Subtype.ext_iff, Units.ext_iff] using hn.symm

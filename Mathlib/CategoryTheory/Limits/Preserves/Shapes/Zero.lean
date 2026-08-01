@@ -75,13 +75,13 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
   map_zero X Y := by
     let adj := Adjunction.ofIsLeftAdjoint F
     calc
-      F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
+      dsimp% F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_
       _ = 0 := ?_
     · rw [Adjunction.left_triangle_components]
       exact (Category.comp_id _).symm
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
-    · simp only [Adjunction.counit_naturality, comp_zero]
+    · simp
 
 set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
@@ -94,7 +94,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D
       _ = 0 := ?_
     · rw [Adjunction.right_triangle_components_assoc]
     · simp only [← G.map_comp, comp_zero]
-    · simp only [id_obj, comp_obj, Adjunction.unit_naturality_assoc, zero_comp]
+    · simp only [id_obj, Adjunction.unit_naturality_assoc, zero_comp]
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :
     PreservesZeroMorphisms F where

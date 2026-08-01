@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Pi
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.MvPolynomial.Ideal
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.CharP.Pi
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.RingTheory.MvPolynomial.Ideal
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
@@ -30,10 +32,9 @@ As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`:
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
-open LinearMap (BilinForm)
-open LinearMap (BilinMap)
+open LinearMap (BilinForm BilinMap)
 
 name_poly_vars X, Y, Z over ZMod 2
 
@@ -154,7 +155,7 @@ theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a 
 
 theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a - b) = sq i a - sq i b := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
 
 /-- The quadratic form (metric) is just Euclidean -/
@@ -234,7 +235,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
   simp_rw [← map_smul, ← map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
-  convert LinearMap.map_zero _ using 2
+  convert LinearMap.map_zero _
   rw [Submodule.Quotient.mk_eq_zero]
   simp +decide [sub_zero]
 
@@ -242,7 +243,6 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
   suffices α • 1 - β • (y' * x') - γ • (z' * x') = 0 by
     have := congr_arg (fun x => (β * γ) • x) this
-    dsimp only at this
     simp_rw [smul_sub, smul_smul] at this
     rwa [mul_assoc β γ γ, mul_right_comm β γ β, mul_right_comm β γ α, mul_comm β α, X_sq, X_sq,
       zero_mul, mul_zero, zero_smul, zero_smul, sub_zero, sub_zero, smul_zero] at this

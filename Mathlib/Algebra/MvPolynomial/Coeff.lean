@@ -17,7 +17,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -94,12 +94,7 @@ lemma coeff_sum_X_pow_of_fintype [Fintype σ] (d : σ →₀ ℕ) (n : ℕ) :
     coeff d (((∑ i, X i : MvPolynomial σ R)) ^ n) =
       if d.sum (fun _ m ↦ m) = n then d.multinomial else 0 := by
   have : (∑ i, X i : MvPolynomial σ R) = ∑ i, (1 : σ → R) i • X i := by simp
-  simp only [this, coeff_linearCombination_X_pow_of_fintype, Pi.one_apply, one_pow, Nat.cast_ite,
-    Nat.cast_zero]
-  split_ifs with hi
-  · convert mul_one _
-    exact Finset.prod_eq_one (by simp)
-  · rfl
+  simp [this, coeff_linearCombination_X_pow_of_fintype]
 
 /-- The formula for the `d`th coefficient of `(X 0 + X 1) ^ n`. -/
 theorem coeff_add_pow (d : Fin 2 →₀ ℕ) (n : ℕ) :
@@ -114,5 +109,10 @@ theorem coeff_add_pow (d : Fin 2 →₀ ℕ) (n : ℕ) :
   · rw [multinomial_eq_of_support_subset (Finset.subset_univ d.support), Finset.univ_fin2,
       Nat.binomial_eq_choose Fin.zero_ne_one, hd]
   · rfl
+
+/-- A monomial in two variables equals `C a * X 0 ^ d 0 * X 1 ^ d 1`. -/
+theorem monomial_fin_two (d : Fin 2 →₀ ℕ) (a : R) :
+    monomial d a = C a * X 0 ^ d 0 * X 1 ^ d 1 := by
+  rw [monomial_eq, mul_assoc, d.prod_fintype _ fun _ ↦ pow_zero _, Fin.prod_univ_two]
 
 end MvPolynomial

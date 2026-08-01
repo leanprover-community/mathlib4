@@ -17,7 +17,7 @@ about limits and colimits indexed by a preordered type `J`:
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u' w
 

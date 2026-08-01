@@ -381,7 +381,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
+      convert! this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
@@ -627,7 +627,7 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
 
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
-  le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
+  le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using! hab.add hbc
   lt_iff_le_not_ge a b := by
     have ht : b ≤ a ∨ a ≤ b := by
       have t := (a - b).nonneg_total
@@ -665,9 +665,9 @@ theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ�
     match a, nonneg_cases ha, ha with
     | _, ⟨x, y, Or.inl rfl⟩, _ => by rw [smul_val]; trivial
     | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
-      rw [smul_val]; simpa using nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
+      rw [smul_val]; simpa using! nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
     | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
-      rw [smul_val]; simpa using nonnegg_neg_pos.2 (sqLe_smul n <| nonnegg_neg_pos.1 ha)
+      rw [smul_val]; simpa using! nonnegg_neg_pos.2 (sqLe_smul n <| nonnegg_neg_pos.1 ha)
 
 theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) :=
   match a, nonneg_cases ha, ha with
@@ -863,7 +863,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   rw [sub_eq_zero] at ha
   by_cases! h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
+    have : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
     exact divides_sq_eq_zero_z ha
   · suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
@@ -873,7 +873,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
 
-variable {R : Type}
+variable {R : Type*}
 
 @[ext]
 theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by
