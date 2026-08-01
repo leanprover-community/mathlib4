@@ -1002,12 +1002,17 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless ← withReducible <| isDefEq srcType tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
       type{indentExpr tgtType}"
-  -- Process any remaining universe contraints, to assign all universe metavariables.
+  -- Process any remaining universe constraints, to assign all universe metavariables.
   discard <| processPostponed (mayPostpone := false) (exceptionOnFailure := true)
-  let params ← levels.mapM fun level ↦ do match ← instantiateLevelMVars level with
+  let tgtParams := tgtDecl.levelParams.toArray
+  let params ← levels.mapIdxM fun i level ↦ do
+    match ← instantiateLevelMVars level with
     | .param u => return u
-    | _ => throwError "inferred universe `{level}` in `{srcType}` is not a parameter."
-  let some univReorder := getPermutation params.toArray tgtDecl.levelParams.toArray |
+    | _ =>
+      -- For example in `HasLimitsOfSize`, not all universe levels appear in the type.
+      -- In that case, default to not permuting the universe levels.
+      return tgtParams[i]!
+  let some univReorder := getPermutation params.toArray tgtParams |
     throwError "inferred universe parameters {params} \
       are not a reordering of {srcDecl.levelParams}."
   return ({ univReorder, reorder }, ← getRelevantArg t cfg relevantArg? src lint)
@@ -1275,6 +1280,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- tgt doesn't exist, so let's make it
     transformDeclRec t cfg src tgt src reorder cfg.rename
   if let some doc := cfg.doc then
+    if alreadyExists then
+      logWarningAt doc <|
+        if (← findInternalDocString? (← getEnv) tgt).isSome then
+          m!"The target declaration `{.ofConstName tgt}` already has a docstring."
+        else
+          m!"This docstring should be added directly to `{.ofConstName tgt}`."
     -- TODO: `Syntax.missing` means we do not add binders to the context,
     -- so the docstring is going to have incomplete syntax highlighting.
     addDocString tgt Syntax.missing doc |>.run'.run'
