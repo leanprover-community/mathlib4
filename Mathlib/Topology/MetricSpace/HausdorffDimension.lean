@@ -539,12 +539,12 @@ Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff 
 
 /-- If `f` is differentiable on a set `s` in a finite-dimensional real normed space, then
 `dimH (f '' t) ≤ dimH t` for any `t ⊆ s`. -/
-theorem DifferentiableOn.dimH_image_le {f : E → F} {t : Set E} (hf : DifferentiableOn ℝ f t) : 
+theorem DifferentiableOn.dimH_image_le {f : E → F} {t : Set E} (hf : DifferentiableOn ℝ f t) :
     dimH (f '' t) ≤ dimH t := by
   -- `P (n, k)` collects the points of `t` near which `f` grows at rate at most `n` at scale
   -- `(n + 1)⁻¹`, intersected with the ball of radius `(n + 1)⁻¹ / 2` around the `k`-th point of
   -- a dense sequence. Then `f` is `n`-Lipschitz on each piece, and the pieces cover `t`.
-  let P (n k : ℕ) : Set E := 
+  let P (n k : ℕ) : Set E :=
     {x ∈ t | ∀ y ∈ t, dist y x ≤ (n + 1 : ℝ)⁻¹ → dist (f y) (f x) ≤ n * dist y x} ∩
       Metric.ball (denseSeq E k) ((n + 1 : ℝ)⁻¹ / 2)
   have hcover : t ⊆ ⋃ i, ⋃ k, P i k := by
