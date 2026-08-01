@@ -21,6 +21,18 @@ public section
 
 variable {ι : Sort*} {M α : Type*}
 
+@[to_additive (attr := gcongr)]
+theorem smul_le_smul_left [SMul M α] [LE α] [IsLeftOrderedSMul M α]
+    (m : M) {a b : α} (h : a ≤ b) :
+    m • a ≤ m • b :=
+  IsLeftOrderedSMul.smul_le_smul_left a b h m
+
+@[to_additive (attr := gcongr)]
+theorem smul_lt_smul_left [SMul M α] [LT α] [IsLeftStrictOrderedSMul M α]
+    (m : M) {a b : α} (h : a < b) :
+    m • a < m • b :=
+  IsLeftStrictOrderedSMul.smul_lt_smul_left a b h m
+
 theorem smul_mono_right [SMul M α] [Preorder α] [IsLeftOrderedSMul M α]
     (m : M) : Monotone (HSMul.hSMul m : α → α) :=
   fun _ _ => smul_le_smul_left _

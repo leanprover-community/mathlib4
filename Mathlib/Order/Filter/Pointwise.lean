@@ -877,8 +877,8 @@ theorem le_smul_iff : h ≤ f • g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t 
   le_map₂_iff
 
 @[to_additive]
-theorem covariant_smul : Covariant (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
-  fun _ _ _ => map₂_mono_left
+instance covariant_smul : IsLeftOrderedSMul (Filter α) (Filter β) where
+  smul_le_smul_left _ _ h _ := map₂_mono_left h
 
 end SMul
 
@@ -1026,8 +1026,8 @@ theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f
   map_mono hf
 
 @[to_additive]
-theorem covariant_smul_filter : Covariant α (Filter β) (· • ·) (· ≤ ·) :=
-  fun _ => @map_mono β β _
+instance covariant_smul_filter : IsLeftOrderedSMul α (Filter β) where
+  smul_le_smul_left _ _ h _ := map_mono h
 
 end SMul
 

@@ -320,18 +320,6 @@ theorem covariant_smul_lt [SMul M N] [LT N] [IsLeftStrictOrderedSMul M N] :
     Covariant M N (· • ·) (· < ·) :=
   fun m _ _ h ↦ IsLeftStrictOrderedSMul.smul_lt_smul_left _ _ h m
 
-@[to_additive (attr := gcongr)]
-theorem smul_le_smul_left [SMul M N] [LE N] [IsLeftOrderedSMul M N]
-    (m : M) {a b : N} (h : a ≤ b) :
-    m • a ≤ m • b :=
-  IsLeftOrderedSMul.smul_le_smul_left a b h m
-
-@[to_additive (attr := gcongr)]
-theorem smul_lt_smul_left [SMul M N] [LT N] [IsLeftStrictOrderedSMul M N]
-    (m : M) {a b : N} (h : a < b) :
-    m • a < m • b :=
-  IsLeftStrictOrderedSMul.smul_lt_smul_left a b h m
-
 theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
     (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=

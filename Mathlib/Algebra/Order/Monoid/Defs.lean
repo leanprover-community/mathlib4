@@ -21,6 +21,8 @@ open Function
 
 variable {α : Type*}
 
+-- TODO: assume weaker typeclasses
+
 /-- An ordered (additive) monoid is a monoid with a preorder such that addition is monotone. -/
 class IsOrderedAddMonoid (α : Type*) [AddCommMonoid α] [Preorder α] where
   protected add_le_add_left (a b : α) : a ≤ b → ∀ c, a + c ≤ b + c

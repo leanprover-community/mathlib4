@@ -286,7 +286,7 @@ theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Monotone f ↔ MonotoneOn f (Icc l (l + a)) :=
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
-    AddConstMapClass.rel_map_of_Icc AddRightMono.elim ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
+    AddConstMapClass.rel_map_of_Icc covariant_swap_add_le ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
 theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
@@ -298,7 +298,7 @@ theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid 
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
-  ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc AddRightStrictMono.elim ha⟩
+  ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc covariant_swap_add_lt ha⟩
 
 theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
     [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]

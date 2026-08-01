@@ -108,9 +108,13 @@ instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
 
 instance : IsOrderedModule ℝ≥0 ℝ≥0∞ where
 
+example : IsLeftOrderedSMul ℝ≥0∞ ℝ≥0∞ := inferInstance
+
 instance : IsOrderedSMul ℝ≥0 ℝ≥0∞ where
   smul_le_smul_left a b hab c := by gcongr
   smul_le_smul_right a b hab c := by gcongr
+
+example : IsLeftOrderedSMul ℝ≥0 ℝ≥0∞ := inferInstance
 
 end Actions
 

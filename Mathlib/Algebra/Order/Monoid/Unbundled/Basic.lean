@@ -65,6 +65,7 @@ variable [LE α]
 
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_le_mul_of_nonneg_left`, which have an extra side condition.
+
 @[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a * b ≤ a * c :=
   MulLeftMono.elim _ bc
