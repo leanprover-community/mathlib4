@@ -89,7 +89,8 @@ theorem isChain_destutter' (l : List α) (a : α) : (l.destutter' R a).IsChain R
     simp_rw [destutter'_cons, apply_ite (IsChain R ·),
       apply_ite (IsChain R <| a :: ·), IH, isChain_cons_cons,
       if_true_right, ite_prop_iff_and, imp_and]
-    exact ⟨⟨⟨swap <| fun _ => id, fun _ => IH2 c b⟩, swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
+    exact ⟨⟨⟨Function.swap <| fun _ => id, fun _ => IH2 c b⟩,
+      Function.swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
 
 theorem isChain_cons_destutter'_of_rel (l : List α) {a b} (hab : R a b) :
     (a :: l.destutter' R b).IsChain R := by
