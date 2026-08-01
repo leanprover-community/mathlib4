@@ -79,8 +79,8 @@ instance [SMul M N] [IsScalarTower M N R] : IsScalarTower M N (Ideal R) where
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Ideal R) : r ∈ S → m • r ∈ m • S :=
   fun h => subset_span <| Set.smul_mem_smul_set h
 
-instance : SMulLeftMono M (Ideal R) :=
-  ⟨fun _ _ _ => map_mono⟩
+instance : IsLeftOrderedSMul M (Ideal R) where
+  smul_le_smul_left _ _ h _ := map_mono h
 
 -- note: unlike with `Subring`, `mem_smul_pointwise_iff_exists` wouldn't be true
 

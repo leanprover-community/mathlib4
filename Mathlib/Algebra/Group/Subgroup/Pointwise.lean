@@ -451,8 +451,8 @@ theorem pointwise_smul_toSubmonoid (a : α) (S : Subgroup G) :
 theorem smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set G))
 
-instance : SMulLeftMono α (Subgroup G) :=
-  ⟨fun _ _ _ => image_mono⟩
+instance : IsLeftOrderedSMul α (Subgroup G) where
+  smul_le_smul_left _ _ h _ := image_mono h
 
 theorem mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :
     m ∈ a • S ↔ ∃ s : G, s ∈ S ∧ a • s = m :=

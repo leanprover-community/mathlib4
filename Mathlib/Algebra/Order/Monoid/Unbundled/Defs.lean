@@ -244,29 +244,29 @@ attribute [to_additive] MulLeftReflectLE MulRightReflectLE
 
 /-- Typeclass for monotonicity of scalar multiplication on the left,
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂`. -/
-class SMulLeftMono [SMul M N] [LE N] : Prop where
+class IsLeftOrderedSMul [SMul M N] [LE N] : Prop where
   /-- Do not use this. Use `smul_le_smul_left` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ ≤ b₂) : a • b₁ ≤ a • b₂
+  protected smul_le_smul_left : ∀ b₁ b₂ : N, b₁ ≤ b₂ → ∀ a : M, a • b₁ ≤ a • b₂
 
 /-- Typeclass for strict monotonicity of scalar multiplication on the left,
 namely `b₁ < b₂ → a • b₁ < a • b₂`. -/
-class SMulLeftStrictMono [SMul M N] [LT N] : Prop where
+class IsLeftStrictOrderedSMul [SMul M N] [LT N] : Prop where
   /-- Do not use this. Use `smul_lt_smul_left` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ < b₂) : a • b₁ < a • b₂
+  protected smul_lt_smul_left : ∀ b₁ b₂ : N, b₁ < b₂ → ∀ a : M, a • b₁ < a • b₂
 
 /-- Typeclass for monotonicity of vector addition on the left,
 namely `b₁ ≤ b₂ → a +ᵥ b₁ ≤ a +ᵥ b₂`. -/
-class VAddLeftMono [VAdd M N] [LE N] : Prop where
+class IsLeftOrderedVAdd [VAdd M N] [LE N] : Prop where
   /-- Do not use this. Use `vadd_le_vadd_left` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ ≤ b₂) : a +ᵥ b₁ ≤ a +ᵥ b₂
+  protected vadd_le_vadd_left : ∀ b₁ b₂ : N, b₁ ≤ b₂ → ∀ a : M, a +ᵥ b₁ ≤ a +ᵥ b₂
 
 /-- Typeclass for strict monotonicity of vector addition on the left,
 namely `b₁ < b₂ → a +ᵥ b₁ < a +ᵥ b₂`. -/
-class VAddLeftStrictMono [VAdd M N] [LT N] : Prop where
+class IsLeftStrictOrderedVAdd [VAdd M N] [LT N] : Prop where
   /-- Do not use this. Use `vadd_lt_vadd_left` instead. -/
-  protected elim (a : M) ⦃b₁ b₂ : N⦄ (hb : b₁ < b₂) : a +ᵥ b₁ < a +ᵥ b₂
+  protected vadd_lt_vadd_left : ∀ b₁ b₂ : N, b₁ < b₂ → ∀ a : M, a +ᵥ b₁ < a +ᵥ b₂
 
-attribute [to_additive] SMulLeftMono SMulLeftStrictMono
+attribute [to_additive] IsLeftOrderedSMul IsLeftStrictOrderedSMul
 
 variable {M N μ r}
 
@@ -311,26 +311,26 @@ theorem contravariant_swap_mul_le [Mul M] [LE M] [MulRightReflectLE M] :
   MulRightReflectLE.le_of_mul_le_mul_right'
 
 @[to_additive]
-theorem covariant_smul_le [SMul M N] [LE N] [SMulLeftMono M N] :
+theorem covariant_smul_le [SMul M N] [LE N] [IsLeftOrderedSMul M N] :
     Covariant M N (· • ·) (· ≤ ·) :=
-  SMulLeftMono.elim
+  fun m _ _ h ↦ IsLeftOrderedSMul.smul_le_smul_left _ _ h m
 
 @[to_additive]
-theorem covariant_smul_lt [SMul M N] [LT N] [SMulLeftStrictMono M N] :
+theorem covariant_smul_lt [SMul M N] [LT N] [IsLeftStrictOrderedSMul M N] :
     Covariant M N (· • ·) (· < ·) :=
-  SMulLeftStrictMono.elim
+  fun m _ _ h ↦ IsLeftStrictOrderedSMul.smul_lt_smul_left _ _ h m
 
 @[to_additive (attr := gcongr)]
-theorem smul_le_smul_left [SMul M N] [LE N] [SMulLeftMono M N]
+theorem smul_le_smul_left [SMul M N] [LE N] [IsLeftOrderedSMul M N]
     (m : M) {a b : N} (h : a ≤ b) :
     m • a ≤ m • b :=
-  SMulLeftMono.elim m h
+  IsLeftOrderedSMul.smul_le_smul_left a b h m
 
 @[to_additive (attr := gcongr)]
-theorem smul_lt_smul_left [SMul M N] [LT N] [SMulLeftStrictMono M N]
+theorem smul_lt_smul_left [SMul M N] [LT N] [IsLeftStrictOrderedSMul M N]
     (m : M) {a b : N} (h : a < b) :
     m • a < m • b :=
-  SMulLeftStrictMono.elim m h
+  IsLeftStrictOrderedSMul.smul_lt_smul_left a b h m
 
 theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
     (m : M) {a b : N} :

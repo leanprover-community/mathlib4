@@ -817,8 +817,8 @@ open scoped Pointwise
 theorem smul_mem_pointwise_smul (g : G) (x : K) (S : ValuationSubring K) : x ∈ S → g • x ∈ g • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ g • (S : Set K))
 
-instance : SMulLeftMono G (ValuationSubring K) :=
-  ⟨fun _ _ _ => Set.image_mono⟩
+instance : IsLeftOrderedSMul G (ValuationSubring K) where
+  smul_le_smul_left _ _ h _ := Set.image_mono h
 
 theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
     x ∈ g • S ↔ ∃ s : K, s ∈ S ∧ g • s = x :=

@@ -1114,9 +1114,9 @@ protected theorem le_add_left (h : μ ≤ ν) : μ ≤ ν' + ν := fun s => le_a
 
 protected theorem le_add_right (h : μ ≤ ν) : μ ≤ ν + ν' := fun s => le_add_right (h s)
 
-instance [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [SMulLeftMono R ℝ≥0∞] :
-    SMulLeftMono R (Measure α) where
-  elim c μ ν hμν s := by
+instance [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsLeftOrderedSMul R ℝ≥0∞] :
+    IsLeftOrderedSMul R (Measure α) where
+  smul_le_smul_left μ ν hμν c s := by
     simp only [smul_apply]
     gcongr
 

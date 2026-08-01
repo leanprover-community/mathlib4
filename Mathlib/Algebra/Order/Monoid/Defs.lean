@@ -71,18 +71,19 @@ instance [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid.le_of_add_le_add_right c a b⟩
 
 section IsOrderedCancelMonoid
-variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
+variable [CommMonoid α]
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
-  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
+    [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
   le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left
 
+variable [PartialOrder α] [IsOrderedCancelMonoid α]
+
 @[to_additive]
-instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT
-  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLT α where
-  elim := sorry -- contravariant_lt_of_contravariant_le α α _ fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where
+  elim := contravariant_lt_of_contravariant_le MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
 theorem IsOrderedCancelMonoid.toMulRightReflectLT : MulRightReflectLT α :=

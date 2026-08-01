@@ -71,8 +71,8 @@ theorem pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
-instance : SMulLeftMono M (Subring R) :=
-  ⟨fun _ _ _ => image_mono⟩
+instance : IsLeftOrderedSMul M (Subring R) where
+  smul_le_smul_left _ _ h _ := image_mono h
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=

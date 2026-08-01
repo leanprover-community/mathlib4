@@ -149,8 +149,8 @@ theorem smul_mono (hij : I ≤ J) (hnp : N ≤ P) : I • N ≤ J • P :=
 theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   smul_mono h le_rfl
 
-instance : SMulLeftMono (Submodule R A) (Submodule R M) :=
-  ⟨fun _ _ _ => smul_mono le_rfl⟩
+instance : IsLeftOrderedSMul (Submodule R A) (Submodule R M) where
+  smul_le_smul_left _ _ h _ := smul_mono le_rfl h
 
 variable (I J N P)
 

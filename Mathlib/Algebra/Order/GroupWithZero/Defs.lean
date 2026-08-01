@@ -188,11 +188,11 @@ theorem MulPosMono.to_covariant_pos_mul_le [MulPosMono α] :
     Covariant α>0 α (fun x y => y * x) (· ≤ ·) :=
   fun a _b _c hbc ↦ MulPosMono.mul_le_mul_of_nonneg_right a.2.le hbc
 
-theorem PosMulStrictMono.to_covariant_pos_mul_le [PosMulStrictMono α] :
+theorem PosMulStrictMono.to_covariant_pos_mul_lt [PosMulStrictMono α] :
     Covariant α>0 α (fun x y => x * y) (· < ·) :=
   fun a _b _c hbc ↦ PosMulStrictMono.mul_lt_mul_of_pos_left a.2 hbc
 
-theorem MulPosStrictMono.to_covariant_pos_mul_le [MulPosStrictMono α] :
+theorem MulPosStrictMono.to_covariant_pos_mul_lt [MulPosStrictMono α] :
     Covariant α>0 α (fun x y => y * x) (· < ·) :=
   fun a _b _c hbc ↦ MulPosStrictMono.mul_lt_mul_of_pos_right a.2 hbc
 
@@ -203,6 +203,14 @@ theorem PosMulReflectLT.to_contravariant_pos_mul_lt [PosMulReflectLT α] :
 theorem MulPosReflectLT.to_contravariant_pos_mul_lt [MulPosReflectLT α] :
     Contravariant α>0 α (fun x y => y * x) (· < ·) :=
   fun a _ _ bc => MulPosReflectLT.elim a.2.le bc
+
+theorem PosMulReflectLE.to_contravariant_pos_mul_le [PosMulReflectLE α] :
+    Contravariant α>0 α (fun x y => x * y) (· ≤ ·) :=
+  fun a _ _ bc ↦ PosMulReflectLE.elim a.2 bc
+
+theorem MulPosReflectLE.to_contravariant_pos_mul_le [MulPosReflectLE α] :
+    Contravariant α>0 α (fun x y => y * x) (· ≤ ·) :=
+  fun a _ _ bc => MulPosReflectLE.elim a.2 bc
 
 instance (priority := 100) MulLeftMono.toPosMulMono [MulLeftMono α] :
     PosMulMono α where mul_le_mul_of_nonneg_left _ _ _ _ h := MulLeftMono.elim _ h
@@ -305,12 +313,12 @@ theorem mul_lt_mul_iff_left₀ [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 
 @[simp]
 theorem mul_le_mul_iff_right₀ [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) :
     a * b ≤ a * c ↔ b ≤ c :=
-  sorry -- @rel_iff_cov α>0 α (fun x y => x * y) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
+  rel_iff_cov PosMulMono.to_covariant_pos_mul_le PosMulReflectLE.to_contravariant_pos_mul_le ⟨a, a0⟩
 
 @[simp]
 theorem mul_le_mul_iff_left₀ [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) :
     b * a ≤ c * a ↔ b ≤ c :=
-  sorry -- @rel_iff_cov α>0 α (fun x y => y * x) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
+  rel_iff_cov MulPosMono.to_covariant_pos_mul_le MulPosReflectLE.to_contravariant_pos_mul_le ⟨a, a0⟩
 
 alias mul_le_mul_iff_of_pos_left := mul_le_mul_iff_right₀
 alias mul_le_mul_iff_of_pos_right := mul_le_mul_iff_left₀
@@ -430,12 +438,14 @@ variable [LinearOrder α]
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulReflectLE [PosMulStrictMono α] :
     PosMulReflectLE α where
-  elim := sorry -- (covariant_lt_iff_contravariant_le _ _ _).1 CovariantClass.elim
+  elim _ h _ _ := covariant_lt_iff_contravariant_le.1
+    PosMulStrictMono.to_covariant_pos_mul_lt ⟨_, h⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) MulPosStrictMono.toMulPosReflectLE [MulPosStrictMono α] :
     MulPosReflectLE α where
-  elim := sorry -- (covariant_lt_iff_contravariant_le _ _ _).1 CovariantClass.elim
+  elim _ h _ _ := covariant_lt_iff_contravariant_le.1
+    MulPosStrictMono.to_covariant_pos_mul_lt ⟨_, h⟩
 
 theorem PosMulReflectLE.toPosMulStrictMono [PosMulReflectLE α] : PosMulStrictMono α where
   mul_lt_mul_of_pos_left _a ha _b _c hbc :=
@@ -460,12 +470,12 @@ theorem MulPosReflectLT.toMulPosMono [MulPosReflectLT α] : MulPosMono α where
     not_lt.1 fun h ↦ hbc.not_gt <| lt_of_mul_lt_mul_right h ha
 
 theorem PosMulMono.toPosMulReflectLT [PosMulMono α] : PosMulReflectLT α where
-  elim := sorry -- (covariant_le_iff_contravariant_lt _ _ _).1
-    -- fun a _b _c hbc ↦ mul_le_mul_of_nonneg_left hbc a.2
+  elim _ h _ _ := covariant_le_iff_contravariant_lt.1
+    PosMulMono.to_covariant_nonneg_mul_le ⟨_, h⟩
 
 theorem MulPosMono.toMulPosReflectLT [MulPosMono α] : MulPosReflectLT α where
-  elim := sorry -- (covariant_le_iff_contravariant_lt _ _ _).1
-    -- fun a _b _c hbc ↦ mul_le_mul_of_nonneg_right hbc a.2
+  elim _ h _ _ := covariant_le_iff_contravariant_lt.1
+    MulPosMono.to_covariant_nonneg_mul_le ⟨_, h⟩
 
 /-! TODO: Currently, only one in four of the above are made instances; we could consider making
   both directions of `covariant_le_iff_contravariant_lt` and `covariant_lt_iff_contravariant_le`

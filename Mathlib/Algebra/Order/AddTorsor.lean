@@ -70,8 +70,8 @@ class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_right : ∀ c d : G, c ≤ d → ∀ a : P, c • a ≤ d • a
 
 @[to_additive]
-instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : SMulLeftMono G P where
-  elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
+instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : IsLeftOrderedSMul G P where
+  smul_le_smul_left := IsOrderedSMul.smul_le_smul_left
 
 @[to_additive]
 instance [CommMonoid G] [Preorder G] [IsOrderedMonoid G] : IsOrderedSMul G G where

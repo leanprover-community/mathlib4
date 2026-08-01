@@ -225,8 +225,8 @@ theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submodule R M) :
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
-instance : SMulLeftMono α (Submodule R M) :=
-  ⟨fun _ _ _ => map_mono⟩
+instance : IsLeftOrderedSMul α (Submodule R M) where
+  smul_le_smul_left _ _ h _ := map_mono h
 
 /-- See also `Submodule.smul_bot`. -/
 @[simp]
@@ -348,9 +348,9 @@ lemma set_smul_eq_of_le (p : Submodule R M)
     s • N = p :=
   le_antisymm (set_smul_le s N p closed_under_smul) le
 
-instance : SMulLeftMono (Set S) (Submodule R M) :=
-  ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
-    (mem2 := le hm)⟩
+instance : IsLeftOrderedSMul (Set S) (Submodule R M) where
+  smul_le_smul_left _ _ le _ :=
+    set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr) (mem2 := le hm)
 
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
