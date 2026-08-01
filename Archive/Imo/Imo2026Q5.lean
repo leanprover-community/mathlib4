@@ -88,7 +88,8 @@ lemma iterate_eq_add_mul_displacement (hf : ∀ x > 0, 0 < f x) (h : IsSolution 
     ring
 
 /-- The displacement `f x - x` is nonnegative at every positive input. -/
-lemma displacement_nonneg (hf : ∀ x > 0, 0 < f x) (h : IsSolution f) (hx : 0 < x) : 0 ≤ f x - x := by
+lemma displacement_nonneg (hf : ∀ x > 0, 0 < f x) (h : IsSolution f) (hx : 0 < x) :
+    0 ≤ f x - x := by
   by_contra! hneg
   obtain ⟨n, hn_large⟩ := exists_nat_gt (x / (x - f x))
   have hiter_pos := iterate_pos hf hx n
