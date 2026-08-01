@@ -21,7 +21,7 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 public section
 
-open MeasureTheory Nat Set Filter Topology
+open Nat Set Filter Topology
 
 local notation "γ" => Real.eulerMascheroniConstant
 
