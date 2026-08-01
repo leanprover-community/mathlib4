@@ -98,6 +98,19 @@ lemma inTangentCoordinates_eq_mfderiv_comp
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
 
+/-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
+postcomposing it with derivatives of extended charts.
+Concrete version of `inTangentCoordinates_eq`, abusing defeq between the tangent space to the model
+space and the model space. -/
+lemma inTangentCoordinates_eq_mfderiv_comp_abuse
+    {N : Type*} {f : N → M} {g : N → M'}
+    {ϕ : Π x : N, TangentSpace% (f x) →L[𝕜] TangentSpace% (g x)} {x₀ : N} {x : N}
+    (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
+    inTangentCoordinates I I' f g ϕ x₀ x =
+      mfderiv% (extChartAt I' (g x₀)) (g x) ∘L (ϕ x) ∘L
+      mfderiv[range I] (extChartAt I (f x₀)).symm (extChartAt I (f x₀) (f x)) :=
+  inTangentCoordinates_eq_mfderiv_comp hx hy
+
 open Bundle
 variable (I) in
 /-- The canonical identification between the tangent bundle to the model space and the product,
