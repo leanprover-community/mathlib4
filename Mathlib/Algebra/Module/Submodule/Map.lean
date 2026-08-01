@@ -285,6 +285,10 @@ def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (p ⊓
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+-- TODO: we would like to implement this by casting `submoduleOfEquivInf p q`
+-- using `LinearEquiv.ofEq`, but currently that's not possible due to import cycles.
+-- We can change to this once that's earlier in the import hierarchy:
+--   := submoduleOfEquivInf p q |>.trans <| .ofEq _ _ (by simp)
 /-- If `p ≤ q`, then `p` as a submodule of `q` is isomorphic to `p`. -/
 def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
   toFun m := ⟨m.1, m.2⟩
