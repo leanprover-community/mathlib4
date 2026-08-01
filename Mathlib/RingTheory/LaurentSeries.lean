@@ -306,22 +306,22 @@ theorem coeff_contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) (k : ℤ) :
   rfl
 
 theorem coeff_single_mul_expand (n : ℕ+) (r : Fin n) (g : R⸨X⸩) (j : ℤ) :
-    (HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n g).coeff j =
-      if j % (n : ℤ) = ((r : ℕ) : ℤ) then g.coeff (j / (n : ℤ)) else 0 := by
+    (HahnSeries.single (r : ℤ) 1 * expand n g).coeff j =
+      if j % (n : ℤ) = (r : ℤ) then g.coeff (j / (n : ℤ)) else 0 := by
   rw [HahnSeries.coeff_single_mul, one_mul, expand_apply]
   split_ifs with h
-  · rw [show j - ((r : ℕ) : ℤ) = (n : ℤ) * (j / (n : ℤ)) by
+  · rw [show j - (r : ℤ) = (n : ℤ) * (j / (n : ℤ)) by
       rw [← h]; exact (eq_sub_of_add_eq (Int.mul_ediv_add_emod j n)).symm]
     exact HahnSeries.embDomain_coeff
   · refine HahnSeries.embDomain_of_notMem_range fun ⟨k, hk⟩ ↦ h ?_
-    have hk' : j = (n : ℤ) * k + ((r : ℕ) : ℤ) := by rw [← sub_eq_iff_eq_add]; exact hk.symm
+    have hk' : j = (n : ℤ) * k + (r : ℤ) := by rw [← sub_eq_iff_eq_add]; exact hk.symm
     rw [hk', add_comm, Int.add_mul_emod_self_left,
       Int.emod_eq_of_lt (Int.natCast_nonneg _) (mod_cast r.isLt)]
 
 /-- Every Laurent series decomposes as `∑ r < n, X ^ r * expand n (contract n f r)`: the `r`-th
 component collects the coefficients at exponents congruent to `r` mod `n`. -/
 theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
-    ∑ r : Fin n, HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n (contract n f r) = f := by
+    ∑ r : Fin n, HahnSeries.single (r : ℤ) 1 * expand n (contract n f r) = f := by
   have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
   ext j
   have hjn : (j % (n : ℤ)).toNat < (n : ℕ) :=
@@ -337,11 +337,11 @@ theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
 `g` of components with `∑ r : Fin n, X ^ r * expand n (g r) = f` is given by
 `LaurentSeries.contract`. -/
 theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
-    (hg : ∑ r : Fin n, HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n (g r) = f) (r : Fin n) :
+    (hg : ∑ r : Fin n, HahnSeries.single (r : ℤ) 1 * expand n (g r) = f) (r : Fin n) :
     contract n f r = g r := by
   have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
-  have hlt : ((r : ℕ) : ℤ) < (n : ℤ) := mod_cast r.isLt
-  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℕ)) % (n : ℤ) = ((r : ℕ) : ℤ) := fun k ↦ by
+  have hlt : (r : ℤ) < (n : ℤ) := mod_cast r.isLt
+  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℕ)) % (n : ℤ) = (r : ℤ) := fun k ↦ by
     rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
   ext k
   rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
