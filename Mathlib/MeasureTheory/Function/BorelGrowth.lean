@@ -75,7 +75,7 @@ theorem MonotoneOn.eventually_le_two_mul {S : ℝ → ℝ} {a : ℝ}
       exact not_lt.1 h₆
   -- Two points of a slice are at distance at most `(2 ^ n)⁻¹`
   have hkey : ∀ n, ∀ x ∈ En n, ∀ y ∈ En n, y - x ≤ (2 ^ n)⁻¹ := by
-    intro n x hx y hy hxy
+    intro n x hx y hy
     obtain ⟨⟨h₁x, h₂x⟩, h₃x, -⟩ := hx
     obtain ⟨⟨h₁y, -⟩, -, h₄y⟩ := hy
     -- `y` lies strictly below `x + (S x)⁻¹`…
@@ -99,9 +99,9 @@ theorem MonotoneOn.eventually_le_two_mul {S : ℝ → ℝ} {a : ℝ}
     rw [edist_le_ofReal (by positivity)]
     rcases le_total x y with h | h
     · rw [Real.dist_eq, abs_of_nonpos (by linarith), neg_sub]
-      exact hkey n x hx y hy h
+      exact hkey n x hx y hy
     · rw [Real.dist_eq, abs_of_nonneg (by linarith)]
-      exact hkey n y hy x hx h
+      exact hkey n y hy x hx
   -- …and `E` has finite volume
   have hvol : volume E < ⊤ := by
     have hsum : Summable fun n ↦ ((2 : ℝ) ^ n)⁻¹ := by
