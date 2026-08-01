@@ -58,7 +58,8 @@ It logs details of what the linter would report if the `cop` is "malformed".
 elab "#check_copyright " copStx:str : command => do
   let cop := copStx.getString
   let offset := copStx.raw.getPos?.get!.increaseBy 1
-  for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
+  let expectedLicense := Mathlib.Linter.linter.style.header.license.get (← getOptions)
+  for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop expectedLicense do
     if let some rg := s.getRange? then
       logInfoAt (.ofRange ({start := rg.start.offsetBy offset, stop := rg.stop.offsetBy offset}))
         m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
@@ -208,6 +209,32 @@ Message: 'Second copyright line should be
 Copyright (c) 2024 Damiano Testa. All rights reserved.
 Rleased under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
+-/
+"
+
+-- The required second line is configurable via the `linter.style.header.license` option.
+/--
+info: Text: `Released under Apache 2.0 license as described in the file LICENSE.`
+Range: (49, 116)
+Message: 'Second copyright line should be "Released under the Custom License."'
+-/
+#guard_msgs in
+set_option linter.style.header.license "Released under the Custom License." in
+#check_copyright
+"/-
+Copyright (c) 2026 Name. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name
+-/
+"
+
+-- A header whose second line matches the custom license is accepted.
+set_option linter.style.header.license "Released under the Custom License." in
+#check_copyright
+"/-
+Copyright (c) 2026 Name. All rights reserved.
+Released under the Custom License.
+Authors: Name
 -/
 "
 
