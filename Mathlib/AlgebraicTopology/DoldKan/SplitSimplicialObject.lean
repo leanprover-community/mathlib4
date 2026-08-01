@@ -254,7 +254,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split monomormphism from the chain complex `s.nondegComplex` to
-the alternating face map complex fo `X`. -/
+the alternating face map complex of `X`. -/
 @[no_expose]
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
