@@ -207,7 +207,7 @@ if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero (A : E →L[𝕜] F) (y : F) (x : E) :
     (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
   rw [A.range.norm_eq_iInf_iff_inner_eq_zero (by simp),
-    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe, map_sub]
+    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe]
 
 /-- The residual norm at `x` is minimal among all points of `E` if and only if
 the adjoint of `A` sends the residual `y - A x` to zero. -/
