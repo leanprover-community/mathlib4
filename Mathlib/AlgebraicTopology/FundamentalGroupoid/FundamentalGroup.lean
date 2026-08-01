@@ -94,6 +94,14 @@ lemma mapOfSubset_eq_map_inclusion {U V : Set X} (h : U ⊆ V) (x : U) :
 def mapOfSubtype {U : Set X} (x : U) : FundamentalGroup U x →* FundamentalGroup X x :=
   map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x
 
+lemma mapOfSubtype_eq_map {U : Set X} (x : U) :
+    mapOfSubtype x = map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) x := rfl
+
+lemma mapOfSubtype_comp_mapOfSubset {U V : Set X} (h : U ⊆ V) (x : U) :
+    (mapOfSubtype (U := V) ⟨x, h x.property⟩).comp (mapOfSubset h x) = mapOfSubtype x := by
+  ext q
+  exact (Path.Homotopic.Quotient.map_comp (f := ContinuousMap.inclusion h)).symm
+
 variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
 
 /-- The homomorphism from π₁(X, x) to π₁(Y, y) induced by a continuous map `f` with `f x = y`. -/
