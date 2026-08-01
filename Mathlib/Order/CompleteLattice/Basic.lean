@@ -294,27 +294,20 @@ theorem iSup₂_eq_iSup_diagonal [CompleteSemilatticeSup α]
     (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
     (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
   apply le_antisymm
-  · refine sSup_le ?_
-    intro x hx
-    simp only [iSup] at hx
+  · apply sSup_le
+    intro _ hx
     obtain ⟨i, rfl⟩ := hx
     apply sSup_le
-    intro y hy
-    simp only [mem_range] at hy
-    obtain ⟨j, rfl⟩ := hy
-    obtain ⟨k₂, hk⟩ := h i j
-    have : f k₂ k₂ ≤ iSup (fun k => f k k) := by
-      rw [iSup]
-      exact le_sSup (mem_range_self k₂)
-    exact le_trans hk this
-  · refine sSup_le ?_
-    intro x hx
-    simp only [mem_range] at hx
-    obtain ⟨k₀, rfl⟩ := hx
-    have h1 : f k₀ k₀ ≤ sSup (range fun j => f k₀ j) := le_sSup (mem_range_self k₀)
-    have h2 : sSup (range fun j => f k₀ j) ≤ sSup (range fun i => sSup (range fun j => f i j)) :=
-      le_sSup ⟨k₀, rfl⟩
-    exact le_trans h1 h2
+    intro _ hx
+    obtain ⟨j, rfl⟩ := hx
+    obtain ⟨k, hk⟩ := h i j
+    exact hk.trans <| le_sSup (mem_range_self k)
+  · apply sSup_le
+    intro _ hx
+    obtain ⟨k, rfl⟩ := hx
+    exact (le_sSup (show f k k ∈ range (f k) from mem_range_self k)).trans <|
+      le_sSup (show sSup (range (f k)) ∈ range (fun i ↦ sSup (range (f i))) from
+        mem_range_self k)
 
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
