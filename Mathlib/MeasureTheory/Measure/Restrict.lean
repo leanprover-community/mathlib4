@@ -145,7 +145,7 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
-theorem ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
+theorem _root_.MeasureTheory.ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
   ae_mono restrict_le_self
 
 variable (μ)
