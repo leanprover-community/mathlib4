@@ -70,6 +70,30 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
 
+theorem Module.finrank_dvd_finrank_left :
+    Module.finrank K A ∣ Module.finrank F A :=
+  Dvd.intro_left (finrank F K) (finrank_mul_finrank ..)
+
+theorem Module.finrank_dvd_finrank_right :
+    Module.finrank F K ∣ Module.finrank F A :=
+  Dvd.intro (finrank K A) (finrank_mul_finrank ..)
+
+theorem Module.finrank_div_finrank_cancel_right (h : Module.finrank K A ≠ 0) :
+    Module.finrank F A / Module.finrank K A = Module.finrank F K :=
+  Nat.div_eq_of_eq_mul_left h.bot_lt (finrank_mul_finrank ..).symm
+
+theorem Module.finrank_div_finrank_cancel_left (h : Module.finrank F K ≠ 0) :
+    Module.finrank F A / Module.finrank F K = Module.finrank K A :=
+  Nat.div_eq_of_eq_mul_right h.bot_lt (finrank_mul_finrank ..).symm
+
+theorem Module.finrank_div_finrank_cancel_right_of_nontrivial [Nontrivial A] [Module.Finite K A] :
+    Module.finrank F A / Module.finrank K A = Module.finrank F K :=
+  finrank_div_finrank_cancel_right F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
+
+theorem Module.finrank_div_finrank_cancel_left_of_nontrivial [Nontrivial K] [Module.Finite F K] :
+    Module.finrank F A / Module.finrank F K = Module.finrank K A :=
+  finrank_div_finrank_cancel_left F K A ((finrank_pos_iff_of_free ..).mpr ‹_›).ne'
+
 end Tower
 
 variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
