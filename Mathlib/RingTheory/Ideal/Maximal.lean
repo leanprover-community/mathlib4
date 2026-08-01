@@ -258,18 +258,8 @@ theorem irreducible_of_isMaximal_of_eq_span_singleton_of_not_isIdempotentElem {a
 
 theorem irreducible_of_isMaximal_span_singleton [IsDomain α] {a : α}
     (ha : a ≠ 0) (max : (Ideal.span {a}).IsMaximal) :
-    Irreducible a := by
-  apply irreducible_of_isMaximal_of_eq_span_singleton_of_not_isIdempotentElem max
-  intro x hx
-  rw [IsIdempotentElem.iff_eq_zero_or_one, not_or]
-  constructor
-  · intro rfl
-    apply ha
-    simpa using hx
-  · intro rfl
-    apply max.ne_top
-    rw [hx]
-    simp
+    Irreducible a :=
+  ((Ideal.span_singleton_prime ha).1 max.isPrime).irreducible
 
 section IsPrincipalIdealRing
 
