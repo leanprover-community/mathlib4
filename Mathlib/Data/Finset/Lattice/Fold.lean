@@ -161,6 +161,9 @@ theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
 
 theorem monotone_sup (f : β → α) : Monotone fun s : Finset β => s.sup f := fun _ _ h => sup_mono h
 
+theorem antitone_inf {α} [SemilatticeInf α] [OrderTop α] (f : β → α) :
+  Antitone fun s : Finset β => s.inf f := monotone_sup (α := αᵒᵈ) f
+
 @[to_dual]
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
     (s.sup fun b => t.sup (f b)) = t.sup fun c => s.sup fun b => f b c :=
