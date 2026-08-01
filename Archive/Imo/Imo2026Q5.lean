@@ -74,7 +74,7 @@ lemma displacement_control (hf : ∀ x > 0, 0 < f x) (h : Condition f) (hx : 0 <
   rwa [show ((f x - x) - (f y - y)) * (f x + y + x + f y) = (f x + y) ^ 2 - (x + f y) ^ 2 by ring]
 
 /-- Every iterate of a positive input remains positive. -/
-lemma iterate_pos (hf : ∀ x > 0, 0 < f x) (hx : 0 < x) (n : ℕ) : 0 < (f^[n]) x := by
+lemma iterate_pos (hf : ∀ x > 0, 0 < f x) (hx : 0 < x) (n : ℕ) : 0 < f^[n] x := by
   induction n with
   | zero => simpa
   | succ n ih => simpa [Function.iterate_succ_apply'] using hf _ ih
@@ -123,7 +123,8 @@ lemma positive_displacements_eq (hf : ∀ x > 0, 0 < f x) (h : Condition f)
     simpa [Function.iterate_succ_apply', Nat.cast_succ] using
       iterate_eq_add_mul_displacement hf h hy n.succ
   set m := Nat.floor ((f ((f^[n]) y) - x) / a)
-  have hcontra : a ^ 2 < a ^ 2 := calc
+  apply lt_irrefl (a ^ 2)
+  calc
     _ < n * (|a - b| * b) := by
       rw [← div_lt_iff₀ (mul_pos habs_pos hb)]
       grind
@@ -147,7 +148,6 @@ lemma positive_displacements_eq (hf : ∀ x > 0, 0 < f x) (h : Condition f)
         have hnonneg : 0 ≤ (f ((f^[n]) y) - x) / a :=
           div_nonneg (by rw [hy_succ]; nlinarith) ha.le
         nlinarith [(le_div_iff₀ ha).1 (Nat.floor_le hnonneg)]
-  exact (lt_irrefl _ hcontra)
 
 /-- A point with positive displacement `a` is at least distance `a` from every point with zero
 displacement. -/
