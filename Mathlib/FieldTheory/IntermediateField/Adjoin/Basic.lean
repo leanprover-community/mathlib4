@@ -653,8 +653,6 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
       rw [← hb, isUnit_C]
       exact hr
 
--- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
-open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
 theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hf : Irreducible f)
