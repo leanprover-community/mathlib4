@@ -21,16 +21,18 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance mulLeftReflectLE [LE α] [Mul α] [c : MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ :=
-  ⟨Contravariant.flip (μ := (· * ·)) (fun _ ↦ c.1) _⟩
+instance mulLeftReflectLE [LE α] [Mul α] [MulLeftReflectLE α] : MulLeftReflectLE αᵒᵈ where
+  le_of_mul_le_mul_left' :=
+    Contravariant.flip (μ := (· * ·)) (fun _ ↦ ‹MulLeftReflectLE α›.le_of_mul_le_mul_left') _
 
 @[to_additive]
 instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒᵈ :=
   ⟨Covariant.flip c.1⟩
 
 @[to_additive]
-instance mulRightReflectLE [LE α] [Mul α] [c : MulRightReflectLE α] : MulRightReflectLE αᵒᵈ :=
-  ⟨Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ c.1) _⟩
+instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightReflectLE αᵒᵈ where
+  le_of_mul_le_mul_right' :=
+    Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ ‹MulRightReflectLE α›.le_of_mul_le_mul_right') _
 
 @[to_additive]
 instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=

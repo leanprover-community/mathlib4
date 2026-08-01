@@ -21,21 +21,16 @@ public section
 
 variable {ι : Sort*} {M α : Type*}
 
+theorem smul_mono_right [SMul M α] [Preorder α] [IsLeftOrderedSMul M α]
+    (m : M) : Monotone (HSMul.hSMul m : α → α) :=
+  fun _ _ h => IsLeftOrderedSMul.smul_le_smul_left _ _ h m
+
+/-- A copy of `smul_mono_right` that is understood by `gcongr`. -/
 @[to_additive (attr := gcongr)]
 theorem smul_le_smul_left [SMul M α] [LE α] [IsLeftOrderedSMul M α]
     (m : M) {a b : α} (h : a ≤ b) :
     m • a ≤ m • b :=
   IsLeftOrderedSMul.smul_le_smul_left a b h m
-
-@[to_additive (attr := gcongr)]
-theorem smul_lt_smul_left [SMul M α] [LT α] [IsLeftStrictOrderedSMul M α]
-    (m : M) {a b : α} (h : a < b) :
-    m • a < m • b :=
-  IsLeftStrictOrderedSMul.smul_lt_smul_left a b h m
-
-theorem smul_mono_right [SMul M α] [Preorder α] [IsLeftOrderedSMul M α]
-    (m : M) : Monotone (HSMul.hSMul m : α → α) :=
-  fun _ _ => smul_le_smul_left _
 
 theorem smul_inf_le [SMul M α] [SemilatticeInf α] [IsLeftOrderedSMul M α]
     (m : M) (a₁ a₂ : α) : m • (a₁ ⊓ a₂) ≤ m • a₁ ⊓ m • a₂ :=
@@ -48,7 +43,13 @@ theorem smul_iInf_le [SMul M α] [CompleteLattice α] [IsLeftOrderedSMul M α]
 
 theorem smul_strictMono_right [SMul M α] [Preorder α] [IsLeftStrictOrderedSMul M α]
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
-  fun _ _ => smul_lt_smul_left _
+  fun _ _ h => IsLeftStrictOrderedSMul.smul_lt_smul_left _ _ h m
+
+@[to_additive (attr := gcongr)]
+theorem smul_lt_smul_left [SMul M α] [LT α] [IsLeftStrictOrderedSMul M α]
+    (m : M) {a b : α} (h : a < b) :
+    m • a < m • b :=
+  IsLeftStrictOrderedSMul.smul_lt_smul_left a b h m
 
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [IsLeftOrderedSMul G α]

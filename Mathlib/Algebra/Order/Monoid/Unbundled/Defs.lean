@@ -162,10 +162,10 @@ class AddRightMono [Add M] [LE M] : Prop where
   /-- Do not use this. Use `add_le_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ + b ≤ a₂ + b
 
-attribute [to_additive] MulLeftMono MulRightMono
+attribute [to_additive existing] MulLeftMono MulRightMono
 
-/-- Typeclass for monotonicity of addition on the right,
-namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
+/-- Typeclass for monotonicity of multiplication on the left,
+namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
@@ -200,7 +200,7 @@ class AddRightStrictMono [Add M] [LT M] : Prop where
   /-- Do not use this. Use `add_lt_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ + b < a₂ + b
 
-attribute [to_additive] MulLeftStrictMono MulRightStrictMono
+attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 
 /-- Typeclass for strict reverse monotonicity of multiplication on the left,
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
@@ -238,7 +238,7 @@ class AddRightReflectLT [Add M] [LT M] : Prop where
   /-- Do not use this. Use `lt_of_add_lt_add_right` instead. -/
   protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b < a₂ + b) : a₁ < a₂
 
-attribute [to_additive] MulLeftReflectLT MulRightReflectLT
+attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
 
 /-- Typeclass for reverse monotonicity of multiplication on the left,
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
@@ -276,7 +276,7 @@ class AddRightReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_right` instead. -/
   protected le_of_add_le_add_right {b a₁ a₂ : M} : a₁ + b ≤ a₂ + b → a₁ ≤ a₂
 
-attribute [to_additive] MulLeftReflectLE MulRightReflectLE
+attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
 /-- Typeclass for monotonicity of scalar multiplication on the left,
 namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂`. -/

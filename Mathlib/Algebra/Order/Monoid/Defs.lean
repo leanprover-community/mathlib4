@@ -73,15 +73,13 @@ instance [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid.le_of_add_le_add_right c a b⟩
 
 section IsOrderedCancelMonoid
-variable [CommMonoid α]
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
-    [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
+  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
   le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left _ _ _
-
-variable [PartialOrder α] [IsOrderedCancelMonoid α]
 
 @[to_additive]
 instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where

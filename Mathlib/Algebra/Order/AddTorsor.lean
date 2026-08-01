@@ -74,13 +74,11 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : IsLeftOrderedSMul G P wh
   smul_le_smul_left := IsOrderedSMul.smul_le_smul_left
 
 @[to_additive]
-instance [Mul G] [LE G] [MulLeftMono G] :
-    IsLeftOrderedSMul G G where
+instance [Mul G] [LE G] [MulLeftMono G] : IsLeftOrderedSMul G G where
   smul_le_smul_left _ _ := mul_le_mul_right
 
 @[to_additive]
-instance [Mul G] [LT G] [MulLeftStrictMono G] :
-    IsLeftStrictOrderedSMul G G where
+instance [Mul G] [LT G] [MulLeftStrictMono G] : IsLeftStrictOrderedSMul G G where
   smul_lt_smul_left _ _ := mul_lt_mul_right
 
 @[to_additive]

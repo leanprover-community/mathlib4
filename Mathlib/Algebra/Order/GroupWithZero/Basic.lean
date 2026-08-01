@@ -134,22 +134,20 @@ theorem mulPosMono_iff_covariant_pos :
         · exact h ⟨_, ha⟩ hbc }
 
 theorem posMulReflectLT_iff_contravariant_pos :
-    PosMulReflectLT α ↔ Contravariant α>0 α (fun x y => x * y) (· < ·) where
-  mp _ := PosMulReflectLT.to_contravariant_pos_mul_lt
-  mpr h :=
+    PosMulReflectLT α ↔ Contravariant α>0 α (fun x y => x * y) (· < ·) :=
+  ⟨fun _ ↦ PosMulReflectLT.to_contravariant_pos_mul_lt, fun h =>
     { elim a ha b c hbc := by
         obtain ha | ha := ha.eq_or_lt
         · simp [← ha] at hbc
-        · exact h ⟨_, ha⟩ hbc }
+        · exact h ⟨_, ha⟩ hbc }⟩
 
 theorem mulPosReflectLT_iff_contravariant_pos :
-    MulPosReflectLT α ↔ Contravariant α>0 α (fun x y => y * x) (· < ·) where
-  mp _ := MulPosReflectLT.to_contravariant_pos_mul_lt
-  mpr h :=
+    MulPosReflectLT α ↔ Contravariant α>0 α (fun x y => y * x) (· < ·) :=
+  ⟨fun _ ↦ MulPosReflectLT.to_contravariant_pos_mul_lt, fun h =>
     { elim a ha b c hbc := by
         obtain ha | ha := ha.eq_or_lt
         · simp [← ha] at hbc
-        · exact h ⟨_, ha⟩ hbc }
+        · exact h ⟨_, ha⟩ hbc }⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) PosMulStrictMono.toPosMulMono [PosMulStrictMono α] : PosMulMono α :=
