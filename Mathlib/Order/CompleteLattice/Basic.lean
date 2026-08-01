@@ -289,6 +289,33 @@ theorem iSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : 
 theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   iSup_le <| le_iSup _ ∘ h
 
+@[to_dual iInf₂_eq_iInf_diagonal]
+theorem iSup₂_eq_iSup_diagonal [CompleteSemilatticeSup α]
+    (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
+  apply le_antisymm
+  · refine sSup_le ?_
+    intro x hx
+    simp only [iSup] at hx
+    obtain ⟨i, rfl⟩ := hx
+    apply sSup_le
+    intro y hy
+    simp only [mem_range] at hy
+    obtain ⟨j, rfl⟩ := hy
+    obtain ⟨k₂, hk⟩ := h i j
+    have : f k₂ k₂ ≤ iSup (fun k => f k k) := by
+      rw [iSup]
+      exact le_sSup (mem_range_self k₂)
+    exact le_trans hk this
+  · refine sSup_le ?_
+    intro x hx
+    simp only [mem_range] at hx
+    obtain ⟨k₀, rfl⟩ := hx
+    have h1 : f k₀ k₀ ≤ sSup (range fun j => f k₀ j) := le_sSup (mem_range_self k₀)
+    have h2 : sSup (range fun j => f k₀ j) ≤ sSup (range fun i => sSup (range fun j => f i j)) :=
+      le_sSup ⟨k₀, rfl⟩
+    exact le_trans h1 h2
+
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
   iSup_le fun i => iInf_mono fun j => le_iSup (fun i => f i j) i
