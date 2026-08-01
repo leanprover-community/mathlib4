@@ -219,6 +219,11 @@ theorem dvd_of_isSquare_mul (hx : Squarefree x) (h : IsSquare (x * y)) : x ∣ y
   rw [mul_mul_mul_comm, mul_assoc, mul_right_inj' hx.ne_zero] at hc
   exact ⟨k * k, hc⟩
 
+/-- Two squarefree elements whose product is a square are associated. -/
+theorem associated_of_isSquare_mul (hx : Squarefree x) (hy : Squarefree y)
+    (h : IsSquare (x * y)) : Associated x y :=
+  associated_of_dvd_dvd (hx.dvd_of_isSquare_mul h) (hy.dvd_of_isSquare_mul (mul_comm x y ▸ h))
+
 end Squarefree
 
 variable [DecompositionMonoid R]
