@@ -78,7 +78,7 @@ protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := 
 @[simp]
 protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
 
-@[aesop unsafe 20% forward (rule_sets := [SetLike]), membership .]
+@[aesop unsafe 20% forward (rule_sets := [SetLike])]
 protected theorem neg_one_notMem (P : RingPreordering R) : -1 ∉ P :=
   RingPreordering.neg_one_notMem' _
 

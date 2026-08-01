@@ -73,7 +73,7 @@ variable {s t : Set M}
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
-@[simp, aesop safe 20 (rule_sets := [SetLike]), membership .]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 
 @[aesop 80% (rule_sets := [SetLike]), membership .]

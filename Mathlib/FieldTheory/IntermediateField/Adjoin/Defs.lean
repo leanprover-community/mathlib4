@@ -327,7 +327,7 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 
-@[simp, aesop safe 20 (rule_sets := [SetLike]), membership .]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 
 @[aesop 80% (rule_sets := [SetLike]), membership .]
