@@ -271,14 +271,14 @@ theorem exists_ofPowerSeries_eq_of_orderTop_nonneg {f : R⸨X⸩} (hf : 0 ≤ f.
 embedding the exponents along `k ↦ m * k`. -/
 def expand (m : ℕ+) : R⸨X⸩ →+* R⸨X⸩ :=
   HahnSeries.embDomainRingHom (AddMonoidHom.mul (m : ℤ))
-    (fun _ _ ↦ mul_left_cancel₀ (by exact_mod_cast m.ne_zero))
-    fun _ _ ↦ mul_le_mul_iff_right₀ (by exact_mod_cast m.pos)
+    (fun _ _ ↦ mul_left_cancel₀ (mod_cast m.ne_zero))
+    fun _ _ ↦ mul_le_mul_iff_right₀ (mod_cast m.pos)
 
 @[simp]
 theorem expand_apply (m : ℕ+) (f : R⸨X⸩) :
     expand m f = HahnSeries.embDomain
-      ⟨⟨AddMonoidHom.mul (m : ℤ), fun _ _ ↦ mul_left_cancel₀ (by exact_mod_cast m.ne_zero)⟩,
-        mul_le_mul_iff_right₀ (by exact_mod_cast m.pos)⟩ f :=
+      ⟨⟨AddMonoidHom.mul (m : ℤ), fun _ _ ↦ mul_left_cancel₀ (mod_cast m.ne_zero)⟩,
+        mul_le_mul_iff_right₀ (mod_cast m.pos)⟩ f :=
   rfl
 
 theorem expand_single (m : ℕ+) (k : ℤ) (a : R) :
@@ -295,14 +295,14 @@ These are the unique components satisfying
 `∑ r : Fin n, X ^ r * expand n (contract n f r) = f`; see
 `LaurentSeries.sum_single_mul_expand_contract` and `LaurentSeries.contract_eq_of_sum_eq`. -/
 def contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) : R⸨X⸩ where
-  coeff k := f.coeff ((n : ℤ) * k + (r : ℕ))
+  coeff k := f.coeff ((n : ℤ) * k + (r : ℤ))
   isPWO_support' := Set.partiallyWellOrderedOn_iff_exists_lt.mpr fun g hg ↦
-    let ⟨a, b, hab, h⟩ := f.isPWO_support.exists_lt (f := fun k ↦ (n : ℤ) * g k + (r : ℕ)) hg
+    let ⟨a, b, hab, h⟩ := f.isPWO_support.exists_lt (f := fun k ↦ (n : ℤ) * g k + (r : ℤ)) hg
     ⟨a, b, hab, le_of_mul_le_mul_left (le_of_add_le_add_right h) (mod_cast n.pos)⟩
 
 @[simp]
 theorem coeff_contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) (k : ℤ) :
-    (contract n f r).coeff k = f.coeff ((n : ℤ) * k + (r : ℕ)) :=
+    (contract n f r).coeff k = f.coeff ((n : ℤ) * k + (r : ℤ)) :=
   rfl
 
 theorem coeff_single_mul_expand (n : ℕ+) (r : Fin n) (g : R⸨X⸩) (j : ℤ) :
@@ -341,7 +341,7 @@ theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
     contract n f r = g r := by
   have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
   have hlt : (r : ℤ) < (n : ℤ) := mod_cast r.isLt
-  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℕ)) % (n : ℤ) = (r : ℤ) := fun k ↦ by
+  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℤ)) % (n : ℤ) = (r : ℤ) := fun k ↦ by
     rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
   ext k
   rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
