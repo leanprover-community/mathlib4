@@ -1,0 +1,138 @@
+# Maintain a stacked "deprecated module stubs" PR for every PR that deletes
+# or renames library modules.
+#
+# When PR_summary detects that a PR removes or renames modules without
+# leaving `deprecated_module` stubs, it adds the `file-removed` label.
+# That label triggers this workflow, which generates the stub files on a
+# branch `deprecation-stubs/pr-<N>`, opens a PR for it, and chains it to
+# the parent with a `bors stack #<N>` comment. Bors then merges both PRs
+# atomically, parent first, so the old module names always resolve on
+# master.
+#
+# Later pushes to the parent regenerate the stub branch; closing the parent
+# without merging closes the stub PR. The `no-auto-stub` label on the
+# parent opts out.
+#
+# SECURITY: this workflow runs on pull_request_target and mints a token
+# that can push branches and open PRs. It must therefore never check out
+# or execute code from the parent PR. It always checks out `master`, and
+# the driver script assembles the stub commit with git plumbing, without a
+# working-tree checkout of the parent's head. Keep it that way: do not add
+# steps that run lake/lean or any other build tool here.
+#
+# Requirements:
+#   * the GitHub App behind the minted token needs contents:write and
+#     pull_requests:write;
+#   * the app's user must have reviewer ("member") standing in bors,
+#     otherwise the `bors stack` comment is ignored.
+
+name: Auto-stack module deprecation stubs
+
+on:
+  pull_request_target:
+    types: [labeled, synchronize, closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'parent PR number to (re)generate deprecation stubs for'
+        required: true
+        type: string
+      dry_run:
+        description: 'if true, only log what would happen'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: auto-deprecate-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  stubs:
+    name: Maintain the stacked deprecation-stub PR
+    runs-on: ubuntu-latest
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.action == 'synchronize' ||
+       github.event.action == 'closed' ||
+       (github.event.action == 'labeled' && github.event.label.name == 'file-removed'))
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+      EVENT: ${{ github.event.action || 'dispatch' }}
+
+    steps:
+    - name: Check whether this event needs work
+      id: precheck
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # `synchronize` fires for every push to every PR in the repository,
+        # and `closed` for every PR close. Those events only matter when a
+        # stub PR already exists, so gate them on one cheap API call before
+        # the (expensive) repository checkout. `labeled` and manual dispatch
+        # always proceed.
+        case "$EVENT" in
+          labeled|dispatch)
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            n="$(gh pr list --repo "$GITHUB_REPOSITORY" \
+              --head "deprecation-stubs/pr-${PR_NUMBER}" --state open \
+              --json number --jq 'length')"
+            if [ "$n" -gt 0 ]; then
+              echo "proceed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "proceed=false" >> "$GITHUB_OUTPUT"
+              echo "No open stub PR for #${PR_NUMBER}; nothing to do."
+            fi
+            ;;
+        esac
+
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      if: steps.precheck.outputs.proceed == 'true'
+      with:
+        # SECURITY: always check out master, never the (untrusted) PR head.
+        ref: master
+        # The driver needs commit history (merge base, deletion dates) but
+        # no file content beyond a handful of blobs it reads on demand.
+        fetch-depth: 0
+        filter: blob:none
+
+    - name: Generate app token
+      id: app-token
+      if: steps.precheck.outputs.proceed == 'true' && inputs.dry_run != true
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+      with:
+        app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nolints-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+    # This token is masked by the token minting action and will not be
+    # logged accidentally.
+    - name: Maintain the stub PR
+      if: steps.precheck.outputs.proceed == 'true'
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+        DRY_RUN: ${{ toJson(inputs.dry_run) }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        # Pushes authenticate through the remote URL; gh uses GH_TOKEN.
+        git remote set-url origin \
+          "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+        args=(--pr "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --run-url "$RUN_URL")
+        case "$EVENT" in
+          closed)      args+=(--close) ;;
+          synchronize) args+=(--only-if-exists) ;;
+        esac
+        if [ "$DRY_RUN" = "true" ]; then
+          args+=(--dry-run)
+        fi
+        ./scripts/auto_deprecate_modules.sh "${args[@]}"
