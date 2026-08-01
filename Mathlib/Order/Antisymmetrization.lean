@@ -288,7 +288,7 @@ theorem wellFoundedLT_antisymmetrization_iff :
 set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
-  convert wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
+  convert! wellFounded_liftOn₂'_iff with ⟨_⟩ ⟨_⟩
   exact fun _ _ _ _ h₁ h₂ ↦ propext
     ⟨fun h ↦ (h₂.2.trans_lt h).trans_le h₁.1, fun h ↦ (h₂.1.trans_lt h).trans_le h₁.2⟩
 

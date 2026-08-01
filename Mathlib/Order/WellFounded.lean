@@ -78,9 +78,8 @@ theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 
-instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
-    IsWellFounded α (r.onFun f) where
-  wf := IsWellFounded.wf.onFun
+instance (r : β → β → Prop) (f : α → β) [H : WellFounded r] : WellFounded (r.onFun f) :=
+  WellFounded.onFun H
 
 theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
@@ -157,7 +156,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
 @[to_dual]
 theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
     WellFoundedLT α ↔ ∀ s : Set α, s.Nonempty → ∃ m, Minimal (· ∈ s) m := by
-  simp only [isWellFounded_iff, wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
+  simp only [wellFounded_iff_has_min, not_lt_iff_le_imp_ge, Minimal]
 
 @[to_dual]
 alias ⟨_root_.WellFoundedLT.exists_minimal, _⟩ := wellFoundedLT_iff_exists_minimal
@@ -171,8 +170,8 @@ theorem isWellOrder_iff_exists_not_lt_and_eq_or_gt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩
   · grind [h.wf.has_min, trichotomous_of r]
-  · grind [wellFounded_iff_has_min]
   · grind [h {a, b} <| by simp]
+  · grind [wellFounded_iff_has_min]
 
 /-- The minimum of `f '' s` is `f` applied to the minimum of `s`. -/
 theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounded r) (f : α → β)
