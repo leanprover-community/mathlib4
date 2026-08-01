@@ -46,6 +46,15 @@ instance : Nontrivial (Iic ω₁) :=
 instance : CompactSpace (Iic ω₁) :=
   isCompact_iff_compactSpace.mp (by simp only [← Icc_bot, bot_eq_zero, isCompact_Icc])
 
+private lemma exists_lt_notMem_of_disjoint {U V : Set (Iic ω₁)} (hV : V ∈ 𝓝 ⊤)
+    (hUV : Disjoint U V) (x : Iio ω₁) : ∃ y, x < y ∧ inc y ∉ U := by
+  obtain ⟨c, hc, hcV⟩ := nhds_top_basis.mem_iff.mp hV
+  obtain ⟨z, hz, hz'⟩ := (Cardinal.isSuccLimit_omega 1).lt_iff_exists_lt.mp
+    (max_lt x.2 (Subtype.coe_lt_coe.mpr hc))
+  have hcz : c < inc ⟨z, hz⟩ := Subtype.coe_lt_coe.mp ((le_max_right _ _).trans_lt hz')
+  exact ⟨⟨z, hz⟩, Subtype.coe_lt_coe.mp ((le_max_left _ _).trans_lt hz'),
+    disjoint_right.mp hUV (hcV hcz)⟩
+
 /-- Main theorem: `Iio ω₁ × Iic ω₁` is not normal. -/
 theorem not_normalSpace_Iio_prod_Iic_omega_one :
     ¬ NormalSpace (Iio.{u+1} ω₁ × Iic.{u+1} ω₁) := by
@@ -59,17 +68,8 @@ theorem not_normalSpace_Iio_prod_Iic_omega_one :
     intro ⟨a, b⟩ (ha : inc a = b) (hb : b = ⊤)
     exact absurd (Subtype.ext_iff.mp (ha.trans hb)) a.2.ne
   obtain ⟨U, V, hU, hV, hAU, hBV, hUV⟩ := normal_separation hA hB hAB
-  have hβ_ex : ∀ x : Iio ω₁, ∃ y : Iio ω₁, x < y ∧ (x, inc y) ∉ U := by
-    intro x
-    obtain ⟨_, hN1, N2, hN2, hsub⟩ := mem_nhds_prod_iff.mp (hV.mem_nhds (hBV rfl))
-    obtain ⟨c, hcω₁, hcN⟩ := nhds_top_basis.mem_iff.mp hN2
-    obtain ⟨z, hz1, hz2⟩ := (Order.IsSuccLimit.lt_iff_exists_lt (Cardinal.isSuccLimit_omega _)).mp
-      (max_lt x.2 (Subtype.coe_lt_coe.mpr hcω₁))
-    have hx : x < ⟨z, hz1⟩ := Subtype.coe_lt_coe.mp (lt_of_le_of_lt (le_max_left _ _) hz2)
-    have hc : c < inc ⟨z, hz1⟩ :=
-      Subtype.coe_lt_coe.mp (lt_of_le_of_lt (le_max_right _ _) hz2)
-    exact ⟨⟨z, hz1⟩, hx, fun hU' => hUV.le_bot ⟨hU', hsub ⟨mem_of_mem_nhds hN1, hcN hc⟩⟩⟩
-  choose β hβ1 hβ2 using hβ_ex
+  choose β hβ1 hβ2 using fun x => exists_lt_notMem_of_disjoint
+    ((hV.preimage (.prodMk_right x)).mem_nhds (hBV rfl)) (hUV.preimage _) x
   let seq : ℕ → Iio ω₁ := Nat.rec ⟨0, (Cardinal.isSuccLimit_omega _).bot_lt⟩ fun _ ↦ β
   have hmono : Monotone (fun n => (seq n).1) :=
     monotone_nat_of_le_succ fun n => (Subtype.coe_lt_coe.mpr (hβ1 (seq n))).le
