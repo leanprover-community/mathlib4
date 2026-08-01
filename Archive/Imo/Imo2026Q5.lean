@@ -140,6 +140,7 @@ lemma displacement_eq_of_pos (hf : ∀ x > 0, 0 < f x) (h : IsSolution f)
         have hnonneg : 0 ≤ (f (f^[n] y) - x) / a :=
           div_nonneg (by rw [hy_succ]; nlinarith) ha.le
         nlinarith [(le_div_iff₀ ha).1 (Nat.floor_le hnonneg)]
+  exact (lt_self_iff_false (a ^ 2)).mp hcontra
 
 /-- A point with positive displacement `a` is at least distance `a` from every point with zero
 displacement. -/
