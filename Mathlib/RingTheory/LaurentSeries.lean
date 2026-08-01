@@ -28,7 +28,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 * Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
 * Provides a coercion from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
-* Defines `LaurentSeries.expand`, the ring endomorphism of `R⸨X⸩` sending `X` to `X ^ m`.
+* Defines `LaurentSeries.expand`, the ring endomorphism of `R⸨X⸩` sending `X` to `X ^ m`, and
+  `LaurentSeries.contract`, its opposite, giving the unique decomposition of a Laurent series as
+  `∑ r < n, X ^ r * expand n (contract n f r)`.
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
@@ -287,34 +289,66 @@ theorem orderTop_expand (m : ℕ+) (f : R⸨X⸩) :
     (expand m f).orderTop = f.orderTop.map fun k : ℤ ↦ m * k := by
   simp
 
-/-- Every Laurent series decomposes as `∑ r < n, X ^ r * expand n (g r)`, where `g r`
-collects its coefficients at exponents congruent to `r` mod `n`. -/
-theorem exists_eq_sum_single_mul_expand (n : ℕ+) (f : R⸨X⸩) :
-    ∃ g : ℕ → R⸨X⸩,
-      f = ∑ r ∈ Finset.range (n : ℕ), HahnSeries.single (r : ℤ) 1 * expand n (g r) := by
+/-- The opposite of `expand`, shifted by `r`: the `r`-th component of a Laurent series with
+respect to `n`, obtained by collecting the coefficients at exponents congruent to `r` mod `n`.
+These are the unique components satisfying
+`∑ r : Fin n, X ^ r * expand n (contract n f r) = f`; see
+`LaurentSeries.sum_single_mul_expand_contract` and `LaurentSeries.contract_eq_of_sum_eq`. -/
+def contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) : R⸨X⸩ where
+  coeff k := f.coeff ((n : ℤ) * k + (r : ℕ))
+  isPWO_support' := Set.partiallyWellOrderedOn_iff_exists_lt.mpr fun g hg ↦
+    let ⟨a, b, hab, h⟩ := f.isPWO_support.exists_lt (f := fun k ↦ (n : ℤ) * g k + (r : ℕ)) hg
+    ⟨a, b, hab, le_of_mul_le_mul_left (le_of_add_le_add_right h) (mod_cast n.pos)⟩
+
+@[simp]
+theorem coeff_contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) (k : ℤ) :
+    (contract n f r).coeff k = f.coeff ((n : ℤ) * k + (r : ℕ)) :=
+  rfl
+
+theorem coeff_single_mul_expand (n : ℕ+) (r : Fin n) (g : R⸨X⸩) (j : ℤ) :
+    (HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n g).coeff j =
+      if j % (n : ℤ) = ((r : ℕ) : ℤ) then g.coeff (j / (n : ℤ)) else 0 := by
+  rw [HahnSeries.coeff_single_mul, one_mul, expand_apply]
+  split_ifs with h
+  · rw [show j - ((r : ℕ) : ℤ) = (n : ℤ) * (j / (n : ℤ)) by
+      rw [← h]; exact (eq_sub_of_add_eq (Int.mul_ediv_add_emod j n)).symm]
+    exact HahnSeries.embDomain_coeff
+  · refine HahnSeries.embDomain_of_notMem_range fun ⟨k, hk⟩ ↦ h ?_
+    have hk' : j = (n : ℤ) * k + ((r : ℕ) : ℤ) := by rw [← sub_eq_iff_eq_add]; exact hk.symm
+    rw [hk', add_comm, Int.add_mul_emod_self_left,
+      Int.emod_eq_of_lt (Int.natCast_nonneg _) (mod_cast r.isLt)]
+
+/-- Every Laurent series decomposes as `∑ r < n, X ^ r * expand n (contract n f r)`: the `r`-th
+component collects the coefficients at exponents congruent to `r` mod `n`. -/
+theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
+    ∑ r : Fin n, HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n (contract n f r) = f := by
   have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
-  have hex : ∀ r : ℕ, ∃ x : R⸨X⸩, ∀ j : ℤ,
-      x.coeff j = if j % (n : ℤ) = (r : ℤ) then f.coeff j else 0 := fun r ↦
-    ⟨⟨_, f.isPWO_support.mono fun j hj h ↦ hj (ite_eq_right_iff.mpr fun _ ↦ h)⟩, fun _ ↦ rfl⟩
-  choose fc hfc using hex
-  have hcomp : ∀ r : ℕ, ∃ y : R⸨X⸩,
-      HahnSeries.single (r : ℤ) 1 * expand n y = fc r := fun r ↦ by
-    have hsupp : (HahnSeries.single (-(r : ℤ)) 1 * fc r).support ⊆
-        Set.range fun k : ℤ ↦ (n : ℤ) * k := fun j hj ↦ by
-      rw [HahnSeries.mem_support, HahnSeries.coeff_single_mul, hfc, sub_neg_eq_add, one_mul] at hj
-      obtain ⟨k, hk⟩ : (n : ℤ) ∣ j + (r : ℤ) - (j + (r : ℤ)) % (n : ℤ) := Int.dvd_self_sub_emod
-      rw [(ite_ne_right_iff.mp hj).1] at hk
-      exact ⟨k, show (n : ℤ) * k = j by omega⟩
-    obtain ⟨y, hy⟩ : ∃ y : R⸨X⸩, expand n y = HahnSeries.single (-(r : ℤ)) 1 * fc r :=
-      HahnSeries.mem_range_embDomain_iff.mpr hsupp
-    exact ⟨y, by simp [hy, ← mul_assoc, HahnSeries.single_mul_single]⟩
-  choose g hg using hcomp
-  refine ⟨g, HahnSeries.coeff_injective <| funext fun j ↦ ?_⟩
-  simp only [HahnSeries.coeff_sum, hg, hfc]
-  rw [Finset.sum_eq_single (j % (n : ℤ)).toNat (fun r _ hr ↦ if_neg fun h ↦ hr (by omega))
-    fun h ↦ absurd (Finset.mem_range.mpr ?_) h]
-  · exact (if_pos (Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne')).symm).symm
-  · exact (Int.toNat_lt (Int.emod_nonneg j hn0.ne')).mpr (Int.emod_lt_of_pos j hn0)
+  ext j
+  have hjn : (j % (n : ℤ)).toNat < (n : ℕ) :=
+    (Int.toNat_lt (Int.emod_nonneg j hn0.ne')).mpr (Int.emod_lt_of_pos j hn0)
+  rw [HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem ⟨(j % (n : ℤ)).toNat, hjn⟩
+    (Finset.mem_univ _) fun r _ hr ↦ (coeff_single_mul_expand n r _ j).trans
+      (if_neg fun h ↦ hr (Fin.ext (show (r : ℕ) = (j % (n : ℤ)).toNat by omega))),
+    coeff_single_mul_expand, if_pos (Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne')).symm,
+    coeff_contract, Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne'),
+    Int.mul_ediv_add_emod]
+
+/-- The decomposition of `LaurentSeries.sum_single_mul_expand_contract` is unique: any family
+`g` of components with `∑ r : Fin n, X ^ r * expand n (g r) = f` is given by
+`LaurentSeries.contract`. -/
+theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
+    (hg : ∑ r : Fin n, HahnSeries.single ((r : ℕ) : ℤ) 1 * expand n (g r) = f) (r : Fin n) :
+    contract n f r = g r := by
+  have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
+  have hlt : ((r : ℕ) : ℤ) < (n : ℤ) := mod_cast r.isLt
+  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℕ)) % (n : ℤ) = ((r : ℕ) : ℤ) := fun k ↦ by
+    rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
+  ext k
+  rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
+    (fun s _ hs ↦ (coeff_single_mul_expand n s _ _).trans (if_neg fun h ↦
+      hs (Fin.ext (Nat.cast_injective (h.symm.trans (hmod k)))))),
+    coeff_single_mul_expand, if_pos (hmod k), add_comm, Int.add_mul_ediv_left _ _ hn0.ne',
+    Int.ediv_eq_zero_of_lt (Int.natCast_nonneg _) hlt, zero_add]
 
 end Semiring
 
