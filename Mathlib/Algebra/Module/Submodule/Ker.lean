@@ -128,7 +128,7 @@ theorem ker_restrict {p : Submodule R M} {q : Submodule R₂ M₂} {f : M →ₛ
   rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict, ker_domRestrict]
 
 theorem ker_submoduleComap (f : M →ₛₗ[τ₁₂] M₂) (q : Submodule R₂ M₂) :
-    ker (submoduleComap f q) = (ker f).submoduleOf _ := by
+    ker (submoduleComap f q) = (ker f).submoduleOf (q.comap f) := by
   simp [submoduleComap, ker_restrict, submoduleOf]
 
 @[simp]
