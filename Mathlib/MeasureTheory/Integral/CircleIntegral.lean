@@ -211,7 +211,6 @@ theorem sub (hf : CircleIntegrable f c R) (hg : CircleIntegrable g c R) :
   IntervalIntegrable.sub hf hg
 
 /-- Sums of circle integrable functions are circle integrable. -/
-@[fun_prop]
 @[to_fun (attr := fun_prop)]
 protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
