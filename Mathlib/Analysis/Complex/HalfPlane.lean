@@ -12,7 +12,7 @@ public import Mathlib.Topology.Instances.EReal.Lemmas
 # Half-planes in ℂ are open
 
 We state that open left, right, upper and lower half-planes in the complex numbers are open sets,
-where the bounding value of the real or imaginary part is given by an `EReal` `x`.
+where the bounding value of the real or imaginary part is given by a real or `EReal` `x`.
 So this includes the full plane and the empty set for `x = ⊤`/`x = ⊥`.
 -/
 
