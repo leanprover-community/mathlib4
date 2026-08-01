@@ -24,6 +24,8 @@ proves some basic properties.
 
 * `Complex.digamma_apply_add_one`: The digamma function satisfies the functional equation
   `digamma (s + 1) = digamma s + s⁻¹`.
+* `Complex.digamma_one_sub`: Euler's reflection formula
+  `digamma (1 - s) = digamma s + π * cot (π * s)`.
 * `Complex.meromorphic_digamma`: The digamma function is meromorphic.
 
 ## TODO
@@ -57,6 +59,26 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   have hs0 : s ≠ 0 := by simpa using hs 0
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
+
+open scoped Real in
+/-- Euler's reflection formula for the digamma function:
+`ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
+theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
+    digamma (1 - s) = digamma s + π * cot (π * s) := by
+  have hπ : (π : ℂ) ≠ 0 := ofReal_ne_zero.mpr Real.pi_ne_zero
+  have hsnat (m : ℕ) : s ≠ -m := by simpa using hs (-m)
+  have h1snat (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
+  have := differentiableAt_Gamma _ h1snat
+  have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
+  rw [logDeriv_mul s (Gamma_ne_zero hsnat) _ (differentiableAt_Gamma s hsnat) (by fun_prop),
+    logDeriv_div s hπ _ (by fun_prop) (by fun_prop),
+    (by rfl : (Gamma <| 1 - ·) = Gamma ∘ (1 - ·)),
+    logDeriv_comp (by assumption) (by fun_prop),
+    (by rfl : (sin <| π * ·) = sin ∘ (π * ·)),
+    logDeriv_comp (by fun_prop) (by fun_prop)] at this
+  · simp [digamma_def] at this ⊢; grind 
+  · grind [sin_eq_zero_iff]
+  · exact Gamma_ne_zero h1snat
 
 theorem meromorphic_digamma : Meromorphic digamma :=
   Meromorphic.Gamma.logDeriv
