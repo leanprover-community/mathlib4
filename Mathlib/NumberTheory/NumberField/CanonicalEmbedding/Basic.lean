@@ -125,7 +125,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
-      RingHom.equivRatAlgHom
+      (RingHom.equivRatAlgHom K ℂ)
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
     convert!
@@ -133,7 +133,7 @@ noncomputable def latticeBasis [NumberField K] :
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-      (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+      (fun i => integralBasis K (e i)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
@@ -160,6 +160,7 @@ theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     (latticeBasis K).repr (canonicalEmbedding K x) i = (integralBasis K).repr x i := by
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
@@ -241,6 +242,7 @@ instance : NullSingletonClass (volume : Measure (mixedSpace K)) := by
       pi_nullSingletonClass ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNullSingletonClass_snd
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {K} in
 open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
@@ -695,6 +697,7 @@ theorem mem_rat_span_latticeBasis (x : K) :
   rw [← latticeBasis_apply]
   exact Set.mem_range_self i
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
     (latticeBasis K).repr (mixedEmbedding K x) i = (integralBasis K).repr x i := by
   rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
@@ -866,7 +869,6 @@ protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
 instance : DiscreteTopology (euclidean.integerLattice K) := by
-  classical
   rw [euclidean.integerLattice]
   infer_instance
 
@@ -1104,6 +1106,7 @@ abbrev realSpace := InfinitePlace K → ℝ
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by

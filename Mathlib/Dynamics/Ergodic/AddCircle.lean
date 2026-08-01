@@ -102,6 +102,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     volume_of_add_preimage_eq s _ (u j) d huj (hu₁ j) closedBall_ae_eq_ball, nsmul_eq_mul, ←
     mul_assoc, this, hI₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
   { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
     aeconst_set := fun s hs hs' => by

@@ -218,7 +218,7 @@ instance : (valuation v).Compatible := .ofValuation (valuation v)
 
 instance : IsValuativeTopology (WithVal v) where
   mem_nhds_iff {s x} := by
-    simp only [Set.image_add_left, Set.preimage_setOf_eq, Valued.mem_nhds]
+    simp only [Set.image_add_left, Set.preimage_ofPred_eq, Valued.mem_nhds]
     let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation v)
     apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
     simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
@@ -267,9 +267,8 @@ instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
   smul_assoc := by simp [smul_right_def, smul_left_def, -toVal_smul]
 
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
-  .compHom S (equiv v).toRingHom
+  fast_instance% .compHom S (equiv v).toRingHom
 
-set_option backward.isDefEq.respectTransparency false in
 instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
@@ -300,7 +299,7 @@ section left
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
 instance : Algebra (WithVal v) S := fast_instance% {
-  __ := (inferInstance : Module (WithVal v) S)
+  algebraMap.toFun r := algebraMap R S (ofVal r)
   __ := Algebra.compHom S (equiv v).toRingHom }
 
 theorem algebraMap_left_apply (s : WithVal v) :
@@ -318,7 +317,9 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance : Algebra R (WithVal v) := fast_instance% (equiv v).algebra R
+instance : Algebra R (WithVal v) := fast_instance% {
+  (equiv v).algebra R with
+  algebraMap.toFun r := toVal v (algebraMap R S r) }
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
@@ -344,12 +345,9 @@ instance {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R) [IsLocalizatio
 
 end Algebra
 
-section Field
+section DivisionRing
 
-instance [DivisionRing R] (v : Valuation R Γ₀) : DivisionRing (WithVal v) := fast_instance%
-  (equiv v).divisionRing
-
-variable [Field R] (v : Valuation R Γ₀)
+variable [DivisionRing R] (v : Valuation R Γ₀)
 
 instance : Div (WithVal v) where div x y := toVal _ (x.ofVal / y.ofVal)
 instance : Inv (WithVal v) where inv x := toVal _ x.ofVal⁻¹
@@ -376,6 +374,14 @@ instance : RatCast (WithVal v) where ratCast q := toVal _ q
 @[simp] lemma toVal_ratCast (q : ℚ) : toVal v q = q := rfl
 
 @[simp] lemma ofVal_ratCast (q : ℚ) : ofVal (q : WithVal v) = q := rfl
+
+instance : DivisionRing (WithVal v) := fast_instance% (equiv v).divisionRing
+
+end DivisionRing
+
+section Field
+
+variable [Field R] (v : Valuation R Γ₀)
 
 instance : Field (WithVal v) := fast_instance% ofVal_injective v |>.field _
   (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
@@ -437,6 +443,7 @@ theorem strictMono_valueGroupEquiv : StrictMono (valueGroupEquiv v) :=
 theorem strictMono_valueGroupEquiv_symm : StrictMono (valueGroupEquiv v).symm :=
   fun _ _ _ ↦ by simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The order-preserving, multiplicative equivalence between the `ValueGroup₀` of the valuation
 on `WithVal v` and the valuation `v`. -/
 @[simps!]
@@ -540,11 +547,11 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp [restrict_pos_iff, h.pos_iff, ← hv, hs₀]
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
-  rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
+  rw [← hr, equiv_apply, Set.mem_ofPred_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
   simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
-  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
+  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_ofPred_eq, lt_div_iff₀ hs0'] at hx
   rwa [← map_mul, restrict_lt_iff] at hx
 
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
@@ -562,8 +569,8 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
       (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
-  simp only [equiv_symm_apply, Set.mem_setOf_eq]
-  simp only [equiv_apply, Units.val_mk0, Set.mem_setOf_eq] at hx
+  simp only [equiv_symm_apply, Set.mem_ofPred_eq]
+  simp only [equiv_apply, Units.val_mk0, Set.mem_ofPred_eq] at hx
   rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
   · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
       ← h.orderRingIso_apply]
@@ -585,7 +592,7 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
   obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
-  simp only [Set.mem_setOf_eq, RingHom.id_apply]
+  simp only [Set.mem_ofPred_eq, RingHom.id_apply]
   set y₀ := h_val.orderMonoidIso x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
   set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
@@ -631,12 +638,12 @@ theorem exists_div_eq_of_surjective {K : Type*} [DivisionRing K] {Γ₀ : Type*}
   obtain ⟨r, hr⟩ := hv γ
   exact ⟨r, 1, by simp [hr]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem restrict_exists_div_eq {K : Type*} [DivisionRing K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀)
     (γ : (ValueGroup₀ (.ofClass v))ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   obtain ⟨r, hr⟩ := ValueGroup₀.restrict₀_surjective (.ofClass v) γ
-  classical
   exact ⟨r, 1, by
     simp only [map_one, zero_lt_one, restrict_def, hr, div_one, and_self, and_true]
     rw [← map_zero v]
@@ -652,7 +659,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
     convert!
-      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOfPred_iff
         (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
@@ -673,7 +680,6 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := .of_algEquiv _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]
@@ -682,6 +688,9 @@ def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ
 
 end NumberField.RingOfIntegers
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped NumberField in
 /-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
 equivalent to `ℤ`. -/

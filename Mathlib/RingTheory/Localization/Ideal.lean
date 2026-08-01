@@ -8,10 +8,10 @@ module
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
-public import Mathlib.Algebra.Algebra.Tower
+
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Ideals in localizations of commutative rings
@@ -49,39 +49,21 @@ theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
--- TODO: golf this using `Submodule.localized'`
-private def map_ideal (I : Ideal R) : Ideal S where
-  carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
-  zero_mem' := ⟨⟨0, 1⟩, by simp⟩
-  add_mem' := by
-    rintro a b ⟨a', ha⟩ ⟨b', hb⟩
-    let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R),
-      I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
-    use ⟨Z, a'.2 * b'.2⟩
-    simp only [Z, map_add, Submonoid.coe_mul, map_mul]
-    rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
-      mul_assoc b, hb]
-    ring
-  smul_mem' := by
-    rintro c x ⟨x', hx⟩
-    obtain ⟨c', hc⟩ := IsLocalization.surj M c
-    let Z : { x // x ∈ I } := ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
-    use ⟨Z, c'.2 * x'.2⟩
-    simp only [Z, ← hx, ← hc, smul_eq_mul, Submonoid.coe_mul, map_mul]
-    ring
+private def map_ideal (I : Ideal R) : Ideal S :=
+  Submodule.localized' S M (Algebra.linearMap R S) I
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
+  rw [← show map_ideal M S I = Ideal.map (algebraMap R S) I by
+    rw [map_ideal, Ideal.map, Ideal.span, Submodule.localized'_eq_span, Algebra.coe_linearMap],
+    map_ideal, Submodule.mem_localized']
   constructor
-  · change _ → z ∈ map_ideal M S I
-    refine fun h => Ideal.mem_sInf.1 h fun z hz => ?_
-    obtain ⟨y, hy⟩ := hz
-    let Z : { x // x ∈ I } := ⟨y, hy.left⟩
-    use ⟨Z, 1⟩
-    simp [Z, hy.right]
-  · rintro ⟨⟨a, s⟩, h⟩
-    rw [← Ideal.unit_mul_mem_iff_mem _ (map_units S s), mul_comm]
-    exact h.symm ▸ Ideal.mem_map_of_mem _ a.2
+  · rintro ⟨x, hx, s, rfl⟩
+    exact ⟨⟨⟨x, hx⟩, s⟩, by rw [← IsLocalization.mk'_eq_mk', IsLocalization.mk'_spec]⟩
+  · rintro ⟨⟨⟨x, hx⟩, s⟩, h⟩
+    refine ⟨x, hx, s, ?_⟩
+    rw [← IsLocalization.mk'_eq_mk', eq_comm, IsLocalization.eq_mk'_iff_mul_eq]
+    exact h
 
 lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
     IsLocalization.mk' S x s ∈ I.map (algebraMap R S) ↔ ∃ s ∈ M, s * x ∈ I := by
@@ -102,6 +84,7 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     IsLocalization.algebraMap_mem_map_algebraMap_iff M]
   simp [Set.disjoint_left]
 
+set_option backward.isDefEq.respectTransparency false in
 include M in
 protected theorem map_inf (I J : Ideal R) :
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
@@ -348,7 +331,7 @@ open nonZeroDivisors
 
 theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p.IsPrime]
     (hp0 : p ≠ ⊥) : ⊥ < p.under R := by
-  haveI : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
+  have : IsDomain S := isDomain_of_le_nonZeroDivisors _ hM
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
   convert!
     (orderIsoOfPrime M S).lt_iff_lt.mpr
@@ -356,6 +339,7 @@ theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
 
 @[deprecated (since := "2026-04-09")] alias bot_lt_comap_prime := bot_lt_under_prime
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {Rₚ Sₚ : Type*}
     [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]

@@ -457,7 +457,7 @@ class MeasurableVAdd₂ (M α : Type*) [VAdd M α] [MeasurableSpace M] [Measurab
     Prop where
   measurable_vadd : Measurable (Function.uncurry (· +ᵥ ·) : M × α → α)
 
-/-- We say that the action of `M` on `α` has `Measurable_SMul₂` if the map
+/-- We say that the action of `M` on `α` has `MeasurableSMul₂` if the map
 `(c, x) ↦ c • x` is a measurable function. -/
 @[to_additive MeasurableVAdd₂]
 class MeasurableSMul₂ (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α] :

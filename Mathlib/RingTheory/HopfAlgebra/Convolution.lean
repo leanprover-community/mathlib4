@@ -115,7 +115,7 @@ lemma comul_right_inv : toConv δ * toConv 𝑭 = 1 := by
     _ = δ ∘ₗ (toConv id * toConv 𝑺).ofConv := by simp [LinearMap.convMul_def]
     _ = δ ∘ₗ (1 : WithConv (C →ₗ[R] C)).ofConv := by rw [id_mul_antipode]
     _ = η ∘ₗ ε := by
-        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η from by ext; simp; rfl,
+        simp [LinearMap.convOne_def, show (δ ∘ₗ η : R →ₗ[R] C ⊗[R] C) = η by ext; simp; rfl,
           ← comp_assoc]
 
 end LinearMap
