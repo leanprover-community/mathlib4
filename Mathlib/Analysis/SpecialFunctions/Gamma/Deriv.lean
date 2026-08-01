@@ -202,7 +202,7 @@ theorem deriv_Gamma_one_eq_integral_log_log {s : ℝ} (hs : 1 < s) :
       have : x ^ (-(s - 1)) = x ^ (-s) * x := by rw [← rpow_add_one (by positivity)]; ring_nf
       rw [log_mul hs' (log_pos hx).ne', smul_eq_mul, neg_mul_eq_neg_mul, mul_comm _ (log x),
             ← rpow_def_of_pos (by linarith), this]
-      field_simp; ring
+      grind
     _ = (s - 1) * ((∫ t in Ioi 1, log (log t) * t ^ (-s)) + log (s - 1) * (s - 1)⁻¹)  := by
       congr
       simp_rw [add_mul]
