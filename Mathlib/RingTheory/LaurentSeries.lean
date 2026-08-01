@@ -270,7 +270,7 @@ theorem exists_ofPowerSeries_eq_of_orderTop_nonneg {f : R⸨X⸩} (hf : 0 ≤ f.
 /-- The expansion ring endomorphism of `R⸨X⸩` sending `X` to `X ^ m`, obtained by
 embedding the exponents along `k ↦ m * k`. -/
 def expand (m : ℕ+) : R⸨X⸩ →+* R⸨X⸩ :=
-  HahnSeries.embDomainRingHom (AddMonoidHom.mul (m : ℤ))
+  HahnSeries.embDomainRingHom (AddMonoidHom.mul m)
     (fun _ _ ↦ mul_left_cancel₀ (mod_cast m.ne_zero))
     fun _ _ ↦ mul_le_mul_iff_right₀ (mod_cast m.pos)
 
@@ -341,7 +341,7 @@ theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
     contract n f r = g r := by
   have hn0 : (0 : ℤ) < n := mod_cast n.pos
   have hlt : (r : ℤ) < n := mod_cast r.isLt
-  have hmod : ∀ k : ℤ, (n * k + r) % n = (r : ℤ) := fun k ↦ by
+  have hmod : ∀ k : ℤ, (n * k + r) % n = r := fun k ↦ by
     rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
   ext k
   rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
