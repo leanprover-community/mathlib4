@@ -152,7 +152,7 @@ open Complex MeasureTheory
 
 theorem hasDerivAt_Gamma {s : ℝ} (hs : 0 < s) :
     HasDerivAt Gamma (∫ t in Ioi 0, t ^ (s - 1) * (log t * exp (-t))) s := by
-  convert (Complex.hasDerivAt_Gamma (by simpa using hs : 0 < (s:ℂ).re)).real_of_complex
+  convert (Complex.hasDerivAt_Gamma (RCLike.ofReal_pos.mp hs)).real_of_complex
   · simp [Gamma_ofReal]
   convert (ofReal_re ?_).symm
   calc
