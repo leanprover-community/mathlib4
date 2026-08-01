@@ -65,6 +65,7 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
 
 theorem hasDerivAt_Gamma {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt Gamma (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
+  -- `{s | 0 < s.re}` is an open half-plane; use `Complex.isOpen_re_gt 0` once #42325 lands.
   have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
   apply (hasDerivAt_GammaIntegral hs).congr_of_eventuallyEq
   filter_upwards [this.mem_nhds hs] with a using Gamma_eq_integral
@@ -182,8 +183,8 @@ theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
   rw [mul_comm, mul_assoc, ← exp_add]
   gcongr
   · rw [abs_le]; constructor
-    · grw [neg_le, ← log_inv, log_le_rpow_div (by positivity) (by positivity : 0 < (1 : ℝ) / 2)]
-      simp [← rpow_neg_eq_inv_rpow]; ring_nf; linarith
+    · rw [show (-(1 : ℝ) / 2) = -(1 / 2) by ring]
+      linarith [neg_rpow_div_le_log hx.le one_half_pos, hx.le]
     grw [log_le_self hx.le, le_add_iff_nonneg_left]
     positivity
   grind
