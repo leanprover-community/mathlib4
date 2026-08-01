@@ -265,46 +265,47 @@ theorem exists_ofPowerSeries_eq_of_orderTop_nonneg {f : R⸨X⸩} (hf : 0 ≤ f.
   ⟨PowerSeries.X ^ f.order.toNat * f.powerSeriesPart,
     X_order_mul_powerSeriesPart (Int.toNat_of_nonneg (zero_le_orderTop_iff.mp hf))⟩
 
-variable (R) in
 /-- The expansion ring endomorphism of `R⸨X⸩` sending `X` to `X ^ m`, obtained by
 embedding the exponents along `k ↦ m * k`. -/
 def expand (m : ℕ+) : R⸨X⸩ →+* R⸨X⸩ :=
-  HahnSeries.embDomainRingHom (AddMonoidHom.mk' ((m : ℤ) * ·) (mul_add _))
+  HahnSeries.embDomainRingHom (AddMonoidHom.mul (m : ℤ))
     (fun _ _ ↦ mul_left_cancel₀ (by exact_mod_cast m.ne_zero))
     fun _ _ ↦ mul_le_mul_iff_right₀ (by exact_mod_cast m.pos)
 
 @[simp]
-theorem expand_single (m : ℕ+) (k : ℤ) (a : R) :
-    expand R m (single k a) = single ((m : ℤ) * k) a :=
-  HahnSeries.embDomain_single ..
-
-@[simp]
-theorem orderTop_expand (m : ℕ+) (f : R⸨X⸩) :
-    (expand R m f).orderTop = f.orderTop.map fun k : ℤ ↦ (m : ℤ) * k := by
-  rw [show expand R m f = HahnSeries.embDomain _ f from HahnSeries.embDomainRingHom_apply _ _ _ f,
-    HahnSeries.orderTop_embDomain]
+theorem expand_apply (m : ℕ+) (f : R⸨X⸩) :
+    expand m f = HahnSeries.embDomain
+      ⟨⟨AddMonoidHom.mul (m : ℤ), fun _ _ ↦ mul_left_cancel₀ (by exact_mod_cast m.ne_zero)⟩,
+        mul_le_mul_iff_right₀ (by exact_mod_cast m.pos)⟩ f :=
   rfl
 
-/-- Every Laurent series decomposes as `∑ r < n, X ^ r * expand R n (g r)`, where `g r`
+theorem expand_single (m : ℕ+) (k : ℤ) (a : R) :
+    expand m (single k a) = single (m * k) a := by
+  simp
+
+theorem orderTop_expand (m : ℕ+) (f : R⸨X⸩) :
+    (expand m f).orderTop = f.orderTop.map fun k : ℤ ↦ m * k := by
+  simp
+
+/-- Every Laurent series decomposes as `∑ r < n, X ^ r * expand n (g r)`, where `g r`
 collects its coefficients at exponents congruent to `r` mod `n`. -/
 theorem exists_eq_sum_single_mul_expand (n : ℕ+) (f : R⸨X⸩) :
     ∃ g : ℕ → R⸨X⸩,
-      f = ∑ r ∈ Finset.range (n : ℕ), HahnSeries.single (r : ℤ) 1 * expand R n (g r) := by
-  classical
+      f = ∑ r ∈ Finset.range (n : ℕ), HahnSeries.single (r : ℤ) 1 * expand n (g r) := by
   have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
   have hex : ∀ r : ℕ, ∃ x : R⸨X⸩, ∀ j : ℤ,
       x.coeff j = if j % (n : ℤ) = (r : ℤ) then f.coeff j else 0 := fun r ↦
     ⟨⟨_, f.isPWO_support.mono fun j hj h ↦ hj (ite_eq_right_iff.mpr fun _ ↦ h)⟩, fun _ ↦ rfl⟩
   choose fc hfc using hex
   have hcomp : ∀ r : ℕ, ∃ y : R⸨X⸩,
-      HahnSeries.single (r : ℤ) 1 * expand R n y = fc r := fun r ↦ by
+      HahnSeries.single (r : ℤ) 1 * expand n y = fc r := fun r ↦ by
     have hsupp : (HahnSeries.single (-(r : ℤ)) 1 * fc r).support ⊆
         Set.range fun k : ℤ ↦ (n : ℤ) * k := fun j hj ↦ by
       rw [HahnSeries.mem_support, HahnSeries.coeff_single_mul, hfc, sub_neg_eq_add, one_mul] at hj
       obtain ⟨k, hk⟩ : (n : ℤ) ∣ j + (r : ℤ) - (j + (r : ℤ)) % (n : ℤ) := Int.dvd_self_sub_emod
       rw [(ite_ne_right_iff.mp hj).1] at hk
       exact ⟨k, show (n : ℤ) * k = j by omega⟩
-    obtain ⟨y, hy⟩ : ∃ y : R⸨X⸩, expand R n y = HahnSeries.single (-(r : ℤ)) 1 * fc r :=
+    obtain ⟨y, hy⟩ : ∃ y : R⸨X⸩, expand n y = HahnSeries.single (-(r : ℤ)) 1 * fc r :=
       HahnSeries.mem_range_embDomain_iff.mpr hsupp
     exact ⟨y, by simp [hy, ← mul_assoc, HahnSeries.single_mul_single]⟩
   choose g hg using hcomp

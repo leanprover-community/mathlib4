@@ -509,8 +509,7 @@ theorem mem_range_embDomain_iff {f : Γ ↪o Γ'} {x : R⟦Γ'⟧} :
   · rintro ⟨y, rfl⟩
     exact support_embDomain_subset.trans (Set.image_subset_range _ _)
   · intro hx
-    refine ⟨⟨fun a ↦ x.coeff (f a),
-      Set.partiallyWellOrderedOn_iff_exists_lt.mpr fun g hg ↦ ?_⟩, ?_⟩
+    refine ⟨⟨fun a ↦ x.coeff (f a), Set.partiallyWellOrderedOn_iff_exists_lt.mpr fun g hg ↦ ?_⟩, ?_⟩
     · obtain ⟨a, b, hab, h⟩ := x.isPWO_support.exists_lt (f := fun k ↦ f (g k)) hg
       exact ⟨a, b, hab, f.le_iff_le.mp h⟩
     · ext b
