@@ -295,26 +295,26 @@ These are the unique components satisfying
 `∑ r : Fin n, X ^ r * expand n (contract n f r) = f`; see
 `LaurentSeries.sum_single_mul_expand_contract` and `LaurentSeries.contract_eq_of_sum_eq`. -/
 def contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) : R⸨X⸩ where
-  coeff k := f.coeff ((n : ℤ) * k + (r : ℤ))
+  coeff k := f.coeff (n * k + r)
   isPWO_support' := Set.partiallyWellOrderedOn_iff_exists_lt.mpr fun g hg ↦
-    let ⟨a, b, hab, h⟩ := f.isPWO_support.exists_lt (f := fun k ↦ (n : ℤ) * g k + (r : ℤ)) hg
+    let ⟨a, b, hab, h⟩ := f.isPWO_support.exists_lt (f := fun k ↦ n * g k + r) hg
     ⟨a, b, hab, le_of_mul_le_mul_left (le_of_add_le_add_right h) (mod_cast n.pos)⟩
 
 @[simp]
 theorem coeff_contract (n : ℕ+) (f : R⸨X⸩) (r : Fin n) (k : ℤ) :
-    (contract n f r).coeff k = f.coeff ((n : ℤ) * k + (r : ℤ)) :=
+    (contract n f r).coeff k = f.coeff (n * k + r) :=
   rfl
 
 theorem coeff_single_mul_expand (n : ℕ+) (r : Fin n) (g : R⸨X⸩) (j : ℤ) :
     (HahnSeries.single (r : ℤ) 1 * expand n g).coeff j =
-      if j % (n : ℤ) = (r : ℤ) then g.coeff (j / (n : ℤ)) else 0 := by
+      if j % n = r then g.coeff (j / n) else 0 := by
   rw [HahnSeries.coeff_single_mul, one_mul, expand_apply]
   split_ifs with h
-  · rw [show j - (r : ℤ) = (n : ℤ) * (j / (n : ℤ)) by
+  · rw [show j - r = n * (j / n) by
       rw [← h]; exact (eq_sub_of_add_eq (Int.mul_ediv_add_emod j n)).symm]
     exact HahnSeries.embDomain_coeff
   · refine HahnSeries.embDomain_of_notMem_range fun ⟨k, hk⟩ ↦ h ?_
-    have hk' : j = (n : ℤ) * k + (r : ℤ) := by rw [← sub_eq_iff_eq_add]; exact hk.symm
+    have hk' : j = n * k + r := by rw [← sub_eq_iff_eq_add]; exact hk.symm
     rw [hk', add_comm, Int.add_mul_emod_self_left,
       Int.emod_eq_of_lt (Int.natCast_nonneg _) (mod_cast r.isLt)]
 
@@ -322,13 +322,13 @@ theorem coeff_single_mul_expand (n : ℕ+) (r : Fin n) (g : R⸨X⸩) (j : ℤ) 
 component collects the coefficients at exponents congruent to `r` mod `n`. -/
 theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
     ∑ r : Fin n, HahnSeries.single (r : ℤ) 1 * expand n (contract n f r) = f := by
-  have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
+  have hn0 : (0 : ℤ) < n := mod_cast n.pos
   ext j
-  have hjn : (j % (n : ℤ)).toNat < (n : ℕ) :=
+  have hjn : (j % n).toNat < (n : ℕ) :=
     (Int.toNat_lt (Int.emod_nonneg j hn0.ne')).mpr (Int.emod_lt_of_pos j hn0)
-  rw [HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem ⟨(j % (n : ℤ)).toNat, hjn⟩
+  rw [HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem ⟨(j % n).toNat, hjn⟩
     (Finset.mem_univ _) fun r _ hr ↦ (coeff_single_mul_expand n r _ j).trans
-      (if_neg fun h ↦ hr (Fin.ext (show (r : ℕ) = (j % (n : ℤ)).toNat by omega))),
+      (if_neg fun h ↦ hr (Fin.ext (show (r : ℕ) = (j % n).toNat by omega))),
     coeff_single_mul_expand, if_pos (Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne')).symm,
     coeff_contract, Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg j hn0.ne'),
     Int.mul_ediv_add_emod]
@@ -339,9 +339,9 @@ theorem sum_single_mul_expand_contract (n : ℕ+) (f : R⸨X⸩) :
 theorem contract_eq_of_sum_eq {n : ℕ+} {f : R⸨X⸩} {g : Fin n → R⸨X⸩}
     (hg : ∑ r : Fin n, HahnSeries.single (r : ℤ) 1 * expand n (g r) = f) (r : Fin n) :
     contract n f r = g r := by
-  have hn0 : (0 : ℤ) < (n : ℤ) := mod_cast n.pos
-  have hlt : (r : ℤ) < (n : ℤ) := mod_cast r.isLt
-  have hmod : ∀ k : ℤ, ((n : ℤ) * k + (r : ℤ)) % (n : ℤ) = (r : ℤ) := fun k ↦ by
+  have hn0 : (0 : ℤ) < n := mod_cast n.pos
+  have hlt : (r : ℤ) < n := mod_cast r.isLt
+  have hmod : ∀ k : ℤ, (n * k + r) % n = (r : ℤ) := fun k ↦ by
     rw [add_comm, Int.add_mul_emod_self_left, Int.emod_eq_of_lt (Int.natCast_nonneg _) hlt]
   ext k
   rw [coeff_contract, ← hg, HahnSeries.coeff_sum, Finset.sum_eq_single_of_mem r (Finset.mem_univ _)
