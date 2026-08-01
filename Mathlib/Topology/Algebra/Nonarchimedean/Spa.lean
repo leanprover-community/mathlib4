@@ -178,4 +178,55 @@ theorem rationalSubset_inter_subset (s₁ : A) (T₁ : Finset A) (s₂ : A)
       exact mul_ne_zero hs1 hs2
     exact hne h0
 
+/-- Wedhorn, Rem. 7.28 (p. 62): any continuous morphism `φ : A →+* B` between
+affinoid rings defines via composition a continuous map `Spa(φ) : Spa B → Spa A`
+(the pullback of valuations). Here `hAB : A⁺ ≤ B⁺.comap φ` is the
+integrality condition `φ(a) ∈ B⁺` for all `a ∈ A⁺`. -/
+def comap {B : Type*} [CommRing B] [TopologicalSpace B] (Bplus : Subring B)
+    (φ : A →+* B) (hφ : Continuous φ) (hAB : Aplus ≤ Bplus.comap φ) :
+    SpaPoint B Bplus → SpaPoint A Aplus := fun w =>
+  { Γ₀ := w.Γ₀
+    instLinearOrderedCommGroupWithZero := w.instLinearOrderedCommGroupWithZero
+    instTopologicalSpace := w.instTopologicalSpace
+    instOrderTopology := w.instOrderTopology
+    v := ⟨Valuation.comap φ w.v.toValuation, w.v.continuous_toValuation.comp hφ⟩
+    le_one := fun a ha =>
+      (w.le_one (φ a) (hAB ha) : (Valuation.comap φ w.v.toValuation) a ≤ (1 : w.Γ₀)) }
+
+/-- The pullback of a rational subset is a rational subset:
+`Spa(φ)⁻¹(R(T/s)) = R(φ(T)/φ(s))` (Wedhorn, Rem. 7.28). -/
+theorem preimage_comap_rationalSubset {B : Type*} [CommRing B] [TopologicalSpace B]
+    (Bplus : Subring B) (φ : A →+* B) (hφ : Continuous φ) (hAB : Aplus ≤ Bplus.comap φ)
+    (s : A) (T : Finset A) [DecidableEq B] :
+    comap (A := A) (Aplus := Aplus) Bplus φ hφ hAB ⁻¹'
+        (rationalSubset (A := A) (Aplus := Aplus) s T) =
+      rationalSubset (A := B) (Aplus := Bplus) (φ s) (T.image φ) := by
+  ext w
+  constructor
+  · rintro ⟨hT, hs⟩
+    constructor
+    · intro t' ht'
+      rcases Finset.mem_image.mp ht' with ⟨t, ht, rfl⟩
+      change (comap Aplus Bplus φ hφ hAB w).v t ≤ (comap Aplus Bplus φ hφ hAB w).v s
+      exact hT t ht
+    · change (comap Aplus Bplus φ hφ hAB w).v s ≠ 0
+      exact hs
+  · rintro ⟨hT, hs⟩
+    constructor
+    · intro t ht
+      exact hT (φ t) (Finset.mem_image.mpr ⟨t, ht, rfl⟩)
+    · exact hs
+
+/-- The functor law: `Spa(ψ ∘ φ) = Spa(φ) ∘ Spa(ψ)` (Wedhorn, Rem. 7.28:
+"we obtain a contravariant functor"). -/
+theorem comap_comp {B : Type*} [CommRing B] [TopologicalSpace B]
+    (Bplus : Subring B) {C : Type*} [CommRing C] [TopologicalSpace C]
+    (Cplus : Subring C) (φ : A →+* B) (hφ : Continuous φ) (hAB : Aplus ≤ Bplus.comap φ)
+    (ψ : B →+* C) (hψ : Continuous ψ) (hBC : Bplus ≤ Cplus.comap ψ) :
+    comap Aplus Cplus (ψ.comp φ) (hψ.comp hφ)
+        (by intro a ha; exact hBC (hAB ha)) =
+      comap Aplus Bplus φ hφ hAB ∘ comap Bplus Cplus ψ hψ hBC := by
+  ext w
+  rfl
+
 end SpaPoint
