@@ -4,27 +4,35 @@
 # When PR_summary detects that a PR removes or renames modules without
 # leaving `deprecated_module` stubs, it adds the `file-removed` label.
 # That label triggers this workflow, which generates the stub files on a
-# branch `deprecation-stubs/pr-<N>`, opens a PR for it, and chains it to
-# the parent with a `bors stack #<N>` comment. Bors then merges both PRs
-# atomically, parent first, so the old module names always resolve on
-# master.
+# branch `deprecation-stubs/pr-<N>` in the stub fork (mathlib4_copy, a
+# fork with CI disabled), opens a PR for it against this repository, and
+# chains it to the parent with a `bors stack #<N>` comment. Bors then
+# merges both PRs atomically, parent first, so the old module names
+# always resolve on master. Bors compares bundle members by commit SHA,
+# so the fork-hosted stub branch works.
 #
 # Later pushes to the parent regenerate the stub branch; closing the parent
 # without merging closes the stub PR. The `no-auto-stub` label on the
 # parent opts out.
 #
 # SECURITY: this workflow runs on pull_request_target and mints a token
-# that can push branches and open PRs. It must therefore never check out
-# or execute code from the parent PR. It always checks out `master`, and
-# the driver script assembles the stub commit with git plumbing, without a
-# working-tree checkout of the parent's head. Keep it that way: do not add
-# steps that run lake/lean or any other build tool here.
+# that can push branches to the stub fork and open PRs here. It must
+# therefore never check out or execute code from the parent PR. It always
+# checks out `master`, and the driver script assembles the stub commit
+# with git plumbing, without a working-tree checkout of the parent's head.
+# Keep it that way: do not add steps that run lake/lean or any other build
+# tool here.
 #
 # Requirements:
-#   * the GitHub App behind the minted token needs contents:write and
-#     pull_requests:write;
-#   * the app's user must have reviewer ("member") standing in bors,
-#     otherwise the `bors stack` comment is ignored.
+#   * the GitHub App behind the minted token needs pull_requests:write on
+#     this repository (open/close the stub PR, post the bors comment) and
+#     contents:write on the stub fork only — it can never push a branch
+#     to this repository;
+#   * the app's user must have member standing in bors (a manual add on
+#     the bors project settings page), otherwise the `bors stack` comment
+#     is ignored. Note: bors's "synchronize members with collaborators"
+#     option replaces the member list on every sync; it must stay off, or
+#     the manually added app user is removed again.
 
 name: Auto-stack module deprecation stubs
 
@@ -64,6 +72,7 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
       EVENT: ${{ github.event.action || 'dispatch' }}
+      STUB_REPO: leanprover-community/mathlib4_copy
 
     steps:
     - name: Check whether this event needs work
@@ -123,11 +132,13 @@ jobs:
         DRY_RUN: ${{ toJson(inputs.dry_run) }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
-        # Pushes authenticate through the remote URL; gh uses GH_TOKEN.
-        git remote set-url origin \
-          "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        # Stub-branch pushes go to the fork, authenticated through the
+        # remote URL; gh uses GH_TOKEN. Nothing pushes to this repository.
+        git remote add stubfork \
+          "https://x-access-token:${GH_TOKEN}@github.com/${STUB_REPO}.git"
 
-        args=(--pr "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --run-url "$RUN_URL")
+        args=(--pr "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --run-url "$RUN_URL"
+              --push-repo "$STUB_REPO" --push-remote stubfork)
         case "$EVENT" in
           closed)      args+=(--close) ;;
           synchronize) args+=(--only-if-exists) ;;

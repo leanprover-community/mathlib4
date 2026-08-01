@@ -11,14 +11,18 @@
 #     (`Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean`,
 #     `Counterexamples.lean`);
 #   * commits them on branch `deprecation-stubs/pr-N`, based on the head
-#     commit of #N;
+#     commit of #N. The branch lives in the repository given by --push-repo
+#     (a fork in the same fork network, e.g. mathlib4_copy), so the token
+#     never needs push access to the main repository;
 #   * opens (or refreshes) a PR for that branch against the target branch,
 #     and chains it to #N with a `bors stack #N` comment. Bors then merges
 #     both PRs atomically, parent first, so the old module names always
-#     resolve on the target branch.
+#     resolve on the target branch. Bors compares bundle members by commit
+#     SHA, so a fork-hosted stub branch works.
 #
 # SECURITY: this script is meant to run in a privileged workflow
-# (pull_request_target) with a token that can push branches and open PRs.
+# (pull_request_target) with a token that can push branches to the stub
+# fork and open PRs.
 # It must never execute anything that comes from the parent PR. The stub
 # commit is assembled with git plumbing (read-tree/update-index/commit-tree);
 # file content is only read via `git cat-file` / `git show`. Do not add
@@ -37,9 +41,21 @@
 #
 # Options:
 #   --pr N              parent PR number (required)
-#   --repo OWNER/NAME   GitHub repository (required unless offline)
-#   --remote NAME       git remote to fetch from / push to (default: origin)
+#   --repo OWNER/NAME   GitHub repository of the parent PR (required unless
+#                       offline)
+#   --remote NAME       git remote to fetch the parent from (default: origin)
+#   --push-repo O/N     repository that hosts the stub branches (default:
+#                       --repo). Must be in the same fork network. PRs still
+#                       open on --repo.
+#   --push-remote R     git remote or URL to push the stub branch to
+#                       (default: --remote when --push-repo equals --repo,
+#                       otherwise https://github.com/<push-repo>.git)
 #   --base BRANCH       target branch of the parent PR (default: master)
+#   --bors-login NAME   GitHub login of the bors bot (default: mathlib-bors).
+#                       Used to tell a bors merge apart from an abandoned
+#                       parent: in squash mode bors closes pull requests
+#                       instead of merging them through GitHub, so `.merged`
+#                       stays false and only the closing actor differs.
 #   --dry-run           log everything, push nothing, call no mutating API
 #   --close             close the stub PR (parent was closed without merge)
 #   --only-if-exists    exit quietly unless an open stub PR already exists;
@@ -60,7 +76,10 @@ export LC_ALL=C
 PR=""
 REPO=""
 REMOTE="origin"
+PUSH_REPO=""
+PUSH_REMOTE=""
 BASE="master"
+BORS_LOGIN="mathlib-bors"
 DRY_RUN=""
 CLOSE=""
 ONLY_IF_EXISTS=""
@@ -73,7 +92,10 @@ while [ $# -gt 0 ]; do
     --pr) PR="$2"; shift 2 ;;
     --repo) REPO="$2"; shift 2 ;;
     --remote) REMOTE="$2"; shift 2 ;;
+    --push-repo) PUSH_REPO="$2"; shift 2 ;;
+    --push-remote) PUSH_REMOTE="$2"; shift 2 ;;
     --base) BASE="$2"; shift 2 ;;
+    --bors-login) BORS_LOGIN="$2"; shift 2 ;;
     --dry-run) DRY_RUN=1; shift ;;
     --close) CLOSE=1; shift ;;
     --only-if-exists) ONLY_IF_EXISTS=1; shift ;;
@@ -95,6 +117,17 @@ else
   [ -n "$REPO" ] || { echo "--repo is required" >&2; exit 2; }
 fi
 
+PUSH_REPO="${PUSH_REPO:-$REPO}"
+PUSH_OWNER="${PUSH_REPO%%/*}"
+PUSH_REPO_NAME="${PUSH_REPO##*/}"
+if [ -z "$PUSH_REMOTE" ]; then
+  if [ "$PUSH_REPO" = "$REPO" ]; then
+    PUSH_REMOTE="$REMOTE"
+  else
+    PUSH_REMOTE="https://github.com/${PUSH_REPO}.git"
+  fi
+fi
+
 STUB_BRANCH="deprecation-stubs/pr-${PR}"
 GIT_NAME="${ADM_GIT_NAME:-mathlib-nolints[bot]}"
 GIT_EMAIL="${ADM_GIT_EMAIL:-258989889+mathlib-nolints[bot]@users.noreply.github.com}"
@@ -112,10 +145,13 @@ trap cleanup EXIT
 
 log() { printf '%s\n' "$*" >&2; }
 
-# find_stub_pr: print the number of the open stub PR, if any.
+# find_stub_pr: print the number of the open stub PR, if any. The head
+# filter takes the branch label (`owner:branch`); for a same-org fork the
+# label matches either hosting repository, which is fine because only the
+# automation creates this branch name.
 find_stub_pr() {
-  gh pr list --repo "$REPO" --head "$STUB_BRANCH" --state open \
-    --json number --jq '.[0].number // empty'
+  gh api "repos/${REPO}/pulls?state=open&head=${PUSH_OWNER}:${STUB_BRANCH}" \
+    --jq '.[0].number // empty'
 }
 
 close_stub_pr() {
@@ -126,20 +162,44 @@ close_stub_pr() {
     return 0
   fi
   if [ -n "$DRY_RUN" ]; then
-    log "dry-run: would close stub PR #${num} (${reason}) and delete ${STUB_BRANCH}"
+    log "dry-run: would close stub PR #${num} (${reason}) and delete ${PUSH_REPO}:${STUB_BRANCH}"
     return 0
   fi
-  gh pr close "$num" --repo "$REPO" --comment "$reason" --delete-branch
-  log "closed stub PR #${num} and deleted ${STUB_BRANCH}"
+  gh pr close "$num" --repo "$REPO" --comment "$reason"
+  gh api -X DELETE "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null ||
+    log "note: branch ${STUB_BRANCH} was already gone from ${PUSH_REPO}"
+  log "closed stub PR #${num} and deleted ${PUSH_REPO}:${STUB_BRANCH}"
 }
 
-# --close: the parent PR was closed. Only clean up if it was not merged;
-# a merged parent means bors handled the bundle (or a human unstacked it),
-# and the stubs may still be needed.
+# gc_stub_branch: delete the stub branch once its PR is no longer open.
+# Needed because bors's delete_merged_branches cannot delete a branch that
+# lives in the stub fork.
+gc_stub_branch() {
+  if [ -n "$(find_stub_pr)" ]; then
+    log "parent #${PR} was merged but the stub PR is still open; leaving it untouched"
+  elif [ -n "$DRY_RUN" ]; then
+    log "dry-run: would delete ${PUSH_REPO}:${STUB_BRANCH} if it still exists"
+  elif gh api -X DELETE "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null; then
+    log "deleted merged stub branch ${PUSH_REPO}:${STUB_BRANCH}"
+  else
+    log "no stub branch to clean up"
+  fi
+}
+
+# --close: the parent PR was closed.
+# Merged by bors or through GitHub: never touch an open stub PR; only
+# garbage-collect the stub branch once its PR is no longer open. In squash
+# mode bors closes pull requests instead of merging them through GitHub, so
+# `.merged` stays false there and the closing actor is the signal.
+# Closed by a person without a merge: the stubs are no longer needed, so
+# close the stub PR.
 if [ -n "$CLOSE" ]; then
   merged="$(gh api "repos/${REPO}/pulls/${PR}" --jq .merged)"
-  if [ "$merged" = "true" ]; then
-    log "parent #${PR} was merged; leaving the stub PR untouched"
+  closer="$(gh api "repos/${REPO}/issues/${PR}" --jq '.closed_by.login // empty')"
+  # closed_by reports the app-suffixed login (`name[bot]`) while comments
+  # use the plain login; compare with the suffix stripped.
+  if [ "$merged" = "true" ] || [ "${closer%\[bot\]}" = "${BORS_LOGIN%\[bot\]}" ]; then
+    gc_stub_branch
     exit 0
   fi
   close_stub_pr "Parent PR #${PR} was closed without merging, so these stubs are no longer needed."
@@ -365,7 +425,7 @@ if [ -n "$DRY_RUN" ]; then
     cat "$TMP/stubs/${old}" >&2
   done < "$STUBS_FILE"
   log ""
-  log "dry-run: would push ${COMMIT} to ${REMOTE}/${STUB_BRANCH}"
+  log "dry-run: would push ${COMMIT} to ${PUSH_REPO}:${STUB_BRANCH}"
   log "dry-run: would open or refresh the stub PR and comment 'bors stack #${PR}'"
   exit 0
 fi
@@ -373,7 +433,7 @@ fi
 # Idempotency: skip the push when the branch already holds this exact tree
 # on this exact parent.
 NEED_PUSH=1
-if git fetch -q --no-tags "$REMOTE" "+refs/heads/${STUB_BRANCH}:refs/auto-deprecate/existing-${PR}" 2>/dev/null; then
+if git fetch -q --no-tags "$PUSH_REMOTE" "+refs/heads/${STUB_BRANCH}:refs/auto-deprecate/existing-${PR}" 2>/dev/null; then
   existing="$(git rev-parse "refs/auto-deprecate/existing-${PR}")"
   if [ "$(git rev-parse "${existing}^{tree}")" = "$TREE" ] &&
      [ "$(git rev-parse "${existing}^1" 2>/dev/null)" = "$HEAD_SHA" ]; then
@@ -383,8 +443,8 @@ if git fetch -q --no-tags "$REMOTE" "+refs/heads/${STUB_BRANCH}:refs/auto-deprec
   git update-ref -d "refs/auto-deprecate/existing-${PR}" || true
 fi
 if [ -n "$NEED_PUSH" ]; then
-  git push -q --force "$REMOTE" "${COMMIT}:refs/heads/${STUB_BRANCH}"
-  log "pushed ${STUB_BRANCH}"
+  git push -q --force "$PUSH_REMOTE" "${COMMIT}:refs/heads/${STUB_BRANCH}"
+  log "pushed ${PUSH_REPO}:${STUB_BRANCH}"
 fi
 
 COMPARE_URL="https://github.com/${REPO}/compare/${HEAD_SHA}...${COMMIT}"
@@ -409,10 +469,22 @@ EOF
 
 EXISTING_PR="$(find_stub_pr)"
 if [ -z "$EXISTING_PR" ]; then
-  url="$(gh pr create --repo "$REPO" --base "$BASE" --head "$STUB_BRANCH" \
-    --title "chore: module deprecation stubs for #${PR}" \
-    --body-file "$BODY")"
-  EXISTING_PR="${url##*/}"
+  if [ "$PUSH_REPO" = "$REPO" ]; then
+    url="$(gh pr create --repo "$REPO" --base "$BASE" --head "$STUB_BRANCH" \
+      --title "chore: module deprecation stubs for #${PR}" \
+      --body-file "$BODY")"
+    EXISTING_PR="${url##*/}"
+  else
+    # Cross-repo head. `head_repo` disambiguates when the fork and the main
+    # repository share an owner (`owner:branch` alone is ambiguous then).
+    EXISTING_PR="$(gh api "repos/${REPO}/pulls" \
+      -f title="chore: module deprecation stubs for #${PR}" \
+      -f head="${PUSH_OWNER}:${STUB_BRANCH}" \
+      -f head_repo="${PUSH_REPO_NAME}" \
+      -f base="$BASE" \
+      -F body=@"$BODY" \
+      --jq '.number')"
+  fi
   log "opened stub PR #${EXISTING_PR}"
   gh pr comment "$EXISTING_PR" --repo "$REPO" --body "bors stack #${PR}"
   log "posted 'bors stack #${PR}' on #${EXISTING_PR}"
