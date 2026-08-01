@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Rel
+public import Mathlib.Data.Sigma.Order
 public import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -1094,6 +1095,44 @@ instance [DecidableLT α] : Fintype (LTSeries α) where
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
 
 end Fintype
+
+section Sigma
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
+
+/-- A relation series of the less-than relation `<` in the disjoint sum
+of orders lies in a single fiber. -/
+theorem sigma_fst_eq_fst (p : LTSeries (Σ i, α i)) (n : Fin (p.length + 1)) :
+    (p n).1 = (p 0).1 := by
+  induction n using Fin.induction with
+  | zero => rfl
+  | succ k ih =>
+    obtain ⟨h, _⟩ := Sigma.lt_def.mp <| p.strictMono (@Fin.castSucc_lt_succ _ k)
+    rw [← h, ih]
+
+variable (α) in
+/-- The relation series of the less-than relation `<` in the disjoint sum
+of orders are in bijection with the disjoint sum of the relation series
+in the fibers. -/
+noncomputable def sigma_equiv : LTSeries (Σ i, α i) ≃ Σ i, LTSeries (α i) where
+  toFun p :=
+    ⟨(p 0).1, ⟨p.length, fun n ↦ (p.sigma_fst_eq_fst n) ▸ (p n).2, fun n ↦ by
+      obtain ⟨h, hab⟩ := Sigma.lt_def.mp <| p.step n
+      simp_rw [Set.mem_ofPred_eq]
+      convert hab using 2
+      · rw [← LTSeries.sigma_fst_eq_fst]
+      · rw [LTSeries.sigma_fst_eq_fst (n := n.succ)]
+      · exact eqRec_heq (LTSeries.sigma_fst_eq_fst p n.succ) (p n.succ).snd⟩⟩
+  invFun q := ⟨q.2.length, fun n => ⟨q.1, q.2 n⟩,
+    fun n => Sigma.lt_def.mpr ⟨rfl, q.2.step n⟩⟩
+  left_inv := by
+    intro p ; ext n
+    · exact Nat.add_zero p.1
+    · exact (LTSeries.sigma_fst_eq_fst p n).symm
+    rw [Function.comp_apply, Fin.cast_eq_self, eqRec_heq_iff, heq_eq_eq]
+  right_inv := by intro q ; rfl
+
+end Sigma
 
 end LTSeries
 

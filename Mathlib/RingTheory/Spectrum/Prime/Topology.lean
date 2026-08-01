@@ -724,6 +724,28 @@ lemma sigmaToPiHomeo_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
     sigmaToPiHomeo R p = sigmaToPi R p :=
   rfl
 
+variable (R) in
+/-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is order
+isomorphic to the prime spectrum of the product of the `R i`. -/
+noncomputable def sigmaToPiOrderIso [Finite ι] :
+    (Σ i, PrimeSpectrum (R i)) ≃o PrimeSpectrum (Π i, R i) where
+  toEquiv := Equiv.ofBijective (sigmaToPi R) <| sigmaToPi_bijective R
+  map_rel_iff' := by
+    rintro ⟨i, p⟩ ⟨j, q⟩
+    change Ideal.comap (Pi.evalRingHom R i) p.asIdeal ≤
+      Ideal.comap (Pi.evalRingHom R j) q.asIdeal ↔ _
+    rewrite [Sigma.le_def]
+    by_cases! hij : i = j
+    · subst hij
+      rewrite [Ideal.comap_le_comap_iff_of_surjective _ <|
+        RingHom.surjective (Pi.evalRingHom R i), asIdeal_le_asIdeal]
+      exact Iff.symm (exists_prop_of_true rfl)
+    · simp_rw [hij, IsEmpty.exists_iff, iff_false]
+      exact Pi.not_comap_evalRingHom_le_comap_of_neq R hij p q (Ideal.IsPrime.ne_top')
+
+lemma sigmaToPiOrderIso_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
+    sigmaToPiOrderIso R p = sigmaToPi R p := rfl
+
 end Pi
 
 section DiscreteTopology
@@ -1362,6 +1384,22 @@ theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommSemiring R] :
     topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
   Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
+
+/-- The Krull dimension of the product of finitely many rings is equal to the maximum
+of Krull dimensions of the factors. -/
+theorem ringKrullDim_pi_eq_iSup_ringKrullDim {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)]
+    [Finite ι] : ringKrullDim (Π i, R i) = ⨆ i, ringKrullDim (R i) := by
+  change Order.krullDim (PrimeSpectrum (Π i, R i)) = _
+  rewrite [← Order.krullDim_eq_of_orderIso (PrimeSpectrum.sigmaToPiOrderIso R), Order.krullDim]
+  rewrite [← Equiv.iSup_comp (g := fun r ↦
+    Nat.cast (@RelSeries.length ((i : ι) × PrimeSpectrum (R i)) _ r))
+      (LTSeries.sigma_equiv (fun i => PrimeSpectrum (R i))).symm]
+  have hlen : ∀ x : Σ i, LTSeries (PrimeSpectrum (R i)),
+      ((LTSeries.sigma_equiv (fun i => PrimeSpectrum (R i))).symm x).length = x.2.length :=
+    fun x ↦ rfl
+  simp_rw [hlen]
+  rewrite [iSup_sigma]
+  exact iSup_congr <| fun _ ↦ rfl
 
 end KrullDimension
 
