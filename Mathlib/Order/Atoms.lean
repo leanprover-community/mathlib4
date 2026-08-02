@@ -494,10 +494,8 @@ section WellFounded
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
-    have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
-    exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
-      (Set.Ioc a b) ⟨hac, hlt.le.trans hmem.2⟩ hlt⟩, hmem.2⟩
+    obtain ⟨m, ⟨ham, hmb⟩, hm⟩ := h.has_min (.Ioc a b) ⟨b, hab, le_rfl⟩
+    exact ⟨m, ⟨⟨ham, fun c hac hcm ↦ hm _ ⟨hac, hcm.le.trans hmb⟩ hcm⟩, hmb⟩⟩
 
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
