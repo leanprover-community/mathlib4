@@ -1,4 +1,6 @@
-import Mathlib.RingTheory.Etale.Descent
+module
+
+public import Mathlib.RingTheory.Etale.Descent
 
 open TensorProduct
 

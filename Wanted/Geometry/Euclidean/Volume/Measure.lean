@@ -1,4 +1,6 @@
-import Mathlib.Geometry.Euclidean.Volume.Measure
+module
+
+public import Mathlib.Geometry.Euclidean.Volume.Measure
 
 open MeasureTheory Measure Module
 

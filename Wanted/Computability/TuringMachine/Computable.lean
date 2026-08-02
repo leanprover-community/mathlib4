@@ -1,4 +1,6 @@
-import Mathlib.Computability.TuringMachine.Computable
+module
+
+public import Mathlib.Computability.TuringMachine.Computable
 
 namespace Turing
 

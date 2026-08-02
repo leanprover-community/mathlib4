@@ -1,4 +1,6 @@
-import Mathlib.GroupTheory.GroupAction.Jordan
+module
+
+public import Mathlib.GroupTheory.GroupAction.Jordan
 
 open MulAction SubMulAction Subgroup
 

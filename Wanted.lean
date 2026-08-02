@@ -1,19 +1,21 @@
-import Wanted.Analysis.Convex.Cone.Basic
-import Wanted.Analysis.Convex.Continuous
-import Wanted.Analysis.Real.Pi.Chudnovsky
-import Wanted.CategoryTheory.Limits.Shapes.Countable
-import Wanted.Combinatorics.SimpleGraph.StronglyRegular
-import Wanted.Computability.TuringMachine.Computable
-import Wanted.Data.EReal.Operations
-import Wanted.Geometry.Euclidean.Volume.Measure
-import Wanted.Geometry.Manifold.PoincareConjecture
-import Wanted.Geometry.Manifold.SmoothEmbedding
-import Wanted.GroupTheory.GroupAction.Jordan
-import Wanted.Order.KrullDimension
-import Wanted.Probability.Combinatorics.BinomialRandomGraph.Defs
-import Wanted.Probability.Distributions.Binomial
-import Wanted.RingTheory.Congruence.Basic
-import Wanted.RingTheory.Etale.Descent
-import Wanted.RingTheory.KrullDimension.Basic
-import Wanted.RingTheory.SimpleModule.Basic
-import Wanted.RingTheory.SimpleModule.WedderburnArtin
+module  -- shake: keep-all --deprecated_module: ignore
+
+public import Wanted.Analysis.Convex.Cone.Basic
+public import Wanted.Analysis.Convex.Continuous
+public import Wanted.Analysis.Real.Pi.Chudnovsky
+public import Wanted.CategoryTheory.Limits.Shapes.Countable
+public import Wanted.Combinatorics.SimpleGraph.StronglyRegular
+public import Wanted.Computability.TuringMachine.Computable
+public import Wanted.Data.EReal.Operations
+public import Wanted.Geometry.Euclidean.Volume.Measure
+public import Wanted.Geometry.Manifold.PoincareConjecture
+public import Wanted.Geometry.Manifold.SmoothEmbedding
+public import Wanted.GroupTheory.GroupAction.Jordan
+public import Wanted.Order.KrullDimension
+public import Wanted.Probability.Combinatorics.BinomialRandomGraph.Defs
+public import Wanted.Probability.Distributions.Binomial
+public import Wanted.RingTheory.Congruence.Basic
+public import Wanted.RingTheory.Etale.Descent
+public import Wanted.RingTheory.KrullDimension.Basic
+public import Wanted.RingTheory.SimpleModule.Basic
+public import Wanted.RingTheory.SimpleModule.WedderburnArtin

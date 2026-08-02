@@ -1,4 +1,6 @@
-import Mathlib.RingTheory.Congruence.Basic
+module
+
+public import Mathlib.RingTheory.Congruence.Basic
 
 variable {α β R R' : Type*}
 

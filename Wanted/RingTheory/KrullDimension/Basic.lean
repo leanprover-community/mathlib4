@@ -1,5 +1,7 @@
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.RingTheory.KrullDimension.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
 
 variable {R : Type*} [CommSemiring R]
 

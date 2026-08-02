@@ -1,4 +1,6 @@
-import Mathlib.Data.EReal.Operations
+module
+
+public import Mathlib.Data.EReal.Operations
 
 open ENNReal NNReal
 

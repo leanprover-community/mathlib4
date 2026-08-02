@@ -1,4 +1,6 @@
-import Mathlib.RingTheory.SimpleModule.WedderburnArtin
+module
+
+public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 universe u
 variable {R : Type u} [Ring R]

@@ -1,4 +1,6 @@
-import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 
 namespace SimpleGraph
 

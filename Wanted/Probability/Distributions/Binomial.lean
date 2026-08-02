@@ -1,4 +1,6 @@
-import Mathlib.Probability.Distributions.Binomial
+module
+
+public import Mathlib.Probability.Distributions.Binomial
 
 open MeasureTheory
 open scoped ProbabilityTheory unitInterval

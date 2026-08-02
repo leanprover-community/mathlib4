@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.SmoothEmbedding
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.SmoothEmbedding
 
 open scoped ContDiff
 open Topology

@@ -1,4 +1,6 @@
-import Mathlib.Analysis.Real.Pi.Chudnovsky
+module
+
+public import Mathlib.Analysis.Real.Pi.Chudnovsky
 
 open scoped Real
 

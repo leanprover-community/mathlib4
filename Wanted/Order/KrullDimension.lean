@@ -1,5 +1,7 @@
-import Mathlib.Data.Set.Card
-import Mathlib.Order.KrullDimension
+module
+
+public import Mathlib.Data.Set.Card
+public import Mathlib.Order.KrullDimension
 
 namespace Order
 

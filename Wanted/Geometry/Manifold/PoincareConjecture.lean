@@ -1,5 +1,7 @@
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Geometry.Manifold.PoincareConjecture
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Geometry.Manifold.PoincareConjecture
 
 open scoped Manifold ContDiff
 open Metric (sphere)

@@ -1,4 +1,6 @@
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 variable (R S : Type*) [Ring R] [Ring S]
 

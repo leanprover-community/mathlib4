@@ -1,5 +1,7 @@
-import Mathlib.Analysis.Convex.Continuous
-import Mathlib.Analysis.Convex.Intrinsic
+module
+
+public import Mathlib.Analysis.Convex.Continuous
+public import Mathlib.Analysis.Convex.Intrinsic
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {C : Set E} {f : E → ℝ}
 

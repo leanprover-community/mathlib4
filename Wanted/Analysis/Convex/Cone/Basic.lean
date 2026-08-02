@@ -1,4 +1,6 @@
-import Mathlib.Analysis.Convex.Cone.Basic
+module
+
+public import Mathlib.Analysis.Convex.Cone.Basic
 
 variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]

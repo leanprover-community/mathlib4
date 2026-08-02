@@ -1,4 +1,6 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 
 open CategoryTheory
 

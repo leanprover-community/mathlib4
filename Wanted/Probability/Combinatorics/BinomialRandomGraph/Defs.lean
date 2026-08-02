@@ -1,4 +1,6 @@
-import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
+module
+
+public import Mathlib.Probability.Combinatorics.BinomialRandomGraph.Defs
 
 open MeasureTheory Measure ProbabilityTheory unitInterval
 
