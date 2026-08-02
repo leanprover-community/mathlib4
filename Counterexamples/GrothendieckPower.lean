@@ -366,7 +366,7 @@ theorem mkAlgHomB_VB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
 
 /-- If `S` is an arbitrary `R`-algebra, then to give an `R`-algebra map `A →ₐ[R] S`
 it suffices to give a pair of elements `u` and `v` in `S` satisfying the
-equations `v²=a²v` amd `u²=abu-b²v`. -/
+equations `v²=a²v` and `u²=abu-b²v`. -/
 def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     A →ₐ[R] S :=
