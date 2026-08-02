@@ -185,9 +185,12 @@ theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n :
       (by simpa [FiniteMultiplicity] using h),
     by simp [FiniteMultiplicity]; tauto⟩
 
-theorem FiniteMultiplicity.not_unit (h : FiniteMultiplicity a b) : ¬IsUnit a :=
+theorem FiniteMultiplicity.not_isUnit (h : FiniteMultiplicity a b) : ¬IsUnit a :=
   let ⟨n, hn⟩ := h
   hn ∘ IsUnit.dvd ∘ IsUnit.pow (n + 1)
+
+@[deprecated (since := "2026-08-02")]
+alias FiniteMultiplicity.not_unit := FiniteMultiplicity.not_isUnit
 
 theorem FiniteMultiplicity.mul_left {c : α} :
     FiniteMultiplicity a (b * c) → FiniteMultiplicity a b := fun ⟨n, hn⟩ =>
@@ -290,7 +293,7 @@ theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
 
 @[simp]
 theorem FiniteMultiplicity.not_of_isUnit_left (b : α) (ha : IsUnit a) : ¬FiniteMultiplicity a b :=
-  (·.not_unit ha)
+  (·.not_isUnit ha)
 
 theorem FiniteMultiplicity.not_of_one_left (b : α) : ¬ FiniteMultiplicity 1 b := by simp
 
@@ -667,7 +670,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
     obtain hv | rfl := hv
     · have : IsUnit a := .of_mul_eq_one v hv.symm
-      simpa [this] using ha.not_unit
+      simpa [this] using ha.not_isUnit
     · simpa using ha.ne_zero
   · simp [ha]
 
