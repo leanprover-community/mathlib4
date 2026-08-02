@@ -15,16 +15,16 @@ public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 ## Main results
 
-* `linearEquiv_of_isSimpleModule_over_simple_ring`: any two simple modules over an Artinian
+* `nonempty_linearEquiv_of_isSimpleModule_of_isSimpleRing`: any two simple modules over an Artinian
   simple ring are isomorphic.
-* `directSum_simple_module_over_simple_ring`: any module over an Artinian simple ring is
+* `directSum_simple_module_of_isSimpleRing `: any module over an Artinian simple ring is
   isomorphic to a direct sum of copies of a simple module.
-* `linearEquiv_iff_length_eq_over_simple_ring`: two finite modules over a simple algebra `A` over a
-  commutative Artinian ring `k` are isomorphic as `A`-modules if and only if they have the same
-  length over `k`.
-* `linearEquiv_iff_finrank_eq_over_simple_ring`: two finite modules over a finite simple algebra
-  `A` over a field `k` are isomorphic as `A`-modules if and only if they have the same dimension
-  over `k`.
+* `nonempty_linearEquiv_iff_length_eq_of_isSimpleRing`: two finite modules over a simple algebra `A`
+  over a commutative Artinian ring `k` are isomorphic as `A`-modules if and only if they have the
+  same length over `k`.
+* `nonempty_linearEquiv_iff_finrank_eq_of_simple_algebra`: two finite modules over a finite simple
+  algebra `A` over a field `k` are isomorphic as `A`-modules if and only if they have the same
+  dimension over `k`.
 
 -/
 
@@ -119,8 +119,8 @@ lemma nonempty_linearEquiv_iff_length_eq_of_simple_algebra [IsArtinianRing k]
 /-- Two finite modules over a finite simple algebra `A` over a field `k` have an `A`-linear
 equivalence if and only if their `k`-dimension is the same. -/
 @[stacks 074E "(3)"]
-lemma linearEquiv_iff_finrank_eq_over_simple_algebra (k : Type u) (A : Type v) [Field k] [Ring A]
-    [Algebra k A] [IsSimpleRing A] [Module.Finite k A]
+lemma nonempty_linearEquiv_iff_finrank_eq_of_simple_algebra (k : Type u) (A : Type v) [Field k]
+    [Ring A] [Algebra k A] [IsSimpleRing A] [Module.Finite k A]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module k M] [Module k N] [IsScalarTower k A M] [IsScalarTower k A N]
     [Module.Finite A M] [Module.Finite A N] :
