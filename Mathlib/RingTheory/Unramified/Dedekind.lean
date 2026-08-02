@@ -47,7 +47,7 @@ theorem IsDedekindDomain.of_formallyUnramified : IsDedekindDomain B :=
       IsArtinianRing.mem_minimalPrimes bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩⟩
 
 @[deprecated (since := "2026-08-01")]
-alias isDedekindDomainDvr.of_forallyUnramified := IsDedekindDomain.of_formallyUnramified
+alias isDedekindDomainDvr.of_formallyUnramified := IsDedekindDomain.of_formallyUnramified
 
 @[deprecated (since := "2026-08-01")]
-alias isDedekindDomain.of_forallyUnramified := IsDedekindDomain.of_formallyUnramified
+alias isDedekindDomain.of_formallyUnramified := IsDedekindDomain.of_formallyUnramified
