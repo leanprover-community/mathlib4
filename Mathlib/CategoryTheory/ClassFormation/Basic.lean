@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Action.Continuous
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Category.FinTopCat
@@ -175,6 +176,16 @@ end PreGaloisCategory
 
 namespace GaloisCategory
 
+instance [GaloisCategory C] : HasFiniteLimits C := by
+  infer_instance
+
+instance [GaloisCategory C] : HasFiniteColimits C := by
+  sorry
+
+instance [PreGaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
+    PreservesFiniteColimits F :=
+  sorry
+
 open PreGaloisCategory
 
 lemma has_connected_component [GaloisCategory C] (X : C) (hX : IsInitial X → False) :
@@ -189,7 +200,7 @@ lemma has_connected_component [GaloisCategory C] (X : C) (hX : IsInitial X → F
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
     Epi f.hom := by
-  obtain ⟨F, _⟩ := hasFiberFunctor (C := C)
+  let F := GaloisCategory.getFiberFunctor C
   exact epi_of_nonempty_of_isConnected F _
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
@@ -198,9 +209,37 @@ instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y
     ext
     simp only [← cancel_epi f.hom, ← InducedCategory.comp_hom, h]
 
+instance : SplitEpiCategory FintypeCat.{w} where
+  isSplitEpi_of_epi f hf := by
+    replace hf : Function.Surjective f := by
+      change Function.Surjective (FintypeCat.incl.map f)
+      rw [← CategoryTheory.epi_iff_surjective]
+      infer_instance
+    exact ⟨⟨ SplitEpi.mk (FintypeCat.homMk (Function.surjInv hf)) (by
+      ext x
+      simp [Function.rightInverse_surjInv hf x])⟩⟩
+
+instance : IsRegularEpiCategory FintypeCat.{w} := by
+  infer_instance
+
 lemma effectiveEpi_of_epi [GaloisCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] :
     EffectiveEpi f := by
-  sorry
+  let F := GaloisCategory.getFiberFunctor C
+  rw [← isRegularEpi_iff_effectiveEpi]
+  exact ⟨⟨{
+    W := pullback f f
+    left := pullback.fst _ _
+    right := pullback.snd _ _
+    w := pullback.condition
+    isColimit := isColimitOfReflects F (by
+      have : EffectiveEpi (F.map f) := by
+        rw [← isRegularEpi_iff_effectiveEpi]
+        exact IsRegularEpiCategory.regularEpiOfEpi _
+      exact (isColimitMapCoconeCoforkEquiv _ _).2
+        (isColimitCoforkOfEffectiveEpi _
+        ((PullbackCone.mk _ _ pullback.condition).map F)
+        (isLimitPullbackConeMapOfIsLimit F pullback.condition (pullbackIsPullback _ _))))
+  }⟩⟩
 
 instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
     EffectiveEpi f := by
