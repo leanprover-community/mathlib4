@@ -2434,6 +2434,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.SpecificLimits.Counting
 public import Mathlib.Analysis.SpecificLimits.Fibonacci
 public import Mathlib.Analysis.SpecificLimits.FloorPow
 public import Mathlib.Analysis.SpecificLimits.Normed
