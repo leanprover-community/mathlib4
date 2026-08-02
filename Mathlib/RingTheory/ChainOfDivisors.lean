@@ -85,7 +85,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
 
 theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)} (i_pos : i ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c) : ¬IsUnit (c i) :=
-  DvdNotUnit.not_unit
+  DvdNotUnit.not_isUnit
     (Associates.dvdNotUnit_iff_lt.2
       (h₁ <| show (0 : Fin (n + 1)) < i from Fin.pos_iff_ne_zero.mpr i_pos))
 
@@ -123,7 +123,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   · cases hi
   refine
     not_irreducible_of_not_unit_dvdNotUnit
-      (DvdNotUnit.not_unit
+      (DvdNotUnit.not_isUnit
         (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j.castSucc from ?_))))
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
