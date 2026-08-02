@@ -95,6 +95,31 @@ instance isProbabilityMeasure_geometricMeasure :
       (geometricMeasure_nonneg p)
   · infer_instance
 
+/-- Head mass of the geometric distribution: a value below `m` has probability
+`1 - (1 - p) ^ m`. -/
+lemma geometricMeasure_Iio (hp : p ≠ 0) (m : ℕ) :
+    geometricMeasure p (Iio m) = ENNReal.ofReal (1 - (1 - p) ^ m) := by
+  have hset : (Iio m : Set ℕ) = ⋃ k ∈ Finset.range m, {k} := by
+    ext n
+    simp
+  rw [hset,
+    measure_biUnion_finset (fun i _ j _ hij ↦ disjoint_singleton.mpr hij) fun _ _ ↦ .of_discrete,
+    Finset.sum_congr rfl fun n _ ↦ geometricMeasure_singleton hp n,
+    ← ENNReal.ofReal_sum_of_nonneg fun n _ ↦ geometricMeasure_nonneg p n, ← Finset.sum_mul]
+  congr 1
+  linear_combination (-1 : ℝ) * geom_sum_mul (1 - (p : ℝ)) m
+
+/-- Tail mass of the geometric distribution: a value at least `m` has probability
+`(1 - p) ^ m`. -/
+lemma geometricMeasure_Ici (hp : p ≠ 0) (m : ℕ) :
+    geometricMeasure p (Ici m) = ENNReal.ofReal ((1 - p) ^ m) := by
+  have hle : ((1 - p : ℝ)) ^ m ≤ 1 :=
+    pow_le_one₀ (sub_nonneg.mpr p.2.2) (sub_le_self _ p.2.1)
+  rw [← compl_Iio, measure_compl .of_discrete (measure_ne_top _ _), measure_univ,
+    geometricMeasure_Iio hp, ← ENNReal.ofReal_one, ← ENNReal.ofReal_sub _ (sub_nonneg.mpr hle)]
+  congr 1
+  ring
+
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E] {f : ℕ → E}

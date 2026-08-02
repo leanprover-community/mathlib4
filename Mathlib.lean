@@ -6310,6 +6310,7 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Indep
 public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
+public import Mathlib.Probability.Distributions.GeometricCensored
 public import Mathlib.Probability.Distributions.Pareto
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Distributions.Poisson.PoissonLimitThm
