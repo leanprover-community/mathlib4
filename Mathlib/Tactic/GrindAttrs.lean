@@ -111,12 +111,12 @@ macro "closedness?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `closedness):term])
 
 /-- The `membership` attribute is a custom grind-set specialized to prove
-membership goals in algebraic substructures.
+membership goals in algebraic substructures by backward reasoning.
 It is called by the `membership` tactic. -/
 register_grind_attr membership
 
 /--
-`membership` is a simple tactic that tries various lemmas to prove
+`membership` is a simple tactic that performs backward reasoning to prove
 membership goals in algebraic substructures.
 It is implemented using `grind`, and has the same configuration options as `grind`.
 
