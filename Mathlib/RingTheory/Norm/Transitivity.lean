@@ -49,6 +49,7 @@ def auxMat : Matrix m m S :=
 /-- `aux M k` is lower triangular. -/
 lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
   fun i j lt ↦ by
+    let := Prop.linearOrder
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp, not_not] at lt
     rw [auxMat, of_apply, if_pos lt.2, if_neg lt.1]
 
@@ -67,6 +68,7 @@ variable [Fintype m]
 /-- `M * aux M k` is upper triangular. -/
 lemma mul_auxMat_blockTriangular : (M * auxMat M k).BlockTriangular (· = k) :=
   fun i j lt ↦ by
+    let := Prop.linearOrder
     simp_rw [lt_iff_not_ge, le_Prop_eq, Classical.not_imp] at lt
     simp_rw [Matrix.mul_apply, auxMat, of_apply, if_neg lt.2, mul_ite, mul_neg, mul_zero]
     rw [Finset.sum_ite, Finset.filter_eq', if_pos (Finset.mem_univ _), Finset.sum_singleton,
@@ -88,6 +90,7 @@ scoped notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) Fals
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
+  let := Prop.linearOrder
   trans (M * auxMat M k).det
   · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
@@ -128,6 +131,7 @@ lemma eval_zero_comp_det :
 theorem comp_det_mul_pow :
     ((M.map f).comp m m n n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
       (f (M k k)).det * (((mulAuxMatBlock).map f).comp _ _ n n R).det := by
+  let := Prop.linearOrder
   trans (((M * auxMat M k).map f).comp m m n n R).det
   · simp_rw [← f.mapMatrix_apply, ← compRingEquiv_apply, map_mul, det_mul, f.mapMatrix_apply,
       compRingEquiv_apply, ((auxMat_blockTriangular M k).map f).comp.det_fintype, Fintype.prod_Prop,
