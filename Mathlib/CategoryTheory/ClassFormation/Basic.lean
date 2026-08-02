@@ -5,14 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Action.Continuous
-public import Mathlib.CategoryTheory.Galois.Decomposition
-public import Mathlib.CategoryTheory.Galois.Examples
+public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
-public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Category.FinTopCat
 
 /-!
 # ...
@@ -167,6 +162,13 @@ instance : (isContinuous FintypeCat.{w} G).IsGaloisSubcategory where
 
 example : GaloisCategory (ContAction FintypeCat.{w} G) := inferInstance
 
+instance : HasFiniteColimits FintypeCat.{w} where
+  out _ _ _ := inferInstance
+
+instance : HasFiniteColimits FintypeCat.{w} := inferInstance
+instance : HasFiniteColimits (ContAction FintypeCat.{w} G) where
+  out _ _ _ := inferInstance
+
 end Group
 
 end Action
@@ -191,17 +193,30 @@ variable (F : C ⥤ FintypeCat.{w}) [GaloisCategory C] [FiberFunctor F]
 
 end PreGaloisCategory
 
+instance (G : Type*) [Group G] : HasFiniteColimits (Action FintypeCat.{w} G) where
+  out _ _ _ := inferInstance
+
 namespace GaloisCategory
 
 instance [GaloisCategory C] : HasFiniteLimits C := by
   infer_instance
 
-instance [GaloisCategory C] : HasFiniteColimits C := by
-  sorry
+instance [GaloisCategory C] : HasFiniteColimits C where
+  out _ _ _ :=
+    Adjunction.hasColimitsOfShape_of_equivalence
+      (functorToContAction (GaloisCategory.getFiberFunctor C))
 
-instance [PreGaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
-    PreservesFiniteColimits F :=
-  sorry
+instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
+    PreservesFiniteColimits
+      (ObjectProperty.ι _ : ContAction FintypeCat.{w} (Aut F) ⥤ _) where
+  preservesFiniteColimits _ _ _ := inferInstance
+
+instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
+    PreservesFiniteColimits F := by
+  change (PreservesFiniteColimits
+    (functorToContAction F ⋙ ObjectProperty.ι _ ⋙ Action.forget _ _))
+  apply +allowSynthFailures comp_preservesFiniteColimits
+  apply +allowSynthFailures comp_preservesFiniteColimits
 
 open PreGaloisCategory
 
