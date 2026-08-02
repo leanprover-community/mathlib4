@@ -1102,7 +1102,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
 
 /-- A relation series of the less-than relation `<` in the disjoint sum
 of orders lies in a single fiber. -/
-theorem sigma_fst_eq_fst (p : LTSeries (Σ i, α i)) (n : Fin (p.length + 1)) :
+lemma sigma_fst_eq_fst (p : LTSeries (Σ i, α i)) (n : Fin (p.length + 1)) :
     (p n).1 = (p 0).1 := by
   induction n using Fin.induction with
   | zero => rfl
@@ -1114,7 +1114,7 @@ variable (α) in
 /-- The relation series of the less-than relation `<` in the disjoint sum
 of orders are in bijection with the disjoint sum of the relation series
 in the fibers. -/
-noncomputable def sigma_equiv : LTSeries (Σ i, α i) ≃ Σ i, LTSeries (α i) where
+noncomputable def sigmaEquiv : LTSeries (Σ i, α i) ≃ Σ i, LTSeries (α i) where
   toFun p :=
     ⟨(p 0).1, ⟨p.length, fun n ↦ (p.sigma_fst_eq_fst n) ▸ (p n).2, fun n ↦ by
       obtain ⟨h, hab⟩ := Sigma.lt_def.mp <| p.step n
