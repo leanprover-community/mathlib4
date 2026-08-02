@@ -353,7 +353,7 @@ attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- Auxiliary theorem for `to_dual`.
 @[to_dual existing mk, instance_reducible]
-def Lattice.mk_dual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
+def Lattice.mkDual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
     (le_sup_left : ∀ a b, a ≤ sup a b) (le_sup_right : ∀ a b, b ≤ sup a b)
     (sup_le : ∀ a b c, a ≤ c → b ≤ c → sup a b ≤ c) : Lattice α where
   sup
