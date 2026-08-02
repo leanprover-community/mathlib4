@@ -29,7 +29,7 @@ variable [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : 
 
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  simp only [tangentConeAt_def, setOf_subset_setOf]
+  simp only [tangentConeAt_def, ofPred_subset_ofPred]
   refine fun y hy ↦ hy.mono ?_
   gcongr
 
@@ -40,7 +40,7 @@ respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to
 theorem tangentConeAt_mono_field
     {𝕜' : Type*} [Monoid 𝕜'] [SMul 𝕜 𝕜'] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
-  simp only [tangentConeAt_def, setOf_subset_setOf]
+  simp only [tangentConeAt_def, ofPred_subset_ofPred]
   refine fun y hy ↦ hy.mono ?_
   rw [← smul_one_smul (Filter 𝕜')]
   grw [le_top (a := ⊤ • 1)]
@@ -49,7 +49,7 @@ theorem Filter.HasBasis.tangentConeAt_eq_biInter_closure {ι} {p : ι → Prop} 
     (h : (𝓝 0).HasBasis p U) :
     tangentConeAt 𝕜 s x = ⋂ (i) (_ : p i), closure ((univ : Set 𝕜) • (U i ∩ (x + ·) ⁻¹' s)) := by
   ext y
-  simp only [tangentConeAt_def, mem_setOf_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
+  simp only [tangentConeAt_def, mem_ofPred_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
     ((nhdsWithin_hasBasis h _).top_prod.map _).clusterPt_iff_forall_mem_closure, image_prod,
     image2_smul]
 
@@ -61,7 +61,7 @@ variable [ContinuousAdd E]
 
 theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  simp only [tangentConeAt_def, setOf_subset_setOf]
+  simp only [tangentConeAt_def, ofPred_subset_ofPred]
   refine fun y hy ↦ hy.mono ?_
   gcongr _ • ?_
   rw [nhdsWithin_le_iff]

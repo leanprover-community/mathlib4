@@ -12,7 +12,7 @@ public import Mathlib.Data.Set.Image
 
 ## Main definitions
 
-* `Set.restrict f s` : restrict the domain of `f` to the set `s`;
+* `Set.domRestrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
 
@@ -24,96 +24,94 @@ open Equiv Equiv.Perm Function
 
 namespace Set
 
-/-! ### Restrict -/
-section restrict
+/-! ### Domain restriction -/
+section domRestrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
 takes an argument `↥s` instead of `Subtype s`. -/
-def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
+def domRestrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
 
-theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := rfl
+theorem domRestrict_def (s : Set α) : s.domRestrict (π := π) = fun f x ↦ f x := rfl
 
-theorem restrict_eq (f : α → β) (s : Set α) : s.restrict f = f ∘ Subtype.val :=
+theorem domRestrict_eq (f : α → β) (s : Set α) : s.domRestrict f = f ∘ Subtype.val :=
   rfl
 
-@[simp] lemma restrict_id (s : Set α) : restrict s id = Subtype.val := rfl
+@[simp] lemma domRestrict_id (s : Set α) : domRestrict s id = Subtype.val := rfl
 
 @[simp, grind =]
-theorem restrict_apply (f : (a : α) → π a) (s : Set α) (x : s) : s.restrict f x = f x :=
+theorem domRestrict_apply (f : (a : α) → π a) (s : Set α) (x : s) : s.domRestrict f x = f x :=
   rfl
 
-theorem restrict_eq_iff {f : ∀ a, π a} {s : Set α} {g : ∀ a : s, π a} :
-    restrict s f = g ↔ ∀ (a) (ha : a ∈ s), f a = g ⟨a, ha⟩ :=
+theorem domRestrict_eq_iff {f : ∀ a, π a} {s : Set α} {g : ∀ a : s, π a} :
+    domRestrict s f = g ↔ ∀ (a) (ha : a ∈ s), f a = g ⟨a, ha⟩ :=
   funext_iff.trans Subtype.forall
 
-theorem eq_restrict_iff {s : Set α} {f : ∀ a : s, π a} {g : ∀ a, π a} :
-    f = restrict s g ↔ ∀ (a) (ha : a ∈ s), f ⟨a, ha⟩ = g a :=
+theorem eq_domRestrict_iff {s : Set α} {f : ∀ a : s, π a} {g : ∀ a, π a} :
+    f = domRestrict s g ↔ ∀ (a) (ha : a ∈ s), f ⟨a, ha⟩ = g a :=
   funext_iff.trans Subtype.forall
 
 @[simp]
-theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) = f '' s :=
+theorem range_domRestrict (f : α → β) (s : Set α) : Set.range (s.domRestrict f) = f '' s :=
   (range_comp _ _).trans <| congr_arg (f '' ·) Subtype.range_coe
 
-theorem image_restrict (f : α → β) (s t : Set α) :
-    s.restrict f '' Subtype.val ⁻¹' t = f '' (t ∩ s) := by
-  rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
+theorem image_domRestrict (f : α → β) (s t : Set α) :
+    s.domRestrict f '' Subtype.val ⁻¹' t = f '' (t ∩ s) := by
+  rw [domRestrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 
 @[simp]
-theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
+theorem domRestrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
+    (s.domRestrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
   funext fun a => dif_pos a.2
 
 @[simp]
-theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
+theorem domRestrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
+    (sᶜ.domRestrict fun a => if h : a ∈ s then f a h else g a h) =
+      (fun a : (sᶜ : Set α) => g a a.2) :=
   funext fun a => dif_neg a.2
 
 @[simp]
-theorem restrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (s.restrict fun a => if a ∈ s then f a else g a) = s.restrict f :=
-  restrict_dite _ _
+theorem domRestrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
+    (s.domRestrict fun a => if a ∈ s then f a else g a) = s.domRestrict f := domRestrict_dite _ _
 
 @[simp]
-theorem restrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (sᶜ.restrict fun a => if a ∈ s then f a else g a) = sᶜ.restrict g :=
-  restrict_dite_compl _ _
+theorem domRestrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
+    (sᶜ.domRestrict fun a => if a ∈ s then f a else g a) = sᶜ.domRestrict g :=
+  domRestrict_dite_compl _ _
 
 @[simp]
-theorem restrict_piecewise (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    s.restrict (piecewise s f g) = s.restrict f :=
-  restrict_ite _ _ _
+theorem domRestrict_piecewise (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
+    s.domRestrict (piecewise s f g) = s.domRestrict f := domRestrict_ite _ _ _
 
 @[simp]
-theorem restrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    sᶜ.restrict (piecewise s f g) = sᶜ.restrict g :=
-  restrict_ite_compl _ _ _
+theorem domRestrict_piecewise_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
+    sᶜ.domRestrict (piecewise s f g) = sᶜ.domRestrict g := domRestrict_ite_compl _ _ _
 
-theorem restrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
-    (range f).restrict (extend f g g') = fun x => g x.coe_prop.choose := by
+theorem domRestrict_extend_range (f : α → β) (g : α → γ) (g' : β → γ) :
+    (range f).domRestrict (extend f g g') = fun x => g x.coe_prop.choose := by
   classical
-  exact restrict_dite _ _
+  exact domRestrict_dite _ _
 
 @[simp]
-theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β → γ) :
-    (range f)ᶜ.restrict (extend f g g') = g' ∘ Subtype.val := by
+theorem domRestrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β → γ) :
+    (range f)ᶜ.domRestrict (extend f g g') = g' ∘ Subtype.val := by
   classical
-  exact restrict_dite_compl _ _
+  exact domRestrict_dite_compl _ _
 
 /-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
 @[simp]
-def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
+def domRestrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
   fun x => f ⟨x.1, hst x.2⟩
 
-theorem restrict₂_def {s t : Set α} (hst : s ⊆ t) :
-    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+theorem domRestrict₂_def {s t : Set α} (hst : s ⊆ t) :
+    domRestrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
 
-theorem restrict₂_comp_restrict {s t : Set α} (hst : s ⊆ t) :
-    (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
+theorem domRestrict₂_comp_domRestrict {s t : Set α} (hst : s ⊆ t) :
+    (domRestrict₂ (π := π) hst) ∘ t.domRestrict = s.domRestrict := rfl
 
-theorem restrict₂_comp_restrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
-    (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+theorem domRestrict₂_comp_domRestrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
+    (domRestrict₂ (π := π) hst) ∘ (domRestrict₂ htu) = domRestrict₂ (hst.trans htu) := rfl
 
 theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
@@ -154,8 +152,8 @@ theorem val_codRestrict_apply (f : ι → α) (s : Set α) (h : ∀ x, f x ∈ s
   rfl
 
 @[simp]
-theorem restrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α} (h : ∀ x, f x ∈ b) :
-    b.restrict g ∘ b.codRestrict f h = g ∘ f :=
+theorem domRestrict_comp_codRestrict {f : ι → α} {g : α → β} {b : Set α}
+    (h : ∀ x, f x ∈ b) : b.domRestrict g ∘ b.codRestrict f h = g ∘ f :=
   rfl
 
 @[simp]
@@ -181,10 +179,38 @@ theorem codRestrict_range_surjective (f : ι → α) :
 variable {s : Set α} {f₁ f₂ : α → β}
 
 @[simp]
-theorem restrict_eq_restrict_iff : restrict s f₁ = restrict s f₂ ↔ EqOn f₁ f₂ s :=
-  restrict_eq_iff
+theorem domRestrict_eq_domRestrict_iff :
+    domRestrict s f₁ = domRestrict s f₂ ↔ EqOn f₁ f₂ s := domRestrict_eq_iff
 
-end restrict
+@[deprecated (since := "2026-07-19")] alias restrict := domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_def := domRestrict_def
+@[deprecated (since := "2026-07-19")] alias restrict_eq := domRestrict_eq
+@[deprecated (since := "2026-07-19")] alias restrict_id := domRestrict_id
+@[deprecated (since := "2026-07-19")] alias restrict_apply := domRestrict_apply
+@[deprecated (since := "2026-07-19")] alias restrict_eq_iff := domRestrict_eq_iff
+@[deprecated (since := "2026-07-19")] alias eq_restrict_iff := eq_domRestrict_iff
+@[deprecated (since := "2026-07-19")] alias range_restrict := range_domRestrict
+@[deprecated (since := "2026-07-19")] alias image_restrict := image_domRestrict
+@[deprecated (since := "2026-07-19")] alias restrict_dite := domRestrict_dite
+@[deprecated (since := "2026-07-19")] alias restrict_dite_compl := domRestrict_dite_compl
+@[deprecated (since := "2026-07-19")] alias restrict_ite := domRestrict_ite
+@[deprecated (since := "2026-07-19")] alias restrict_ite_compl := domRestrict_ite_compl
+@[deprecated (since := "2026-07-19")] alias restrict_piecewise := domRestrict_piecewise
+@[deprecated (since := "2026-07-19")] alias restrict_piecewise_compl := domRestrict_piecewise_compl
+@[deprecated (since := "2026-07-19")] alias restrict_extend_range := domRestrict_extend_range
+@[deprecated (since := "2026-07-19")]
+alias restrict_extend_compl_range := domRestrict_extend_compl_range
+@[deprecated (since := "2026-07-19")] alias restrict₂ := domRestrict₂
+@[deprecated (since := "2026-07-19")] alias restrict₂_def := domRestrict₂_def
+@[deprecated (since := "2026-07-19")] alias restrict₂_comp_restrict := domRestrict₂_comp_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias restrict₂_comp_restrict₂ := domRestrict₂_comp_domRestrict₂
+@[deprecated (since := "2026-07-19")]
+alias restrict_comp_codRestrict := domRestrict_comp_codRestrict
+@[deprecated (since := "2026-07-19")]
+alias restrict_eq_restrict_iff := domRestrict_eq_domRestrict_iff
+
+end domRestrict
 
 variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
@@ -207,17 +233,19 @@ theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (
 
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
-theorem codRestrict_restrict (h : ∀ x : s, f x ∈ t) :
-    codRestrict (s.restrict f) t h = MapsTo.restrict f s t fun x hx => h ⟨x, hx⟩ :=
+theorem codRestrict_domRestrict (h : ∀ x : s, f x ∈ t) :
+    codRestrict (s.domRestrict f) t h = MapsTo.restrict f s t fun x hx => h ⟨x, hx⟩ :=
   rfl
 
-/-- Reverse of `Set.codRestrict_restrict`. -/
+@[deprecated (since := "2026-07-19")] alias codRestrict_restrict := codRestrict_domRestrict
+
+/-- Reverse of `Set.codRestrict_domRestrict`. -/
 theorem MapsTo.restrict_eq_codRestrict (h : MapsTo f s t) :
-    h.restrict f s t = codRestrict (s.restrict f) t fun x => h x.2 :=
+    h.restrict f s t = codRestrict (s.domRestrict f) t fun x => h x.2 :=
   rfl
 
 theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
-    Subtype.val ∘ h.restrict f s t = s.restrict f :=
+    Subtype.val ∘ h.restrict f s t = s.domRestrict f :=
   rfl
 
 theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
@@ -282,7 +310,7 @@ end
 /-! ### Injectivity on a set -/
 section injOn
 
-theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
+theorem injOn_iff_injective : InjOn f s ↔ Injective (s.domRestrict f) :=
   ⟨fun H a b h => Subtype.ext <| H a.2 b.2 h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
@@ -297,7 +325,7 @@ end injOn
 /-! ### Surjectivity on a set -/
 section surjOn
 
-theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
+theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.domRestrict f) :=
   ⟨fun H b =>
     let ⟨a, as, e⟩ := @H b trivial
     ⟨⟨a, as⟩, e⟩,

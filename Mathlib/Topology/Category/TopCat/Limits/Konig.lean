@@ -113,7 +113,7 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     partialSections F H =
       ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
-    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     rfl
   rw [this]
   apply isClosed_biInter

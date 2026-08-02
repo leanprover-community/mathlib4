@@ -258,6 +258,36 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
 
+section CommRing
+
+-- In this section we shadow the semiring `R` with a ring `R`.
+variable {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+
+/-- The negation of a weighted homogeneous polynomial of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem neg (hφ : IsWeightedHomogeneous w φ n) : IsWeightedHomogeneous w (-φ) n :=
+  (weightedHomogeneousSubmodule R w n).neg_mem hφ
+
+/-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem sub (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+    IsWeightedHomogeneous w (φ - ψ) n :=
+  (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+end CommRing
+
+/-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
+theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd ↦ hno _ (hφ (mem_support_iff.mp hd))
+
+/-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
+fixed `d₀` is a single monomial. -/
+theorem eq_monomial_of_unique_weight {w : σ → M} {d₀ : σ →₀ ℕ} (hφ : IsWeightedHomogeneous w φ n)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
+  eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
+
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
 theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
@@ -335,7 +365,7 @@ lemma induction_on {w : σ → M} {m : M}
   rw [Set.image_subset_iff]
   intro d hd
   simp only [MvPolynomial, Submodule.coe_set_mk, AddSubmonoid.coe_set_mk,
-    AddSubsemigroup.coe_set_mk, preimage_setOf_eq, mem_setOf_eq, A]
+    AddSubsemigroup.coe_set_mk, preimage_ofPred_eq, mem_ofPred_eq, A]
   refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
   simpa only [single_eq_monomial, ← MvPolynomial.C_mul_monomial] using monomial _ (a * 1) hd
 

@@ -232,7 +232,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
       (Set.Finite.ofFinset
         {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
-  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
+  rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_ofPred,
     Multiset.mem_toFinset]
   exact
     and_iff_right_of_imp fun hP =>

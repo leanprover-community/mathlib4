@@ -137,7 +137,7 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
     rw [iteratedLineDerivOp_succ_left, iteratedFDeriv_succ_apply_left,
       ← fderiv_continuousMultilinear_apply_const_apply]
     · simp only [lineDerivOp_apply_eq_fderiv, ← ih]
-    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
+    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.natCast_lt_top n) x
 
 end fderiv
 
