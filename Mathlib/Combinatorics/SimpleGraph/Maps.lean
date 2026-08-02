@@ -120,6 +120,14 @@ theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
   ext; simp [mem_support]
 
+@[simp]
+theorem map_top {f : V → W} (hf : f.Surjective) : SimpleGraph.map f ⊤ = ⊤ := by
+  ext u v
+  refine ⟨And.left, fun h ↦ ⟨h, ?_⟩⟩
+  obtain ⟨u, rfl⟩ := hf u
+  obtain ⟨v, rfl⟩ := hf v
+  exact ⟨u, v, ne_of_apply_ne f h.ne, rfl, rfl⟩
+
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
@@ -156,8 +164,13 @@ lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) :=
   fun _ _ h _ _ ha ↦ h ha
 
+@[simp]
+theorem edgeSet_comap (f : W → V) : (G.comap f).edgeSet = Sym2.map f ⁻¹' G.edgeSet := by
+  simp [Set.ext_iff, Sym2.forall]
+
 @[simp] lemma comap_bot (f : V → W) : (emptyGraph W).comap f = emptyGraph V := rfl
 
+@[simp]
 lemma comap_top {f : V → W} (hf : f.Injective) : (completeGraph W).comap f = completeGraph V := by
   ext; simp [hf.eq_iff]
 
@@ -176,14 +189,57 @@ theorem map_injective (f : V ↪ W) : Function.Injective (SimpleGraph.map f) :=
 theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap f) :=
   (leftInverse_comap_map f).surjective
 
+theorem map_le_of_le_comap (f : V → W) {G : SimpleGraph V} {G' : SimpleGraph W}
+    (h : G ≤ G'.comap f) : G.map f ≤ G' := by
+  rintro _ _ ⟨hne, u, v, hadj, rfl, rfl⟩
+  exact h hadj
+
 theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph W) :
     G.map f ≤ G' ↔ G ≤ G'.comap f :=
-  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, by
-    rintro h _ _ ⟨-, u, v, ha, rfl, rfl⟩
-    exact h ha⟩
+  ⟨fun h _ _ ha => h ⟨f.injective.ne ha.ne, _, _, ha, rfl, rfl⟩, map_le_of_le_comap f⟩
 
-theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
-  rw [map_le_iff_le_comap]
+theorem comap_le_of_le_map (f : V ↪ W) {G : SimpleGraph V} {G' : SimpleGraph W} (h : G' ≤ G.map f) :
+    G'.comap f ≤ G := by
+  intro u v hadj
+  simpa using h hadj
+
+theorem le_map_of_comap_le {f : V → W} (hf : f.Surjective) {G : SimpleGraph V} {G' : SimpleGraph W}
+    (h : G'.comap f ≤ G) : G' ≤ G.map f := by
+  intro u v hadj
+  obtain ⟨u, rfl⟩ := hf u
+  obtain ⟨v, rfl⟩ := hf v
+  exact ⟨hadj.ne, u, v, h hadj, rfl, rfl⟩
+
+theorem le_map_iff_comap_le {f : V → W} (hf : f.Bijective) {G : SimpleGraph V}
+    {G' : SimpleGraph W} : G'.comap f ≤ G ↔ G' ≤ G.map f :=
+  ⟨le_map_of_comap_le hf.surjective, comap_le_of_le_map ⟨f, hf.injective⟩⟩
+
+theorem map_comap_le (f : V → W) (G : SimpleGraph W) : (G.comap f).map f ≤ G :=
+  map_le_of_le_comap f le_rfl
+
+theorem map_comap_eq_inf (f : W → V) : (G.comap f).map f = G ⊓ SimpleGraph.map f ⊤ := by
+  ext u v
+  grind [map_adj', comap_adj, inf_adj, top_adj, Adj.ne]
+
+theorem map_comap_eq {f : V → W} (hf : f.Surjective) (G : SimpleGraph W) :
+    (G.comap f).map f = G := by
+  simp [map_comap_eq_inf, hf]
+
+theorem leftInverse_map_comap {f : V → W} (hf : f.Surjective) :
+    (SimpleGraph.map f).LeftInverse (SimpleGraph.comap f) :=
+  map_comap_eq hf
+
+theorem comap_injective {f : V → W} (hf : f.Surjective) : (SimpleGraph.comap f).Injective :=
+  leftInverse_map_comap hf |>.injective
+
+theorem map_surjective {f : V → W} (hf : f.Surjective) : (SimpleGraph.map f).Surjective :=
+  leftInverse_map_comap hf |>.surjective
+
+theorem comap_bijective {f : V → W} (hf : f.Bijective) : (SimpleGraph.comap f).Bijective :=
+  ⟨comap_injective hf.surjective, comap_surjective ⟨f, hf.injective⟩⟩
+
+theorem map_bijective {f : V → W} (hf : f.Bijective) : (SimpleGraph.map f).Bijective :=
+  ⟨map_injective ⟨f, hf.injective⟩, map_surjective hf.surjective⟩
 
 lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f := by
   intro v w; simp [Subsingleton.elim v w]
@@ -214,6 +270,38 @@ protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleG
 @[simp]
 lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.simpleGraph := rfl
 
+/-- A bijective function between vertex types induces an equivalence between simple graphs on them.
+
+See `Equiv.simpleGraph` to lift an `Equiv` instead of a bijective function. -/
+def equivOfBijective (f : V → W) (hf : f.Bijective) : SimpleGraph V ≃ SimpleGraph W where
+  toFun := .map f
+  invFun := .comap f
+  left_inv := leftInverse_comap_map ⟨f, hf.injective⟩
+  right_inv := leftInverse_map_comap hf.surjective
+
+@[simp]
+theorem coe_equivOfBijective {f : V → W} (hf : f.Bijective) :
+    equivOfBijective f hf = SimpleGraph.map f :=
+  rfl
+
+@[simp]
+theorem coe_symm_equivOfBijective {f : V → W} (hf : f.Bijective) :
+    (equivOfBijective f hf).symm = SimpleGraph.comap f :=
+  rfl
+
+@[simp]
+theorem equivOfBijective_id :
+    equivOfBijective id Function.bijective_id = .refl (SimpleGraph V) := by
+  ext
+  simp
+
+@[simp]
+theorem equivOfBijective_trans {U V W : Type*} {g : U → V} {f : V → W} (hg : g.Bijective)
+    (hf : f.Bijective) :
+    equivOfBijective _ (hf.comp hg) = (equivOfBijective g hg).trans (equivOfBijective f hf) := by
+  ext
+  simp
+
 /-! ## Induced graphs -/
 
 
@@ -242,6 +330,9 @@ lemma support_induce_subset_coe_preimage_support (s : Set V) :
     (G.induce s).support ⊆ (↑) ⁻¹' G.support :=
   fun _ ⟨v, hadj⟩ ↦ ⟨v, hadj⟩
 
+theorem edgeSet_induce (s : Set V) : (G.induce s).edgeSet = Sym2.map (↑) ⁻¹' G.edgeSet :=
+  G.edgeSet_comap _
+
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
 
@@ -251,6 +342,7 @@ This is a wrapper around `SimpleGraph.map`. -/
 abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 
+@[simp]
 theorem support_spanningCoe {s : Set V} (G : SimpleGraph s) :
     G.spanningCoe.support = (↑) '' G.support :=
   G.support_map _
@@ -261,20 +353,34 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
-theorem spanningCoe_induce_eq_self (s : Set V) : (G.induce s).spanningCoe = G ↔ G.support ⊆ s := by
+variable {G} in
+@[simp]
+theorem le_spanningCoe_top_coe {s : Set V} :
+    G ≤ (⊤ : SimpleGraph s).spanningCoe ↔ G.support ⊆ s := by
+  refine ⟨fun h v hv ↦ ?_, fun h u v hadj ↦ ?_⟩
+  · obtain ⟨_, hne, u, v, hadj, rfl, rfl⟩ := support_mono h hv
+    exact u.prop
+  · simp [hadj.ne, h hadj.mem_support_left, h hadj.mem_support_right]
+
+variable {G} in
+@[simp]
+theorem spanningCoe_induce_eq_self {s : Set V} : (G.induce s).spanningCoe = G ↔ G.support ⊆ s := by
   refine ⟨fun h v hv ↦ ?_, fun h ↦ le_antisymm (G.spanningCoe_induce_le s) fun u v hadj ↦ ?_⟩
-  · rw [← h, support_spanningCoe] at hv
-    have ⟨u, _, hvu⟩ := hv
-    exact hvu ▸ u.prop
+  · obtain ⟨_, hne, u, v, hadj, rfl, rfl⟩ := support_mono h.ge hv
+    exact u.prop
   · exact ⟨hadj.ne, ⟨u, h hadj.left_mem_support⟩, ⟨v, h hadj.right_mem_support⟩, hadj, rfl, rfl⟩
 
 @[simp]
 theorem spanningCoe_induce_support : (G.induce G.support).spanningCoe = G :=
-  G.spanningCoe_induce_eq_self _ |>.mpr .rfl
+  spanningCoe_induce_eq_self.mpr .rfl
 
 @[simp]
 theorem spanningCoe_induce_univ : (G.induce .univ).spanningCoe = G :=
-  G.spanningCoe_induce_eq_self _ |>.mpr G.support.subset_univ
+  spanningCoe_induce_eq_self.mpr G.support.subset_univ
+
+theorem spanningCoe_induce_eq_inf (s : Set V) :
+    (G.induce s).spanningCoe = G ⊓ (⊤ : SimpleGraph s).spanningCoe :=
+  G.map_comap_eq_inf _
 
 open Set.Notation in
 theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
