@@ -36,15 +36,19 @@ namespace Set
 
 namespace Ico
 
+@[to_dual]
 instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b) :=
-  Subtype.semilatticeInf fun _ _ hx hy => ⟨le_inf hx.1 hy.1, lt_of_le_of_lt inf_le_left hx.2⟩
+  Subtype.semilatticeInf fun _ _ hx hy ↦ by
+    rw [mem_Ico] at hx hy
+    exact ⟨le_inf hx.1 hy.1, lt_of_le_of_lt inf_le_left hx.2⟩
 
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 protected lemma coe_inf [SemilatticeInf α] {a b : α} {x y : Ico a b} :
     ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
 /-- `Ico a b` has a bottom element whenever `a < b`. -/
+@[to_dual /-- `Ioc a b` has a top element whenever `a < b`. -/]
 instance orderBot [PartialOrder α] {a b : α} [Fact (a < b)] : OrderBot (Ico a b) :=
   (isLeast_Ico Fact.out).orderBot
 
@@ -59,6 +63,7 @@ end Ico
 
 namespace Iio
 
+@[to_dual]
 instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iio a) :=
   Subtype.semilatticeInf fun _ _ hx _ => lt_of_le_of_lt inf_le_left hx
 
