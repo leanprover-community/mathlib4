@@ -276,6 +276,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [comp_id, ← F.map_comp]
+      rfl
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape
 `Discrete (Fin n)`.

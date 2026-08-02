@@ -117,7 +117,7 @@ theorem gl_smul_eq_self_iff_quadratic (h : 0 < g.val.det) :
   simp [gl_smul_eq_iff_num_eq, σ, h, num, denom]
   grind
 
-/-- If `g` is a non-scalar orientation perserving matrix with a fixed point in `ℍ`,
+/-- If `g` is a non-scalar orientation preserving matrix with a fixed point in `ℍ`,
 then it's an elliptic matrix. -/
 theorem isElliptic_of_exists_smul_eq_self (h : 0 < g.val.det) (hgc : g ∉ Subgroup.center _)
     (hfix : ∃ z : ℍ, g • z = z) : g.IsElliptic := by
