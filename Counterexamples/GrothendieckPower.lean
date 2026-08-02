@@ -412,42 +412,7 @@ private theorem law_relations_generic {S : Type*} [CommRing S]
     let dv := v₁ * l₂ + v₂
     let du := u₁ + l₁ * u₂
     dv ^ 2 = a ^ 2 * dv ∧ du ^ 2 = a * b * du - b ^ 2 * dv := by
-  dsimp only
-  have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
-  have h2a : 2 * a = 0 := by
-    linear_combination a * hab - b * ha
-  have h2a2 : 2 * a ^ 2 = 0 := by
-    linear_combination a * h2a
-  have h2b2 : 2 * b ^ 2 = 0 := by
-    linear_combination b ^ 2 * hab - a ^ 2 * hb
-  have h4 : (4 : S) = 0 := by
-    linear_combination -(a ^ 2 * b - 2) * hab + a * b ^ 2 * ha
-  constructor
-  · ring_nf
-    simp only [hu₂, hv₁, hv₂, ha, h4]
-    ring_nf
-    simp only [hv₂, ha, hb, h4]
-    linear_combination
-      (v₁ * u₂ * v₂) * h2a +
-      (a ^ 2 * b * v₁ * u₂) * ha -
-      (a ^ 5 * b ^ 4 * v₁ * v₂) * ha -
-      (v₁ * v₂) * hab +
-      (v₁ * v₂) * h4
-  · ring_nf
-    simp only [hu₁, hu₂, hv₁, hb, h4]
-    ring_nf
-    simp only [hv₁, ha, hb, h4]
-    linear_combination
-      -(u₁ * b ^ 2 * v₂) * h2a +
-      (u₁ * b * u₂ * v₁) * hab -
-      (u₁ * u₂) * hab +
-      (u₁ * u₂) * h4 +
-      (u₁ * a * b ^ 2 * u₂) * ha -
-      (u₁ * a ^ 2 * b ^ 5 * v₂ * v₁) * ha +
-      (u₁ * a ^ 3 * b ^ 4 * u₂ * v₁) * ha +
-      (2 * a * b ^ 5 * v₂ * v₁) * ha +
-      (a ^ 3 * b ^ 6 * v₂ * v₁) * ha -
-      (a ^ 4 * b ^ 5 * u₂ * v₁) * ha
+  grind
 
 private theorem law_lambda_generic {S : Type*} [CommRing S]
     {a b u₁ v₁ u₂ v₂ : S}
@@ -459,26 +424,7 @@ private theorem law_lambda_generic {S : Type*} [CommRing S]
     letI dv := v₁ * l₂ + v₂
     letI du := u₁ + l₁ * u₂
     (1 + a * du) * (1 + b * dv) = l₁ * l₂ := by
-  have hab' : a ^ 2 * b = -2 := eq_neg_of_add_eq_zero_left hab
-  have h2a : 2 * a = 0 := by
-    linear_combination a * hab - b * ha
-  have h2a2 : 2 * a ^ 2 = 0 := by
-    linear_combination a * h2a
-  have h2b2 : 2 * b ^ 2 = 0 := by
-    linear_combination b ^ 2 * hab - a ^ 2 * hb
-  have h4 : (4 : S) = 0 := by
-    linear_combination -(a ^ 2 * b - 2) * hab + a * b ^ 2 * ha
-  ring_nf
-  simp only [hu₂, hv₁, ha, hb, hab']
-  ring_nf
-  simp only [hv₂, ha, hb]
-  linear_combination
-    (b ^ 2 * v₁ * v₂ * u₂) * h2a +
-    (u₁ * b * v₁ * u₂) * h2a2 +
-    (u₁ * b ^ 2 * v₁ * v₂ * u₂) * h2a2 +
-    (v₁ * v₂) * h2b2 +
-    (a * u₁ * b ^ 2 * v₁ * u₂) * ha -
-    (2 * a * b ^ 4 * v₁ * v₂) * ha
+  grind
 
 /-- The group-like unit `(1+aU)(1+bV)` of `A` controlling the semidirect-product law. -/
 def lambda : A := (1 + aA * U) * (1 + bA * V)
@@ -494,15 +440,11 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
   split_ands
   · simp [aA, ← map_pow, a_cube]
   · simp [bA, ← map_pow, b_cube]
-  · have h : aA ^ 2 * bA + 2 = 0 := by
-      unfold aA bA
-      calc
-        (algebraMap R A a) ^ 2 * algebraMap R A b + 2 =
-            algebraMap R A (a ^ 2 * b + 2) := by
-              rw [map_add, map_mul, map_pow, map_ofNat]
-        _ = algebraMap R A 0 := congr_arg (algebraMap R A) base_relation
-        _ = 0 := map_zero _
-    simpa only [map_add, map_mul, map_pow, map_ofNat, map_zero] using congr_arg f h
+  · rw [← map_ofNat f]
+    suffices f (aA ^ 2 * bA + 2) = 0 by simpa
+    suffices aA ^ 2 * bA + 2 = 0 by simp [this]
+    suffices algebraMap R A (a ^ 2 * b + 2) = 0 by simpa [aA, bA, -base_relation]
+    simp
   · rw [← map_pow, V_relation, map_mul]
     simp [aA, ← map_pow]
   · have h : U ^ 2 = aA * bA * U - bA ^ 2 * V := by
@@ -725,28 +667,7 @@ private theorem theta_identities_generic {S : Type*} [CommRing S]
     (hu : uu ^ 2 = aa * bb * uu - bb ^ 2 * vv) :
     letI th := (1 + aa * uu) * (1 + bb * vv) - 1
     th ^ 2 = 0 ∧ 2 * th = 2 * bb * vv := by
-  have hab' : aa ^ 2 * bb = -2 := eq_neg_of_add_eq_zero_left hab
-  have h2a : 2 * aa = 0 := by
-    linear_combination aa * hab - bb * ha
-  have h2a2 : 2 * aa ^ 2 = 0 := by
-    linear_combination aa * h2a
-  have h2b2 : 2 * bb ^ 2 = 0 := by
-    linear_combination bb ^ 2 * hab - aa ^ 2 * hb
-  have h4 : (4 : S) = 0 := by
-    linear_combination -(aa ^ 2 * bb - 2) * hab + aa * bb ^ 2 * ha
-  constructor
-  · ring_nf
-    simp only [hu, hv]
-    ring_nf
-    linear_combination
-      (uu * bb * vv) * h2a -
-      (2 * aa ^ 2 * vv ^ 2) * hb +
-      (uu * bb) * ha +
-      (4 * uu * bb ^ 2 * vv) * ha -
-      (aa * bb ^ 4 * vv ^ 2) * ha +
-      (aa ^ 2 * uu * bb ^ 3 * vv) * ha
-  · ring_nf
-    linear_combination uu * (1 + bb * vv) * h2a
+  grind
 
 theorem theta_sq : theta ^ 2 = 0 := by
   obtain ⟨ha, hb, hab, hv, hu⟩ := mapped_relations (AlgHom.id R A)
