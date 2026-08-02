@@ -295,11 +295,11 @@ instance (priority := 100) EuclideanDomain.isPrincipalIdealRing : IsPrincipalIde
         have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
         simp only [not_and_or, Set.mem_ofPred_eq, not_ne_iff] at this
         exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
-      · let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
-        exact hy.symm ▸ S.mul_mem_right _ hms
+      · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
+        exact S.mul_mem_right _ hms
     · use 0
       rw [span_zero_singleton, Submodule.eq_bot_iff]
-      exact fun a haS => by_contra fun ha0 ↦ h ⟨a, ⟨haS, ha0⟩⟩
+      exact fun a haS ↦ by_contra (h ⟨a, ⟨haS, ·⟩⟩)
 
 @[deprecated (since := "2026-08-01")]
 alias EuclideanDomain.to_principal_ideal_domain := EuclideanDomain.isPrincipalIdealRing
