@@ -724,6 +724,7 @@ private theorem exists_subgroup_tower_aux [Finite G] {p n : ℕ} (hp : p.Prime)
   have : Fact p.Prime := ⟨hp⟩
   induction missing using Finset.induction_on_min generalizing s with
   | empty =>
+    -- if `missing` is empty, the chain is already complete. Rearrange them into an OrderEmbedding
     simp only [notMem_empty, not_false_eq_true, iff_true] at hmissing
     choose f hfs hfcard using hmissing
     have hmono : StrictMono f := by
@@ -742,20 +743,26 @@ private theorem exists_subgroup_tower_aux [Finite G] {p n : ℕ} (hp : p.Prime)
     · refine (Subgroup.eq_of_le_of_card_ge hfg ?_).symm
       simp [hk, hfcard]
   | insert j missing hj ih =>
-    have hi (hj0 : j ≠ 0) : j - 1 ∉ insert j missing := fun h ↦ by
-      have hn0 : n ≠ 0 := by grind
-      obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn0
-      simp only [mem_insert, sub_eq_self, one_ne_zero, false_or] at h
-      specialize hj _ h
-      simp [hj0] at hj
+    -- Remove the element `j` from `missing` and
+    -- insert a subgroup `u` of order `p ^ j` to the chain `s`.
+    -- If j = 0, we set `u = ⊥`.
+    -- Otherwise, `j - 1` is not in `missing` and there is a corresponding subgroup of
+    -- order `p ^ (j - 1)` (because our induction is on minimal elements of `missing`)
+    -- We choose a subgroup of order `p ^ j` between `p ^ (j - 1)` and `L`, where `L` is the next
+    -- available element in `s`, or `⊤` if there is no more element.
     have hiexist (hj0 : j ≠ 0) : ∃ g ∈ s, Nat.card g = p ^ (j.val - 1) := by
-      convert (hmissing (j - 1)).mpr (hi hj0)
+      -- If j ≠ 0, there exists a subgroup in `s` of order `p ^ (j - 1)`
       have hn0 : n ≠ 0 := by grind
       obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn0
-      simp [Fin.coe_sub_iff_le.mpr (Fin.one_le_of_ne_zero hj0)]
-    have hiexist' (hj0 : j ≠ 0)  :
+      convert (hmissing (j - 1)).mpr (fun h ↦ ?_)
+      · simp [Fin.coe_sub_iff_le.mpr (Fin.one_le_of_ne_zero hj0)]
+      · simp only [mem_insert, sub_eq_self, one_ne_zero, false_or] at h
+        specialize hj _ h
+        simp [hj0] at hj
+    have hiexist' (hj0 : j ≠ 0) :
         ∃ K : Subgroup G, Nat.card K = p ^ j.val ∧ (hiexist hj0).choose ≤ K ∧
         ∀ g ∈ s, p ^ j.val < Nat.card g → K ≤ g := by
+      -- If j ≠ 0, there exists a subgroup of order `p ^ j` that fits in the chain
       by_cases hnonempty :  ((missingᶜ).filter (j < ·)).Nonempty
       · let m := ((missingᶜ).filter (j < ·)).min' hnonempty
         have hm : m ∈ (missingᶜ).filter (j < ·) := Finset.min'_mem _ _
@@ -866,6 +873,9 @@ private theorem exists_subgroup_tower_aux [Finite G] {p n : ℕ} (hp : p.Prime)
     obtain ⟨f, hsf, hfcard⟩ := ih hchain' hpgroup' hcard' hmissing'
     exact ⟨f, Set.Subset.trans (s.subset_insert u) hsf, hfcard⟩
 
+/-- A corollary of **Sylow's first theorem**. Given a chain of `p`-subgroups, one can complete the
+chain to contain subgroup of size `p ^ k` for all `k` up to `n` such that `p ^ n` divides the order
+of the group. -/
 theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
     (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
     (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) :
