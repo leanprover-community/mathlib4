@@ -32,9 +32,6 @@ restricted to `Ioi 0`.
 * `laplace_indicator_comp_sub`: the time-shift rule for the one-sided Laplace transform.
 * `hasLaplace_const`/`hasLaplace_one`/`hasLaplace_cexp`: basic transform values.
 
-Derivative, integration, holomorphy, and convolution rules are in
-`Mathlib.Analysis.LaplaceTransformDeriv`.
-
 ## Design notes
 
 As for `mellin`, the transform is a total function. If the integrand is not integrable, the
@@ -69,13 +66,6 @@ classical one-sided Laplace transform. -/
 def LaplaceConvergent (f : ℝ → E) (s : ℂ)
     (μ : Measure ℝ := volume.restrict (Ioi 0)) : Prop :=
   Integrable (fun t : ℝ => Complex.exp ((-s) * (t : ℂ)) • f t) μ
-
-/-- Unfold convergence of a Laplace integral with an arbitrary measure. -/
-theorem laplaceConvergent_iff_integrable (f : ℝ → E) (s : ℂ)
-    (μ : Measure ℝ := volume.restrict (Ioi 0)) :
-    LaplaceConvergent f s μ ↔
-      Integrable (fun t : ℝ => Complex.exp ((-s) * (t : ℂ)) • f t) μ :=
-  Iff.rfl
 
 /-- Unfold convergence of a one-sided Laplace integral with respect to a base measure. -/
 theorem laplaceConvergent_iff_integrableOn (f : ℝ → E) (s : ℂ)
@@ -134,6 +124,12 @@ section Add
 variable [NormedAddCommGroup E]
 
 @[simp]
+theorem LaplaceConvergent.zero [SMulZeroClass ℂ E] (s : ℂ)
+    (μ : Measure ℝ := volume.restrict (Ioi 0)) :
+    LaplaceConvergent (fun _ : ℝ => (0 : E)) s μ := by
+  simp [LaplaceConvergent]
+
+@[simp]
 theorem laplace_zero [NormedSpace ℝ E] [SMulZeroClass ℂ E] (s : ℂ)
     (μ : Measure ℝ := volume.restrict (Ioi 0)) :
     laplace (fun _ : ℝ => (0 : E)) s μ = 0 := by
@@ -144,6 +140,10 @@ theorem laplace_neg [NormedSpace ℝ E] [DistribSMul ℂ E] (f : ℝ → E) (s :
     (μ : Measure ℝ := volume.restrict (Ioi 0)) :
     laplace (fun t => -f t) s μ = -laplace f s μ := by
   simp [laplace, integral_neg]
+
+theorem LaplaceConvergent.neg [DistribSMul ℂ E] {μ : Measure ℝ} {f : ℝ → E} {s : ℂ}
+    (hf : LaplaceConvergent f s μ) : LaplaceConvergent (fun t => -f t) s μ := by
+  exact (Integrable.neg hf).congr <| ae_of_all _ fun _ => (smul_neg _ _).symm
 
 theorem LaplaceConvergent.add [DistribSMul ℂ E] {μ : Measure ℝ} {f g : ℝ → E} {s : ℂ}
     (hf : LaplaceConvergent f s μ) (hg : LaplaceConvergent g s μ) :
@@ -180,6 +180,16 @@ theorem HasLaplace.sub [NormedSpace ℝ E] [DistribSMul ℂ E]
     (hf : HasLaplace f s m μ) (hg : HasLaplace g s n μ) :
     HasLaplace (fun t => f t - g t) s (m - n) μ := by
   simpa [hf.2, hg.2] using hasLaplace_sub hf.1 hg.1
+
+theorem hasLaplace_zero [NormedSpace ℝ E] [SMulZeroClass ℂ E] (s : ℂ)
+    (μ : Measure ℝ := volume.restrict (Ioi 0)) :
+    HasLaplace (fun _ : ℝ => (0 : E)) s 0 μ :=
+  ⟨.zero s μ, laplace_zero s μ⟩
+
+theorem HasLaplace.neg [NormedSpace ℝ E] [DistribSMul ℂ E]
+    {μ : Measure ℝ} {f : ℝ → E} {s : ℂ} {m : E} (hf : HasLaplace f s m μ) :
+    HasLaplace (fun t => -f t) s (-m) μ :=
+  ⟨hf.1.neg, by rw [laplace_neg f s μ, hf.2]⟩
 
 end Add
 
@@ -219,7 +229,7 @@ end ConstSMul
 section Norm
 
 /-- The norm of the Laplace kernel. -/
-theorem norm_laplaceKernel (s : ℂ) (t : ℝ) :
+theorem norm_laplace_kernel (s : ℂ) (t : ℝ) :
     ‖Complex.exp ((-s) * (t : ℂ))‖ = Real.exp (-s.re * t) := by
   simp [Complex.norm_exp, mul_comm]
 
@@ -249,7 +259,7 @@ theorem laplaceConvergent_iff_norm {μ : Measure ℝ} {f : ℝ → E} {s : ℂ}
   refine integrable_congr <| ae_of_all _ fun t => ?_
   dsimp only
   rw [norm_smul]
-  simp [Complex.norm_exp, mul_comm]
+  exact congrArg (· * ‖f t‖) (norm_laplace_kernel s t)
 
 /-- A convenient sufficient condition for convergence of a Laplace integral. -/
 theorem laplaceConvergent_of_integrable_norm {μ : Measure ℝ} {f : ℝ → E} {s : ℂ}
@@ -336,7 +346,7 @@ theorem norm_laplace_le_integral_norm (f : ℝ → E) (s : ℂ)
   refine (norm_integral_le_integral_norm _).trans_eq ?_
   congr with t
   rw [norm_smul]
-  simp [Complex.norm_exp, mul_comm]
+  exact congrArg (· * ‖f t‖) (norm_laplace_kernel s t)
 
 end NormBound
 
@@ -364,6 +374,12 @@ theorem laplace_cexp_smul [NormedSpace ℝ E] [MulAction ℂ E] (f : ℝ → E) 
   rw [← mul_smul, ← Complex.exp_add]
   congr 1
   ring_nf
+
+theorem HasLaplace.cexp_smul [NormedSpace ℝ E] [MulAction ℂ E]
+    {μ : Measure ℝ} {f : ℝ → E} {s a : ℂ} {m : E} (hf : HasLaplace f (s - a) m μ) :
+    HasLaplace (fun t : ℝ => Complex.exp (a * (t : ℂ)) • f t) s m μ :=
+  ⟨(LaplaceConvergent.cexp_smul (f := f) (s := s) (a := a)).2 hf.1,
+    (laplace_cexp_smul f s a μ).trans hf.2⟩
 
 end Shift
 
@@ -483,6 +499,18 @@ theorem laplace_comp_mul_right [NormedSpace ℝ E] [Module ℂ E] [IsScalarTower
     (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     laplace (fun t : ℝ => f (t * a)) s = (a : ℂ)⁻¹ • laplace f (s / a) := by
   simpa only [mul_comm] using laplace_comp_mul_left f s ha
+
+theorem HasLaplace.comp_mul_left [NormedSpace ℝ E] [Module ℂ E] [IsScalarTower ℝ ℂ E]
+    {f : ℝ → E} {s : ℂ} {a : ℝ} {m : E} (hf : HasLaplace f (s / a) m) (ha : 0 < a) :
+    HasLaplace (fun t : ℝ => f (a * t)) s ((a : ℂ)⁻¹ • m) :=
+  ⟨(LaplaceConvergent.comp_mul_left (f := f) (s := s) ha).2 hf.1,
+    by rw [laplace_comp_mul_left f s ha, hf.2]⟩
+
+theorem HasLaplace.comp_mul_right [NormedSpace ℝ E] [Module ℂ E] [IsScalarTower ℝ ℂ E]
+    {f : ℝ → E} {s : ℂ} {a : ℝ} {m : E} (hf : HasLaplace f (s / a) m) (ha : 0 < a) :
+    HasLaplace (fun t : ℝ => f (t * a)) s ((a : ℂ)⁻¹ • m) :=
+  ⟨(LaplaceConvergent.comp_mul_right (f := f) (s := s) ha).2 hf.1,
+    by rw [laplace_comp_mul_right f s ha, hf.2]⟩
 
 end RealScaling
 

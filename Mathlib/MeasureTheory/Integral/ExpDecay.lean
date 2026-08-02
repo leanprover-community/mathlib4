@@ -16,6 +16,8 @@ for integrability:
 
 * `integrable_of_isBigO_exp_neg`: If `f` is continuous on `[a,∞)`, for some `a ∈ ℝ`, and there
   exists `b > 0` such that `f(x) = O(exp(-b x))` as `x → ∞`, then `f` is integrable on `(a, ∞)`.
+* `integrableOn_exp_neg_mul_norm_of_isBigO_exp`: exponential decay dominates a locally integrable
+  function of strictly smaller exponential order.
 -/
 
 public section
