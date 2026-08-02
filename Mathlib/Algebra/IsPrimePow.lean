@@ -43,11 +43,14 @@ theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
   rw [eq_zero_of_pow_eq_zero hx]
   simp
 
-theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
+theorem IsPrimePow.not_isUnit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
   let ⟨_p, _k, hp, hk, hn⟩ := h
   hn ▸ (isUnit_pow_iff hk.ne').not.mpr hp.not_unit
 
-theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' => h'.not_unit h
+@[deprecated (since := "2026-08-02")]
+alias IsPrimePow.not_unit := IsPrimePow.not_isUnit
+
+theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' => h'.not_isUnit h
 
 theorem not_isPrimePow_one : ¬IsPrimePow (1 : R) :=
   isUnit_one.not_isPrimePow
