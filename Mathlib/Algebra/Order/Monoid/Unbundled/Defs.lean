@@ -399,7 +399,7 @@ attribute [deprecated Group.covariant_iff_contravariant (since := "2026-08-01")]
 attribute [deprecated AddGroup.covariant_iff_contravariant (since := "2026-08-01")] AddGroup.covconv
 
 @[to_additive]
-instance (priority := 100) Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N] [MulLeftMono N] :
+instance Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N] [MulLeftMono N] :
     MulLeftReflectLE N where
   le_of_mul_le_mul_left' := Group.covariant_iff_contravariant.mp covariant_mul_le _
 
@@ -429,8 +429,8 @@ attribute [deprecated AddGroup.covariant_swap_iff_contravariant_swap (since := "
   AddGroup.covconv_swap
 
 @[to_additive]
-instance (priority := 100) Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N]
-    [MulRightMono N] : MulRightReflectLE N where
+instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N] [MulRightMono N] :
+    MulRightReflectLE N where
   le_of_mul_le_mul_right' := Group.covariant_swap_iff_contravariant_swap.mp covariant_swap_mul_le _
 
 @[to_additive]
