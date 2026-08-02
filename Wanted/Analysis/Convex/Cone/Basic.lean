@@ -2,13 +2,12 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Basic
 
-variable {𝕜 R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
-variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
+variable {𝕜 E : Type*} [AddCommMonoid E] [TopologicalSpace E]
 
 namespace ConvexCone
 variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
 
--- TODO: This result generalises to G-submodules.
+-- TODO: This result generalises to `G`-submodules in the sense of the Zulip thread linked below.
 
 -- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
 -- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup E] in

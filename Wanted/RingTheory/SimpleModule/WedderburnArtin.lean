@@ -2,8 +2,7 @@ module
 
 public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
-universe u
-variable {R : Type u} [Ring R]
+variable {R : Type*} [Ring R]
 
 -- Need left-right symmetry of Jacobson radical
 proof_wanted IsSemiprimaryRing.mulOpposite [IsSemiprimaryRing R] : IsSemiprimaryRing Rᵐᵒᵖ

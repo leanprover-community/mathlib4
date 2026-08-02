@@ -4,13 +4,11 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 
 open CategoryTheory
 
-variable (C : Type*) [Category* C]
+variable {C : Type*} [Category* C]
 
 namespace CategoryTheory.Limits
 
 namespace IsCofiltered
-
-variable {C}
 
 @[stacks 0032]
 proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
@@ -38,7 +36,8 @@ proof_wanted hasCountableLimits_of_hasFiniteLimits_and_hasSequentialLimits [HasF
   [HasLimitsOfShape ℕᵒᵖ C] : HasCountableLimits C
 
 /--
-For this we need to dualize this whole section.
+For this we need to dualize `sequentialFunctor_initial` (in
+`Mathlib/CategoryTheory/Limits/Shapes/Countable.lean`) and the `proof_wanted` statements above.
 -/
 proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
   [HasFiniteColimits C] [HasLimitsOfShape ℕ C] : HasCountableColimits C

@@ -6,9 +6,7 @@ open MeasureTheory
 open scoped ProbabilityTheory unitInterval
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m : MeasurableSpace Ω} {P : Measure Ω} {n : ℕ} {p : I}
-
-variable {X : Ω → ℝ}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {P : Measure Ω} {n : ℕ} {p : I} {X : Ω → ℝ}
 
 /-- **Expectation of a binomial random variable**.
 
