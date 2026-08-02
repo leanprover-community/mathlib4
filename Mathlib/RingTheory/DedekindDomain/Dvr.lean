@@ -122,6 +122,10 @@ theorem IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain [IsDed
 
 end
 
+/-- An integral domain is called a Dedekind domain if it is Noetherian, and the
+localization at every nonzero prime is a discrete valuation ring.
+This is an auxiliary definition used to prove
+`isDedekindDomain_iff_isDiscreteValuationRing_atPrime`. -/
 def IsDedekindDomainDvr [IsDomain A] : Prop :=
   IsNoetherian A A ∧ ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
     IsDiscreteValuationRing (Localization.AtPrime P)
