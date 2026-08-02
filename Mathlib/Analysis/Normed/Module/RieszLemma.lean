@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Seminorm.Basic
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
