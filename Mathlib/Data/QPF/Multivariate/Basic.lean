@@ -177,7 +177,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
-    have : LiftP (supp x) x := by rw [h]; introv; exact id
+    have : LiftP (fun i u => u ∈ supp x i) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
