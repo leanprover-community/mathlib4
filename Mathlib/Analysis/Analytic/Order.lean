@@ -485,8 +485,8 @@ lemma analyticOrderAt_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
   exact ⟨1, by simp [Pi.one_def, analyticAt_const]⟩
 
 /-- The analytic order of the function `(· - c)` at `x` is one if `x = c`. -/
-@[simp] theorem analyticOrderAt_id_sub_const_of_eq {c x : 𝕜} (h : x = c) :
-    analyticOrderAt (· - c) x = 1 := by
+@[simp] theorem analyticOrderAt_id_sub_const_self {c : 𝕜} :
+    analyticOrderAt (· - c) c = 1 := by
   have := analyticOrderAt_centeredMonomial (n := 1) (z₀ := x)
   simp_all [pow_one]
 

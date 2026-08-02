@@ -741,7 +741,6 @@ theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn (fun x ↦ (f x)⁻¹) U ↔ MeromorphicNFOn f U :=
   meromorphicNFOn_inv
 
-
 /-- `MeromorphicNFOn` is invariant under translation. -/
 @[to_fun meromorphicNFOn_fun_comp_add_const_iff_meromorphicNFOn]
 theorem meromorphicNFOn_comp_add_const_iff_meromorphicNFOn {c : 𝕜} {U : Set 𝕜} :

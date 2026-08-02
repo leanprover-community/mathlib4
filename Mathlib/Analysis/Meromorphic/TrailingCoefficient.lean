@@ -518,7 +518,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_comp {g : 𝕜 → 𝕜} (hf : 
     meromorphicTrailingCoeffAt (f ∘ g) x =
       (meromorphicTrailingCoeffAt (g · - g x) x) ^ (meromorphicOrderAt f (g x)).untop₀ •
       meromorphicTrailingCoeffAt f (g x) := by
-  by_cases h : meromorphicOrderAt f ( g x ) = ⊤
+  by_cases h : meromorphicOrderAt f (g x) = ⊤
   · have : meromorphicTrailingCoeffAt (f ∘ g) x = 0 := by
       apply MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top
       rw [meromorphicOrderAt_eq_top_iff] at *

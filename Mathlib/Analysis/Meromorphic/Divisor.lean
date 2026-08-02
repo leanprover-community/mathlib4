@@ -88,7 +88,7 @@ analysis: Divisors on spheres have finite support.
 -/
 lemma _root_.divisor_sphere_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜} :
     (divisor f (sphere c R)).support.Finite :=
-    (divisor f (sphere c R)).finiteSupport (isCompact_sphere c R)
+  (divisor f (sphere c R)).finiteSupport (isCompact_sphere c R)
 
 /--
 If `f` is meromorphic on a compact set `U` and `V ⊆ U`, then the divisor of `f` on `V` has finite
