@@ -70,10 +70,14 @@ section Preorder
 variable [Preorder α] [OrderBot α] {a b x : α}
 
 /-- An atom of an `OrderBot` is an element with no other element between it and `⊥`,
-  which is not `⊥`. -/
+which is not `⊥`. -/
+@[to_dual
+/-- A coatom of an `OrderTop` is an element with no other element between it and `⊤`,
+which is not `⊤`. -/]
 def IsAtom (a : α) : Prop :=
   a ≠ ⊥ ∧ ∀ b, b < a → b = ⊥
 
+@[to_dual]
 theorem IsAtom.Iic (ha : IsAtom a) (hax : a ≤ x) : IsAtom (⟨a, hax⟩ : Set.Iic x) :=
   ⟨fun con => ha.1 (Subtype.mk_eq_mk.1 con), fun ⟨b, _⟩ hba => Subtype.mk_eq_mk.2 (ha.2 b hba)⟩
 
@@ -335,7 +339,7 @@ class IsAtomic [OrderBot α] : Prop where
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
-@[mk_iff]
+@[to_dual, mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
   /-- Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
