@@ -126,7 +126,7 @@ private theorem quadratic_lift_omega {C S : Type*} [CommSemiring C] [Ring S]
 The base ring `R = ℤ[a, b] / (a³, b³, a²b + 2)` is nontrivial, but this is not syntactically
 obvious from its presentation.  We certify it by exhibiting an explicit `R`-module: the
 regular representation of `R` on `ℤ/4 × ℤ/4 × (ℤ/2)⁵`, with `a` and `b` acting through
-explicit commuting additive endomorphisms.  All required relations are closed under `decide`.
+explicit commuting additive endomorphisms.  All required relations are closed by `decide +kernel`.
 -/
 
 /-- Reduction modulo `2`, as a ring homomorphism `ℤ/4 → ℤ/2`. -/
