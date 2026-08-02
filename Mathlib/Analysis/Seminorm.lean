@@ -253,18 +253,11 @@ variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
   [Preorder R] [Zero R] [IsOrderedModule R ℝ]
 
 instance : IsOrderedSMul R (Seminorm 𝕜 E) where
-  smul_le_smul_left p q hpq c := by
-    rw [le_def] at hpq ⊢
-    intro x
-    simp only [smul_apply]
-    have hp : (c • (1 : ℝ≥0)) • p x = c • p x := by simp
-    have hq : (c • (1 : ℝ≥0)) • q x = c • q x := by simp
-    grw [← hp, smul_le_smul_of_nonneg_left (hpq x) (by positivity), hq]
-  smul_le_smul_right a b hab p := by
-    rw [le_def]
-    intro x
-    simp only [smul_apply]
-    grw [smul_le_smul_of_nonneg_right hab (by positivity)]
+  smul_le_smul_left p q hpq c x := calc
+    _ ≤ (c • (1 : ℝ≥0)) • p x := by simp
+    _ ≤ _ := by grw [hpq x]; simp
+  smul_le_smul_right a b hab p x := by
+    grw [smul_apply, hab, smul_apply]
 
 end SMul
 
@@ -343,7 +336,7 @@ theorem bot_eq_zero : (⊥ : Seminorm 𝕜 E) = 0 :=
   rfl
 
 @[deprecated IsOrderedSMul.smul_le_smul (since := "2026-07-31")]
-theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
+protected theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (hab : a ≤ b) :
     a • p ≤ b • q := by
   simp_rw [le_def]
   intro x
