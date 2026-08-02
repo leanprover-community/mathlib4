@@ -77,8 +77,8 @@ jobs:
           #                                     We ship the whole build dir, not just the
           #                                     binary, in case it needs other files there
           #                                     to run.
-          #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples
-          #                                     with retries.
+          #   - scripts/lake-build-with-retry.sh: builds Mathlib/Archive/Counterexamples/
+          #                                     Wanted with retries.
           #   - scripts/lake-build-wrapper.py:  wraps the `lake test` step.
           #   - lean-toolchain:                 the toolchain this binary was built with;
           #                                     the consumer installs it (via elan) so the

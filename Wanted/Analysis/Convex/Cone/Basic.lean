@@ -11,7 +11,7 @@ variable [Semifield 𝕜] [LinearOrder 𝕜] [Module 𝕜 E] {s : Set E}
 -- TODO: This result generalises to G-submodules.
 
 -- FIXME: This is necessary for the proof below but triggers the `unusedSectionVars` linter.
--- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M] in
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup E] in
 /-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
 doesn't support that use case. See
 https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
