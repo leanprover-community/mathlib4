@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib
+public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
@@ -158,6 +159,10 @@ variable (C) in
 abbrev PreGaloisCategory.isConnected : ObjectProperty C :=
   IsConnected
 
+instance (X : (PreGaloisCategory.isConnected C).FullSubcategory) :
+    PreGaloisCategory.IsConnected X.obj :=
+  X.property
+
 open PreGaloisCategory
 
 namespace PreGaloisCategory
@@ -168,12 +173,70 @@ end PreGaloisCategory
 
 namespace GaloisCategory
 
-instance : Preregular (isConnected C).FullSubcategory where
-  exists_fac := sorry
+open PreGaloisCategory
 
-abbrev grothendieckTopologyConnected :
-    GrothendieckTopology (isConnected C).FullSubcategory :=
-  regularTopology _
+lemma has_connected_component [GaloisCategory C] (X : C) (hX : IsInitial X → False) :
+    ∃ (X₀ : C) (f : X₀ ⟶ X), Mono f ∧ PreGaloisCategory.IsConnected X₀ := by
+  obtain ⟨ι, W, a, ha, _, _⟩ := has_decomp_connected_components X
+  have : Nonempty ι := by
+    by_contra!
+    exact hX (IsInitial.ofUniqueHom
+      (fun _ ↦ Cofan.IsColimit.desc ha (fun i ↦ (IsEmpty.false i).elim))
+      (fun _ _ ↦ Cofan.IsColimit.hom_ext ha _ _ (fun i ↦ (IsEmpty.false i).elim)))
+  exact ⟨W (Classical.arbitrary _), a _, MonoCoprod.mono_inj _ _ ha _, inferInstance⟩
+
+instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
+    Epi f.hom := by
+  obtain ⟨F, _⟩ := hasFiberFunctor (C := C)
+  exact epi_of_nonempty_of_isConnected F _
+
+instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
+    Epi f where
+  left_cancellation {Z} g₁ g₂ h := by
+    ext
+    simp only [← cancel_epi f.hom, ← InducedCategory.comp_hom, h]
+
+lemma effectiveEpi_of_epi [GaloisCategory C] {X Y : C} (f : X ⟶ Y) [Epi f] :
+    EffectiveEpi f := by
+  sorry
+
+instance [GaloisCategory C] {X Y : (isConnected C).FullSubcategory} (f : X ⟶ Y) :
+    EffectiveEpi f := by
+  have := effectiveEpi_of_epi f.hom
+  let h := EffectiveEpi.getStruct f.hom
+  have {W : (isConnected C).FullSubcategory} (e : X ⟶ W)
+      (he : ∀ {Z : (isConnected C).FullSubcategory} (g₁ g₂ : Z ⟶ X),
+        g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) {Z : C}
+      (g₁ g₂ : Z ⟶ X.obj) (hf : g₁ ≫ f.hom = g₂ ≫ f.hom) :
+      g₁ ≫ e.hom = g₂ ≫ e.hom := by
+    obtain ⟨ι, T, a, ha, _, _⟩ := has_decomp_connected_components Z
+    refine Cofan.IsColimit.hom_ext ha _ _ (fun i ↦ ?_)
+    simpa [ObjectProperty.hom_ext_iff] using
+      he (Z := ⟨T i, inferInstance⟩) (ObjectProperty.homMk (a i ≫ g₁))
+        (ObjectProperty.homMk (a i ≫ g₂)) (by cat_disch)
+  exact ⟨⟨{
+    desc e he := ObjectProperty.homMk (h.desc e.hom (this e he))
+    fac e he := by ext; exact h.fac e.hom (this e he)
+    uniq e he m hm := by
+      ext
+      exact h.uniq e.hom _ _ (by simp [← hm])
+  }⟩⟩
+
+instance [GaloisCategory C] : Preregular (isConnected C).FullSubcategory where
+  exists_fac {X Y Z} f g _ := by
+    obtain ⟨X₀, a, _, _⟩ := has_connected_component (pullback f.hom g.hom) (by
+      let F := GaloisCategory.getFiberFunctor C
+      rw [not_initial_iff_fiber_nonempty F]
+      let x : F.obj X.obj := Classical.arbitrary _
+      have ⟨z, hz⟩ := surjective_on_fiber_of_epi F g.hom (F.map f.hom x)
+      exact ⟨(fiberPullbackEquiv F f.hom g.hom).symm ⟨⟨x, z⟩, hz.symm⟩⟩)
+    refine ⟨⟨X₀, inferInstance⟩, ObjectProperty.homMk (a ≫ pullback.fst _ _),
+      inferInstance, ObjectProperty.homMk (a ≫ pullback.snd _ _), ?_⟩
+    ext
+    simp [pullback.condition]
+
+example [GaloisCategory C] : GrothendieckTopology (isConnected C).FullSubcategory :=
+  regularTopology (isConnected C).FullSubcategory
 
 end GaloisCategory
 
