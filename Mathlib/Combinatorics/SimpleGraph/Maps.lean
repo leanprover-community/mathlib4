@@ -253,7 +253,9 @@ Two vertices are adjacent if and only if their indices are not equal. -/
 abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
   .comap Sigma.fst ⊤
 
-/-- Equivalent types have equivalent simple graphs. -/
+/-- Equivalent types have equivalent simple graphs.
+
+See `equivOfBijective` to lift a bijection instead of an `Equiv`. -/
 @[simps apply]
 protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleGraph W where
   toFun := .comap e.symm
