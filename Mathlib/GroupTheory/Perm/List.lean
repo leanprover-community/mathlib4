@@ -60,31 +60,31 @@ theorem formPerm_singleton (x : α) : formPerm [x] = 1 :=
 
 @[simp]
 theorem formPerm_cons_cons (x y : α) (l : List α) :
-    formPerm (x :: y :: l) = swap x y * formPerm (y :: l) :=
+    formPerm (x :: y :: l) = Equiv.swap x y * formPerm (y :: l) :=
   rfl
 
-theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
+theorem formPerm_pair (x y : α) : formPerm [x, y] = Equiv.swap x y :=
   rfl
 
 theorem mem_or_mem_of_zipWith_swap_prod_ne : ∀ {l l' : List α} {x : α},
-    (zipWith swap l l').prod x ≠ x → x ∈ l ∨ x ∈ l'
+    (zipWith Equiv.swap l l').prod x ≠ x → x ∈ l ∨ x ∈ l'
   | [], _, _ => by simp
   | _, [], _ => by simp
   | a::l, b::l', x => fun hx ↦
-    if h : (zipWith swap l l').prod x = x then
+    if h : (zipWith Equiv.swap l l').prod x = x then
       (eq_or_eq_of_swap_apply_ne_self (a := a) (b := b) (x := x) (by simpa [h] using hx)).imp
         (by rintro rfl; exact .head _) (by rintro rfl; exact .head _)
     else
      (mem_or_mem_of_zipWith_swap_prod_ne h).imp (.tail _) (.tail _)
 
 theorem zipWith_swap_prod_support' (l l' : List α) :
-    { x | (zipWith swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := fun _ h ↦ by
+    { x | (zipWith Equiv.swap l l').prod x ≠ x } ≤ l.toFinset ⊔ l'.toFinset := fun _ h ↦ by
   simpa using mem_or_mem_of_zipWith_swap_prod_ne h
 
 theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
-    (zipWith swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
+    (zipWith Equiv.swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
-  have hx' : x ∈ { x | (zipWith swap l l').prod x ≠ x } := by simpa using hx
+  have hx' : x ∈ { x | (zipWith Equiv.swap l l').prod x ≠ x } := by simpa using hx
   simpa using zipWith_swap_prod_support' _ _ hx'
 
 theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
@@ -239,7 +239,7 @@ theorem formPerm_eq_of_isRotated {l l' : List α} (hd : Nodup l) (h : l ~r l') :
   exact (formPerm_rotate l hd n).symm
 
 theorem formPerm_append_pair : ∀ (l : List α) (a b : α),
-    formPerm (l ++ [a, b]) = formPerm (l ++ [a]) * swap a b
+    formPerm (l ++ [a, b]) = formPerm (l ++ [a]) * Equiv.swap a b
   | [], _, _ => rfl
   | [_], _, _ => rfl
   | x::y::l, a, b => by
@@ -249,7 +249,7 @@ theorem formPerm_reverse : ∀ l : List α, formPerm l.reverse = (formPerm l)⁻
   | [] => rfl
   | [_] => rfl
   | a::b::l => by
-    simp [formPerm_append_pair, swap_comm, ← formPerm_reverse (b::l)]
+    simp [formPerm_append_pair, Equiv.swap_comm, ← formPerm_reverse (b::l)]
 
 theorem formPerm_pow_apply_getElem (l : List α) (w : Nodup l) (n : ℕ) (i : ℕ) (h : i < l.length) :
     (formPerm l ^ n) l[i] =

@@ -163,10 +163,10 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
+  simp only [Q', sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
+  simp only [Q', sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
 theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
