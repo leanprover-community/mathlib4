@@ -110,7 +110,7 @@ macro_rules
   `(tactic| first
     | fail_if_no_progress
         simp -decide -failIfUnchanged only [sub_eq_add_neg] $[$loc]?
-        <;> repeat fail_if_no_progress
+        repeat fail_if_no_progress
           (simp -decide -failIfUnchanged only
             [addCommutatorElement_def, add_zero, zero_add,
               neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
