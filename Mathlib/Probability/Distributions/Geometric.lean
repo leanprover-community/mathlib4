@@ -13,12 +13,12 @@ import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 /-! # Geometric distributions
 
 We define the geometric distributions over natural numbers. For `0 < p ≤ 1`, `geometricMeasure p`
-is the measure which to `{n}` associates `(1 - p) ^ n * n`.
+is the measure which to `{n}` associates `(1 - p) ^ n * p`.
 
 As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasure p` with
 `p : unitInterval`.
 
-Imagine a certain experience which has success probability `p`. If you repeat this experience
+Imagine a certain experiment which has success probability `p`. If you repeat this experiment
 infinitely many times and independently, the number of failures before the first success
 follows a geometric distribution with parameter `p`.
 
