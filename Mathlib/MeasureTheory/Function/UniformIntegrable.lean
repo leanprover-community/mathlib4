@@ -732,14 +732,10 @@ private theorem forall_exists_eLpNorm_indicator_le_iff_lt {f : ι → α → β}
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
   · obtain ⟨C, hC⟩ := h ε hε
     refine ⟨C, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
-    by_cases hx : C < ‖f i x‖₊
-    · simp [hx, hx.le]
-    · simp [hx]
+    exact norm_indicator_le_of_subset (by grind) _ _
   · obtain ⟨C, hC⟩ := h ε hε
     refine ⟨C + 1, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
-    by_cases hx : C + 1 ≤ ‖f i x‖₊
-    · simp [hx, (lt_add_of_pos_right C zero_lt_one).trans_le hx]
-    · simp [hx]
+    exact norm_indicator_le_of_subset (fun x hx ↦ (lt_add_one C).trans_le hx) _ _
 
 theorem uniformIntegrable_zero_meas [MeasurableSpace α] : UniformIntegrable f p (0 : Measure α) :=
   ⟨fun _ => aestronglyMeasurable_zero_measure _, unifIntegrable_zero_meas, 0,
@@ -922,8 +918,7 @@ theorem UniformIntegrable.spec_lt (hp' : p ≠ ∞) (hfu : UniformIntegrable f p
 infinity. -/
 theorem UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop (hp' : p ≠ ∞)
     (hfu : UniformIntegrable f p μ) :
-    Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ)
-      atTop (𝓝 0) := by
+    Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) := by
   refine ENNReal.tendsto_atTop_zero.2 fun ε hε ↦ ?_
   obtain ⟨δ, hδ, hδε⟩ : ∃ δ : ℝ, 0 < δ ∧ ENNReal.ofReal δ ≤ ε := by
     rcases eq_or_ne ε ∞ with rfl | hε'
@@ -943,9 +938,7 @@ private theorem tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt :
   mp hle := by
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hle
       (fun _ ↦ zero_le) fun C ↦ iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
-    by_cases hx : C < ‖f i x‖₊
-    · simp [hx, hx.le]
-    · simp [hx]
+    exact norm_indicator_le_of_subset (by grind) _ _
   mpr hlt := by
     have hsub : Tendsto (fun C : ℝ≥0 ↦ C - 1) atTop atTop :=
       tendsto_atTop_atTop.2 fun b ↦ ⟨b + 1, fun C hC ↦ le_tsub_of_add_le_right hC⟩
@@ -956,9 +949,7 @@ private theorem tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt :
       (.of_forall fun _ ↦ zero_le) ?_
     filter_upwards [eventually_gt_atTop 0] with C hC
     refine iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
-    by_cases hx : C ≤ ‖f i x‖₊
-    · simp [hx, (tsub_lt_self hC one_pos).trans_le hx]
-    · simp [hx]
+    exact norm_indicator_le_of_subset (fun x hx ↦ (tsub_lt_self hC one_pos).trans_le hx) _ _
 
 /-- The strict-inequality analogue of `UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop`:
 the `eLpNorm` of the tail `{x | C < ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i`. -/
