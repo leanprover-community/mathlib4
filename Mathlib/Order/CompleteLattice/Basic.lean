@@ -58,7 +58,7 @@ theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t 
 theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
-@[to_dual iInf₂_eq_iInf_diagonal]
+@[to_dual]
 theorem iSup₂_eq_iSup_diagonal
     (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
     (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
