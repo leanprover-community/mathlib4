@@ -23,10 +23,12 @@ restricted to `Ioi 0`.
 ## Main definitions
 
 * `LaplaceConvergent f s`: the predicate that the Laplace integral is defined at `s`.
+* `laplaceConvergenceSet f`: the real region of absolute convergence.
 * `laplace f s`: the Laplace transform of `f` at `s`.
 * `HasLaplace f s m`: shorthand asserting convergence and value of the Laplace transform.
 * `LaplaceConvergent.of_re_le`/`LaplaceConvergent.of_re_lt`: half-plane monotonicity
   of convergence in `s.re`.
+* `convex_laplaceConvergenceSet`: the real convergence set is an interval.
 * `laplaceConvergent_of_isBigO_exp`: exponential-order convergence for `s.re` larger
   than the growth rate.
 * `laplace_indicator_comp_sub`: the time-shift rule for the one-sided Laplace transform.
@@ -66,6 +68,20 @@ classical one-sided Laplace transform. -/
 def LaplaceConvergent (f : ℝ → E) (s : ℂ)
     (μ : Measure ℝ := volume.restrict (Ioi 0)) : Prop :=
   Integrable (fun t : ℝ => Complex.exp ((-s) * (t : ℂ)) • f t) μ
+
+/-- The set of real parameters at which the Laplace integral converges.
+
+Complex convergence depends only on the real part of the parameter; see
+`laplaceConvergent_iff_re_mem_laplaceConvergenceSet`. For the classical one-sided transform this
+is an upper set, while for an arbitrary measure it can have two finite endpoints. -/
+def laplaceConvergenceSet (f : ℝ → E)
+    (μ : Measure ℝ := volume.restrict (Ioi 0)) : Set ℝ :=
+  {x | LaplaceConvergent f x μ}
+
+@[simp]
+theorem mem_laplaceConvergenceSet {μ : Measure ℝ} {f : ℝ → E} {x : ℝ} :
+    x ∈ laplaceConvergenceSet f μ ↔ LaplaceConvergent f x μ :=
+  Iff.rfl
 
 /-- Unfold convergence of a one-sided Laplace integral with respect to a base measure. -/
 theorem laplaceConvergent_iff_integrableOn (f : ℝ → E) (s : ℂ)
@@ -328,6 +344,78 @@ theorem LaplaceConvergent.congr_re {μ : Measure ℝ} {f : ℝ → E} {s₀ s : 
     (hf : LaplaceConvergent f s₀ μ) (hs : s₀.re = s.re) :
     LaplaceConvergent f s μ :=
   (laplaceConvergent_congr_re hs).1 hf
+
+/-- If a Laplace integral converges at two parameters, then it converges at every parameter whose
+real part lies between theirs. -/
+theorem laplaceConvergent_of_re_le_of_le {μ : Measure ℝ} {f : ℝ → E} {s₁ s s₂ : ℂ}
+    (h₁ : LaplaceConvergent f s₁ μ) (h₂ : LaplaceConvergent f s₂ μ)
+    (h₁s : s₁.re ≤ s.re) (hs₂ : s.re ≤ s₂.re) : LaplaceConvergent f s μ := by
+  have hf : AEStronglyMeasurable f μ := h₁.aestronglyMeasurable
+  rw [laplaceConvergent_iff_norm hf] at h₁ h₂ ⊢
+  refine Integrable.mono (h₁.add h₂)
+    ((by fun_prop : Continuous fun t : ℝ => Real.exp (-s.re * t))
+      |>.aestronglyMeasurable.mul hf.norm) (ae_of_all _ fun t => ?_)
+  simp only [Pi.add_apply, Real.norm_eq_abs]
+  rw [abs_of_nonneg (mul_nonneg (Real.exp_pos _).le (norm_nonneg _)),
+    abs_of_nonneg (add_nonneg (mul_nonneg (Real.exp_pos _).le (norm_nonneg _))
+      (mul_nonneg (Real.exp_pos _).le (norm_nonneg _)))]
+  rcases le_total 0 t with ht | ht
+  · calc
+      Real.exp (-s.re * t) * ‖f t‖ ≤ Real.exp (-s₁.re * t) * ‖f t‖ := by
+        exact mul_le_mul_of_nonneg_right
+          (Real.exp_le_exp.mpr (mul_le_mul_of_nonneg_right (neg_le_neg h₁s) ht)) (norm_nonneg _)
+      _ ≤ Real.exp (-s₁.re * t) * ‖f t‖ + Real.exp (-s₂.re * t) * ‖f t‖ :=
+        le_add_of_nonneg_right (mul_nonneg (Real.exp_pos _).le (norm_nonneg _))
+  · calc
+      Real.exp (-s.re * t) * ‖f t‖ ≤ Real.exp (-s₂.re * t) * ‖f t‖ := by
+        exact mul_le_mul_of_nonneg_right
+          (Real.exp_le_exp.mpr (mul_le_mul_of_nonpos_right (neg_le_neg hs₂) ht)) (norm_nonneg _)
+      _ ≤ Real.exp (-s₁.re * t) * ‖f t‖ + Real.exp (-s₂.re * t) * ‖f t‖ :=
+        le_add_of_nonneg_left (mul_nonneg (Real.exp_pos _).le (norm_nonneg _))
+
+/-- Complex Laplace convergence is determined by membership of the real part in the real
+convergence set. -/
+theorem laplaceConvergent_iff_re_mem_laplaceConvergenceSet {μ : Measure ℝ} {f : ℝ → E}
+    {s : ℂ} :
+    LaplaceConvergent f s μ ↔ s.re ∈ laplaceConvergenceSet f μ := by
+  rw [mem_laplaceConvergenceSet]
+  exact laplaceConvergent_congr_re (by simp)
+
+/-- The real convergence set of a Laplace transform is convex, hence an interval. -/
+theorem convex_laplaceConvergenceSet {μ : Measure ℝ} (f : ℝ → E) :
+    Convex ℝ (laplaceConvergenceSet f μ) := by
+  rintro x₁ hx₁ x₂ hx₂ a b ha hb hab
+  rw [mem_laplaceConvergenceSet] at hx₁ hx₂ ⊢
+  rcases le_total x₁ x₂ with hle | hle
+  · refine laplaceConvergent_of_re_le_of_le hx₁ hx₂ ?_ ?_ <;>
+      simp only [ofReal_re, smul_eq_mul]
+    · calc
+        x₁ = a * x₁ + b * x₁ := by rw [← add_mul, hab, one_mul]
+        _ ≤ a * x₁ + b * x₂ := by gcongr
+    · calc
+        a * x₁ + b * x₂ ≤ a * x₂ + b * x₂ := by gcongr
+        _ = x₂ := by rw [← add_mul, hab, one_mul]
+  · refine laplaceConvergent_of_re_le_of_le hx₂ hx₁ ?_ ?_ <;>
+      simp only [ofReal_re, smul_eq_mul]
+    · calc
+        x₂ = a * x₂ + b * x₂ := by rw [← add_mul, hab, one_mul]
+        _ ≤ a * x₁ + b * x₂ := by gcongr
+    · calc
+        a * x₁ + b * x₂ ≤ a * x₁ + b * x₁ := by gcongr
+        _ = x₁ := by rw [← add_mul, hab, one_mul]
+
+/-- The real convergence set is upward-closed when the measure is supported on the nonnegative
+reals. -/
+theorem isUpperSet_laplaceConvergenceSet_of_ae_nonneg {μ : Measure ℝ} (f : ℝ → E)
+    (hμ : ∀ᵐ t ∂μ, 0 ≤ t) : IsUpperSet (laplaceConvergenceSet f μ) := by
+  intro a b hab ha
+  exact ha.of_re_le_of_ae_nonneg hμ (by simpa using hab)
+
+/-- The real convergence set of the classical one-sided Laplace transform is upward-closed. -/
+theorem isUpperSet_laplaceConvergenceSet (f : ℝ → E) :
+    IsUpperSet (laplaceConvergenceSet f) :=
+  isUpperSet_laplaceConvergenceSet_of_ae_nonneg f
+    ((ae_restrict_mem measurableSet_Ioi).mono fun _ ht => le_of_lt ht)
 
 end Monotonicity
 
