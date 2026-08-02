@@ -1126,11 +1126,11 @@ noncomputable def sigma_equiv : LTSeries (Σ i, α i) ≃ Σ i, LTSeries (α i) 
   invFun q := ⟨q.2.length, fun n => ⟨q.1, q.2 n⟩,
     fun n => Sigma.lt_def.mpr ⟨rfl, q.2.step n⟩⟩
   left_inv := by
-    intro p ; ext n
+    intro p; ext n
     · exact Nat.add_zero p.1
     · exact (LTSeries.sigma_fst_eq_fst p n).symm
     rw [Function.comp_apply, Fin.cast_eq_self, eqRec_heq_iff, heq_eq_eq]
-  right_inv := by intro q ; rfl
+  right_inv := by intro q; rfl
 
 end Sigma
 
