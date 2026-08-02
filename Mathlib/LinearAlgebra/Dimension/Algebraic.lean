@@ -53,8 +53,8 @@ theorem lift_rank_mul_lift_rank :
   have _ : NoZeroDivisors R := .of_faithfulSMul R S
   have _ : Nontrivial S := FaithfulSMul.algebraMap_injective R S |>.nontrivial
   have _ : IsDomain S := {}
-  letI R' := FractionRing R
-  letI S' := FractionRing S
+  let R' := FractionRing R
+  let S' := FractionRing S
   let M' := LocalizedModule S⁰ M
   let f : M →ₗ[S] M' := LocalizedModule.mkLinearMap ..
   let _ : Algebra R' S' := FractionRing.liftAlgebra ..
