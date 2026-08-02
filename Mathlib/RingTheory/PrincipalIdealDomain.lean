@@ -33,7 +33,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 ## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `EuclideanDomain.isPrincipalIdealRing` : a Euclidean domain is a PID.
+- `EuclideanDomain.isPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
@@ -293,7 +293,7 @@ instance (priority := 100) EuclideanDomain.isPrincipalIdealRing : IsPrincipalIde
       refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
       · rw [← Ideal.span, Ideal.mem_span_singleton, ← mod_eq_zero]
         have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
-        simp only [not_and_or, Set.mem_ofPred_eq, not_ne_iff] at this
+        rw [Set.mem_ofPred_eq, not_and_or, not_not] at this
         exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
       · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
         exact S.mul_mem_right _ hms
