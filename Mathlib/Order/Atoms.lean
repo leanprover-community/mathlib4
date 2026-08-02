@@ -63,8 +63,6 @@ variable {ι : Sort*} {α β : Type*}
 
 section Atoms
 
-section IsAtom
-
 section Preorder
 
 variable [Preorder α] [OrderBot α] {a b x : α}
@@ -77,19 +75,29 @@ which is not `⊤`. -/]
 def IsAtom (a : α) : Prop :=
   a ≠ ⊥ ∧ ∀ b, b < a → b = ⊥
 
+@[to_dual (attr := simp)]
+theorem isCoatom_dual_iff_isAtom {a : α} : IsCoatom (OrderDual.toDual a) ↔ IsAtom a :=
+  .rfl
+
+@[to_dual]
+alias ⟨_, IsAtom.dual⟩ := isCoatom_dual_iff_isAtom
+
 @[to_dual]
 theorem IsAtom.Iic (ha : IsAtom a) (hax : a ≤ x) : IsAtom (⟨a, hax⟩ : Set.Iic x) :=
   ⟨fun con => ha.1 (Subtype.mk_eq_mk.1 con), fun ⟨b, _⟩ hba => Subtype.mk_eq_mk.2 (ha.2 b hba)⟩
 
+@[to_dual]
 theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : α) :=
   ⟨fun con => ha.1 (Subtype.ext con), fun b hba =>
     Subtype.mk_eq_mk.1 (ha.2 ⟨b, hba.le.trans a.prop⟩ hba)⟩
 
+@[to_dual isCoatom_iff_ge_of_le]
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by
       simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
 
+@[to_dual]
 lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
 
 end Preorder
@@ -98,35 +106,46 @@ section PartialOrder
 
 variable [PartialOrder α] [OrderBot α] {a b x : α}
 
+@[to_dual]
 theorem IsAtom.lt_iff (h : IsAtom a) : x < a ↔ x = ⊥ :=
   ⟨h.2 x, fun hx => hx.symm ▸ h.1.bot_lt⟩
 
+@[to_dual]
 theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [le_iff_lt_or_eq, h.lt_iff]
 
+@[to_dual lt_top]
 lemma IsAtom.bot_lt (h : IsAtom a) : ⊥ < a :=
   h.lt_iff.mpr rfl
 
+@[to_dual]
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
   ha.le_iff.trans <| or_iff_right hb
 
+@[to_dual]
 lemma IsAtom.ne_iff_eq_bot (ha : IsAtom a) (hba : b ≤ a) : b ≠ a ↔ b = ⊥ where
   mp := (ha.le_iff.1 hba).resolve_right
   mpr := by rintro rfl; exact ha.ne_bot.symm
 
+@[to_dual]
 lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a :=
   (ha.ne_iff_eq_bot hba).not_right.symm
 
+@[to_dual]
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 
+@[to_dual]
 lemma Set.Iio_eq_singleton_bot_iff : Iio a = {⊥} ↔ IsAtom a := by
   simp [IsAtom, superset_antisymm_iff, bot_lt_iff_ne_bot]
 
-@[simp]
+@[to_dual (attr := simp) covBy_top_iff]
 theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
   simp only [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
 
 alias ⟨CovBy.is_atom, IsAtom.bot_covBy⟩ := bot_covBy_iff
+
+attribute [to_dual] CovBy.is_atom
+attribute [to_dual covBy_top] IsAtom.bot_covBy
 
 end PartialOrder
 
@@ -149,81 +168,23 @@ protected lemma IsAtom.le_sSup (ha : IsAtom a) : a ≤ sSup s ↔ ∃ b ∈ s, a
   simp [sSup_eq_iSup', ha.le_iSup]
 
 end Frame
-end IsAtom
 
-section IsCoatom
+section Coframe
+variable [Coframe α] {f : ι → α} {s : Set α} {a : α}
 
-section Preorder
+@[to_dual existing le_iSup]
+protected lemma IsCoatom.iInf_le (ha : IsCoatom a) : iInf f ≤ a ↔ ∃ i, f i ≤ a :=
+  IsAtom.le_iSup (α := αᵒᵈ) ha
 
-variable [Preorder α]
+@[to_dual existing le_sSup]
+protected lemma IsCoatom.sInf_le (ha : IsCoatom a) : sInf s ≤ a ↔ ∃ b ∈ s, b ≤ a := by
+  simp [sInf_eq_iInf', ha.iInf_le]
 
-/-- A coatom of an `OrderTop` is an element with no other element between it and `⊤`,
-  which is not `⊤`. -/
-def IsCoatom [OrderTop α] (a : α) : Prop :=
-  a ≠ ⊤ ∧ ∀ b, a < b → b = ⊤
-
-@[simp]
-theorem isCoatom_dual_iff_isAtom [OrderBot α] {a : α} :
-    IsCoatom (OrderDual.toDual a) ↔ IsAtom a :=
-  Iff.rfl
-
-@[simp]
-theorem isAtom_dual_iff_isCoatom [OrderTop α] {a : α} :
-    IsAtom (OrderDual.toDual a) ↔ IsCoatom a :=
-  Iff.rfl
-
-alias ⟨_, IsAtom.dual⟩ := isCoatom_dual_iff_isAtom
-
-alias ⟨_, IsCoatom.dual⟩ := isAtom_dual_iff_isCoatom
-
-variable [OrderTop α] {a x : α}
-
-theorem IsCoatom.Ici (ha : IsCoatom a) (hax : x ≤ a) : IsCoatom (⟨a, hax⟩ : Set.Ici x) :=
-  ha.dual.Iic hax
-
-theorem IsCoatom.of_isCoatom_coe_Ici {a : Set.Ici x} (ha : IsCoatom a) : IsCoatom (a : α) :=
-  @IsAtom.of_isAtom_coe_Iic αᵒᵈ _ _ x a ha
-
-theorem isCoatom_iff_ge_of_le : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ b ≠ ⊤, a ≤ b → b ≤ a :=
-  isAtom_iff_le_of_ge (α := αᵒᵈ)
-
-lemma IsCoatom.ne_top (ha : IsCoatom a) : a ≠ ⊤ := ha.1
-
-end Preorder
+end Coframe
 
 section PartialOrder
 
 variable [PartialOrder α] [OrderTop α] {a b x : α}
-
-theorem IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
-  h.dual.lt_iff
-
-theorem IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a :=
-  h.dual.le_iff
-
-lemma IsCoatom.lt_top (h : IsCoatom a) : a < ⊤ :=
-  h.lt_iff.mpr rfl
-
-lemma IsCoatom.le_iff_eq (ha : IsCoatom a) (hb : b ≠ ⊤) : a ≤ b ↔ b = a := ha.dual.le_iff_eq hb
-
-lemma IsCoatom.ne_iff_eq_top (ha : IsCoatom a) (hab : a ≤ b) : b ≠ a ↔ b = ⊤ where
-  mp := (ha.le_iff.1 hab).resolve_right
-  mpr := by rintro rfl; exact ha.ne_top.symm
-
-lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b = a :=
-  (ha.ne_iff_eq_top hab).not_right.symm
-
-theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
-  h.dual.Iic_eq
-
-lemma Set.Ioi_eq_singleton_top_iff : Ioi a = {⊤} ↔ IsCoatom a := by
-  simp [IsCoatom, superset_antisymm_iff, lt_top_iff_ne_top]
-
-@[simp]
-theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
-  toDual_covBy_toDual_iff.symm.trans bot_covBy_iff
-
-alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 namespace SetLike
 
@@ -260,71 +221,41 @@ end SetLike
 
 end PartialOrder
 
-section Coframe
-variable [Coframe α] {f : ι → α} {s : Set α} {a : α}
-
-protected lemma IsCoatom.iInf_le (ha : IsCoatom a) : iInf f ≤ a ↔ ∃ i, f i ≤ a :=
-  IsAtom.le_iSup (α := αᵒᵈ) ha
-
-protected lemma IsCoatom.sInf_le (ha : IsCoatom a) : sInf s ≤ a ↔ ∃ b ∈ s, b ≤ a := by
-  simp [sInf_eq_iInf', ha.iInf_le]
-
-end Coframe
-end IsCoatom
-
 section PartialOrder
 
 variable [PartialOrder α] {a b : α}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
   simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Ici
 
-@[simp]
-theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
-  rw [← covBy_top_iff]
-  refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
-  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using! Set.ordConnected_Iic
-
+@[to_dual]
 theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
-
-theorem covBy_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : Set.Iic b) := by simp
 
 end PartialOrder
 
 section SemilatticeInf
 variable [SemilatticeInf α] [OrderBot α] {a b : α}
 
+@[to_dual]
 lemma IsAtom.not_disjoint_iff_le (ha : IsAtom a) : ¬ Disjoint a b ↔ a ≤ b := by
   rw [disjoint_iff, ← inf_eq_left]; exact ha.ne_bot_iff_eq inf_le_left
 
+@[to_dual]
 lemma IsAtom.not_le_iff_disjoint (ha : IsAtom a) : ¬ a ≤ b ↔ Disjoint a b :=
   ha.not_disjoint_iff_le.not_right.symm
 
+@[to_dual]
 lemma IsAtom.disjoint_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b := by
   simp [← ha.not_le_iff_disjoint, hb.le_iff, hab, ha.ne_bot]
 
+@[to_dual]
+theorem IsAtom.inf_eq_bot_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
+  disjoint_iff.1 <| ha.disjoint_of_ne hb hab
+
 end SemilatticeInf
-
-section SemilatticeSup
-variable [SemilatticeSup α] [OrderTop α] {a b : α}
-
-lemma IsCoatom.not_codisjoint_iff_le (ha : IsCoatom a) : ¬ Codisjoint a b ↔ b ≤ a := by
-  rw [codisjoint_iff, ← sup_eq_left]; exact ha.ne_top_iff_eq le_sup_left
-
-lemma IsCoatom.not_le_iff_codisjoint (ha : IsCoatom a) : ¬ b ≤ a ↔ Codisjoint a b :=
-  ha.not_codisjoint_iff_le.not_right.symm
-
-lemma IsCoatom.codisjoint_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) :
-    Codisjoint a b := by
-  simp [← ha.not_le_iff_codisjoint, hb.le_iff, hab, ha.ne_top]
-
-theorem IsCoatom.sup_eq_top_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
-  codisjoint_iff.1 <| ha.codisjoint_of_ne hb hab
-
-end SemilatticeSup
 
 end Atoms
 
