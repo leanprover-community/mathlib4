@@ -31,6 +31,13 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `BatteriesRecycling,
   `Aesop,
   `Cli,
+  -- Mathlib-free Lean dependencies imported by `Mathlib.Tactic.SOS`.
+  -- CSDP owns its complete platform build tree through a GitHub release;
+  -- `Cache.Native.prefetchReleases` fetches it before the Mathlib cache.
+  `HexBasic,
+  `HexMvPoly,
+  `HexPoly,
+  `SOS,
   `ImportGraph,
   `LeanSearchClient,
   `Plausible,
