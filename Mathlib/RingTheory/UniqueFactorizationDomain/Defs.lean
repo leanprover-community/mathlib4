@@ -177,11 +177,13 @@ namespace UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α]
 
+instance [Subsingleton α] : WfDvdMonoid α :=
+  ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
+
 variable (α) in
 theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
   mul_left_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
   mul_right_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
-  wf := ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
   irreducible_iff_prime {a} := by simp [Subsingleton.elim a 0]
 
 variable [UniqueFactorizationMonoid α]
