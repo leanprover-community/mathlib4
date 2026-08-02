@@ -196,7 +196,7 @@ end Ring
 
 end WeakDual
 
-/-- The weak topology is the topology coarsest topology on `E` such that all functionals
+/-- The weak topology is the coarsest topology on `E` such that all functionals
 `fun x => v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
