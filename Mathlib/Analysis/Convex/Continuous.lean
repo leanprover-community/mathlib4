@@ -223,10 +223,10 @@ protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : Locally
 
 -- Commented out since `intrinsicInterior` is not imported (but should be once these are proved)
 -- proof_wanted ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+--     LocallyLipschitzOn (intrinsicInterior ℝ C) f
 
 -- proof_wanted ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+--     LocallyLipschitzOn (intrinsicInterior ℝ C) f
 
 -- proof_wanted ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
 --     ContinuousOn f (intrinsicInterior ℝ C)
