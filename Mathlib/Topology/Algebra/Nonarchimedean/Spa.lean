@@ -128,9 +128,10 @@ theorem rationalSubset_insert_self (s : A) (T : Finset A) [DecidableEq A] :
 /-- Wedhorn, Rem. 7.30(4), p. 63: for `s` a unit, `R(T/s)` is always a rational
 subset, hence open — since `R(T/s) = R(T ∪ {s}/s)` and the ideal `(T ∪ {s})·A`
 contains the unit `s` and is therefore the whole ring. -/
-theorem isOpen_rationalSubset_of_unit (s : A) (T : Finset A) [DecidableEq A]
+theorem isOpen_rationalSubset_of_unit (s : A) (T : Finset A)
     (hs : IsUnit s) :
     IsOpen (rationalSubset (A := A) (Aplus := Aplus) s T) := by
+  classical
   rw [rationalSubset_insert_self]
   apply isOpen_rationalSubset
   -- the ideal spanned by T ∪ {s} contains the unit s, hence is ⊤, which is open
@@ -250,14 +251,61 @@ theorem continuous_comap {B : Type*} [CommRing B] [TopologicalSpace B] [Decidabl
   rw [preimage_comap_rationalSubset (A := A) (Aplus := Aplus) Bplus φ hφ hAB s T]
   exact isOpen_rationalSubset (A := B) (Aplus := Bplus) (φ s) (T.image φ) (hTopen' T hTopen)
 
-end SpaPoint
 
-/-- The ideal-transfer premise of `continuous_comap` is witnessed by the
-identity morphism: `T.image id = T`, so the premise reduces to the source
-hypothesis. This makes `continuous_comap` non-vacuous (Spa(id) is continuous). -/
-theorem hTopen'_of_id (T : Finset A) [DecidableEq A] :
-    IsOpen ((Ideal.span (T : Set A)) : Set A) →
-      IsOpen ((Ideal.span (T.image (RingHom.id A) : Set A)) : Set A) := by
-  intro hT
-  -- T.image (RingHom.id A) = T: the image under the identity is the same finset
-  simpa [Finset.image_id, RingHom.id] using hT
+
+
+
+/-- The ideal-transfer premise of `continuous_comap` holds for ring
+isomorphisms: the image-ideal `φ(T)·B` is the image of the open ideal under
+the homeomorphism — the image of an ideal under an isomorphism is an ideal
+(`span_induction`), and a bijection's image is the preimage under its inverse
+(`Equiv.image_eq_preimage_symm`), so the openness is the continuity of the
+inverse. This covers the pullback of a Huber-ring isomorphism (the general
+case of the rational-open transfer). -/
+theorem hTopen'_of_ringEquiv {B : Type*} [CommRing B] [TopologicalSpace B]
+    (e : A ≃+* B) (_he : Continuous e) (he' : Continuous e.symm) [DecidableEq B] :
+    ∀ T : Finset A,
+      IsOpen ((Ideal.span (T : Set A)) : Set A) →
+        IsOpen ((Ideal.span (T.image (e : A →+* B) : Set B)) : Set B) := by
+  intro T hTopen
+  -- span (T.image e) = e '' (span T) as sets
+  have himg : ((Ideal.span (T.image (e : A →+* B) : Set B)) : Set B) =
+      (e : A →+* B) '' (Ideal.span (T : Set A) : Set A) := by
+    -- the finset image coerces to the set image; the span of the image is the
+    -- image ideal of the span; the image ideal's underlying set is the image
+    -- (e an isomorphism: the image of an ideal is an ideal)
+    simp only [Finset.coe_image]
+    rw [← Ideal.map_span]
+    -- the sub-lemma: ↑(Ideal.map e (span T)) = e '' ↑(span T)
+    ext x
+    constructor
+    · intro hx
+      have hspan : (Ideal.span ((e : A →+* B) '' (Ideal.span (T : Set A) : Set A)) : Set B) ⊆
+          (e : A →+* B) '' (Ideal.span (T : Set A) : Set A) := by
+        intro y hy
+        refine Submodule.span_induction
+          (p := fun z _hz => z ∈ (e : A →+* B) '' (Ideal.span (T : Set A) : Set A)) ?_ ?_ ?_ ?_ hy
+        · rintro _ ⟨a, ha, rfl⟩
+          exact ⟨a, ha, rfl⟩
+        · exact ⟨0, (Ideal.span (T : Set A)).zero_mem, by simp⟩
+        · rintro y z _hy _hz ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+          exact ⟨a + b, (Ideal.span (T : Set A)).add_mem ha hb, by simp⟩
+        · rintro c y _hy ⟨a, ha, rfl⟩
+          refine ⟨e.symm c * a, (Ideal.span (T : Set A)).mul_mem_left _ ha, ?_⟩
+          -- c • (e a) = e (e.symm c * a): the ring hom back-and-forth
+          rw [map_mul]
+          rw [show (e : A →+* B) (e.symm c) = c by exact e.apply_symm_apply c]
+          rw [smul_eq_mul]
+      rw [Ideal.map] at hx
+      exact hspan hx
+    · intro hx
+      simpa [Ideal.map] using (Submodule.subset_span hx)
+  -- e '' (span T) = e.symm ⁻¹' (span T): a bijection's image is the preimage
+  -- under its inverse
+  have himg' : (e : A →+* B) '' (Ideal.span (T : Set A) : Set A) =
+      (e.symm : B →+* A) ⁻¹' (Ideal.span (T : Set A) : Set A) := by
+    exact e.toEquiv.image_eq_preimage_symm (Ideal.span (T : Set A) : Set A)
+  rw [himg, himg']
+  exact he'.isOpen_preimage (Ideal.span (T : Set A) : Set A) hTopen
+
+end SpaPoint
