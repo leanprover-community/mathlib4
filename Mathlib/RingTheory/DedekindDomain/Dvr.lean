@@ -17,7 +17,7 @@ namely a Noetherian integral domain where the localization at every nonzero prim
 ## Main results
 - `IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain` shows that
   `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
-- `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` proves the equivalece of
+- `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` proves the equivalence of
   the two notions of Dedekind domain
 
 ## Implementation notes
