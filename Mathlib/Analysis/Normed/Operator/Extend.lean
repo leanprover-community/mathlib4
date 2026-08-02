@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Analysis.InnerProductSpace.Completion
 
 /-!
 
