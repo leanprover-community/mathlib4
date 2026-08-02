@@ -5,11 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib
+public import Mathlib.CategoryTheory.Action.Continuous
 public import Mathlib.CategoryTheory.Galois.Decomposition
+public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
-public import Mathlib.CategoryTheory.Galois.Equivalence
-public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Category.FinTopCat
 
 /-!
 # ...
