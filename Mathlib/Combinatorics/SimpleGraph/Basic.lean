@@ -201,6 +201,11 @@ theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ 
 
 instance symm_adj (f : ι → V) : Std.Symm fun i j ↦ G.Adj (f i) (f j) where symm _ _ := .symm
 
+instance [Infinite V] : Infinite (SimpleGraph V) := by
+  let f := Infinite.natEmbedding V
+  refine .of_injective (fun n ↦ fromRel (· = f 0 ∧ · = f (n + 1))) fun a b h ↦ ?_
+  simpa using congr(($h).Adj (f 0) (f (a + 1)))
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
