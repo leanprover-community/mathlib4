@@ -562,7 +562,7 @@ lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → 
 @[to_dual]
 theorem WellFoundedOn.exists_minimal {α : Type*} [Preorder α] {s : Set α}
     (h : s.WellFoundedOn (· < ·)) (nonempty : s.Nonempty) : ∃ a, Minimal (· ∈ s) a :=
-  have ⟨m, hm⟩ := WellFoundedLT.exists_minimal ⟨h⟩ univ <| nonempty.elim (⟨⟨·, ·⟩, trivial⟩)
+  have ⟨m, hm⟩ := WellFoundedLT.exists_minimal h univ <| nonempty.elim (⟨⟨·, ·⟩, trivial⟩)
   ⟨m, m.property, fun y hy ↦ hm.right (y := ⟨y, hy⟩) trivial⟩
 
 end WellFoundedOn
