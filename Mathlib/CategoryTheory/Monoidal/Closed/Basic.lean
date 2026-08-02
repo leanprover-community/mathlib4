@@ -54,7 +54,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 This isn't an instance because it's not usually how we want to construct internal homs,
 we'll usually prove all objects are closed uniformly.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
   rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
@@ -63,7 +63,7 @@ def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) wh
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def unitClosed : Closed (𝟙_ C) where
   rightAdj := 𝟭 C
   adj := Adjunction.id.ofNatIsoLeft (MonoidalCategory.leftUnitorNatIso C).symm
@@ -110,6 +110,9 @@ theorem ev_naturality {X Y : C} (f : X ⟶ Y) :
     A ◁ (ihom A).map f ≫ (ev A).app Y = (ev A).app X ≫ f :=
   (ev A).naturality f
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
@@ -202,6 +205,7 @@ theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟶[C] X) →
 
 variable (A X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem uncurry_id_eq_ev : uncurry (𝟙 (A ⟶[C] X)) = (ihom.ev A).app X := by
   simp [uncurry_eq]
 
@@ -211,7 +215,6 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   apply comp_id
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_curry_ihom_ev_app (g : A ⊗ Y ⟶ X) :
     A ◁ curry g ≫ (ihom.ev A).app X = g := by
@@ -247,13 +250,11 @@ theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
   conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
     MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma curry_pre_app (f : B ⟶ A) {X Y : C} (g : A ⊗ Y ⟶ X) :
     curry g ≫ (pre f).app X = curry (f ▷ _ ≫ g) := uncurry_injective (by
@@ -313,7 +314,7 @@ variable (F : C ⥤ D) {G : D ⥤ C} (adj : F ⊣ G)
   [F.Monoidal] [F.IsEquivalence] [MonoidalClosed D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def ofEquiv : MonoidalClosed C where
   closed X :=
     { rightAdj := F ⋙ ihom (F.obj X) ⋙ G
@@ -321,6 +322,7 @@ noncomputable def ofEquiv : MonoidalClosed C where
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
             (Iso.compInverseIso (H := adj.toEquivalence) (Functor.Monoidal.commTensorLeft F X)) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
@@ -342,6 +344,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
@@ -496,7 +499,6 @@ lemma curry'_id (X : C) [Closed X] : curry' (𝟙 X) = id X := by
   rw [Category.comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma whiskerLeft_curry'_ihom_ev_app {X Y : C} [Closed X] (f : X ⟶ Y) :
     X ◁ curry' f ≫ (ihom.ev X).app Y = (ρ_ _).hom ≫ f := by

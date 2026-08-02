@@ -43,7 +43,7 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
     (hf_meas : StronglyMeasurable f) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ := by
   borelize G
-  haveI : SeparableSpace (Set.range f ∪ {0} : Set G) :=
+  have : SeparableSpace (Set.range f ∪ {0} : Set G) :=
     hf_meas.separableSpace_range_union_singleton
   let fs := SimpleFunc.approxOn f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
   refine ⟨fs, ?_, ?_⟩

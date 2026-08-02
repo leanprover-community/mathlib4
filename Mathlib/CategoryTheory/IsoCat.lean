@@ -17,7 +17,7 @@ This is a strict notion, stronger than an equivalence of categories `C ≌ D`.
 We also define `Functor.IsIso` as a property saying that a functor is fully faithful and
 bijective on objects. We develop basic api for these two concepts.
 
-Unless the application explicitely demands an isomorphism, the equivalence of categories is
+Unless the application explicitly demands an isomorphism, the equivalence of categories is
 to be preferred.
 
 ## Main definitions
@@ -31,7 +31,7 @@ to be preferred.
 
 namespace CategoryTheory
 
-open Functor NatIso Category
+open CategoryTheory.Functor NatIso Category
 
 variable {C : Type*} {D : Type*} {E : Type*} [Category* C] [Category* D] [Category* E]
 variable (F : C ⥤ D) (G : D ⥤ E)
@@ -124,6 +124,7 @@ noncomputable def strictInv : D ⥤ C where
   map f := F.preimage (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
   map_comp _ _ := by simp [← preimage_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
 with `Functor.strictInv` as its inverse. -/

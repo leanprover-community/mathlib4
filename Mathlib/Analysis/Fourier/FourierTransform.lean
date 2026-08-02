@@ -435,15 +435,9 @@ instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_eq := fourier_eq
-
 lemma fourier_eq' (f : V → E) (w : V) :
     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourier_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_eq' := fourier_eq'
 
 theorem fourier_congr_ae {f₁ f₂ : V → E} (hf : f₁ =ᵐ[volume] f₂) (x : V) : 𝓕 f₁ x = 𝓕 f₂ x := by
   apply integral_congr_ae
@@ -454,30 +448,18 @@ lemma fourierInv_eq (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, 𝐞 ⟪v, w⟫ • f v := by
   simp [FourierTransformInv.fourierInv, VectorFourier.fourierIntegral]
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_eq := fourierInv_eq
-
 lemma fourierInv_eq' (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourierInv_eq, Circle.smul_def, Real.fourierChar_apply]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_eq' := fourierInv_eq'
 
 lemma fourier_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourier_eq, ← A.inner_map_map, Function.comp_apply,
     ← MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_comp_linearIsometry := fourier_comp_linearIsometry
-
 lemma fourierInv_eq_fourier_neg (f : V → E) (w : V) :
     𝓕⁻ f w = 𝓕 f (-w) := by
   simp [fourier_eq, fourierInv_eq]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_eq_fourierIntegral_neg := fourierInv_eq_fourier_neg
 
 lemma fourierInv_eq_fourier_comp_neg (f : V → E) :
     𝓕⁻ f = 𝓕 (fun x ↦ f (-x)) := by
@@ -486,39 +468,24 @@ lemma fourierInv_eq_fourier_comp_neg (f : V → E) :
   change 𝓕 f (LinearIsometryEquiv.neg ℝ y) = 𝓕 (f ∘ LinearIsometryEquiv.neg ℝ) y
   exact (fourier_comp_linearIsometry _ _ _).symm
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_eq_fourierIntegral_comp_neg := fourierInv_eq_fourier_comp_neg
-
 lemma fourierInv_comm (f : V → E) :
     𝓕 (𝓕⁻ f) = 𝓕⁻ (𝓕 f) := by
   conv_rhs => rw [fourierInv_eq_fourier_comp_neg]
   simp_rw [← fourierInv_eq_fourier_neg]
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_comm := fourierInv_comm
-
 lemma fourierInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕⁻ (f ∘ A) w = (𝓕⁻ f) (A w) := by
   simp [fourierInv_eq_fourier_neg, fourier_comp_linearIsometry]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegralInv_comp_linearIsometry := fourierInv_comp_linearIsometry
 
 theorem fourier_real_eq (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
   simp_rw [mul_comm _ w]
   rfl
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_real_eq := fourier_real_eq
-
 theorem fourier_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
   simp_rw [fourier_real_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul,
     mul_assoc]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_real_eq_integral_exp_smul := fourier_real_eq_integral_exp_smul
 
 theorem fourier_continuousLinearMap_apply
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -526,17 +493,11 @@ theorem fourier_continuousLinearMap_apply
     𝓕 f v a = 𝓕 (fun x ↦ f x a) v :=
   fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_continuousLinearMap_apply := fourier_continuousLinearMap_apply
-
 theorem fourier_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
     {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
     {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
     𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
   fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_continuousMultilinearMap_apply := fourier_continuousMultilinearMap_apply
 
 open scoped BoundedContinuousFunction
 

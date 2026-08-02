@@ -354,7 +354,6 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     ext t ht
     rw [← measure_sdiff_null (s := t) hμ]
     dsimp
-    classical
     rw [Set.sdiff_compl, ← (s : Set α).biUnion_of_singleton]
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
