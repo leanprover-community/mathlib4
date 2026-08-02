@@ -58,10 +58,9 @@ theorem factorial_eq_neg_one_pow_mul_half_factorial_sq (p : ℕ) (hp : Odd p) :
     ((p - 1)! : ZMod p) =
         ((p - 1 - m)! : ZMod p) * ((p - 1).descFactorial m : ZMod p) := by
       rw [← Nat.cast_mul, Nat.factorial_mul_descFactorial (by omega)]
-    _ = (m.factorial : ZMod p) * ((-1) ^ m * (m.factorial : ZMod p)) := by
-      rw [show p - 1 - m = m by omega, ZMod.cast_descFactorial (by omega)]
     _ = (-1) ^ m * (m.factorial : ZMod p) ^ 2 := by
-      rw [pow_two]
+      rw [show p - 1 - m = m by omega,
+        ZMod.cast_descFactorial (by omega), pow_two]
       ac_rfl
 
 variable (p : ℕ) [Fact p.Prime]
@@ -99,23 +98,15 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
 in `ZMod p`. -/
 theorem half_factorial_sq_eq_neg_one (hp : p % 4 ≠ 3) :
     (((p - 1) / 2)! : ZMod p) ^ 2 = -1 := by
-  by_cases hp_two : p = 2
-  · subst p
-    have h : (1 : ZMod 2) = -1 := by decide +revert
-    change (1 : ZMod 2) ^ 2 = -1
-    rw [pow_two, mul_one]
-    exact h
-  have hodd : Odd p := by
-    exact (Fact.out (p := p.Prime)).odd_of_ne_two hp_two
-  have hpair := factorial_eq_neg_one_pow_mul_half_factorial_sq p hodd
-  have hEven : Even ((p - 1) / 2) := by
+  rcases (Fact.out (p := p.Prime)).eq_two_or_odd' with rfl | hodd
+  · decide +revert
+  have hm : Even ((p - 1) / 2) := by
     rw [Nat.even_iff]
     have hp_mod_two : p % 2 = 1 := Nat.odd_iff.mp hodd
     omega
-  have hwil : ((p - 1)! : ZMod p) = -1 := ZMod.wilsons_lemma p
-  rw [hwil] at hpair
-  rw [hEven.neg_one_pow, one_mul] at hpair
-  exact hpair.symm
+  rw [← ZMod.wilsons_lemma p,
+    factorial_eq_neg_one_pow_mul_half_factorial_sq p hodd,
+    hm.neg_one_pow, one_mul]
 
 @[simp]
 theorem prod_Ico_one_prime : ∏ x ∈ Ico 1 p, (x : ZMod p) = -1 := by
