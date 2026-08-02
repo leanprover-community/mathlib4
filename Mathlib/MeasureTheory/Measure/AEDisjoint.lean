@@ -57,7 +57,10 @@ protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
 @[symm]
 protected theorem symm (h : AEDisjoint μ s t) : AEDisjoint μ t s := by rwa [AEDisjoint, inter_comm]
 
-protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
+instance stdSymm : Std.Symm (AEDisjoint μ) where
+  symm _ _ := AEDisjoint.symm
+
+@[deprecated (since := "2026-06-10")] protected alias symmetric := AEDisjoint.stdSymm
 
 protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
   ⟨AEDisjoint.symm, AEDisjoint.symm⟩
@@ -77,7 +80,7 @@ theorem mono_ae (h : AEDisjoint μ s t) (hu : u ≤ᵐ[μ] s) (hv : v ≤ᵐ[μ]
   measure_mono_null_ae (hu.inter hv) h
 
 protected theorem mono (h : AEDisjoint μ s t) (hu : u ⊆ s) (hv : v ⊆ t) : AEDisjoint μ u v :=
-  mono_ae h (HasSubset.Subset.eventuallyLE hu) (HasSubset.Subset.eventuallyLE hv)
+  mono_ae h (LE.le.eventuallyLE hu) (LE.le.eventuallyLE hv)
 
 protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ[μ] t) :
     AEDisjoint μ u v :=

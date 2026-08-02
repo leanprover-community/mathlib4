@@ -34,7 +34,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Induced inner product on a submodule. -/
 instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
-  .induced W.subtype
+  fast_instance% .induced W.subtype
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]
@@ -99,6 +99,7 @@ theorem OrthogonalFamily.eq_ite [DecidableEq ι] {i j : ι} (v : G i) (w : G j) 
   · rfl
   · exact hV h v w
 
+set_option backward.isDefEq.respectTransparency false in
 theorem OrthogonalFamily.inner_right_dfinsupp
     [∀ (i) (x : G i), Decidable (x ≠ 0)] [DecidableEq ι] (l : ⨁ i, G i) (i : ι) (v : G i) :
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=

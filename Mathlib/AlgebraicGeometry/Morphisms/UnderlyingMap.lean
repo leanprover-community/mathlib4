@@ -239,6 +239,7 @@ lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
 lemma IsDominant.comp_iff [IsDominant f] : IsDominant (f ≫ g) ↔ IsDominant g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance IsDominant.respectsIso : MorphismProperty.RespectsIso @IsDominant :=
   MorphismProperty.respectsIso_of_isStableUnderComposition fun _ _ f (_ : IsIso f) ↦ inferInstance
 
@@ -258,7 +259,7 @@ lemma IsDominant.of_comp_of_isOpenImmersion
     IsDominant f := by
   rw [isDominant_iff, DenseRange] at H ⊢
   simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] at H
-  convert! H.preimage g.isOpenEmbedding.isOpenMap using 1
+  convert H.preimage g.isOpenEmbedding.isOpenMap
   rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
 
 lemma Opens.isDominant_ι {U : X.Opens} (hU : Dense (X := X) U) : IsDominant U.ι :=
@@ -282,6 +283,7 @@ instance specializingMap_respectsIso : (topologically @SpecializingMap).Respects
   · introv hf hg
     exact hf.comp hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance specializingMap_isZariskiLocalAtTarget :
     IsZariskiLocalAtTarget (topologically @SpecializingMap) := by
   apply topologically_isZariskiLocalAtTarget
@@ -314,8 +316,8 @@ end SpecializingMap
 section GeneralizingMap
 
 instance : (topologically GeneralizingMap).RespectsIso :=
-  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
-    f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
+  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap)
+    (fun _ _ hf hg ↦ hf.comp hg)
 
 instance : IsZariskiLocalAtSource (topologically GeneralizingMap) :=
   topologically_isZariskiLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp

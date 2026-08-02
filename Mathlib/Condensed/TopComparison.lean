@@ -70,17 +70,18 @@ theorem equalizerCondition_yonedaPresheaf
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
-      Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq,
-      mk.injEq] at h
+      Set.coe_ofPred, mapToEqualizer, Set.mem_ofPred_eq, ConcreteCategory.hom_ofHom,
+      Subtype.mk.injEq, mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
     ext x
     obtain ⟨y, hy⟩ := (hq Z B π).surjective x
     rw [← hy]
     exact congr_fun h y
   · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.coe_mk, mk.injEq, Set.mem_setOf_eq] at ha
+      TypeCat.Fun.coe_mk, mk.injEq, Set.mem_ofPred_eq] at ha
     simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
-      Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq]
+      Set.coe_ofPred, mapToEqualizer, Set.mem_ofPred_eq, ConcreteCategory.hom_ofHom,
+      Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr 1
@@ -117,7 +118,7 @@ def TopCat.toSheafCompHausLike :
     apply +allowSynthFailures equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.hom.continuous
+    exact .of_surjective_continuous (hs _ he) π.hom.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to

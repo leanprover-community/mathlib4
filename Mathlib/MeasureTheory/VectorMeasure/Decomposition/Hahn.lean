@@ -6,7 +6,6 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Order.SymmDiff
 
 /-!
 # Hahn decomposition
@@ -423,8 +422,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hi.compl.inter hj) Set.inter_subset_left)
         (hj'.1 (hi.compl.inter hj) Set.inter_subset_right),
       le_antisymm (hj'.2 (hj.compl.inter hi) Set.inter_subset_left)
-        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right),
-      zero_apply, zero_apply, zero_add]
+        (hi'.1 (hj.compl.inter hi) Set.inter_subset_right), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right
@@ -436,8 +434,7 @@ theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α
       le_antisymm (hi'.2 (hj.inter hi.compl) Set.inter_subset_right)
         (hj'.1 (hj.inter hi.compl) Set.inter_subset_left),
       le_antisymm (hj'.2 (hi.inter hj.compl) Set.inter_subset_right)
-        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left),
-      zero_apply, zero_apply, zero_add]
+        (hi'.1 (hi.inter hj.compl) Set.inter_subset_left), zero_apply, zero_apply, zero_add]
     · exact
         Set.disjoint_of_subset_left Set.inter_subset_left
           (Set.disjoint_of_subset_right Set.inter_subset_right

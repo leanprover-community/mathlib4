@@ -202,6 +202,14 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
+lemma convexHull_interior_subset [ZeroLEOneClass 𝕜] (s : Set E) :
+    convexHull 𝕜 (interior s) ⊆ interior (convexHull 𝕜 s) :=
+  convexHull_min (interior_mono <| subset_convexHull 𝕜 s) (convex_convexHull 𝕜 s).interior
+
+protected theorem IsOpen.convexHull [ZeroLEOneClass 𝕜] {s : Set E} (hs : IsOpen s) :
+    IsOpen (convexHull 𝕜 s) := by
+  simpa [← subset_interior_iff_isOpen, hs.interior_eq] using convexHull_interior_subset s
+
 end ContinuousConstSMul
 
 section ContinuousConstSMul
@@ -212,6 +220,7 @@ variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 open AffineMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
 `interior s`. -/
@@ -506,6 +515,7 @@ variable {𝕜 V P : Type*}
   [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
   [TopologicalSpace P] [IsTopologicalAddTorsor P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed interior of a simplex is compact. -/
 theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
   suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''

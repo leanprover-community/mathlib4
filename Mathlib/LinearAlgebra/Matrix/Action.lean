@@ -47,6 +47,9 @@ instance [DistribSMul S R] [SMulCommClass S R R] : SMulCommClass S (Matrix n n R
 instance [DistribSMul S R] [IsScalarTower S R R] : IsScalarTower S (Matrix n n R) (n → R) where
   smul_assoc := smul_mulVec
 
+lemma ext_iff_smul {A B : Matrix n n R} :
+    A = B ↔ ∀ v : n → R, A • v = B • v := Matrix.ext_iff_mulVec
+
 end mulVec
 
 /-! ## `*ᵥ` as a right-module -/
