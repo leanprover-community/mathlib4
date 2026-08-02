@@ -779,7 +779,7 @@ open scoped Pointwise in
 lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
     X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
   simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
-  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+  simp [← Set.union_iInter₂, ← Set.iInter₂_union]
 
 open scoped Pointwise in
 lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :

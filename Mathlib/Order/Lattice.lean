@@ -559,7 +559,7 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
   (Std.Total.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
   rwa [sup_eq_left.2 h]
 
-@[to_dual (attr := simp) inf_le_iff]
+@[to_dual (attr := simp low) inf_le_iff]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
   grind
 

@@ -79,7 +79,7 @@ lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : Measurabl
     rw [measure_compl (hs.inter ht) (by simp), measure_univ ‹_›] at this
     simp_all
   calc
-  _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
+  _ = μ (sᶜ ∪ tᶜ) := by simp
   _ ≤ μ sᶜ + μ tᶜ := measure_union_le _ _
   _ ≤ 0 := by
     rw [measure_compl hs (by simp), measure_univ hμs, hμs, tsub_self,
