@@ -6,8 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-set_option profiler true
-set_option profiler.threshold 200
+
 /-!
 # Uniform integrability
 
