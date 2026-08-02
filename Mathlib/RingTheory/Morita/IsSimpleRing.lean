@@ -40,7 +40,7 @@ variable (k : Type u) (A : Type v) [CommRing k] [Ring A] [Algebra k A]
     [IsSimpleRing A] [Module.Finite k A]
 
 @[stacks 074E "(1)"]
-lemma linearEquiv_of_isSimpleModule_over_simple_ring [IsArtinianRing A] (M N : Type w)
+lemma nonempty_linearEquiv_of_isSimpleModule_of_isSimpleRing [IsArtinianRing A] (M N : Type w)
     [AddCommGroup M] [AddCommGroup N] [Module A M] [Module A N] [IsSimpleModule A M]
     [IsSimpleModule A N] : Nonempty (M ≃ₗ[A] N) := by
   let eM := LinearEquiv.ofInjective (LinearMap.inl A M N) LinearMap.inl_injective
@@ -51,54 +51,54 @@ lemma linearEquiv_of_isSimpleModule_over_simple_ring [IsArtinianRing A] (M N : T
     (LinearMap.range (LinearMap.inr A M N))
   exact ⟨eM.trans (e.symm.trans eN.symm)⟩
 
-lemma isIsotypicOfType_over_simple [IsArtinianRing A] (M : Type w) [AddCommGroup M]
+lemma isIsotypicOfType_of_isSimpleRing [IsArtinianRing A] (M : Type w) [AddCommGroup M]
     [Module A M] (S : Type w) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
-    IsIsotypicOfType A M S := fun m _ ↦ linearEquiv_of_isSimpleModule_over_simple_ring A m S
+    IsIsotypicOfType A M S := fun m _ ↦ nonempty_linearEquiv_of_isSimpleModule_of_isSimpleRing A m S
 
 @[stacks 074E "(2)"]
-lemma directSum_simple_module_over_simple_ring [IsArtinianRing A] (M : Type v) [AddCommGroup M]
+lemma directSum_simple_module_of_isSimpleRing [IsArtinianRing A] (M : Type v) [AddCommGroup M]
     [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module A S) (_ : IsSimpleModule A S)
     (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
   obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
   rw [← isSimpleModule_iff_isAtom] at hS
-  obtain ⟨ι, he⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
+  obtain ⟨ι, he⟩ := (isIsotypicOfType_of_isSimpleRing A M S).linearEquiv_finsupp
   exact ⟨S, inferInstance, inferInstance, hS, ι, he⟩
 
-lemma directSum_simple_module_over_simple_ring' (A : Type u) [Ring A] [IsArtinianRing A]
+lemma directSum_simple_module_of_isSimpleRing' (A : Type u) [Ring A] [IsArtinianRing A]
     [IsSimpleRing A] (M : Type v) [AddCommGroup M] [Module A M]
     (S : Type v) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
     ∃ (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) :=
-  (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
+  (isIsotypicOfType_of_isSimpleRing A M S).linearEquiv_finsupp
 
 @[stacks 074E "(2)"]
-lemma directSum_simple_module_over_simple_algebra [IsArtinianRing k] (M : Type v) [AddCommGroup M]
+lemma directSum_simple_module_of_simple_algebra [IsArtinianRing k] (M : Type v) [AddCommGroup M]
     [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
     (_ : Module A S) (_ : IsScalarTower k A S) (_ : IsSimpleModule A S) (ι : Type v),
     Nonempty (M ≃ₗ[A] (ι →₀ S)) := by
   have : IsArtinianRing A := IsArtinianRing.of_finite k A
-  obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_over_simple_ring A M
+  obtain ⟨S, _, _, _, ι, ⟨iso⟩⟩ := directSum_simple_module_of_isSimpleRing A M
   let : Module k S := Module.compHom S (algebraMap k A)
   have : IsScalarTower k A S := .of_algebraMap_smul fun _ _ ↦ rfl
   exact ⟨S, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, ι, ⟨iso⟩⟩
 
 /-- Two finite modules over an artinian simple ring `A` have an `A`-linear
 equivalence if and only if their `A`-length is the same. -/
-lemma linearEquiv_iff_length_eq_over_simple_ring [IsArtinianRing A]
+lemma nonempty_linearEquiv_iff_length_eq_of_isSimpleRing [IsArtinianRing A]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module.Finite A M] [Module.Finite A N] :
     Nonempty (M ≃ₗ[A] N) ↔ Module.length A M = Module.length A N := by
   refine ⟨fun ⟨e⟩ ↦ e.length_eq, fun h ↦ ?_⟩
   obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
   rw [← isSimpleModule_iff_isAtom] at hS
-  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_fun
-  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_over_simple A N S).linearEquiv_fun
+  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_of_isSimpleRing A M S).linearEquiv_fun
+  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_of_isSimpleRing A N S).linearEquiv_fun
   obtain rfl : m = n := by simpa [eM.length_eq, eN.length_eq] using h
   exact ⟨eM.trans eN.symm⟩
 
 /-- Two finite modules over a simple `k`-algebra `A` have an `A`-linear equivalence if and only if
 their `k`-length is the same. -/
 @[stacks 074E "(3)"]
-lemma linearEquiv_iff_length_eq_over_simple_algebra [IsArtinianRing k]
+lemma nonempty_linearEquiv_iff_length_eq_of_simple_algebra [IsArtinianRing k]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module k M] [Module k N] [IsScalarTower k A M] [IsScalarTower k A N]
     [Module.Finite A M] [Module.Finite A N] :
@@ -107,8 +107,8 @@ lemma linearEquiv_iff_length_eq_over_simple_algebra [IsArtinianRing k]
   refine ⟨fun ⟨e⟩ ↦ (e.restrictScalars k).length_eq, fun h ↦ ?_⟩
   obtain ⟨S, hS⟩ := IsAtomic.exists_atom (Submodule A A)
   rw [← isSimpleModule_iff_isAtom] at hS
-  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_fun
-  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_over_simple A N S).linearEquiv_fun
+  obtain ⟨m, ⟨eM⟩⟩ := (isIsotypicOfType_of_isSimpleRing A M S).linearEquiv_fun
+  obtain ⟨n, ⟨eN⟩⟩ := (isIsotypicOfType_of_isSimpleRing A N S).linearEquiv_fun
   have : Nontrivial S := IsSimpleModule.nontrivial A S
   obtain rfl : m = n := by
     apply_fun ENat.toNat at h
@@ -127,7 +127,7 @@ lemma linearEquiv_iff_finrank_eq_over_simple_algebra (k : Type u) (A : Type v) [
     Nonempty (M ≃ₗ[A] N) ↔ Module.finrank k M = Module.finrank k N := by
   have : Module.Finite k M := .trans A M
   have : Module.Finite k N := .trans A N
-  rw [linearEquiv_iff_length_eq_over_simple_algebra k A M N, Module.length_eq_finrank,
+  rw [nonempty_linearEquiv_iff_length_eq_of_simple_algebra k A M N, Module.length_eq_finrank,
     Module.length_eq_finrank, Nat.cast_inj]
 
 open Matrix.Module
