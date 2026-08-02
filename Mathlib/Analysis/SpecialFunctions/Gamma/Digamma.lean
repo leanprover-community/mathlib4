@@ -70,13 +70,10 @@ theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
   have h1snat (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
   have := differentiableAt_Gamma _ h1snat
   have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
-  rw [logDeriv_mul s (Gamma_ne_zero hsnat) _ (differentiableAt_Gamma s hsnat) (by fun_prop),
-    logDeriv_div s hπ _ (by fun_prop) (by fun_prop),
-    (by rfl : (Gamma <| 1 - ·) = Gamma ∘ (1 - ·)),
-    logDeriv_comp (by assumption) (by fun_prop),
-    (by rfl : (sin <| π * ·) = sin ∘ (π * ·)),
-    logDeriv_comp (by fun_prop) (by fun_prop)] at this
-  · simp [digamma_def] at this ⊢; grind 
+  rw [logDeriv_mul s (Gamma_ne_zero hsnat) _ (differentiableAt_Gamma s hsnat), logDeriv_div s hπ,
+    (by rfl : (Gamma <| 1 - ·) = Gamma ∘ (1 - ·)), (by rfl : (sin <| π * ·) = sin ∘ (π * ·)),
+    logDeriv_comp, logDeriv_comp] at this <;> try fun_prop
+  · simp [digamma_def] at this ⊢; grind
   · grind [sin_eq_zero_iff]
   · exact Gamma_ne_zero h1snat
 
