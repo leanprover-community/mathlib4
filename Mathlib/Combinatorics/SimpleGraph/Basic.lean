@@ -221,7 +221,7 @@ instance : Max (SimpleGraph V) where
     { Adj := x.Adj ⊔ y.Adj
       symm.symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
-@[simp]
+@[simp, grind =]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 
