@@ -38,9 +38,9 @@ class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
   isClosedUnderLimitsOfShape_walkingCospan :
     P.IsClosedUnderLimitsOfShape WalkingCospan  := by infer_instance
   isClosedUnderColimitsOfShape_discrete (ι : Type) [Finite ι] :
-    P.IsClosedUnderColimitsOfShape (Discrete.{0} ι) := by infer_instance
+    P.IsClosedUnderColimitsOfShape (Discrete.{0} ι) := by intros; infer_instance
   isClosedUnderColimitsOfShape_singleObj (G : Type v) [Group G] [Finite G] :
-    P.IsClosedUnderColimitsOfShape (SingleObj G) := by infer_instance
+    P.IsClosedUnderColimitsOfShape (SingleObj G) := by intros; infer_instance
   isClosedUnderSubobjects : P.IsClosedUnderSubobjects := by infer_instance
   preservesEpimorphisms : P.ι.PreservesEpimorphisms := by infer_instance
 
