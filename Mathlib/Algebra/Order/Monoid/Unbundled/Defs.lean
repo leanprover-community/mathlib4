@@ -361,6 +361,9 @@ theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨contra _, co _⟩
 
+@[deprecated rel_iff_cov (since := "2026-08-01")]
+alias rel_iff_cov' := rel_iff_cov
+
 section flip
 
 theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
@@ -549,6 +552,12 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   rcases bc.eq_or_lt with (rfl | bc)
   · exact le_rfl
   · exact (h _ bc).le
+
+set_option linter.deprecated false in
+@[deprecated covariant_le_of_covariant_lt (since := "2026-08-01")]
+theorem covariantClass_le_of_lt [PartialOrder N] (h : CovariantClass M N μ (· < ·)) :
+    CovariantClass M N μ (· ≤ ·) :=
+  ⟨covariant_le_of_covariant_lt h.elim⟩
 
 @[to_additive]
 theorem mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M] [MulLeftStrictMono M] :
