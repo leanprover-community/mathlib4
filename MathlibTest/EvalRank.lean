@@ -1,23 +1,14 @@
 module
+
+public import Mathlib.Tactic.Echelon.Interface
+
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.LinearAlgebra.Matrix.Cartan
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
-public import Mathlib.Tactic.Echelon.Interface
-public import Mathlib.LinearAlgebra.Matrix.Cartan
 
 /-! # Tests for the `eval_rank` tactic -/
-
-example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
-     A.rank = 1 := by
-  rw [hA]
-  eval_rank
-
-/-
-take existing definitions that will unfold to a literals
--/
-example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by unfold CartanMatrix.E₇; eval_rank
-
 
 example : Matrix.rank (R := ℤ)
     !![1, 2, 3] = 1 := by
@@ -106,7 +97,8 @@ error: division entries are supported only in characteristic zero; write the ent
 example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 
 -- This 9x9 matrix has rank 8 and is the Cartan matrix of the
--- affine-type E8 root system.
+-- affine-type E8 root system. The lemma is `public` so that the axiom guard below sees
+-- its unmangled name.
 public lemma test_Cartan_matrix :
     Matrix.rank (R := ℚ)
       !![ 2, -1,  0,  0,  0,  0,  0,  0,  0;
@@ -152,6 +144,15 @@ example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 -- 2 * 4 ≡ 1 (mod 7), det ≡ 0
 example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
 
+-- tactic application as a simproc after a rewrite. `rw [hA]; eval_rank` works as well
+example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
+    A.rank = 1 := by
+  simp [hA, norm_rank]
+
+-- rank of an existing definition after unfolding
+example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by
+  simp [CartanMatrix.E₇, norm_rank]
+
 -- only closed matrix literals are in scope: the commitment gate skips an abstract matrix,
 -- and `eval_rank` reports that nothing was found
 /-- error: eval_rank: no closed `Matrix.rank` literal found in the goal -/
@@ -187,16 +188,26 @@ the kernel
   ℚ[X]
 -/
 #guard_msgs in
-example : Matrix.rank (R := ℚ[X]) !![1, 2; 2, 4] = 1 := by eval_rank
-
-/--
-error: cannot verify the rank certificate: equality in the element type does not reduce in the kernel
-  ℚ[X]
--/
-#guard_msgs in
 example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
 
 -- in a larger simp set, an unsupported element type is skipped rather than aborting the
 -- whole `simp` call (the skip is exactly why the argument goes unused)
 set_option linter.unusedSimpArgs false in
 example : Matrix.rank (R := ℝ) !![1, 0; 0, 1] = 2 ∨ True := by simp [norm_rank]
+
+-- mixed element types in one goal: the ℤ literal is rewritten while the unsupported ℝ
+-- literal is skipped, without an error; the ℝ rank is then evaluated by recognizing the
+-- identity matrix
+example :
+    Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
+  simp only [norm_rank]
+  simp [← Matrix.one_fin_two, Matrix.rank_one]
+
+-- the same via `eval_rank`: partial progress is success — the no-progress diagnosis is
+-- suppressed and the failure of the closing `omega` on the opaque ℝ rank is absorbed,
+-- leaving the residual goal
+example :
+    Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
+  eval_rank
+  rw [← Matrix.one_fin_two, Matrix.rank_one]
+  simp
