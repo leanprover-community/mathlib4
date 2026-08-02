@@ -214,18 +214,11 @@ the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
     (A : E →L[𝕜] F) (y : F) (x : E) :
     (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
-  have residual_norms_bddBelow : BddBelow (Set.range fun w : A.range => ‖y - w‖) :=
+  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) :=
     ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩
-  rw [← A.norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero y x]
-  constructor
-  · intro h
-    apply le_antisymm
-    · apply le_ciInf
-      simpa
-    · exact ciInf_le residual_norms_bddBelow ⟨A x, ⟨x, rfl⟩⟩
-  · intro h z
-    rw [h]
-    exact ciInf_le residual_norms_bddBelow ⟨A z, ⟨z, rfl⟩⟩
+  rw [← A.norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero y x, le_antisymm_iff,
+    and_iff_left (ciInf_le hb ⟨A x, x, rfl⟩), le_ciInf_iff hb]
+  simp
 
 omit [CompleteSpace E] in
 theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
