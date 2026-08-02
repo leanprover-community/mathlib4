@@ -1393,9 +1393,9 @@ theorem ringKrullDim_pi_eq_iSup_ringKrullDim {ι : Type*} (R : ι → Type*) [�
   rewrite [← Order.krullDim_eq_of_orderIso (PrimeSpectrum.sigmaToPiOrderIso R), Order.krullDim]
   rewrite [← Equiv.iSup_comp (g := fun r ↦
     Nat.cast (@RelSeries.length ((i : ι) × PrimeSpectrum (R i)) _ r))
-      (LTSeries.sigma_equiv (fun i => PrimeSpectrum (R i))).symm]
+      (LTSeries.sigmaEquiv (fun i => PrimeSpectrum (R i))).symm]
   have hlen : ∀ x : Σ i, LTSeries (PrimeSpectrum (R i)),
-      ((LTSeries.sigma_equiv (fun i => PrimeSpectrum (R i))).symm x).length = x.2.length :=
+      ((LTSeries.sigmaEquiv (fun i => PrimeSpectrum (R i))).symm x).length = x.2.length :=
     fun x ↦ rfl
   simp_rw [hlen]
   rewrite [iSup_sigma]
