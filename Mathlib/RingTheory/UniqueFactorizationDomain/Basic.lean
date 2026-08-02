@@ -80,7 +80,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_notMem fun x hx =>
         have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
-        (hg x hx).not_unit <|
+        (hg x hx).not_isUnit <|
           isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this)
   | cons p f ih =>
     intro g hf hg hfg
@@ -420,7 +420,7 @@ variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
     IsRelPrime a b ↔ ∀ ⦃d⦄, d ∣ a → d ∣ b → ¬Prime d :=
-  ⟨fun h _ ha hb ↦ (·.not_unit <| h ha hb), fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
+  ⟨fun h _ ha hb ↦ (·.not_isUnit <| h ha hb), fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
     (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.

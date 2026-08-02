@@ -153,7 +153,7 @@ theorem exists_prime_factors (a : α) :
 
 lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
-  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_isUnit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
   obtain ⟨f, hf, -⟩ := WfDvdMonoid.exists_irreducible_factor hxu hx₀
   exact ⟨f, UniqueFactorizationMonoid.irreducible_iff_prime.mp hf⟩
 

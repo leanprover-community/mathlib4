@@ -412,7 +412,7 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     Associates.mk a ⊓ Associates.mk b = 1 ↔ ∀ {d : α}, d ∣ a → d ∣ b → ¬Prime d := by
   constructor
   · intro hg p ha hb hp
-    refine (Associates.prime_mk.mpr hp).not_unit (isUnit_of_dvd_one ?_)
+    refine (Associates.prime_mk.mpr hp).not_isUnit (isUnit_of_dvd_one ?_)
     rw [← hg]
     exact le_inf (mk_le_mk_of_dvd ha) (mk_le_mk_of_dvd hb)
   · contrapose

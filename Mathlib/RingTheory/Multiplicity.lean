@@ -706,13 +706,13 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
   induction s using Finset.induction with
   | empty =>
     simp only [Finset.sum_empty, Finset.prod_empty]
-    exact emultiplicity_of_one_right hp.not_unit
+    exact emultiplicity_of_one_right hp.not_isUnit
   | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
   induction k with
-  | zero => simp [emultiplicity_of_one_right hp.not_unit]
+  | zero => simp [emultiplicity_of_one_right hp.not_isUnit]
   | succ k hk => simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
 
 protected theorem FiniteMultiplicity.multiplicity_pow {p a : α} (hp : Prime p)
@@ -733,11 +733,11 @@ theorem multiplicity_pow_self {p : α} (h0 : p ≠ 0) (hu : ¬IsUnit p) (n : ℕ
 
 theorem emultiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     emultiplicity p (p ^ n) = n :=
-  emultiplicity_pow_self hp.ne_zero hp.not_unit n
+  emultiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
 theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
-  multiplicity_pow_self hp.ne_zero hp.not_unit n
+  multiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
 end CancelCommMonoidWithZero
 

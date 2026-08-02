@@ -252,7 +252,7 @@ theorem disjoint_normalizedFactors {a b : α} (hc : IsRelPrime a b) :
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
   have x_dvd_b := dvd_of_mem_normalizedFactors hxb
-  exact (prime_of_normalized_factor x hxa).not_unit (hc x_dvd_a x_dvd_b)
+  exact (prime_of_normalized_factor x hxa).not_isUnit (hc x_dvd_a x_dvd_b)
 
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
@@ -283,7 +283,7 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
   · intro h hx
     obtain ⟨p, hp⟩ := Multiset.exists_mem_of_ne_zero h.ne'
     exact
-      (prime_of_normalized_factor _ hp).not_unit
+      (prime_of_normalized_factor _ hp).not_isUnit
         (isUnit_of_dvd_unit (dvd_of_mem_normalizedFactors hp) hx)
   · intro h
     obtain ⟨p, hp⟩ := exists_mem_normalizedFactors hx h
