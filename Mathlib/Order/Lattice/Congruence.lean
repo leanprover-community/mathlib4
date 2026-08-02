@@ -71,7 +71,7 @@ private lemma transitive {r : α → α → Prop}
     (by simp [sup_assoc, le_sup_left]) inf_le_right le_sup_right
     (h₃ (by simpa [inf_assoc] using inf_le_of_right_le inf_le_sup)
     (by simp [sup_assoc, le_sup_right]) (h₃
-    (by simpa [inf_assoc] using inf_le_right (b := y ⊓ z)) inf_le_sup (by
+    (by simp [inf_assoc]) inf_le_sup (by
       suffices r (x ⊓ y ⊓ (y ⊓ z)) ((x ⊔ y) ⊓ (y ⊓ z)) by
         rw [inf_comm x, inf_assoc]
         simpa [inf_comm x, ← inf_inf_distrib_left] using this

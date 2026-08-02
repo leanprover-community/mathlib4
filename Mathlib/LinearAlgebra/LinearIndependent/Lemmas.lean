@@ -906,8 +906,7 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
         (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def]),
-      h.2.1, by simp only [h.2.2, eq]⟩
+    ⟨u, Subset.trans h.1 (by grind), h.2.1, by simp only [h.2.2, eq]⟩
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set V} (ht : t.Finite)
     (hs : LinearIndepOn K id s) (hst : s ⊆ span K t) :
