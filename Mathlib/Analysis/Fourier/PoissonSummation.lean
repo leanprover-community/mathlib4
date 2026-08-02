@@ -46,6 +46,7 @@ open scoped Real Filter FourierTransform
 
 open ContinuousMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
 `∑' n : ℤ, f (x + n)` is the value at `m` of the Fourier transform of `f`. -/
 theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
@@ -62,7 +63,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
-    simpa only [mul_one] using this.int_mul n x
+    simpa only [mul_one] using! this.int_mul n x
   -- Now the main argument. First unwind some definitions.
   calc
     fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
@@ -115,9 +116,6 @@ theorem Real.tsum_eq_tsum_fourier {f : C(ℝ, ℂ)}
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
 
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral := Real.tsum_eq_tsum_fourier
-
 section RpowDecay
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -141,7 +139,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
-  rw [ge_iff_le, max_le_iff] at hx
+  rw [max_le_iff] at hx
   have hx' : max 0 (-2 * R) < x := by linarith
   rw [max_lt_iff] at hx'
   rw [norm_norm, ContinuousMap.norm_le _ (by positivity)]
@@ -202,10 +200,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable {f : ℝ → ℂ} (h
     ((isBigO_norm_restrict_cocompact ⟨_, hc⟩ (zero_lt_one.trans hb) hf K).comp_tendsto
     Int.tendsto_coe_cofinite)) hFf x
 
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable
-
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
 Weiss, *Introduction to Fourier analysis on Euclidean spaces*.) -/
@@ -215,10 +209,6 @@ theorem Real.tsum_eq_tsum_fourier_of_rpow_decay {f : ℝ → ℂ} (hc : Continuo
     ∑' n : ℤ, f (x + n) = ∑' n : ℤ, 𝓕 f n * fourier n (x : UnitAddCircle) :=
   Real.tsum_eq_tsum_fourier_of_rpow_decay_of_summable hc hb hf (summable_of_isBigO
     (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite)) x
-
-@[deprecated (since := "2025-11-16")]
-alias Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay :=
-  Real.tsum_eq_tsum_fourier_of_rpow_decay
 
 end RpowDecay
 
@@ -233,8 +223,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourier (f : 𝓢(ℝ, ℂ)) (x : ℝ) :
   -- `b = 2` and work with that.
   apply Real.tsum_eq_tsum_fourier_of_rpow_decay f.continuous one_lt_two
     (f.isBigO_cocompact_rpow (-2)) ((𝓕 f).isBigO_cocompact_rpow (-2))
-
-@[deprecated (since := "2025-11-16")]
-alias SchwartzMap.tsum_eq_tsum_fourierIntegral := SchwartzMap.tsum_eq_tsum_fourier
 
 end Schwartz

@@ -118,16 +118,15 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert! (hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg using 1
   ext y
-  simp only [neg_mul, ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
-    Function.comp_apply, ofRealCLM_apply, smul_eq_mul, ContinuousLinearMap.comp_neg,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
+  simp only [neg_mul, neg_smul, neg_apply, smul_apply, ContinuousLinearMap.comp_apply,
+    ofRealCLM_apply, smul_eq_mul, ContinuousLinearMap.comp_neg,
+    ContinuousLinearMap.toSpanSingleton_apply, real_smul, neg_inj]
   ring
 
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
     fderiv ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) w y = -2 * π * I * L v y * 𝐞 (-L v w) := by
-  simp only [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv, neg_mul,
-    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
-    Function.comp_apply, ofRealCLM_apply, smul_eq_mul, neg_inj]
+  simp only [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv, neg_mul, neg_smul,
+    neg_apply, smul_apply, ContinuousLinearMap.comp_apply, ofRealCLM_apply, smul_eq_mul, neg_inj]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_right (v : V) :
@@ -141,9 +140,9 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
 
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :
     fderiv ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) v y = -2 * π * I * L y w * 𝐞 (-L v w) := by
-  simp only [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv, neg_mul,
-    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
-    Function.comp_apply, ContinuousLinearMap.flip_apply, ofRealCLM_apply, smul_eq_mul, neg_inj]
+  simp only [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv, neg_mul, neg_smul, neg_apply,
+    smul_apply, ContinuousLinearMap.comp_apply, ContinuousLinearMap.flip_apply, ofRealCLM_apply,
+    smul_eq_mul, neg_inj]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_left (w : W) :
@@ -174,8 +173,8 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert! ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
   ext w' : 1
-  simp_rw [fourierSMulRight, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
+  simp_rw [fourierSMulRight, smul_apply, ContinuousLinearMap.smulRight_apply]
+  rw [ContinuousLinearMap.comp_apply, neg_apply,
     ContinuousLinearMap.toSpanSingleton_apply, ← smul_assoc, smul_comm,
     ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
   push_cast
@@ -198,7 +197,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     {L : V →L[ℝ] W →L[ℝ] ℝ} {f : V → E} {μ : Measure V}
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun v ↦ fourierSMulRight L f v) μ := by
-  apply AEStronglyMeasurable.const_smul'
+  apply AEStronglyMeasurable.fun_const_smul
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
@@ -225,7 +224,7 @@ theorem hasFDerivAt_fourierIntegral
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     Eventually.of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
-    refine .smul ?_ hf.1.fourierSMulRight
+    refine .fun_smul ?_ hf.1.fourierSMulRight
     refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
     fun_prop
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
@@ -265,7 +264,7 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   suffices ∫ x, g x • fderiv ℝ f x y ∂μ = ∫ x, (2 * ↑π * I * L y w * g x) • f x ∂μ by
     rw [fourierIntegral_continuousLinearMap_apply' hf']
     simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₁₂_apply, fourierSMulRight_apply,
-      ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply, ← integral_smul, neg_smul,
+      neg_apply, ContinuousLinearMap.flip_apply, ← integral_smul, neg_smul,
       smul_neg, ← smul_smul, coe_smul, neg_neg]
   -- Key step: integrate by parts with respect to `y` to switch the derivative from `f` to `g`.
   have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x :=
@@ -311,7 +310,7 @@ lemma fourierPowSMulRight_eq_comp {f : V → E} {v : V} {n : ℕ} :
 lemma _root_.Continuous.fourierPowSMulRight {f : V → E} (hf : Continuous f) (n : ℕ) :
     Continuous (fun v ↦ fourierPowSMulRight L f v n) := by
   simp_rw [fourierPowSMulRight_eq_comp]
-  apply Continuous.const_smul
+  apply Continuous.fun_const_smul
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp₂ _ hf
   exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
 
@@ -434,7 +433,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
     (hf : AEStronglyMeasurable f μ) (n : ℕ) :
     AEStronglyMeasurable (fun v ↦ fourierPowSMulRight L f v n) μ := by
   simp_rw [fourierPowSMulRight_eq_comp]
-  apply AEStronglyMeasurable.const_smul'
+  apply AEStronglyMeasurable.fun_const_smul
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp_aestronglyMeasurable₂ _ hf
   apply Continuous.aestronglyMeasurable
   exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
@@ -487,8 +486,8 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞ω}
         fourierIntegral_continuousMultilinearMap_apply' (I₄.apply_continuousLinearMap _)]
       congr with v
       simp only [fourierPowSMulRight_apply, mul_comm, pow_succ, neg_mul, Fin.prod_univ_succ,
-        Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply, neg_apply, smul_apply,
-        smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
+        Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply,
+        neg_apply, smul_apply, smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
     exact E ▸ hasFDerivAt_fourierIntegral L I₁ I₂ w
   · intro n hn
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
@@ -512,7 +511,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
   · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₁₂ f = 0 := by
       ext w; simp [fourierIntegral, integral, h'f]
-    simpa [this] using contDiff_const
+    simpa [this] using! contDiff_const
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier
 transform of `f` is the Fourier transform of `fourierPowSMulRight L f v n`,
@@ -538,9 +537,9 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
   induction n with
   | zero =>
     ext w m
-    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
-      Finset.univ_eq_empty, ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply,
-      Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
+    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero, Finset.univ_eq_empty,
+      neg_apply, ContinuousLinearMap.flip_apply, Finset.prod_empty, one_smul,
+      fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>
     ext w m
     have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
@@ -552,17 +551,17 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
           (m 0) (Fin.tail m) =
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
       rw [fourierIntegral_continuousMultilinearMap_apply' (h'f _ hn)]
-      simp only [iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply,
-        ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply]
+      simp only [iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply, neg_apply,
+        ContinuousLinearMap.flip_apply]
       rw [← fourierIntegral_continuousMultilinearMap_apply' ((J.apply_continuousLinearMap _)),
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
     have h'n : n < N := (Nat.cast_lt.mpr n.lt_succ_self).trans_le hn
     rw [fourierIntegral_fderiv _ (h'f n h'n.le)
       (hf.differentiable_iteratedFDeriv (mod_cast h'n)) J]
-    simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
-      ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
-      fourierPowSMulRight_apply, ← coe_smul (E := E), smul_smul]
+    simp only [ih h'n.le, fourierSMulRight_apply, neg_apply, ContinuousLinearMap.flip_apply,
+      neg_smul, smul_neg, neg_neg, smul_apply, fourierPowSMulRight_apply, ← coe_smul (E := E),
+      smul_smul]
     congr 1
     simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
       ofReal_mul, neg_neg, Fin.tail_def]
@@ -681,9 +680,6 @@ theorem hasFDerivAt_fourier
     HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x :=
   VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
 
-@[deprecated (since := "2025-11-16")]
-alias hasFDerivAt_fourierIntegral := hasFDerivAt_fourier
-
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
 `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem fderiv_fourier
@@ -691,16 +687,10 @@ theorem fderiv_fourier
     fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
   VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
-@[deprecated (since := "2025-11-16")]
-alias fderiv_fourierIntegral := fderiv_fourier
-
 theorem differentiable_fourier
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     Differentiable ℝ (𝓕 f) :=
   VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
-
-@[deprecated (since := "2025-11-16")]
-alias differentiable_fourierIntegral := differentiable_fourier
 
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `2πI ⟪v, w⟫`. -/
@@ -710,17 +700,11 @@ theorem fourier_fderiv
   rw [← flip_innerSL_real V]
   exact VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
 
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_fderiv := fourier_fderiv
-
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the Fourier transform of `f` is `C^n`. -/
 theorem contDiff_fourier {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖)) :
     ContDiff ℝ N (𝓕 f) :=
   VectorFourier.contDiff_fourierIntegral (innerSL ℝ) hf
-
-@[deprecated (since := "2025-11-16")]
-alias contDiff_fourierIntegral := contDiff_fourier
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the `n`-th derivative of the Fourier transform of `f` is
   the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ⬝⟫^n f v`. -/
@@ -730,9 +714,6 @@ theorem iteratedFDeriv_fourier {N : ℕ∞}
     iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (innerSL ℝ) f v n) :=
   VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
 
-@[deprecated (since := "2025-11-16")]
-alias iteratedFDeriv_fourierIntegral := iteratedFDeriv_fourier
-
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
 theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
@@ -741,9 +722,6 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
       = (fun w ↦ fourierPowSMulRight (-innerSL ℝ) (𝓕 f) w n) := by
   rw [← flip_innerSL_real V]
   exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
 
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by positivity
@@ -782,18 +760,15 @@ lemma pow_mul_norm_iteratedFDeriv_fourier_le
   gcongr
   exact norm_innerSL_le _
 
-@[deprecated (since := "2025-11-16")]
-alias pow_mul_norm_iteratedFDeriv_fourierIntegral_le := pow_mul_norm_iteratedFDeriv_fourier_le
-
 lemma hasDerivAt_fourier
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
     HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) w) w := by
-  have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using hf'.norm
+  have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using! hf'.norm
   let L := ContinuousLinearMap.mul ℝ ℝ |>.flip
   have h_int : Integrable fun v ↦ fourierSMulRight L f v := by
     suffices Integrable fun v ↦ ContinuousLinearMap.smulRight (L v) (f v) by
-      simpa only [fourierSMulRight, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
-    convert ((ContinuousLinearMap.toSpanSingletonLIE ℝ
+      simpa only [fourierSMulRight, neg_smul, neg_mul, Pi.smul_apply] using! this.smul (-2 * π * I)
+    convert! ((ContinuousLinearMap.toSpanSingletonLIE ℝ
       E).toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with _ v
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
@@ -802,20 +777,14 @@ lemma hasDerivAt_fourier
   convert! (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   rw [fourierIntegral_continuousLinearMap_apply' h_int, VectorFourier.fourierIntegral,
     fourier_real_eq]
-  simp [fourierSMulRight, L, ContinuousLinearMap.smul_apply,
+  simp [fourierSMulRight, L, smul_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', ← neg_mul, mul_smul]
-
-@[deprecated (since := "2025-11-16")]
-alias hasDerivAt_fourierIntegral := hasDerivAt_fourier
 
 theorem deriv_fourier
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) :
     deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
   ext x
   exact (hasDerivAt_fourier hf hf' x).deriv
-
-@[deprecated (since := "2025-11-16")]
-alias deriv_fourierIntegral := deriv_fourier
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
@@ -825,16 +794,13 @@ theorem fourier_deriv
     𝓕 (deriv f) = fun (x : ℝ) ↦ (2 * π * I * x) • (𝓕 f x) := by
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
-    simpa only [← toSpanSingleton_deriv] using
+    simpa only [← toSpanSingleton_deriv] using!
       (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]
-  simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply_apply, smul_smul,
+  simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply ℝ, smul_smul,
     RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_deriv := fourier_deriv
 
 set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_fourier {f : ℝ → E} {N : ℕ∞} {n : ℕ}
@@ -853,9 +819,6 @@ theorem iteratedDeriv_fourier {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     simpa [innerSL_apply_apply _]
   simp only [← neg_mul, ← coe_smul, smul_smul, mul_pow, ofReal_pow, mul_assoc]
 
-@[deprecated (since := "2025-11-16")]
-alias iteratedDeriv_fourierIntegral := iteratedDeriv_fourier
-
 set_option backward.isDefEq.respectTransparency false in
 theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContDiff ℝ N f)
     (h'f : ∀ (n : ℕ), n ≤ N → Integrable (iteratedDeriv n f)) (hn : n ≤ N) :
@@ -868,9 +831,6 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
   simp_rw [iteratedDeriv, ← fourier_continuousMultilinearMap_apply (A n hn),
     fourier_iteratedFDeriv hf A hn]
-  simp [← coe_smul, smul_smul, ← mul_pow]
-
-@[deprecated (since := "2025-11-16")]
-alias fourierIntegral_iteratedDeriv := fourier_iteratedDeriv
+  simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
 end Real

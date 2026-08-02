@@ -93,6 +93,7 @@ def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
   obj E := E.page r
   map f := f.hom r
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the homology of a spectral sequence on the
 object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]

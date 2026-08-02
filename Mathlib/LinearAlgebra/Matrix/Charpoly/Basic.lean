@@ -196,9 +196,12 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
-lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
-  simp [charpoly, det_of_upperTriangular h.charmatrix]
+  simp [charpoly, det_of_isUpperTriangular h.charmatrix]
+
+@[deprecated (since := "2026-07-30")]
+alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -230,6 +233,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.

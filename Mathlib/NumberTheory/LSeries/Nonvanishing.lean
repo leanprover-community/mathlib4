@@ -86,6 +86,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
@@ -106,7 +107,7 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [ArithmeticFunction.map_zero, le_refl]
-  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
+  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 

@@ -74,7 +74,7 @@ theorem DiffContOnCl.circleAverage_smul_div (hf : DiffContOnCl ℂ f (ball c |R|
   apply circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable countable_empty _ _ hw
   · simpa [← closure_ball _ (ne_of_not_ge hR).symm] using hf.2
   · intro z hz
-    rw [diff_empty] at hz
+    rw [sdiff_empty] at hz
     apply (hf.1 z hz).differentiableAt (isOpen_ball.mem_nhds hz)
 
 @[deprecated (since := "2026-02-11")]

@@ -283,7 +283,7 @@ theorem fourierCoeff_bernoulli_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   have : ((↑) ∘ periodizedBernoulli k : 𝕌 → ℂ) = AddCircle.liftIco 1 0 ((↑) ∘ bernoulliFun k) := by
     ext1 x; rfl
   rw [this, fourierCoeff_liftIco_eq]
-  simpa only [zero_add] using bernoulliFourierCoeff_eq hk n
+  simpa only [zero_add] using! bernoulliFourierCoeff_eq hk n
 
 theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
     Summable (fun n => -k ! / (2 * π * I * n) ^ k : ℤ → ℂ) := by

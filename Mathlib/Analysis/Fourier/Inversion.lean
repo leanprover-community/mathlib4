@@ -81,7 +81,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
-      simpa using
+      simpa using!
         (VectorFourier.fourierIntegral_convergent_iff Real.continuous_fourierChar B v).2 h'f
     convert! tendsto_integral_cexp_sq_smul this using 4 with c w
     · rw [Submonoid.smul_def, Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
@@ -96,7 +96,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     have J : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)) :=
       GaussianFourier.integrable_cexp_neg_mul_sq_norm_add (by simpa) _ _
-    simpa using (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
+    simpa using! (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
       Real.continuous_fourierChar continuous_inner J hf).symm
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
@@ -168,9 +168,6 @@ theorem MeasureTheory.Integrable.fourierInv_fourier_eq
   tendsto_nhds_unique (Real.tendsto_integral_gaussian_smul hf h'f v)
     (Real.tendsto_integral_gaussian_smul' hf hv)
 
-@[deprecated (since := "2025-11-16")]
-alias MeasureTheory.Integrable.fourier_inversion := MeasureTheory.Integrable.fourierInv_fourier_eq
-
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕⁻ (𝓕 f) = f`. -/
@@ -179,9 +176,6 @@ theorem Continuous.fourierInv_fourier_eq (h : Continuous f)
     𝓕⁻ (𝓕 f) = f := by
   ext v
   exact hf.fourierInv_fourier_eq h'f h.continuousAt
-
-@[deprecated (since := "2025-11-16")]
-alias Continuous.fourier_inversion := Continuous.fourierInv_fourier_eq
 
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕 (𝓕⁻ f) = f` at
@@ -192,10 +186,6 @@ theorem MeasureTheory.Integrable.fourier_fourierInv_eq
   rw [fourierInv_comm]
   exact hf.fourierInv_fourier_eq h'f hv
 
-@[deprecated (since := "2025-11-16")]
-alias MeasureTheory.Integrable.fourier_inversion_inv :=
-  MeasureTheory.Integrable.fourier_fourierInv_eq
-
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕 (𝓕⁻ f) = f`. -/
@@ -204,6 +194,3 @@ theorem Continuous.fourier_fourierInv_eq (h : Continuous f)
     𝓕 (𝓕⁻ f) = f := by
   ext v
   exact hf.fourier_fourierInv_eq h'f h.continuousAt
-
-@[deprecated (since := "2025-11-16")]
-alias Continuous.fourier_inversion_inv := Continuous.fourier_fourierInv_eq

@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
@@ -48,7 +49,7 @@ theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf 
   apply (integrable_map_equiv (MeasurableEquiv.inv G) f).mp
   have : s⁻¹ = MeasurableEquiv.inv G ⁻¹' s := by simp
   rw [this, ← MeasurableEquiv.restrict_map]
-  simpa using hf
+  simpa using! hf
 
 end MeasurableInv
 

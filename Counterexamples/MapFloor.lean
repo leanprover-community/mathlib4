@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Round
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Polynomial.Reverse
+module
+
+public import Mathlib.Algebra.Order.Round
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -35,10 +37,9 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 (`IntWithEpsilon.forgetEpsilons_floor_lt`, `IntWithEpsilon.lt_forgetEpsilons_ceil`).
 -/
 
+@[expose] public noncomputable section
 
 namespace Counterexample
-
-noncomputable section
 
 open Function Int Polynomial
 
@@ -59,6 +60,7 @@ instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
     (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine
@@ -118,6 +120,7 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
   exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
 itself. -/
 theorem lt_forgetEpsilons_ceil (n : ℤ) :
@@ -127,7 +130,5 @@ theorem lt_forgetEpsilons_ceil (n : ℤ) :
   exact forgetEpsilons_floor_lt _
 
 end IntWithEpsilon
-
-end
 
 end Counterexample

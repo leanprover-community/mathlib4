@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
-public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -174,7 +174,7 @@ theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q �
   · rw [hpq, natDegree_zero, Nat.pos_iff_ne_zero]
     contrapose hq
     exact eq_one_of_monic_natDegree_zero hmq hq
-  · haveI := Nontrivial.of_polynomial_ne hpq
+  · have := Nontrivial.of_polynomial_ne hpq
     exact natDegree_lt_natDegree hpq (degree_modByMonic_lt p hmq)
 
 @[simp]
@@ -189,7 +189,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
 theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=
   letI := Classical.decEq R
   if h : Monic (0 : R[X]) then by
-    haveI := monic_zero_iff_subsingleton.mp h
+    have := monic_zero_iff_subsingleton.mp h
     simp [eq_iff_true_of_subsingleton]
   else by unfold modByMonic divModByMonicAux; rw [dif_neg h]
 
@@ -197,7 +197,7 @@ theorem modByMonic_zero (p : R[X]) : p %ₘ 0 = p :=
 theorem divByMonic_zero (p : R[X]) : p /ₘ 0 = 0 :=
   letI := Classical.decEq R
   if h : Monic (0 : R[X]) then by
-    haveI := monic_zero_iff_subsingleton.mp h
+    have := monic_zero_iff_subsingleton.mp h
     simp [eq_iff_true_of_subsingleton]
   else by unfold divByMonic divModByMonicAux; rw [dif_neg h]
 
@@ -209,7 +209,6 @@ theorem modByMonic_eq_of_not_monic (p : R[X]) (hq : ¬Monic q) : p %ₘ q = p :=
 
 theorem modByMonic_eq_self_iff [Nontrivial R] (hq : Monic q) : p %ₘ q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ degree_modByMonic_lt _ hq, fun h => by
-    classical
     have : ¬degree q ≤ degree p := not_le_of_gt h
     unfold modByMonic divModByMonicAux; dsimp; rw [dif_pos hq, if_neg (mt And.left this)]⟩
 
@@ -260,12 +259,19 @@ theorem modByMonic_eq_sub_mul_div :
 theorem modByMonic_add_div (p q : R[X]) : p %ₘ q + q * (p /ₘ q) = p :=
   eq_sub_iff_add_eq.1 (modByMonic_eq_sub_mul_div p q)
 
+theorem dvd_modByMonic_sub (p q : R[X]) : q ∣ (p %ₘ q - p) := by
+  by_cases h : q.Monic
+  · simp [modByMonic_eq_sub_mul_div]
+  · simp [modByMonic_eq_of_not_monic, h]
+
+@[simp] theorem dvd_modByMonic_iff_dvd : q ∣ p %ₘ q ↔ q ∣ p := by
+  simpa using dvd_iff_dvd_of_dvd_sub <| dvd_modByMonic_sub p q
+
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
     have := modByMonic_add_div p q
     rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
   fun h => by
-    classical
     have : ¬degree q ≤ degree p := not_le_of_gt h
     unfold divByMonic divModByMonicAux; dsimp; rw [dif_pos hq, if_neg (mt And.left this)]⟩
 
@@ -293,7 +299,7 @@ theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
   else
     if hq : Monic q then
       if h : degree q ≤ degree p then by
-        haveI := Nontrivial.of_polynomial_ne hp0
+        have := Nontrivial.of_polynomial_ne hp0
         rw [← degree_add_divByMonic hq h, degree_eq_natDegree hq.ne_zero,
           degree_eq_natDegree (mt (divByMonic_eq_zero_iff hq).1 (not_lt.2 h))]
         exact WithBot.coe_le_coe.2 (Nat.le_add_left _ _)
@@ -307,17 +313,17 @@ theorem degree_divByMonic_lt (p q : R[X]) (hp0 : p ≠ 0)
   letI := Classical.decEq R
   if hq : q.Monic then
     if hpq : degree p < degree q then by
-      haveI := Nontrivial.of_polynomial_ne hp0
+      have := Nontrivial.of_polynomial_ne hp0
       rw [(divByMonic_eq_zero_iff hq).2 hpq, degree_eq_natDegree hp0]
       exact WithBot.bot_lt_coe _
     else by
-      haveI := Nontrivial.of_polynomial_ne hp0
+      have := Nontrivial.of_polynomial_ne hp0
       rw [← degree_add_divByMonic hq (not_lt.1 hpq), degree_eq_natDegree hq.ne_zero,
         degree_eq_natDegree (mt (divByMonic_eq_zero_iff hq).1 hpq)]
       exact
         Nat.cast_lt.2
           (Nat.lt_add_of_pos_left (Nat.cast_lt.1 <|
-            by simpa [degree_eq_natDegree hq.ne_zero] using h0q))
+            by simpa [degree_eq_natDegree hq.ne_zero] using! h0q))
   else by
     rwa [divByMonic_eq_of_not_monic _ hq, degree_zero, bot_lt_iff_ne_bot, degree_ne_bot]
 
@@ -367,7 +373,7 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
 theorem map_mod_divByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
     (p /ₘ q).map f = p.map f /ₘ q.map f ∧ (p %ₘ q).map f = p.map f %ₘ q.map f := by
   nontriviality S
-  haveI : Nontrivial R := f.domain_nontrivial
+  have : Nontrivial R := f.domain_nontrivial
   have : map f p /ₘ map f q = map f (p /ₘ q) ∧ map f p %ₘ map f q = map f (p %ₘ q) :=
     div_modByMonic_unique ((p /ₘ q).map f) _ (hq.map f)
       ⟨Eq.symm <| by rw [← Polynomial.map_mul, ← Polynomial.map_add, modByMonic_add_div],
@@ -404,6 +410,8 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
+@[simp]
+theorem modByMonic_self (hp : p.Monic) : p %ₘ p = 0 := by rw [modByMonic_eq_zero_iff_dvd hp]
 
 /-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
@@ -477,7 +485,7 @@ variable (R) in
 theorem not_isField : ¬IsField R[X] := by
   nontriviality R
   intro h
-  letI := h.toField
+  let := h.toField
   simpa using congr_arg natDegree (monic_X.eq_one_of_isUnit <| monic_X (R := R).ne_zero.isUnit)
 
 section multiplicity
@@ -490,7 +498,7 @@ def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q �
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
 theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by
-  haveI := Nontrivial.of_polynomial_ne h0
+  have := Nontrivial.of_polynomial_ne h0
   refine finiteMultiplicity_of_degree_pos_of_monic ?_ (monic_X_sub_C _) h0
   rw [degree_X_sub_C]
   decide
@@ -515,7 +523,6 @@ theorem rootMultiplicity_eq_natFind_of_ne_zero {p : R[X]} (p0 : p ≠ 0) {a : R}
 @[deprecated (since := "2026-02-12")]
 alias rootMultiplicity_eq_nat_find_of_nonzero := rootMultiplicity_eq_natFind_of_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
@@ -525,7 +532,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   · rfl
   rename_i h
   simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
-  rw [← ENat.some_eq_coe, WithTop.untopD_coe]
+  rw [untopD_coe_enat]
   congr
 
 @[simp]
@@ -547,7 +554,6 @@ theorem pow_rootMultiplicity_dvd (p : R[X]) (a : R) : (X - C a) ^ rootMultiplici
   letI := Classical.decEq R
   if h : p = 0 then by simp [h]
   else by
-    classical
     rw [rootMultiplicity_eq_multiplicity, if_neg h]; apply pow_multiplicity_dvd
 
 theorem pow_mul_divByMonic_rootMultiplicity_eq (p : R[X]) (a : R) :
@@ -642,7 +648,7 @@ theorem rootMultiplicity_pos {p : R[X]} (hp : p ≠ 0) {x : R} :
 theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p ≠ 0) :
     eval a (p /ₘ (X - C a) ^ rootMultiplicity a p) ≠ 0 := by
   classical
-  haveI : Nontrivial R := Nontrivial.of_polynomial_ne hp
+  have : Nontrivial R := Nontrivial.of_polynomial_ne hp
   rw [Ne, ← IsRoot, ← dvd_iff_isRoot]
   rintro ⟨q, hq⟩
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
@@ -714,7 +720,6 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
 `(X - a) ^ n` divides `p`. -/
 lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
-  classical
   simp_rw [rootMultiplicity, dif_neg p0, Nat.le_find_iff, not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   rcases n with - | n

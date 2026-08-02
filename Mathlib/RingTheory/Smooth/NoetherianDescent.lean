@@ -51,20 +51,34 @@ variable (D : DescentAux A B)
 variable (R)
 
 /-- (Implementation detail): The finite type `R`-algebra. -/
-def subalgebra (D : DescentAux A B) : Subalgebra R A :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
       ((⋃ i, (D.h i).coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.q i).coeffs, x.coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
-instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : CommRing (D.subalgebra R) :=
+  inferInstanceAs <| CommRing (Algebra.adjoin _ _)
 
-instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₀ : Algebra R (D.subalgebra R) :=
+  inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
-instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₁ : Algebra (D.subalgebra R) A :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
-instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance algebra₂ : Algebra (D.subalgebra R) B :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
@@ -189,6 +203,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an

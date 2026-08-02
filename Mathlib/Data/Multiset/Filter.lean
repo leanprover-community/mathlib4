@@ -414,11 +414,11 @@ for more discussion.
 @[simp]
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
-    eq_true_eq_id, Function.comp_apply]
+  simp only [count_eq_card_filter_eq, eq_iff_iff, true_iff, filter_map, comp_apply, card_map]
 
 section Map
 
+set_option backward.isDefEq.respectTransparency false in
 lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableEq α]
     [DecidablePred p] :
     s.attach.filter p =
@@ -426,8 +426,8 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   classical
   refine Multiset.map_injective Subtype.val_injective ?_
   rw [map_filter' _ Subtype.val_injective]
-  simp only [Function.comp, Subtype.exists, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, id]
+  simp only [Subtype.exists, exists_and_right, exists_eq_right, attach_map_val, Subtype.map, id,
+    map_map, comp]
 
 end Map
 
@@ -441,7 +441,7 @@ theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup
 theorem Nodup.erase_eq_filter [DecidableEq α] (a : α) {s} :
     Nodup s → s.erase a = Multiset.filter (· ≠ a) s :=
   Quot.induction_on s fun _ d =>
-    congr_arg ((↑) : List α → Multiset α) <| by simpa using List.Nodup.erase_eq_filter d a
+    congr_arg ((↑) : List α → Multiset α) <| by simpa using! List.Nodup.erase_eq_filter d a
 
 protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
     Nodup s → Nodup (filterMap f s) :=

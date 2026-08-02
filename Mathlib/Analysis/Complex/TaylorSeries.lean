@@ -54,7 +54,7 @@ lemma hasSum_taylorSeries_on_ball :
   have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
       |>.hasSum_iteratedFDeriv hz'
   simp only [add_sub_cancel] at H
-  convert! H using 4 with n
+  convert H with n
   simpa only [iteratedDeriv_eq_iteratedFDeriv, smul_eq_mul, mul_one, Finset.prod_const,
     Finset.card_fin]
     using ((iteratedFDeriv ℂ n f c).map_smul_univ (fun _ ↦ z - c) (fun _ ↦ 1)).symm

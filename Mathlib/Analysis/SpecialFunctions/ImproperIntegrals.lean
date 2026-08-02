@@ -5,9 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
@@ -66,7 +65,7 @@ theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
   refine (integrable_norm_iff ?_).mp ?_
   · apply Continuous.aestronglyMeasurable
     fun_prop
-  · simpa [Complex.norm_exp] using
+  · simpa [Complex.norm_exp] using!
       (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c (a := -a.re) (by simpa)).mpr <|
         integrableOn_exp_neg_Ioi _
 
@@ -77,13 +76,13 @@ theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
 
 theorem integrableOn_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Ioi c) := by
-  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using ha) c
-  simpa [Complex.norm_exp] using this
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Ioi (a := a) (by simpa using! ha) c
+  simpa [Complex.norm_exp] using! this
 
 theorem integrableOn_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Real.exp (a * x)) (Iic c) := by
-  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using ha) c
-  simpa [Complex.norm_exp] using this
+  have := Integrable.norm <| integrableOn_exp_mul_complex_Iic (a := a) (by simpa using! ha) c
+  simpa [Complex.norm_exp] using! this
 
 theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
@@ -197,6 +196,11 @@ theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Ioi t) ↔ s.re < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_norm_cpow_of_lt h ht⟩
   refine (integrableOn_Ioi_rpow_iff ht).mp <| h.congr_fun (fun a ha ↦ ?_) measurableSet_Ioi
+  #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+  instantiation order leads to a term with a beta redex.
+  https://github.com/leanprover/lean4/pull/13762
+  This will be removed once app elaboration itself does beta reduction. -/
+  dsimp only
   rw [Complex.norm_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
@@ -283,3 +287,26 @@ theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
+
+@[simp]
+theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
+    IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by
+  apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
+  · intro t _
+    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    field
+  · intro t _
+    have : 0 < t := by grind
+    positivity
+
+@[simp]
+theorem integral_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
+    ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
+  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
+    (integrableOn_inv_div_log_sq_Ioi hc) ?_ using 1
+  · simp
+  · intro t _
+    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    field
+  convert! tendsto_log_atTop.inv_tendsto_atTop.neg using 1
+  simp

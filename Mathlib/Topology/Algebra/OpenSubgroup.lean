@@ -71,7 +71,7 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
 
@@ -249,7 +249,7 @@ theorem isOpen_of_mem_nhds [SeparatelyContinuousMul G] (H : Subgroup G) {g : G}
   have : Filter.Tendsto (fun y ↦ y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul_const _).tendsto' _ _ (mul_inv_cancel_left _ _)
   simpa only [SetLike.mem_coe, Filter.mem_map',
-    H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using this hg
+    H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using! this hg
 
 @[to_additive]
 theorem isOpen_mono [SeparatelyContinuousMul G] {H₁ H₂ : Subgroup G} (h : H₁ ≤ H₂)
@@ -395,7 +395,7 @@ theorem toSubgroup_injective : Function.Injective
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
 
@@ -450,6 +450,8 @@ open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G]
 
+/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. -/
 structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhds : T ∈ 𝓝 0
   neg : -T = T
@@ -458,9 +460,7 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
 
 /-- For a set `W`, `T` is a neighborhood of `1` which is open, stable under inverse and satisfies
 `T * W ⊆ W`. -/
-@[to_additive
-/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
-`T + W ⊆ W`. -/]
+@[to_additive]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhds : T ∈ 𝓝 1
   inv : T⁻¹ = T

@@ -78,12 +78,12 @@ variable {α β : Type*} [TopologicalSpace α] [PartialOrder α] [TopologicalSpa
 @[to_dual]
 theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
     ContinuousWithinAt f (Ioi a) a ↔ ContinuousWithinAt f (Ici a) a := by
-  simp only [← Ici_diff_left, continuousWithinAt_diff_self]
+  simp only [← Ici_sdiff_left, continuousWithinAt_sdiff_self]
 
 @[to_dual]
 theorem continuousWithinAt_inter_Ioi_iff_Ici {a : α} {f : α → β} {s : Set α} :
     ContinuousWithinAt f (s ∩ Ioi a) a ↔ ContinuousWithinAt f (s ∩ Ici a) a := by
-  simp [← Ici_diff_left, ← inter_diff_assoc, continuousWithinAt_diff_self]
+  simp [← Ici_sdiff_left, ← inter_sdiff_assoc, continuousWithinAt_sdiff_self]
 
 end PartialOrder
 
@@ -122,7 +122,7 @@ theorem nhdsLT_sup_nhdsGT (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
 @[to_dual nhdsWithinGT_sup_nhdsWithinLT]
 theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
     𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s \ {a}] a := by
-  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ioi, compl_eq_univ_diff,
+  rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ioi, compl_eq_univ_sdiff,
     inter_sdiff_left_comm, univ_inter]
 
 @[to_dual nhdsLT_sup_nhdsWithin_singleton]

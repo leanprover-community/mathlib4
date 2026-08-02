@@ -114,15 +114,17 @@ variable (C) in
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
+#adaptation_note /-- Prior to nightly-2026-05-07, the LHS of these statements was guarded with
+`dsimp%`; it now reports `made no progress`, so we write the (already-reduced) form directly. -/
 @[reassoc (attr := simp)]
 lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
-    dsimp% Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
+    Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
       (quotientCompQhIso C).hom.app K ≫ Q.map f :=
   (quotientCompQhIso C).hom.naturality f
 
 @[reassoc]
 lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
-    dsimp% Q.map f ≫ (quotientCompQhIso C).inv.app L =
+    Q.map f ≫ (quotientCompQhIso C).inv.app L =
       (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
   (quotientCompQhIso C).inv.naturality f
 
@@ -235,10 +237,11 @@ their compatibilities with shifts. -/
 def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
   (HomotopyCategory.singleFunctors C).postcomp Qh
 
-/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+/-- The single functor `C ⥤ DerivedCategory C` which sends `X : C` to the
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
@@ -269,6 +272,8 @@ def singleFunctorsPostcompQIso :
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
   ext X
@@ -278,6 +283,8 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X

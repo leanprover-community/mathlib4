@@ -34,3 +34,9 @@ example (h : a → b) : (b → True) → (a → True') := by
 example (h : a → b) : (b → True) → (a → True') := by
   gcongr
   exact id
+
+-- Binder names are inferred, using the binder names in the LHS.
+example (f g : Nat → Nat → Prop) (h : ∀ i j, f i j → g i j) :
+    (∃ ε > 0, ∃ δ > 0, f ε δ) → (∃ ε' > 0, ∃ δ' > 0, g ε' δ') := by
+  gcongr
+  exact h ε δ

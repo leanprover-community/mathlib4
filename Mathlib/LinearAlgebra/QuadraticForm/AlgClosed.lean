@@ -52,7 +52,7 @@ theorem equivalent_weightedSumSquares_of_isAlgClosed [Invertible (2 : K)] {M : T
     [AddCommGroup M] [Module K M]
     [FiniteDimensional K M] (Q : QuadraticForm K M) (hQ : (associated Q).SeparatingLeft) :
     Equivalent Q (weightedSumSquares K (1 : Fin (Module.finrank K M) → K)) :=
-  open Classical in
+  open scoped Classical in
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
   ⟨hw₁.trans (isometryEquivSumSquaresUnits w)⟩
 
@@ -62,7 +62,6 @@ theorem equivalent_of_isAlgClosed [Invertible (2 : K)] {M : Type*} [AddCommGroup
     [FiniteDimensional K M] (Q₁ Q₂ : QuadraticForm K M)
     (hQ₁ : (associated Q₁).SeparatingLeft)
     (hQ₂ : (associated Q₂).SeparatingLeft) : Equivalent Q₁ Q₂ :=
-  open Classical in
   (Q₁.equivalent_weightedSumSquares_of_isAlgClosed hQ₁).trans
   (Q₂.equivalent_weightedSumSquares_of_isAlgClosed hQ₂).symm
 

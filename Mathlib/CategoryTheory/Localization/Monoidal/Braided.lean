@@ -62,6 +62,9 @@ lemma braidingNatIso_hom_app (X Y : C) :
   simp [braidingNatIso, lift₂NatIso]
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y ⊗ (L').obj Z) ≫
@@ -70,6 +73,9 @@ lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
           ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) :=
   (((braidingNatIso L W ε).hom.app ((L').obj X)).naturality ((Functor.LaxMonoidal.μ (L') Y Z))).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X ⊗ (L').obj Y)).app ((L').obj Z) ≫
@@ -118,9 +124,9 @@ lemma map_hexagon_reverse (X Y Z : C) :
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) := by
   refine .ofBifunctor (braidingNatIso L W ε) ?_ ?_
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_forward _ _ _
+    simpa using! map_hexagon_forward _ _ _
   · apply natTrans₃_ext (L') (L') (L') W W W
-    simpa using map_hexagon_reverse _ _ _
+    simpa using! map_hexagon_reverse _ _ _
 
 lemma β_hom_app (X Y : C) :
     (β_ ((L').obj X) ((L').obj Y)).hom =
@@ -138,6 +144,8 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) := by
   refine .ofCurried (natTrans₂_ext (L') (L') W W fun X Y ↦ ?_)
   simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]

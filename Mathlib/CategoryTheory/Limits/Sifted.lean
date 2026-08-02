@@ -41,7 +41,7 @@ universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 section
 
@@ -66,10 +66,11 @@ namespace IsSifted
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
-    letI : D × D ≌ C × C := Equivalence.prod e e
+    let : D × D ≌ C × C := Equivalence.prod e e
     have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
@@ -98,11 +99,12 @@ instance [IsSifted C] : IsConnected C :=
         · rfl)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A category with binary coproducts is sifted or empty. -/
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
-    haveI : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
+    have : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
@@ -161,6 +163,7 @@ open scoped MonoidalCategory.ExternalProduct
 variable (X Y : C ⥤ Type u)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/

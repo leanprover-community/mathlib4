@@ -124,7 +124,7 @@ alias seminormFromConst_isLimit := tendsto_seminormFromConst_seq_atTop
 theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
   apply tendsto_nhds_unique_of_eventuallyEq (tendsto_seminormFromConst_seq_atTop hf1 hc hpm 1)
     tendsto_const_nhds
-  simp only [EventuallyEq, eventually_atTop, ge_iff_le]
+  simp only [EventuallyEq, eventually_atTop]
   exact ⟨1, seminormFromConst_seq_one hc hpm⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -132,7 +132,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 def seminormFromConst : RingSeminorm R where
   toFun     := seminormFromConst' c f
   map_zero' := tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hf1 hc hpm 0)
-    (by simpa [seminormFromConst_seq_zero c (map_zero _)] using tendsto_const_nhds)
+    (by simpa [seminormFromConst_seq_zero c (map_zero _)] using! tendsto_const_nhds)
   add_le' x y := by
     apply le_of_tendsto_of_tendsto' (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x + y)) <|
       (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).add
@@ -197,7 +197,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
 /-- The function `seminormFromConst' c f` is bounded above by `f`. -/
 theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' c f x ≤ f x := by
   apply le_of_tendsto (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x)
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   use 1
   intro n hn
   rw [seminormFromConst_seq, div_le_iff₀ (by positivity), ← hpm c hn]
