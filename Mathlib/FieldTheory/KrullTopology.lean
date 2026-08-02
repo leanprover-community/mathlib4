@@ -3,15 +3,17 @@ Copyright (c) 2022 Sebastian Monnet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology
 
-We define the Krull topology on `L ≃ₐ[K] L` for an arbitrary field extension `L/K`. In order to do
-this, we first define a `GroupFilterBasis` on `L ≃ₐ[K] L`, whose sets are `E.fixingSubgroup` for
+We define the Krull topology on `Gal(L/K)` for an arbitrary field extension `L/K`. In order to do
+this, we first define a `GroupFilterBasis` on `Gal(L/K)`, whose sets are `E.fixingSubgroup` for
 all intermediate fields `E` with `E/K` finite dimensional.
 
 ## Main Definitions
@@ -22,13 +24,13 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `fixedByFinite K L`. Given a field extension `L/K`, `fixedByFinite K L` is the set of
   subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite
 
-- `galBasis K L`. Given a field extension `L/K`, this is the filter basis on `L ≃ₐ[K] L` whose
+- `galBasis K L`. Given a field extension `L/K`, this is the filter basis on `Gal(L/K)` whose
   sets are `Gal(L/E)` for intermediate fields `E` with `E/K` finite.
 
 - `galGroupBasis K L`. This is the same as `galBasis K L`, but with the added structure
-  that it is a group filter basis on `L ≃ₐ[K] L`, rather than just a filter basis.
+  that it is a group filter basis on `Gal(L/K)`, rather than just a filter basis.
 
-- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `L ≃ₐ[K] L`, induced
+- `krullTopology K L`. Given a field extension `L/K`, this is the topology on `Gal(L/K)`, induced
   by the group filter basis `galGroupBasis K L`.
 
 ## Main Results
@@ -36,24 +38,25 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology_t2 K L`. For an integral field extension `L/K`, the topology `krullTopology K L`
   is Hausdorff.
 
-- `krullTopology_totallyDisconnected K L`. For an integral field extension `L/K`, the topology
-  `krullTopology K L` is totally disconnected.
+- `krullTopology_isTotallySeparated K L`. For an integral field extension `L/K`, the topology
+  `krullTopology K L` is totally separated.
 
-- `IntermediateField.finrank_eq_fixingSubgroup_index`: given a Galois extension `K/k` and an
-  intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
-  fixing subgroup of `L`.
+- `stabilizer_isOpen_of_isIntegral`: For an integral field extension `L/K`, the stabilizer
+  in `Gal(L/K)` of any element in `L` is open for the Krull topology.
 
 ## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
-  `E`. That is, `Gal(L/E)` is the subgroup of `L ≃ₐ[K] L` consisting of automorphisms that fix
-  every element of `E`. In particular, we distinguish between `L ≃ₐ[E] L` and `Gal(L/E)`, since the
-  former is defined to be a subgroup of `L ≃ₐ[K] L`, while the latter is a group in its own right.
+  `E`. That is, `Gal(L/E)` is the subgroup of `Gal(L/K)` consisting of automorphisms that fix
+  every element of `E`. In particular, we distinguish between `Gal(L/E)` and `Gal(L/E)`, since the
+  former is defined to be a subgroup of `Gal(L/K)`, while the latter is a group in its own right.
 
 ## Implementation Notes
 
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -64,27 +67,18 @@ def finiteExts (K : Type*) [Field K] (L : Type*) [Field L] [Algebra K L] :
   {E | FiniteDimensional K E}
 
 /-- Given a field extension `L/K`, `fixedByFinite K L` is the set of
-subsets `Gal(L/E)` of `L ≃ₐ[K] L`, where `E/K` is finite. -/
-def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgroup (L ≃ₐ[K] L)) :=
+subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite. -/
+def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgroup Gal(L/K)) :=
   IntermediateField.fixingSubgroup '' finiteExts K L
-
-@[deprecated (since := "2025-03-16")]
-alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
-
-@[deprecated (since := "2025-03-12")]
-alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
 
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
   ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot⟩
 
-@[deprecated (since := "2025-03-16")]
-alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
-
-/-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `L ≃ₐ[K] L` whose sets
+/-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `Gal(L/K)` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional. -/
-def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L ≃ₐ[K] L) where
+def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis Gal(L/K) where
   sets := (fun g => g.carrier) '' fixedByFinite K L
   nonempty := ⟨⊤, ⊤, top_fixedByFinite, rfl⟩
   inter_sets := by
@@ -94,16 +88,17 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
     refine ⟨(E1 ⊔ E2).fixingSubgroup.carrier, ⟨_, ⟨_, E1.finiteDimensional_sup E2, rfl⟩, rfl⟩, ?_⟩
     exact Set.subset_inter (E1.fixingSubgroup_le le_sup_left) (E2.fixingSubgroup_le le_sup_right)
 
-/-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
+/-- A subset of `Gal(L/K)` is a member of `galBasis K L` if and only if it is the underlying set
 of `Gal(L/E)` for some finite subextension `E/K`. -/
-theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set (L ≃ₐ[K] L)) :
+theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set Gal(L/K)) :
     U ∈ galBasis K L ↔ U ∈ (fun g => g.carrier) '' fixedByFinite K L :=
   Iff.rfl
 
-/-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `L ≃ₐ[K] L`
+/-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `Gal(L/K)`
 whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
+@[instance_reducible]
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    GroupFilterBasis (L ≃ₐ[K] L) where
+    GroupFilterBasis Gal(L/K) where
   toFilterBasis := galBasis K L
   one' := fun ⟨H, _, h2⟩ => h2 ▸ H.one_mem
   mul' {U} hU :=
@@ -125,7 +120,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     rw [IntermediateField.mem_fixingSubgroup_iff]
     intro x hx
     change σ (g (σ⁻¹ x)) = x
-    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
+    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp⟩
     have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
       rw [Subgroup.mem_carrier, IntermediateField.mem_fixingSubgroup_iff F g] at hg
       exact hg (σ⁻¹ x) h_in_F
@@ -134,20 +129,20 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     exact AlgEquiv.apply_symm_apply σ x
 
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
-`L ≃ₐ[K] L` induced by the group filter basis `galGroupBasis K L`. -/
+`Gal(L/K)` induced by the group filter basis `galGroupBasis K L`. -/
 instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    TopologicalSpace (L ≃ₐ[K] L) :=
+    TopologicalSpace Gal(L/K) :=
   GroupFilterBasis.topology (galGroupBasis K L)
 
-/-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
+/-- For a field extension `L/K`, the Krull topology on `Gal(L/K)` makes it a topological group. -/
 @[stacks 0BMJ "We define Krull topology directly without proving the universal property"]
-instance (K L : Type*) [Field K] [Field L] [Algebra K L] : IsTopologicalGroup (L ≃ₐ[K] L) :=
+instance (K L : Type*) [Field K] [Field L] [Algebra K L] : IsTopologicalGroup Gal(L/K) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra K L]
-    (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
-    FiniteDimensional K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
+    (s : Set Gal(L/K)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
+    FiniteDimensional K E ∧ (E.fixingSubgroup : Set Gal(L/K)) ⊆ s := by
   rw [GroupFilterBasis.nhds_one_eq]
   constructor
   · rintro ⟨-, ⟨-, ⟨E, fin, rfl⟩, rfl⟩, hE⟩
@@ -157,8 +152,8 @@ lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra 
 
 open scoped Topology in
 lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
-    [Normal K L] (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
-    FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
+    [Normal K L] (s : Set Gal(L/K)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
+    FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set Gal(L/K)) ⊆ s := by
   rw [krullTopology_mem_nhds_one_iff]
   refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
   use (IntermediateField.normalClosure K E L)
@@ -170,25 +165,25 @@ section KrullT2
 open scoped Topology Filter
 
 /-- Let `L/E/K` be a tower of fields with `E/K` finite. Then `Gal(L/E)` is an open subgroup of
-  `L ≃ₐ[K] L`. -/
+  `Gal(L/K)`. -/
 theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsOpen (E.fixingSubgroup : Set (L ≃ₐ[K] L)) := by
+    IsOpen (E.fixingSubgroup : Set Gal(L/K)) := by
   have h_basis : E.fixingSubgroup.carrier ∈ galGroupBasis K L :=
     ⟨E.fixingSubgroup, ⟨E, ‹_›, rfl⟩, rfl⟩
   have h_nhds := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
   exact Subgroup.isOpen_of_mem_nhds _ h_nhds
 
-/-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ L ≃ₐ[K] L` is
+/-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
   closed. -/
 theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsClosed (E.fixingSubgroup : Set (L ≃ₐ[K] L)) :=
+    IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
   OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
 
-/-- If `L/K` is an algebraic extension, then the Krull topology on `L ≃ₐ[K] L` is Hausdorff. -/
+/-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Algebra.IsIntegral K L] : T2Space (L ≃ₐ[K] L) :=
+    [Algebra.IsIntegral K L] : T2Space Gal(L/K) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
       obtain ⟨x, hx⟩ := DFunLike.exists_ne hfg
@@ -201,7 +196,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       let h_findim : FiniteDimensional K E := IntermediateField.adjoin.finiteDimensional
         (Algebra.IsIntegral.isIntegral x)
       let H := E.fixingSubgroup
-      have h_basis : (H : Set (L ≃ₐ[K] L)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
+      have h_basis : (H : Set Gal(L/K)) ∈ galGroupBasis K L := ⟨H, ⟨E, ⟨h_findim, rfl⟩⟩, rfl⟩
       have h_nhds := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
       rw [mem_nhds_iff] at h_nhds
       rcases h_nhds with ⟨W, hWH, hW_open, hW_1⟩
@@ -226,13 +221,13 @@ end KrullT2
 section TotallySeparated
 
 instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
-    TotallySeparatedSpace (L ≃ₐ[K] L) := by
+    TotallySeparatedSpace Gal(L/K) := by
   rw [totallySeparatedSpace_iff_exists_isClopen]
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
   rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
   let E := IntermediateField.adjoin K ({x} : Set L)
-  haveI := IntermediateField.adjoin.finiteDimensional
+  have := IntermediateField.adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral (R := K) x)
   refine ⟨σ • E.fixingSubgroup,
     ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
@@ -241,83 +236,34 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
     IntermediateField.mem_fixingSubgroup_iff, not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
-/-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
-  totally disconnected. -/
+/-- If `L/K` is an algebraic field extension, then the Krull topology on `Gal(L/K)` is
+  totally separated. -/
 theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set (L ≃ₐ[K] L)) :=
+    [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
-
-@[deprecated (since := "2025-04-03")]
-alias krullTopology_totallyDisconnected := krullTopology_isTotallySeparated
 
 end TotallySeparated
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
-    [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
+    [Algebra K L] [FiniteDimensional K L] : DiscreteTopology Gal(L/K) := by
   rw [discreteTopology_iff_isOpen_singleton_one]
-  change IsOpen ((⊥ : Subgroup (L ≃ₐ[K] L)) : Set (L ≃ₐ[K] L))
+  change IsOpen ((⊥ : Subgroup Gal(L/K)) : Set Gal(L/K))
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤
 
-namespace IntermediateField
+section MulAction
 
-variable {k E : Type*} (K : Type*) [Field k] [Field E] [Field K]
-  [Algebra k E] [Algebra k K] [Algebra E K] [IsScalarTower k E K] (L : IntermediateField k E)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
-/-- If `K / E / k` is a field extension tower with `E / k` normal,
-`L` is an intermediate field of `E / k`, then the fixing subgroup of `L` viewed as an
-intermediate field of `K / k` is equal to the preimage of the fixing subgroup of `L` viewed as an
-intermediate field of `E / k` under the natural map `Aut(K / k) → Aut(E / k)`
-(`AlgEquiv.restrictNormalHom`). -/
-theorem map_fixingSubgroup [Normal k E] :
-    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup =
-      L.fixingSubgroup.comap (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) E) := by
-  ext f
-  simp only [Subgroup.mem_comap, mem_fixingSubgroup_iff]
-  constructor
-  · rintro h x hx
-    change f.restrictNormal E x = x
-    apply_fun _ using (algebraMap E K).injective
-    rw [AlgEquiv.restrictNormal_commutes]
-    exact h _ ⟨x, hx, rfl⟩
-  · rintro h _ ⟨x, hx, rfl⟩
-    replace h := congr(algebraMap E K $(show f.restrictNormal E x = x from h x hx))
-    rwa [AlgEquiv.restrictNormal_commutes] at h
+/-- If `L/K` is an algebraic field extension, then the stabilizer
+in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
+theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
+    IsOpen (MulAction.stabilizer Gal(L/K) x : Set Gal(L/K)) := by
+  open IntermediateField in
+  let E := adjoin K {x}
+  have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
+  convert! fixingSubgroup_isOpen E
+  ext g
+  simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
-/-- If `K / E / k` is a field extension tower with `E / k` and `K / k` normal,
-`L` is an intermediate field of `E / k`, then the index of the fixing subgroup of `L` viewed as an
-intermediate field of `K / k` is equal to the index of the fixing subgroup of `L` viewed as an
-intermediate field of `E / k`. -/
-theorem map_fixingSubgroup_index [Normal k E] [Normal k K] :
-    (L.map (IsScalarTower.toAlgHom k E K)).fixingSubgroup.index = L.fixingSubgroup.index := by
-  rw [L.map_fixingSubgroup K, L.fixingSubgroup.index_comap_of_surjective
-    (AlgEquiv.restrictNormalHom_surjective _)]
-
-variable {K} in
-/-- If `K / k` is a Galois extension, `L` is an intermediate field of `K / k`, then `[L : k]`
-as a natural number is equal to the index of the fixing subgroup of `L`. -/
-theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k K] :
-    Module.finrank k L = L.fixingSubgroup.index := by
-  wlog hnfd : FiniteDimensional k L generalizing L
-  · rw [Module.finrank_of_infinite_dimensional hnfd]
-    by_contra! h
-    replace h : L.fixingSubgroup.FiniteIndex := ⟨h.symm⟩
-    obtain ⟨L', hfd, hL'⟩ :=
-      exists_lt_finrank_of_infinite_dimensional hnfd L.fixingSubgroup.index
-    let i := (liftAlgEquiv L').toLinearEquiv
-    replace hfd := i.finiteDimensional
-    rw [i.finrank_eq, this _ hfd] at hL'
-    exact (Subgroup.index_antitone <| fixingSubgroup_le <|
-      IntermediateField.lift_le L').not_gt hL'
-  let E := normalClosure k L K
-  have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
-  let L' := restrict hle
-  have h := Module.finrank_mul_finrank k ↥L' ↥E
-  classical
-  rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
-  rw [← L'.fixingSubgroup.index_mul_card,  Nat.mul_left_inj Finite.card_pos.ne'] at h
-  rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]
-  congr 2
-  exact lift_restrict hle
-
-end IntermediateField
+end MulAction

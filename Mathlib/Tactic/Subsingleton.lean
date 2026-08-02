@@ -3,7 +3,10 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Logic.Basic
+module
+
+public meta import Lean.Meta.Tactic.Refl
+public import Mathlib.Logic.Basic
 
 /-!
 # `subsingleton` tactic
@@ -11,8 +14,10 @@ import Mathlib.Logic.Basic
 The `subsingleton` tactic closes `Eq` or `HEq` goals using an argument
 that the types involved are subsingletons.
 To first approximation, it does `apply Subsingleton.elim` but it also will try `proof_irrel_heq`,
-and it is careful not to accidentally specialize `Sort _` to `Prop.
+and it is careful not to accidentally specialize `Sort _` to `Prop`.
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -103,34 +108,21 @@ def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsR
 namespace Mathlib.Tactic
 
 /--
-The `subsingleton` tactic tries to prove a goal of the form `x = y` or `x ≍ y`
-using the fact that the types involved are *subsingletons*
-(a type with exactly zero or one terms).
-To a first approximation, it does `apply Subsingleton.elim`.
-As a nicety, `subsingleton` first runs the `intros` tactic.
-
-- If the goal is an equality, it either closes the goal or fails.
-- `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances
-  to the local context. This can be more flexible than
-  `have := inst1; have := inst2; ...; subsingleton` since the tactic does not require that
-  all placeholders be solved for.
+`subsingleton` proves the main goal of the form `∀ a ... b, x = y` or `∀ a ... b, x ≍ y` using the
+fact that the type(s) of `x` and `y` are *subsingletons* (a type with exactly zero or one elements).
+If `subsingleton` cannot close the goal, it fails.
 
 Techniques the `subsingleton` tactic can apply:
 - proof irrelevance
 - heterogeneous proof irrelevance (via `proof_irrel_heq`)
 - using `Subsingleton` (via `Subsingleton.elim`)
-- proving `BEq` instances are equal if they are both lawful (via `lawful_beq_subsingleton`)
+- proving instances of the type `BEq α` are equal if they are both lawful
+  (via `lawful_beq_subsingleton`)
 
-### Properties
-
-The tactic is careful not to accidentally specialize `Sort _` to `Prop`,
-avoiding the following surprising behavior of `apply Subsingleton.elim`:
-```lean
-example (α : Sort _) (x y : α) : x = y := by apply Subsingleton.elim
-```
-The reason this `example` goes through is that
-it applies the `∀ (p : Prop), Subsingleton p` instance,
-specializing the universe level metavariable in `Sort _` to `0`.
+* `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances
+  to the local context. This can be more flexible than
+  `have := inst1; have := inst2; ...; subsingleton` since the tactic does not require that
+  all placeholders be solved for.
 -/
 syntax (name := subsingletonStx) "subsingleton" (ppSpace "[" term,* "]")? : tactic
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.Lift
-import Mathlib.Topology.Defs.Basic
+module
+
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.Lift
+public import Mathlib.Topology.Defs.Basic
 
 /-!
 # Continuous bundled maps
@@ -16,6 +18,8 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass
 which is meant to be satisfied by itself and all stricter types.
 -/
+
+@[expose] public section
 
 open Function
 open scoped Topology
@@ -30,7 +34,7 @@ structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] 
   /-- The function `X → Y` -/
   protected toFun : X → Y
   /-- Proposition that `toFun` is continuous -/
-  protected continuous_toFun : Continuous toFun := by continuity
+  protected continuous_toFun : Continuous toFun := by fun_prop
 
 /-- `C(X, Y)` is the type of continuous maps from `X` to `Y`. -/
 notation "C(" X ", " Y ")" => ContinuousMap X Y
@@ -57,7 +61,7 @@ variable {F X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X 
 variable [ContinuousMapClass F X Y]
 
 /-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
-@[coe] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
+@[coe, reducible] def toContinuousMap (f : F) : C(X, Y) := ⟨f, map_continuous f⟩
 
 instance : CoeTC F C(X, Y) := ⟨toContinuousMap⟩
 
@@ -72,7 +76,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 instance instFunLike : FunLike C(X, Y) X Y where
   coe := ContinuousMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance instContinuousMapClass : ContinuousMapClass C(X, Y) X Y where
   map_continuous := ContinuousMap.continuous_toFun

@@ -3,8 +3,9 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
 /-!
 # Products of finite measures and probability measures
@@ -26,6 +27,8 @@ the underlying space is metrizable and separable.
 continuously on the factors.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 
@@ -162,8 +165,8 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
     exact ameas.prod bmeas
-  · letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
-    letI : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
+  · let : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
+    let : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
     intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
     rcases exists_null_frontier_thickening (μ.1 : Measure α) {x.1} εpos with ⟨r, hr, μr⟩

@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Tactic.NormNum.Prime
 
@@ -30,6 +30,9 @@ namespace Theorems100
 namespace Nat
 
 open ArithmeticFunction Finset
+
+-- access notation `σ`
+open scoped sigma
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, ← one_add_one_eq_two, ← geom_sum_mul_add 1 (k + 1)]
@@ -59,7 +62,7 @@ theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k *
   refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
   have hg := h.not_pow_dvd_of_multiplicity_lt (Nat.lt_succ_self _)
-  contrapose! hg
+  contrapose hg
   rcases hg with ⟨k, rfl⟩
   apply Dvd.intro k
   rw [pow_succ, mul_assoc, ← hm]
@@ -102,7 +105,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
         apply pow_lt_pow_right₀ (Nat.lt_succ_self 1) (Nat.succ_lt_succ k.succ_pos)
-    contrapose! hm
+    contrapose hm
     simp [hm]
 
 /-- The Euclid-Euler theorem characterizing even perfect numbers -/

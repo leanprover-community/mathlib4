@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Adjoining elements to form subalgebras
@@ -25,12 +27,14 @@ adjoin, algebra, finitely-generated algebra
 
 -/
 
+@[expose] public section
+
 
 universe u v w
 
 open Subsemiring Ring Submodule
 
-open Pointwise
+open scoped Pointwise
 
 namespace Algebra
 
@@ -137,6 +141,7 @@ theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).FG) : S.FG :=
   let ⟨s, hs⟩ := hs

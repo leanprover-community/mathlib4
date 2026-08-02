@@ -3,8 +3,11 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Data.FunLike.Module
 
 /-!
 # Group seminorms
@@ -42,6 +45,8 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 norm, seminorm
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -175,7 +180,7 @@ variable [Group E] [Group F] [Group G] {p q : GroupSeminorm E}
 @[to_additive]
 instance funLike : FunLike (GroupSeminorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[to_additive]
 instance groupSeminormClass : GroupSeminormClass (GroupSeminorm E) E ℝ where
@@ -220,13 +225,17 @@ instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
       mul_le' := fun _ _ => (zero_add _).ge
       inv' := fun _ => rfl }⟩
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_zero : ⇑(0 : GroupSeminorm E) = 0 :=
-  rfl
+@[to_additive]
+instance : IsZeroApply (GroupSeminorm E) E ℝ where
+  zero_apply _ := rfl
 
-@[to_additive (attr := simp)]
-theorem zero_apply (x : E) : (0 : GroupSeminorm E) x = 0 :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_zero := FunLike.coe_zero
+@[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-10")] protected alias _root_.GroupSeminorm.zero_apply :=
+  zero_apply
+@[deprecated (since := "2026-07-10")] protected alias _root_.AddGroupSeminorm.zero_apply :=
+  zero_apply
 
 @[to_additive]
 instance : Inhabited (GroupSeminorm E) :=
@@ -242,16 +251,62 @@ instance : Add (GroupSeminorm E) :=
           add_add_add_comm _ _ _ _
       inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
 
-@[to_additive (attr := simp)]
-theorem coe_add : ⇑(p + q) = p + q :=
+@[to_additive]
+instance : IsAddApply (GroupSeminorm E) E ℝ where
+  add_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_add := FunLike.coe_add
+@[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_add := FunLike.coe_add
+
+@[deprecated (since := "2026-07-10")] protected alias _root_.GroupSeminorm.add_apply :=
+  add_apply
+@[deprecated (since := "2026-07-10")] protected alias _root_.AddGroupSeminorm.add_apply :=
+  add_apply
+
+open scoped Classical in
+@[to_additive]
+noncomputable instance : SupSet (GroupSeminorm E) where
+  sSup s :=
+    if h : BddAbove s then
+      { toFun x := ⨆ p : s, p.1 x
+        map_one' := by simp
+        mul_le' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_mul_le_add p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        inv' x := by simp }
+    else 0
+
+@[to_additive]
+lemma sSup_of_not_bddAbove {s : Set (GroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+@[to_additive]
+lemma coe_sSup_apply {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : GroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
   rfl
 
-@[to_additive (attr := simp)]
-theorem add_apply (x : E) : (p + q) x = p x + q x :=
-  rfl
+@[to_additive]
+lemma coe_sSup_apply' {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+@[to_additive]
+lemma coe_iSup_apply {ι : Type*} (f : ι → GroupSeminorm E) (h : BddAbove (range f)) {x : E} :
+    ⇑(⨆ i, f i) x = ⨆ i, (f i : GroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+
 @[to_additive]
 instance : Max (GroupSeminorm E) :=
   ⟨fun p q =>
@@ -273,7 +328,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive /-- Composition of an additive group seminorm with an additive monoid homomorphism as
@@ -404,17 +459,18 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
         apply map_add_le_add
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
-@[simp, norm_cast]
-theorem coe_smul (r : R) (p : AddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
-  rfl
+instance : IsSMulApply R (AddGroupSeminorm E) E ℝ where
+  smul_apply _ _ _ := rfl
 
-@[simp]
-theorem smul_apply (r : R) (p : AddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
 
 instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R']
     [IsScalarTower R R' ℝ] : IsScalarTower R R' (AddGroupSeminorm E) :=
-  ⟨fun r a p => ext fun x => smul_assoc r a (p x)⟩
+  FunLike.isScalarTower
+
+instance : AddCommMonoid (AddGroupSeminorm E) := fast_instance% FunLike.addCommMonoid
 
 theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
@@ -432,7 +488,7 @@ variable [AddGroup E] {p q : NonarchAddGroupSeminorm E}
 
 instance funLike : FunLike (NonarchAddGroupSeminorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
 
 instance nonarchAddGroupSeminormClass :
     NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E where
@@ -473,19 +529,55 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
       neg' := fun _ => rfl }⟩
 
-@[simp, norm_cast]
-theorem coe_zero : ⇑(0 : NonarchAddGroupSeminorm E) = 0 :=
-  rfl
+instance : IsZeroApply (NonarchAddGroupSeminorm E) E ℝ where
+  zero_apply _ := rfl
 
-@[simp]
-theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
+
+@[deprecated (since := "2026-07-10")] protected alias zero_apply := zero_apply
 
 instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+open scoped Classical in
+noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
+  sSup s :=
+    if h : BddAbove s then
+      { toFun x := ⨆ p : s, p.1 x
+        map_zero' := by simp
+        add_le_max' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_add_le_max p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        neg' := by simp }
+    else 0
+
+lemma sSup_of_not_bddAbove {s : Set (NonarchAddGroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+lemma coe_sSup_apply {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : NonarchAddGroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
+  rfl
+
+lemma coe_sSup_apply' {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
+
+lemma coe_iSup_apply {ι : Type*} (f : ι → NonarchAddGroupSeminorm E) (h : BddAbove (range f))
+    {x : E} : ⇑(⨆ i, f i) x = ⨆ i, (f i : NonarchAddGroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+
 instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
@@ -504,7 +596,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end AddGroup
 
@@ -554,17 +646,18 @@ instance : SMul R (GroupSeminorm E) :=
         apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
+instance : IsSMulApply R (GroupSeminorm E) E ℝ where
+  smul_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
+
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (GroupSeminorm E) :=
-  ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
+  FunLike.isScalarTower
 
-@[simp, norm_cast]
-theorem coe_smul (r : R) (p : GroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
-  rfl
-
-@[simp]
-theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p x :=
-  rfl
+instance : AddCommMonoid (GroupSeminorm E) := fast_instance% FunLike.addCommMonoid
 
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
@@ -608,17 +701,15 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
         apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
+instance : IsSMulApply R (NonarchAddGroupSeminorm E) E ℝ where
+  smul_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
+
+@[deprecated (since := "2026-07-10")] protected alias smul_apply := smul_apply
+
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
-    IsScalarTower R R' (NonarchAddGroupSeminorm E) :=
-  ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
-
-@[simp, norm_cast]
-theorem coe_smul (r : R) (p : NonarchAddGroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
-  rfl
-
-@[simp]
-theorem smul_apply (r : R) (p : NonarchAddGroupSeminorm E) (x : E) : (r • p) x = r • p x :=
-  rfl
+    IsScalarTower R R' (NonarchAddGroupSeminorm E) := FunLike.isScalarTower
 
 theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
@@ -640,7 +731,7 @@ variable [Group E] {p q : GroupNorm E}
 @[to_additive]
 instance funLike : FunLike (GroupNorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
 
 @[to_additive]
 instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
@@ -686,15 +777,19 @@ instance : Add (GroupNorm E) :=
       eq_one_of_map_eq_zero' := fun _x hx =>
         of_not_not fun h => hx.not_gt <| add_pos (map_pos_of_ne_one p h) (map_pos_of_ne_one q h) }⟩
 
-@[to_additive (attr := simp)]
-theorem coe_add : ⇑(p + q) = p + q :=
-  rfl
+@[to_additive]
+instance : IsAddApply (GroupNorm E) E ℝ where
+  add_apply _ _ _ := rfl
 
-@[to_additive (attr := simp)]
-theorem add_apply (x : E) : (p + q) x = p x + q x :=
-  rfl
+@[deprecated (since := "2026-07-10")] alias _root_.GroupNorm.coe_add := FunLike.coe_add
+@[deprecated (since := "2026-07-10")] alias _root_.AddGroupNorm.coe_add := FunLike.coe_add
 
--- TODO: define `SupSet`
+@[deprecated (since := "2026-07-10")] protected alias _root_.GroupNorm.add_apply := add_apply
+@[deprecated (since := "2026-07-10")] protected alias _root_.AddGroupNorm.add_apply := add_apply
+
+-- Note: To define an instance SupSet (GroupNorm E) requires a canonical "bottom" norm for sSup ∅.
+-- The zero function fails definiteness; the discrete norm needs complex proofs.
+-- See https://github.com/leanprover-community/mathlib/pull/11329 for context.
 @[to_additive]
 instance : Max (GroupNorm E) :=
   ⟨fun p q =>
@@ -712,7 +807,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance : SemilatticeSup (GroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end Group
 
@@ -764,7 +859,7 @@ variable [AddGroup E] {p q : NonarchAddGroupNorm E}
 
 instance funLike : FunLike (NonarchAddGroupNorm E) E ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
+  coe_injective f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
 
 instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E where
   map_add_le_max f := f.add_le_max'
@@ -814,7 +909,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
   ⟨{ (1 : NonarchAddGroupSeminorm E) with

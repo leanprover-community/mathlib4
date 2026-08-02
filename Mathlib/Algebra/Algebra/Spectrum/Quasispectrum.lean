@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Algebra.Unitization
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Unitization
 
 /-!
 # Quasiregularity and quasispectrum
@@ -56,9 +58,10 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 + `Unitization.isQuasiregular_inr_iff`: `a : A` is quasiregular if and only if it is quasiregular
   in `Unitization R A` (via the coercion `Unitization.inr`).
 + `Unitization.quasispectrum_eq_spectrum_inr`: the quasispectrum of `a` in a non-unital `R`-algebra
-  `A` is precisely the spectrum of `a` in the unitization.
-  in `Unitization R A` (via the coercion `Unitization.inr`).
+  `A` is precisely the spectrum of `a` in `Unitization R A` (via the coercion `Unitization.inr`).
 -/
+
+@[expose] public section
 
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.
 If `R` is a non-unital semiring, then `PreQuasiregular R` is equipped with the monoid structure
@@ -120,8 +123,8 @@ variable (R A) in
 def unitsFstOne : Subgroup (Unitization R A)ˣ where
   carrier := {x | x.val.fst = 1}
   one_mem' := rfl
-  mul_mem' {x} {y} (hx : fst x.val = 1) (hy : fst y.val = 1) := by simp [hx, hy]
-  inv_mem' {x} (hx : fst x.val = 1) := by
+  mul_mem' {x} {y} (hx : x.val.fst = 1) (hy : y.val.fst = 1) := by simp [hx, hy]
+  inv_mem' {x} (hx : x.val.fst = 1) := by
     simpa [-Units.mul_inv, hx] using congr(fstHom R A $(x.mul_inv))
 
 @[simp]
@@ -142,30 +145,32 @@ scalar part is `1 : R` (i.e., `Unitization.unitsFstOne`) is isomorphic to the gr
 @[simps]
 def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)ˣ where
   toFun x :=
-    { val := equiv x.val.val.snd
-      inv := equiv x⁻¹.val.val.snd
-      val_inv := equiv.symm.injective <| by
-        simpa [-Units.mul_inv] using congr(snd $(x.val.mul_inv))
-      inv_val := equiv.symm.injective <| by
-        simpa [-Units.inv_mul] using congr(snd $(x.val.inv_mul)) }
+    { val := PreQuasiregular.equiv x.val.val.snd
+      inv := PreQuasiregular.equiv x⁻¹.val.val.snd
+      val_inv := PreQuasiregular.equiv.symm.injective <| by
+        simpa [-Units.mul_inv] using congr($(x.val.mul_inv).snd)
+      inv_val := PreQuasiregular.equiv.symm.injective <| by
+        simpa [-Units.inv_mul] using congr($(x.val.inv_mul).snd) }
   invFun x :=
     { val :=
-      { val := 1 + equiv.symm x.val
-        inv := 1 + equiv.symm x⁻¹.val
+      { val := 1 + PreQuasiregular.equiv.symm x.val
+        inv := 1 + PreQuasiregular.equiv.symm x⁻¹.val
         val_inv := by
-          convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
+          convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A))
+          · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
+              add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero]
         inv_val := by
-          convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
+          convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A))
+          · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
+              add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero] }
       property := by simp }
   left_inv x := Subtype.ext <| Units.ext <| by simpa using x.val.val.inl_fst_add_inr_snd_eq
-  right_inv x := Units.ext <| by simp [-equiv_symm_apply]
-  map_mul' x y := Units.ext <| equiv.symm.injective <| by simp
+  right_inv x := Units.ext <| by simp [-PreQuasiregular.equiv_symm_apply]
+  map_mul' x y := Units.ext <| PreQuasiregular.equiv.symm.injective <| by simp
 
 end Unitization
 
@@ -211,8 +216,8 @@ lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQua
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
-  · convert congr(1 + $(hy₁)) using 1 <;> [noncomm_ring; simp]
-  · convert congr(1 + $(hy₂)) using 1 <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₁)) <;> [noncomm_ring; simp]
+  · convert congr(1 + $(hy₂)) <;> [noncomm_ring; simp]
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
@@ -224,7 +229,7 @@ lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
   case' h.right => have := congr($(hx.val_inv_mul) - 1)
   all_goals
     rw [← sub_add_cancel (↑hx.unit⁻¹ : R) 1, sub_self] at this
-    convert this using 1
+    convert this
     noncomm_ring
 
 -- interestingly, this holds even in the semiring case.
@@ -263,6 +268,7 @@ instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
 need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
@@ -273,11 +279,11 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
     [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a := by
   refine Set.compl_subset_compl.mp fun x ↦ ?_
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not,
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
     forall_exists_index]
   refine fun hx this ↦ ⟨hx, ?_⟩
   rw [Units.smul_def, ← smul_one_smul S] at this ⊢
-  simpa [- smul_assoc] using this.map φ
+  simpa [-smul_assoc] using this.map φ
 
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
@@ -298,7 +304,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
     [Ring A] [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {r : R | ¬ IsUnit r} := by
   ext r
   rw [quasispectrum]
-  simp only [Set.mem_setOf_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
+  simp only [Set.mem_ofPred_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
   congr! 1 with hr
   rw [not_iff_not, isQuasiregular_iff_isUnit, ← sub_eq_add_neg, Algebra.algebraMap_eq_smul_one]
   exact (IsUnit.smul_sub_iff_sub_inv_smul hr.unit a).symm
@@ -309,7 +315,7 @@ lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ri
 
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
-  convert quasispectrum_eq_spectrum_union R a
+  convert! quasispectrum_eq_spectrum_union R a
   simp
 
 lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
@@ -376,7 +382,7 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
     ← Set.inter_union_compl (quasispectrum R (b * a)) {r | IsUnit r}]
   congr! 1
   · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
-      Unitization.inr_mul] using spectrum.setOf_isUnit_inter_mul_comm _ _
+      Unitization.inr_mul] using spectrum.setOfPred_isUnit_inter_mul_comm _ _
   · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
     all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
 
@@ -513,11 +519,11 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [F
     (hf : QuasispectrumRestricts a f) (hg : QuasispectrumRestricts a g) :
     QuasispectrumRestricts a e where
   left_inv := by
-    convert hfge ▸ hf.left_inv.comp hg.left_inv
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    convert! hfge ▸ hf.left_inv.comp hg.left_inv
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
   rightInvOn := by
-    convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    convert! hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end NonUnital
 
@@ -567,7 +573,7 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
 
 lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
-  rightInvOn :=  by
+  rightInvOn := by
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv

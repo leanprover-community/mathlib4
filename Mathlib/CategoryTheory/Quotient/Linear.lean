@@ -3,39 +3,43 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The quotient category is linear
 
 If `r : HomRel C` is a congruence on a preadditive category `C` which satisfies certain
 compatibilities, we have already defined a preadditive structure on `Quotient r` in
-the file `CategoryTheory.Quotient.Preadditive` such that `functor r : C ⥤ Quotient r` is
-an additive functor. In this file, assuming moreover that `C` is a `R`-linear category
+the file `Mathlib/CategoryTheory/Quotient/Preadditive.lean` such that `functor r : C ⥤ Quotient r`
+is an additive functor. In this file, assuming moreover that `C` is an `R`-linear category
 and that the relation `r` is compatible with the scalar multiplication by any `a : R`, we
-show that `Quotient r` is a `R`-linear category and that `functor r : C ⥤ Quotient r`
-is a `R`-linear functor.
+show that `Quotient r` is an `R`-linear category and that `functor r : C ⥤ Quotient r`
+is an `R`-linear functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 namespace Quotient
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
 
 namespace Linear
 
 /-- The scalar multiplications on morphisms in `Quotient R`. -/
+@[instance_reducible]
 def smul (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     (X Y : Quotient r) : SMul R (X ⟶ Y) where
   smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
-    dsimp
-    simp only [compClosure_eq_self] at h₁₂
+    simp only [HomRel.compClosure_eq_self] at h₁₂
     apply Quot.sound
-    rw [compClosure_eq_self]
+    rw [HomRel.compClosure_eq_self]
     exact hr _ _ _ h₁₂)
 
 @[simp]
@@ -46,6 +50,7 @@ lemma smul_eq (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ 
 
 
 /-- Auxiliary definition for `Quotient.Linear.module`. -/
+@[instance_reducible]
 def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] (X Y : C) :
     Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
@@ -75,6 +80,7 @@ def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
       rw [add_smul, Functor.map_add] }
 
 /-- Auxiliary definition for `Quotient.linear`. -/
+@[instance_reducible]
 def module (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] (X Y : Quotient r) :
     Module R (X ⟶ Y) := module' r hr X.as Y.as
@@ -83,10 +89,12 @@ end Linear
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assuming `Quotient r` has already been endowed with a preadditive category structure
-such that `functor r : C ⥤ Quotient r` is additive, and that `C` has a `R`-linear category
+such that `functor r : C ⥤ Quotient r` is additive, and that `C` has an `R`-linear category
 structure compatible with `r`, this is the induced `R`-linear category structure on
 `Quotient r`. -/
+@[instance_reducible]
 def linear (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] : Linear R (Quotient r) := by
   letI := Linear.module r hr
@@ -108,7 +116,7 @@ instance linear_functor
     (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
     [Preadditive (Quotient r)] [(functor r).Additive] :
     letI := linear R r hr; Functor.Linear R (functor r) := by
-  letI := linear R r hr; exact { }
+  let := linear R r hr; exact { }
 
 end Quotient
 

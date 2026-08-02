@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
 # Effective epimorphisms in `TopCat`
@@ -13,6 +15,8 @@ This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -63,7 +67,6 @@ theorem effectiveEpi_iff_isQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) :
   /- Since `TopCat` has pullbacks, `π` is in fact a `RegularEpi`. This means that it exhibits `B` as
     a coequalizer of two maps into `X`. It suffices to prove that `π` followed by the isomorphism to
     an arbitrary coequalizer is a quotient map. -/
-  have hπ : RegularEpi π := inferInstance
-  exact isQuotientMap_of_isColimit_cofork _ hπ.isColimit
+  exact isQuotientMap_of_isColimit_cofork _ (IsRegularEpi.isColimit π)
 
 end TopCat

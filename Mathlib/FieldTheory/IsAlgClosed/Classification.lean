@@ -3,12 +3,14 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Classification of Algebraically closed fields
@@ -22,6 +24,8 @@ This file contains results related to classifying algebraically closed fields.
 * `IsAlgClosed.ringEquivOfCardinalEqOfCharEq` Two uncountable algebraically closed fields
   are isomorphic if they have the same characteristic and the same cardinality.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -80,7 +84,7 @@ variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
 variable {ι' : Type u} (v' : ι' → K')
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
@@ -91,7 +95,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
   calc
     Cardinal.lift.{max u w} #K ≤ Cardinal.lift.{max u w}
         (max #(Algebra.adjoin R (Set.range v)) ℵ₀) := by
-      letI := isAlgClosure_of_transcendence_basis v hv
+      let := isAlgClosure_of_transcendence_basis v hv
       simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
@@ -101,7 +105,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     _ = _ := by simp
 
 /-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
-the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+the maximum of the cardinality of `R`, the cardinality of a transcendence basis and
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
@@ -169,8 +173,8 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
-  letI : Algebra (ZMod p) K := ZMod.algebra _ _
-  letI : Algebra (ZMod p) L := ZMod.algebra _ _
+  let : Algebra (ZMod p) K := ZMod.algebra _ _
+  let : Algebra (ZMod p) L := ZMod.algebra _ _
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
   obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
@@ -189,11 +193,11 @@ if they have the same cardinality and the same characteristic. -/
 theorem ringEquiv_of_equiv_of_char_eq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
-  · haveI : Fact p.Prime := ⟨hp⟩
+  · have : Fact p.Prime := ⟨hp⟩
     exact ringEquiv_of_Cardinal_eq_of_charP p hK hKL
   · simp only [hp] at *
-    letI : CharZero K := CharP.charP_to_charZero K
-    letI : CharZero L := CharP.charP_to_charZero L
+    let : CharZero K := CharP.charP_to_charZero K
+    let : CharZero L := CharP.charP_to_charZero L
     exact ringEquiv_of_equiv_of_charZero hK hKL
 
 end IsAlgClosed

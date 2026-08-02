@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kim Morrison
 -/
-import Batteries.Control.AlternativeMonad
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Multiset.Functor
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Multiset.Functor
 
 /-!
 # Functoriality of `Finset`
@@ -19,6 +21,8 @@ Currently, all instances are classical because the functor classes want to run o
 instead we could state that a functor is lawful/applicative/traversable... between two given types,
 then we could provide the instances for types with decidable equality.
 -/
+
+@[expose] public section
 
 
 universe u

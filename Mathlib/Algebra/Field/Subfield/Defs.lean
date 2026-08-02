@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -42,6 +44,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 subfield, subfields
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -101,8 +105,6 @@ instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_me
 @[simp, norm_cast] lemma coe_nnqsmul (s : S) (q : ℚ≥0) (x : s) : ↑(q • x) = q • (x : K) := rfl
 @[simp, norm_cast] lemma coe_qsmul (s : S) (q : ℚ) (x : s) : ↑(q • x) = q • (x : K) := rfl
 
-variable (S)
-
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K)
@@ -137,12 +139,15 @@ add_decl_doc Subfield.toSubring
 namespace Subfield
 
 /-- The underlying `AddSubgroup` of a subfield. -/
+@[reducible]
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
@@ -180,7 +185,7 @@ protected def copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : Subfield K :=
     carrier := s
     inv_mem' := hs.symm ▸ S.inv_mem' }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : (S.copy s hs : Set K) = s :=
   rfl
 
@@ -261,19 +266,9 @@ instance : Inv s :=
 instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
--- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
-instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
-  Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
-    (fun _ ↦ rfl) fun _ ↦ rfl
+instance toDivisionRing (s : Subfield K) : DivisionRing s := SubfieldClass.toDivisionRing s
 
-/-- A subfield inherits a field structure -/
-instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
-  Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ ↦ rfl) fun _ => rfl
+instance toField {K} [Field K] (s : Subfield K) : Field s := SubfieldClass.toField s
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
@@ -330,7 +325,7 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
     S.toSubring.subtype = S.subtype :=
   rfl
 
-/-! # Partial order -/
+/-! ### Partial order -/
 
 
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
@@ -340,7 +335,6 @@ theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 

@@ -3,10 +3,12 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Set
-import Mathlib.Order.RelIso.Set
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.RelIso.Set
 
 /-!
 # Lexicographic order and order isomorphisms
@@ -19,6 +21,8 @@ import Mathlib.Order.RelIso.Set
   other side is `Unique`.
 -/
 
+@[expose] public section
+
 open Set
 
 variable {α : Type*}
@@ -27,7 +31,7 @@ variable {α : Type*}
 
 namespace RelIso
 
-variable {r : α → α → Prop} {x y : α} [IsTrans α r] [IsTrichotomous α r] [DecidableRel r]
+variable {r : α → α → Prop} {x y : α} [IsTrans α r] [Std.Trichotomous r] [DecidableRel r]
 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
@@ -146,6 +150,7 @@ end OrderIso
 namespace Prod.Lex
 variable (α β : Type*)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lexicographic product type with `Unique` type on the right is `OrderIso` to the left. -/
 def prodUnique [PartialOrder α] [Preorder β] [Unique β] : α ×ₗ β ≃o α where
   toFun x := (ofLex x).1
@@ -160,6 +165,7 @@ variable {α β} in
 theorem prodUnique_apply [PartialOrder α] [Preorder β] [Unique β] (x : α ×ₗ β) :
     prodUnique α β x = (ofLex x).1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lexicographic product type with `Unique` type on the left is `OrderIso` to the right. -/
 def uniqueProd [Preorder α] [Unique α] [LE β] : α ×ₗ β ≃o β where
   toFun x := (ofLex x).2
@@ -174,5 +180,34 @@ variable {α β} in
 @[simp]
 theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
     uniqueProd α β x = (ofLex x).2 := rfl
+
+/-- `Equiv.prodAssoc` promoted to an order isomorphism of lexicographic products. -/
+@[simps!]
+def prodLexAssoc (α β γ : Type*)
+    [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
+  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) <| toLex
+  map_rel_iff' := by
+    simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
+      Equiv.prodAssoc_apply]
+    grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
+
+/-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
+
+Right distributivity doesn't hold. A counterexample is `ℕ ×ₗ (Unit ⊕ₗ Unit) ≃o ℕ`
+which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ ℕ`. -/
+@[simps!]
+def sumLexProdLexDistrib (α β γ : Type*)
+    [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where
+  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
+    .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
+
+/-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
+@[simps! apply]
+def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]
+    [Preorder γ] [Preorder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
+  toEquiv := ofLex.trans ((Equiv.prodCongr ea eb).trans toLex)
+  map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 end Prod.Lex

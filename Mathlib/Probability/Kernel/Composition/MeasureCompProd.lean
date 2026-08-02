@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Composition.CompProd
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!
 # Composition-Product of a measure and a kernel
@@ -24,6 +26,8 @@ This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : Kernel α
 
 * `μ ⊗ₘ κ = μ.compProd κ`
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -45,13 +49,13 @@ scoped[ProbabilityTheory] infixl:100 " ⊗ₘ " => MeasureTheory.Measure.compPro
 @[simp]
 lemma compProd_of_not_sfinite (μ : Measure α) (κ : Kernel α β) (h : ¬ SFinite μ) :
     μ ⊗ₘ κ = 0 := by
-  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, Kernel.zero_apply]
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_left, zero_apply]
   rwa [Kernel.isSFiniteKernel_const]
 
 @[simp]
 lemma compProd_of_not_isSFiniteKernel (μ : Measure α) (κ : Kernel α β) (h : ¬ IsSFiniteKernel κ) :
     μ ⊗ₘ κ = 0 := by
-  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, Kernel.zero_apply]
+  rw [compProd, Kernel.compProd_of_not_isSFiniteKernel_right, zero_apply]
   rwa [Kernel.isSFiniteKernel_prodMkLeft_unit]
 
 lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs : MeasurableSet s) :
@@ -114,12 +118,22 @@ lemma ae_compProd_of_ae_ae {p : α × β → Prop}
 lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
     ∀ᵐ a ∂μ, ∀ᵐ b ∂κ a, p (a, b) := by
-  convert Kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
+  convert! Kernel.ae_ae_of_ae_compProd h -- Much faster with `convert`
 
 lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (hp : MeasurableSet {x | p x}) :
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
   Kernel.ae_compProd_iff hp
+
+lemma ae_compProd_of_ae_fst (κ : Kernel α β) {p : α → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ x ∂(μ ⊗ₘ κ), p x.1 :=
+  ae_compProd_of_ae_ae (measurable_fst hp) <| by filter_upwards [h] with a ha using by simp [ha]
+
+lemma ae_eq_compProd_of_ae_eq_fst {γ : Type*} {mγ : MeasurableSpace γ} [MeasurableEq γ]
+    (κ : Kernel α β) {f g : α → γ} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
+    (fun p ↦ f p.1) =ᵐ[μ ⊗ₘ κ] (fun p ↦ g p.1) :=
+  ae_compProd_of_ae_fst κ (measurableSet_eq_fun hf hg) h
 
 /-- The composition product of a measure and a constant kernel is the product between the two
 measures. -/
@@ -132,14 +146,14 @@ lemma compProd_const {ν : Measure β} [SFinite μ] [SFinite ν] :
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
-  · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
+  · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, _root_.add_apply]
   · simp [hκ]
 
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
-  · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
+  · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, _root_.add_apply]
   · simp [hμ]
 
 lemma compProd_sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} [∀ i, SFinite (μ i)] :

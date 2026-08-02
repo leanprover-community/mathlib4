@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.Equicontinuity
+module
+
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
 # Compact separated uniform spaces
@@ -20,6 +22,8 @@ import Mathlib.Topology.UniformSpace.Equicontinuity
 
 uniform space, uniform continuity, compact space
 -/
+
+public section
 
 open Uniformity Topology Filter UniformSpace Set
 
@@ -44,7 +48,7 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
     (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
-  rw [continuousOn_iff_continuous_restrict] at hf
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact CompactSpace.uniformContinuous_of_continuous hf
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
@@ -62,7 +66,7 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
-  refine ⟨f a, htsymm.mk_mem_comm.1 (hb _ _ _ haU ?_), hb _ _ _ haU ?_⟩
+  refine ⟨f a, SetRel.symm t <| hb _ _ _ haU ?_, hb _ _ _ haU ?_⟩
   exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
@@ -79,7 +83,7 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
     by_cases h₁ : b₁ ∈ s; · exact (h.1 h₁).1
     by_cases h₂ : b₂ ∈ s; · exact (h.2 h₂).2
     apply htr
-    exact ⟨x, htsymm.mk_mem_comm.1 (hst h₁), hst h₂⟩
+    exact ⟨x, SetRel.symm t <| hst h₁, hst h₂⟩
 
 @[to_additive]
 theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [One β]
@@ -120,7 +124,7 @@ lemma IsCompact.mem_uniformity_of_prod
     exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
   · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
     refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
-    rcases hx with h'x|h'x
+    rcases hx with h'x | h'x
     · exact hv p hp.1 x h'x
     · exact hv' p hp.2 x h'x
   · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩
@@ -131,7 +135,7 @@ lemma IsCompact.mem_uniformity_of_prod
     refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
     have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
-    exact hu' (prodMk_mem_compRel (u'_symm A) B)
+    exact hu' <| SetRel.prodMk_mem_comp (u'_symm A) B
 
 section UniformConvergence
 

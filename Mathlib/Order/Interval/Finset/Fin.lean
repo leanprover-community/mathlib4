@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Fin
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.Interval.Set.Fin
+module
+
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Set.Fin
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -88,46 +92,6 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
 theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
 
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Icc (since := "2025-04-06")]
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico (since := "2025-04-06")]
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioc (since := "2025-04-06")]
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo (since := "2025-04-06")]
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_uIcc (since := "2025-04-06")]
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
-theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
-theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iic (since := "2025-04-06")]
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iio (since := "2025-04-06")]
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
-
-end deprecated
-
 section val
 
 /-!
@@ -189,9 +153,6 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo (a : ℕ) b 
 @[simp]
 theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc (a : ℕ) b :=
   map_valEmbedding_Icc _ _
-
-@[deprecated (since := "2025-04-08")]
-alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico (a : ℕ) n := by
@@ -432,46 +393,55 @@ theorem finsetImage_cast_Iio (h : n = m) (i : Fin n) :
 ### `Finset.map` along `finCongr`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Icc (h : n = m) (i j : Fin n) :
     (Icc i j).map (finCongr h).toEmbedding = Icc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ico (h : n = m) (i j : Fin n) :
     (Ico i j).map (finCongr h).toEmbedding = Ico (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioc (h : n = m) (i j : Fin n) :
     (Ioc i j).map (finCongr h).toEmbedding = Ioc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioo (h : n = m) (i j : Fin n) :
     (Ioo i j).map (finCongr h).toEmbedding = Ioo (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_uIcc (h : n = m) (i j : Fin n) :
     (uIcc i j).map (finCongr h).toEmbedding = uIcc (i.cast h) (j.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ici (h : n = m) (i : Fin n) :
     (Ici i).map (finCongr h).toEmbedding = Ici (i.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Ioi (h : n = m) (i : Fin n) :
     (Ioi i).map (finCongr h).toEmbedding = Ioi (i.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Iic (h : n = m) (i : Fin n) :
     (Iic i).map (finCongr h).toEmbedding = Iic (i.cast h) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_finCongr_Iio (h : n = m) (i : Fin n) :
     (Iio i).map (finCongr h).toEmbedding = Iio (i.cast h) := by
@@ -616,35 +586,42 @@ theorem finsetImage_natAdd_Ioi (m) (i : Fin n) : (Ioi i).image (natAdd m) = Ioi 
 ### `Finset.map` along `Fin.natAddEmb`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Icc (m) (i j : Fin n) :
     (Icc i j).map (natAddEmb m) = Icc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ico (m) (i j : Fin n) :
     (Ico i j).map (natAddEmb m) = Ico (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioc (m) (i j : Fin n) :
     (Ioc i j).map (natAddEmb m) = Ioc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioo (m) (i j : Fin n) :
     (Ioo i j).map (natAddEmb m) = Ioo (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (natAddEmb m) = uIcc (natAdd m i) (natAdd m j) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ici (m) (i : Fin n) : (Ici i).map (natAddEmb m) = Ici (natAdd m i) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_natAddEmb_Ioi (m) (i : Fin n) : (Ioi i).map (natAddEmb m) = Ioi (natAdd m i) := by
   simp [← coe_inj]
@@ -694,35 +671,42 @@ theorem finsetImage_addNat_Ioi (m) (i : Fin n) : (Ioi i).image (addNat · m) = I
 ### `Finset.map` along `Fin.addNatEmb`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Icc (m) (i j : Fin n) :
     (Icc i j).map (addNatEmb m) = Icc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ico (m) (i j : Fin n) :
     (Ico i j).map (addNatEmb m) = Ico (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioc (m) (i j : Fin n) :
     (Ioc i j).map (addNatEmb m) = Ioc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioo (m) (i j : Fin n) :
     (Ioo i j).map (addNatEmb m) = Ioo (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_uIcc (m) (i j : Fin n) :
     (uIcc i j).map (addNatEmb m) = uIcc (i.addNat m) (j.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ici (m) (i : Fin n) : (Ici i).map (addNatEmb m) = Ici (i.addNat m) := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_addNatEmb_Ioi (m) (i : Fin n) : (Ioi i).map (addNatEmb m) = Ioi (i.addNat m) := by
   simp [← coe_inj]
@@ -855,38 +839,47 @@ theorem finsetImage_rev_Iio (i : Fin n) : (Iio i).image rev = Ioi i.rev := by si
 ### `Finset.map` along `revPerm`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Icc (i j : Fin n) : (Icc i j).map revPerm.toEmbedding = Icc j.rev i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ico (i j : Fin n) : (Ico i j).map revPerm.toEmbedding = Ioc j.rev i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioc (i j : Fin n) : (Ioc i j).map revPerm.toEmbedding = Ico j.rev i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioo (i j : Fin n) : (Ioo i j).map revPerm.toEmbedding = Ioo j.rev i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_uIcc (i j : Fin n) : (uIcc i j).map revPerm.toEmbedding = uIcc i.rev j.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ici (i : Fin n) : (Ici i).map revPerm.toEmbedding = Iic i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Ioi (i : Fin n) : (Ioi i).map revPerm.toEmbedding = Iio i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Iic (i : Fin n) : (Iic i).map revPerm.toEmbedding = Ici i.rev := by
   simp [← coe_inj]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_revPerm_Iio (i : Fin n) : (Iio i).map revPerm.toEmbedding = Ioi i.rev := by
   simp [← coe_inj]
@@ -929,33 +922,79 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by simp
-
-@[deprecated Fintype.card_Ici (since := "2025-03-28")]
-theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by simp
-
-@[deprecated Fintype.card_Ioi (since := "2025-03-28")]
-theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
-
-@[deprecated Fintype.card_Iic (since := "2025-03-28")]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated Fintype.card_Iio (since := "2025-03-28")]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
-
 end card
+
+/-! ### Perturbations of endpoints by one -/
+
+/-
+Note: the `haveI`s in the statements below are needed for `0` and `1`
+to be defined in `Fin n`. One could instead add `[NeZero n]` at the
+top of this section, but then this instance would be required to
+rewrite using the lemmas.
+-/
+
+section pm_one
+
+lemma Iio_add_one_eq_Iic {n : ℕ} {b : Fin n} (hb : b + 1 < n) :
+    haveI := b.neZero
+    Iio (b + 1) = Iic b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Iic_sub_one_eq_Iio {n : ℕ} {b : Fin n} :
+    haveI := b.neZero
+    (hb : 0 < b) → Iic (b - 1) = Iio b := by
+  grind [= Fin.val_sub_one_of_ne_zero]
+
+lemma Ici_add_one_eq_Ioi {n : ℕ} {a : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ici (a + 1) = Ioi a := by
+  grind [= Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioi_sub_one_eq_Ici {n : ℕ} {a : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioi (a - 1) = Ici a := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioc_sub_one_eq_Icc {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioc (a - 1) b = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Icc_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Icc (a + 1) b = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioo_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioo (a - 1) b = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Ioo {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ico (a + 1) b = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Icc_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Icc a (b - 1) = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Icc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ico a (b + 1) = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioc_sub_one_eq_Ioo {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Ioc a (b - 1) = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioo_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ioo a (b + 1) = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+end pm_one
 
 end Fin

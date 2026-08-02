@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.GroupTheory.Index
 
 /-!
 # Commensurability for subgroups
@@ -33,7 +35,9 @@ interesting concept for abelian groups, and it would be unusual to write a non-a
 additively.
 -/
 
-open Pointwise
+@[expose] public section
+
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 
@@ -46,15 +50,11 @@ def Subgroup.quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
       mem_subgroupOf, mem_subgroupOf, ← map_inv, ← map_mul, equivSMul_apply_coe]
     exact smul_mem_pointwise_smul_iff.symm
 
-@[deprecated (since := "2025-09-17")] alias Commensurable.quotConjEquiv := Subgroup.quotConjEquiv
-
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K`. -/
 @[to_additive /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both
 `H` and `K`. -/]
 def Subgroup.Commensurable (H K : Subgroup G) : Prop :=
   H.relIndex K ≠ 0 ∧ K.relIndex H ≠ 0
-
-@[deprecated (since := "2025-09-17")] alias Commensurable := Subgroup.Commensurable
 
 namespace Subgroup.Commensurable
 
@@ -78,8 +78,8 @@ theorem equivalence : Equivalence (@Commensurable G _) :=
 
 theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
     Commensurable H K ↔ Commensurable (g • H) (g • K) :=
-  and_congr (not_iff_not.mpr (Eq.congr_left (Cardinal.toNat_congr (quotConjEquiv H K g))))
-    (not_iff_not.mpr (Eq.congr_left (Cardinal.toNat_congr (quotConjEquiv K H g))))
+  and_congr (not_iff_not.mpr (Eq.congr_left (Nat.card_congr (quotConjEquiv H K g))))
+    (not_iff_not.mpr (Eq.congr_left (Nat.card_congr (quotConjEquiv K H g))))
 
 /-- Alias for the forward direction of `commensurable_conj` to allow dot-notation -/
 theorem conj {H K : Subgroup G} (h : Commensurable H K) (g : ConjAct G) :
@@ -93,11 +93,11 @@ theorem commensurable_inv (H : Subgroup G) (g : ConjAct G) :
 such that `Commensurable (g • H) H` -/
 def commensurator' (H : Subgroup G) : Subgroup (ConjAct G) where
   carrier := { g : ConjAct G | Commensurable (g • H) H }
-  one_mem' := by rw [Set.mem_setOf_eq, one_smul]
+  one_mem' := by rw [Set.mem_ofPred_eq, one_smul]
   mul_mem' ha hb := by
-    rw [Set.mem_setOf_eq, mul_smul]
+    rw [Set.mem_ofPred_eq, mul_smul]
     exact trans ((commensurable_conj _).mp hb) ha
-  inv_mem' _ := by rwa [Set.mem_setOf_eq, comm, ← commensurable_inv]
+  inv_mem' _ := by rwa [Set.mem_ofPred_eq, comm, ← commensurable_inv]
 
 /-- For `H` a subgroup of `G`, this is the subgroup of all elements `g : G`
 such that `Commensurable (g H g⁻¹) H` -/

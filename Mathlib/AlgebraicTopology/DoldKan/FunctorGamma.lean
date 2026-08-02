@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -15,7 +17,7 @@ In this file, we construct the functor `Γ₀ : ChainComplex C ℕ ⥤ Simplicia
 which shall be the inverse functor of the Dold-Kan equivalence in the case of abelian categories,
 and more generally pseudoabelian categories.
 
-By definition, when `K` is a chain_complex, `Γ₀.obj K` is a simplicial object which
+By definition, when `K` is a `ChainComplex`, `Γ₀.obj K` is a simplicial object which
 sends `Δ : SimplexCategoryᵒᵖ` to a certain coproduct indexed by the set
 `Splitting.IndexSet Δ` whose elements consists of epimorphisms `e : Δ.unop ⟶ Δ'.unop`
 (with `Δ' : SimplexCategoryᵒᵖ`); the summand attached to such an `e` is `K.X Δ'.unop.len`.
@@ -28,6 +30,8 @@ which shall be an equivalence for any additive category `C`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -38,7 +42,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
+variable {C : Type*} [Category* C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
   {Δ Δ' Δ'' : SimplexCategory}
 
 /-- `Isδ₀ i` is a simple condition used to check whether a monomorphism `i` in
@@ -142,13 +146,13 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
-  have eq : Δ.len = Δ''.len + (k + k' + 2) := by omega
+  have eq : Δ.len = Δ''.len + (k + k' + 2) := by lia
   rw [mapMono_eq_zero K (i' ≫ i) _ _]; rotate_left
   · by_contra h
     simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
-    cutsat
+    lia
   -- in all cases, the LHS is also zero, either by definition, or because d ≫ d = 0
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'
@@ -168,6 +172,7 @@ def map (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategoryᵒᵖ} (θ : Δ ⟶ �
   Sigma.desc fun A =>
     Termwise.mapMono K (image.ι (θ.unop ≫ A.e)) ≫ Sigma.ι (summand K Δ') (A.pull θ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) {θ : Δ ⟶ Δ'}
     {Δ'' : SimplexCategory} {e : Δ'.unop ⟶ Δ''} {i : Δ'' ⟶ A.1.unop} [Epi e] [Mono i]
@@ -175,14 +180,14 @@ theorem map_on_summand₀ {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexS
     Sigma.ι (summand K Δ) A ≫ map K θ =
       Termwise.mapMono K i ≫ Sigma.ι (summand K Δ') (Splitting.IndexSet.mk e) := by
   simp only [map, colimit.ι_desc, Cofan.mk_ι_app]
-  have h := SimplexCategory.image_eq fac
-  subst h
+  obtain rfl := SimplexCategory.image_eq fac
   congr
   · exact SimplexCategory.image_ι_eq fac
   · dsimp only [SimplicialObject.Splitting.IndexSet.pull]
     congr
     exact SimplexCategory.factorThruImage_eq fac
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed below
 @[reassoc]
 theorem map_on_summand₀' {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) (θ : Δ ⟶ Δ') :
     Sigma.ι (summand K Δ) A ≫ map K θ =
@@ -193,6 +198,7 @@ end Obj
 
 variable [HasFiniteCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on objects. -/
 @[simps]
 def obj (K : ChainComplex C ℕ) : SimplicialObject C where
@@ -213,6 +219,8 @@ def obj (K : ChainComplex C ℕ) : SimplicialObject C where
       Obj.Termwise.mapMono_comp_assoc, Obj.map_on_summand₀ K A fac]
     rfl)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- By construction, the simplicial `Γ₀.obj K` is equipped with a splitting. -/
 def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K) where
   N n := K.X n
@@ -226,6 +234,8 @@ def splitting (K : ChainComplex C ℕ) : SimplicialObject.Splitting (Γ₀.obj K
       rw [id_comp]
       rfl))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Obj.map_on_summand {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) (θ : Δ ⟶ Δ')
     {Δ'' : SimplexCategory} {e : Δ'.unop ⟶ Δ''} {i : Δ'' ⟶ A.1.unop} [Epi e] [Mono i]
@@ -253,20 +263,23 @@ theorem Obj.map_on_summand' {Δ Δ' : SimplexCategoryᵒᵖ} (A : Splitting.Inde
   apply Obj.map_on_summand
   apply image.fac
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Obj.mapMono_on_summand_id {Δ Δ' : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] :
     ((splitting K).cofan _).inj (Splitting.IndexSet.id (op Δ)) ≫ (obj K).map i.op =
       Obj.Termwise.mapMono K i ≫ ((splitting K).cofan _).inj (Splitting.IndexSet.id (op Δ')) :=
   Obj.map_on_summand K (Splitting.IndexSet.id (op Δ)) i.op (rfl : 𝟙 _ ≫ i = i ≫ 𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Obj.map_epi_on_summand_id {Δ Δ' : SimplexCategory} (e : Δ' ⟶ Δ) [Epi e] :
     ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op Δ)) ≫ (Γ₀.obj K).map e.op =
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.mk e) := by
   simpa only [Γ₀.Obj.map_on_summand K (Splitting.IndexSet.id (op Δ)) e.op
       (rfl : e ≫ 𝟙 Δ = e ≫ 𝟙 Δ),
-    Γ₀.Obj.Termwise.mapMono_id] using id_comp _
+    Γ₀.Obj.Termwise.mapMono_id] using! id_comp _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, on morphisms. -/
 @[simps]
 def map {K K' : ChainComplex C ℕ} (f : K ⟶ K') : obj K ⟶ obj K' where
@@ -283,6 +296,8 @@ end Γ₀
 
 variable [HasFiniteCoproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C`
 that induces `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`, which
 shall be the inverse functor of the Dold-Kan equivalence for
@@ -312,6 +327,7 @@ for any additive category `C`. -/
 def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   (CategoryTheory.Idempotents.functorExtension₂ _ _).obj Γ₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
     @HigherFacesVanish C _ _ (Γ₀.obj K) _ n (n + 1)
       (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n + 1⦌))) := by
@@ -330,7 +346,7 @@ theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : 
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
   rcases n with _ | n
-  · simpa only [P_f_0_eq] using comp_id _
+  · simpa only [P_f_0_eq] using! comp_id _
   · exact (HigherFacesVanish.on_Γ₀_summand_id K n).comp_P_eq_self
 
 end DoldKan

@@ -3,16 +3,20 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Basis.Submodule
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Basis.Submodule
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # The basis of ideals
 
 Some results involving `Ideal` and `Basis`.
 -/
+
+@[expose] public section
 
 open Module
 
@@ -31,6 +35,7 @@ noncomputable def basisSpanSingleton (b : Basis ι R S) {x : S} (hx : x ≠ 0) :
             simp [mem_span_singleton', mul_comm]) ≪≫ₗ
       (Submodule.restrictScalarsEquiv R S S (Ideal.span ({x} : Set S))).restrictScalars R
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : ι) :
     (basisSpanSingleton b hx i : S) = x * b i := by

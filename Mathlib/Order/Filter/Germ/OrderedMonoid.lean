@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Order.Filter.Germ.Basic
+module
+
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Order.Filter.Germ.Basic
 
 /-!
 # Ordered monoid instances on the space of germs of a function at a filter
@@ -13,25 +15,27 @@ import Mathlib.Order.Filter.Germ.Basic
 For each of the following structures we prove that if `β` has this structure, then so does
 `Germ l β`:
 
-* `OrderedCancelCommMonoid` and `OrderedCancelAddCommMonoid`.
+* `IsOrderedCancelMonoid` and `IsOrderedCancelAddMonoid`.
 
 ## Tags
 
 filter, germ
 -/
 
+public section
+
 namespace Filter.Germ
 
 variable {α : Type*} {β : Type*} {l : Filter α}
 
 @[to_additive]
-instance instIsOrderedMonoid [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+instance instIsOrderedMonoid [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (Germ l β) where
   mul_le_mul_left f g := inductionOn₂ f g fun _ _ H h ↦ inductionOn h fun _ ↦ H.mono
-    fun _ H ↦ mul_le_mul_left' H _
+    fun _ H ↦ by dsimp; gcongr
 
 @[to_additive]
-instance instIsOrderedCancelMonoid [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
+instance instIsOrderedCancelMonoid [CommMonoid β] [Preorder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (Germ l β) where
   le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _ _ _ H ↦ H.mono
     fun _ ↦ le_of_mul_le_mul_left'

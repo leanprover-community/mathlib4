@@ -3,8 +3,10 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
@@ -13,6 +15,8 @@ import Mathlib.SetTheory.Cardinal.Finite
   there is an analogous version for additive groups
 
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -56,14 +60,14 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   rw [← Nat.card_prod, Nat.card_congr]
   apply Equiv.trans _ (QuotientGroup.preimageMkEquivSubgroupProdSet _ _)
   rw [QuotientGroup.preimage_image_mk]
-  convert Equiv.refl ↑(t * s)
+  convert! Equiv.refl ↑(t * s)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive /-- **Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group. -/]
+@[to_additive (attr := wikidata Q505798) /-- **Lagrange's Theorem**: The order of an additive
+subgroup divides the order of its ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
-  classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
+  simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 
 @[to_additive]
 theorem card_quotient_dvd_card (s : Subgroup α) : Nat.card (α ⧸ s) ∣ Nat.card α := by
@@ -74,7 +78,7 @@ variable {H : Type*} [Group H]
 @[to_additive]
 theorem card_dvd_of_injective (f : α →* H) (hf : Function.Injective f) :
     Nat.card α ∣ Nat.card H := by
-  classical calc
+  calc
       Nat.card α = Nat.card (f.range : Subgroup H) := Nat.card_congr (Equiv.ofInjective f hf)
       _ ∣ Nat.card H := card_subgroup_dvd_card _
 

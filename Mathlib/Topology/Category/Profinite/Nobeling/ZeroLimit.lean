@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The zero and limit cases in the induction for Nöbeling's theorem
@@ -18,6 +20,8 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -46,14 +50,16 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
 /-- The empty list as a `Products` -/
 def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
   refine ⟨fun h ↦ ?_, by tauto⟩
-  simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.not_lex_nil] at h
+  simp only [Set.mem_ofPred_eq, lt_iff_lex_lt, nil, List.not_lex_nil] at h
 
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Products.isGood_nil {I} [LinearOrder I] :
     Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
@@ -70,6 +76,7 @@ theorem Products.span_nil_eq_top {I} [LinearOrder I] :
   obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- There is a unique `GoodProducts` for the singleton `{fun _ ↦ false}`. -/
 noncomputable
 instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) l } where
@@ -82,25 +89,17 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     intro _
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
-      simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
+      simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_ofPred_eq]
     grw [← he]
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
-  constructor
-  intro c f h
-  rw [or_iff_not_imp_left]
-  intro hc
-  ext x
-  apply mul_right_injective₀ hc
-  simp [LocallyConstant.ext_iff] at h
-  simpa [LocallyConstant.ext_iff] using h x
+instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant α ℤ) :=
+  LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
-    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
-  refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
-  simp [eval, Products.eval, Products.nil, default]
+    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) :=
+  .of_subsingleton default <| by simp [eval, Products.eval, Products.nil, default]
 
 end Zero
 
@@ -142,7 +141,9 @@ The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C 
 refers to the setting in which we will use this, when we are mapping in `GoodProducts` from a
 smaller set, i.e. when `o` is a smaller ordinal than the one `C` is "contained" in.
 -/
-def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (π C (ord I · < o)))
 
 /--
@@ -153,6 +154,7 @@ noncomputable
 def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : smaller C o :=
   ⟨πs C o ↑x, x.val, x.property, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
   dsimp +unfoldPartialApp [range_equiv_smaller_toFun]
@@ -237,7 +239,9 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
 The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
 ordinals `o' < o`.
 -/
-def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
   Equiv.setCongr (union C ho hsC)
 
 theorem GoodProducts.range_equiv_factorization :

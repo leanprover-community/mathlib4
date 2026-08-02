@@ -3,7 +3,9 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Combinatorics.Young.YoungDiagram
+module
+
+public import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Semistandard Young tableaux
@@ -42,6 +44,8 @@ Semistandard Young tableau
 
 -/
 
+@[expose] public section
+
 
 /-- A semistandard Young tableau is a filling of the cells of a Young diagram by natural
 numbers, such that the entries in each row are weakly increasing (left to right), and the entries
@@ -63,7 +67,7 @@ namespace SemistandardYoungTableau
 
 instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ) ℕ (ℕ → ℕ) where
   coe := SemistandardYoungTableau.entry
-  coe_injective' T T' h := by
+  coe_injective T T' h := by
     cases T
     cases T'
     congr

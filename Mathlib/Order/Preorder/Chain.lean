@@ -3,10 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Directed
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Directed
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Chains and flags
@@ -25,11 +28,13 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
+@[expose] public section
+
 assert_not_exists CompleteLattice
 
-open Set
+open Set Set.Notation
 
-variable {α β : Type*}
+variable {α β F : Type*}
 
 /-! ### Chains -/
 
@@ -72,46 +77,135 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 
-theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
+theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
-  hs.insert_of_symmetric (fun _ _ => Or.symm) ha
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  hs.insert_of_symm ha
 
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
 
-theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
+theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ Std.Trichotomous r := by
   refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
-  rw [or_left_comm, or_iff_not_imp_left]
-  exact h trivial trivial
+  have : a ≠ b → (r a b ∨ r b a) := h trivial trivial
+  grind
 
-theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
+theorem IsChain.image_of_map_rel (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
     (h : ∀ x y, r x y → s (f x) (f y)) {c : Set α} (hrc : IsChain r c) : IsChain s (f '' c) :=
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 
+theorem IsChain.preimage (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
+    (hf : Function.Injective f) (h : ∀ x y, s (f x) (f y) → r x y) {c : Set β} (hrc : IsChain s c) :
+    IsChain r (f ⁻¹' c) := by
+  intro _ ha _ hb hne
+  have := hrc ha hb (fun h ↦ hne (hf h))
+  grind
+
 lemma isChain_union {s t : Set α} :
     IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
-  rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
+  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
+  rw [IsChain, IsChain, IsChain, pairwise_union_of_symm]
 
 lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
-  hs.image _ _ _ (fun _ _ a ↦ hf a)
+  hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
 
 theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
   exact hf.isChain_image (isChain_of_trichotomous _)
 
+lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hf.dual_left.isChain_image hs.symm
+
+theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    IsChain (· ≤ ·) (range f) :=
+  hf.dual_left.isChain_range
+
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
+@[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
+  h.mono Set.sdiff_subset
+
+theorem isChain_preimage_subtypeVal (s t : Set α) :
+    @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) := by
+  simp [IsChain, Set.Pairwise]
+
+theorem isChain_coe_univ_iff {s : Set α} : @IsChain ↑s (r · ·) univ ↔ IsChain r s := by
+  simpa using isChain_preimage_subtypeVal s univ
+
+section Rel
+
+variable {r : α → α → Prop} {r' : β → β → Prop} {s : Set α}
+
+theorem IsChain.image [FunLike F α β] [RelHomClass F r r'] (hs : IsChain r s) (φ : F) :
+    IsChain r' (φ '' s) :=
+  hs.image_of_map_rel _ _ _ (fun _ _ h ↦ map_rel φ h)
+
+@[deprecated IsChain.image (since := "2026-02-26")]
+theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) :=
+  hs.image _
+
+theorem IsChain.preimage_relEmbedding {t : Set β} (ht : IsChain r' t) (φ : r ↪r r') :
+    IsChain r (φ ⁻¹' t) :=
+  ht.preimage _ _ _ φ.injective (fun _ _ h ↦ φ.map_rel_iff.mp h)
+
+@[deprecated IsChain.image (since := "2026-02-26")]
+theorem IsChain.image_relIso (hs : IsChain r s) (φ : r ≃r r') : IsChain r' (φ '' s) :=
+  hs.image φ.toRelEmbedding
+
+theorem IsChain.preimage_relIso {t : Set β} (hs : IsChain r' t) (φ : r ≃r r') :
+    IsChain r (φ ⁻¹' t) :=
+  hs.preimage_relEmbedding φ.toRelEmbedding
+
+theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
+  ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h => h.image φ⟩
+
+theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
+  @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
+
+@[deprecated IsChain.image (since := "2026-02-26")]
+theorem IsChain.image_embedding [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ↪o β) :
+    IsChain (· ≤ ·) (φ '' s) :=
+  image hs _
+
+theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
+    IsChain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht _
+
+theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
+    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
+  image_relEmbedding_iff
+
+@[deprecated IsChain.image (since := "2026-02-26")]
+theorem IsChain.image_iso [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ≃o β) :
+    IsChain (· ≤ ·) (φ '' s) :=
+  image hs _
+
+theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
+    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
+  image_relEmbedding_iff
+
+theorem IsChain.preimage_iso [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ≃o β) :
+    IsChain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht _
+
+theorem IsChain.preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
+    IsChain (· ≤ ·) (φ ⁻¹' t) ↔ IsChain (· ≤ ·) t :=
+  ⟨fun h => (φ.image_preimage t).subst (h.image φ), fun h => h.preimage_iso _⟩
+
+end Rel
+
 section Total
 
-variable [IsRefl α r]
+variable [Std.Refl r]
 
 theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y ∨ y ≺ x :=
   (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
@@ -136,13 +230,20 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
+/-- A chain in a partial order is a linear order. -/
+@[implicit_reducible]
+def IsChain.linearOrder [PartialOrder α] [DecidableLE α] {s : Set α} (hs : IsChain (· ≤ ·) s) :
+    LinearOrder s where
+  le_total := by
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    exact hs.total ha hb
+  toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
+
 lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
   cases hs.total hx hy with
   | inr h' => exact h'
   | inl h' => simpa [lt_iff_le_not_ge, h'] using h
-
-@[deprecated (since := "2025-05-11")] alias IsChain.le_of_not_lt := IsChain.le_of_not_gt
 
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
@@ -151,8 +252,6 @@ lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
 lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
   (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
-
-@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
@@ -172,16 +271,30 @@ theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) 
 
 lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxChain r c) :
     IsMaxChain s (e '' c) where
-  left := hc.isChain.image _ _ _ fun _ _ ↦ by exact e.map_rel_iff.2
+  left := hc.isChain.image e
   right t ht hf := by
-    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
-    exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
-      ((e.toEquiv.subset_symm_image _ _).2 hf)
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, ← Equiv.image_symm_eq_preimage]
+    exact hc.2 (ht.image e.symm) ((e.toEquiv.subset_symm_image _ _).2 hf)
 
-open Classical in
+protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s = ∅ := by
+  refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  constructor
+  intro x
+  simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
+  exact singleton_ne_empty x (h IsChain.singleton).symm
+
+protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
+
+theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
+  ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
+
+open scoped Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/
-def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then h.choose else s
 
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
@@ -189,10 +302,9 @@ theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
   simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
 
-open Classical in
-theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).1
-  else by
+theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
+  else
     rw [exists_and_left] at h
     simpa [SuccChain, dif_neg, h] using hs
 
@@ -202,10 +314,9 @@ theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
-open Classical in
-theorem subset_succChain : s ⊆ SuccChain r s :=
-  if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
-  else by
+theorem subset_succChain : s ⊆ SuccChain r s := by
+  if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).2.1
+  else
     simp [SuccChain, h]
 
 end Chain
@@ -230,10 +341,12 @@ variable [LE α] {s t : Flag α} {a : α}
 
 instance : SetLike (Flag α) α where
   coe := carrier
-  coe_injective' s t h := by
+  coe_injective s t h := by
     cases s
     cases t
     congr
+
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=

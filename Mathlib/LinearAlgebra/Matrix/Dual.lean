@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Dual space, linear maps and matrices.
@@ -14,14 +16,16 @@ This file contains some results about matrices and dual spaces.
 
 ## Tags
 
-matrix, linear_map, transpose, dual
+matrix, linear map, transpose, dual
 -/
+
+@[expose] public section
 
 open Matrix Module
 
 section Transpose
 
-variable {K V₁ V₂ ι₁ ι₂ : Type*} [Field K] [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂]
+variable {K V₁ V₂ ι₁ ι₂ : Type*} [CommSemiring K] [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂]
   [Module K V₂] [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] {B₁ : Basis ι₁ K V₁}
   {B₂ : Basis ι₂ K V₂}
 
@@ -41,6 +45,7 @@ theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) : Matrix.toLin B₁.du
 
 end Transpose
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The dot product as a linear equivalence to the dual. -/
 @[simps] def dotProductEquiv (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n] :
     (n → R) ≃ₗ[R] Module.Dual R (n → R) where

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang, Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.Algebra.DirectSum.Decomposition
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.Algebra.DirectSum.Decomposition
 
 /-!
 # Decomposition of the identity of a semiring into orthogonal idempotents
@@ -14,6 +16,8 @@ of (left) ideals `R = V₁ ⊕ V₂ ⊕ ⋯ ⊕ Vₙ` then in the corresponding 
 `1 = e₁ + e₂ + ⋯ + eₙ` with `eᵢ ∈ Vᵢ`, each `eᵢ` is an idempotent and the
 `eᵢ`'s form a family of complete orthogonal idempotents.
 -/
+
+@[expose] public section
 
 namespace DirectSum
 
@@ -46,7 +50,7 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I] :
   complete := by
     apply (decompose V).injective
     refine DFunLike.ext _ _ fun i ↦ ?_
-    rw [decompose_sum, DFinsupp.finset_sum_apply]
+    rw [decompose_sum, DFinsupp.finsetSum_apply]
     simp [idempotent, of_apply]
 
 end OrthogonalIdempotents

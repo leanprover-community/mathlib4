@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
   surjective homomorphism `R_{f⁻¹(P)} →+* S_P` for every prime ideal `P` of `S`.
 
 -/
+
+public section
 
 
 namespace RingHom
@@ -43,7 +47,6 @@ theorem surjective_respectsIso : RespectsIso surjective := by
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
-  classical
   introv h x
   induction x with
   | zero => exact ⟨0, map_zero _⟩
@@ -56,7 +59,7 @@ theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective 
 theorem surjective_localizationPreserves :
     LocalizationPreserves surjective := by
   introv R H x
-  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (M.map f) x
+  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f) x
   obtain ⟨y, rfl⟩ := H x
   use IsLocalization.mk' R' y ⟨s, hs⟩
   rw [IsLocalization.map_mk']
@@ -66,13 +69,13 @@ theorem surjective_localizationPreserves :
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R e H
   rw [← Set.range_eq_univ, Set.eq_univ_iff_forall]
-  letI := f.toAlgebra
+  let := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
     (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
-  obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a
+  obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers (r : R)) a
   rw [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_mk', eq_comm,
     IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
   obtain ⟨⟨_, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'

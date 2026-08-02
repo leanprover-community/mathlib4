@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # Computable inverses for injective/surjective functions on finite types
@@ -15,6 +17,8 @@ import Mathlib.Data.Fintype.Defs
   computable versions of `Function.invFun`.
 * `Fintype.choose`: computably obtain a witness for `ExistsUnique`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -55,7 +59,7 @@ theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b
 theorem right_inv_of_invOfMemRange (a : α) : hf.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   hf (Finset.choose_spec (fun a' => f a' = f a) _ _).right
 
-theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = hf.invOfMemRange := by
+theorem invFun_restrict [Nonempty α] : (Set.range f).domRestrict (invFun f) = hf.invOfMemRange := by
   ext ⟨b, h⟩
   apply hf
   simp [hf.left_inv_of_invOfMemRange, @invFun_eq _ _ _ f b (Set.mem_range.mp h)]
@@ -88,7 +92,7 @@ theorem left_inv_of_invOfMemRange : f (f.invOfMemRange b) = b :=
 theorem right_inv_of_invOfMemRange (a : α) : f.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
   f.injective.right_inv_of_invOfMemRange a
 
-theorem invFun_restrict [Nonempty α] : (Set.range f).restrict (invFun f) = f.invOfMemRange := by
+theorem invFun_restrict [Nonempty α] : (Set.range f).domRestrict (invFun f) = f.invOfMemRange := by
   ext ⟨b, h⟩
   apply f.injective
   simp [f.left_inv_of_invOfMemRange, @invFun_eq _ _ _ f b (Set.mem_range.mp h)]

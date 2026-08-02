@@ -3,8 +3,13 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init
-import Batteries.Util.ExtendedBinder
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Util.ExtendedBinder
+public import Mathlib.Tactic.SetNotationForOrder
+
+import Mathlib.Tactic.ToDual
 
 /-!
 # Sets
@@ -29,6 +34,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
+@[expose] public section
+
 open Lean Elab Term Meta Batteries.ExtendedBinder
 
 universe u
@@ -37,29 +44,44 @@ variable {α : Type u}
 /-- A set is a collection of elements of some type `α`.
 
 Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
-relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
-and predicates.
+relied on. Instead, `Set.ofPred` (also written `{x | p x}`) and membership of a set (`∈`) should be
+used to convert between sets and predicates.
 -/
+@[use_set_notation_for_order]
 def Set (α : Type u) := α → Prop
 
+/-
+We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
+This is because for example the following theorems should be dual
+```
+theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
+theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
+```
+Additionally, dualizing the order on sets would mean that a set is dual to its complement.
+But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
+-/
+attribute [to_dual_dont_translate] Set
+
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
-def setOf {α : Type u} (p : α → Prop) : Set α :=
+@[implicit_reducible]
+def Set.ofPred {α : Type u} (p : α → Prop) : Set α :=
   p
+
+@[deprecated (since := "2026-07-09")] alias setOf := Set.ofPred
 
 namespace Set
 
 /-- Membership in a set -/
+@[implicit_reducible]
 protected def Mem (s : Set α) (a : α) : Prop :=
   s a
 
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
+@[ext, grind ext]
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
-
-attribute [local ext] ext in
-attribute [grind ext] ext
 
 /-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
@@ -71,9 +93,6 @@ protected def Subset (s₁ s₂ : Set α) :=
 to subset hypotheses. -/
 instance : LE (Set α) :=
   ⟨Set.Subset⟩
-
-instance : HasSubset (Set α) :=
-  ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
   ⟨fun _ ↦ False⟩
@@ -98,8 +117,8 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
 
 /-- Elaborate set builder notation for `Set`.
 
-* `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
-* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+* `{x | p x}` is elaborated as `Set.ofPred fun x ↦ p x`
+* `{x : α | p x}` is elaborated as `Set.ofPred fun x : α ↦ p x`
 * `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
   `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
   `{x | x ∈ s ∧ p x}`. The possible binders are
@@ -119,18 +138,18 @@ See also
   one for syntax of the form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
 -/
 @[term_elab setBuilder]
-def elabSetBuilder : TermElab
+meta def elabSetBuilder : TermElab
   | `({ $x:ident | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident ↦ $p)) expectedType?
   | `({ $x:ident : $t | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident : $t ↦ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident : $t ↦ $p)) expectedType?
   | `({ $x:ident $b:binderPred | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Unexpander for set builder notation. -/
-@[app_unexpander setOf]
-def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Set.ofPred]
+meta def ofPred.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
@@ -170,8 +189,8 @@ macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/
-@[app_unexpander setOf]
-def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Set.ofPred]
+meta def ofPredPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term | $p:term })
@@ -239,7 +258,7 @@ instance : SDiff (Set α) := ⟨Set.diff⟩
 /-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-@[inherit_doc] prefix:100 "𝒫" => powerset
+@[inherit_doc] prefix:100 "𝒫 " => powerset
 
 universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that

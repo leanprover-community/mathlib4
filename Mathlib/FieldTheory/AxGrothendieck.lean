@@ -3,12 +3,10 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-import Mathlib.ModelTheory.Algebra.Ring.Definability
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+public import Mathlib.ModelTheory.Algebra.Ring.Definability
 
 /-!
 # Ax-Grothendieck
@@ -36,6 +34,8 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -87,7 +87,7 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
+open MvPolynomial FreeCommRing Language FirstOrder.Field FirstOrder.Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
@@ -156,7 +156,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     realize_bdEqual, Term.realize_relabel,
     Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply,
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
-    Set.MapsTo, Set.mem_setOf_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
+    Set.MapsTo, Set.mem_ofPred_eq, injOnAlt, funext_iff, Set.SurjOn, Set.image,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
@@ -168,9 +168,8 @@ theorem realize_genericPolyMapSurjOnOfInjOn
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
-  classical
   have : Fact p.Prime := ⟨hp⟩
-  letI := compatibleRingOfRing (AlgebraicClosure (ZMod p))
+  let := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)), realize_genericPolyMapSurjOnOfInjOn]
   rintro v ⟨f, _⟩
@@ -183,7 +182,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert Set.infinite_univ (α := Nat.Primes)
+    convert! Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
@@ -204,7 +203,7 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     S.MapsTo (fun v i => eval v (ps i)) S →
     S.InjOn (fun v i => eval v (ps i)) →
     S.SurjOn (fun v i => eval v (ps i)) S := by
-  letI := Fintype.ofFinite ι
+  let := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   rw [Set.definable_iff_finitely_definable] at hS
   rcases hS with ⟨c, _, hS⟩
@@ -229,7 +228,7 @@ theorem ax_grothendieck_zeroLocus
     S.MapsTo (fun v i => eval v (p i)) S →
     S.InjOn (fun v i => eval v (p i)) →
     S.SurjOn (fun v i => eval v (p i)) S := by
-  letI := compatibleRingOfRing K
+  let := compatibleRingOfRing K
   intro S
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
@@ -241,5 +240,4 @@ algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by
-  simpa [Set.injective_iff_injOn_univ, Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 p
+  simpa using ax_grothendieck_zeroLocus 0 p

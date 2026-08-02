@@ -3,11 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Spectrum and quasispectrum of products
@@ -28,6 +29,8 @@ union of the (quasi)spectra.
 + Apply these results to block matrices.
 
 -/
+
+@[expose] public section
 
 variable {ι A B R : Type*} {κ : ι → Type*}
 
@@ -73,20 +76,20 @@ section spectrum
 lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ i)]
     (a : ∀ i, κ i) : spectrum R a = ⋃ i, spectrum R (a i) := by
   apply compl_injective
-  simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_setOf,
+  simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_ofPred,
     Pi.isUnit_iff, sub_apply, algebraMap_apply]
 
 lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (a : A) (b : B) : spectrum R (⟨a, b⟩ : A × B) = spectrum R a ∪ spectrum R b := by
   apply compl_injective
-  simp_rw [spectrum, Set.compl_union, compl_compl, resolventSet, ← Set.setOf_and,
+  simp_rw [spectrum, Set.compl_union, compl_compl, resolventSet, ← Set.ofPred_and,
     Prod.isUnit_iff, algebraMap_apply, mk_sub_mk]
 
 lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
   ext r
-  simp only [quasispectrum, Set.mem_setOf_eq, Set.mem_iUnion]
+  simp only [quasispectrum, Set.mem_ofPred_eq, Set.mem_iUnion]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_pi_iff]
@@ -97,7 +100,8 @@ lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not, Set.mem_union]
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
+    Set.mem_union]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_prod_iff]

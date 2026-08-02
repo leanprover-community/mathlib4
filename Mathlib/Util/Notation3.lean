@@ -3,19 +3,24 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean.Elab.BuiltinCommand
-import Lean.Elab.MacroArgUtil
-import Mathlib.Lean.Elab.Term
-import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Tactic.ScopedNS
-import Batteries.Linter.UnreachableTactic
-import Batteries.Util.ExtendedBinder
-import Batteries.Lean.Syntax
-import Lean.Elab.AuxDef
+module
+
+public meta import Lean.Elab.MacroArgUtil
+public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
+public meta import Mathlib.Lean.PrettyPrinter.Delaborator
+public meta import Batteries.Lean.Syntax
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
+public import Batteries.Linter.UnreachableTactic
+public import Batteries.Util.ExtendedBinder
+public import Lean.Elab.AuxDef
+public import Mathlib.Lean.Elab.Term
+public import Mathlib.Tactic.ScopedNS
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
 -/
+
+public meta section
 
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
@@ -113,7 +118,7 @@ structure MatchState where
   foldState : Std.HashMap Name (Array Term)
 
 /-- A matcher is a delaboration function that transforms `MatchState`s. -/
-def Matcher := MatchState → DelabM MatchState
+@[expose] def Matcher := MatchState → DelabM MatchState
   deriving Inhabited
 
 /-- The initial state. -/
@@ -560,7 +565,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
       if let `(stx| $lit:str) := syntaxArgs.back! then
-        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
+        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimAsciiEnd.copy):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
@@ -616,10 +621,10 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
-  let mut macroDecl ← `(macro_rules | `($pat) => `($val'))
+  let mut macroDecl ← `($attrKind:attrKind macro_rules | `($pat) => `($val'))
   if isLocalAttrKind attrKind then
     -- For local notation, take section variables into account
-    macroDecl ← `(section set_option quotPrecheck.allowSectionVars true $macroDecl end)
+    macroDecl ← `(command| set_option quotPrecheck.allowSectionVars true in $macroDecl)
   elabCommand macroDecl
 
   -- 3. Create a delaborator
@@ -647,6 +652,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       let delabKeys : List DelabKey := ms.foldr (·.1 ++ ·) []
+      let vis ← if let `(attrKind| local) := attrKind then
+        `(visibility| private) else `(visibility| public)
       for key in delabKeys do
         trace[notation3] "Creating delaborator for key {repr key}"
         let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
@@ -657,7 +664,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         elabCommand <| ← `(
           /-- Pretty printer defined by `notation3` command. -/
           @[$attrKind delab $(mkIdent key.key)]
-          public aux_def delab_app $(mkIdent fullName) : Delab :=
+          $vis:visibility aux_def delab_app $(mkIdent fullName) : Delab :=
             whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
     else
       logWarning s!"\

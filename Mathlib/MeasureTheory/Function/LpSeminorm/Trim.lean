@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Lp seminorm with respect to trimmed measure
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we prove basic properties of the Lp-seminorm of a function
 with respect to the restriction of a measure to a sub-σ-algebra.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -33,7 +37,7 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
     rw [h_set_eq]
   ext1 a
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
-    simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]
+    simp_rw [Set.mem_ofPred_eq, ae_iff, h_meas_eq]
   refine (trim_measurableSet_eq hm ?_).symm
   exact (measurableSet_le hf measurable_const).compl
 

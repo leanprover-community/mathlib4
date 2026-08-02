@@ -3,8 +3,9 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Complex.Basic
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Circle integral transform
@@ -17,6 +18,8 @@ These results are useful for proving that the uniform limit of a sequence of hol
 is holomorphic.
 
 -/
+
+@[expose] public section
 
 
 open Set MeasureTheory Metric Filter Function
@@ -43,12 +46,7 @@ def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
 
 theorem circleTransformDeriv_periodic (f : ℂ → E) :
     Periodic (circleTransformDeriv R z w f) (2 * π) := by
-  have := periodic_circleMap
-  simp_rw [Periodic] at *
-  intro x
-  simp_rw [circleTransformDeriv, this]
-  congr 2
-  simp [this]
+  simp [circleTransformDeriv, periodic_circleMap z R _, periodic_circleMap 0 R _]
 
 theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
@@ -70,7 +68,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
   · rw [funext <| deriv_circleMap _ _]
-    apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
+    fun_prop
   · exact continuous_circleMap_inv hw
   · apply ContinuousOn.comp_continuous hf (continuous_circleMap z R)
     exact fun _ => (circleMap_mem_sphere _ hR.le) _
@@ -98,7 +96,7 @@ theorem continuousOn_prod_circle_transform_function {R r : ℝ} (hr : r < R) {z 
 theorem continuousOn_norm_circleTransformBoundingFunction {R r : ℝ} (hr : r < R) (z : ℂ) :
     ContinuousOn ((‖·‖) ∘ circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
   have : ContinuousOn (circleTransformBoundingFunction R z) (closedBall z r ×ˢ univ) := by
-    apply_rules [ContinuousOn.smul, continuousOn_const]
+    apply_rules [ContinuousOn.fun_smul, continuousOn_const]
     · simp only [deriv_circleMap]
       apply_rules [ContinuousOn.mul, (continuous_circleMap 0 R).comp_continuousOn continuousOn_snd,
         continuousOn_const]
@@ -133,8 +131,8 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
   have hy2 : y1 ∈ [[0, 2 * π]] := Icc_subset_uIcc <| Ico_subset_Icc_self hy1
   simp only [isMaxOn_iff, mem_sphere_iff_norm] at HX2
   have := mul_le_mul (hab ⟨⟨v, y1⟩, ⟨ball_subset_closedBall (H hv), hy2⟩⟩)
-    (HX2 (circleMap z R y1) (circleMap_mem_sphere z hR.le y1)) (norm_nonneg _)
-    (norm_nonneg _)
+    (HX2 (circleMap z R y1) (mem_sphere_iff_norm.1 (circleMap_mem_sphere z hR.le y1)))
+    (norm_nonneg _) (norm_nonneg _)
   rw [hfun]
   simpa [V, circleTransformBoundingFunction, circleTransformDeriv, mul_assoc] using this
 

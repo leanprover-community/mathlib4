@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Direct sum of modules
@@ -23,6 +25,8 @@ in this file.
 
 -/
 
+@[expose] public section
+
 universe u v w u₁
 
 namespace DirectSum
@@ -36,18 +40,18 @@ variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
-  DFinsupp.module
+  inferInstanceAs <| Module R (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
-  DFinsupp.smulCommClass
+  inferInstanceAs <| SMulCommClass R S (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
-  DFinsupp.isScalarTower
+  inferInstanceAs <| IsScalarTower R S (Π₀ i, M i)
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
-  DFinsupp.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (Π₀ i, M i)
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _
@@ -136,7 +140,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
-  toModule R _ _ fun i ↦ lof R T (fun i : Subtype T ↦ M i) ⟨i, H i.prop⟩
+  toModule R _ _ fun i ↦ lof R T (fun i : T ↦ M i) ⟨i, H i.prop⟩
 
 variable (ι M)
 
@@ -170,6 +174,14 @@ protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 
+@[simp] lemma lid_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+    (x : ⨁ _ : ι, M) : DirectSum.lid R M ι x = x default :=
+  DirectSum.id_apply x
+
+@[simp] lemma lid_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Module R M] [Unique ι]
+    (x : M) : (DirectSum.lid R M ι).symm x = lof R _ _ default x :=
+  DirectSum.id_symm_apply x
+
 /-- The projection map onto one component, as a linear map. -/
 def component (i : ι) : (⨁ i, M i) →ₗ[R] M i :=
   DFinsupp.lapply i
@@ -200,6 +212,14 @@ theorem component.lof_self [DecidableEq ι] (i : ι) (b : M i) :
 theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
+
+lemma component_comp_lof [DecidableEq ι] (i j : ι) :
+    component R ι M i ∘ₗ lof R ι M j = if h : j = i then h ▸ .id else 0 := by
+  aesop (add simp component.of)
+
+@[simp]
+lemma component_comp_lof_same [DecidableEq ι] (i : ι) : component R ι M i ∘ₗ lof R ι M i = .id := by
+  simp [component_comp_lof]
 
 section map
 
@@ -248,10 +268,10 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
   DFinsupp.mapRange.linearMap_comp _ _
 
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
-  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
 theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
-  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
@@ -306,6 +326,23 @@ theorem lequivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, M i) (k : κ) :
     lequivCongrLeft R h f k = f (h.symm k) :=
   equivCongrLeft_apply _ _ _
 
+-- We need to try very hard to avoid dependent type "issues".
+lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
+    {i : ι} {k : κ} (hik : i = e.symm k)
+    (x : M i) (y : M (e.symm k)) (hxy : cast congr(M $hik) x = y) :
+    lequivCongrLeft R e (lof R ι M i x) = lof R _ _ k y := by
+  subst hik hxy
+  ext j
+  simp [lof_eq_of, of_apply]
+  lia
+
+lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
+    {k : κ} {x : M (h.symm k)} :
+    (lequivCongrLeft R h).symm (lof R κ (fun k => M (h.symm k)) k x) = lof R ι M (h.symm k) x := by
+  rw [LinearEquiv.symm_apply_eq]
+  symm
+  exact lequivCongrLeft_lof _ rfl _ _ rfl
+
 end CongrLeft
 
 section Sigma
@@ -315,7 +352,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :
@@ -365,6 +402,7 @@ indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A i) :
     coeLinearMap A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
@@ -372,25 +410,28 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
-@[deprecated (since := "2025-04-06")]
-alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
-
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
   toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
+
+@[simp] lemma coeLinearMap_lof (i : ι) (x : A i) :
+    DirectSum.coeLinearMap A (lof R ι (fun i ↦ A i) i x) = x :=
+  coeLinearMap_of A i x
 
 variable {A}
 
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
     {i : ι} (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
   rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
@@ -425,43 +466,24 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
       (sigmaFinsuppLequivDFinsupp R).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
-  funext a
-  -- Porting note: was
-  -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
-  --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
-  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, linearCombination_single,
-  --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
-  --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-  --   sigmaFinsuppLequivDFinsupp_apply]
-  -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
-  simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
-    LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
-    LinearEquiv.ofBijective_apply]
-  rw [DFinsupp.mapRange.linearEquiv_symm]
-  -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
-  -- appears in the goal, but the lemma is expecting
-  -- `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), ↥(A i))`
-  erw [DFinsupp.mapRange.linearEquiv_apply]
-  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
-    toModule]
-  -- Similarly here.
-  erw [DFinsupp.lsum_single]
-  simp only [Submodule.coe_subtype]
+  simp [IsInternal.collectedBasis, coeLinearMap, DFinsupp.mapRange.linearEquiv,
+    toModule, DFinsupp.lsum]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
   change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
@@ -543,5 +565,45 @@ theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι �
 end Ring
 
 end Submodule
+
+section Congr
+
+variable {R : Type*} [Semiring R]
+    {ι : Type*}
+    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+
+/-- Direct sums of isomorphic additive groups are isomorphic. -/
+def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    (⨁ i, N i) ≃+ ⨁ i, P i where
+  toAddHom := DirectSum.map fun i ↦ (u i).toAddMonoidHom
+  invFun := DirectSum.map fun i ↦ (u i).symm.toAddMonoidHom
+  left_inv x := by aesop
+  right_inv y := by aesop
+
+theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    ⇑(congrAddEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
+  rfl
+
+/-- Direct sums of isomorphic modules are isomorphic. -/
+def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
+  toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
+  map_smul' r x := by
+    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+
+theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
+  rfl
+
+theorem congrLinearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toAddEquiv = congrAddEquiv (fun i ↦ (u i).toAddEquiv) :=
+  rfl
+
+theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
+  rfl
+
+end Congr
 
 end DirectSum

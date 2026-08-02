@@ -3,12 +3,15 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.DiscrTree
+module
+
+public import Mathlib.Init
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`
 -/
+
+@[expose] public section
 
 namespace Lean.Meta.DiscrTree
 

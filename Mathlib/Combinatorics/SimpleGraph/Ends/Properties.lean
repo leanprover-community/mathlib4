@@ -3,8 +3,10 @@ Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
-import Mathlib.CategoryTheory.CofilteredSystem
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
+public import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!
 # Properties of the ends of graphs
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.CofilteredSystem
 This file is meant to contain results about the ends of (locally finite connected) graphs.
 
 -/
+
+public section
 
 
 variable {V : Type} (G : SimpleGraph V)
@@ -42,7 +46,6 @@ instance componentComplFunctor_finite [LocallyFinite G] [Fact G.Preconnected]
 /-- A locally finite preconnected infinite graph has at least one end. -/
 lemma nonempty_ends_of_infinite [LocallyFinite G] [Fact G.Preconnected] [Infinite V] :
     G.end.Nonempty := by
-  classical
   apply nonempty_sections_of_finite_inverse_system G.componentComplFunctor
 
 end SimpleGraph

@@ -3,8 +3,9 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # `Monic` does not necessarily imply `IsRegular` in a `Semiring` with no opposites
@@ -23,6 +24,9 @@ The products `(X + 2) * (X + 2)` and `(X + 2) * (X + 3)` are equal to
 By truncation, `4, 5, 6` all mean `3` in `N`.
 It follows that multiplication by `(X + 2)` is not injective.
 -/
+
+@[expose] public section
+
 open Polynomial
 
 namespace Counterexample.NonRegular
@@ -65,9 +69,9 @@ instance : CommMonoid N₃ where
 instance : CommSemiring N₃ :=
   { (inferInstance : CommMonoid N₃) with
     add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
-    zero_add  := by rintro ⟨⟩ <;> rfl
-    add_zero  := by rintro ⟨⟩ <;> rfl
-    add_comm  := by rintro ⟨⟩ ⟨⟩ <;> rfl
+    zero_add := by rintro ⟨⟩ <;> rfl
+    add_zero := by rintro ⟨⟩ <;> rfl
+    add_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
     left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     zero_mul := by rintro ⟨⟩ <;> rfl

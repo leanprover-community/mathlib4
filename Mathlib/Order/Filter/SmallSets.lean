@@ -3,8 +3,10 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The filter of small sets
@@ -19,6 +21,9 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 `f` tends to the Dirac delta distribution.
 -/
 
+assert_not_exists Set.Finite
+
+@[expose] public section
 
 open Filter
 
@@ -99,7 +104,7 @@ theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s �
 theorem frequently_smallSets' {α : Type*} {l : Filter α} {p : Set α → Prop}
     (hp : ∀ ⦃s t : Set α⦄, s ⊆ t → p s → p t) :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, p t := by
-  convert not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
+  convert! not_iff_not.mpr <| l.eventually_smallSets' (p := (¬p ·)) (by tauto)
   simp
 
 theorem HasBasis.frequently_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
@@ -122,7 +127,7 @@ theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α
     (hl : l.HasAntitoneBasis s) : Tendsto s atTop l.smallSets :=
   tendsto_smallSets_iff.2 fun _t ht => hl.eventually_subset ht
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_smallSets : Monotone (@smallSets α) :=
   monotone_lift' monotone_id monotone_const
 

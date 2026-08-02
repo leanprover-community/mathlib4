@@ -3,11 +3,13 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupWithZero.Idempotent
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Notation
-import Mathlib.Tactic.Convert
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.GroupWithZero.Idempotent
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.Convert
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring
@@ -16,6 +18,8 @@ This file proves result about idempotent elements of a ring, like:
 * `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `a` is an idempotent if and only if
   `1 - a` is an idempotent.
 -/
+
+public section
 
 variable {R : Type*}
 
@@ -46,7 +50,7 @@ lemma _root_.isIdempotentElem_iff_one_sub_mul_self :
     IsIdempotentElem a ↔ (1 - a) * a = 0 := by
   rw [sub_mul, one_mul, sub_eq_zero, eq_comm, IsIdempotentElem]
 
-instance : HasCompl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
+instance : Compl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
 
 @[simp] lemma coe_compl (a : {a : R // IsIdempotentElem a}) : ↑aᶜ = (1 : R) - ↑a := rfl
 
@@ -139,7 +143,7 @@ theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
     simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
     exact h2.symm.trans h1
   rw [hpq.eq, and_self, ← nsmul_right_inj (by simp : 2 ≠ 0), ← zero_add (2 • p)]
-  convert congrArg (· + 2 • p) h using 1
+  convert congrArg (· + 2 • p) h
   simp [sub_mul, mul_sub, hp.eq, hpq.eq, two_nsmul, sub_add, sub_sub]
 
 end IsIdempotentElem

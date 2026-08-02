@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Fin.FlagRange
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Data.Fin.FlagRange
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -16,6 +18,11 @@ to be the subspace spanned by the first `k` vectors of the basis `b`.
 
 We also prove some lemmas about this definition.
 -/
+
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- This is why this section is `noncomputable`.
+-- See https://github.com/leanprover/lean4/issues/14084.
+@[expose] public noncomputable section
 
 open Set Submodule
 
@@ -42,9 +49,9 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
   span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
-    b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
+    b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
   simp only [flag, Fin.castSucc_lt_castSucc_iff]
-  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
+  simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, ofPred_or, image_insert_eq, span_insert]
 
 theorem self_mem_flag (b : Basis (Fin n) R M) {i : Fin n} {k : Fin (n + 1)} (h : i.castSucc < k) :
     b i ∈ b.flag k :=
@@ -55,21 +62,16 @@ theorem self_mem_flag_iff [Nontrivial R] (b : Basis (Fin n) R M) {i : Fin n} {k 
     b i ∈ b.flag k ↔ i.castSucc < k :=
   b.self_mem_span_image
 
-@[mono]
+@[gcongr, mono]
 theorem flag_mono (b : Basis (Fin n) R M) : Monotone b.flag :=
   Fin.monotone_iff_le_succ.2 fun k ↦ by rw [flag_succ]; exact le_sup_right
 
 theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range b.flag) :=
   b.flag_mono.isChain_range
 
-@[mono]
+@[gcongr, mono]
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
-
-@[gcongr] lemma flag_le_flag (hij : i ≤ j) : b.flag i ≤ b.flag j := flag_mono _ hij
-
-@[gcongr]
-lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_strictMono _ hij
 
 end Semiring
 

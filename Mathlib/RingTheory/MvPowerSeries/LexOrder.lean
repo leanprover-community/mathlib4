@@ -3,18 +3,21 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.WellFounded
 
-/-! LexOrder of multivariate power series
+/-! # LexOrder of multivariate power series
 
-Given an ordering of `σ` such that `WellOrderGT σ`,
+Given an ordering of `σ` such that `WellFoundedGT σ`,
 the lexicographic order on `σ →₀ ℕ` is a well ordering,
 which can be used to define a natural valuation `lexOrder` on the ring `MvPowerSeries σ R`:
 the smallest exponent in the support.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -30,13 +33,13 @@ variable [LinearOrder σ] [WellFoundedGT σ]
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by
-    have ne : Set.Nonempty (toLex '' φ.support) := by
-      simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
+    have ne : Set.Nonempty (toLex '' φ.support) := (Function.support_nonempty_iff.mpr h).image _
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
     · exact Finsupp.instLTLex.lt
     · exact wellFounded_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),
       lexOrder φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ))
@@ -45,7 +48,7 @@ theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     use ne
     unfold lexOrder
     simp only [dif_neg hφ]
-  simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, hφ, not_false_eq_true]
+  exact (Function.support_nonempty_iff.mpr hφ).image _
 
 @[simp]
 theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
@@ -55,7 +58,7 @@ theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :
   · simp only [h]
   · simp only [h, WithTop.coe_ne_top]
 
-theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
+@[simp] theorem lexOrder_zero : lexOrder (0 : MvPowerSeries σ R) = ⊤ := by
   unfold lexOrder
   rw [dif_pos rfl]
 
@@ -73,7 +76,7 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
   rcases hφ' with ⟨ne, hφ'⟩
   simp only [← h, WithTop.coe_eq_coe] at hφ'
   suffices toLex d ∈ toLex '' φ.support by
-    simp only [Set.mem_image_equiv, toLex_symm_eq, ofLex_toLex, Function.mem_support, ne_eq] at this
+    simp only [Set.mem_image_equiv, toLex_symm_eq, ofLex_toLex] at this
     apply this
   rw [hφ']
   apply WellFounded.min_mem
@@ -85,7 +88,7 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
     rw [hφ', WithTop.coe_lt_coe] at h
     by_contra h'
-    exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
+    exact WellFounded.not_lt_min _ (toLex '' φ.support) (Set.mem_image_equiv.mpr h') h
 
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by
@@ -154,10 +157,10 @@ alias lexOrder_mul_ge := le_lexOrder_mul
 
 theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
     lexOrder (φ * ψ) = lexOrder φ + lexOrder ψ := by
-  by_cases hφ : φ = 0
-  · simp only [hφ, zero_mul, lexOrder_zero, top_add]
-  by_cases hψ : ψ = 0
-  · simp only [hψ, mul_zero, lexOrder_zero, add_top]
+  obtain rfl | hφ := eq_or_ne φ 0
+  · simp
+  obtain rfl | hψ := eq_or_ne ψ 0
+  · simp
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hφ with ⟨p, hp⟩
   rcases exists_finsupp_eq_lexOrder_of_ne_zero hψ with ⟨q, hq⟩
   apply le_antisymm _ (lexOrder_mul_ge φ ψ)

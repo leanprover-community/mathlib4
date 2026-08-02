@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Data.Finsupp.Option
-import Mathlib.LinearAlgebra.Finsupp.Supported
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Data.Finsupp.Option
+public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 # `Finsupp.linearCombination`
@@ -28,6 +30,8 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -132,6 +136,11 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     use single i 1
     simp [hi]
 
+theorem _root_.span_range_eq_top_iff_surjective_finsuppLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Finsupp.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, range_linearCombination]
+
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
@@ -161,7 +170,7 @@ theorem linearCombination_equivMapDomain (f : α ≃ α') (l : α →₀ R) :
 direction -/
 theorem span_eq_range_linearCombination (s : Set M) :
     span R s = LinearMap.range (linearCombination R ((↑) : s → M)) := by
-  rw [range_linearCombination, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  rw [range_linearCombination, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
 
 theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
     x ∈ span R s ↔ ∃ l : s →₀ R, linearCombination R (↑) l = x :=
@@ -183,7 +192,7 @@ theorem span_image_eq_map_linearCombination (s : Set α) :
   · refine map_le_iff_le_comap.2 fun z hz => ?_
     have : ∀ i, z i • v i ∈ span R (v '' s) := by
       intro c
-      haveI := Classical.decPred fun x => x ∈ s
+      have := Classical.decPred fun x => x ∈ s
       by_cases h : c ∈ s
       · exact smul_mem _ _ (subset_span (Set.mem_image_of_mem _ h))
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
@@ -211,10 +220,9 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
   | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
   | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-theorem linearCombination_smul [DecidableEq α] [Module R S] [Module S M] [IsScalarTower R S M]
-    {w : α' → S} :
+theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
-      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
+      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (curryLinearEquiv R).toLinearMap := by
   ext; simp
 
 @[simp]
@@ -242,10 +250,11 @@ theorem linearCombinationOn_range (s : Set α) :
     range_subtype]
   exact (span_image_eq_map_linearCombination _ _).le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearCombination_restrict (s : Set α) :
-    linearCombination R (s.restrict v) = Submodule.subtype _ ∘ₗ
+    linearCombination R (s.domRestrict v) = Submodule.subtype _ ∘ₗ
       linearCombinationOn α M R v s ∘ₗ (supportedEquivFinsupp s).symm.toLinearMap := by
-  classical ext; simp [linearCombinationOn]
+  ext; simp [linearCombinationOn]
 
 theorem linearCombination_comp (f : α' → α) :
     linearCombination R (v ∘ f) = (linearCombination R v).comp (lmapDomain R R f) := by
@@ -264,7 +273,7 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
-  contrapose! h
+  contrapose h
   simp [h]
 
 variable [Module S M] [SMulCommClass R S M]
@@ -336,6 +345,11 @@ theorem Fintype.range_linearCombination :
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
 
+theorem span_range_eq_top_iff_surjective_fintypeLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Fintype.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
+
 /-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
@@ -391,6 +405,22 @@ theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
   · rw [← hx]
     exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
 
+theorem Submodule.mem_span_image_finset_iff_exists_fun {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
+  rw [← mem_span_range_iff_exists_fun, image_eq_range]
+  rfl
+
+theorem Submodule.mem_span_image_finset_iff_exists_fun' {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : α → R, ∑ i ∈ s, c i • v i = x := by
+  classical
+  rw [Submodule.mem_span_image_finset_iff_exists_fun]
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, fun ⟨c, hc⟩ ↦ ?_⟩
+  · refine ⟨fun i ↦ if h : i ∈ s then c ⟨i, h⟩ else 0, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
+    simp
+  · refine ⟨fun i ↦ c i, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
+
 theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]
@@ -409,7 +439,7 @@ section
 variable (R)
 
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
+`((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
 irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
@@ -432,7 +462,7 @@ lemma Submodule.mem_span_iff_exists_finset_subset {s : Set M} {x : M} :
   mp := by
     rw [← s.image_id, mem_span_image_iff_linearCombination]
     rintro ⟨l, hl, rfl⟩
-    exact ⟨l, l.support, by simpa [linearCombination, Finsupp.sum] using hl⟩
+    exact ⟨l, l.support, by simpa [linearCombination, Finsupp.sum] using! hl⟩
   mpr := by
     rintro ⟨n, t, hts, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hts hx
 
@@ -485,7 +515,7 @@ lemma Submodule.span_eq_iUnion_nat (s : Set M) :
     (Submodule.span R s : Set M) = ⋃ (n : ℕ),
       (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
   ext m
-  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_setOf_eq, mem_span_set']
+  simp only [SetLike.mem_coe, mem_iUnion, mem_image, mem_ofPred_eq, mem_span_set']
   refine exists_congr (fun n ↦ ⟨?_, ?_⟩)
   · rintro ⟨f, g, rfl⟩
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩

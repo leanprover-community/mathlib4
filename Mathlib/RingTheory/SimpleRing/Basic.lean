@@ -3,10 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Defs
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import Mathlib.RingTheory.SimpleRing.Defs
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 /-! # Basic Properties of Simple rings
 
@@ -14,7 +15,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 ## Main results
 
-- `IsSimpleRing.nontrivial`: simple rings are non-trivial.
+- `IsSimpleRing.instNontrivial`: simple rings are non-trivial.
 - `DivisionRing.isSimpleRing`: division rings are simple.
 - `RingHom.injective`: every ring homomorphism from a simple ring to a nontrivial ring is injective.
 - `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
@@ -22,7 +23,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 -/
 
-assert_not_exists Finset
+public section
 
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
@@ -33,6 +34,8 @@ variable {R}
 instance [IsSimpleRing R] : Nontrivial R := by
   obtain ⟨x, _, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
   use x, 0, hx
+
+attribute [instance 200] IsSimpleRing.instNontrivial
 
 lemma one_mem_of_ne_bot {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : TwoSidedIdeal A)
     (hI : I ≠ ⊥) : (1 : A) ∈ I :=

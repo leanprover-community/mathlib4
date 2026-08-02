@@ -3,25 +3,31 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.SymmDiff
 
 /-! # Symmetric differences of sets -/
+
+public section
 
 assert_not_exists RelIso
 
 namespace Set
 
 universe u
-variable {α : Type u} {a : α} {s t u : Set α}
+variable {α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
-theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s :=
-  Iff.rfl
+@[grind =] theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := .rfl
 
-protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s :=
-  rfl
+protected theorem symmDiff_def (s t : Set α) : s ∆ t = s \ t ∪ t \ s := rfl
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
 
 theorem symmDiff_subset_union : s ∆ t ⊆ s ∪ t :=
   @symmDiff_le_sup (Set α) _ _ _
@@ -45,5 +51,14 @@ theorem subset_symmDiff_union_symmDiff_left (h : Disjoint s t) : u ⊆ s ∆ u �
 
 theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t ∪ s ∆ u :=
   h.le_symmDiff_sup_symmDiff_right
+
+lemma union_symmDiff_subset : (s ∪ t) ∆ u ⊆ s ∆ u ∪ t ∆ u := by
+  grind
+
+lemma symmDiff_union_subset : s ∆ (t ∪ u) ⊆ s ∆ t ∪ s ∆ u := by
+  grind
+
+lemma union_symmDiff_union_subset : (s ∪ t) ∆ (u ∪ v) ⊆ s ∆ u ∪ t ∆ v := by
+  grind
 
 end Set

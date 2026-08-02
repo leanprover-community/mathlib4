@@ -3,8 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Roots of cyclotomic polynomials.
@@ -30,6 +32,8 @@ To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic 
 primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
+public section
+
 
 namespace Polynomial
 
@@ -40,9 +44,9 @@ theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divi
   rcases n.eq_zero_or_pos with (rfl | hn)
   · exact pow_zero _
   have := congr_arg (eval ζ) (prod_cyclotomic_eq_X_pow_sub_one hn R).symm
-  rw [eval_sub, eval_pow, eval_X, eval_one] at this
-  convert eq_add_of_sub_eq' this
-  convert (add_zero (M := R) _).symm
+  rw [eval_sub, eval_X_pow, eval_one] at this
+  convert! eq_add_of_sub_eq' this
+  convert! (add_zero (M := R) _).symm
   apply eval_eq_zero_of_dvd_of_eval_eq_zero _ h
   exact Finset.dvd_prod_of_mem _ hi
 
@@ -94,7 +98,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
-  haveI : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
+  have : NeZero (n : FractionRing R) := NeZero.nat_of_injective hf
   rw [← isRoot_map_iff hf, ← IsPrimitiveRoot.map_iff_of_injective hf, map_cyclotomic, ←
     isRoot_cyclotomic_iff']
 
@@ -133,7 +137,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
   · rw [cyclotomic_zero] at hnm
     replace hnm := congr_arg natDegree hnm
     rwa [natDegree_one, natDegree_cyclotomic, eq_comm, Nat.totient_eq_zero, eq_comm] at hnm
-  · haveI := NeZero.mk hzero
+  · have := NeZero.mk hzero
     rw [← map_cyclotomic_int _ R, ← map_cyclotomic_int _ R] at hnm
     replace hnm := map_injective (Int.castRingHom R) Int.cast_injective hnm
     replace hnm := congr_arg (map (Int.castRingHom ℂ)) hnm
@@ -141,7 +145,7 @@ theorem cyclotomic_injective [CharZero R] : Function.Injective fun n => cyclotom
     have hprim := Complex.isPrimitiveRoot_exp _ hzero
     have hroot := isRoot_cyclotomic_iff (R := ℂ).2 hprim
     rw [hnm] at hroot
-    haveI hmzero : NeZero m := ⟨fun h => by simp [h] at hroot⟩
+    have hmzero : NeZero m := ⟨fun h => by simp [h] at hroot⟩
     rw [isRoot_cyclotomic_iff (R := ℂ)] at hroot
     replace hprim := hprim.eq_orderOf
     rwa [← IsPrimitiveRoot.eq_orderOf hroot] at hprim
@@ -159,7 +163,7 @@ open IsPrimitiveRoot Complex
 theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
-  haveI := NeZero.of_faithfulSMul K R n
+  have := NeZero.of_faithfulSMul K R n
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 
@@ -204,3 +208,37 @@ theorem cyclotomic.isCoprime_rat {n m : ℕ} (h : n ≠ m) :
 end minpoly
 
 end Polynomial
+
+namespace IsPrimitiveRoot
+
+open Polynomial
+
+variable {K : Type*} [Field K] [CharZero K]
+variable {p : ℕ} {ζ : K}
+
+/-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
+coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
+polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
+lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
+  have : Fact p.Prime := ⟨hp⟩
+  let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
+  have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
+  have hP' : P.degree ≤ ↑(p - 1) :=
+    (degree_sum_le ..).trans (Finset.sup_le fun _ _ ↦ by grw [degree_C_mul_X_pow_le]; simp; grind)
+  trans aeval ζ P = 0; · simp [P]
+  rw [← minpoly.dvd_iff, ← cyclotomic_eq_minpoly_rat hζ hp.pos]
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, fun H ↦ ⟨C (α 0), Polynomial.ext fun i ↦ if h : i < p then ?_ else ?_⟩⟩
+  · rw [hc, degree_mul, degree_cyclotomic, Nat.totient_prime hp] at hP'
+    have : c.degree ≤ 0 := (WithBot.add_le_add_iff_left (x := ↑(p - 1)) (by simp)).mp (by simpa)
+    obtain ⟨c, rfl⟩ := natDegree_eq_zero.mp (natDegree_eq_zero_iff_degree_le_zero.mpr this)
+    simp [hP, hc, cyclotomic_prime]
+  · lift i to Fin p using h; simp [cyclotomic_prime, ← hP, H i 0]
+  · simp [cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _), Finset.sum_eq_zero]
+
+/-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients. -/
+lemma sum_eq_zero_iff_forall_eq_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
+  simpa using sum_eq_zero_iff_forall_eq hp hζ (Int.cast ∘ α)
+
+end IsPrimitiveRoot

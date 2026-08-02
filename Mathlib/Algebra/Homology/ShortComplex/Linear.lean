@@ -3,23 +3,27 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Homology of linear categories
 
-In this file, it is shown that if `C` is a `R`-linear category, then
-`ShortComplex C` is a `R`-linear category. Various homological notions
+In this file, it is shown that if `C` is an `R`-linear category, then
+`ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
 
 namespace ShortComplex
 

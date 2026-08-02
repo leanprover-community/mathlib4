@@ -3,12 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The category paths on a quiver.
+
 When `C` is a quiver, `paths C` is the category of paths.
 
 ## When the quiver is itself a category
@@ -18,6 +19,7 @@ We check that the quotient of the path category of a category by the canonical r
 (paths are related if they compose to the same path) is equivalent to the original category.
 -/
 
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -30,16 +32,20 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (V : Type u₁) [Unique V] : Unique (Paths V) where
+  uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
   id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion of a quiver `V` into its path category, as a prefunctor.
 -/
 @[simps]
@@ -49,6 +55,7 @@ def of : V ⥤q Paths V where
 
 variable {V}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To prove a property on morphisms of a path category with given source `a`, it suffices to
 prove it for the identity and prove that the property is preserved under composition on the right
 with length 1 paths. -/
@@ -61,6 +68,7 @@ lemma induction_fixed_source {a : Paths V} (P : ∀ {b : Paths V}, (a ⟶ b) →
   | nil => exact id
   | cons _ w h => exact comp _ w h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To prove a property on morphisms of a path category with given target `b`, it suffices to prove
 it for the identity and prove that the property is preserved under composition on the left
 with length 1 paths. -/
@@ -78,6 +86,7 @@ lemma induction_fixed_target {b : Paths V} (P : ∀ {a : Paths V}, (a ⟶ b) →
     obtain ⟨c, f, q, hq, rfl⟩ := f.eq_toPath_comp_of_length_eq_succ h
     exact comp _ _ (h' _ hq)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the right with length 1 paths. -/
 lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
@@ -87,6 +96,7 @@ lemma induction (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
     ∀ {a b : Paths V} (f : a ⟶ b), P f :=
   fun {_} ↦ induction_fixed_source _ id comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To prove a property on morphisms of a path category, it suffices to prove it for the identity
 and prove that the property is preserved under composition on the left with length 1 paths. -/
 lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
@@ -100,8 +110,9 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 
 attribute [local ext (iff := false)] Functor.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
-def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
+def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
@@ -118,21 +129,26 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
       simp only at ih ⊢
       rw [ih, Category.assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
+theorem lift_nil {C} [Category* C] (φ : V ⥤q C) (X : V) :
     (lift φ).map Quiver.Path.nil = 𝟙 (φ.obj X) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
+theorem lift_cons {C} [Category* C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
     (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
+theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
     (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
     rfl
@@ -141,7 +157,9 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefu
     dsimp [lift, Quiver.Hom.toPath]
     simp
 
-theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   fapply Functor.ext
@@ -158,12 +176,13 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
       -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
-        convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
+        convert! Functor.map_comp Φ p (Quiver.Hom.toPath f')
       rw [this, ih]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
 @[ext (iff := false)]
-theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
+theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
     F = G := by
@@ -179,9 +198,10 @@ theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.ob
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem Prefunctor.mapPath_comp' (F : V ⥤q W) {X Y Z : Paths V} (f : X ⟶ Y) (g : Y ⟶ Z) :
     F.mapPath (f ≫ g) = (F.mapPath f).comp (F.mapPath g) :=
@@ -218,10 +238,12 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
   | nil => simp
   | cons g e ih => simp [ih]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 -- TODO get rid of `(id X : C)` somehow?
 theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (show C from X) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     composePath (f ≫ g) = composePath f ≫ composePath g :=
@@ -229,6 +251,7 @@ theorem composePath_comp' {X Y Z : Paths C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Composition of paths as functor from the path category of a category to the category. -/
 @[simps]
 def pathComposition : Paths C ⥤ C where
@@ -245,20 +268,28 @@ two paths are related if they compose to the same morphism. -/
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] pathsHomRel.eq_1
+
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
-  map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
-  map_comp f g := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
+  map_id X := Quot.sound (HomRel.CompClosure.of (by simp))
+  map_comp f g := Quot.sound (HomRel.CompClosure.of (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from the canonical quotient of a path category of a category
 to the original category. -/
 @[simps!]
 def quotientPathsTo : Quotient (pathsHomRel C) ⥤ C :=
   Quotient.lift _ (pathComposition C) fun _ _ _ _ w => w
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical quotient of the path category of a category
 is equivalent to the original category. -/
 def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
@@ -267,10 +298,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
-        apply Quot.sound
-        apply Quotient.CompClosure.of
-        simp [Category.comp_id, Category.id_comp, pathsHomRel])
+      (Quot.ind fun f => by exact Quot.sound (HomRel.CompClosure.of (by simp)))
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X

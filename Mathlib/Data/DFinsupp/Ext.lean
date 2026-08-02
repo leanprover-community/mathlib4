@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Data.DFinsupp.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Extensionality principles for `DFinsupp`
@@ -14,6 +16,8 @@ import Mathlib.Data.DFinsupp.Defs
 * `DFinsupp.addHom_ext`, `DFinsupp.addHom_ext'`: if two additive homomorphisms from `Π₀ i, β i`
   are equal on each `single a b`, then they are equal.
 -/
+
+public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l

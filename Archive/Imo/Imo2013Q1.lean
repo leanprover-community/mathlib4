@@ -17,7 +17,7 @@ m₁, m₂, ..., mₖ (not necessarily different) such that
 
   1 + (2ᵏ - 1)/ n = (1 + 1/m₁) * (1 + 1/m₂) * ... * (1 + 1/mₖ).
 
-# Solution
+## Solution
 
 Adaptation of the solution found in https://www.imo-official.org/problems/IMO2013SL.pdf
 
@@ -39,6 +39,8 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
 end Imo2013Q1
 
 open Imo2013Q1
+
+set_option backward.isDefEq.respectTransparency.types false in
 theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
   induction k generalizing n with
@@ -59,7 +61,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     have hmpk : (m pk : ℚ) = 2 * t + 2 ^ pk.succ := by
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
     calc
-      ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
+      ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
         simp [field, -mul_eq_mul_right_iff]

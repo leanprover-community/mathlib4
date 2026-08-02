@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The composition of QPFs is itself a QPF
@@ -12,6 +14,8 @@ import Mathlib.Data.QPF.Multivariate.Basic
 We define composition between one `n`-ary functor and `n` `m`-ary functors
 and show that it preserves the QPF structure
 -/
+
+@[expose] public section
 
 
 universe u
@@ -67,6 +71,7 @@ theorem get_map (x : Comp F G α) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i
   abs := Comp.mk ∘ (map fun _ ↦ abs) ∘ abs ∘ MvPFunctor.comp.get

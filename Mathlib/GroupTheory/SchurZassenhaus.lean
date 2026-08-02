@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.GroupTheory.Transfer
 
 /-!
 # The Schur-Zassenhaus Theorem
@@ -20,12 +22,15 @@ In this file we prove the Schur-Zassenhaus theorem.
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
 
+@[expose] public section
+
 
 namespace Subgroup
 
 section SchurZassenhausAbelian
 
 open MulOpposite MulAction Subgroup.leftTransversals
+open scoped IsMulCommutative
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
@@ -37,14 +42,16 @@ def QuotientDiff :=
       ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
-instance : Inhabited H.QuotientDiff :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : Inhabited H.QuotientDiff :=
   inferInstanceAs (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
         hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
-  letI := H.fintypeQuotientOfFiniteIndex
+  let := H.fintypeQuotientOfFiniteIndex
   let ϕ : H →* H :=
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
@@ -75,7 +82,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
-  letI := H.fintypeQuotientOfFiniteIndex
+  let := H.fintypeQuotientOfFiniteIndex
   rw [diff, diff, index_eq_card, Nat.card_eq_fintype_card,
       ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine Finset.prod_congr rfl fun q _ => ?_
@@ -218,8 +225,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
     rhs
     rhs
     rw [← N.range_subtype, N.subtype.range_eq_map]
-  have inj := map_injective N.subtype_injective
-  rwa [inj.eq_iff, inj.eq_iff] at key
+  rwa [map_subtype_inj, map_subtype_inj] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
@@ -227,25 +233,25 @@ private theorem step4 : (Nat.card N).minFac.Prime :=
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
-  haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
+  have : (P.1.map N.subtype).Normal :=
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by
-  haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
-  haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact
     ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
       (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
@@ -262,7 +268,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Finite G] (hG : Nat.ca
   induction n using Nat.strongRecOn with | ind n ih => ?_
   rintro G _ _ rfl N _ hN
   refine not_forall_not.mp fun h3 => ?_
-  haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
+  have := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
 
 /-- **Schur-Zassenhaus** for normal subgroups:
@@ -275,15 +281,14 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     rw [hN]
     exact ⟨⊥, isComplement'_top_bot⟩
   by_cases hN2 : N.index = 0
-  · rw [hN2, Nat.coprime_zero_right] at hN
-    haveI := (Cardinal.toNat_eq_one_iff_unique.mp hN).1
+  · rw [hN2, Nat.coprime_zero_right, Nat.card_eq_one_iff_unique] at hN
+    have := hN.1
     rw [N.eq_bot_of_subsingleton]
     exact ⟨⊤, isComplement'_bot_top⟩
-  have hN3 : Nat.card G ≠ 0 := by
+  have hN3 : Finite G := by
+    apply Nat.finite_of_card_ne_zero
     rw [← N.card_mul_index]
     exact mul_ne_zero hN1 hN2
-  haveI := (Cardinal.lt_aleph0_iff_fintype.mp
-    (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   exact exists_right_complement'_of_coprime_aux' rfl hN
 
 /-- **Schur-Zassenhaus** for normal subgroups:

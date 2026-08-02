@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -32,6 +34,8 @@ on all compact Hausdorff spaces. We replace it by a two steps construction.
 The first step called `PreStoneCech` guarantees the expected universal property but
 not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreStoneCech α)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -70,7 +74,7 @@ theorem ultrafilter_isOpen_basic (s : Set α) : IsOpen { u : Ultrafilter α | s 
 /-- The basic open sets for the topology on ultrafilters are also closed. -/
 theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α | s ∈ u } := by
   rw [← isOpen_compl_iff]
-  convert ultrafilter_isOpen_basic sᶜ using 1
+  convert! ultrafilter_isOpen_basic sᶜ using 1
   ext u
   exact Ultrafilter.compl_mem_iff_notMem.symm
 
@@ -81,7 +85,7 @@ theorem ultrafilter_converges_iff {u : Ultrafilter (Ultrafilter α)} {x : Ultraf
   rw [eq_comm, ← Ultrafilter.coe_le_coe]
   change ↑u ≤ 𝓝 x ↔ ∀ s ∈ x, { v : Ultrafilter α | s ∈ v } ∈ u
   simp only [TopologicalSpace.nhds_generateFrom, le_iInf_iff, ultrafilterBasis, le_principal_iff,
-    mem_setOf_eq]
+    mem_ofPred_eq]
   constructor
   · intro h a ha
     exact h _ ⟨ha, a, rfl⟩
@@ -114,7 +118,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
   ext s
   change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
-  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
+  simp_rw [mem_map, preimage_ofPred_eq, mem_pure, ofPred_mem_eq]
 
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
@@ -126,8 +130,6 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
   exact principal_mono.2 fun _ ↦ id
 
 section Embedding
-
-@[deprecated (since := "2025-08-14")] alias ultrafilter_pure_injective := Ultrafilter.pure_injective
 
 open TopologicalSpace
 
@@ -176,8 +178,8 @@ variable [T2Space γ]
 
 @[simp]
 lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
-  letI : TopologicalSpace α := ⊥
-  haveI : DiscreteTopology α := ⟨rfl⟩
+  let : TopologicalSpace α := ⊥
+  have : DiscreteTopology α := ⟨rfl⟩
   exact funext (isDenseInducing_pure.extend_eq continuous_of_discreteTopology)
 
 @[simp]
@@ -243,6 +245,7 @@ instance [Inhabited α] : Inhabited (PreStoneCech α) :=
 def preStoneCechUnit (x : α) : PreStoneCech α :=
   Quot.mk _ (pure x : Ultrafilter α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreStoneCech α) :=
   continuous_iff_ultrafilter.mpr fun x g gx ↦ by
     have : (g.map pure).toFilter ≤ 𝓝 g := by
@@ -250,7 +253,7 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
       rfl
     have : (map preStoneCechUnit g : Filter (PreStoneCech α)) ≤ 𝓝 (Quot.mk _ g) :=
       (map_mono this).trans (continuous_quot_mk.tendsto _)
-    convert this
+    convert! this
     exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
@@ -291,6 +294,7 @@ lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
   congr_fun (preStoneCechExtend_extends hg) a
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g
@@ -367,6 +371,7 @@ variable [CompactSpace β]
 def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x

@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Combinatorics.SetFamily.Compression.Down
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families
@@ -24,6 +26,8 @@ This file defines the shattering property and VC-dimension of set families.
 * Order-shattering
 * Strong shattering
 -/
+
+@[expose] public section
 
 open scoped FinsetFamily
 
@@ -116,7 +120,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
     refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
-    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_setOf_eq, and_imp,
+    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_ofPred_eq, and_imp,
       mem_shatterer]
     exact fun s _ ↦ aux (fun t ht ↦ (mem_filter.1 ht).2)
   rw [← card_memberSubfamily_add_card_nonMemberSubfamily a]

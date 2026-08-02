@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Simps.Basic
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes
@@ -21,6 +23,8 @@ A subtype has a natural coercion to the parent type, by coercing `⟨val, proper
 such, subtypes can be thought of as bundled sets, the difference being that elements of a set are
 still of type `α` while elements of a subtype aren't.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -56,18 +60,7 @@ theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x //
     (by grind) (funext <| fun x ↦ propext (h x)) a2
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
-    {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by
-  subst h
-  subst h'
-  grind
-
-@[deprecated Subtype.ext (since := "2025-09-10")]
-theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
-  Subtype.ext
-
-@[deprecated Subtype.ext_iff (since := "2025-09-10")]
-theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
-  Subtype.ext_iff
+    {b : {y // q y}} (h : α = β) (h' : p ≍ q) : a ≍ b ↔ (a : α) ≍ (b : β) := by grind
 
 @[simp]
 theorem coe_eta (a : { a // p a }) (h : p a) : mk (↑a) h = a :=
@@ -142,14 +135,9 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
 
-theorem coind_surjective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Surjective f) :
-    Surjective (coind f h) := fun x ↦
-  let ⟨a, ha⟩ := hf x
-  ⟨a, coe_injective ha⟩
-
-theorem coind_bijective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Bijective f) :
-    Bijective (coind f h) :=
-  ⟨coind_injective h hf.1, coind_surjective h hf.2⟩
+@[simp] theorem coind_injective_iff {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) :
+    Injective (coind f h) ↔ Injective f :=
+  ⟨Subtype.coe_injective.comp, coind_injective h⟩
 
 /-- Restriction of a function to a function on subtypes. -/
 @[simps]

@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.IsomorphismClasses
-import Mathlib.CategoryTheory.Thin
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Skeleton of a category
@@ -22,6 +24,8 @@ separately is that lemmas and definitions about orderings can be used directly, 
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -72,8 +76,11 @@ its category structure.
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
 deriving
   Category,
-  [Inhabited C] → Inhabited _,
-  (α : Sort _) → [CoeSort C α] → CoeSort _ α
+  [Inhabited C] → Inhabited _
+
+-- Without this we get errors in Mathlib/RingTheory/PicardGroup.lean
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance (α : Sort _) → [CoeSort C α] → CoeSort _ α for Skeleton C
 
 end
 
@@ -102,34 +109,41 @@ variable {C}
 abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 
 /-- The isomorphism between `⟦X⟧.out` and `X`. -/
-noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
+noncomputable def fromSkeletonToSkeletonIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-alias fromSkeletonToSkeletonIso := preCounitIso
+@[reassoc, simp]
+lemma Skeleton.comp_hom {X Y Z : Skeleton C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An inverse to `fromSkeleton C` that forms an equivalence with it. -/
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
-  map {X Y} f := by apply (preCounitIso X).hom ≫ f ≫ (preCounitIso Y).inv
+  map {X Y} f :=
+    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv }
   map_id _ := by aesop
-  map_comp _ _ := by change _ = CategoryStruct.comp (obj := C) _ _; simp
+  map_comp _ _ := InducedCategory.hom_ext (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the skeleton and the category itself. -/
 @[simps] noncomputable def skeletonEquivalence : Skeleton C ≌ C where
   functor := fromSkeleton C
   inverse := toSkeletonFunctor C
   unitIso := NatIso.ofComponents
     (fun X ↦ InducedCategory.isoMk (Nonempty.some <| Quotient.mk_out X.out).symm)
-    fun _ ↦ .symm <| Iso.inv_hom_id_assoc _ _
-  counitIso := NatIso.ofComponents preCounitIso
+    (fun f ↦ InducedCategory.hom_ext (Iso.inv_hom_id_assoc _ _).symm)
+  counitIso := NatIso.ofComponents fromSkeletonToSkeletonIso
   functor_unitIso_comp _ := Iso.inv_hom_id _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem skeleton_skeletal : Skeletal (Skeleton C) := by
   rintro X Y ⟨h⟩
   have : X.out ≈ Y.out := ⟨(fromSkeleton C).mapIso h⟩
-  simpa using Quotient.sound this
+  simpa using! Quotient.sound this
 
 /-- The `skeleton` of `C` given by choice is a skeleton of `C`. -/
 lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
@@ -164,29 +178,33 @@ noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
 
 variable (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mapSkeleton_obj_toSkeleton (X : C) :
     F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
-  congr_toSkeleton_of_iso <| F.mapIso <| preCounitIso X
+  congr_toSkeleton_of_iso <| F.mapIso <| fromSkeletonToSkeletonIso X
 
-instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+instance [F.Full] : F.mapSkeleton.Full := inferInstanceAs <| (_ ⋙ _).Full
 
-instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+instance [F.Faithful] : F.mapSkeleton.Faithful := inferInstanceAs <| (_ ⋙ _).Faithful
 
-instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
+instance [F.EssSurj] : F.mapSkeleton.EssSurj := inferInstanceAs <| (_ ⋙ _).EssSurj
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
 the square formed by these 4 objects and 4 functors commutes. -/
 noncomputable def toSkeletonFunctorCompMapSkeletonIso :
     toSkeletonFunctor C ⋙ F.mapSkeleton ≅ F ⋙ toSkeletonFunctor D :=
-  NatIso.ofComponents (fun X ↦ (toSkeletonFunctor D).mapIso <| F.mapIso <| preCounitIso X)
-    (fun {X Y} f ↦ show (_ ≫ _) ≫ _ = _ ≫ _ by simp [assoc])
+  NatIso.ofComponents
+    (fun X ↦ (toSkeletonFunctor D).mapIso <| F.mapIso <| fromSkeletonToSkeletonIso X)
+    (fun f ↦ InducedCategory.hom_ext (show (_ ≫ _) ≫ _ = _ ≫ _ by simp))
 
 lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
   fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
 
 lemma mapSkeleton_surjective [F.EssSurj] : Function.Surjective F.mapSkeleton.obj :=
-  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage Y; ⟨X, skeleton_skeletal D h⟩
+  fun Y ↦ let ⟨X, h⟩ := EssSurj.mem_essImage F.mapSkeleton Y; ⟨X, skeleton_skeletal D h⟩
 
 end Functor
 
@@ -205,6 +223,7 @@ variable (C D)
 preorder with nice definitional properties, but is only really appropriate for thin categories.
 If your original category is not thin, you probably want to be using `Skeleton` instead of this.
 -/
+@[implicit_reducible]
 def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
@@ -231,7 +250,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le_trans a b c := Quotient.inductionOn₃ a b c fun _ _ _ => Nonempty.map2 (· ≫ ·)
 
 /-- The functor from a category to its thin skeleton. -/
-@[simps]
+@[simps, implicit_reducible]
 def toThinSkeleton : C ⥤ ThinSkeleton C where
   obj := ThinSkeleton.mk
   map f := homOfLE (Nonempty.intro f)
@@ -252,6 +271,7 @@ instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
 
 variable {C} {D}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
@@ -266,7 +286,7 @@ def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F�
   app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted
-from the original `map₂` proof. Lean needed an extensive amount explicit type
+from the original `map₂` proof. Lean needed an extensive amount of explicit type
 annotations to figure things out. This also translated into repeated deterministic
 timeouts. The extracted defs allow for explicit motives for the multiple
 descents to the quotients.
@@ -364,6 +384,25 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
   Functor.eq_of_iso skeletal
     { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }
+
+/--
+Applying `fromThinSkeleton`, `F` and then `toThinSkeleton` is isomorphic to applying `map F`.
+-/
+noncomputable def fromThinSkeletonCompToThinSkeletonIso (F : C ⥤ D) :
+    fromThinSkeleton C ⋙ F ⋙ toThinSkeleton D ≅ map F :=
+  Functor.isoWhiskerLeft (fromThinSkeleton C) (Iso.refl _) ≪≫
+    Functor.isoWhiskerRight (equivalence C).unitIso.symm (map F) ≪≫
+    Functor.leftUnitor (map F)
+
+/--
+Applying `map F` and then `fromThinSkeleton` is isomorphic to first applying `fromThinSkeleton`
+and then applying `F`.
+-/
+noncomputable def mapCompFromThinSkeletonIso [Quiver.IsThin D] (F : C ⥤ D) :
+    map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F :=
+  Functor.isoWhiskerRight (fromThinSkeletonCompToThinSkeletonIso F).symm _ ≪≫
+    Functor.isoWhiskerLeft (fromThinSkeleton C ⋙ F) (equivalence D).counitIso ≪≫
+    Functor.rightUnitor (fromThinSkeleton C ⋙ F)
 
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
 lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C) where

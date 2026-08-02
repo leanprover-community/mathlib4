@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Image-to-kernel comparison maps
@@ -15,6 +17,8 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
 
 -/
+
+@[expose] public section
 
 universe v u w
 
@@ -46,8 +50,6 @@ instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
 theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
-
-attribute [local instance] HasForget.instFunLike
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
@@ -135,7 +137,7 @@ instance imageToKernel_epi_of_zero_of_mono [HasKernels V] [HasZeroObject V] [Mon
 instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
     Epi (imageToKernel f (0 : B ⟶ C) (by simp)) := by
   simp only [imageToKernel_zero_right]
-  haveI := epi_image_of_epi f
+  have := epi_image_of_epi f
   rw [← imageSubobject_arrow]
   infer_instance
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -31,6 +33,8 @@ a linearly ordered commutative group with zero. You can locally activate this to
 `open WithZeroTopology`.
 -/
 
+public section
+
 open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
@@ -39,7 +43,8 @@ variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ�
   {f : α → Γ₀}
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
-A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
+A subset `U` is open if `0 ∉ U` or if there is an invertible element γ₀ such that
+`{γ | γ < γ₀} ⊆ U`. -/
 scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 
@@ -135,16 +140,14 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 
 /-- The topology on a linearly ordered group with zero element adjoined is compatible with the order
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
-@[nolint defLemma]
 scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
-    simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
+    simp only [← isOpen_compl_iff, compl_ofPred, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
-    rw [nhds_prod_eq, nhds_of_ne_zero (zero_le'.trans_lt hab).ne', pure_prod]
+    rw [nhds_prod_eq, nhds_of_ne_zero hab.ne_zero, pure_prod]
     exact Iio_mem_nhds hab
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
-@[nolint defLemma]
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
   completely_normal := fun s t h₁ h₂ => by
     by_cases hs : 0 ∈ s
@@ -154,7 +157,6 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological
 monoid. -/
-@[nolint defLemma]
 scoped instance (priority := 100) : ContinuousMul Γ₀ where
   continuous_mul := by
     simp only [continuous_iff_continuousAt, ContinuousAt]
@@ -167,7 +169,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
-      exact (mul_lt_mul'' hx hy zero_le' zero_le').trans_eq (mul_one γ)
+      exact (mul_lt_mul'' hx hy zero_le zero_le).trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
@@ -177,7 +179,6 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
 
-@[nolint defLemma]
 scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.HarrisKleitman
-import Mathlib.Combinatorics.SetFamily.Intersecting
+module
+
+public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
+public import Mathlib.Combinatorics.SetFamily.Intersecting
 
 /-!
 # Kleitman's bound on the size of intersecting families
@@ -22,6 +24,8 @@ Kleitman's bound stipulates that `k` intersecting families cover at most `2ⁿ -
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+public section
 
 
 open Finset
@@ -60,7 +64,7 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine (card_le_card <| biUnion_mono fun j hj ↦ (hf₁ _ hj).1).trans ?_
   nth_rw 1 [cons_eq_insert i]
   rw [biUnion_insert]
-  refine (card_mono <| @le_sup_sdiff _ _ _ <| f' i).trans ((card_union_le _ _).trans ?_)
+  refine (card_mono <| @le_sup_sdiff _ _ (f' i) _).trans ((card_union_le _ _).trans ?_)
   rw [union_sdiff_left, sdiff_eq_inter_compl]
   refine le_of_mul_le_mul_left ?_ (pow_pos (zero_lt_two' ℕ) <| Fintype.card α + 1)
   rw [pow_succ, mul_add, mul_assoc, mul_comm _ 2, mul_assoc]
@@ -75,8 +79,8 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   rw [mul_tsub, card_compl, Fintype.card_finset, mul_left_comm, mul_tsub,
     (hf₁ _ <| mem_cons_self _ _).2.1, two_mul, add_tsub_cancel_left, ← mul_tsub, ← mul_two,
     mul_assoc, ← add_mul, mul_comm]
-  refine mul_le_mul_left' ?_ _
-  refine (add_le_add_left
+  gcongr
+  refine (add_le_add_right
     (ih _ (fun i hi ↦ (hf₁ _ <| subset_cons _ hi).2.2)
     ((card_le_card <| subset_cons _).trans hs)) _).trans ?_
   rw [mul_tsub, two_mul, ← pow_succ',

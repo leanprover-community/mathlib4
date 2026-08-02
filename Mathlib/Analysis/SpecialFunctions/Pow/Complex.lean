@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-! # Power function on `ℂ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
+
+@[expose] public section
 
 open Real Topology Filter ComplexConjugate Finset Set
 
@@ -209,6 +213,15 @@ theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
 
 theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
   rw [inv_cpow_eq_ite, if_neg hx]
+
+lemma inv_cpow_ofReal_nonneg {a : ℝ} (ha : 0 ≤ a) (r : ℂ) :
+    ((a : ℂ)⁻¹) ^ r = (a ^ r : ℂ)⁻¹ :=
+  inv_cpow _ _ <| by simpa [arg_ofReal_of_nonneg ha] using Real.pi_ne_zero.symm
+
+lemma div_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
+    ((a : ℂ) / (b : ℂ)) ^ r = (a : ℂ) ^ r / (b : ℂ) ^ r := by
+  rw [div_eq_mul_inv, ← ofReal_inv, mul_cpow_ofReal_nonneg ha (inv_nonneg_of_nonneg hb),
+    ofReal_inv, inv_cpow_ofReal_nonneg hb, div_eq_mul_inv]
 
 /-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/
 theorem inv_cpow_eq_ite' (x : ℂ) (n : ℂ) :

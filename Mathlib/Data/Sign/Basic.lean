@@ -3,11 +3,13 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Sign.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Sign.Defs
 
 /-!
 # Sign function
@@ -15,6 +17,8 @@ import Mathlib.Data.Sign.Defs
 This file defines the sign function for types with zero and a decidable less-than relation, and
 proves some basic theorems about it.
 -/
+
+@[expose] public section
 
 universe u
 variable {α : Type u}
@@ -61,7 +65,7 @@ theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
 
 theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f pos} := by
   classical rw [← Fintype.coe_image_univ, univ_eq]
-  classical simp [Finset.coe_insert]
+  simp [Finset.coe_insert]
 
 @[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
     ↑(a * b) = (a : α) * b :=
@@ -116,6 +120,7 @@ is required; consider ℂ with the order `z ≤ w` iff they have the same imagin
 `z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
 `0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
 (`Complex.orderedCommRing`) -/
+@[simps -fullyApplied]
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero
@@ -175,6 +180,7 @@ theorem exists_signed_sum [DecidableEq α] (s : Finset α) (f : α → ℤ) :
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
     (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
     (n : ℕ) (h : (∑ i ∈ s, (f i).natAbs) ≤ n) :

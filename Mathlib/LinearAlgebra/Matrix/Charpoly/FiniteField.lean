@@ -3,13 +3,17 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.CharP
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.CharP
 
 /-!
 # Results on characteristic polynomials and traces over finite fields.
 -/
+
+public section
 
 
 noncomputable section
@@ -26,7 +30,7 @@ theorem FiniteField.Matrix.charpoly_pow_card {K : Type*} [Field K] [Fintype K] (
   cases (isEmpty_or_nonempty n).symm
   · obtain ⟨p, hp⟩ := CharP.exists K
     rcases FiniteField.card K p with ⟨⟨k, kpos⟩, ⟨hp, hk⟩⟩
-    haveI : Fact p.Prime := ⟨hp⟩
+    have : Fact p.Prime := ⟨hp⟩
     dsimp at hk; rw [hk]
     apply (frobenius_inj K[X] p).iterate k
     repeat' rw [iterate_frobenius (R := K[X])]; rw [← hk]

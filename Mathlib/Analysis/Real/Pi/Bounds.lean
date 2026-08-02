@@ -3,7 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Pi
@@ -16,6 +18,8 @@ numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise version
 See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/Wallis.lean` for
 infinite formulas for `π`.
 -/
+
+public section
 
 open scoped Real
 
@@ -36,14 +40,10 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by
     rw [← div_lt_iff₀ (by simp), ← sin_pi_over_two_pow_succ, ← sub_lt_iff_lt_add']
     calc
-      π / 2 ^ (n + 2) - sin (π / 2 ^ (n + 2)) < (π / 2 ^ (n + 2)) ^ 3 / 4 :=
-        sub_lt_comm.1 <| sin_gt_sub_cube (by positivity) <| div_le_one_of_le₀ ?_ (by positivity)
-      _ ≤ (4 / 2 ^ (n + 2)) ^ 3 / 4 := by gcongr; exact pi_le_four
+      π / 2 ^ (n + 2) - sin (π / 2 ^ (n + 2)) < (π / 2 ^ (n + 2)) ^ 3 / 6 :=
+        sub_lt_comm.1 <| sin_gt_sub_cube (by positivity)
+      _ ≤ (4 / 2 ^ (n + 2)) ^ 3 / 4 := by gcongr; exacts [pi_le_four, by norm_num]
       _ = 1 / (2 ^ n) ^ 3 / 4 := by simp [add_comm n, pow_add, div_mul_eq_div_div]; norm_num
-    calc
-      π ≤ 4 := pi_le_four
-      _ = 2 ^ (0 + 2) := by norm_num
-      _ ≤ 2 ^ (n + 2) := by gcongr <;> norm_num
   refine lt_of_lt_of_le this (le_of_eq ?_); rw [add_mul]; congr 1
   · ring
   simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]
@@ -218,5 +218,16 @@ theorem pi_lt_d20 : π < 3.14159265358979323847 := by
     2-784/22895812812720260289, 2-1717/200571992854289218531, 2-368/171952226838388893139,
     2-149/278487845640434185590, 2-207/1547570041545500037992, 2-20/598094702046570062987,
     2-7/837332582865198088180]
+
+theorem floor_pi_eq_three : ⌊π⌋ = 3 :=
+  Int.floor_eq_iff.mpr ⟨pi_gt_three.le, by exact_mod_cast pi_lt_four⟩
+
+theorem ceil_pi_eq_four : ⌈π⌉ = 4 :=
+  Int.ceil_eq_iff.mpr ⟨by exact_mod_cast pi_gt_three, pi_lt_four.le⟩
+
+theorem round_pi_eq_three : round π = 3 := by
+  refine round_eq _ |>.trans <| Int.floor_eq_iff.mpr ⟨by grind [pi_gt_three], ?_⟩
+  grw [pi_lt_d2]
+  norm_num
 
 end Real

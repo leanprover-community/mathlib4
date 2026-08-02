@@ -3,11 +3,16 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Logic
-import Batteries.Data.List.Basic
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Logic
+public import Batteries.Data.List.Basic
+public import Mathlib.Init
+import all Init.Data.Array.Basic
 
 /-! ### lookmap -/
+
+public section
 
 variable {α β : Type*}
 
@@ -97,9 +102,9 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h, p]
   | swap a b l =>
     rcases h₁ : f a with - | c <;> rcases h₂ : f b with - | d
-    · simpa [h₁, h₂] using swap _ _ _
-    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
-    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
+    · simpa [h₁, h₂] using Perm.swap _ _ _
+    · simpa [h₁, lookmap_cons_some _ _ h₂] using Perm.swap _ _ _
+    · simpa [lookmap_cons_some _ _ h₁, h₂] using Perm.swap _ _ _
     · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
   | trans p₁ _ IH₁ IH₂ =>

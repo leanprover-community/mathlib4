@@ -3,13 +3,17 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Lemmas about the interaction of power operations with order
 -/
+
+public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
@@ -99,7 +103,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
   rcases lt_trichotomy a 1 with hlt | rfl | hlt
   · rcases exists_between hlt with ⟨b, hab, hb⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by cutsat
+    suffices 0 < k ∧ k < 1 by lia
     rw [← one_lt_inv'] at hlt
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
@@ -107,7 +111,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
     simpa [hb.symm] using ha b
   · rcases exists_between hlt with ⟨b, hb, hba⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by cutsat
+    suffices 0 < k ∧ k < 1 by lia
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
 

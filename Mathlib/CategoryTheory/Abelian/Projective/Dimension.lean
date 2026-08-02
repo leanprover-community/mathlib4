@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Nailin Guan
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Projective dimension
@@ -20,9 +23,11 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLE`.)
 
 We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
-`projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
+`projectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -53,7 +58,7 @@ variable [HasExt.{w} C] (X : C) (n : ℕ)
 
 lemma subsingleton [hX : HasProjectiveDimensionLT X n] (i : ℕ) (hi : n ≤ i) (Y : C) :
     Subsingleton (Ext.{w} X Y i) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   have := hX.subsingleton' i hi
   exact Ext.chgUniv.{w, max u v}.symm.subsingleton
 
@@ -62,7 +67,7 @@ lemma mk (hX : ∀ (i : ℕ) (_ : n ≤ i) ⦃Y : C⦄, ∀ (e : Ext X Y i), e =
     HasProjectiveDimensionLT X n where
   subsingleton' i hi Y := by
     have : Subsingleton (Ext X Y i) := ⟨fun e₁ e₂ ↦ by simp only [hX i hi]⟩
-    letI := HasExt.standard C
+    let := HasExt.standard C
     exact Ext.chgUniv.{max u v, w}.symm.subsingleton
 
 end HasProjectiveDimensionLT
@@ -85,7 +90,7 @@ lemma hasProjectiveDimensionLT_iff [HasExt.{w} C] :
 variable {X} in
 lemma Limits.IsZero.hasProjectiveDimensionLT_zero (hX : IsZero X) :
     HasProjectiveDimensionLT X 0 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   rw [← e.mk₀_id_comp, hX.eq_of_src (𝟙 X) 0, Ext.mk₀_zero, Ext.zero_comp]
@@ -94,7 +99,7 @@ instance : HasProjectiveDimensionLT (0 : C) 0 :=
   (isZero_zero C).hasProjectiveDimensionLT_zero
 
 lemma isZero_of_hasProjectiveDimensionLT_zero [HasProjectiveDimensionLT X 0] : IsZero X := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [IsZero.iff_id_eq_zero]
   apply Ext.homEquiv₀.symm.injective
   simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
@@ -106,32 +111,33 @@ lemma hasProjectiveDimensionLT_zero_iff_isZero : HasProjectiveDimensionLT X 0 �
 lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X m := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasProjectiveDimensionLT n (by cutsat)
+  exact e.eq_zero_of_hasProjectiveDimensionLT n (by lia)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (n + k) :=
-  hasProjectiveDimensionLT_of_ge X n (n + k) (by cutsat)
+  hasProjectiveDimensionLT_of_ge X n (n + k) (by lia)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (k + n) :=
-  hasProjectiveDimensionLT_of_ge X n (k + n) (by cutsat)
+  hasProjectiveDimensionLT_of_ge X n (k + n) (by lia)
 
 instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
   inferInstanceAs (HasProjectiveDimensionLT X (n + 1))
 
 instance [Projective X] : HasProjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
   obtain _ | i := i
   · simp at hi
   · exact e.eq_zero_of_projective
 
-lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+variable {X} in
+lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] :
     Projective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext X Y 1) := by
   refine ⟨fun h ↦ HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
@@ -141,18 +147,25 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
+variable {X} in
+lemma projective_iff_hasProjectiveDimensionLT_one :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
+
+lemma projective_iff_hasProjectiveDimensionLE_zero : Projective X ↔ HasProjectiveDimensionLE X 0 :=
+  projective_iff_hasProjectiveDimensionLT_one
+
+instance (priority := low) [HasProjectiveDimensionLT X 1] : Projective X :=
+  projective_iff_hasProjectiveDimensionLT_one.mpr ‹_›
 
 end
 
 lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
     [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT X n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi T x
   rw [← x.mk₀_id_comp, ← h.retract, ← Ext.mk₀_comp_mk₀,
@@ -179,7 +192,7 @@ include hS
 lemma hasProjectiveDimensionLT_X₂ (h₁ : HasProjectiveDimensionLT S.X₁ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ n) :
     HasProjectiveDimensionLT S.X₂ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₂
   obtain ⟨x₃, rfl⟩ := Ext.contravariant_sequence_exact₂ hS _ x₂
@@ -189,23 +202,23 @@ lemma hasProjectiveDimensionLT_X₂ (h₁ : HasProjectiveDimensionLT S.X₁ n)
 lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
     (h₂ : HasProjectiveDimensionLT S.X₂ (n + 1)) :
     HasProjectiveDimensionLT S.X₃ (n + 1) := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   rintro (_ | i) hi Y x₃
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ hS _ x₃
       (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) hi) (add_comm _ _)
-    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
+    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by lia), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ (n + 1)) :
     HasProjectiveDimensionLT S.X₁ n := by
-  letI := HasExt.standard C
+  let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.contravariant_sequence_exact₁ hS _ x₁ (add_comm _ _)
-    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by cutsat))
-  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
+    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by lia))
+  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by lia), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Projective S.X₂) :
     HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
@@ -216,11 +229,29 @@ end ShortExact
 
 end ShortComplex
 
-instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n]
-    [HasProjectiveDimensionLT Y n] :
+instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT (X ⊞ Y) n :=
-  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n
-    (by assumption) (by assumption)
+  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n ‹_› ‹_›
+
+lemma hasProjectiveDimensionLT_of_enoughInjectives [HasExt.{w} C] [EnoughInjectives C] (X : C)
+    (n : ℕ) (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
+  suffices ∀ ⦃d : ℕ⦄ ⦃Y : C⦄ (e : Ext X Y d) (k : ℕ), d = n + k → e = 0 from
+    HasProjectiveDimensionLT.mk (fun i hi Y e ↦ by
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hi
+      exact this e k rfl)
+  intro d Y e k hd
+  induction k generalizing d Y with
+  | zero =>
+    obtain rfl : d = n := by simpa using hd
+    subsingleton
+  | succ k hk =>
+    let ⟨p⟩ := EnoughInjectives.presentation Y
+    have h : (ShortComplex.mk _ _ (cokernel.condition p.f)).ShortExact :=
+      { exact := ShortComplex.exact_cokernel p.f }
+    have hd : n + k + 1 = d := by lia
+    obtain ⟨x, rfl⟩ := Ext.covariant_sequence_exact₁ X h e
+      (by subst hd; apply Ext.eq_zero_of_injective) hd
+    simp [hk x rfl]
 
 end CategoryTheory
 
@@ -241,10 +272,11 @@ lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
     fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     projectiveDimension X ≤ projectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
-    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+    simp only [Set.mem_ofPred_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
       Set.insert_eq_of_mem] at hn ⊢
     intro i hi
     have := hn i hi
@@ -254,20 +286,20 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
-    simp only [Set.mem_setOf_eq] at this
+    simp only [Set.mem_ofPred_eq] at this
     exact this _ h
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
     projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
-  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← projectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
-  rw [← not_iff_not, not_le, not_not, projectiveDimension_lt_iff]
+  contrapose!; exact projectiveDimension_lt_iff
 
 lemma projectiveDimension_eq_bot_iff (X : C) :
     projectiveDimension X = ⊥ ↔ Limits.IsZero X := by
@@ -288,10 +320,16 @@ lemma projectiveDimension_ne_top_iff (X : C) :
       simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
       obtain ⟨n, hn⟩ := this
       rw [← projectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
-      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+      exact ENat.natCast_ne_top _ ((WithBot.coe_eq_coe).1 hn)
     | coe d =>
-      simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
-      exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
+      simp only [ne_eq, WithBot.coe_eq_top, ENat.natCast_ne_top, not_false_eq_true, true_iff]
+      exact ⟨d, by simpa only [← projectiveDimension_le_iff] using! hd.le⟩
+
+lemma projectiveDimension_eq_zero_iff (X : C) :
+    projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
+  rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
+    ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
+    le_antisymm_iff]
 
 end CategoryTheory
 

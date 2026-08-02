@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Convergence
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -20,6 +22,8 @@ We then consider the case `R = ℂ` and show that `L (f ⍟ g) = L f * L g` on t
 of convergence of the L-series `L f`  and `L g` of `f` and `g`; see `LSeries_convolution`
 and `LSeries_convolution'`.
 -/
+
+@[expose] public section
 
 open scoped LSeries.notation
 
@@ -37,12 +41,14 @@ def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFuncti
   toFun n := if n = 0 then 0 else f n
   map_zero' := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
     (h : ∀ {n}, n ≠ 0 → f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
   ext
   simp_all [toArithmeticFunction]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we consider an arithmetic function just as a function and turn it back into an
 arithmetic function, it is the same as before. -/
 @[simp]
@@ -74,6 +80,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 
 namespace LSeries
 
+set_option backward.isDefEq.respectTransparency false in
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n

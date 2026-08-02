@@ -3,10 +3,13 @@ Copyright (c) 2021 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Bundle
+
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
@@ -36,6 +39,8 @@ general, the constructions of fiber bundles we will make will be of this form.
 ## References
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Coproduct (free product) of two monoids or groups
@@ -117,6 +119,8 @@ There are several reasons to build an API from scratch.
 group, monoid, coproduct, free product
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 open FreeMonoid Function List Set
@@ -149,7 +153,8 @@ section MulOneClass
 variable {M N M' N' P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M'] [MulOneClass N']
   [MulOneClass P]
 
-@[to_additive] protected instance : MulOneClass (M ∗ N) := Con.mulOneClass _
+@[to_additive] protected instance : MulOneClass (M ∗ N) :=
+  inferInstanceAs <| MulOneClass (coprodCon M N).Quotient
 
 /-- The natural projection `FreeMonoid (M ⊕ N) →* M ∗ N`. -/
 @[to_additive /-- The natural projection `FreeAddMonoid (M ⊕ N) →+ AddMonoid.Coprod M N`. -/]
@@ -188,21 +193,22 @@ theorem mk_of_inl (x : M) : (mk (of (.inl x)) : M ∗ N) = inl x := rfl
 theorem mk_of_inr (x : N) : (mk (of (.inr x)) : M ∗ N) = inr x := rfl
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
-    (one : C 1)
-    (inl_mul : ∀ m x, C x → C (inl m * x))
-    (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
+theorem induction_on' {motive : M ∗ N → Prop} (m : M ∗ N)
+    (one : motive 1)
+    (inl_mul : ∀ m x, motive x → motive (inl m * x))
+    (inr_mul : ∀ n x, motive x → motive (inr n * x)) : motive m := by
   rcases mk_surjective m with ⟨x, rfl⟩
   induction x using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x xs ih =>
+  | of_mul x xs ih =>
     cases x with
     | inl m => simpa using inl_mul m _ ih
     | inr n => simpa using inr_mul n _ ih
 
 @[to_additive (attr := elab_as_elim)]
-theorem induction_on {C : M ∗ N → Prop} (m : M ∗ N)
-    (inl : ∀ m, C (inl m)) (inr : ∀ n, C (inr n)) (mul : ∀ x y, C x → C y → C (x * y)) : C m :=
+theorem induction_on {motive : M ∗ N → Prop} (m : M ∗ N)
+    (inl : ∀ m, motive (inl m)) (inr : ∀ n, motive (inr n))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
   induction_on' m (by simpa using inl 1) (fun _ _ ↦ mul _ _ (inl _)) fun _ _ ↦ mul _ _ (inr _)
 
 /-- Lift a monoid homomorphism `FreeMonoid (M ⊕ N) →* P` satisfying additional properties to
@@ -481,9 +487,6 @@ def snd : M ∗ N →* N := lift 1 (.id N)
 @[to_additive toProd /-- The natural projection `AddMonoid.Coprod M N →+ M × N`. -/]
 def toProd : M ∗ N →* M × N := lift (.inl _ _) (.inr _ _)
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum := AddMonoid.Coprod.toProd
-
 @[to_additive (attr := simp)] theorem fst_comp_inl : (fst : M ∗ N →* M).comp inl = .id _ := rfl
 @[to_additive (attr := simp)] theorem fst_apply_inl (x : M) : fst (inl x : M ∗ N) = x := rfl
 @[to_additive (attr := simp)] theorem fst_comp_inr : (fst : M ∗ N →* M).comp inr = 1 := rfl
@@ -496,67 +499,37 @@ alias _root_.AddMonoid.Coprod.toSum := AddMonoid.Coprod.toProd
 @[to_additive (attr := simp) toProd_comp_inl]
 theorem toProd_comp_inl : (toProd : M ∗ N →* M × N).comp inl = .inl _ _ := rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum_comp_inl := AddMonoid.Coprod.toProd_comp_inl
-
 @[to_additive (attr := simp) toProd_comp_inr]
 theorem toProd_comp_inr : (toProd : M ∗ N →* M × N).comp inr = .inr _ _ := rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum_comp_inr := AddMonoid.Coprod.toProd_comp_inr
 
 @[to_additive (attr := simp) toProd_apply_inl]
 theorem toProd_apply_inl (x : M) : toProd (inl x : M ∗ N) = (x, 1) := rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum_apply_inl := AddMonoid.Coprod.toProd_apply_inl
-
 @[to_additive (attr := simp) toProd_apply_inr]
 theorem toProd_apply_inr (x : N) : toProd (inr x : M ∗ N) = (1, x) := rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum_apply_inr := AddMonoid.Coprod.toProd_apply_inr
-
 @[to_additive (attr := simp) fst_prod_snd]
 theorem fst_prod_snd : (fst : M ∗ N →* M).prod snd = toProd := by ext1 <;> rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.fst_sum_snd := AddMonoid.Coprod.fst_prod_snd
 
 @[to_additive (attr := simp) prod_mk_fst_snd]
 theorem prod_mk_fst_snd (x : M ∗ N) : (fst x, snd x) = toProd x := by
   rw [← fst_prod_snd, MonoidHom.prod_apply]
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.sum_mk_fst_snd := AddMonoid.Coprod.prod_mk_fst_snd
-
 @[to_additive (attr := simp) fst_comp_toProd]
 theorem fst_comp_toProd : (MonoidHom.fst M N).comp toProd = fst := by
   rw [← fst_prod_snd, MonoidHom.fst_comp_prod]
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.fst_comp_toSum := AddMonoid.Coprod.fst_comp_toProd
 
 @[to_additive (attr := simp) fst_toProd]
 theorem fst_toProd (x : M ∗ N) : (toProd x).1 = fst x := by
   rw [← fst_comp_toProd]; rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.fst_toSum := AddMonoid.Coprod.fst_toProd
-
 @[to_additive (attr := simp) snd_comp_toProd]
 theorem snd_comp_toProd : (MonoidHom.snd M N).comp toProd = snd := by
   rw [← fst_prod_snd, MonoidHom.snd_comp_prod]
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.snd_comp_toSum := AddMonoid.Coprod.snd_comp_toProd
-
 @[to_additive (attr := simp) snd_toProd]
 theorem snd_toProd (x : M ∗ N) : (toProd x).2 = snd x := by
   rw [← snd_comp_toProd]; rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.snd_toSum := AddMonoid.Coprod.snd_toProd
 
 @[to_additive (attr := simp)]
 theorem fst_comp_swap : fst.comp (swap M N) = snd := lift_comp_swap _ _
@@ -592,9 +565,6 @@ theorem snd_surjective : Surjective (snd : M ∗ N →* N) := LeftInverse.surjec
 theorem toProd_surjective : Surjective (toProd : M ∗ N →* M × N) := fun x =>
   ⟨inl x.1 * inr x.2, by rw [map_mul, toProd_apply_inl, toProd_apply_inr, Prod.fst_mul_snd]⟩
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoid.Coprod.toSum_surjective := AddMonoid.Coprod.toProd_surjective
-
 end ToProd
 
 section Group
@@ -612,7 +582,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   rw [← mk_eq_mk, map_mul, map_one]
   induction x using FreeMonoid.inductionOn' with
   | one => simp
-  | mul_of x xs ihx =>
+  | of_mul x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 

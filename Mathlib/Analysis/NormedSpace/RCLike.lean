@@ -1,3 +1,5 @@
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
+module
 
-deprecated_module (since := "2025-09-02")
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+
+deprecated_module (since := "2026-03-23")

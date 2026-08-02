@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -29,6 +31,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.etaExpand`
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -87,6 +91,7 @@ def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin 
   | _, _ + 1, A =>
     of <| vecCons (FinVec.map (fun v : Fin _ → α => v 0) A) (transposeᵣ (A.submatrix id Fin.succ))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] := (transposeᵣ_eq _).symm
@@ -132,6 +137,7 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
     Matrix (Fin l) (Fin n) α :=
   of <| FinVec.map (fun v₁ => FinVec.map (fun v₂ => dotProductᵣ v₁ v₂) Bᵀ) A
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
@@ -159,6 +165,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) : Fin l → α :=
   FinVec.map (fun a => dotProductᵣ a v) A
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -181,6 +188,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) : Fin m → α :=
   FinVec.map (fun a => dotProductᵣ v a) Aᵀ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -212,9 +220,12 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 ```
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
-  -- This to be in the above `simp_rw` before https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.refl_apply]
+  rfl
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm

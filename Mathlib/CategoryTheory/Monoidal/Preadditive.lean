@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Preadditive monoidal categories
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor product of morphisms
 is linear in both factors.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -21,7 +25,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category* C] [Preadditive C] [MonoidalCategory C]
 
 /-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
 
@@ -58,6 +62,11 @@ theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ₘ (g + h
 theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ₘ h = f ⊗ₘ h + g ⊗ₘ h := by
   simp [tensorHom_def]
 
+instance (X : C) : (tensorLeft X).Additive where
+instance (X : C) : (tensorRight X).Additive where
+instance : (curriedTensor C).Additive where
+instance : (curriedTensor C).flip.Additive where
+
 end MonoidalPreadditive
 
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
@@ -70,7 +79,7 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
-theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
+theorem monoidalPreadditive_of_faithful {D} [Category* D] [Preadditive D] [MonoidalCategory D]
     (F : D ⥤ C) [F.Monoidal] [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
@@ -108,6 +117,8 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
     (∑ j ∈ s, g j) ⊗ₘ f = ∑ j ∈ s, g j ⊗ₘ f := by
   simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 -- In a closed monoidal category, this would hold because
 -- `tensorLeft X` is a left adjoint and hence preserves all colimits.
 -- In any case it is true in any preadditive category.
@@ -121,6 +132,8 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
             simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     let ⟨_⟩ := nonempty_fintype J
@@ -137,6 +150,7 @@ variable [HasFiniteBiproducts C]
 def leftDistributor {J : Type} [Finite J] (X : C) (f : J → C) : X ⊗ ⨁ f ≅ ⨁ fun j => X ⊗ f j :=
   (tensorLeft X).mapBiproduct f
 
+set_option backward.defeqAttrib.useBackward true in
 theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
     (leftDistributor X f).hom =
       ∑ j : J, (X ◁ biproduct.π f j) ≫ biproduct.ι (fun j => X ⊗ f j) j := by
@@ -147,6 +161,8 @@ theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
   simp only [Preadditive.sum_comp, Category.assoc, biproduct.ι_π, comp_dite, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
     (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (X ◁ biproduct.ι f j) := by
   classical
@@ -205,6 +221,7 @@ theorem leftDistributor_assoc {J : Type} [Finite J] (X Y : C) (f : J → C) :
 def rightDistributor {J : Type} [Finite J] (f : J → C) (X : C) : (⨁ f) ⊗ X ≅ ⨁ fun j => f j ⊗ X :=
   (tensorRight X).mapBiproduct f
 
+set_option backward.defeqAttrib.useBackward true in
 theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).hom =
       ∑ j : J, (biproduct.π f j ▷ X) ≫ biproduct.ι (fun j => f j ⊗ X) j := by
@@ -215,6 +232,8 @@ theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
   simp only [Preadditive.sum_comp, Category.assoc, biproduct.ι_π, comp_dite, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id, ite_true]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ▷ X) := by
   classical
@@ -291,7 +310,6 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Finite J]
 @[ext]
 theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⊗ ⨁ f ⟶ Y}
     (w : ∀ j, (X ◁ biproduct.ι f j) ≫ g = (X ◁ biproduct.ι f j) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
@@ -300,7 +318,6 @@ theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {
 @[ext]
 theorem leftDistributor_ext_right {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⟶ Y ⊗ ⨁ f}
     (w : ∀ j, g ≫ (Y ◁ biproduct.π f j) = h ≫ (Y ◁ biproduct.π f j)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
@@ -330,7 +347,6 @@ theorem leftDistributor_ext₂_right {J : Type} [Finite J]
 theorem rightDistributor_ext_left {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : (⨁ f) ⊗ X ⟶ Y}
     (w : ∀ j, (biproduct.ι f j ▷ X) ≫ g = (biproduct.ι f j ▷ X) ≫ h) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
@@ -340,7 +356,6 @@ theorem rightDistributor_ext_left {J : Type} [Finite J]
 theorem rightDistributor_ext_right {J : Type} [Finite J]
     {f : J → C} {X Y : C} {g h : X ⟶ (⨁ f) ⊗ Y}
     (w : ∀ j, g ≫ (biproduct.π f j ▷ Y) = h ≫ (biproduct.π f j ▷ Y)) : g = h := by
-  classical
   cases nonempty_fintype J
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext

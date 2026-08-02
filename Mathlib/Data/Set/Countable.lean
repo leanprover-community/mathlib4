@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.List
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.List
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Countable sets
@@ -22,6 +24,8 @@ For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_enc
 
 sets, countable set
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Multiset.sort
 
@@ -68,6 +72,7 @@ theorem countable_iff_nonempty_encodable {s : Set α} : s.Countable ↔ Nonempty
 alias ⟨Countable.nonempty_encodable, _⟩ := countable_iff_nonempty_encodable
 
 /-- Convert `Set.Countable s` to `Encodable s` (noncomputable). -/
+@[instance_reducible]
 protected def Countable.toEncodable {s : Set α} (hs : s.Countable) : Encodable s :=
   Classical.choice hs.nonempty_encodable
 
@@ -102,7 +107,7 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  convert mem_range_self n
+  convert! mem_range_self n
   exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
@@ -158,6 +163,14 @@ theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' 
   have := hs.to_subtype
   apply countable_range
 
+theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs : s.Infinite) :
+    ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
+  obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
+  refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
+  · exact fun _ ⟨y, hy⟩ ↦ hy ▸ Subtype.coe_prop (f y)
+  · exact countable_range (Subtype.val ∘ f)
+  · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
+
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
     (hf' : InjOn f s) (ht : t.Countable) : s.Countable :=
   have := ht.to_subtype
@@ -182,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
     · rw [sSup_empty] at hS
-      haveI := subsingleton_of_bot_eq_top hS
+      have := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
@@ -228,8 +241,10 @@ theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
   countable_union.2 ⟨hs, ht⟩
 
-theorem Countable.of_diff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
-  (h.union ht).mono (subset_diff_union _ _)
+theorem Countable.of_sdiff {s t : Set α} (h : (s \ t).Countable) (ht : t.Countable) : s.Countable :=
+  (h.union ht).mono (subset_sdiff_union _ _)
+
+@[deprecated (since := "2026-06-03")] alias Countable.of_diff := Countable.of_sdiff
 
 @[simp]
 theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Countable := by
@@ -255,7 +270,7 @@ theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Co
   (finite_isBot α).countable
 
 /-- The set of finite subsets of a countable set is countable. -/
-theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
+theorem countable_ofPred_finite_subset {s : Set α} (hs : s.Countable) :
     { t | Set.Finite t ∧ t ⊆ s }.Countable := by
   have := hs.to_subtype
   refine (countable_range fun t : Finset s => Subtype.val '' (t : Set s)).mono ?_
@@ -264,9 +279,21 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_finite_subset := countable_ofPred_finite_subset
+
 /-- The set of finite sets in a countable type is countable. -/
-theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
-  simpa using countable_setOf_finite_subset countable_univ
+theorem Countable.ofPred_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
+  simpa using countable_ofPred_finite_subset countable_univ
+
+@[deprecated (since := "2026-07-09")] alias Countable.setOf_finite := Countable.ofPred_finite
+
+/-- If the codomain of a map is countable and the fibres are countable, the domain
+is countable. -/
+theorem Countable.of_preimage_singleton {f : α → β} [Countable β]
+    (h : ∀ (b : β), (f ⁻¹' {b}).Countable) : Countable α := by
+  simp_rw [← Set.countable_univ_iff, ← Set.preimage_univ (f := f), ← Set.iUnion_of_singleton,
+    Set.preimage_iUnion, Set.countable_iUnion h]
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
@@ -274,7 +301,7 @@ theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)
 
 theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
-  simpa only [← mem_univ_pi] using countable_univ_pi hs
+  simpa only [← mem_univ_pi] using! countable_univ_pi hs
 
 protected theorem Countable.prod {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Countable) :
     Set.Countable (s ×ˢ t) :=
@@ -287,7 +314,7 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
 
 /-- If a family of disjoint sets is included in a countable set, then only countably many of
 them are nonempty. -/
-theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
+theorem countable_ofPred_nonempty_of_disjoint {f : β → Set α}
     (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
     Set.Countable {t | (f t).Nonempty} := by
   rw [← Set.countable_coe_iff] at hs ⊢
@@ -305,6 +332,9 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
     by_contra H
     exact not_disjoint_iff_nonempty_inter.2 A (hf H)
   exact Injective.countable A
+
+@[deprecated (since := "2026-07-09")]
+alias countable_setOf_nonempty_of_disjoint := countable_ofPred_nonempty_of_disjoint
 
 end Set
 

@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note "IMO geometry formalization conventions"/--
+library_note «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).
@@ -58,9 +58,7 @@ rather than more literally with `affineSegment`.
 
 
 open Affine Affine.Simplex EuclideanGeometry Module
-
-open scoped Affine EuclideanGeometry Real
-
+open scoped Real
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
@@ -96,6 +94,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
+@[instance_reducible]
 def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 
@@ -117,11 +116,7 @@ def symm : Imo2019q2Cfg V Pt where
   Q := cfg.P
   P₁ := cfg.Q₁
   Q₁ := cfg.P₁
-  affineIndependent_ABC := by
-    rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
-    convert cfg.affineIndependent_ABC using 1
-    ext x
-    fin_cases x <;> rfl
+  affineIndependent_ABC := cfg.affineIndependent_ABC.comm_left
   wbtw_B_A₁_C := cfg.wbtw_A_B₁_C
   wbtw_A_B₁_C := cfg.wbtw_B_A₁_C
   wbtw_A_P_A₁ := cfg.wbtw_B_Q_B₁
@@ -233,8 +228,6 @@ theorem Q_notMem_CB : cfg.Q ∉ line[ℝ, cfg.C, cfg.B] := by
     or_iff_right cfg.C_ne_Q₁, or_iff_right cfg.sbtw_Q_A₁_Q₁.left_ne_right, angle_comm] at hc
   exact cfg.not_collinear_ABC (hc.elim collinear_of_angle_eq_zero collinear_of_angle_eq_pi)
 
-@[deprecated (since := "2025-05-23")] alias Q_not_mem_CB := Q_notMem_CB
-
 theorem Q_ne_B : cfg.Q ≠ cfg.B := by
   intro h
   have h' := cfg.Q_notMem_CB
@@ -282,7 +275,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
     rw [AffineSubspace.eq_iff_direction_eq_of_mem (left_mem_affineSpan_pair _ _ _)
       hwbtw.mem_affineSpan]
     exact cfg.PQ_parallel_AB.direction_eq
-  haveI := someOrientation V
+  have := someOrientation V
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
@@ -316,7 +309,7 @@ theorem sbtw_A_B₁_C : Sbtw ℝ cfg.A cfg.B₁ cfg.C :=
 
 theorem sbtw_A_A₁_A₂ : Sbtw ℝ cfg.A cfg.A₁ cfg.A₂ := by
   refine Sphere.sbtw_secondInter cfg.A_mem_circumsphere ?_
-  convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
+  convert! cfg.sbtw_B_A₁_C.dist_lt_max_dist _
   change _ = max (dist (cfg.triangleABC.points 1) _) (dist (cfg.triangleABC.points 2) _)
   simp_rw [circumsphere_center, circumsphere_radius, dist_circumcenter_eq_circumradius, max_self]
 
@@ -382,7 +375,7 @@ variable [Module.Oriented ℝ V (Fin 2)]
 theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
     (2 : ℤ) • ∡ cfg.Q cfg.P cfg.A₂ = (2 : ℤ) • ∡ cfg.B cfg.A cfg.A₂ := by
   refine two_zsmul_oangle_of_parallel cfg.QP_parallel_BA ?_
-  convert AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
+  convert! AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
   rw [cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
     (Set.mem_insert_of_mem _ (Set.mem_insert _ _)) cfg.A₂_ne_A,
@@ -396,7 +389,7 @@ end Oriented
 
 
 theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
@@ -522,13 +515,13 @@ end Oriented
 
 
 theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.A₂, cfg.A₁} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CBA,
     Set.pair_comm, Set.insert_comm, Set.pair_comm]
   exact cfg.not_collinear_ABC
 
 theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.A₁, cfg.Q₁, cfg.C, cfg.A₂} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [Set.insert_comm cfg.Q₁, Set.insert_comm cfg.A₁, Set.pair_comm, Set.insert_comm cfg.A₁,
     Set.pair_comm]
   exact cospherical_of_two_zsmul_oangle_eq_of_not_collinear

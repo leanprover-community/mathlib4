@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
@@ -31,6 +33,8 @@ if `X` is empty, then any index `i` will work, so there is no 1-to-1 corresponde
 
 continuous map, sigma type, disjoint union
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -67,6 +71,9 @@ theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp 
 
 variable (X Y)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Homeomorphism between the type `C(X, Σ i, Y i)` of continuous maps from a connected topological
 space to the disjoint union of a family of topological spaces and the disjoint union of the types of
 continuous maps `C(X, Y i)`.

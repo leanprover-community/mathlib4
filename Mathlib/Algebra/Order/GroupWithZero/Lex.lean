@@ -3,11 +3,13 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.ProdHom
-import Mathlib.Algebra.Order.Group.Equiv
-import Mathlib.Algebra.Order.Monoid.Lex
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Data.Prod.Lex
+module
+
+public import Mathlib.Algebra.GroupWithZero.ProdHom
+public import Mathlib.Algebra.Order.Group.Equiv
+public import Mathlib.Algebra.Order.Monoid.Lex
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Data.Prod.Lex
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
@@ -26,10 +28,13 @@ Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
+@[expose] public section
+
 namespace MonoidWithZeroHom
 
 variable {M₀ N₀ : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] : Monotone (inl M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inl_mono).comp ?_
@@ -42,6 +47,7 @@ lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] 
     [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
   inl_mono.strictMono_of_injective inl_injective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀]
     [DecidablePred fun x : N₀ ↦ x = 0] : Monotone (inr M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inr_mono).comp ?_
@@ -73,6 +79,9 @@ variable (α β : Type*) [LinearOrderedCommGroupWithZero α] [LinearOrderedCommG
 
 open MonoidWithZeroHom
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
@@ -81,6 +90,9 @@ nonrec def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inl α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inl_mono
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 N to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
@@ -89,12 +101,13 @@ nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
   __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inr α β)
   monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inr_mono
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
 `WithZero (Mˣ ×ₗ Nˣ)` to M, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
 nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
-  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv ..).symm.toMonoidHom)
+  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv (αˣ × βˣ)).symm.toMonoidHom)
   monotone' := by
     -- this can't rely on `Monotone.comp` since `ofLex` is not monotone
     intro x y
@@ -105,6 +118,7 @@ nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
     · simp
     · simpa using Prod.Lex.monotone_fst _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
   ext x
@@ -113,11 +127,13 @@ theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
 
 variable {α β}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inl_eq_coe_inlₗ {m : α} (hm : m ≠ 0) :
     inl α β m = OrderMonoidHom.inlₗ αˣ βˣ (Units.mk0 _ hm) := by
   lift m to αˣ using isUnit_iff_ne_zero.mpr hm
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr_eq_coe_inrₗ {n : β} (hn : n ≠ 0) :
     inr α β n = OrderMonoidHom.inrₗ αˣ βˣ (Units.mk0 _ hn) := by
   lift n to βˣ using isUnit_iff_ne_zero.mpr hn

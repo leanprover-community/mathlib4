@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Measurability criterion for ennreal-valued functions
@@ -19,6 +21,8 @@ Note that it should be enough to assume that the space is a conditionally comple
 but the proof would be more painful. Since our only use for now is for `ℝ≥0∞`, we keep it as simple
 as possible.
 -/
+
+public section
 
 
 open MeasureTheory Set TopologicalSpace
@@ -36,7 +40,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
   classical
-  haveI : Encodable s := s_count.toEncodable
+  have : Encodable s := s_count.toEncodable
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
     intro p q
@@ -46,8 +50,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     · refine
         ⟨univ, univ, MeasurableSet.univ, MeasurableSet.univ, subset_univ _, subset_univ _,
           fun ps qs pq => ?_⟩
-      simp only [not_and] at H
-      exact (H ps qs pq).elim
+      exact (H ⟨ps, qs, pq⟩).elim
   choose! u v huv using h'
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
@@ -61,7 +64,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
-        haveI := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
+        have := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q
@@ -72,9 +75,9 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     have : ∀ᵐ x ∂μ, x ∉ t := by
       have : μ t = 0 := le_antisymm μt bot_le
       change μ _ = 0
-      convert this
+      convert! this
       ext y
-      simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
+      simp only [mem_ofPred_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.ZornAtoms
+module
+
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -17,6 +19,8 @@ In this file we define
 * `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 -/
+
+@[expose] public section
 
 assert_not_exists Set.Finite
 
@@ -104,8 +108,6 @@ theorem compl_notMem_iff : sᶜ ∉ f ↔ s ∈ f :=
       f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
     compl_notMem⟩
 
-@[deprecated (since := "2025-05-23")] alias compl_not_mem_iff := compl_notMem_iff
-
 @[simp]
 theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x :=
   compl_notMem_iff
@@ -114,10 +116,10 @@ alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 
 theorem compl_mem_iff_notMem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_notMem_iff, compl_compl]
 
-@[deprecated (since := "2025-05-23")] alias compl_mem_iff_not_mem := compl_mem_iff_notMem
-
-theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
+theorem sdiff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
   inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_notMem
+
+@[deprecated (since := "2026-06-03")] alias diff_mem_iff := sdiff_mem_iff
 
 /-- If `sᶜ ∉ f ↔ s ∈ f`, then `f` is an ultrafilter. The other implication is given by
 `Ultrafilter.compl_notMem_iff`. -/
@@ -142,8 +144,6 @@ theorem ne_empty_of_mem (hs : s ∈ f) : s ≠ ∅ :=
 theorem empty_notMem : ∅ ∉ f :=
   Filter.empty_notMem (f : Filter α)
 
-@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
-
 @[simp]
 theorem le_sup_iff {u : Ultrafilter α} {f g : Filter α} : ↑u ≤ f ⊔ g ↔ ↑u ≤ f ∨ ↑u ≤ g :=
   not_iff_not.1 <| by simp only [← disjoint_iff_not_le, not_or, disjoint_sup_right]
@@ -161,6 +161,7 @@ protected theorem em (f : Ultrafilter α) (p : α → Prop) : (∀ᶠ x in f, p 
 theorem eventually_or : (∀ᶠ x in f, p x ∨ q x) ↔ (∀ᶠ x in f, p x) ∨ ∀ᶠ x in f, q x :=
   union_mem_iff
 
+@[push ← high] -- higher priority than `Filter.not_eventually`
 theorem eventually_not : (∀ᶠ x in f, ¬p x) ↔ ¬∀ᶠ x in f, p x :=
   compl_mem_iff_notMem
 
@@ -262,7 +263,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
-    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_setOf, compl_compl]
+    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_ofPred, compl_compl]
 
 instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
@@ -339,7 +340,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
   refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
-  haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf] )
+  have : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_ofPred])
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
 
 theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : Ultrafilter α, ↑g ≤ f₁ → ↑g ≤ f₂ :=
@@ -374,13 +375,13 @@ noncomputable def ofComapInfPrincipal (h : m '' s ∈ g) : Ultrafilter α :=
 
 theorem ofComapInfPrincipal_mem (h : m '' s ∈ g) : s ∈ ofComapInfPrincipal h := by
   let f := Filter.comap m g ⊓ 𝓟 s
-  haveI : f.NeBot := comap_inf_principal_neBot_of_image_mem h
+  have : f.NeBot := comap_inf_principal_neBot_of_image_mem h
   have : s ∈ f := mem_inf_of_right (mem_principal_self s)
   exact le_def.mp (of_le _) s this
 
 theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal h).map m = g := by
   let f := Filter.comap m g ⊓ 𝓟 s
-  haveI : f.NeBot := comap_inf_principal_neBot_of_image_mem h
+  have : f.NeBot := comap_inf_principal_neBot_of_image_mem h
   apply eq_of_le
   calc
     Filter.map m (of f) ≤ Filter.map m f := map_mono (of_le _)

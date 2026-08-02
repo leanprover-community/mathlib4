@@ -3,9 +3,11 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Composition
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Matrix.ConjTranspose
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
+
+@[expose] public section
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
@@ -331,10 +335,7 @@ theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
   rfl
 
 theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
-    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := by
-  cases ik
-  cases jk
-  rfl
+    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := rfl
 
 @[simp]
 theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
@@ -588,10 +589,7 @@ theorem blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
 
 theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
     blockDiagonal' M ik jk =
-      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := by
-  cases ik
-  cases jk
-  rfl
+      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := rfl
 
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :
@@ -833,10 +831,9 @@ theorem toBlock_mul_eq_mul {m n k : Type*} [Fintype n] (p : m → Prop) (q : k �
 theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n → Prop)
     [DecidablePred q] (r : k → Prop) (A : Matrix m n R) (B : Matrix n k R) : (A * B).toBlock p r =
     A.toBlock p q * B.toBlock q r + (A.toBlock p fun i => ¬q i) * B.toBlock (fun i => ¬q i) r := by
-  classical
-    ext i k
-    simp only [toBlock_apply, mul_apply]
-    exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
+  ext i k
+  simp only [toBlock_apply, mul_apply]
+  exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
 
 end
 
@@ -860,6 +857,7 @@ lemma Matrix.comp_toSquareBlock {b : m → α}
 
 variable [Zero R] [DecidableEq m]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Matrix.comp_diagonal (d) :
     comp m m n n R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by

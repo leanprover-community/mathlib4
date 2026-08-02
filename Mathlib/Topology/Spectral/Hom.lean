@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Spectral maps
@@ -23,6 +25,8 @@ compact open set is compact open.
 
 Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
+
+@[expose] public section
 
 
 open Function OrderDual
@@ -107,7 +111,7 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
 
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'

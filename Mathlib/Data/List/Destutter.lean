@@ -3,7 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Eric Wieser
 -/
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.Data.List.Dedup
 
 /-!
 # Destuttering of Lists
@@ -24,6 +27,8 @@ Note that we make no guarantees of being the longest sublist with this property;
 
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
+
+public section
 
 open Function
 
@@ -63,7 +68,7 @@ theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   | cons b l hl =>
     rw [destutter']
     split_ifs
-    · exact Sublist.cons₂ a (hl b)
+    · exact Sublist.cons_cons a (hl b)
     · exact (hl a).trans ((l.sublist_cons_self b).cons_cons a)
 
 theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
@@ -84,7 +89,8 @@ theorem isChain_destutter' (l : List α) (a : α) : (l.destutter' R a).IsChain R
     simp_rw [destutter'_cons, apply_ite (IsChain R ·),
       apply_ite (IsChain R <| a :: ·), IH, isChain_cons_cons,
       if_true_right, ite_prop_iff_and, imp_and]
-    exact ⟨⟨⟨swap <| fun _ => id, fun _ => IH2 c b⟩, swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
+    exact ⟨⟨⟨Function.swap <| fun _ => id, fun _ => IH2 c b⟩,
+      Function.swap <| fun _ => IH2 b a⟩, fun _ => IH2 c a⟩
 
 theorem isChain_cons_destutter'_of_rel (l : List α) {a b} (hab : R a b) :
     (a :: l.destutter' R b).IsChain R := by
@@ -97,15 +103,9 @@ theorem destutter'_of_isChain_cons (h : (a :: l).IsChain R) : l.destutter' R a =
     obtain ⟨h, hc⟩ := isChain_cons_cons.mp h
     rw [l.destutter'_cons_pos h, hb hc]
 
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain := isChain_cons_destutter'_of_rel
-@[deprecated (since := "2025-09-24")] alias destutter'_is_chain' := isChain_destutter'
-@[deprecated (since := "2025-09-24")] alias destutter'_of_chain := destutter'_of_isChain_cons
-
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ (a :: l).IsChain R :=
   ⟨fun h => by
-    suffices IsChain R (a::l) by
-      assumption
     rw [← h]
     exact l.isChain_destutter' R a, destutter'_of_isChain_cons _ _⟩
 
@@ -143,9 +143,6 @@ theorem destutter_of_isChain : ∀ l : List α, l.IsChain R → l.destutter R = 
   | [], _ => rfl
   | _ :: l, h => l.destutter'_of_isChain_cons _ h
 
-@[deprecated (since := "2025-09-24")] alias destutter_is_chain' := isChain_destutter
-@[deprecated (since := "2025-09-24")] alias destutter_of_chain' := destutter_of_isChain
-
 @[simp]
 theorem destutter_eq_self_iff : ∀ l : List α, l.destutter R = l ↔ l.IsChain R
   | [] => by simp
@@ -174,9 +171,9 @@ theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b �
         (subset_cons_self _ _) hc) _ (cons_subset_cons _ (subset_cons_self _ _) hd),
         map_destutter fun c hc d hd ↦ hl _ (subset_cons_self _ _ hc) _ (subset_cons_self _ _ hd)]
 
-/-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
+/-- For an injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
 theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
-    (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
+    (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
 /-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone
@@ -252,16 +249,16 @@ lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
   | l₁, _, .cons (l₂ := l₂) a hl, hl₁ =>
     (hl₁.length_le_length_destutter hl).trans length_destutter_le_length_destutter_cons
   -- `l₁ := [a]`, `l₂ := a :: l₂`
-  | _, _, .cons₂ (l₁ := []) (l₂ := l₁) a hl, hl₁ => by simp [Nat.one_le_iff_ne_zero]
+  | _, _, .cons_cons (l₁ := []) (l₂ := l₁) a hl, hl₁ => by simp [Nat.one_le_iff_ne_zero]
   -- `l₁ := a :: l₁`, `l₂ := a :: b :: l₂`
-  | _, _, .cons₂ a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+  | _, _, .cons_cons a <| .cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     by_cases hab : R a b
-    · simpa [destutter_cons_cons, hab] using hl₁.tail.length_le_length_destutter (hl.cons _)
-    · simpa [destutter_cons_cons, hab] using hl₁.length_le_length_destutter (hl.cons₂ _)
+    · simpa [destutter_cons_cons, hab] using! hl₁.tail.length_le_length_destutter (hl.cons _)
+    · simpa [destutter_cons_cons, hab] using! hl₁.length_le_length_destutter (hl.cons_cons _)
   -- `l₁ := a :: b :: l₁`, `l₂ := a :: b :: l₂`
-  | _, _, .cons₂ a <| .cons₂ (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
+  | _, _, .cons_cons a <| .cons_cons (l₁ := l₁) (l₂ := l₂) b hl, hl₁ => by
     simpa [destutter_cons_cons, rel_of_isChain_cons_cons hl₁]
-      using hl₁.tail.length_le_length_destutter (hl.cons₂ _)
+      using! hl₁.tail.length_le_length_destutter (hl.cons_cons _)
 
 /-- `destutter` of `≠` gives a list of maximal length over any chain.
 
@@ -270,5 +267,23 @@ other `≠`-chain sublist. -/
 lemma IsChain.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
     (hl₁ : l₁.IsChain (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
   hl₁.length_le_length_destutter hl
+
+/--
+If the elements of a list `l` are related pairwise by an antisymmetric relation `r`, then
+destuttering `l` by disequality produces the same result as deduplicating `l`.
+This is most useful when `r` is a strict or weak ordering.
+-/
+lemma Pairwise.destutter_eq_dedup [DecidableEq α] {r : α → α → Prop} [Std.Antisymm r] :
+    ∀ {l : List α}, l.Pairwise r → l.destutter (· ≠ ·) = l.dedup
+  | [], h => by simp
+  | [x], h => by simp
+  | x :: y :: xs, h => by
+    rw [pairwise_cons] at h
+    rw [destutter_cons_cons, ← destutter_cons', ← destutter_cons', h.2.destutter_eq_dedup]
+    obtain rfl | hxy := eq_or_ne x y
+    · simpa using h.2.destutter_eq_dedup
+    · simp only [mem_cons, forall_eq_or_imp, pairwise_cons] at h
+      have : x ∉ xs := fun hx ↦ hxy (antisymm h.1.1 (h.2.1 x hx))
+      rw [if_pos hxy, dedup_cons_of_notMem (a := x) (by simp [*])]
 
 end List

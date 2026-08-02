@@ -3,9 +3,11 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Cardinal
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.Algebraic.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Cardinal
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Cardinality of algebraic extensions
@@ -13,17 +15,18 @@ import Mathlib.RingTheory.Algebraic.Defs
 This file contains results on cardinality of algebraic extensions.
 -/
 
+public section
+
 
 universe u v
 
-open scoped Cardinal Polynomial
-
-open Cardinal
+open Cardinal Module
+open scoped Polynomial
 
 namespace Algebra.IsAlgebraic
 
-variable (R : Type u) [CommRing R] (L : Type v) [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
+variable (R : Type u) [CommRing R] [IsDomain R] (L : Type v) [CommRing L] [IsDomain L] [Algebra R L]
+variable [IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem lift_cardinalMk_le_sigma_polynomial :
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by
@@ -37,7 +40,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
           ← Polynomial.aeval_def, p.2.2]⟩)
     fun x y => by
       intro h
-      simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
+      simp only [Set.coe_ofPred, ne_eq, Set.mem_ofPred_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
   rwa [lift_umax, lift_id'.{v}] at this
@@ -56,7 +59,7 @@ theorem lift_cardinalMk_le_max : lift.{u} #L ≤ lift.{v} #R ⊔ ℵ₀ :=
     _ = _ := by simp
 
 variable (L : Type u) [CommRing L] [IsDomain L] [Algebra R L]
-variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
+variable [IsTorsionFree R L] [Algebra.IsAlgebraic R L]
 
 theorem cardinalMk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) := by

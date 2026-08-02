@@ -3,10 +3,12 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.PFunctor.Multivariate.M
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Control.Functor.Multivariate
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.PFunctor.Multivariate.M
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.
@@ -37,6 +39,8 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
+
+@[expose] public section
 
 
 universe u
@@ -119,12 +123,12 @@ instance Cofix.mvfunctor : MvFunctor (Cofix F) where map := @Cofix.map _ _ _
 def Cofix.corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) : β → Cofix F α := fun x =>
   Quot.mk _ (corecF g x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Destructor for `Cofix F` -/
 def Cofix.dest {α : TypeVec n} : Cofix F α → F (α.append1 (Cofix F α)) :=
   Quot.lift (fun x => appendFun id (Quot.mk Mcongr) <$$> abs (M.dest q.P x))
     (by
       rintro x y ⟨r, pr, rxy⟩
-      dsimp
       have : ∀ x y, r x y → Mcongr x y := by
         intro x y h
         exact ⟨r, pr, h⟩
@@ -160,6 +164,7 @@ def Cofix.corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α ::: X)) (x : β) : Cofix F α :=
   Cofix.corec' (fun x => g Sum.inl Sum.inr x) x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
     Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x := by
   conv =>
@@ -188,6 +193,7 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop) (h' : ∀ x, r x x)
     (h : ∀ x y, r x y →
       appendFun id (Quot.mk r) <$$> Cofix.dest x = appendFun id (Quot.mk r) <$$> Cofix.dest y) :
@@ -256,6 +262,7 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
       rw [h _ _ r'xy]
   right; exact rxy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Bisimulation principle using `LiftR` to match and relate children of two trees. -/
 theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h : ∀ x y, r x y → LiftR (RelLast α r) (Cofix.dest x) (Cofix.dest y)) :
@@ -305,7 +312,6 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
 
 theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
   apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl
-  dsimp
   intro x y h
   rw [h]
   conv =>
@@ -353,6 +359,7 @@ theorem liftR_map {α β : TypeVec n} {F' : TypeVec n → Type u} [MvFunctor F']
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
@@ -369,8 +376,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
     dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
-        dropFun_toSubtype]
+      simp only [prod_map_id, TypeVec.id_comp]
       erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
       clear liftR_map_last q lawful F x R f g hh h b c
       ext (i x) : 2
@@ -393,6 +399,7 @@ end LiftRMap
 
 variable {F : TypeVec (n + 1) → Type u} [q : MvQPF F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
   refine Cofix.bisim₂ R ?_ _ _ rfl
@@ -510,11 +517,12 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance mvqpfCofix : MvQPF (Cofix F) where
-  P         := q.P.mp
-  abs       := Quot.mk Mcongr
-  repr      := Cofix.repr
-  abs_repr  := Cofix.abs_repr
-  abs_map   := by intros; rfl
+  P        := q.P.mp
+  abs      := Quot.mk Mcongr
+  repr     := Cofix.repr
+  abs_repr := Cofix.abs_repr
+  abs_map  := by intros; rfl
 
 end MvQPF

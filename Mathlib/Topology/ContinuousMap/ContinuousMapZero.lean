@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Continuous maps sending zero to zero
@@ -17,6 +19,8 @@ overly burdensome on type class synthesis.
 Of course, one could generalize to maps between pointed topological spaces, but that goes beyond
 the purpose of this type.
 -/
+
+@[expose] public section
 
 assert_not_exists StarOrderedRing
 
@@ -44,7 +48,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R]
 
 instance instFunLike : FunLike C(X, R)₀ X R where
   coe f := f.toFun
-  coe_injective' _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
+  coe_injective _ _ h := congr(⟨⟨$(h), _⟩, _⟩)
 
 instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
   map_continuous f := f.continuous
@@ -55,6 +59,7 @@ instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
 /-- not marked as an instance because it would be a bad one in general, but it can
 be useful when working with `ContinuousMapZero` and the non-unital continuous
 functional calculus. -/
+@[instance_reducible]
 def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
     Zero s where
   zero := ⟨0, Fact.out⟩
@@ -81,12 +86,12 @@ def comp (g : C(Y, R)₀) (f : C(X, Y)₀) : C(X, R)₀ where
 @[simp]
 lemma comp_apply (g : C(Y, R)₀) (f : C(X, Y)₀) (x : X) : g.comp f x = g (f x) := rfl
 
-instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ :=
-  .lift _ DFunLike.coe_injective'
+instance instPartialOrder [PartialOrder R] : PartialOrder C(X, R)₀ := fast_instance%
+  .lift _ DFunLike.coe_injective
 
 lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g x := Iff.rfl
 
-protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
+protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ := fast_instance%
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
@@ -115,12 +120,22 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     exact isClosed_singleton.preimage <| continuous_eval_const 0
 
 @[fun_prop]
-lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
-    Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
+lemma continuous_precomp (f : C(X, Y)₀) : Continuous fun g : C(Y, R)₀ ↦ g.comp f := by
   rw [continuous_induced_rng]
-  change Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  change Continuous fun g : C(Y, R)₀ ↦ (g : C(Y, R)).comp (f : C(X, Y))
   fun_prop
+
+@[deprecated (since := "2026-02-20")] alias continuous_comp_left := continuous_precomp
+
+theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
+    Injective (g.comp : C(X, Y)₀ → C(X, R)₀) :=
+  fun _ _ h ↦ ext fun x ↦ hg congr($h x)
+
+@[fun_prop]
+theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp : C(X, Y)₀ → C(X, R)₀) := by
+  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
+  exact g.toContinuousMap.continuous_postcomp |>.comp <|
+    ContinuousMapZero.isEmbedding_toContinuousMap.continuous
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
@@ -170,19 +185,20 @@ lemma mkD_apply_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} {x : X}
 
 lemma mkD_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g = ⟨⟨s.restrict f, hf.restrict⟩, hf₀⟩ :=
-  mkD_of_continuous hf.restrict hf₀
+    mkD (s.domRestrict f) g = ⟨⟨s.domRestrict f, hf.domRestrict⟩, hf₀⟩ :=
+  mkD_of_continuous hf.domRestrict hf₀
 
 lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ¬ ContinuousOn f s) :
-    mkD (s.restrict f) g = g := by
-  rw [continuousOn_iff_continuous_restrict] at hf
+    mkD (s.domRestrict f) g = g := by
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, restrict_apply]
+    mkD (s.domRestrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, domRestrict_apply]
 
 open ContinuousMap in
 /-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
@@ -314,7 +330,7 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
   map_mul' _ _ := rfl
   map_star' _ := rfl
 
-lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
+@[simp] lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
 
@@ -373,7 +389,8 @@ section UniformSpace
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [Zero R] [UniformSpace R]
 
-protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
+protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
+  fast_instance% .comap toContinuousMap inferInstance
 
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
@@ -427,6 +444,7 @@ def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(
   map_star' _ := rfl
   map_smul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- The functor `C(X, ·)₀` from non-unital topological star algebras (with non-unital continuous
 star homomorphisms) to non-unital star algebras. -/

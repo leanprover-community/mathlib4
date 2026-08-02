@@ -3,16 +3,22 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.Calculus.MeanValue
+module
 
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.Calculus.MeanValue
+
+import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Analysis.Calculus.Deriv.Slope
 /-!
 # Logarithmic Derivatives
 
-We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic
+We define the logarithmic derivative of a function `f` as `deriv f / f`. We then prove some basic
 facts about this, including how it changes under multiplication and composition.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -64,7 +70,7 @@ theorem logDeriv_const_mul {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a �
   simp only [logDeriv_apply, deriv_const_mul_field, mul_div_mul_left _ _ ha]
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
-theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (x : 𝕜) (hf : ∀ i ∈ s, f i x ≠ 0)
+theorem logDeriv_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜'} {x : 𝕜} (hf : ∀ i ∈ s, f i x ≠ 0)
     (hd : ∀ i ∈ s, DifferentiableAt 𝕜 (f i) x) :
     logDeriv (∏ i ∈ s, f i ·) x = ∑ i ∈ s, logDeriv (f i) x := by
   induction s using Finset.cons_induction with
@@ -76,14 +82,14 @@ theorem logDeriv_prod {ι : Type*} (s : Finset ι) (f : ι → 𝕜 → 𝕜') (
     · exact hf.1
     · simpa [Finset.prod_eq_zero_iff] using hf.2
     · exact hd.1
-    · exact .fun_finset_prod hd.2
+    · exact .fun_finsetProd hd.2
 
 lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℤ) :
     logDeriv (f · ^ n) x = n * logDeriv f x := by
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (· ^ n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
     simp [field, zpow_sub_one₀ hf]
 
@@ -127,9 +133,23 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
         simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
           Pi.zero_apply]
         grind [logDeriv_apply, Pi.div_apply]
-      letI := IsRCLikeNormedField.rclike 𝕜
+      let := IsRCLikeNormedField.rclike 𝕜
       obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
       grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
     · rintro ⟨z, hz0, hz⟩ x hx
       simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
+
+
+/-- At a simple zero of an analytic function, the logarithmic residue
+`(w - x) * logDeriv f w` tends to 1. -/
+theorem AnalyticAt.tendsto_mul_logDeriv_simple_zero [CompleteSpace 𝕜]
+    {f : 𝕜 → 𝕜} {x : 𝕜}
+    (hf : AnalyticAt 𝕜 f x) (hfx : f x = 0) (hf' : deriv f x ≠ 0) :
+    Filter.Tendsto (fun w => (w - x) * logDeriv f w)
+      (𝓝[≠] x) (𝓝 1) := by
+  have h_slope := hasDerivAt_iff_tendsto_slope.mp hf.differentiableAt.hasDerivAt
+  rw [← div_self hf']
+  convert hf.deriv.continuousAt.tendsto.mono_left nhdsWithin_le_nhds |>.div h_slope hf'
+  simp [logDeriv, slope, hfx]
+  field

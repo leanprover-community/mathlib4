@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Malo Jaffré
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Slopes of convex functions
@@ -16,6 +18,8 @@ of their slopes.
 
 The main use is to show convexity/concavity from monotonicity of the derivative.
 -/
+
+public section
 
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} {f : 𝕜 → 𝕜}
 
@@ -27,7 +31,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz ha hb (by field_simp; ring)
+  have key := hf.2 hx hz ha hb (by field)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
@@ -52,7 +56,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz hxz' ha hb (by field_simp; ring)
+  have key := hf.2 hx hz hxz' ha hb (by field)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
@@ -177,8 +181,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
     ring_nf at key
     field_simp at key
     linear_combination key
-  · field_simp
-    ring
+  · field
 
 theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f x) / (z - x) := by
@@ -203,8 +206,8 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
   · simp
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
-    · convert hf.slope_mono_adjacent hx hy hxa hya using 1
+    · convert! hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
+    · convert! hf.slope_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; simp
   · exact hf.secant_mono_aux2 ha hy hxa hxy
 
@@ -220,8 +223,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
     ring_nf at key
     field_simp at key
     linear_combination key
-  · field_simp
-    ring
+  · field
 
 theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) < (f z - f x) / (z - x) := by
@@ -244,9 +246,9 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
     (f x - f a) / (x - a) < (f y - f a) / (y - a) := by
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
+    · convert! hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
         simp
-    · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1
+    · convert! hf.slope_strict_mono_adjacent hx hy hxa hya using 1
       rw [← neg_div_neg_eq]; simp
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 
@@ -261,7 +263,7 @@ theorem StrictConcaveOn.secant_strict_mono (hf : StrictConcaveOn 𝕜 s f) {a x 
 
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f x < f y` for two points
 `x < y` in `s`, then `f` is strictly monotone on `s ∩ [y, ∞)`. -/
-theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ s) (hxy : x < y)
+theorem ConvexOn.strictMonoOn (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ s) (hxy : x < y)
     (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) := by
   intro u hu v hv huv
   have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
@@ -277,3 +279,22 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
       exact ⟨hxy.le, hu.2⟩
     · rw [openSegment_eq_Ioo (hu2.trans huv)]
       exact ⟨hu2, huv⟩
+
+/-- If `f` is convex on a set `s` in a linearly ordered field, and `f y < f x` for two points
+`x < y` in `s`, then `f` is strictly antitone on `s ∩ (∞, x]`. -/
+theorem ConvexOn.strictAntiOn (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hy : y ∈ s) (hxy : x < y)
+    (hxy' : f y < f x) : StrictAntiOn f (s ∩ .Iic x) := by
+  have := hf.comp_affineMap (-.id ..) |>.strictMonoOn (by simpa) (neg_lt_neg hxy) (by simpa)
+  simpa [Function.comp_def] using this.comp_strictAntiOn strictMonoOn_id.neg fun _ _ ↦ by simpa
+
+/-- If `f` is concave on a set `s` in a linearly ordered field, and `f x < f y` for two points
+`x < y` in `s`, then `f` is strictly monotone on `s ∩ (∞, x]`. -/
+theorem ConcaveOn.strictMonoOn (hf : ConcaveOn 𝕜 s f) {x y : 𝕜} (hy : y ∈ s) (hxy : x < y)
+    (hxy' : f x < f y) : StrictMonoOn f (s ∩ .Iic x) := by
+  simpa using (neg_convexOn_iff.mpr hf |>.strictAntiOn hy hxy <| neg_lt_neg hxy').neg
+
+/-- If `f` is concave on a set `s` in a linearly ordered field, and `f y < f x` for two points
+`x < y` in `s`, then `f` is strictly antitone on `s ∩ [y, ∞)`. -/
+theorem ConcaveOn.strictAntiOn (hf : ConcaveOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ s) (hxy : x < y)
+    (hxy' : f y < f x) : StrictAntiOn f (s ∩ .Ici y) := by
+  simpa using (neg_convexOn_iff.mpr hf |>.strictMonoOn hx hxy <| neg_lt_neg hxy').neg

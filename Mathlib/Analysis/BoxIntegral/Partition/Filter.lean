@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Split
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
 
 /-!
 # Filters used in box-based integrals
@@ -162,6 +164,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 
 integral, rectangular box, partition, filter
 -/
+
+@[expose] public section
 
 open Set Function Filter Metric Finset Bool
 open scoped Topology Filter NNReal
@@ -331,7 +335,7 @@ theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     fun hD => (hπ.4 (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
 
 variable (I) in
-@[mono]
+@[gcongr, mono]
 theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
@@ -361,6 +365,7 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
   classical
@@ -397,7 +402,7 @@ theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepa
     rw [π.iUnion_compl, ← π.iUnion_biUnion_partition hp]
     rfl
 
-@[mono]
+@[gcongr, mono]
 theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
@@ -445,7 +450,7 @@ theorem hasBasis_toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Pr
     (l.toFilteriUnion I π₀).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
   have := fun c => l.hasBasis_toFilterDistortioniUnion I c π₀
-  simpa only [setOf_and, setOf_exists] using hasBasis_iSup this
+  simpa only [ofPred_and, ofPred_exists] using! hasBasis_iSup this
 
 theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
     (l.toFilteriUnion I ⊤).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
@@ -456,7 +461,7 @@ theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
 theorem hasBasis_toFilter (l : IntegrationParams) (I : Box ι) :
     (l.toFilter I).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π } := by
-  simpa only [setOf_exists] using hasBasis_iSup (l.hasBasis_toFilterDistortion I)
+  simpa only [ofPred_exists] using! hasBasis_iSup (l.hasBasis_toFilterDistortion I)
 
 theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J) :
     Tendsto (TaggedPrepartition.embedBox I J h) (l.toFilteriUnion I ⊤)
@@ -467,7 +472,7 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
   refine ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => ?_
   refine ⟨r, hr, fun π hπ => ?_⟩
-  rw [mem_setOf_eq, Prepartition.iUnion_top] at hπ
+  rw [mem_ofPred_eq, Prepartition.iUnion_top] at hπ
   refine ⟨⟨hπ.1.1, hπ.1.2, fun hD => le_trans (hπ.1.3 hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
   · refine ⟨_, π₀.iUnion_compl.trans ?_, le_max_right _ _⟩
     congr 1

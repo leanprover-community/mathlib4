@@ -3,7 +3,9 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 
@@ -36,6 +38,8 @@ purely inseparable
 
 -/
 
+@[expose] public section
+
 namespace IsPurelyInseparable
 
 variable (F K L : Type*)
@@ -63,10 +67,10 @@ noncomputable def exponent [HasExponent K L] : ℕ :=
 
 variable {L}
 
-open Classical in
 theorem exponent_def [HasExponent K L] (a : L) :
-    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
-  Nat.find_spec ‹HasExponent K L›.has_exponent a
+    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range := by
+  classical
+  exact Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version of `exponent_def` using `ExpChar`. -/
 theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
@@ -75,10 +79,10 @@ theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
 
 variable {K}
 
-open Classical in
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
-    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
-  not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
+    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range := by
+  classical
+  exact not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version of `exponent_min` using `ExpChar`. -/
 theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
@@ -104,16 +108,16 @@ open Polynomial
 variable [Field K] [Field L] [Algebra K L] [IsPurelyInseparable K L]
 variable {L}
 
-open Classical in
+open scoped Classical in
 /-- The exponent of an element `a ∈ L` of a purely inseparable field extension `L / K`
 is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
+  classical
   apply (Nat.find_eq_zero _).mpr
   rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h
@@ -123,19 +127,18 @@ theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
   elemExponent_eq_zero_of_mem_range <| surjective_algebraMap_of_isSeparable K L a
 
-open Classical in
+open scoped Classical in
 /-- The element `y` of the base field `K` such that
 `a ^ ringExpChar K ^ elemExponent K a = algebraMap K L y`.
 See `IsPurelyInseparable.algebraMap_elemReduct_eq`. -/
 noncomputable def elemReduct (a : L) : K :=
   Classical.choose <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 theorem minpoly_eq (a : L) :
-    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
-  Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
+    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) := by
+  classical
+  exact Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 /-- Version of `minpoly_eq` using `ExpChar`. -/
 theorem minpoly_eq' (p : ℕ) [ExpChar K p] (a : L) :
     minpoly K a = X ^ p ^ elemExponent K a - C (elemReduct K a) :=
@@ -209,7 +212,7 @@ theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
   elemExponent_le_of_pow_mem <| exponent_def K a
 
 variable {K} in
-instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
+instance hasExponent_of_finiteDimensional [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
@@ -219,7 +222,7 @@ instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimen
     have h_elemexp_bound (a : L) : elemExponent K a ≤ e :=
       Nat.le_log_of_pow_le (Nat.Prime.one_lt <| ringExpChar.eq K p ▸ hp)
         (minpoly_natDegree_eq K a ▸ minpoly.natDegree_le a)
-    rw [RingHom.map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
+    rw [map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 end Field
@@ -240,6 +243,7 @@ to avoid problems with definitional equality when using the semilinear map versi
 variable [Field K] [Field L] [Algebra K L] [HasExponent K L]
 variable (p : ℕ) [ExpChar K p]
 
+set_option backward.privateInPublic true in
 private noncomputable def iterateFrobeniusAux (n : ℕ) : L → K :=
   fun a ↦ elemReduct K a ^ p ^ (n - elemExponent K a)
 
@@ -247,11 +251,13 @@ variable {L} in
 /-- Action of `iterateFrobeniusAux` on the top field. -/
 private theorem algebraMap_iterateFrobeniusAux {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
     algebraMap K L (iterateFrobeniusAux K L p n a) = a ^ p ^ n := by
-  rw [iterateFrobeniusAux, RingHom.map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
+  rw [iterateFrobeniusAux, map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
     Nat.add_sub_cancel' <| (elemExponent_le_exponent K a).trans hn]
 
 section RingHom
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Iterated Frobenius map (ring homomorphism) for purely inseparable field extension with exponent.
 If `n ≥ exponent K L`, it acts like `x ↦ x ^ p ^ n` but the codomain is the base field `K`. -/
 noncomputable def iterateFrobenius {n : ℕ} (hn : exponent K L ≤ n) : L →+* K where

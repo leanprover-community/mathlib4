@@ -1,14 +1,18 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.UniformSpace.Pi
+module
+
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Indexed product of extended metric spaces
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -63,10 +67,10 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
-      preimage_setOf_eq, comap_principal, edist_pi_def]
+      preimage_ofPred_eq, comap_principal, edist_pi_def]
     rw [iInf_comm]; congr; funext ε
     rw [iInf_comm]; congr; funext εpos
-    simp [setOf_forall, εpos]
+    simp [ofPred_forall, εpos]
 
 end Pi
 

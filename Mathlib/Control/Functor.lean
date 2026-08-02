@@ -3,10 +3,11 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
+
+public import Mathlib.Data.Set.Defs
+
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Lint
 
 /-!
 # Functors
@@ -26,6 +27,8 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
+@[expose] public section
+
 universe u v w
 
 section Functor
@@ -40,6 +43,7 @@ theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
 
+set_option linter.overlappingInstances false in
 theorem Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
     (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →
@@ -53,12 +57,6 @@ theorem Functor.ext {F} :
     exact E1.trans E2.symm
 
 end Functor
-
-/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
-`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
-@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
-def id.mk {α : Sort u} : α → id α :=
-  id
 
 namespace Functor
 
@@ -175,9 +173,11 @@ protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
 variable [LawfulFunctor F] [LawfulFunctor G]
 variable {α β γ : Type v}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
   | Comp.mk x => by simp only [Comp.map, id_map, id_map']; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
   | Comp.mk x => by simp [Comp.map, Comp.mk, functor_norm, Function.comp_def]

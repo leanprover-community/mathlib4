@@ -3,10 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Monad.Equalizer
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Monad.Equalizer
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Comonadicity theorems
@@ -37,6 +39,8 @@ Beck, comonadicity, descent
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -54,6 +58,7 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
 coreflexive pair, and will be used to construct the left adjoint to the comparison functor and show
 it is an equivalence.
@@ -80,6 +85,8 @@ def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app _)] : C :=
   equalizer (G.map A.a) (adj.unit.app _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 We have a bijection of homsets which will be used to construct the right adjoint to the comparison
 functor.
@@ -105,6 +112,7 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       left_inv f := by aesop
       right_inv f := by apply equalizer.hom_ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.
 -/
 def rightAdjointComparison
@@ -119,6 +127,9 @@ def rightAdjointComparison
     apply equalizer.hom_ext
     simp [Adjunction.homEquiv_unit]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Provided we have the appropriate equalizers, we have an adjunction to the comparison functor.
 -/
 @[simps! counit]
@@ -138,6 +149,7 @@ theorem comparisonAdjunction_counit_f_aux
       (adj.homEquiv _ A.A).symm (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
   congr_arg (adj.homEquiv _ _).symm (Category.id_comp _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a fork which is helpful for establishing comonadicity: the morphism from this fork to
 the Beck equalizer is the counit for the adjunction on the comparison functor.
 -/
@@ -154,6 +166,7 @@ theorem unitFork_ι (A : adj.toComonad.Coalgebra)
     (counitFork A).ι = F.map (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_counit_f
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a)
       (adj.unit.app (G.obj A.A))]
@@ -164,7 +177,7 @@ theorem comparisonAdjunction_counit_f
 variable (adj)
 
 /-- The fork which describes the unit of the adjunction: the morphism from this fork to the
-the equalizer of this pair is the unit.
+equalizer of this pair is the unit.
 -/
 @[simps!]
 def unitFork (B : C) :
@@ -172,6 +185,7 @@ def unitFork (B : C) :
       (adj.unit.app (G.obj (F.obj B))) :=
   Fork.ofι (adj.unit.app B) (adj.unit_naturality _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {adj} in
 /-- The counit fork is a limit provided `F` preserves it. -/
 def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
@@ -196,6 +210,8 @@ instance
     (G.map ((comparison adj).obj B).a)
     (adj.unit.app (G.obj ((comparison adj).obj B).A))
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_unit_app
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] (B : C) :
     (comparisonAdjunction adj).unit.app B = limit.lift _ (unitFork adj B) := by
@@ -213,14 +229,16 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring" direction of
 Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitEqualizers`.
 -/
+@[instance_reducible]
 def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
-  apply (config := {allowSynthFailures := true}) comonadicCreatesLimitOfPreservesLimit
+  apply +allowSynthFailures comonadicCreatesLimitOfPreservesLimit
   all_goals
     apply @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
@@ -263,9 +281,11 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => ReflectsLimitOfIsCosplitPair.out _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
 equalizers, and `C` has them.
 -/
+@[instance_reducible]
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
     [PreservesLimitOfIsCosplitPair F] [ReflectsLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F where
@@ -286,9 +306,9 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
-      letI _ :
+      let _ :
         F.IsCosplitPair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) :=
         ComonadicityInternal.main_pair_F_cosplit _ ((comparison adj).obj Y)
@@ -313,6 +333,7 @@ Beck's comonadicity theorem. If `F` has a right adjoint and creates equalizers o
 then it is comonadic.
 This is the converse of `createsFSplitEqualizersOfComonadic`.
 -/
+@[instance_reducible]
 def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
   have I {A B} (f g : A ⟶ B) [F.IsCosplitPair f g] : HasLimit (parallelPair f g ⋙ F) := by
@@ -326,6 +347,7 @@ def comonadicOfCreatesFSplitEqualizers [CreatesLimitOfIsCosplitPair F] :
 /-- An alternate version of Beck's comonadicity theorem. If `F` reflects isomorphisms, preserves
 equalizers of `F`-cosplit pairs and `C` has equalizers of `F`-cosplit pairs, then it is comonadic.
 -/
+@[instance_reducible]
 def comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms [F.ReflectsIsomorphisms]
     [HasEqualizerOfIsCosplitPair F] [PreservesLimitOfIsCosplitPair F] :
     ComonadicLeftAdjoint F := by
@@ -355,9 +377,11 @@ instance [PreservesLimitOfIsCoreflexivePair F] : ∀ X : Coalgebra adj.toComonad
 
 variable [PreservesLimitOfIsCoreflexivePair F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Coreflexive (crude) comonadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
+@[instance_reducible]
 def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
     ComonadicLeftAdjoint F where
   R := G
@@ -375,7 +399,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 
 /-!
 # The graded object in a single degree
@@ -14,13 +16,15 @@ the initial object of `C` in other degrees.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
 namespace GradedObject
 
-variable {J : Type*} {C : Type*} [Category C] [HasInitial C] [DecidableEq J]
+variable {J : Type*} {C : Type*} [Category* C] [HasInitial C] [DecidableEq J]
 
 /-- The functor which sends `X : C` to the graded object which is `X` in degree `j`
 and the initial object in other degrees. -/
@@ -72,6 +76,7 @@ lemma single_map_singleObjApplyIso_hom (j : J) {X Y : C} (f : X ⟶ Y) :
     (single j).map f j ≫ (singleObjApplyIso j Y).hom = (singleObjApplyIso j X).hom ≫ f := by
   apply single_map_singleObjApplyIsoOfEq_hom
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The composition of the single functor `single j : C ⥤ GradedObject J C` and the
 evaluation functor `eval j` identifies to the identity functor. -/

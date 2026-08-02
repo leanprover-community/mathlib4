@@ -3,21 +3,25 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Batteries.Control.Nondet.Basic
-import Mathlib.Init
+module
+
+public import Lean.Meta.Tactic.TryThis
+public meta import Batteries.Control.Nondet.Basic
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `hint` tactic.
 
 The `hint` tactic tries the kitchen sink:
-it runs every tactic registered via the `register_hint tac` command
+it runs every tactic registered via the `register_hint <prio> tac` command
 on the current goal, and reports which ones succeed.
 
 ## Future work
 It would be nice to run the tactics in parallel.
 -/
+
+public meta section
 
 open Lean Elab Tactic
 
@@ -43,40 +47,20 @@ def getHints : CoreM (List (Nat × TSyntax `tactic)) :=
 
 open Lean.Elab.Command in
 /--
-Register a tactic for use with the `hint` tactic, e.g. `register_hint simp_all`.
-An optional priority can be provided with `register_hint (priority := n) tac`.
-Tactics with larger priorities run before those with smaller priorities. The default
-priority is `1000`.
+Register a tactic for use with the `hint` tactic, e.g. `register_hint 1000 simp_all`.
+The numeric argument specifies the priority: tactics with larger priorities run before
+those with smaller priorities. The priority must be provided explicitly.
 -/
 elab (name := registerHintStx)
-    "register_hint" p:("(" "priority" ":=" num ")")? tac:tactic : command =>
+    "register_hint" prio:num tac:tactic : command =>
     liftTermElabM do
-  -- remove comments
-  let prio := match p with
-    | some stx =>
-        match stx.raw[3]?.bind Syntax.isNatLit? with
-        | some n => n
-        | none => 1000
-    | none => 1000
   let tac : TSyntax `tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
+  let some prio := prio.raw.isNatLit?
+    | throwError "expected a numeric literal for priority"
   addHint prio tac
 
 initialize
   Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
-
-/--
-Extracts the `MessageData` from the first clickable `Try This:` diff widget in the message.
-Preserves (only) contexts and tags.
--/
-private def getFirstTryThisFromMessage? : MessageData → Option MessageData
-  | .ofWidget w msg => if w.id == ``Meta.Hint.tryThisDiffWidget then msg else none
-  | .nest _ msg
-  | .group msg => getFirstTryThisFromMessage? msg
-  | .compose msg₁ msg₂ => getFirstTryThisFromMessage? msg₁ <|> getFirstTryThisFromMessage? msg₂
-  | .withContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withContext ctx
-  | .withNamingContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withNamingContext ctx
-  | .tagged tag msg => (getFirstTryThisFromMessage? msg).map <| .tagged tag
-  | .ofFormatWithInfos _ | .ofGoal _ | .trace .. | .ofLazy .. => none
 
 /--
 Construct a suggestion for a tactic.
@@ -85,7 +69,7 @@ Construct a suggestion for a tactic.
 * Otherwise use the provided syntax.
 * Also, look for remaining goals and pretty print them after the suggestion.
 -/
-def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Suggestion := do
+def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : TacticM Suggestion := do
   -- TODO `addExactSuggestion` has an option to construct `postInfo?`
   -- Factor that out so we can use it here instead of copying and pasting?
   let goals ← getGoals
@@ -101,27 +85,12 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
   We use emojis for now instead.
   -/
   -- let style? := if goals.isEmpty then some .success else none
-  let preInfo? := if goals.isEmpty then some "🎉 " else none
-  let msg? : Option MessageData := msgs.toList.firstM (getFirstTryThisFromMessage? ·.data)
-  let suggestion ← match msg? with
-  | some m => pure <| SuggestionText.string (← m.toString)
-  | none => pure <| SuggestionText.tsyntax tac
+  let preInfo? := if goals.isEmpty then some "🎉️ " else none
+  let suggestions := collectTryThisSuggestions trees
+  let suggestion := match suggestions[0]? with
+  | some s => s.suggestion
+  | none => SuggestionText.tsyntax tac
   return { preInfo?, suggestion, postInfo? }
-
-/-- Run a tactic, returning any new messages rather than adding them to the message log. -/
-def withMessageLog (t : TacticM Unit) : TacticM MessageLog := do
-  let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
-  t
-  modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
-
-/--
-Run a tactic, but revert any changes to info trees.
-We use this to inhibit the creation of widgets by subsidiary tactics.
--/
-def withoutInfoTrees (t : TacticM Unit) : TacticM Unit := do
-  let trees := (← getInfoState).trees
-  t
-  modifyInfoState fun s => { s with trees }
 
 /--
 Run all tactics registered using `register_hint`.
@@ -136,11 +105,11 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   let tacs := (← getHints).toArray.qsort (·.1 > ·.1) |>.toList.map (·.2)
   let tacs := Nondet.ofList tacs
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
-    if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
+    if let some { msgs, trees, .. } ← observing? (withResetServerInfo (evalTactic t)) then
       if msgs.hasErrors then
         return none
       else
-        return some (← getGoals, ← suggestion t msgs)
+        return some (← getGoals, ← suggestion t trees)
     else
       return none
   let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray
@@ -153,7 +122,7 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   | none => admitGoal (← getMainGoal)
 
 /--
-The `hint` tactic tries every tactic registered using `register_hint tac`,
+The `hint` tactic tries every tactic registered using `register_hint <prio> tac`,
 and reports any that succeed.
 -/
 syntax (name := hintStx) "hint" : tactic

@@ -3,11 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Algebra.Order.Ring.NNRat
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set
@@ -44,6 +46,8 @@ performance-wise.
 These considerations more generally apply to `Finset.card` and `Finset.sum` and demonstrate that
 overengineering basic definitions is likely to hinder user experience.
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists Ring
@@ -163,7 +167,7 @@ lemma dens_inter_add_dens_union (s t : Finset α) :
     dens (s ∩ t) + dens (s ∪ t) = dens s + dens t := by rw [add_comm, dens_union_add_dens_inter]
 
 @[simp] lemma dens_union_of_disjoint (h : Disjoint s t) : dens (s ∪ t) = dens s + dens t := by
-  rw [← disjUnion_eq_union s t h, dens_disjUnion _ _ _]
+  rw [← disjUnion_eq_union s t h, dens_disjUnion]
 
 lemma dens_sdiff_add_dens_eq_dens (h : s ⊆ t) : dens (t \ s) + dens s = dens t := by
   simp [dens, ← card_sdiff_add_card_eq_card h, add_div]
@@ -187,10 +191,10 @@ lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Fin
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
-  rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
+  rw [← dens_union_of_disjoint (disjoint_filter_filter_not ..), filter_union_filter_not_eq]
 
 lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
-  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'
+  dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le
 
 lemma dens_le_dens_sdiff_add_dens : dens s ≤ dens (s \ t) + dens t :=
   dens_sdiff_add_dens s _ ▸ dens_le_dens subset_union_left

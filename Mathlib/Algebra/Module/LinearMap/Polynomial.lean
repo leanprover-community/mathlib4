@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Characteristic polynomials of linear families of endomorphisms
@@ -62,6 +64,8 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
+@[expose] public section
+
 open Module MvPolynomial
 open scoped Matrix
 
@@ -93,8 +97,7 @@ lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
   apply MvPolynomial.IsHomogeneous.sum
   rintro j -
   apply MvPolynomial.isHomogeneous_monomial _ _
-  simp [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
-    Finsupp.single_eq_same]
+  simp
 
 lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).totalDegree ≤ 1 := by
@@ -124,6 +127,7 @@ lemma toMvPolynomial_add (M N : Matrix m n R) :
   ext i : 1
   simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
   simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
@@ -236,6 +240,7 @@ noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
 
+set_option backward.defeqAttrib.useBackward true in
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     polyCharpolyAux (tensorProduct _ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
@@ -244,12 +249,11 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   rw [← charpoly.univ_map_map _ (algebraMap R A)]
   simp only [Polynomial.map_map]
   congr 1
-  apply ringHom_ext
+  apply MvPolynomial.ringHom_ext
   · intro r
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
   · rintro ij
     simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X, bind₁_X_right]
-    classical
     rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
     suffices toMvPolynomial (M₂ := (Module.End A (TensorProduct R A M)))
         (basis A bₘ.end) (basis A bₘ).end (tensorProduct R A M M) ij = X ij by
@@ -299,6 +303,7 @@ lemma polyCharpolyAux_coeff_eval [Module.Finite R M] [Module.Free R M] (x : L) (
   nontriviality R
   rw [← polyCharpolyAux_map_eq_charpoly φ b bₘ x, Polynomial.coeff_map]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]
     (x : ι → R) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval x) =
@@ -323,10 +328,11 @@ open Algebra.TensorProduct MvPolynomial in
 
 Proof strategy:
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
-   of the basechange of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
+   of the base change of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
    This independence result is used transitively via
-   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
+   `LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`.
+-/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
@@ -552,7 +558,7 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
 
 lemma exists_isNilRegular [Infinite R] : ∃ x : L, IsNilRegular φ x := by
   apply exists_isNilRegular_of_finrank_le_card
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
 

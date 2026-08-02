@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
-import Mathlib.CategoryTheory.Adjunction.Opposites
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Opposites of functors between pretriangulated categories,
@@ -20,11 +22,13 @@ given by `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [HasShift C ℤ] [HasShift D ℤ] (F : C ⥤ D)
   [F.CommShift ℤ]
 
 open Category Limits Pretriangulated Opposite
@@ -36,7 +40,7 @@ namespace Pretriangulated.Opposite
 -/
 noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
   inferInstanceAs ((PullbackShift.functor
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.functor ℤ F)).CommShift ℤ)
 
 variable {F}
@@ -44,13 +48,15 @@ variable {F}
 noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
     [NatTrans.CommShift τ ℤ] : NatTrans.CommShift (NatTrans.op τ) ℤ :=
   inferInstanceAs (NatTrans.CommShift (PullbackShift.natTrans
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.natTrans ℤ τ)) ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
     [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
   have eq : adj.op = PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.adjunction ℤ adj) := by
     ext
     dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
@@ -60,22 +66,25 @@ noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommS
     simp only [Category.comp_id, Category.id_comp]
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
       (OppositeShift.adjunction ℤ adj)) ℤ)
 
 end Pretriangulated.Opposite
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency false in -- Needed in map_opShiftFunctorEquivalence_counitIso_hom_app_unop
 @[reassoc]
 lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).hom.app X =
       (F.map ((shiftFunctorOpIso C n m h).hom.app X).unop).op ≫
         ((F.commShiftIso m).inv.app X.unop).op ≫
         (shiftFunctorOpIso D n m h).inv.app (op (F.obj X.unop)) := by
-  obtain rfl : m = -n := by cutsat
+  obtain rfl : m = -n := by lia
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     (F.op.commShiftIso n).inv.app X =
@@ -86,18 +95,24 @@ lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
     op_commShiftIso_hom_app _ X n m h, assoc, assoc]
   simp [← op_comp, ← F.map_comp]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma shift_map_op {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     (F.map f).op⟦n⟧' = (F.op.commShiftIso n).inv.app _ ≫
       (F.map (f.op⟦n⟧').unop).op ≫ (F.op.commShiftIso n).hom.app _ :=
   (NatIso.naturality_1 (F.op.commShiftIso n) f.op).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_shift_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (n : ℤ) :
     F.map ((f⟦n⟧').unop) = ((F.op.commShiftIso n).inv.app Y).unop ≫
       ((F.map f.unop).op⟦n⟧').unop ≫ ((F.op.commShiftIso n).hom.app X).unop := by
   simp [shift_map_op]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop =
@@ -114,6 +129,8 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
   dsimp
   rw [map_id, id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X).unop =
@@ -126,6 +143,8 @@ lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ)
     Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc, ← unop_comp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).counitIso.hom.app X).unop =
@@ -138,6 +157,7 @@ lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : �
     map_shiftFunctorCompIsoId_inv_app_assoc, op_comp, op_comp_assoc, op_comp_assoc,
     NatTrans.naturality_assoc, op_map, Iso.inv_hom_id_app_assoc, Quiver.Hom.unop_op]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop =
@@ -161,6 +181,8 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Ad
 
 namespace Functor
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
 with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
@@ -169,14 +191,11 @@ with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle C) :
     (triangleOpEquivalence D).functor.obj (op (F.mapTriangle.obj T)) ≅
       F.op.mapTriangle.obj ((triangleOpEquivalence C).functor.obj (op T)) :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by
-      dsimp
-      simp only [map_comp, shift_map_op, map_id, comp_id, op_comp, op_unop,
-        map_opShiftFunctorEquivalence_counitIso_inv_app_unop,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-        Quiver.Hom.op_unop, assoc, id_comp])
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+      (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
 with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
@@ -186,7 +205,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
   NatIso.ofComponents
     (fun T ↦ F.mapTriangleOpCompTriangleOpEquivalenceFunctorApp T.unop)
-    (by intros; ext <;> dsimp <;> simp only [comp_id, id_comp])
+    (by intros; ext <;> dsimp <;> simp only [id_comp, comp_id])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories
@@ -221,7 +240,7 @@ end Functor
 
 namespace Pretriangulated.Opposite
 
-open Functor in
+open CategoryTheory.Functor in
 /-- If `F` is triangulated, so is `F.op`.
 -/
 scoped instance functor_isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
@@ -245,11 +264,7 @@ lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
     rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff, ← Functor.op_obj, ← Functor.comp_obj,
       distinguished_iff_of_iso ((mapTriangleOpCompTriangleOpEquivalenceFunctor F).app
       (Opposite.op T))]
-    apply F.op.map_distinguished
-    have := distinguished_iff_of_iso ((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop
-    rw [Functor.id_obj, Opposite.unop_op T] at this
-    rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff] at dT
-    exact dT
+    exact F.op.map_distinguished _ (op_distinguished _ dT)
 
 open Pretriangulated.Opposite in
 /-- `F` is triangulated if and only if `F.op` is triangulated.

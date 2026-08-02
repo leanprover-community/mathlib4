@@ -3,7 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+import all Lean.Elab.Tactic.Induction
+public import Mathlib.Data.PNat.Basic
+public meta import Mathlib.Tactic.ToAdditive
+
 
 /-!
 # `pnat_to_nat`
@@ -17,9 +22,9 @@ The implementation follows these steps:
 
 -/
 
-namespace Mathlib.Tactic.PNatToNat
+public meta section
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
+namespace Mathlib.Tactic.PNatToNat
 
 open Lean Meta Elab Tactic Qq
 
@@ -52,15 +57,16 @@ lemma coe_lt_coe (m n : PNat) : m < n ↔ (m : ℕ) < (n : ℕ) := by simp
 
 attribute [pnat_to_nat_coe] PNat.add_coe PNat.mul_coe PNat.val_ofNat
 
+set_option backward.isDefEq.respectTransparency false in
 @[pnat_to_nat_coe]
 lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := by
   cases a
   cases b
   simp only [PNat.mk_coe, _root_.PNat.sub_coe, ← _root_.PNat.coe_lt_coe]
-  split_ifs <;> omega
+  split_ifs <;> lia
 
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `pnat_to_nat; omega`. -/
+A typical use case is `pnat_to_nat; lia`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
   pnat_positivity;
   simp only [pnat_to_nat_coe] at *)

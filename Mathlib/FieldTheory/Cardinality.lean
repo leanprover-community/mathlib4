@@ -3,13 +3,14 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Field.TransferInstance
-import Mathlib.Algebra.Field.ULift
-import Mathlib.Algebra.MvPolynomial.Cardinal
-import Mathlib.Data.Rat.Encodable
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.RingTheory.Localization.Cardinality
-import Mathlib.SetTheory.Cardinal.Divisibility
+module
+
+public import Mathlib.Algebra.Field.TransferInstance
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Divisibility
 
 /-!
 # Cardinality of Fields
@@ -25,6 +26,8 @@ a field structure, and so can all types with prime power cardinalities, and this
 * `Field.nonempty_iff` : There is a field structure on type iff its cardinality is a prime power.
 
 -/
+
+public section
 
 
 local notation "‖" x "‖" => Fintype.card x
@@ -42,8 +45,8 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
   refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
-  haveI := Fact.mk hp.nat_prime
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have := Fact.mk hp.nat_prime
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   exact ⟨(Fintype.equivOfCardEq
     (((Fintype.card_eq_nat_card).trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
 
@@ -62,5 +65,5 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   rw [Cardinal.isPrimePow_iff]
   obtain h | h := fintypeOrInfinite α
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
-      (Cardinal.nat_lt_aleph0 _).not_ge, false_or] using Fintype.nonempty_field_iff
+      Cardinal.natCast_lt_aleph0.not_ge, false_or] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field

@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Ray
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.LinearAlgebra.Ray
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Rays in a real normed vector space
@@ -15,11 +16,13 @@ this case, for two vectors `x y` in the same ray, the norm of their sum is equal
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/
 
+public section
+
 
 open Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
-[NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
 

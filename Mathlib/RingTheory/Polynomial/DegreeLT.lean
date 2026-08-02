@@ -3,12 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Polynomials with degree strictly less than `n`
@@ -33,6 +34,8 @@ This file contains the properties of the submodule of polynomials of degree less
   `X + r` and preserves degrees.
 
 -/
+
+@[expose] public section
 
 open Module
 
@@ -114,10 +117,11 @@ lemma addLinearEquiv_symm_apply_inr (Q : R[X]_n) :
 
 lemma addLinearEquiv_symm_apply (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + (PQ.2 : R[X]) * X ^ (m : ℕ) := calc
-  _ = ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ PQ.1 + LinearMap.inr R _ _ PQ.2) : R[X]) :=
-      by rw [LinearMap.inl_apply, LinearMap.inr_apply, Prod.add_def, add_zero, zero_add]
-  _ = _ := by rw [map_add, Submodule.coe_add,
-        addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
+  _ = ((addLinearEquiv R m n).symm (LinearMap.inl R _ _ PQ.1 + LinearMap.inr R _ _ PQ.2) :
+      R[X]) := by
+    rw [LinearMap.inl_apply, LinearMap.inr_apply, Prod.add_def, add_zero, zero_add]
+  _ = _ := by
+    rw [map_add, Submodule.coe_add, addLinearEquiv_symm_apply_inl, addLinearEquiv_symm_apply_inr]
 
 lemma addLinearEquiv_symm_apply' (PQ) :
     ((addLinearEquiv R m n).symm PQ : R[X]) = (PQ.1 : R[X]) + X ^ (m : ℕ) * (PQ.2 : R[X]) := by
@@ -154,12 +158,12 @@ variable {R : Type*} [CommRing R] {r : R} {m n : ℕ} {s : R} {f g : R[X]}
 @[simp]
 lemma taylor_mem_degreeLT : taylor r f ∈ R[X]_n ↔ f ∈ R[X]_n := by simp [mem_degreeLT]
 
-lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r) = R[X]_n := by
+lemma comap_taylorEquiv_degreeLT : (R[X]_n).comap (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
   ext; simp [taylorEquiv]
 
-lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r) = R[X]_n := by
-  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r),
-    Submodule.map_comap_eq_of_surjective (taylorEquiv r).surjective]
+lemma map_taylorEquiv_degreeLT : (R[X]_n).map (taylorEquiv r : R[X] →ₗ[R] R[X]) = R[X]_n := by
+  nth_rw 1 [← comap_taylorEquiv_degreeLT (r := r), Submodule.map_comap_eq_of_surjective]
+  exact (taylorEquiv r).surjective
 
 /-- The map `taylor r` induces an automorphism of the module `R[X]_n` of polynomials of
 degree `< n`. -/
@@ -175,7 +179,7 @@ noncomputable def taylorLinearEquiv (r : R) (n : ℕ) : R[X]_n ≃ₗ[R] R[X]_n 
     (taylorLinearEquiv r n).toLinearMap.det = 1 := by
   nontriviality R
   rw [← LinearMap.det_toMatrix (degreeLT.basis R n),
-    Matrix.det_of_upperTriangular, Fintype.prod_eq_one]
+    Matrix.det_of_isUpperTriangular, Fintype.prod_eq_one]
   · intro i
     rw [LinearMap.toMatrix_apply, degreeLT.basis_repr, ← natDegree_X_pow (R := R) (i : ℕ)]
     change (taylor r (degreeLT.basis R n i)).coeff _ = 1

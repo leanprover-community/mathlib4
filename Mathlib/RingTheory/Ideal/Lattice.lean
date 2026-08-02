@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The lattice of ideals in a ring
@@ -17,6 +20,8 @@ Some basic results on lattice operations on ideals: `⊥`, `⊤`, `⊔`, `⊓`.
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
+public section
+
 
 universe u v w
 
@@ -24,7 +29,7 @@ variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 

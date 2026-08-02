@@ -3,16 +3,20 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.PrettyPrinter.Delaborator.Basic
+module
+
+public import Mathlib.Init
+public import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
 # Additions to the delaborator
 -/
 
+@[expose] public section
+
 namespace Lean.PrettyPrinter.Delaborator
 
-open SubExpr
+open Delaborator.SubExpr
 
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.

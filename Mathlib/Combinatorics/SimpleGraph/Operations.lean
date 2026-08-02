@@ -3,9 +3,11 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Local graph operations
@@ -21,6 +23,8 @@ we also prove theorems about the number of edges in the modified graphs.
 * `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
   `G ⊔ edge s t`.
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -38,7 +42,7 @@ edge is removed if present. -/
 def replaceVertex : SimpleGraph V where
   Adj v w := if v = t then if w = t then False else G.Adj s w
                       else if w = t then G.Adj v s else G.Adj v w
-  symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
+  symm.symm v w := by split_ifs <;> simp [adj_comm]
 
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]
@@ -67,30 +71,30 @@ variable {s}
 theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeSet =
     G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s) := by
   ext e; refine e.inductionOn ?_
-  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
-  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
   ext e; refine e.inductionOn ?_
-  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_diff, mk'_mem_incidenceSet_iff]
-  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by aesop]
+  simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
+  intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; infer_instance
+instance : DecidableRel (G.replaceVertex s t).Adj := inferInstanceAs <| DecidableRel (mk _ _ _).Adj
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_not_adj hn)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_not_adj hn
 
 theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union, ← Set.toFinset_singleton]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_adj ha)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_adj ha
 
 lemma disjoint_sdiff_neighborFinset_image :
     Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by
@@ -99,7 +103,7 @@ lemma disjoint_sdiff_neighborFinset_image :
   have : t ∉ e := by
     rw [mem_sdiff, mem_incidenceFinset] at he
     obtain ⟨_, h⟩ := he
-    contrapose! h
+    contrapose h
     simp_all [incidenceSet]
   aesop
 
@@ -132,16 +136,17 @@ section AddEdge
 /-- The graph with a single `s-t` edge. It is empty iff `s = t`. -/
 def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 
+@[grind =]
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
 lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
-  simp only [edge_adj, ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
-    and_congr_left_iff]
-  tauto
+  grind
 
 lemma edge_comm : edge s t = edge t s := by
   rw [edge, edge, Sym2.eq_swap]
+
+@[simp] lemma edge_le : edge s t ≤ G ↔ {s(s, t)} \ Sym2.diagSet ⊆ G.edgeSet := by simp [edge]
 
 variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
@@ -160,35 +165,46 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
   obtain h | h := eq_or_ne v w
   · simp [h]
   · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj]), fun hadj v' w' hvw' ↦ ?_⟩
-    aesop (add simp [edge_adj, adj_symm])
+    grind [adj_symm]
+
+@[simp]
+lemma edgeSet_edge (v w : V) : (edge v w).edgeSet = {s(v, w)} \ Sym2.diagSet := by simp [edge]
+
+lemma edgeSet_edge_subset {v w : V} : (edge v w).edgeSet ⊆ {s(v, w)} := by simp [edge]
 
 variable {s t}
 
-lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
-  rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
-    Sym2.isDiag_iff_proj_eq]
+lemma edgeSet_edge_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by simpa [edge]
+
+@[deprecated (since := "2026-03-18")] alias edge_edgeSet_of_ne := edgeSet_edge_of_ne
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
-  rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
-    mem_edgeSet]
+  simp [h]
+
+@[simp] lemma deleteEdges_edge {u v : V} {s : Set (Sym2 V)} (h : s(u, v) ∈ s) :
+    (edge u v).deleteEdges s = ⊥ := by simp [edge, Set.sdiff_subset_iff, h]
 
 lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
-  by_cases h : u = v
-  · subst h
-    simp [edge_self_eq_bot]
-  simp [← disjoint_edgeSet, edge_edgeSet_of_ne h]
+  rcases eq_or_ne u v with rfl | h
+  · simp [edge_self_eq_bot]
+  simp [← disjoint_edgeSet, edgeSet_edge_of_ne h]
 
 lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
   simp [disjoint_edge, h]
 
+theorem biSup_fromEdgeSet_singleton_eq : ⨆ e ∈ G.edgeSet, fromEdgeSet {e} = G := by
+  simp_rw [← edgeSet_inj, ← iSup_subtype'', edgeSet_iSup, edgeSet_fromEdgeSet, ← Set.iUnion_sdiff,
+    Set.iUnion_coe_set, Set.biUnion_of_singleton]
+  exact Set.disjoint_left.mpr G.edgeSet_subset_compl_diagSet |>.sdiff_eq_left
+
+theorem sSup_edge_eq : sSup { edge u v | (u : V) (v : V) (_ : G.Adj u v) } = G := by
+  refine .trans ?_ G.biSup_fromEdgeSet_singleton_eq
+  simp_rw [edge, ← iSup_subtype'', iSup, Set.range, Subtype.exists, Sym2.exists, mem_edgeSet]
+
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by
   intro v w hvw
-  have := hvw.adj_sub
-  simp only [Subgraph.spanningCoe_adj, SimpleGraph.sup_adj, SimpleGraph.edge_adj] at *
-  by_cases hs : s(v, w) = s(s, t)
-  · exact (h ((Subgraph.adj_congr_of_sym2 hs).mp hvw)).elim
-  · aesop
+  grind [adj_congr_of_sym2]
 
 variable [Fintype V] [DecidableRel G.Adj]
 
@@ -197,9 +213,8 @@ instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     (G ⊔ edge s t).edgeFinset = G.edgeFinset.cons s(s, t) (by simp_all) := by
-  letI := Classical.decEq V
-  rw [edgeFinset_sup, cons_eq_insert, insert_eq, union_comm]
-  simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
+  classical
+  simp [edgeFinset, edgeSet_edge_of_ne h]
 
 theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
     #(G ⊔ edge s t).edgeFinset = #G.edgeFinset + 1 := by

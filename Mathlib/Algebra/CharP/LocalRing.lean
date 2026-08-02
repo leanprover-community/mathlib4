@@ -3,10 +3,12 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # Characteristics of local rings
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 -/
 
+public section
+
 
 /-- In a local ring the characteristic is either zero or a prime power. -/
 theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : ℕ)
@@ -26,7 +30,7 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : 
   apply or_iff_not_imp_left.2
   intro q_pos
   let K := IsLocalRing.ResidueField R
-  haveI RM_char := ringChar.charP K
+  have RM_char := ringChar.charP K
   let r := ringChar K
   let n := q.factorization r
   -- `r := char(R/m)` is either prime or zero:
@@ -54,9 +58,9 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : 
       absurd (by simpa [n_zero] using q_eq_rn) (CharP.char_ne_one R q)
     -- Definition of prime power: `∃ r n, Prime r ∧ 0 < n ∧ r ^ n = q`.
     exact ⟨r, ⟨n, ⟨r_prime.prime, ⟨pos_iff_ne_zero.mpr n_pos, q_eq_rn.symm⟩⟩⟩⟩
-  · haveI K_char_p_0 := ringChar.of_eq r_zero
-    haveI K_char_zero : CharZero K := CharP.charP_to_charZero K
-    haveI R_char_zero := RingHom.charZero (IsLocalRing.residue R)
+  · have K_char_p_0 := ringChar.of_eq r_zero
+    have K_char_zero : CharZero K := CharP.charP_to_charZero K
+    have R_char_zero := RingHom.charZero (IsLocalRing.residue R)
     -- Finally, `r = 0` would lead to a contradiction:
     have q_zero := CharP.eq R char_R_q (CharP.ofCharZero R)
     exact absurd q_zero q_pos

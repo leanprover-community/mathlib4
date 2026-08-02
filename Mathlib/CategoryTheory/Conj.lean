@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Conjugate morphisms by isomorphisms
@@ -15,11 +17,13 @@ An isomorphism `α : X ≅ Y` defines
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
 - a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
-using
-`CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`
-and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
-which are defined in  `CategoryTheory.HomCongr`.
+  using
+  `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`
+  and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
+  which are defined in  `CategoryTheory.HomCongr`.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -47,6 +51,7 @@ theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
 theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
   map_one α.conj
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
   rw [conj_apply, Iso.refl_inv, Iso.refl_hom, Category.id_comp, Category.comp_id]
@@ -68,7 +73,7 @@ theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
 -- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
-/-- `conj` defines a group isomorphisms between groups of automorphisms -/
+/-- `conj` defines a group isomorphism between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 
@@ -78,6 +83,7 @@ theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α :=
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
     (α ≪≫ β).conjAut f = β.conjAut (α.conjAut f) := by
@@ -111,6 +117,7 @@ theorem map_conj {X Y : C} (α : X ≅ Y) (f : End X) :
     F.map (α.conj f) = (F.mapIso α).conj (F.map f) :=
   map_homCongr F α α f
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
     F.mapIso (α.conjAut f) = (F.mapIso α).conjAut (F.mapIso f) := by
   ext; simp only [mapIso_hom, Iso.conjAut_hom, F.map_conj]

@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Group.ConjFinite
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Not all complementary decompositions of a module over a semiring make up a direct sum
@@ -19,6 +21,7 @@ This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_
 take `Ring R` and not `Semiring R`.
 -/
 
+public section
 
 namespace Counterexample
 
@@ -57,6 +60,7 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 
+set_option linter.defProp false in
 def withSign.independent : iSupIndep withSign := by
   apply
     (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
@@ -84,7 +88,7 @@ theorem withSign.not_injective :
       Submodule.coe_zero] at h
     apply zero_ne_one h.symm
   apply hinj.ne this
-  rw [LinearMap.map_zero, LinearMap.map_add, DirectSum.toModule_lof, DirectSum.toModule_lof]
+  rw [map_zero, map_add, DirectSum.toModule_lof, DirectSum.toModule_lof]
   simp [p1, n1]
 
 /-- And so they do not represent an internal direct sum. -/

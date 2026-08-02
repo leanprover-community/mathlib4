@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Multilinear.Curry
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-! # Multilinear maps over finite-dimensional spaces
 
@@ -17,6 +19,8 @@ finitely-generated and free.
 We do not put this in `LinearAlgebra.Multilinear.Basic` to avoid making the imports too large
 there.
 -/
+
+public section
 
 
 namespace MultilinearMap
@@ -31,7 +35,7 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
     Module.Free R (MultilinearMap R N M₂) ∧ Module.Finite R (MultilinearMap R N M₂) := by
   induction n with
   | zero =>
-    haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
+    have : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact
       ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R R N M₂),
         Module.Finite.equiv (constLinearEquivOfIsEmpty R R N M₂)⟩

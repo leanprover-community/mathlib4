@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # Functorial resolutions give derivability structures
@@ -14,13 +16,15 @@ a fully faithful functor `Φ.functor : C₁ ⥤ C₂` and that we have a resolut
 functor `ρ : C₂ ⥤ C₁` with a natural transformation `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`
 such that `W₂ (i.app X₂)` for any `X₂ : C₂`. If we assume
 that `W₁` is induced by `W₂`, that `W₂` is multiplicative and has
-the two out of three property, then `Φ` is a right derivability structure.
+the two-out-of-three property, then `Φ` is a right derivability structure.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -38,7 +42,7 @@ lemma hasRightResolutions_arrow_of_functorial_resolutions :
        hw := ⟨hi _, hi _⟩ }⟩
 
 namespace functorialRightResolutions
-open Functor
+open CategoryTheory.Functor
 
 variable {Φ i}
 

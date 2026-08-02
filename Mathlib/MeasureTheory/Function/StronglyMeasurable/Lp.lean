@@ -3,8 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
 /-!
 # Finitely strongly measurable functions in `Lp`
@@ -24,6 +25,8 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 -/
 
+public section
+
 
 open MeasureTheory Filter TopologicalSpace Function
 
@@ -40,7 +43,7 @@ theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)
     (hf_meas : StronglyMeasurable f) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ := by
   borelize G
-  haveI : SeparableSpace (Set.range f ∪ {0} : Set G) :=
+  have : SeparableSpace (Set.range f ∪ {0} : Set G) :=
     hf_meas.separableSpace_range_union_singleton
   let fs := SimpleFunc.approxOn f hf_meas.measurable (Set.range f ∪ {0}) 0 (by simp)
   refine ⟨fs, ?_, ?_⟩

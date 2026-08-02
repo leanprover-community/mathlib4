@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Combinatorics.Additive.Dissociation
+module
+
+public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+public import Mathlib.Combinatorics.Additive.Dissociation
 
 /-!
 # Randomising by a function of dissociated support
@@ -16,6 +18,8 @@ Precisely, for `G` a finite abelian group and two functions `c : AddChar G ℂ �
 `d : AddChar G ℂ → ℝ` such that `{ψ | d ψ ≠ 0}` is dissociated, the product of the `c ψ` over `ψ` is
 the same as the average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
 -/
+
+public section
 
 open Finset
 open scoped BigOperators ComplexConjugate
@@ -46,5 +50,5 @@ lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G �
     _ = 0 := ?_
   rw [mul_eq_zero, AddChar.expect_eq_zero_iff_ne_zero, sub_ne_zero, or_iff_not_imp_left, ← Ne,
     mul_ne_zero_iff, prod_ne_zero_iff, prod_ne_zero_iff]
-  exact fun h ↦ hcd.ne h.1 (by simpa only [map_ne_zero] using h.2)
+  exact fun h ↦ hcd.ne h.1 (by simpa only [map_ne_zero] using! h.2)
     (sdiff_ne_right.2 <| .inl ht).symm

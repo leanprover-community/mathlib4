@@ -1,23 +1,31 @@
-import Counterexamples.AharoniKorman
-import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
-import Counterexamples.CharPZeroNeCharZero
-import Counterexamples.CliffordAlgebraNotInjective
-import Counterexamples.Cyclotomic105
-import Counterexamples.DirectSumIsInternal
-import Counterexamples.DiscreteTopologyNonDiscreteUniformity
-import Counterexamples.GameMultiplication
-import Counterexamples.Girard
-import Counterexamples.HomogeneousPrimeNotPrime
-import Counterexamples.IrrationalPowerOfIrrational
-import Counterexamples.LinearOrderWithPosMulPosEqZero
-import Counterexamples.MapFloor
-import Counterexamples.MonicNonRegular
-import Counterexamples.Motzkin
-import Counterexamples.OrderedCancelAddCommMonoidWithBounds
-import Counterexamples.Phillips
-import Counterexamples.Pseudoelement
-import Counterexamples.QuadraticForm
-import Counterexamples.SeminormLatticeNotDistrib
-import Counterexamples.SorgenfreyLine
-import Counterexamples.TopologistsSineCurve
-import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
+module  -- shake: keep-all --deprecated_module: ignore
+
+public import Counterexamples.AharoniKorman
+public import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
+public import Counterexamples.CharPZeroNeCharZero
+public import Counterexamples.CliffordAlgebraNotInjective
+public import Counterexamples.Cyclotomic105
+public import Counterexamples.DimensionPolynomial
+public import Counterexamples.DirectSumIsInternal
+public import Counterexamples.DiscreteTopologyNonDiscreteUniformity
+public import Counterexamples.EulerSumOfPowers
+public import Counterexamples.Girard
+public import Counterexamples.HeawoodUnitDistance
+public import Counterexamples.HomogeneousPrimeNotPrime
+public import Counterexamples.InvertibleModuleNotIdeal
+public import Counterexamples.IrrationalPowerOfIrrational
+public import Counterexamples.MapFloor
+public import Counterexamples.MonicNonRegular
+public import Counterexamples.Motzkin
+public import Counterexamples.NowhereDifferentiable
+public import Counterexamples.OrderedCancelAddCommMonoidWithBounds
+public import Counterexamples.PeanoCurve
+public import Counterexamples.Phillips
+public import Counterexamples.PolynomialIsDomain
+public import Counterexamples.Pseudoelement
+public import Counterexamples.QuadraticForm
+public import Counterexamples.SeminormLatticeNotDistrib
+public import Counterexamples.SeparableNotSecondCountable
+public import Counterexamples.SorgenfreyLine
+public import Counterexamples.TopologistsSineCurve
+public import Counterexamples.ZeroDivisorsInAddMonoidAlgebras

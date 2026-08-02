@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Prod
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Prod
 
 /-!
 # Finite products of types
@@ -34,6 +36,8 @@ construction/theorem that is easier to define/prove on binary products than on f
 * The product of sets is `Set.tprod : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
 
+@[expose] public section
+
 
 open List Function
 universe u v
@@ -62,7 +66,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 
 @[simp]
 theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
-    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+    (TProd.mk.{u, v} (i :: l) f).2 = TProd.mk.{u, v} l f :=
   rfl
 
 variable [DecidableEq ι]
@@ -133,6 +137,7 @@ protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α 
   | [], _ => univ
   | i :: is, t => t i ×ˢ Set.tprod is t
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_preimage_tprod :
     ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
   | [], t => by simp [Set.tprod]
@@ -143,7 +148,7 @@ theorem mk_preimage_tprod :
       rw [mk_preimage_tprod l t]
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
-    simp_rw [mem_setOf_eq, mem_cons]
+    simp_rw [mem_ofPred_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h
 

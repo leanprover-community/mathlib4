@@ -3,8 +3,10 @@ Copyright (c) 2023 Jason Yuen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
-import Mathlib.Data.Real.ConjExponents
-import Mathlib.Data.Real.Irrational
+module
+
+public import Mathlib.Data.Real.ConjExponents
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # Rayleigh's theorem on Beatty sequences
@@ -44,6 +46,8 @@ The main statements are:
 
 beatty, sequence, rayleigh, irrational, floor, positive
 -/
+
+@[expose] public section
 
 /-- In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`. -/
 noncomputable def beattySeq (r : ℝ) : ℤ → ℤ :=
@@ -136,9 +140,9 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.HolderConjugate s
     {beattySeq r k | k > 0} ∆ {beattySeq' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · rintro j (⟨⟨k, hk, hjk⟩, -⟩ | ⟨⟨k, hk, hjk⟩, -⟩)
-    · rw [Set.mem_setOf_eq, ← hjk, beattySeq, Int.floor_pos]
+    · rw [Set.mem_ofPred_eq, ← hjk, beattySeq, Int.floor_pos]
       exact one_le_mul_of_one_le_of_one_le (by norm_cast) hrs.lt.le
-    · rw [Set.mem_setOf_eq, ← hjk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one]
+    · rw [Set.mem_ofPred_eq, ← hjk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one]
       exact one_lt_mul_of_le_of_lt (by norm_cast) hrs.symm.lt
   intro j (hj : 0 < j)
   have hb₁ : ∀ s ≥ 0, j ∈ {beattySeq s k | k > 0} ↔ j ∈ {beattySeq s k | k} := by

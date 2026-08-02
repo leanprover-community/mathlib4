@@ -3,13 +3,13 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Batteries.Tactic.Lint.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Ineq
+module
+
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Lemmas for `linarith`.
@@ -18,6 +18,8 @@ Those in the `Linarith` namespace should stay here.
 
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith
 
@@ -112,13 +114,3 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
-
-section
-
-@[deprecated GT.gt.lt (since := "2025-06-16")]
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-@[deprecated GE.ge.le (since := "2025-06-16")]
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end

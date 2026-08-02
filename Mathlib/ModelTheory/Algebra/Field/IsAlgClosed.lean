@@ -3,12 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.IsAlgClosed.Classification
-import Mathlib.ModelTheory.Algebra.Field.CharP
-import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsAlgClosed.Classification
+public import Mathlib.ModelTheory.Algebra.Field.CharP
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 
@@ -43,26 +44,29 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 
 -/
 
+@[expose] public section
+
 variable {K : Type*}
 
 namespace FirstOrder
 
 namespace Field
 
-open Ring FreeCommRing Polynomial Language
+open FirstOrder.Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
 free commutative ring in `n + 1` variables, with a variable for each
 of the `n` non-leading coefficients of the polynomial and one variable (`Fin.last n`)
 for `X`. -/
-def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
+noncomputable def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finsetSum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -71,13 +75,14 @@ noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
 theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
     K ⊨ genericMonicPolyHasRoot n ↔
       ∀ p : { p : K[X] // p.Monic ∧ p.natDegree = n }, ∃ x, p.1.eval x = 0 := by
-  let _ := Classical.decEq K
   rw [Equiv.forall_congr_left ((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv)]
   simp [Sentence.Realize, genericMonicPolyHasRoot, lift_genericMonicPoly]
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -129,16 +134,10 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
   | inl hp =>
     have : Fact p.Prime := ⟨hp⟩
     let _ := compatibleRingOfRing (AlgebraicClosure (ZMod p))
-    have : CharP (AlgebraicClosure (ZMod p)) p :=
-      charP_of_injective_algebraMap
-        (RingHom.injective (algebraMap (ZMod p) (AlgebraicClosure (ZMod p)))) p
     exact ⟨⟨AlgebraicClosure (ZMod p)⟩⟩
   | inr hp =>
     subst hp
     let _ := compatibleRingOfRing (AlgebraicClosure ℚ)
-    have : CharP (AlgebraicClosure ℚ) 0 :=
-      charP_of_injective_algebraMap
-        (RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))) 0
     exact ⟨⟨AlgebraicClosure ℚ⟩⟩
 
 open Cardinal
@@ -179,6 +178,7 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := isAlgClosed_of_model_ACF p M
     infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
     Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by

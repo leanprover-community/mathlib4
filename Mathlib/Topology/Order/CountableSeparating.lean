@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
 # Countably many infinite intervals separate points
@@ -14,6 +16,8 @@ the points can be separated by countably many infinite intervals.
 We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
+
+public section
 
 open Set
 
@@ -29,7 +33,7 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
   rcases TopologicalSpace.exists_countable_dense X with ⟨s, hsc, hsd⟩
   set t := s ∪ {x | ∃ y, y ⋖ x}
   refine ⟨Iio '' t, .image ?_ _, ?_, ?_⟩
-  · exact hsc.union countable_setOf_covBy_left
+  · exact hsc.union countable_setOfPred_covBy_left
   · exact image_subset_range _ _
   · rintro x - y - h
     by_contra! hne

@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 /-!
 # Tagged partitions
@@ -21,6 +23,8 @@ requirement.
 
 rectangular box, box partition
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,7 +72,7 @@ theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
-  convert Set.mem_iUnion₂
+  convert! Set.mem_iUnion₂
   rw [Box.mem_coe, mem_toPrepartition, exists_prop]
 
 theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=

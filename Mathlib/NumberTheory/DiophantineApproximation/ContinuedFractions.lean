@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
-import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.NumberTheory.DiophantineApproximation.Basic
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
+public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 /-!
 # Diophantine Approximation using continued fractions
@@ -17,6 +19,8 @@ defined in `Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`, uses `Rea
 a simple recursive definition of the convergents that is also defined in that file.
 This file provides `Real.exists_convs_eq_rat`, using `GenContFract.convs` of `GenContFract.of ξ`.
 -/
+
+public section
 
 section Convergent
 

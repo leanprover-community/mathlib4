@@ -3,9 +3,11 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -34,6 +36,8 @@ separated morphisms and unramified morphisms, respectively.
 
 https://stacks.math.columbia.edu/tag/0CY0
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -157,7 +161,7 @@ theorem discreteTopology_iff_locallyInjective (y : Y) :
     DiscreteTopology X ↔ IsLocallyInjective fun _ : X ↦ y := by
   rw [discreteTopology_iff_singleton_mem_nhds, isLocallyInjective_iff_nhds]
   refine forall_congr' fun x ↦ ⟨fun h ↦ ⟨{x}, h, Set.injOn_singleton _ _⟩, fun ⟨U, hU, inj⟩ ↦ ?_⟩
-  convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
+  convert! hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
 theorem IsLocallyInjective.comp_left {A} {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
@@ -204,8 +208,8 @@ theorem eq_of_comp_eq
 
 theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
-  rw [← Set.restrict_eq_restrict_iff] at he ⊢
-  rw [continuousOn_iff_continuous_restrict] at h₁ h₂
+  rw [← Set.domRestrict_eq_domRestrict_iff] at he ⊢
+  rw [continuousOn_iff_continuous_domRestrict] at h₁ h₂
   rw [isPreconnected_iff_preconnectedSpace] at hs
   exact sep.eq_of_comp_eq inj h₁ h₂ he ⟨a, has⟩ ha
 

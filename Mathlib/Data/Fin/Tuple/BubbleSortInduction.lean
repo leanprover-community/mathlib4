@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.Fin.Tuple.Sort
-import Mathlib.Order.WellFounded
-import Mathlib.Order.PiLex
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.Data.Fin.Tuple.Sort
+public import Mathlib.Order.WellFounded
+public import Mathlib.Order.PiLex
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # "Bubble sort" induction
@@ -25,6 +27,8 @@ The latter is proved by well-founded induction via `WellFounded.induction_bot'`
 with respect to the lexicographic ordering on the finite set of all permutations of `f`.
 -/
 
+public section
+
 
 namespace Tuple
 
@@ -36,7 +40,7 @@ theorem bubble_sort_induction' {n : ℕ} {α : Type*} [LinearOrder α] {f : Fin 
     (h : ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
       i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
     P (f ∘ sort f) := by
-  letI := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
+  let := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
   refine
     @WellFounded.induction_bot' _ _ _ (IsWellFounded.wf : WellFounded (· < ·))
       (Equiv.refl _) (sort f) P (fun σ => f ∘ σ) (fun σ hσ hfσ => ?_) hf

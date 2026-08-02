@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Algebra structures on the multiplicative opposite
@@ -24,6 +26,8 @@ import Mathlib.Algebra.Ring.Opposite
 * `AlgEquiv.opComm`: swap which side of an isomorphism lies in the opposite algebra.
 -/
 
+@[expose] public section
+
 
 variable {R S A B : Type*}
 
@@ -37,6 +41,7 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra R Aᵐᵒᵖ where
   algebraMap := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
@@ -129,6 +134,9 @@ end AlgHom
 
 namespace AlgEquiv
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
@@ -158,6 +166,9 @@ theorem toRingEquiv_unop (f : Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ) :
     (AlgEquiv.unop f).toRingEquiv = RingEquiv.unop f.toRingEquiv :=
   rfl
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Swap the `ᵐᵒᵖ` on an algebra isomorphism to the opposite side. -/
 @[simps!]
 def opComm : (A ≃ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ ≃ₐ[R] B) :=

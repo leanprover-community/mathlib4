@@ -3,11 +3,13 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Fintype.Basic
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Newton's Identities
@@ -38,6 +40,8 @@ terms).
 
 See [zeilberger1984] for the combinatorial proof of Newton's identities.
 -/
+
+public section
 
 open Equiv (Perm)
 
@@ -103,7 +107,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
   · rw [pairMap_of_snd_mem_fst σ h1]
     simp only [h1, implies_true, and_true] at h
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
-    refine ⟨le_step h, ?_⟩
+    refine ⟨le_succ_of_le h, ?_⟩
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
@@ -157,11 +161,13 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma filter_pairs_lt (k : ℕ) :
     (pairs σ k).filter (fun (s, _) ↦ #s < k) =
       (range k).disjiUnion (powersetCard · univ) ((pairwise_disjoint_powersetCard _).set_pairwise _)
         ×ˢ univ := by ext; aesop (add unsafe le_of_lt)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ t ∈ pairs σ k with #t.1 < k, f t =
@@ -243,7 +249,7 @@ the elementary symmetric polynomials and would like to calculate the values of t
 theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
     psum σ R k = (-1) ^ (k + 1) * k * esymm σ R k -
     ∑ a ∈ antidiagonal k with a.1 ∈ Set.Ioo 0 k, (-1) ^ a.fst * esymm σ R a.1 * psum σ R a.2 := by
-  simp only [Set.Ioo, Set.mem_setOf_eq, and_comm]
+  simp only [Set.Ioo, Set.mem_ofPred_eq, and_comm]
   have hesymm := mul_esymm_eq_sum σ R k
   rw [← (sum_filter_add_sum_filter_not {a ∈ antidiagonal k | a.fst < k}
     (fun a ↦ 0 < a.fst) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm
@@ -258,7 +264,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; cutsat⟩
+    refine ⟨?_, by rintro rfl; lia⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

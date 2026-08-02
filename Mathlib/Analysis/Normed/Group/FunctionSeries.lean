@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions
@@ -12,11 +14,13 @@ import Mathlib.Topology.Instances.ENNReal.Lemmas
 We show that series of functions are continuous when each individual function in the series is and
 additionally suitable uniform summable bounds are satisfied, in `continuous_tsum`.
 
-For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSeries`.
+For smoothness of series of functions, see the file `Mathlib/Analysis/Calculus/SmoothSeries.lean`.
 
 TODO: update this to use `SummableUniformlyOn`.
 
 -/
+
+public section
 
 open Set Metric TopologicalSpace Function Filter
 
@@ -47,6 +51,7 @@ theorem tendstoUniformlyOn_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu
       s :=
   fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tsum hu hfu v hv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version relative to a set, with general index set. -/
 theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
@@ -55,8 +60,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   classical
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
-  simp only [gt_iff_lt,
-    eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
+  simp only [eventually_atTop] at *
   obtain ⟨t, ht⟩ := this
   rw [eventually_iff_exists_mem] at hfu
   obtain ⟨N, hN, HN⟩ := hfu
@@ -70,9 +74,9 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   apply lt_of_le_of_lt _ (ht n (Finset.union_subset_right hn))
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   apply (A.subtype _).tsum_le_tsum _ (hu.subtype _)
-  simp only [comp_apply, Subtype.forall, imp_false]
+  simp only [comp_apply, Subtype.forall]
   apply fun i hi => HN i ?_ x hx
-  have :  i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
+  have : i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   simp_all
 
 theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
@@ -112,10 +116,9 @@ function is. -/
 theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set β}
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
-  classical
-    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Eventually.of_forall ?_)
-    intro t
-    exact continuousOn_finset_sum _ fun i _ => hf i
+  refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (Frequently.of_forall ?_)
+  intro t
+  exact continuousOn_finsetSum _ fun i _ => hf i
 
 /-- An infinite sum of functions with summable sup norm is continuous if each individual
 function is. -/

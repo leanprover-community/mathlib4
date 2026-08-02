@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 
 /-!
 # Mul-opposite subgroups
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Group.Submonoid.MulOpposite
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 
@@ -34,6 +38,10 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
     H.op.toSubmonoid = H.toSubmonoid.op :=
   rfl
 
+@[to_additive] lemma op_toSubsemigroup (H : Subgroup G) :
+    H.op.toSubsemigroup = H.toSubsemigroup.op := by
+  dsimp
+
 /-- Pull an opposite subgroup back to a subgroup along `MulOpposite.op` -/
 @[to_additive (attr := simps)
 /-- Pull an opposite additive subgroup back to an additive subgroup along `AddOpposite.op` -/]
@@ -49,6 +57,10 @@ theorem mem_unop {x : G} {S : Subgroup Gᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposit
 @[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Subgroup Gᵐᵒᵖ) :
     H.unop.toSubmonoid = H.toSubmonoid.unop :=
   rfl
+
+@[to_additive] lemma unop_toSubsemigroup (H : Subgroup Gᵐᵒᵖ) :
+    H.unop.toSubsemigroup = H.toSubsemigroup.unop := by
+  dsimp
 
 @[to_additive (attr := simp)]
 theorem unop_op (S : Subgroup G) : S.op.unop = S := rfl
@@ -102,12 +114,14 @@ def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 @[to_additive]
-theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
+theorem op_normalizer (H : Subgroup G) : (normalizer H : Subgroup G).op = normalizer H.op := by
   ext x
-  simp [mem_normalizer_iff', iff_comm]
+  rw [mem_op, mem_normalizer_iff', mem_normalizer_iff']
+  simp [iff_comm]
 
 @[to_additive]
-theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by
+theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) :
+    (normalizer H).unop = normalizer (H.unop : Set G) := by
   rw [← op_inj, op_unop, op_normalizer, op_unop]
 
 end Subgroup

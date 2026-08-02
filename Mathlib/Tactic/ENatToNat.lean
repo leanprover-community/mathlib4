@@ -3,7 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Data.ENat.Basic
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `enat_to_nat`
@@ -20,11 +23,13 @@ The implementation follows these steps:
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.ENatToNat
 
-attribute [enat_to_nat_top] OfNat.ofNat_ne_zero ne_eq not_false_eq_true
-attribute [enat_to_nat_top] ENat.coe_ne_top ENat.top_ne_coe ENat.coe_lt_top top_le_iff le_top
-attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_top ENat.top_mul
+attribute [enat_to_nat_top] OfNat.ofNat_ne_zero ne_eq not_false_eq_true ENat.natCast_ne_top
+  ENat.top_ne_natCast ENat.natCast_lt_top top_le_iff le_top
+attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_natCast ENat.mul_top ENat.top_mul
 
 @[enat_to_nat_top] lemma not_lt_top (x : ENat) :
     ¬(⊤ < x) := by cases x <;> simp
@@ -45,7 +50,7 @@ attribute [enat_to_nat_top] top_add ENat.sub_top ENat.top_sub_coe ENat.mul_top E
 
 @[enat_to_nat_coe] lemma coe_one : (1 : ENat) = ((1 : ℕ) : ENat) := rfl
 
-attribute [enat_to_nat_coe] ENat.coe_inj ENat.coe_le_coe ENat.coe_lt_coe
+attribute [enat_to_nat_coe] ENat.natCast_inj ENat.natCast_le_natCast ENat.natCast_lt_natCast
 
 open Qq Lean Elab Tactic Term Meta in
 /-- Finds the first `ENat` in the context and applies the `cases` tactic to it.
@@ -73,7 +78,7 @@ elab "cases_first_enat" : tactic => focus do
     evalTactic (← `(tactic| all_goals try simp only [enat_to_nat_top] at *))
 
 /-- `enat_to_nat` shifts all `ENat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `enat_to_nat; omega`. -/
+A typical use case is `enat_to_nat; lia`. -/
 macro "enat_to_nat" : tactic => `(tactic| focus (
     (repeat' cases_first_enat) <;>
     (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)

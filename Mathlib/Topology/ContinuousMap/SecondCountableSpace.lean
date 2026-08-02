@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Second countable topology on `C(X, Y)`
@@ -13,6 +15,8 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 - both `X` and `Y` have second countable topology;
 - `X` is a locally compact space;
 -/
+
+public section
 
 open scoped Topology
 open Set Function Filter TopologicalSpace
@@ -54,7 +58,7 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
       rw [mapsTo_sUnion, forall_mem_image]
       exact fun x hx ↦ hLt x <| hsK x hx
     have hsub : (⋂ L ∈ s, {g : C(X, Y) | MapsTo g L (⋃₀ t)}) ⊆ {g | MapsTo g K U} := by
-      simp only [← setOf_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
+      simp only [← ofPred_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
       exact fun g hg ↦ hg.mono hKs (sUnion_subset hTU)
     refine mem_of_superset ((biInter_mem hsf).2 fun L hL ↦ ?_) hsub
     refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_principal_self _
@@ -72,7 +76,7 @@ theorem secondCountableTopology [SecondCountableTopology Y]
   is_open_generated_countable := by
     rcases hX with ⟨S, hScount, hScomp, hS⟩
     refine ⟨_, ?_, compactOpen_eq_generateFrom (S := S) hScomp (isBasis_countableBasis _) ?_⟩
-    · exact .image2 hScount (countable_setOf_finite_subset (countable_countableBasis Y)) _
+    · exact .image2 hScount (countable_ofPred_finite_subset (countable_countableBasis Y)) _
     · intro f x V hV hx
       apply hS
       exacts [isOpen_of_mem_countableBasis hV, hx]

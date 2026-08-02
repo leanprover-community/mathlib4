@@ -3,9 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.TrivSqZeroExt
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -23,6 +26,8 @@ one value.
 * `TrivSqZeroExt.topologicalRing`: the ring operations are continuous
 
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -78,9 +83,7 @@ def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
 def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
-  { ContinuousLinearMap.snd R R M with
-    toFun := snd
-    cont := continuous_snd }
+  { ContinuousLinearMap.snd R R M with toFun := snd }
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]

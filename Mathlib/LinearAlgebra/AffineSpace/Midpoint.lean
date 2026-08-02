@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+module
+
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
 # Midpoint of a segment
@@ -31,6 +33,8 @@ We do not mark most lemmas as `@[simp]` because it is hard to tell which side is
 midpoint, AddMonoidHom
 -/
 
+@[expose] public section
+
 open AffineMap AffineEquiv
 
 section
@@ -38,6 +42,7 @@ section
 variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
 def midpoint (x y : P) : P :=
   lineMap x y (⅟2 : R)
@@ -215,11 +220,11 @@ theorem midpoint_add_sub (x y : V) : midpoint R (x + y) (x - y) = x := by
   rw [midpoint_comm]; simp
 
 theorem midpoint_vsub_midpoint_same_left (p₁ p₂ p₃ : P) :
-    midpoint R p₁ p₂ -ᵥ midpoint R p₁ p₃ = (⅟ 2 : R) • (p₂ -ᵥ p₃) := by
+    midpoint R p₁ p₂ -ᵥ midpoint R p₁ p₃ = (⅟2 : R) • (p₂ -ᵥ p₃) := by
   rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, zero_add]
 
 theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
-    midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟ 2 : R) • (p₁ -ᵥ p₂) := by
+    midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
 
 end

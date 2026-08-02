@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Defs
+module
+
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Construct a `UniformSpace` from a `dist`-like function
@@ -16,6 +18,8 @@ given a `dist`-like function
 RFC: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
 -/
 
+@[expose] public section
+
 open Filter Set
 open scoped Uniformity
 
@@ -25,6 +29,7 @@ namespace UniformSpace
 
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
+@[instance_reducible]
 def ofFun [AddCommMonoid M] [PartialOrder M]
     (d : X → X → M) (refl : ∀ x, d x x = 0)
     (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)
@@ -32,9 +37,9 @@ def ofFun [AddCommMonoid M] [PartialOrder M]
     UniformSpace X :=
   .ofCore
     { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
-      refl := le_iInf₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
+      refl := le_iInf₂ fun r hr => principal_mono.2 <| by simp [Set.subset_def, *]
       symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
-        fun x hx => by rwa [mem_setOf, symm]
+        fun x hx => by rwa [mem_ofPred, symm]
       comp := le_iInf₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
         mem_of_superset
           (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
@@ -55,6 +60,7 @@ distance in a (usual or extended) metric space or an absolute value on a ring. W
 there is a preexisting topology, for which the neighborhoods can be expressed using the "distance",
 and we make sure that the uniform space structure we construct has a topology which is defeq
 to the original one. -/
+@[instance_reducible]
 def ofFunOfHasBasis [t : TopologicalSpace X] [AddCommMonoid M] [LinearOrder M]
     (d : X → X → M) (refl : ∀ x, d x x = 0)
     (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)

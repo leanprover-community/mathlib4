@@ -3,8 +3,10 @@ Copyright (c) 2025 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Group.LIntegral
+module
+
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Convolution of functions using the Lebesgue integral
@@ -31,6 +33,8 @@ the order of the densities would be flipped.
   is the additive convolution of `f` and `g` w.r.t. the measure `μ`.
 -/
 
+@[expose] public section
+
 namespace MeasureTheory
 open Measure
 open scoped ENNReal
@@ -48,18 +52,18 @@ noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ`.
 -/
-scoped[MeasureTheory] notation:67 f " ⋆ₘₗ["μ:67"] " g:66 => MeasureTheory.mlconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₘₗ[" μ:67 "] " g:66 => MeasureTheory.mlconvolution f g μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₘₗ " g:66 => MeasureTheory.mlconvolution f g volume
 
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ`. -/
-scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66 => MeasureTheory.lconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₗ[" μ:67 "] " g:66 => MeasureTheory.lconvolution f g μ
 
 /-- Scoped notation for the additive convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume
 
-/- The definition of multiplicative convolution of functions. -/
+/-- The definition of multiplicative convolution of functions. -/
 @[to_additive /-- The definition of additive convolution of functions. -/]
 theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G} :
     (f ⋆ₘₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := rfl
@@ -81,7 +85,7 @@ section Measurable
 variable [MeasurableMul₂ G] [MeasurableInv G]
 
 /-- The convolution of measurable functions is measurable. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of measurable functions is measurable. -/]
 theorem measurable_mlconvolution {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₘₗ[μ] g) := by
@@ -99,7 +103,7 @@ variable [Group G] [MeasurableMul₂ G] [MeasurableInv G]
 variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/]
 theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -113,15 +117,15 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     f ⋆ₘₗ[μ] g ⋆ₘₗ[μ] k = (f ⋆ₘₗ[μ] g) ⋆ₘₗ[μ] k := by
   ext x
   simp only [mlconvolution_def]
-  conv in f _ * (∫⁻ _ , _ ∂μ) =>
+  conv in f _ * (∫⁻ _, _ ∂μ) =>
     rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
-  conv in (∫⁻ _ , _ ∂μ) * k _ =>
+  conv in (∫⁻ _, _ ∂μ) * k _ =>
     rw [← lintegral_mul_const'' _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · simp [mul_assoc]
   simpa [mul_assoc] using by fun_prop
 
-/- Convolution is associative. -/
+/-- Convolution is associative. -/
 @[to_additive /-- Convolution is associative. -/]
 theorem mlconvolution_assoc {f g k : G → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hk : Measurable k) :

@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Dynamics.BirkhoffSum.Average
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Average
 
 /-!
 # Birkhoff average in a normed space
@@ -16,6 +18,8 @@ At the time of writing, all lemmas in this file
 are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
+
+public section
 
 open Function Set Filter
 open scoped Topology ENNReal Uniformity
@@ -35,7 +39,7 @@ theorem Function.IsFixedPt.tendsto_birkhoffAverage
     {f : α → α} {x : α} (h : f.IsFixedPt x) (g : α → E) :
     Tendsto (birkhoffAverage R f g · x) atTop (𝓝 (g x)) :=
   tendsto_const_nhds.congr' <| (eventually_ne_atTop 0).mono fun _n hn ↦
-    (h.birkhoffAverage_eq R g hn).symm
+    (h.birkhoffAverage_eq R g (Nat.cast_ne_zero.mpr hn)).symm
 
 variable [NormedAddCommGroup E]
 
@@ -126,7 +130,10 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
 then the set of points `x`
 such that the Birkhoff average of `g` along the orbit of `x` tends to `l x`
 is a closed set. -/
-theorem isClosed_setOf_tendsto_birkhoffAverage
+theorem isClosed_setOfPred_tendsto_birkhoffAverage
     (hf : LipschitzWith 1 f) (hg : UniformContinuous g) (hl : Continuous l) :
     IsClosed {x | Tendsto (birkhoffAverage 𝕜 f g · x) atTop (𝓝 (l x))} :=
-  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOf_tendsto hl
+  (uniformEquicontinuous_birkhoffAverage 𝕜 hf hg).equicontinuous.isClosed_setOfPred_tendsto hl
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_tendsto_birkhoffAverage := isClosed_setOfPred_tendsto_birkhoffAverage

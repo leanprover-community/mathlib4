@@ -3,11 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.GroupWithZero.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`
@@ -15,6 +17,8 @@ import Mathlib.Order.Filter.Cofinite
 This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
+
+public section
 
 open Set Function
 
@@ -65,7 +69,7 @@ theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
     (hu : IsBoundedUnder (· ≥ ·) l u) (hv : u ≤ᶠ[l] v) : IsBoundedUnder (· ≥ ·) l v :=
   IsBoundedUnder.mono_le (β := βᵒᵈ) hu hv
 
-theorem isBoundedUnder_const [IsRefl α r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
+theorem isBoundedUnder_const [Std.Refl r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
   ⟨a, eventually_map.2 <| Eventually.of_forall fun _ => refl _⟩
 
 theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
@@ -129,11 +133,11 @@ lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
 lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
     f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
-lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirected α (· ≤ ·)] [Finite β]
+lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirectedOrder α] [Finite β]
     {f : Filter β} {u : β → α} : IsBoundedUnder (· ≤ ·) f u :=
   (Set.toFinite _).bddAbove.isBoundedUnder_of_range
 
-lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsDirected α (· ≥ ·)] [Finite β]
+lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsCodirectedOrder α] [Finite β]
     {f : Filter β} {u : β → α} : IsBoundedUnder (· ≥ ·) f u :=
   (Set.toFinite _).bddBelow.isBoundedUnder_of_range
 
@@ -173,23 +177,23 @@ theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : �
     [l.NeBot] (hf : Tendsto f l atBot) : ¬IsBoundedUnder (· ≥ ·) l f :=
   not_isBoundedUnder_of_tendsto_atTop (β := βᵒᵈ) hf
 
-theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirected β (· ≤ ·)] {f : α → β}
+theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirectedOrder β] {f : α → β}
     (hf : IsBoundedUnder (· ≤ ·) cofinite f) : BddAbove (range f) := by
   rcases hf with ⟨b, hb⟩
-  haveI : Nonempty β := ⟨b⟩
+  have : Nonempty β := ⟨b⟩
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
   exact ⟨⟨b, forall_mem_image.2 fun x => id⟩, (hb.image f).bddAbove⟩
 
-theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsDirected β (· ≥ ·)] {f : α → β}
+theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsCodirectedOrder β] {f : α → β}
     (hf : IsBoundedUnder (· ≥ ·) cofinite f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range_of_cofinite (β := βᵒᵈ) hf
 
-theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirected β (· ≤ ·)] {f : ℕ → β}
+theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirectedOrder β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≤ ·) atTop f) : BddAbove (range f) := by
   rw [← Nat.cofinite_eq_atTop] at hf
   exact hf.bddAbove_range_of_cofinite
 
-theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsDirected β (· ≥ ·)] {f : ℕ → β}
+theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsCodirectedOrder β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≥ ·) atTop f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range (β := βᵒᵈ) hf
 
@@ -273,6 +277,7 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   exact not_lt_of_ge ht ht'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
 lemma IsCobounded.frequently_le [LinearOrder α] [NeBot f] (cobdd : IsCobounded (· ≥ ·) f) :
@@ -438,11 +443,11 @@ theorem Tendsto.isBoundedUnder_le_atBot (h : Tendsto u f atBot) : f.IsBoundedUnd
 theorem Tendsto.isBoundedUnder_ge_atTop (h : Tendsto u f atTop) : f.IsBoundedUnder (· ≥ ·) u :=
   isBounded_ge_atTop.mono h
 
-theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirected α (· ≤ ·)] {u : ℕ → α}
+theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirectedOrder α] {u : ℕ → α}
     (hx : Tendsto u atTop atBot) : BddAbove (Set.range u) :=
   hx.isBoundedUnder_le_atBot.bddAbove_range
 
-theorem bddBelow_range_of_tendsto_atTop_atTop [IsDirected α (· ≥ ·)] {u : ℕ → α}
+theorem bddBelow_range_of_tendsto_atTop_atTop [IsCodirectedOrder α] {u : ℕ → α}
     (hx : Tendsto u atTop atTop) : BddBelow (Set.range u) :=
   hx.isBoundedUnder_ge_atTop.bddBelow_range
 
@@ -472,13 +477,13 @@ theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) 
   OrderIso.isBoundedUnder_le_comp e.dual
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_le_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_le_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_ge_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+theorem isBoundedUnder_ge_inv [CommGroup α] [Preorder α] [IsOrderedMonoid α]
     {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
@@ -661,11 +666,13 @@ lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monoto
   obtain ⟨l, hl⟩ := IsCobounded.frequently_ge cobdd
   exact IsCobounded.of_frequently_ge <| f_incr.frequently_ge_map_of_frequently_ge hl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≥ ·) f :=
   Monotone.isCoboundedUnder_le_of_isCobounded (R := Rᵒᵈ) (S := Sᵒᵈ) f_incr.dual cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Antitone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_decr : Antitone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
     F.IsCoboundedUnder (· ≤ ·) f :=

@@ -3,12 +3,14 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Preimage
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Preimage
 
 /-!
 # Pointwise operations of finsets
@@ -37,7 +39,7 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -45,7 +47,9 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 
@@ -61,8 +65,9 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
-@[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
+/-- The finset `1 : Finset α` is defined as `{1}` in scope `Pointwise`. -/
+@[to_additive (attr := instance_reducible)
+  /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
 
@@ -179,7 +184,7 @@ section Inv
 variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
 /-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
   /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in scope `Pointwise`. -/]
 protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
@@ -260,13 +265,23 @@ lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEqu
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 section InvolutiveInv
 variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
+
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+@[to_additive]
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
@@ -286,7 +301,7 @@ lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_in
 
 @[to_additive (attr := simp)]
 lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
-    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast (s : Set α).inv_prod (t : Set β)
 
 end InvolutiveInv
 
@@ -302,7 +317,7 @@ variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α 
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
 in scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
   /-- The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
   scope `Pointwise`. -/]
 protected def mul : Mul (Finset α) :=
@@ -370,7 +385,7 @@ theorem Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
   image₂_singleton
 
-@[to_additive (attr := mono, gcongr)]
+@[to_additive]
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
@@ -433,7 +448,7 @@ lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image o
 @[to_additive (attr := simp)]
 lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
-  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+  mod_cast (s₁ : Set α).prod_mul_prod_comm s₂ (t₁ : Set β) t₂
 
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
@@ -496,7 +511,7 @@ left-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_left` for a more convenient but less general version for types with a
 left-cancellative addition. -/]
-lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : Function.Injective (a * ·)) :
+lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : IsLeftRegular a) :
     #t ≤ #(s * t) :=
   card_le_card_image₂_left _ has ha
 
@@ -507,7 +522,7 @@ right-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_right` for a more convenient but less general version for types with a
 right-cancellative addition. -/]
-lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : Function.Injective (· * a)) :
+lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : IsRightRegular a) :
     #s ≤ #(s * t) :=
   card_le_card_image₂_right _ hat ha
 
@@ -521,7 +536,7 @@ variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 
 /-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
   /-- The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
   in scope `Pointwise`. -/]
 protected def div : Div (Finset α) :=
@@ -552,8 +567,6 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 @[to_additive]
 theorem card_div_le : #(s / t) ≤ #s * #t :=
   card_image₂_le _ _ _
-
-@[deprecated (since := "2025-07-02")] alias div_card_le := card_div_le
 
 @[to_additive (attr := simp)]
 theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
@@ -646,7 +659,7 @@ theorem subset_div {s t : Set α} :
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
-    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x / y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
@@ -682,34 +695,27 @@ section Instances
 
 variable [DecidableEq α] [DecidableEq β]
 
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
-note [pointwise nat action]. -/
-protected def nsmul [Zero α] [Add α] : SMul ℕ (Finset α) :=
-  ⟨nsmulRec⟩
-
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Finset`. See note [pointwise nat action]. -/
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Finset`. See
+note [pointwise nat action]. -/]
 protected def npow [One α] [Mul α] : Pow (Finset α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
-attribute [to_additive existing] Finset.npow
-
-
-/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/
-protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
-  ⟨zsmulRec⟩
-
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
-@[to_additive existing]
+@[to_additive (attr := instance_reducible)
+/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
+addition/subtraction!) of a `Finset`. See note [pointwise nat action]. -/]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
 /-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Finset α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Finset α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
   coe_injective.semigroup _ coe_mul
 
@@ -718,7 +724,8 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Finset α}
 
 /-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 
@@ -737,7 +744,8 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Finset α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive /-- `Finset α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Finset α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Finset α) :=
   coe_injective.mulOneClass _ (coe_singleton 1) coe_mul
 
@@ -800,7 +808,8 @@ theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
@@ -813,8 +822,8 @@ scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
-@[to_additive (attr := gcongr)]
-lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := subset_of_le (pow_left_mono n hst)
+@[to_additive]
+lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono n hst
 
 @[to_additive]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
@@ -830,7 +839,7 @@ lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
 
 @[to_additive]
 lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
-    s ^ n ⊆ t ^ (n - 1) * s := subset_of_le (pow_le_pow_mul_of_sq_le_mul hst hn)
+    s ^ n ⊆ t ^ (n - 1) * s := pow_le_pow_mul_of_sq_le_mul hst hn
 
 @[to_additive (attr := simp) nsmul_empty]
 lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
@@ -840,17 +849,12 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma pow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    -- TODO: The `nonempty_iff_ne_empty` would be unnecessary if `push_neg` knew how to simplify
-    -- `s ≠ ∅` to `s.Nonempty` when `s : Finset α`.
-    -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/push_neg.20extensibility
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).pow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.pow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_pow hn
 
@@ -880,7 +884,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp [← mem_coe, coe_pow, Set.mem_pow]
+  simp [← mem_coe (s := s ^ n), coe_pow, Set.mem_pow]
 
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
@@ -930,7 +934,8 @@ section CommMonoid
 variable [CommMonoid α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
@@ -954,7 +959,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   simp_rw [← coe_inj, coe_mul, coe_one, Set.mul_eq_one_iff, coe_singleton]
 
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
   /-- `Finset α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
@@ -993,14 +998,12 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   | (n : ℕ) => hs.pow
   | .negSucc n => by simpa using hs.pow
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma zpow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).zpow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.zpow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_zpow hn
 
@@ -1010,7 +1013,7 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Finset α) ^ n = {a ^ n} := by 
 end DivisionMonoid
 
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionCommMonoid
+@[to_additive (attr := instance_reducible) subtractionCommMonoid
   /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Finset α) :=
@@ -1038,18 +1041,8 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_div_iff := one_notMem_div_iff
-
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
@@ -1275,7 +1268,7 @@ lemma piFinset_inv [∀ i, Inv (α i)] (s : ∀ i, Finset (α i)) :
 
 end Fintype
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 

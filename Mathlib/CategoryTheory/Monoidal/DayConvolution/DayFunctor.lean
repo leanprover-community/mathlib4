@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 /-!
 # Day functors
@@ -17,12 +19,14 @@ where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj 
 
 ## TODOs
 - Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
-ι induce a monoidal functor `D ⥤ (C ⊛⥤ V)`.
+  ι induces a monoidal functor `D ⥤ (C ⊛⥤ V)`.
 - Specialize to the case `V := Type _`, and prove a universal property stating
-that for every monoidal category `W` with suitable colimits,
-colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
-to monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
+  that for every monoidal category `W` with suitable colimits,
+  colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
+  monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -154,13 +158,13 @@ def tensorDesc {F G H : C ⊛⥤ V}
 
 lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) :
-   η F G ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
+    η F G ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
   Functor.descOfIsLeftKanExtension_fac _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) (x y : C) :
-   (η F G).app (x , y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
+    (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
 open LawfulDayConvolutionMonoidalCategoryStruct
@@ -173,17 +177,20 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
     (F ⊗ G).functor (η F G) _
     ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor))
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
     (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
     Limits.colimit.ι
       (CostructuredArrow.proj (tensor C) (x ⊗ y) ⋙ F.functor ⊠ G.functor)
       (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
-  simpa [η, isoPointwiseLeftKanExtension] using
+  simpa [η, isoPointwiseLeftKanExtension] using!
     Functor.descOfIsLeftKanExtension_fac_app
       (F ⊗ G).functor (η F G) _
       ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor)) (x, y)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
     Limits.colimit.ι
@@ -199,6 +206,7 @@ that exhibits `(𝟙_ (C ⊛⥤ V)).functor` as a Day convolution unit. -/
 def ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
   LawfulDayConvolutionMonoidalCategoryStruct.unitUnit C V (C ⊛⥤ V)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C V) in
 /-- The reinterpretation of `ν` as a natural transformation. -/
 @[simps]
@@ -209,7 +217,7 @@ def νNatTrans :
 
 open LawfulDayConvolutionMonoidalCategoryStruct in
 instance : (𝟙_ (C ⊛⥤ V)).functor.IsLeftKanExtension (νNatTrans C V) :=
-  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V)|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnitUnit C V (C ⊛⥤ V) |>.isLeftKanExtension
 
 lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
     (h : ν C V ≫ α.natTrans.app (𝟙_ C) = ν C V ≫ β.natTrans.app (𝟙_ C)) :
@@ -220,6 +228,7 @@ lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
   ext
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : C ⊛⥤ V`, a morphism `𝟙_ V ⟶ F.functor.obj (𝟙_ C)` induces a
 (unique) morphism `𝟙_ (C ⊛⥤ V) ⟶ F`. -/
 def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
@@ -227,6 +236,7 @@ def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
   .mk <| Functor.descOfIsLeftKanExtension (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
     F.functor { app _ := φ }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
     ν C V ≫ (unitDesc φ).natTrans.app (𝟙_ C) = φ :=

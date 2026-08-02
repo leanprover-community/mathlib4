@@ -3,10 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -14,6 +15,8 @@ This file defines the positive and negative parts of a selfadjoint element in a 
 the continuous functional calculus and develops the basic API, including the uniqueness of the
 positive and negative parts.
 -/
+
+public section
 
 open scoped NNReal
 
@@ -145,6 +148,9 @@ lemma negPart_nonneg (a : A) :
     0 ≤ a⁻ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
+instance : SelfAdjointDecompose A where
+  exists_nonneg_sub_nonneg {a} ha := ⟨a⁺, a⁻, by cfc_tac, by cfc_tac, (posPart_sub_negPart a).symm⟩
+
 lemma posPart_eq_of_eq_sub_negPart {a b : A} (hab : a = b - a⁻) (hb : 0 ≤ b := by cfc_tac) :
     a⁺ = b := by
   have ha := hab.symm ▸ hb.isSelfAdjoint.sub (negPart_nonneg a).isSelfAdjoint
@@ -202,8 +208,9 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsSemitopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are
@@ -268,7 +275,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
   `b = cfcₙ id b + cfcₙ 0 (-c) = cfcₙ (·⁺) b - cfcₙ (·⁺) (-c) = cfcₙ (·⁺) a = a⁺`, where the
   second equality follows because these functions are equal on the spectra of `b` and `-c`,
   respectively, since `0 ≤ b` and `-c ≤ 0`. -/
-  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp; exact le_rfl⟩
+  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp; norm_cast⟩
   replace key := congr($key f)
   simp only [cfcₙHomSuperset_apply, NonUnitalStarAlgHom.coe_mk', NonUnitalAlgHom.coe_mk, ψ,
     Pi.add_apply, cfcₙHom_eq_cfcₙ_extend (·⁺)] at key

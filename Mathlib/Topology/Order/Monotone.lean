@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Tactic.Order
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Tactic.Order
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Monotone functions on an order topology
@@ -14,6 +16,8 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -33,13 +37,13 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
   apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
   · rcases hbx.eq_or_lt with rfl | hbx
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply ge_of_tendsto h'x
     have : s ∩ Ioi b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hbx)
     filter_upwards [this] with y hy using hf hb hy.1 (le_of_lt hy.2)
   · rcases hxb.eq_or_lt with rfl | hxb
     · exact le_rfl
-    simp [ContinuousWithinAt] at h'x
+    simp only [ContinuousWithinAt] at h'x
     apply le_of_tendsto h'x
     have : s ∩ Iio b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Iio_mem_nhds hxb)
     filter_upwards [this] with y hy
@@ -47,7 +51,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
 
 /-- If a function is monotone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma MonotoneOn.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : MonotoneOn f s) :
     Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} := by
   nontriviality α
@@ -80,27 +84,39 @@ lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
   rw [hfx _ hd, hfy _ hc] at this
   exact not_le.2 H this
 
+@[deprecated (since := "2026-07-09")] alias MonotoneOn.countable_setOf_two_preimages :=
+  MonotoneOn.countable_setOfPred_two_preimages
+
 /-- If a function is monotone in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma Monotone.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma Monotone.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : Monotone f) :
     Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} := by
   rw [← monotoneOn_univ] at hf
-  simpa using hf.countable_setOf_two_preimages
+  simpa using hf.countable_setOfPred_two_preimages
+
+@[deprecated (since := "2026-07-09")] alias Monotone.countable_setOf_two_preimages :=
+  Monotone.countable_setOfPred_two_preimages
 
 /-- If a function is antitone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma AntitoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma AntitoneOn.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : AntitoneOn f s) :
     Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} :=
-  (MonotoneOn.countable_setOf_two_preimages hf.dual_right :)
+  (MonotoneOn.countable_setOfPred_two_preimages hf.dual_right :)
+
+@[deprecated (since := "2026-07-09")] alias AntitoneOn.countable_setOf_two_preimages :=
+  AntitoneOn.countable_setOfPred_two_preimages
 
 /-- If a function is antitone in a second countable topological space, then there
 are only countably many points that have several preimages. -/
-lemma Antitone.countable_setOf_two_preimages [SecondCountableTopology α]
+lemma Antitone.countable_setOfPred_two_preimages [SecondCountableTopology α]
     (hf : Antitone f) :
     Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} :=
-  (Monotone.countable_setOf_two_preimages hf.dual_right :)
+  (Monotone.countable_setOfPred_two_preimages hf.dual_right :)
+
+@[deprecated (since := "2026-07-09")] alias Antitone.countable_setOf_two_preimages :=
+  Antitone.countable_setOfPred_two_preimages
 
 section Continuity
 
@@ -113,7 +129,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt_Ioi (hf : MonotoneOn f s) :
     Set.Countable {x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x} := by
   apply (countable_image_lt_image_Ioi_within s f).mono
   rintro x ⟨xs, hx : ¬ContinuousWithinAt f (s ∩ Ioi x) x⟩
-  dsimp only [mem_setOf_eq]
+  dsimp only [mem_ofPred_eq]
   contrapose! hx
   refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (s ∩ Ioi x)] with y hy
@@ -139,7 +155,7 @@ theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
   refine compl_subset_compl.1 ?_
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
-  simp only [mem_compl_iff, mem_setOf_eq, not_and, not_not] at hx h'x ⊢
+  simp only [mem_compl_iff, mem_ofPred_eq, not_and, not_not] at hx h'x ⊢
   intro xs
   exact continuousWithinAt_iff_continuous_left'_right'.2 ⟨h'x xs, hx xs⟩
 
@@ -163,6 +179,28 @@ theorem Antitone.countable_not_continuousAt (hf : Antitone f) :
   hf.dual_right.countable_not_continuousAt
 
 end Continuity
+
+section OrdContinuous
+
+variable [TopologicalSpace β] [OrderTopology β]
+
+/-- A monotone left-continuous function is left-continuous in the order-theoretic sense. -/
+@[to_dual
+/-- A monotone right-continuous function is right-continuous in the order-theoretic sense. -/
+]
+theorem Monotone.leftOrdContinuous (hf : Monotone f)
+    (cont : ∀ x, ContinuousWithinAt f (Iic x) x) : LeftOrdContinuous f :=
+  fun s x hs hx ↦ IsLUB.isLUB_of_tendsto (hf.monotoneOn s) hx hs ((cont x).mono hx.1)
+
+/-- A monotone continuous function is left-continuous in the order-theoretic sense. -/
+@[to_dual
+/-- A monotone continuous function is right-continuous in the order-theoretic sense. -/
+]
+theorem Continuous.leftOrdContinuous (cont : Continuous f) (hf : Monotone f) :
+    LeftOrdContinuous f :=
+  hf.leftOrdContinuous fun _ ↦ cont.continuousWithinAt
+
+end OrdContinuous
 
 end LinearOrder
 
@@ -436,7 +474,7 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
   refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
-      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
+      simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using!
         exists_lt_of_lt_csSup (h.image _) hl
     filter_upwards [Ioo_mem_nhdsLT zx] with y hy using lz.trans_le (Mf zx hy.2 hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun y hy => lt_of_le_of_lt ?_ hm

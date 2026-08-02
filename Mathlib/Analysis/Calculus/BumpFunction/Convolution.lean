@@ -3,13 +3,15 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.Analysis.Calculus.BumpFunction.Normed
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Analysis.Calculus.BumpFunction.Normed
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Covering.Differentiation
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Convolution with a bump function
@@ -36,6 +38,8 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
 
 convolution, smooth function, bump function
 -/
+
+public section
 
 universe uG uE'
 
@@ -113,7 +117,6 @@ theorem ae_convolution_tendsto_right_of_locallyIntegrable
   have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
     tendsto_nhdsWithin_iff.2 ⟨hφ, Eventually.of_forall (fun i ↦ (φ i).rOut_pos)⟩
   have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
-  simp only at this
   apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (Module.finrank ℝ G)) this
   · filter_upwards with i using
       hg.integrableOn_isCompact (isCompact_closedBall _ _)

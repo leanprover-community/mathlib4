@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # Polynomials supported by a set of variables
@@ -19,6 +21,8 @@ This file contains the definition and lemmas about `MvPolynomial.supported`.
 ## Tags
 variables, polynomial, vars
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -38,8 +42,9 @@ noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
 
 open Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) : s → σ)).range := by
-  rw [supported, Set.image_eq_range, adjoin_range_eq_range_aeval, rename]
+  rw [supported, Set.image_eq_range, adjoin_range_eq_range_aeval, rename_eq_aeval]
   congr
 
 /-- The isomorphism between the subalgebra of polynomials supported by `s` and
@@ -56,8 +61,9 @@ theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
 
 @[simp]
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
-    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
-  by simp [supportedEquivMvPolynomial]
+    (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) =
+      X ↑i := by
+  simp [supportedEquivMvPolynomial]
 
 variable {s t : Set σ}
 

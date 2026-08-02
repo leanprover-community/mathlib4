@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Tensor products of products
@@ -22,6 +24,8 @@ See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 -/
 
+@[expose] public section
+
 variable (R S M₁ M₂ M₃ : Type*)
 
 namespace TensorProduct
@@ -32,6 +36,7 @@ variable [Module R M₁] [Module S M₁] [IsScalarTower R S M₁] [Module R M₂
 
 attribute [ext] TensorProduct.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Tensor products distribute over a product on the right. -/
 def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] (M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃) :=
   LinearEquiv.ofLinear

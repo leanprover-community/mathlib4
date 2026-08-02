@@ -3,9 +3,11 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.CrossProduct
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ This file defines the dot product and cross product on projective spaces.
   instead define `cross v v = v`.
 
 -/
+
+@[expose] public section
 
 variable {F : Type*} [Field F] {m : Type*} [Fintype m]
 

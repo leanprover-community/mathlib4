@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Nonnegative rationals
@@ -35,13 +37,15 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
-assert_not_exists CompleteLattice OrderedCommMonoid
+@[expose] public section
 
-library_note "specialised high priority simp lemma" /--
+assert_not_exists CompleteLattice IsOrderedMonoid
+
+library_note «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
-un``@[simp]``ed):
+un-`@[simp]`ed):
 1. There is a significant portion of the library which needs the early lemma to be available via
   `simp` and which doesn't have access to the more general lemmas.
 2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them
@@ -50,17 +54,18 @@ un``@[simp]``ed):
 
 open Function
 
-instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
-  zero_le_one := rfl
-
 instance Rat.instPosMulMono : PosMulMono ℚ where
-  elim := fun r p q h => by
-    simp only [mul_comm]
-    simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
+  mul_le_mul_of_nonneg_left r hr p q hpq := by
+    simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
+
+deriving instance AddCancelCommMonoid for NNRat
+
 deriving instance LinearOrder for NNRat
+
 deriving instance Sub for NNRat
+
 deriving instance Inhabited for NNRat
 
 namespace NNRat
@@ -75,7 +80,7 @@ instance instOrderBot : OrderBot ℚ≥0 where
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
 
 instance instCharZero : CharZero ℚ≥0 where
-  cast_injective a b hab := by simpa using congr_arg num hab
+  cast_injective a b hab := by simpa using! congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -149,6 +154,9 @@ theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
+
+@[simp]
+theorem mk_zero : (⟨0, le_rfl⟩ : ℚ≥0) = 0 := rfl
 
 @[norm_cast]
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
@@ -245,6 +253,7 @@ theorem toNNRat_zero : toNNRat 0 = 0 := rfl
 @[simp]
 theorem toNNRat_one : toNNRat 1 = 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_pos : 0 < toNNRat q ↔ 0 < q := by simp [toNNRat, ← coe_lt_coe]
 
@@ -254,10 +263,12 @@ theorem toNNRat_eq_zero : toNNRat q = 0 ↔ q ≤ 0 := by
 
 alias ⟨_, toNNRat_of_nonpos⟩ := toNNRat_eq_zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q ≤ p := by
   simp [← coe_le_coe, toNNRat, hp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
   simp [← coe_lt_coe, toNNRat]
@@ -268,6 +279,7 @@ theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
 theorem toNNRat_lt_toNNRat_iff_of_nonneg (hq : 0 ≤ q) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans ⟨And.left, fun h ↦ ⟨h, hq.trans_lt h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toNNRat_add (hq : 0 ≤ q) (hp : 0 ≤ p) : toNNRat (q + p) = toNNRat q + toNNRat p :=
   NNRat.ext <| by simp [toNNRat, hq, hp, add_nonneg]
@@ -291,6 +303,7 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
   · ext; simp [toNNRat, hp, hq, mul_nonneg]
@@ -348,19 +361,21 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 
 See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
-  ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
+  ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩
 
 variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
 lemma mk_divInt (n d : ℕ) :
-    ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩ = divNat n d := rfl
+    ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩ =
+      divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
-@[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]; rfl
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
   ext <| by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]

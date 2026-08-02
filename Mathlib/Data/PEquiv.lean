@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Option.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Data.Option.Basic
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -40,6 +42,8 @@ pequiv, partial equivalence
 
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso
 
 universe u v w x
@@ -68,7 +72,7 @@ open Function Option
 
 instance : FunLike (α ≃. β) α (Option β) :=
   { coe := toFun
-    coe_injective' := by
+    coe_injective := by
       rintro ⟨f₁, f₂, hf⟩ ⟨g₁, g₂, hg⟩ (rfl : f₁ = g₁)
       congr with y x
       simp only [hf, hg] }
@@ -122,6 +126,12 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
 @[simp]
 theorem symm_symm (f : α ≃. β) : f.symm.symm = f := rfl
 
+theorem symm_apply_eq (f : α ≃. β) {x : β} {y : α} : f.symm x = y ↔ x = f y := by
+  rw [eq_some_iff, eq_comm]
+
+theorem eq_symm_apply (f : α ≃. β) {x : β} {y : α} : y = f.symm x ↔ f y = x := by
+  rw [← eq_some_iff, eq_comm]
+
 theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
@@ -143,13 +153,14 @@ theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
 theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
   simp only [eq_none_iff_forall_not_mem, mem_trans, imp_iff_not_or.symm]
-  push_neg
-  exact forall_swap
+  push Not
+  exact forall_comm
 
 @[simp]
 theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by
   ext; dsimp [PEquiv.trans]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
@@ -162,13 +173,12 @@ theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
     ⟨fun b => Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
-      classical
-        cases hfx : f x
-        · have : x = a₂ := not_imp_comm.1 (h x) (hfx.symm ▸ by simp)
-          simp [this]
-        · dsimp only
-          rw [(eq_some_iff f).2 hfx]
-          rfl⟩
+      cases hfx : f x
+      · have : x = a₂ := not_imp_comm.1 (h x) (hfx.symm ▸ by simp)
+        simp [this]
+      · dsimp only
+        rw [(eq_some_iff f).2 hfx]
+        rfl⟩
 
 /-- If the domain of a `PEquiv` is all of `α`, its forward direction is injective. -/
 theorem injective_of_forall_isSome {f : α ≃. β} (h : ∀ a : α, isSome (f a)) : Injective f :=
@@ -198,13 +208,7 @@ theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a 
 theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :
     a ∈ ofSet s b ↔ a = b ∧ a ∈ s := by
   dsimp [ofSet]
-  split_ifs with h
-  · simp only [mem_def, eq_comm, some.injEq, iff_self_and]
-    rintro rfl
-    exact h
-  · simp only [mem_def, false_iff, not_and, reduceCtorEq]
-    rintro rfl
-    exact h
+  grind
 
 @[simp]
 theorem ofSet_eq_some_iff {s : Set α} {_ : DecidablePred (· ∈ s)} {a b : α} :
@@ -237,6 +241,7 @@ end OfSet
 theorem symm_trans_rev (f : α ≃. β) (g : β ≃. γ) : (f.trans g).symm = g.symm.trans f.symm :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).isSome } := by
   ext
   dsimp [PEquiv.trans]

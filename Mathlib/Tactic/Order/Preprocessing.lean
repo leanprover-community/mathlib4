@@ -3,7 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
+module
+
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
 
 /-!
 # Facts preprocessing for the `order` tactic
@@ -11,6 +14,8 @@ import Mathlib.Tactic.Order.CollectFacts
 In this file we implement the preprocessing procedure for the `order` tactic.
 See `Mathlib/Tactic/Order.lean` for details of preprocessing.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 
@@ -28,6 +33,50 @@ lemma le_of_not_lt_le {α : Type u} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h
   not_lt_iff_le_imp_ge.mp h1 h2
 
 end Lemmas
+
+/-- Supported order types: linear, partial, and preorder. -/
+inductive OrderType
+| lin | part | pre
+deriving BEq
+
+instance : ToString OrderType where
+  toString
+  | .lin => "linear order"
+  | .part => "partial order"
+  | .pre => "preorder"
+
+/-- Find the "best" instance of an order on a given type. A linear order is preferred over a partial
+order, and a partial order is preferred over a preorder. -/
+def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
+  if (← synthInstance? (← mkAppM ``LinearOrder #[type])).isSome then
+    return some .lin
+  if (← synthInstance? (← mkAppM ``PartialOrder #[type])).isSome then
+    return some .part
+  if (← synthInstance? (← mkAppM ``Preorder #[type])).isSome then
+    return some .pre
+  return none
+
+/-- Replaces facts of the form `x = ⊤` with `y ≤ x` for all `y`, and similarly for `x = ⊥`. -/
+def replaceBotTop (facts : Array AtomicFact) :
+    AtomM <| Array AtomicFact := do
+  let mut res : Array AtomicFact := #[]
+  for fact in facts do
+    match fact with
+    | .isBot idx =>
+      -- `atoms` contains atoms for all types we are working on, so here we need to filter only
+      -- those with the same type as `atoms[idx]`
+      let type ← inferType (← get).atoms[idx]!
+      for (atom, i) in (← get).atoms.zipIdx do
+        if (← withReducible <| isDefEq type (← inferType atom)) && i != idx then
+          res := res.push <| .le idx i (← mkAppOptM ``bot_le #[none, none, none, atom])
+    | .isTop idx =>
+      let type ← inferType (← get).atoms[idx]!
+      for (atom, i) in (← get).atoms.zipIdx do
+        if (← withReducible <| isDefEq type (← inferType atom)) && i != idx then
+          res := res.push <| .le i idx (← mkAppOptM ``le_top #[none, none, none, atom])
+    | _ =>
+      res := res.push fact
+  return res
 
 /-- Preprocesses facts for preorders. Replaces `x < y` with two equivalent facts: `x ≤ y` and
 `¬ (y ≤ x)`. Replaces `x = y` with `x ≤ y`, `y ≤ x` and removes `x ≠ y`. -/
@@ -50,8 +99,8 @@ def preprocessFactsPreorder (facts : Array AtomicFact) : MetaM <| Array AtomicFa
 /-- Preprocesses facts for partial orders. Replaces `x < y`, `¬ (x ≤ y)`, and `x = y` with
 equivalent facts involving only `≤`, `≠`, and `≮`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsPartial (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
-    MetaM <| Array AtomicFact := do
+def preprocessFactsPartial (facts : Array AtomicFact) :
+    AtomM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -66,15 +115,15 @@ def preprocessFactsPartial (facts : Array AtomicFact) (idxToAtom : Std.HashMap N
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
     | .isSup lhs rhs sup =>
       res := res.push <| .le lhs sup
-        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``le_sup_left #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push <| .le rhs sup
-        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``le_sup_right #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push fact
     | .isInf lhs rhs inf =>
       res := res.push <| .le inf lhs
-        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``inf_le_left #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push <| .le inf rhs
-        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``inf_le_right #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push fact
     | _ =>
       res := res.push fact
@@ -83,8 +132,8 @@ def preprocessFactsPartial (facts : Array AtomicFact) (idxToAtom : Std.HashMap N
 /-- Preprocesses facts for linear orders. Replaces `x < y`, `¬ (x ≤ y)`, `¬ (x < y)`, and `x = y`
 with equivalent facts involving only `≤` and `≠`. For each fact `x = y ⊔ z` adds `y ≤ x`
 and `z ≤ x` facts, and similarly for `⊓`. -/
-def preprocessFactsLinear (facts : Array AtomicFact) (idxToAtom : Std.HashMap Nat Expr) :
-    MetaM <| Array AtomicFact := do
+def preprocessFactsLinear (facts : Array AtomicFact) :
+    AtomM <| Array AtomicFact := do
   let mut res : Array AtomicFact := #[]
   for fact in facts do
     match fact with
@@ -101,19 +150,26 @@ def preprocessFactsLinear (facts : Array AtomicFact) (idxToAtom : Std.HashMap Na
       res := res.push <| .le rhs lhs (← mkAppM ``ge_of_eq #[proof])
     | .isSup lhs rhs sup =>
       res := res.push <| .le lhs sup
-        (← mkAppOptM ``le_sup_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``le_sup_left #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push <| .le rhs sup
-        (← mkAppOptM ``le_sup_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``le_sup_right #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push fact
     | .isInf lhs rhs inf =>
       res := res.push <| .le inf lhs
-        (← mkAppOptM ``inf_le_left #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``inf_le_left #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push <| .le inf rhs
-        (← mkAppOptM ``inf_le_right #[none, none, idxToAtom.get! lhs, idxToAtom.get! rhs])
+        (← mkAppOptM ``inf_le_right #[none, none, (← get).atoms[lhs]!, (← get).atoms[rhs]!])
       res := res.push fact
     | _ =>
       res := res.push fact
   return res
 
+/-- Preprocesses facts for order of `orderType` using either `preprocessFactsPreorder` or
+`preprocessFactsPartial` or `preprocessFactsLinear`. -/
+def preprocessFacts (facts : Array AtomicFact) (orderType : OrderType) : AtomM (Array AtomicFact) :=
+  match orderType with
+  | .pre => preprocessFactsPreorder facts
+  | .part => preprocessFactsPartial facts
+  | .lin => preprocessFactsLinear facts
 
 end Mathlib.Tactic.Order

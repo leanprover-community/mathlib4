@@ -3,12 +3,16 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Order.Group.Synonym
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Add/Mul equivalence for order type synonyms
 -/
+
+@[expose] public section
 
 variable (α : Type*) [Mul α]
 

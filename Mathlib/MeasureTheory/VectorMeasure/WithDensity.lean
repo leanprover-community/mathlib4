@@ -3,15 +3,17 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 
 # Vector measure defined by an integral
 
 Given a measure `μ` and an integrable function `f : α → E`, we can define a vector measure `v` such
-that for all measurable set `s`, `v i = ∫ x in s, f x ∂μ`. This definition is useful for
+that for all measurable sets `s`, `v s = ∫ x in s, f x ∂μ`. This definition is useful for
 the Radon-Nikodym theorem for signed measures.
 
 ## Main definitions
@@ -20,6 +22,8 @@ the Radon-Nikodym theorem for signed measures.
   with respect to a measure `μ` on some set if `f` is integrable, and `0` otherwise.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -35,7 +39,7 @@ open TopologicalSpace
 variable {μ : Measure α}
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-open Classical in
+open scoped Classical in
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=
@@ -44,7 +48,7 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
-        convert hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
+        convert! hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
         · rw [if_pos (hs₁ n)]
         · rw [if_pos (MeasurableSet.iUnion hs₁)] }
   else 0
@@ -59,14 +63,14 @@ theorem withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : Measurabl
 @[simp]
 theorem withDensityᵥ_zero : μ.withDensityᵥ (0 : α → E) = 0 := by
   ext1 s hs
-  rw [Pi.zero_def, withDensityᵥ_apply (integrable_zero α E μ) hs]
+  rw [withDensityᵥ_apply (integrable_zero α E μ) hs]
   simp
 
 @[simp]
 theorem withDensityᵥ_neg : μ.withDensityᵥ (-f) = -μ.withDensityᵥ f := by
   by_cases hf : Integrable f μ
   · ext1 i hi
-    rw [VectorMeasure.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg,
+    rw [_root_.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg,
       withDensityᵥ_apply hf.neg hi]
     simp only [Pi.neg_apply]
   · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, neg_zero]
@@ -79,7 +83,7 @@ theorem withDensityᵥ_neg' : (μ.withDensityᵥ fun x => -f x) = -μ.withDensit
 theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ (f + g) = μ.withDensityᵥ f + μ.withDensityᵥ g := by
   ext1 i hi
-  rw [withDensityᵥ_apply (hf.add hg) hi, VectorMeasure.add_apply, withDensityᵥ_apply hf hi,
+  rw [withDensityᵥ_apply (hf.add hg) hi, _root_.add_apply, withDensityᵥ_apply hf hi,
     withDensityᵥ_apply hg hi]
   simp_rw [Pi.add_apply]
   rw [integral_add]
@@ -104,7 +108,7 @@ theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norme
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) : μ.withDensityᵥ (r • f) = r • μ.withDensityᵥ f := by
   by_cases hf : Integrable f μ
   · ext1 i hi
-    rw [withDensityᵥ_apply (hf.smul r) hi, VectorMeasure.smul_apply, withDensityᵥ_apply hf hi, ←
+    rw [withDensityᵥ_apply (hf.smul r) hi, _root_.smul_apply, withDensityᵥ_apply hf hi, ←
       integral_smul r f]
     simp only [Pi.smul_apply]
   · by_cases hr : r = 0
@@ -171,7 +175,7 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
     (μ.withDensityᵥ fun x => (f x).toReal) =
       @toSignedMeasure α _ (μ.withDensity f) (isFiniteMeasure_withDensity hf) := by
   have hfi := integrable_toReal_of_lintegral_ne_top hfm hf
-  haveI := isFiniteMeasure_withDensity hf
+  have := isFiniteMeasure_withDensity hf
   ext i hi
   rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, measureReal_def,
     withDensity_apply _ hi, integral_toReal hfm.restrict]
@@ -186,12 +190,12 @@ theorem withDensityᵥ_eq_withDensity_pos_part_sub_withDensity_neg_part {f : α 
           (isFiniteMeasure_withDensity_ofReal hfi.2) -
         @toSignedMeasure α _ (μ.withDensity fun x => ENNReal.ofReal <| -f x)
           (isFiniteMeasure_withDensity_ofReal hfi.neg.2) := by
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.2
-  haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.2
+  have := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   ext i hi
   rw [withDensityᵥ_apply hfi hi,
     integral_eq_lintegral_pos_part_sub_lintegral_neg_part hfi.integrableOn,
-    VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
+    _root_.sub_apply, toSignedMeasure_apply_measurable hi,
     toSignedMeasure_apply_measurable hi, measureReal_def, measureReal_def,
     withDensity_apply _ hi, withDensity_apply _ hi]
 

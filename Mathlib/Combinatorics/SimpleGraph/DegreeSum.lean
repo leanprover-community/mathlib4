@@ -3,10 +3,12 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.SimpleGraph.Dart
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Dart
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Degree-sum formula and handshaking lemma
@@ -34,6 +36,8 @@ of the corresponding vertex and that (2) the map from darts to edges is 2-to-1.
 
 simple graphs, sums, degree-sum formula, handshaking lemma
 -/
+
+public section
 
 assert_not_exists Field TwoSidedIdeal
 
@@ -65,7 +69,7 @@ theorem dart_fst_fiber_card_eq_degree [DecidableEq V] (v : V) :
     card_image_of_injective univ (G.dartOfNeighborSet_injective v)
 
 theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
-  haveI := Classical.decEq V
+  have := Classical.decEq V
   simp only [← card_univ, ← dart_fst_fiber_card_eq_degree]
   exact card_eq_sum_card_fiberwise (by simp)
 
@@ -78,7 +82,7 @@ theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) 
     #{d : G.Dart | d.edge = e} = 2 := by
   obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
-  convert congr_arg card d.edge_fiber
+  convert! congr_arg card d.edge_fiber
   rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
@@ -121,19 +125,18 @@ end DegreeSum
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
 theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even #{v | Odd (G.degree v)} := by
-  classical
-    have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
-    rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
-    rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
-    · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
-      rw [← ZMod.natCast_eq_zero_iff_even]
-      convert h
-      exact ZMod.natCast_ne_zero_iff_odd.symm
-    · intro v
-      rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,
-        ← Nat.not_even_iff_odd]
-      tauto
+  have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
+  simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
+  rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
+  rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
+  · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
+    rw [← ZMod.natCast_eq_zero_iff_even]
+    convert! h
+    exact ZMod.natCast_ne_zero_iff_odd.symm
+  · intro v
+    rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,
+      ← Nat.not_even_iff_odd]
+    tauto
 
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : Odd #{w | w ≠ v ∧ Odd (G.degree w)} := by
@@ -151,12 +154,12 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   simp only [hc]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
-    cutsat
+    lia
   · rwa [mem_filter_univ]
 
 theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
-  haveI := Classical.decEq V
+  have := Classical.decEq V
   rcases G.odd_card_odd_degree_vertices_ne v h with ⟨k, hg⟩
   have hg' : 0 < #{w | w ≠ v ∧ Odd (G.degree w)} := by
     rw [hg]

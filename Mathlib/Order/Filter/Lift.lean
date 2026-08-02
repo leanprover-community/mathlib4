@@ -3,14 +3,19 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Bases.Basic
+module
+
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lift filters along filter and set functions
 -/
+
+assert_not_exists Set.Finite
+
+public section
 
 open Set Filter Function
 
@@ -68,7 +73,7 @@ theorem mem_lift_sets (hg : Monotone g) {s : Set β} : s ∈ f.lift g ↔ ∃ t 
 
 theorem sInter_lift_sets (hg : Monotone g) :
     ⋂₀ { s | s ∈ f.lift g } = ⋂ s ∈ f, ⋂₀ { t | t ∈ g s } := by
-  simp only [sInter_eq_biInter, mem_setOf_eq, mem_lift_sets hg, iInter_exists,
+  simp only [sInter_eq_biInter, mem_ofPred_eq, mem_lift_sets hg, iInter_exists,
     iInter_and, @iInter_comm _ (Set β)]
 
 theorem mem_lift {s : Set β} {t : Set α} (ht : t ∈ f) (hs : s ∈ g t) : s ∈ f.lift g :=
@@ -346,7 +351,7 @@ variable {f : Filter α}
 theorem prod_def {f : Filter α} {g : Filter β} :
     f ×ˢ g = f.lift fun s => g.lift' fun t => s ×ˢ t := by
   simpa only [Filter.lift', Filter.lift, (f.basis_sets.prod g.basis_sets).eq_biInf,
-    iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
+    iInf_prod, iInf_and] using! iInf_congr fun i => iInf_comm
 
 alias mem_prod_same_iff := mem_prod_self_iff
 

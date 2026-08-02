@@ -3,8 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Ring involutions
@@ -24,6 +26,8 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 
 Ring involution
 -/
+
+@[expose] public section
 
 variable {F : Type*} (R : Type*)
 
@@ -48,7 +52,7 @@ class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
 @[coe]
 def RingInvoClass.toRingInvo {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ] [RingInvoClass F R] (f : F) :
     RingInvo R :=
-  { (f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
+  { (RingEquivClass.toRingEquiv f : R ≃+* Rᵐᵒᵖ) with involution' := RingInvoClass.involution f }
 
 namespace RingInvo
 
@@ -75,6 +79,8 @@ instance : RingInvoClass (RingInvo R) R where
   map_mul f := f.map_mul'
   involution f := f.involution'
 
+instance : CoeOut (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
+
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
   { f with
@@ -87,11 +93,6 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
--- We might want to restore the below instance if we remove `RingEquivClass.toRingEquiv`.
--- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
---   ⟨RingInvo.toRingEquiv⟩
-
-@[norm_cast]
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
 

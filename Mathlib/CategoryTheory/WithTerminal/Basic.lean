@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 
@@ -37,6 +39,8 @@ We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithIni
 from `Cat` to `Cat`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -87,40 +91,51 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, of _X, _ => fun f _g => PEmpty.elim f
   | _, star, of _Y => fun _f g => PEmpty.elim g
   | star, star, star => fun _ _ => PUnit.unit
-attribute [nolint simpNF] comp.eq_4
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] comp.eq_2 comp.eq_4
 
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star' {X : C} (f : Hom star (of X)) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id _ := id _
   comp := comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star {X : C} (f : star ⟶ of X) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion from `C` into `WithTerminal C`. -/
 def incl : C ⥤ WithTerminal C where
   obj := of
   map f := f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Faithful where
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
-def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal D where
+def map {D : Type*} [Category* D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal D where
   obj X :=
     match X with
     | of x => of <| F.obj x
@@ -131,25 +146,30 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`. -/
 @[simps!]
-def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
+def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
-def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
+def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithTerminal C ⥤ WithTerminal D`. -/
 @[simps]
-def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
+def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
   app := fun X => match X with
     | of x => η.app x
     | star => 𝟙 star
@@ -161,100 +181,64 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | star, star, _ => rfl
 
 -- Note: ...
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
   obj C := Cat.of (WithTerminal C)
-  map := map
-  map₂ := map₂
+  map F := (map F.toFunctor).toCatHom
+  map₂ f := (map₂ f.toNatTrans).toCatHom₂
   map₂_id := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X <;> rfl
   map₂_comp := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
   toPrelaxFunctor := prelaxfunctor
-  mapId C := mapId C
-  mapComp := mapComp
+  mapId C := Cat.Hom.isoMk (mapId C)
+  mapComp _ _ := Cat.Hom.isoMk <| mapComp _ _
   map₂_whisker_left := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
-        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
     · rfl
   map₂_whisker_right := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerRight_app, mapComp_hom_app,
-        Iso.refl_hom, map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
       rfl
     · rfl
   map₂_associator := by
     intros
     dsimp
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [map_obj, Cat.comp_obj,
-        Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
-        map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
-        map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
-        Category.comp_id, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
+    · simp
     · rfl
   map₂_left_unitor := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
-        mapId_hom_app, map_map, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
-      rw [← Functor.map_id]
-      rfl
+    · simp
     · rfl
   map₂_right_unitor := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerLeft_app,
-        mapId_hom_app, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
-      rw [← Functor.map_id]
-      rfl
+    · simpa using! (refl _)
     · rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
@@ -262,10 +246,12 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
     | star => PUnit.unit
   uniq := by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
   Limits.IsTerminal.ofUnique _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique star
 
 /-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
@@ -273,9 +259,10 @@ instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique s
 noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
   starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
 @[simps]
-def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
+def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : WithTerminal C ⥤ D where
   obj X :=
     match X with
@@ -287,29 +274,34 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x 
     | of x, star, _ => M x
     | star, star, _ => 𝟙 Z
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
 @[simps!]
-def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
+def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : incl ⋙ lift F M hM ≅ F where
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(lift F _ _).obj WithTerminal.star` with `Z`. -/
 @[simps!]
-def liftStar {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
+def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
-theorem lift_map_liftStar {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+theorem lift_map_liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (x : C) :
     (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).hom =
       (inclLift F M hM).hom.app x ≫ M x := by
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The uniqueness of `lift`. -/
 @[simp]
-def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
+def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x)
     (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
@@ -330,30 +322,35 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
         simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift` with `Z` a terminal object. -/
 @[simps!]
-def liftToTerminal {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
+def liftToTerminal {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     WithTerminal C ⥤ D :=
   lift F (fun _x => hZ.from _) fun _x _y _f => hZ.hom_ext _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `incl_lift` with `Z` a terminal object. -/
 @[simps!]
-def inclLiftToTerminal {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
+def inclLiftToTerminal {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z) :
     incl ⋙ liftToTerminal F hZ ≅ F :=
   inclLift _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift_unique` with `Z` a terminal object. -/
 @[simps!]
-def liftToTerminalUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
+def liftToTerminalUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsTerminal Z)
     (G : WithTerminal C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToTerminal F hZ :=
   liftUnique F (fun _z => hZ.from _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x =>
     hZ.hom_ext _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a morphism to `star` from `of X`. -/
 @[simp]
 def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   match X with
   | of _X => f.elim
@@ -361,8 +358,10 @@ instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithTerminal C ⥤ D` can be seen as an element of the comma category
 `Comma (𝟭 (C ⥤ D)) (const C)`. -/
 @[simps!]
@@ -374,8 +373,10 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
       naturality x y f := by
         dsimp
         rw [Category.comp_id, ← F.map_comp]
-        congr 1}
+        congr 1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
@@ -383,12 +384,16 @@ def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject 
   right := η.app .star
   left := Functor.whiskerLeft incl η
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
 @[simps!]
 def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal C ⥤ D :=
   lift (Z := c.right) c.left (fun x ↦ c.hom.app x) (fun x y f ↦ by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
 functors `WithTerminal C ⥤ D`. -/
 @[simps!]
@@ -404,6 +409,8 @@ def ofCommaMorphism {c c' : Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c �
     | of a, star, _ => by simp; simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithTerminal C ⥤ D` is equivalent to the category
 `Comma (𝟭 (C ⥤ D)) (const C) `. -/
 @[simps!]
@@ -446,6 +453,8 @@ instance subsingleton_hom {J : Type*} : Quiver.IsThin (WithTerminal (Discrete J)
   · rfl
   · rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.privateInPublic true in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 @[simps apply]
 private def widePullbackShapeEquivObj {J : Type*} :
@@ -456,9 +465,10 @@ private def widePullbackShapeEquivObj {J : Type*} :
   invFun
   | .of x => .some <| Discrete.as x
   | .star => .none
-  left_inv  x := by cases x <;> simp
+  left_inv x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
+set_option backward.privateInPublic true in
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
 private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
@@ -470,8 +480,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     cast (by
         have eq : x = y := PLift.down (ULift.down (down f))
         rw [eq]
-        rfl
-    ) (Hom.id (some y))
+        rfl) (Hom.id (some y))
   | none, some y => by cases f
   | some x, none => .term x
   | none, none => .id none
@@ -482,6 +491,8 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
   | some x, none
   | none, none => rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- In the case of a discrete category, `WithTerminal` is the same category as `WidePullbackShape`
 
 TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/
@@ -527,35 +538,44 @@ attribute [nolint simpNF] comp.eq_3
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star' {X : C} (f : Hom (of X) star) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_id {X : C} : down (𝟙 (of X)) = 𝟙 X := rfl
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma down_comp {X Y Z : C} (f : of X ⟶ of Y) (g : of Y ⟶ of Z) :
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star {X : C} (f : of X ⟶ star) : False := (f : PEmpty).elim
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion of `C` into `WithInitial C`. -/
 def incl : C ⥤ WithInitial C where
   obj := of
   map f := f
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Full where
   map_surjective f := ⟨f, rfl⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (incl : C ⥤ _).Faithful where
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
-def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D where
+def map {D : Type*} [Category* D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D where
   obj X :=
     match X with
     | of x => of <| F.obj x
@@ -566,25 +586,30 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
     | star, of _, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`. -/
 @[simps!]
-def mapId (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
+def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
-def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) :
+def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) :
     map (F ⋙ G) ≅ map F ⋙ map G :=
   NatIso.ofComponents (fun X => match X with
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
 @[simps]
-def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
+def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
   app := fun X => match X with
     | of x => η.app x
     | star => 𝟙 star
@@ -595,100 +620,63 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | star, of x, _ => rfl
     | star, star, _ => rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The prelax functor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
 def prelaxfunctor : PrelaxFunctor Cat Cat where
   obj C := Cat.of (WithInitial C)
-  map := map
-  map₂ := map₂
+  map F := (map F.toFunctor).toCatHom
+  map₂ f := (map₂ f.toNatTrans).toCatHom₂
   map₂_id := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X <;> rfl
   map₂_comp := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
   toPrelaxFunctor := prelaxfunctor
-  mapId C := mapId C
-  mapComp := mapComp
+  mapId C := Cat.Hom.isoMk <| mapId C
+  mapComp _ _ := Cat.Hom.isoMk <| mapComp _ _
   map₂_whisker_left := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
-        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
     · rfl
   map₂_whisker_right := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerRight_app, mapComp_hom_app,
-        Iso.refl_hom, map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+    · simp
       rfl
     · rfl
   map₂_associator := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
-        map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
-        Category.comp_id, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
+    · simp
     · rfl
   map₂_left_unitor := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
-        mapId_hom_app, map_map, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
-      rw [← Functor.map_id]
-      rfl
+    · simp
     · rfl
   map₂_right_unitor := by
     intros
-    apply NatTrans.ext
-    funext X
+    ext X
     cases X
-    · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
-        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
-        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
-        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerLeft_app,
-        mapId_hom_app, Category.id_comp]
-      rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, map_obj, Category.comp_id]
-      rw [← Functor.map_id, Cat.id_map]
-      rfl
+    · simpa using! (refl _)
     · rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
     match X with
@@ -696,10 +684,12 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
     | star => PUnit.unit
   uniq := by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `WithInitial.star` is initial. -/
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
   Limits.IsInitial.ofUnique _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 
 /-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
@@ -707,9 +697,10 @@ instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
 noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
   starInitial.uniqueUpToIso (Limits.initialIsInitial)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/
 @[simps]
-def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
+def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : WithInitial C ⥤ D where
   obj X :=
     match X with
@@ -721,29 +712,33 @@ def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.
     | star, of _, _ => M _
     | star, star, _ => 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/
 @[simps!]
-def inclLift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
+def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : incl ⋙ lift F M hM ≅ F where
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(lift F _ _).obj WithInitial.star` with `Z`. -/
 @[simps!]
-def liftStar {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
+def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
-theorem liftStar_lift_map {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (x : C) :
     (liftStar F M hM).hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
       M x ≫ (inclLift F M hM).hom.app x := by
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [incl]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The uniqueness of `lift`. -/
 @[simp]
-def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
+def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y)
     (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F)
     (hG : G.obj star ≅ Z)
@@ -767,29 +762,34 @@ def liftUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z 
         change G.map (𝟙 _) ≫ hG.hom = hG.hom ≫ 𝟙 _
         simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift` with `Z` an initial object. -/
 @[simps!]
-def liftToInitial {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
+def liftToInitial {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     WithInitial C ⥤ D :=
   lift F (fun _x => hZ.to _) fun _x _y _f => hZ.hom_ext _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `incl_lift` with `Z` an initial object. -/
 @[simps!]
-def inclLiftToInitial {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
+def inclLiftToInitial {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z) :
     incl ⋙ liftToInitial F hZ ≅ F :=
   inclLift _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `lift_unique` with `Z` an initial object. -/
 @[simps!]
-def liftToInitialUnique {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z)
+def liftToInitialUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (hZ : Limits.IsInitial Z)
     (G : WithInitial C ⥤ D) (h : incl ⋙ G ≅ F) (hG : G.obj star ≅ Z) : G ≅ liftToInitial F hZ :=
   liftUnique F (fun _z => hZ.to _) (fun _x _y _f => hZ.hom_ext _ _) G h hG fun _x => hZ.hom_ext _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a morphism from `star` to `of X`. -/
 @[simp]
 def homTo (X : C) : star ⟶ incl.obj X :=
   starInitial.to _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   match X with
   | of _ => f.elim
@@ -797,8 +797,10 @@ instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
 
 section
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithInitial C ⥤ D` can be seen as an element of the comma category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
 @[simps!]
@@ -810,8 +812,10 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
       naturality x y f := by
         dsimp
         rw [Category.id_comp, ← F.map_comp]
-        congr 1}
+        congr 1 }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
@@ -819,6 +823,7 @@ def mkCommaMorphism {F G : WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F
   left := η.app .star
   right := Functor.whiskerLeft incl η
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
 functor `WithInitial C ⥤ D`. -/
 @[simps!]
@@ -826,6 +831,7 @@ def ofCommaObject (c : Comma (Functor.const C) (𝟭 (C ⥤ D))) : WithInitial C
   lift (Z := c.left) c.right (fun x ↦ c.hom.app x)
     (fun x y f ↦ by simpa using (c.hom.naturality f).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
 functors `WithInitial C ⥤ D`. -/
 @[simps!]
@@ -841,6 +847,8 @@ def ofCommaMorphism {c c' : Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c �
     | star, of a, _ => by simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithInitial C ⥤ D` is equivalent to the category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
 @[simps!]
@@ -875,6 +883,7 @@ end
 
 end WithInitial
 
+set_option backward.defeqAttrib.useBackward true in
 open Opposite in
 /-- The opposite category of `WithTerminal C` is equivalent to `WithInitial Cᵒᵖ`. -/
 @[simps!]
@@ -887,7 +896,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         match x, y, f with
         | op (of x), op (of y), f => (WithTerminal.down f).op
         | op star, op (of _), _ => WithInitial.starInitial.to _
-        | op star, op star, _  => 𝟙 _
+        | op star, op star, _ => 𝟙 _
       map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
       map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
         match x, y, z, f, g with
@@ -904,7 +913,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         match x, y, f with
         | .of (op x), .of (op y), f => WithInitial.down f
         | .star, .of (op _), _ => op <| WithTerminal.starTerminal.from _
-        | .star, .star, _  => 𝟙 _
+        | .star, .star, _ => 𝟙 _
       map_id := fun x ↦ by cases x <;> rfl
       map_comp := fun {x y z} f g ↦
         match x, y, z, f, g with
@@ -923,7 +932,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
               Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
             rfl
         | op star, op (of _), _ => rfl
-        | op star, op star, _  => rfl)
+        | op star, op star, _ => rfl)
   counitIso :=
     NatIso.ofComponents
       (fun x ↦ match x with
@@ -937,6 +946,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         rfl
     | .star => rfl
 
+set_option backward.defeqAttrib.useBackward true in
 open Opposite in
 /-- The opposite category of `WithInitial C` is equivalent to `WithTerminal Cᵒᵖ`. -/
 @[simps!]
@@ -950,7 +960,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
         match x, y, f with
         | op (of x), op (of y), f => (WithTerminal.down f).op
         | op (of _), op star, _ => WithTerminal.starTerminal.from _
-        | op star, op star, _  => 𝟙 _
+        | op star, op star, _ => 𝟙 _
       map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
       map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
         match x, y, z, f, g with
@@ -967,7 +977,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
         match x, y, f with
         | .of (op x), .of (op y), f => WithInitial.down f
         | .of (op _), .star, _ => op <| WithInitial.starInitial.to _
-        | .star, .star, _  => 𝟙 _
+        | .star, .star, _ => 𝟙 _
       map_id := fun x ↦ by cases x <;> rfl
       map_comp := fun {x y z} f g ↦
         match x, y, z, f, g with

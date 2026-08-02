@@ -3,10 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -28,6 +30,8 @@ left with angle less than `π`.
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
 
+@[expose] public section
+
 
 open Filter Finset
 
@@ -48,10 +52,10 @@ def stolzCone (s : ℝ) : Set ℂ := {z | |z.im| < s * (1 - z.re)}
 
 theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
   ext z
-  rw [stolzSet, Set.mem_setOf, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
+  rw [stolzSet, Set.mem_ofPred, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
   intro zn
   calc
-    _ ≤ 1 * (1 - ‖z‖) := mul_le_mul_of_nonneg_right hM zn.le
+    _ ≤ 1 * (1 - ‖z‖) := by gcongr
     _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
     _ ≤ _ := norm_sub_norm_le _ _
 
@@ -62,8 +66,8 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
-  simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
-  simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
+  push _ ∈ _ at hx
+  simp only [Set.mem_ofPred_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
@@ -78,7 +82,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
-      _ = √(1 - x) := by congr 1; field_simp; ring
+      _ = √(1 - x) := by congr 1; field
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le
@@ -96,8 +100,8 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ {z : ℂ | 1 - ε < z.re} ∩ stolzCone s ⊆ stolzSet M := by
   peel stolzCone_subset_stolzSet_aux' s with M ε hM hε H
   rintro z ⟨hzl, hzr⟩
-  rw [Set.mem_setOf_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
-  rw [stolzCone, Set.mem_setOf_eq, ← one_re, ← sub_re] at hzr
+  rw [Set.mem_ofPred_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
+  rw [stolzCone, Set.mem_ofPred_eq, ← one_re, ← sub_re] at hzr
   replace H :=
     H (1 - z).re z.im ((mul_pos_iff_of_pos_left hs).mp <| (abs_nonneg z.im).trans_lt hzr) hzl hzr
   have h : z.im ^ 2 = (1 - z).im ^ 2 := by
@@ -112,7 +116,7 @@ lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
   refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
-  simp only [Set.mem_setOf_eq, one_re, sub_lt_self_iff, hε]
+  simp only [Set.mem_ofPred_eq, one_re, sub_lt_self_iff, hε]
 
 end StolzSet
 
@@ -225,11 +229,11 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
           (summable_geometric_of_lt_one (by positivity) zn)
       _ = ‖1 - z‖ * (ε / 4 / M) / (1 - ‖z‖) := by
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]
-      _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr; linarith only [zn]
+      _ < M * (1 - ‖z‖) * (ε / 4 / M) / (1 - ‖z‖) := by gcongr
       _ = _ := by
         rw [← mul_rotate, mul_div_cancel_right₀ _ (by linarith only [zn]),
           div_mul_cancel₀ _ (by linarith only [hM])]
-  convert add_lt_add S₁ S₂ using 1
+  convert! add_lt_add S₁ S₂ using 1
   linarith only
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
@@ -266,7 +270,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   replace h := Complex.tendsto_tsum_powerSeries_nhdsWithin_lt h
   rw [tendsto_map'_iff] at h
   rw [Metric.tendsto_nhdsWithin_nhds] at h ⊢
-  convert h
+  convert! h
   simp_rw [Function.comp_apply, dist_eq_norm]
   norm_cast
 

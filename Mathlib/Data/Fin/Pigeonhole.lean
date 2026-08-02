@@ -3,7 +3,9 @@ Copyright (c) 2025 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Pigeonhole-like results for Fin
@@ -11,6 +13,8 @@ import Mathlib.Data.Fintype.Card
 This adapts Pigeonhole-like results from `Mathlib.Data.Fintype.Card` to the setting where the map
 has the type `f : Fin m → Fin n`.
 -/
+
+public section
 
 namespace Fin
 

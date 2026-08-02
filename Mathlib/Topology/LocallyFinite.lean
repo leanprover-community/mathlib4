@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -14,6 +16,8 @@ there is a neighborhood of `x` which meets only finitely many sets in the family
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
 -/
+
+@[expose] public section
 
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology
@@ -48,6 +52,13 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn hg.injOn
 
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [comp_def, surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective rangeFactorization_surjective hf
+
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
@@ -71,7 +82,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
     𝓝[⋃ i, f i] a = 𝓝[⋃ i, f i ∩ U] a := by
       rw [← iUnion_inter, ← nhdsWithin_inter_of_mem' (nhdsWithin_le_nhds haU)]
     _ = 𝓝[⋃ i ∈ {j | (f j ∩ U).Nonempty}, (f i ∩ U)] a := by
-      simp only [mem_setOf_eq, iUnion_nonempty_self]
+      simp only [mem_ofPred_eq, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
     _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left
@@ -189,7 +200,7 @@ theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) 
 theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ Sum.inl) ∧ LocallyFinite (f ∘ Sum.inr) := by
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
-    preimage_setOf_eq, (· ∘ ·), eventually_and]
+    preimage_ofPred_eq, (· ∘ ·), eventually_and]
 
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
@@ -209,5 +220,5 @@ theorem LocallyFinite.eventually_subset {s : ι → Set X}
     (hs : LocallyFinite s) (hs' : ∀ i, IsClosed (s i)) (x : X) :
     ∀ᶠ y in 𝓝 x, {i | y ∈ s i} ⊆ {i | x ∈ s i} := by
   filter_upwards [hs.iInter_compl_mem_nhds hs' x] with y hy i hi
-  simp only [mem_iInter, mem_compl_iff] at hy
+  push _ ∈ _ at hy
   exact not_imp_not.mp (hy i) hi

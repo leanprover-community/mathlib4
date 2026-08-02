@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Hausdorff's maximality principle
@@ -22,6 +24,8 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
+@[expose] public section
+
 open Set
 
 variable {α : Type*} {r : α → α → Prop} {c c₁ c₂ s t : Set α} {a b x y : α}
@@ -32,7 +36,7 @@ inductive ChainClosure (r : α → α → Prop) : Set α → Prop
   | union : ∀ {s}, (∀ a ∈ s, ChainClosure r a) → ChainClosure r (⋃₀ s)
 
 /-- An explicit maximal chain. `maxChain` is taken to be the union of all sets in `ChainClosure`. -/
-def maxChain (r : α → α → Prop) : Set α := ⋃₀ setOf (ChainClosure r)
+def maxChain (r : α → α → Prop) : Set α := ⋃₀ Set.ofPred (ChainClosure r)
 
 lemma chainClosure_empty : ChainClosure r ∅ := by
   have : ChainClosure r (⋃₀ ∅) := ChainClosure.union fun a h => (notMem_empty _ h).elim

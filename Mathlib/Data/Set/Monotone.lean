@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Data.Set.Function
 
 /-!
 # Monotone functions over sets
 -/
+
+public section
 
 variable {α β γ : Type*}
 
@@ -90,14 +94,10 @@ lemma monotoneOn_insert_iff {a : α} :
       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
   simp [MonotoneOn, forall_and]
 
-@[deprecated (since := "2025-06-14")] alias MonotoneOn_insert_iff := monotoneOn_insert_iff
-
 lemma antitoneOn_insert_iff {a : α} :
     AntitoneOn f (insert a s) ↔
       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
   @monotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
-
-@[deprecated (since := "2025-06-14")] alias AntitoneOn_insert_iff := antitoneOn_insert_iff
 
 end Mono
 
@@ -112,8 +112,10 @@ namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β}
 
-protected theorem restrict (h : Monotone f) (s : Set α) : Monotone (s.restrict f) := fun _ _ hxy =>
-  h hxy
+protected theorem domRestrict (h : Monotone f) (s : Set α) : Monotone (s.domRestrict f) :=
+  fun _ _ hxy => h hxy
+
+@[deprecated (since := "2026-07-19")] alias restrict := Monotone.domRestrict
 
 protected theorem codRestrict (h : Monotone f) {s : Set β} (hs : ∀ x, f x ∈ s) :
     Monotone (s.codRestrict f hs) :=
@@ -129,10 +131,16 @@ section strictMono
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 
 @[simp]
-theorem strictMono_restrict :
-    StrictMono (s.restrict f) ↔ StrictMonoOn f s := by simp [Set.restrict, StrictMono, StrictMonoOn]
+theorem strictMono_domRestrict : StrictMono (s.domRestrict f) ↔ StrictMonoOn f s := by
+  simp [Set.domRestrict, StrictMono, StrictMonoOn]
 
-alias ⟨_root_.StrictMono.of_restrict, _root_.StrictMonoOn.restrict⟩ := strictMono_restrict
+alias ⟨_root_.StrictMono.of_domRestrict, _root_.StrictMonoOn.domRestrict⟩ := strictMono_domRestrict
+
+@[deprecated (since := "2026-07-19")] alias strictMono_restrict := strictMono_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias _root_.StrictMono.of_restrict := _root_.StrictMono.of_domRestrict
+@[deprecated (since := "2026-07-19")]
+alias _root_.StrictMonoOn.restrict := _root_.StrictMonoOn.domRestrict
 
 theorem StrictMono.codRestrict (hf : StrictMono f)
     {s : Set β} (hs : ∀ x, f x ∈ s) : StrictMono (Set.codRestrict f s hs) :=
@@ -190,7 +198,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [Li
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
-  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  rcases le_total (ψ x) (ψ y) with (ψxy | ψyx)
   · exact ψxy
   · have := hφ (ψts ys) (ψts xs) ψyx
     rw [φψs.eq ys, φψs.eq xs] at this

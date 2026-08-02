@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -69,6 +71,8 @@ matched because they preserve the properties of QPF. The latter example,
 each proves that some operations on functors preserves the QPF structure
 -/
 
+@[expose] public section
+
 set_option linter.style.longLine false in
 /-!
 ## Reference
@@ -115,6 +119,7 @@ instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
   id_map := @MvQPF.id_map n F _
   comp_map := @comp_map n F _
 
+set_option backward.isDefEq.respectTransparency false in
 -- Lifting predicates and relations
 theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     LiftP p x ↔ ∃ a f, x = abs ⟨a, f⟩ ∧ ∀ i j, p (f i j) := by
@@ -130,6 +135,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
   constructor
@@ -144,7 +150,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use abs ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
+  constructor
   · rw [xeq, ← abs_map]; rfl
   rw [yeq, ← abs_map]; rfl
 
@@ -165,12 +171,13 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ i a' f', abs ⟨a', f'⟩ = x → f i '' univ ⊆ f' i '' univ := by
   constructor
   · intro h
-    have : LiftP (supp x) x := by rw [h]; introv; exact id
+    have : LiftP (fun i u => u ∈ supp x i) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
@@ -226,12 +233,14 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
   rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, MvPFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
   · intro h α a a' f f' h' i
@@ -240,6 +249,7 @@ theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := b
     ext
     rwa [supp_eq_of_isUniform, MvPFunctor.supp_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPPreservation := by
   constructor <;> intro h
   · rintro α p ⟨a, f⟩
@@ -252,23 +262,25 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
   · rintro α ⟨a, f⟩
     simp only [LiftPPreservation] at h
     ext
-    simp only [supp, h, mem_setOf_eq]
+    simp only [supp, h, mem_ofPred_eq]
 
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
 assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/
+@[instance_reducible]
 def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]
     (eqv : ∀ α, F α ≃ F' α)
     (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
       f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :
     MvQPF F where
-  P         := q.P
-  abs α     := (eqv _).symm <| q.abs α
-  repr α    := q.repr <| eqv _ α
-  abs_repr  := by simp [q.abs_repr]
-  abs_map   := by simp [q.abs_map, map_eq]
+  P        := q.P
+  abs α    := (eqv _).symm <| q.abs α
+  repr α   := q.repr <| eqv _ α
+  abs_repr := by simp [q.abs_repr]
+  abs_map  := by simp [q.abs_map, map_eq]
 
 end MvQPF
 
