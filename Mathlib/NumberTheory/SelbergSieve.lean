@@ -306,8 +306,7 @@ theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l
   congr! 1 with ⟨d, e⟩ hd
   obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
   obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
-  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
-    by simp_all [s.nu_mult.map_mul_of_coprime hde]
+  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 := by simp_all [s.nu_mult.map_mul_of_coprime hde]
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_inv_eq_sum_divisors_inv_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :

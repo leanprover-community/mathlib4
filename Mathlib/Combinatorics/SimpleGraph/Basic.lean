@@ -221,7 +221,7 @@ instance : Max (SimpleGraph V) where
     { Adj := x.Adj ⊔ y.Adj
       symm.symm v w h := by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
 
-@[simp]
+@[simp, grind =]
 theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w :=
   Iff.rfl
 
@@ -820,6 +820,32 @@ variable {G H} in
 theorem disjoint_neighborSet :
     (∀ v, Disjoint (G.neighborSet v) (H.neighborSet v)) ↔ Disjoint G H := by
   simp_rw [← disjoint_edgeSet, Set.disjoint_left, mem_neighborSet, Sym2.forall, mem_edgeSet]
+
+@[simp]
+theorem neighborSet_sup {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊔ G₂).neighborSet v = G₁.neighborSet v ∪ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_inf {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ ⊓ G₂).neighborSet v = G₁.neighborSet v ∩ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_sdiff {G₁ G₂ : SimpleGraph V} (v : V) :
+    (G₁ \ G₂).neighborSet v = G₁.neighborSet v \ G₂.neighborSet v :=
+  rfl
+
+@[simp]
+theorem neighborSet_iSup {s : ι → SimpleGraph V} (v : V) :
+    (⨆ i, s i).neighborSet v = ⋃ i, (s i).neighborSet v := by
+  ext; simp
+
+@[simp]
+theorem neighborSet_iInf [Nonempty ι] {s : ι → SimpleGraph V} (v : V) :
+    (⨅ i, s i).neighborSet v = ⋂ i, (s i).neighborSet v := by
+  ext
+  simp_rw [Set.mem_iInter, mem_neighborSet, iInf_adj_of_nonempty]
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
