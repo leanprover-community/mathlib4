@@ -60,17 +60,16 @@ theorem digamma_apply_add_one (s : ℂ) (hs : ∀ m : ℕ, s ≠ - m) :
   rw [digamma_def, logDeriv_apply, logDeriv_apply, deriv_Gamma_add_one s hs0, Gamma_add_one s hs0,
     add_div, div_mul_cancel_right₀ (Gamma_ne_zero hs), mul_div_mul_left _ _ hs0, add_comm]
 
-open scoped Real in
+open Real in
 /-- Euler's reflection formula for the digamma function:
 `ψ (1 - s) = ψ s + π * cot (π * s)` for `s` not an integer. -/
 theorem digamma_one_sub {s : ℂ} (hs : ∀ n : ℤ, s ≠ n) :
     digamma (1 - s) = digamma s + π * cot (π * s) := by
-  have hπ : (π : ℂ) ≠ 0 := ofReal_ne_zero.mpr Real.pi_ne_zero
-  have hsnat (m : ℕ) : s ≠ -m := by simpa using hs (-m)
-  have h1snat (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
-  have := differentiableAt_Gamma _ h1snat
+  have : (π : ℂ) ≠ 0 := ofReal_ne_zero.mpr pi_ne_zero
+  have (m : ℕ) : s ≠ -m := by simpa using hs (-m)
+  have (m : ℕ) : 1 - s ≠ -m := fun _ ↦ hs (1 + m) (by push_cast; grind)
   have := congrArg (logDeriv · s) (funext Gamma_mul_Gamma_one_sub)
-  rw [logDeriv_mul, logDeriv_div s hπ, (by rfl : (Gamma <| 1 - ·) = Gamma ∘ (1 - ·)),
+  rw [logDeriv_mul, logDeriv_div, (by rfl : (Gamma <| 1 - ·) = Gamma ∘ (1 - ·)),
     (by rfl : (sin <| π * ·) = sin ∘ (π * ·)), logDeriv_comp, logDeriv_comp] at this
     <;> try first | fun_prop | grind [sin_eq_zero_iff, Gamma_ne_zero, differentiableAt_Gamma]
   simp [digamma_def] at this ⊢; grind
