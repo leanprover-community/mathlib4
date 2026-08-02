@@ -247,6 +247,12 @@ lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
 
+instance [Fintype V] : Fintype (SimpleGraph V) :=
+  Fintype.truncFinBijection V |>.recOnSubsingleton fun ⟨_, hf⟩ ↦ .ofBijective _ <| map_bijective hf
+
+/- Remove the instance that requires `DecidableEq`, to avoid conflicts. -/
+attribute [-instance] instFintypeOfDecidableEq
+
 /-- Given a family of vertex types indexed by `ι`, pulling back from `⊤ : SimpleGraph ι`
 yields the complete multipartite graph on the family.
 Two vertices are adjacent if and only if their indices are not equal. -/
