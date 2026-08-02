@@ -117,7 +117,7 @@ instance : (isContinuous FintypeCat.{w} G).IsClosedUnderSubobjects := by
   rw [isContinuous_eq_iSup]
   infer_instance
 
-lemma exists_openSubgroup_of_finite
+lemma exists_openSubgroup_of_isContinuous_of_finite
     {J : Type*} [Finite J] (obj : J → Action FintypeCat.{w} G)
     (property : ∀ j, isContinuous _ _ (obj j)) :
     ∃ (H : OpenSubgroup G), ∀ j, trivialOnSet _ H (obj j) := by
@@ -131,7 +131,7 @@ instance (J : Type*) [Category* J] [HasColimitsOfShape J FintypeCat.{w}] [Finite
     (isContinuous FintypeCat.{w} G).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
     rintro X ⟨p⟩
-    obtain ⟨H, h⟩ := exists_openSubgroup_of_finite _ p.prop_diag_obj
+    obtain ⟨H, h⟩ := exists_openSubgroup_of_isContinuous_of_finite _ p.prop_diag_obj
     exact trivialOnSet_le_isContinuous H _
       (ObjectProperty.prop_of_isColimit _ p.isColimit h)
 
@@ -139,7 +139,7 @@ instance (J : Type*) [Category* J] [HasLimitsOfShape J FintypeCat.{w}] [Finite J
     (isContinuous FintypeCat.{w} G).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := by
     rintro X ⟨p⟩
-    obtain ⟨H, h⟩ := exists_openSubgroup_of_finite _ p.prop_diag_obj
+    obtain ⟨H, h⟩ := exists_openSubgroup_of_isContinuous_of_finite _ p.prop_diag_obj
     exact trivialOnSet_le_isContinuous H _
       (ObjectProperty.prop_of_isLimit _ p.isLimit h)
 
