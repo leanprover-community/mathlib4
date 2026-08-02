@@ -34,6 +34,8 @@ universe w u v
 
 section simple
 
+namespace IsSimpleRing
+
 variable (k : Type u) (A : Type v) [CommRing k] [Ring A] [Algebra k A]
     [IsSimpleRing A] [Module.Finite k A]
 
@@ -62,6 +64,12 @@ lemma directSum_simple_module_over_simple_ring [IsArtinianRing A] (M : Type v) [
   obtain ⟨ι, he⟩ := (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
   exact ⟨S, inferInstance, inferInstance, hS, ι, he⟩
 
+lemma directSum_simple_module_over_simple_ring' (A : Type u) [Ring A] [IsArtinianRing A]
+    [IsSimpleRing A] (M : Type v) [AddCommGroup M] [Module A M]
+    (S : Type v) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
+    ∃ (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) :=
+  (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
+
 @[stacks 074E "(2)"]
 lemma directSum_simple_module_over_simple_algebra [IsArtinianRing k] (M : Type v) [AddCommGroup M]
     [Module A M] : ∃ (S : Type v) (_ : AddCommGroup S) (_ : Module k S)
@@ -73,15 +81,9 @@ lemma directSum_simple_module_over_simple_algebra [IsArtinianRing k] (M : Type v
   have : IsScalarTower k A S := .of_algebraMap_smul fun _ _ ↦ rfl
   exact ⟨S, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, ι, ⟨iso⟩⟩
 
-lemma directSum_simple_module_over_simple_algebra' (A : Type v) [Ring A] [IsArtinianRing A]
-    [IsSimpleRing A] (M : Type v) [AddCommGroup M] [Module A M]
-    (S : Type v) [AddCommGroup S] [Module A S] [IsSimpleModule A S] :
-    ∃ (ι : Type v), Nonempty (M ≃ₗ[A] (ι →₀ S)) :=
-  (isIsotypicOfType_over_simple A M S).linearEquiv_finsupp
-
 /-- Two finite modules over an artinian simple ring `A` have an `A`-linear
 equivalence if and only if their `A`-length is the same. -/
-lemma linearEquiv_iff_length_eq_over_isSimpleRing [IsArtinianRing A]
+lemma linearEquiv_iff_length_eq_over_simple_ring [IsArtinianRing A]
     (M N : Type v) [AddCommGroup M] [Module A M] [AddCommGroup N] [Module A N]
     [Module.Finite A M] [Module.Finite A N] :
     Nonempty (M ≃ₗ[A] N) ↔ Module.length A M = Module.length A N := by
@@ -128,13 +130,7 @@ lemma linearEquiv_iff_finrank_eq_over_simple_algebra (k : Type u) (A : Type v) [
   rw [linearEquiv_iff_length_eq_over_simple_algebra k A M N, Module.length_eq_finrank,
     Module.length_eq_finrank, Nat.cast_inj]
 
-namespace IsSimpleRing
-
 open Matrix.Module
-
-scoped instance isScalarTower_matrix_pi {n : ℕ} (D : Type w) [DivisionRing D] [Algebra k D] :
-    IsScalarTower k (Matrix (Fin n) (Fin n) D) (Fin n → D) where
-  smul_assoc a b x := by ext; simp [Finset.smul_sum]
 
 /-- Along a Wedderburn–Artin isomorphism `A ≃ₐ[k] Mₙ(D)`, the induced `A`-action on `Fin n → D`
 is compatible with the `k`-action. -/
