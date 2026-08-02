@@ -461,12 +461,11 @@ lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero �
 @[to_fun meromorphicAt_fun_comp_add_const_iff_meromorphicAt]
 theorem meromorphicAt_comp_add_const_iff_meromorphicAt {c : 𝕜} {f : 𝕜 → E} :
     MeromorphicAt (f ∘ (· + c)) x ↔ MeromorphicAt f (x + c) := by
-  constructor
-  · intro h
-    rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
     rw [show x = (x + c) - c by ring] at h
     exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
-  · exact (·.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop))
+  · exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
 
 /-- `MeromorphicAt` is invariant under translation. -/
 @[to_fun meromorphicAt_fun_comp_sub_const_iff_meromorphicAt]
@@ -629,8 +628,7 @@ theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv
 @[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
 theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
     MeromorphicOn (f ∘ (· + c)) U ↔ MeromorphicOn f (U + {c}) := by
-  constructor
-  <;> intro h y hy
+  refine ⟨fun h y hy ↦ ?_, fun h y hy ↦ ?_⟩
   · rw [add_singleton, mem_image] at hy
     obtain ⟨x, h₁x, h₂x⟩ := hy
     simpa [← h₂x, ← meromorphicAt_comp_add_const_iff_meromorphicAt] using h x h₁x

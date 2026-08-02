@@ -414,12 +414,11 @@ theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero
 @[to_fun meromorphicNFAt_fun_comp_add_const_iff_meromorphicNFAt]
 theorem meromorphicNFAt_comp_add_const_iff_meromorphicNFAt {c : 𝕜} {f : 𝕜 → E} :
     MeromorphicNFAt (f ∘ (· + c)) x ↔ MeromorphicNFAt f (x + c) := by
-  constructor
-  · intro h
-    rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [show f = ((f ∘ fun x ↦ x + c) ∘ fun z ↦ z - c) by aesop]
     rw [show x = (x + c) - c by ring] at h
     exact h.comp_analyticAt (g := fun z ↦ z - c) (by fun_prop)
-  · exact (·.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop))
+  · exact h.comp_analyticAt (g := fun z ↦ z + c) (by fun_prop)
 
 /-- `MeromorphicNFAt` is invariant under translation. -/
 @[to_fun meromorphicNFAt_fun_comp_sub_const_iff_meromorphicNFAt]
@@ -745,8 +744,7 @@ theorem meromorphicNFOn_fun_inv {f : 𝕜 → 𝕜} :
 @[to_fun meromorphicNFOn_fun_comp_add_const_iff_meromorphicNFOn]
 theorem meromorphicNFOn_comp_add_const_iff_meromorphicNFOn {c : 𝕜} {U : Set 𝕜} :
     MeromorphicNFOn (f ∘ (· + c)) U ↔ MeromorphicNFOn f (U + {c}) := by
-  constructor
-  <;> intro h y hy
+  refine ⟨fun h y hy ↦ ?_, fun h y hy ↦ ?_⟩
   · rw [add_singleton, mem_image] at hy
     obtain ⟨x, h₁x, h₂x⟩ := hy
     simpa [← h₂x, ← meromorphicNFAt_comp_add_const_iff_meromorphicNFAt] using h h₁x

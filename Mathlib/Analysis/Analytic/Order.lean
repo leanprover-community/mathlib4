@@ -487,7 +487,7 @@ lemma analyticOrderAt_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
 /-- The analytic order of the function `(· - c)` at `x` is one if `x = c`. -/
 @[simp] theorem analyticOrderAt_id_sub_const_self {c : 𝕜} :
     analyticOrderAt (· - c) c = 1 := by
-  have := analyticOrderAt_centeredMonomial (n := 1) (z₀ := x)
+  have := analyticOrderAt_centeredMonomial (n := 1) (z₀ := c)
   simp_all [pow_one]
 
 /-- The analytic order of the function `(· - c)` at `x` is zero if `x ≠ c`. -/
