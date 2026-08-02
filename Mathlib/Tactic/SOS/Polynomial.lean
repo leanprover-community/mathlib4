@@ -152,7 +152,7 @@ attribute [local simp] coeff_toMvPolynomial
   · have h' : monoEquiv (Mono.unit i) ≠ monoEquiv m := by
       intro heq
       exact h (monoEquiv.injective heq).symm
-    rw [if_neg h, if_neg h']
+    rw [_root_.ite_eq_right h, _root_.ite_eq_right h']
 
 @[simp] theorem toMvPolynomial_one :
     toMvPolynomial (1 : CMvPolynomial n Rat) = 1 := by
