@@ -529,6 +529,10 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Modu
   holo' := f.holo'
   bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
+/-- `mcast` does not change the pointwise values of a modular form. -/
+theorem mcast_apply {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
+    (hΓ : Γ' = Γ := by rfl) (z : ℍ) : mcast h f hΓ z = f z := rfl
+
 @[simp]
 lemma mcast_eq_zero_iff {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b)
     (hΓ : Γ' = Γ) (f : ModularForm Γ a) : mcast h f hΓ = 0 ↔ f = 0 := by
