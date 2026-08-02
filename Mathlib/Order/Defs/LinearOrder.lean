@@ -207,12 +207,11 @@ lemma lt_min (h₁ : a < b) (h₂ : a < c) : a < min b c := lt_min_iff.mpr ⟨h�
 section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  simp [apply_ite (· = Ordering.lt)]
+  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq_eq_lt]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  simpa [apply_ite (· = Ordering.gt), ne_iff_lt_or_gt, and_or_left, - not_lt] using not_lt_of_gt
+  rw [LinearOrder.compare_eq_compareOfLessAndEq,
+    compareOfLessAndEq_eq_gt le_antisymm le_total not_le]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
