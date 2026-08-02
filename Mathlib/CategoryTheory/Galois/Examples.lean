@@ -103,7 +103,7 @@ noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat G) FintypeCa
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat G) where
-  hasFiberFunctor := ⟨Action.forget FintypeCat G, ⟨inferInstance⟩⟩
+  hasFiberFunctor := ⟨Action.forget FintypeCat G, inferInstance⟩
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
