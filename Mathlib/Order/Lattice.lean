@@ -351,7 +351,7 @@ class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
--- Auxiliary theorem for `to_dual`.
+/-- Auxiliary constructor for `to_dual`. -/
 @[to_dual existing mk, instance_reducible]
 def Lattice.mkDual {α : Type*} [SemilatticeInf α] (sup : α → α → α)
     (le_sup_left : ∀ a b, a ≤ sup a b) (le_sup_right : ∀ a b, b ≤ sup a b)
