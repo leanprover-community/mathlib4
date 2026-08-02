@@ -550,7 +550,9 @@ theorem sInf_add {s : Set ℝ≥0∞} : sInf s + a = ⨅ b ∈ s, b + a := by si
 theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
   rw [add_comm, iInf_add]; simp [add_comm]
 
-theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a := by
+theorem iInf_add_iInf
+    (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) :
+    iInf f + iInf g = ⨅ a, f a + g a := by 
   rw [ENNReal.iInf_add]
   simp_rw [ENNReal.add_iInf]
   exact iInf₂_eq_iInf_diagonal (fun i j ↦ f i + g j) h
