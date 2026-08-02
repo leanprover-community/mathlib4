@@ -122,7 +122,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   obtain rfl | ⟨j, rfl⟩ := i.eq_zero_or_eq_succ
   · cases hi
   refine
-    not_irreducible_of_not_unit_dvdNotUnit
+    not_irreducible_of_not_isUnit_dvdNotUnit
       (DvdNotUnit.not_isUnit
         (Associates.dvdNotUnit_iff_lt.2 (h₁ (show (0 : Fin (n + 2)) < j.castSucc from ?_))))
       ?_ hp.irreducible

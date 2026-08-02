@@ -161,9 +161,12 @@ theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero M] {p q : M}
   obtain ⟨_, x, hx, hx'⟩ := h
   exact ((irreducible_iff.1 hq).right hx').resolve_right hx
 
-theorem not_irreducible_of_not_unit_dvdNotUnit [CommMonoidWithZero M] {p q : M} (hp : ¬IsUnit p)
+theorem not_irreducible_of_not_isUnit_dvdNotUnit [CommMonoidWithZero M] {p q : M} (hp : ¬IsUnit p)
     (h : DvdNotUnit p q) : ¬Irreducible q :=
   mt h.isUnit_of_irreducible_right hp
+
+@[deprecated (since := "2026-08-02")]
+alias not_irreducible_of_not_unit_dvdNotUnit := not_irreducible_of_not_isUnit_dvdNotUnit
 
 theorem DvdNotUnit.not_isUnit [CommMonoidWithZero M] {p q : M} (hp : DvdNotUnit p q) :
     ¬IsUnit q := by
