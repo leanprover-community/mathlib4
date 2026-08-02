@@ -127,7 +127,7 @@ macro_rules
               add_neg_cancel_right, neg_add_cancel_right,
               tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
             $[$loc]?
-          <;> ring_nf (ifUnchanged := .silent) $[$loc]?))
+          <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
     | fail "`add_group` made no progress")
 
 end Mathlib.Tactic.AddGroup
