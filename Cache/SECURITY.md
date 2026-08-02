@@ -139,6 +139,23 @@ The trust model does not attempt to defend against:
 - **Validation of artifact byte-identity** — the cache key identifies inputs,
   not bytes; containment is trust-bounded delivery, not fetch-time detection.
 
+## Provider-owned native releases
+
+For dependencies not representable by portable Lean cache entries, `cache get`
+runs a short allowlist of provider targets. CSDP's `release` facet supplies the
+expensive platform build, then its ordinary target refreshes only the
+toolchain-sensitive Lean wrapper; Mathlib excludes CSDP from its Azure cache.
+
+The checked-in manifest pins the provider source, while
+`Cache.Native.prefetchTargets` limits what the trusted cache binary may invoke.
+Providers publish immutable, checksummed platform assets with source provenance
+and licence notices.
+
+Loading these native libraries trusts the provider and GitHub release delivery
+for process integrity. Mathlib's cache hierarchy keeps pull requests from
+publishing native files into higher-trust Azure containers, but does not inspect
+or re-sign upstream release assets.
+
 ## Code pointers
 
 | Concern                                        | File(s)                                                          |
@@ -147,6 +164,7 @@ The trust model does not attempt to defend against:
 | Read-fallback resolution, upload URL, dispatch | [`Cache/Requests.lean`](Requests.lean) (`effectiveGetURLs`, `effectiveUploadURL`) |
 | Trust property tests                           | [`Cache/Test.lean`](Test.lean)                                   |
 | User-facing CLI surface, env vars              | [`Cache/Main.lean`](Main.lean), [`Cache/README.md`](README.md)   |
+| Provider-owned native release allowlist        | [`Cache/Native.lean`](Native.lean)                              |
 | OIDC mint + per-job dispatch                   | [`.github/workflows/build_template.yml`](../.github/workflows/build_template.yml) (`upload_cache` job) |
 | (repo, ref) → trust class policy table         | [`.github/actions/cache-trust-dispatch/action.yml`](../.github/actions/cache-trust-dispatch/action.yml) |
 | Caller `cache_application_id` wiring           | [`.github/workflows/build.yml`](../.github/workflows/build.yml), [`bors.yml`](../.github/workflows/bors.yml), [`build_fork.yml`](../.github/workflows/build_fork.yml), [`ci_dev.yml`](../.github/workflows/ci_dev.yml), [`release_cache.yml`](../.github/workflows/release_cache.yml) |

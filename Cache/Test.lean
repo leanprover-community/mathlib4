@@ -7,6 +7,7 @@ Authors: Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Native
 import Cache.Query
 import Cache.Warning
 import Cache.Lean
@@ -457,6 +458,29 @@ def test_isRemoteURL : IO Unit := do
     (isRemoteURL "" == false)
 
 end IsRemoteURL
+
+section SosCacheDelivery
+
+/-- Mathlib caches the pure-Lean SOS dependencies, while CSDP's platform release
+owns its complete Lean and native build tree. -/
+def test_sosCacheDelivery : IO Unit := do
+  IO.println "SOS cache roots:"
+  assertTrue "CSDP is owned by its platform release"
+    (!Cache.IO.isPartOfMathlibCache `CSDP)
+  for root in #[`HexBasic, `HexMvPoly, `HexPoly, `SOS] do
+    assertTrue s!"{root} is part of the Mathlib cache" (Cache.IO.isPartOfMathlibCache root)
+  assertTrue "CSDP release precedes its toolchain-sensitive wrapper"
+    (Cache.Native.prefetchTargets == #["@CSDP:release", "CSDP:shared"])
+  assertTrue "cache get prefetches native releases"
+    (Cache.Native.shouldPrefetch ["get"])
+  assertTrue "cache get! prefetches native releases"
+    (Cache.Native.shouldPrefetch ["get!", "Mathlib"])
+  assertTrue "cache get- does not unpack native releases"
+    (!Cache.Native.shouldPrefetch ["get-"])
+  assertTrue "non-read commands do not prefetch native releases"
+    (!Cache.Native.shouldPrefetch ["pack"])
+
+end SosCacheDelivery
 
 section UInt64Formatting
 
@@ -1095,6 +1119,7 @@ def runAll : IO Unit := do
   test_hashFromFileName
   test_tempFileNames
   test_isRemoteURL
+  test_sosCacheDelivery
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL

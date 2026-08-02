@@ -36,7 +36,7 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|
-| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. |
+| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. When a fork PR deliberately changes the cache key space, it rebuilds targets omitted by the trusted-master writer before later checks load them. |
 
 ## Pull requests
 
