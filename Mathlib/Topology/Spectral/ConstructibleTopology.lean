@@ -305,7 +305,7 @@ lemma WithConstructibleTopology.isCompact_preimage_of_map_continuous
     {s : Set Y} (hs1 : IsOpen s) (hs2 : IsCompact s) :
     @IsCompact X (constructibleTopology X) (f ⁻¹' s) := by
   have hf' := (map_continuous_iff f).1 hf
-  letI := constructibleTopology X
+  let := constructibleTopology X
   apply IsClosed.isCompact
   apply @IsClosed.preimage X Y _ (constructibleTopology Y) f hf'
   exact (@isOpen_compl_iff _ _ (generateFrom _)).1 <| isOpen_generateFrom_of_mem <|
@@ -351,6 +351,6 @@ lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [QuasiSeparatedSpace X
     (constructibleTopology Y) g).1 <| WithConstructibleTopology.map_continuous hg
   have h := @Continuous.comp (f ⁻¹' U) _ X (constructibleTopology (f ⁻¹' U)) _ _ id _
     continuous_subtype_val WithConstructibleTopology.continuous_constructibleTopology_id
-  letI := constructibleTopology { x // x ∈ f ⁻¹' U }
-  letI := constructibleTopology Y
+  let := constructibleTopology { x // x ∈ f ⁻¹' U }
+  let := constructibleTopology Y
   exact (isClosed_singleton.preimage hg1).isCompact.image h
