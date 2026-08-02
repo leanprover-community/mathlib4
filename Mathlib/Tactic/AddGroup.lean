@@ -109,7 +109,7 @@ macro_rules
 | `(tactic| add_group $[$loc]?) =>
   `(tactic| first
     | fail_if_no_progress
-        (simp -decide -failIfUnchanged only [sub_eq_add_neg] $[$loc]?
+        simp -decide -failIfUnchanged only [sub_eq_add_neg] $[$loc]?
         <;> repeat fail_if_no_progress
           (simp -decide -failIfUnchanged only
             [addCommutatorElement_def, add_zero, zero_add,
