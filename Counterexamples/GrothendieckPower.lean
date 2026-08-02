@@ -187,7 +187,7 @@ def WitnessRing := Subring.closure ({aEnd, bEnd} : Set (AddMonoid.End M))
 
 open scoped IsMulCommutative
 
-noncomputable instance : IsMulCommutative WitnessRing :=
+instance : IsMulCommutative WitnessRing :=
   Subring.isMulCommutative_closure fun _ hx _ hy ↦ generators_commute hx hy
 
 /-- The element `aEnd`, as an element of `WitnessRing`. -/
@@ -323,10 +323,10 @@ abbrev bA : A := algebraMap R A b
   change (algebraMap B A VB) ^ 2 = algebraMap R A (a ^ 2) * algebraMap B A VB
   rw [← map_pow, VB_relation, map_mul, IsScalarTower.algebraMap_apply R B A]
 
-noncomputable instance : Module.Free R A :=
+instance : Module.Free R A :=
   Module.Free.trans (S := B)
 
-noncomputable instance : Module.Finite R A :=
+instance : Module.Finite R A :=
   Module.Finite.trans B A
 
 theorem finrank_B : Module.finrank R B = 2 :=
@@ -356,7 +356,7 @@ section UniversalProperty
 variable {S : Type*} [CommRing S] [Algebra R S]
 
 /-- The `R`-algebra map `B →ₐ[R] S` sending `VB` to a root of `X² - a²X`. -/
-noncomputable def mkAlgHomB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
+def mkAlgHomB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
     B →ₐ[R] S :=
   QuadraticAlgebra.lift ⟨v, by rw [zero_smul, zero_add, Algebra.smul_def, ← pow_two, hv]⟩
 
@@ -367,7 +367,7 @@ theorem mkAlgHomB_VB (v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v) :
 /-- If `S` is an arbitrary `R`-algebra, then to give an `R`-algebra map `A →ₐ[R] S`
 it suffices to give a pair of elements `u` and `v` in `S` satisfying the
 equations `v²=a²v` amd `u²=abu-b²v`. -/
-noncomputable def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
+def mkAlgHom (u v : S) (hv : v ^ 2 = algebraMap R S (a ^ 2) * v)
     (hu : u ^ 2 = algebraMap R S (a * b) * u - algebraMap R S (b ^ 2) * v) :
     A →ₐ[R] S :=
   let : Algebra B S := (mkAlgHomB v hv).toRingHom.toAlgebra
@@ -529,7 +529,7 @@ private theorem b₁_smul : b₁ = b • 1 := by
   exact TensorProduct.smul_tmul' b 1 1
 
 /-- The coproduct algebra homomorphism, sending `U` to `δ_U` and `V` to `δ_V`. -/
-noncomputable def comul : A →ₐ[R] A ⊗[R] A :=
+def comul : A →ₐ[R] A ⊗[R] A :=
   mkAlgHom deltaU deltaV
     (by rw [← left.commutes (a ^ 2), map_pow, map_pow]; exact delta_relations.1)
     (by rw [← left.commutes (a * b), ← left.commutes (b ^ 2), map_mul, map_mul, map_pow,
@@ -597,7 +597,7 @@ theorem algHom_ext {S : Type*} [Semiring S] [Algebra R S]
 -/
 
 /-- The counit algebra homomorphism, sending `U` and `V` to zero. -/
-noncomputable def counit : A →ₐ[R] R :=
+def counit : A →ₐ[R] R :=
   mkAlgHom 0 0 (by simp) (by simp)
 
 @[simp] theorem counit_V : counit V = 0 := mkAlgHom_V _ _
@@ -632,7 +632,7 @@ theorem counit_right :
   · simp [counit_lambda]
 
 /-- The bialgebra structure underlying the counterexample. -/
-noncomputable instance instBialgebra : Bialgebra R A :=
+instance instBialgebra : Bialgebra R A :=
   Bialgebra.ofAlgHom comul counit comul_coassoc counit_left counit_right
 
 private theorem bialgebra_comulAlgHom : Bialgebra.comulAlgHom R A = comul := rfl
@@ -680,12 +680,12 @@ theorem two_theta : 2 * theta = 2 * bA * V := by
 open WithConv
 
 /-- The universal point, in the convolution monoid of `R`-algebra endomorphisms. -/
-noncomputable def universalPoint : WithConv (A →ₐ[R] A) :=
+def universalPoint : WithConv (A →ₐ[R] A) :=
   toConv (AlgHom.id R A)
 
 /-- The `n`th convolution power of the identity of `A`: the coordinate ring map of the
 pointwise `n`th power map of the group scheme. -/
-noncomputable def powerMap (n : ℕ) : A →ₐ[R] A :=
+def powerMap (n : ℕ) : A →ₐ[R] A :=
   (universalPoint ^ n).ofConv
 
 @[simp] theorem powerMap_zero_apply (x : A) : powerMap 0 x = algebraMap R A (counit x) := by
@@ -850,11 +850,11 @@ theorem antipode_left_identity :
   exact h
 
 /-- The Hopf `R`-algebra structure on `A`. -/
-noncomputable instance instHopfAlgebra : HopfAlgebra R A :=
+instance instHopfAlgebra : HopfAlgebra R A :=
   HopfAlgebra.ofAlgHom (powerMap 7) antipode_right_identity antipode_left_identity
 
 /-- The bundled commutative Hopf algebra representing the affine group scheme. -/
-noncomputable def coordinateHopfAlgebra : CommHopfAlgCat R :=
+def coordinateHopfAlgebra : CommHopfAlgCat R :=
   CommHopfAlgCat.of R A
 
 /-- The formal counterexample: over the nontrivial base ring `R`, the commutative Hopf
@@ -983,7 +983,7 @@ theorem id_pow_op_four_ne_one : 𝟙 (op (CommAlgCat.of R A)) ^ 4 ≠ 1 := by
 /-- The rank-four counterexample as an affine group scheme: the group object in the opposite
 of the category of commutative `R`-algebras corresponding to `coordinateHopfAlgebra` under
 Mathlib's antiequivalence `commHopfAlgCatEquivCogrpCommAlgCat`. -/
-noncomputable def affineGroupScheme : Grp (CommAlgCat R)ᵒᵖ :=
+def affineGroupScheme : Grp (CommAlgCat R)ᵒᵖ :=
   ((commHopfAlgCatEquivCogrpCommAlgCat R).functor.obj coordinateHopfAlgebra).unop
 
 theorem affineGroupScheme_X : affineGroupScheme.X = op (CommAlgCat.of R A) := rfl
