@@ -714,11 +714,10 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 
-
-
-theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p ^ n ∣ Nat.card G)
-    {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s) (hpgroup : ∀ g ∈ s, IsPGroup p g)
-    (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) {missing : Finset (Fin (n + 1))}
+private theorem exists_subgroup_tower_aux [Finite G] {p n : ℕ} (hp : p.Prime)
+    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
+    (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n)
+    (missing : Finset (Fin (n + 1)))
     (hmissing : ∀ k, (∃ g ∈ s, Nat.card g = p ^ k.val) ↔ k ∉ missing) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   have hdvd' : p ^ n ∣ Nat.card (⊤ : Subgroup G) := by simpa using hdvd
@@ -732,8 +731,7 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
       apply hchain.lt_of_not_ge (hfs b) (hfs a)
       contrapose! h
       simpa [hfcard, pow_le_pow_iff_right₀ hp.one_lt] using Subgroup.card_le_of_le h
-    refine ⟨.ofStrictMono f hmono, ?_, hfcard⟩
-    intro g hg
+    refine ⟨.ofStrictMono f hmono, fun g hg ↦ ?_, hfcard⟩
     obtain ⟨k, hk⟩ := (hpgroup g hg).exists_card_eq
     simp only [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
     have hklt : k < n + 1 := by simpa [hk, pow_le_pow_iff_right₀ hp.one_lt] using hcard g hg
@@ -744,10 +742,9 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
     · refine (Subgroup.eq_of_le_of_card_ge hfg ?_).symm
       simp [hk, hfcard]
   | insert j missing hj ih =>
-    have hi (hj0 : j ≠ 0) : j - 1 ∉ insert j missing := by
+    have hi (hj0 : j ≠ 0) : j - 1 ∉ insert j missing := fun h ↦ by
       have hn0 : n ≠ 0 := by grind
       obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn0
-      intro h
       simp only [mem_insert, sub_eq_self, one_ne_zero, false_or] at h
       specialize hj _ h
       simp [hj0] at hj
@@ -760,11 +757,42 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
         ∃ K : Subgroup G, Nat.card K = p ^ j.val ∧ (hiexist hj0).choose ≤ K ∧
         ∀ g ∈ s, p ^ j.val < Nat.card g → K ≤ g := by
       by_cases hnonempty :  ((missingᶜ).filter (j < ·)).Nonempty
-      · sorry
+      · let m := ((missingᶜ).filter (j < ·)).min' hnonempty
+        have hm : m ∈ (missingᶜ).filter (j < ·) := Finset.min'_mem _ _
+        simp only [Finset.mem_filter, mem_compl] at hm
+        obtain ⟨e, hes, hcarde⟩ := (hmissing m).mpr (fun h ↦ by
+          rcases Finset.mem_insert.mp h with h | h
+          · exact hm.2.ne' h
+          · exact hm.1 h
+        )
+        have hje : p ^ j.val ∣ Nat.card e := by
+          rw [hcarde]
+          exact pow_dvd_pow _ hm.2.le
+        have hlee : (hiexist hj0).choose ≤ e := by
+          refine hchain.le_of_not_gt hes (hiexist hj0).choose_spec.1 fun h ↦ ?_
+          have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
+            hcarde ▸ (hiexist hj0).choose_spec.2 ▸ Subgroup.card_lt_of_lt h
+          grind
+        obtain ⟨K, hKcard, hleft, hright⟩ := exists_subgroup_card_pow_prime_le_le hp
+          (hiexist hj0).choose_spec.2 hje hlee (by simp)
+        refine ⟨K, hKcard, hleft, fun g hg hjcardg ↦ ?_⟩
+        obtain ⟨d, hcardg⟩ := (hpgroup g hg).exists_card_eq
+        have hd := Nat.lt_add_one_of_le <| (pow_le_pow_iff_right₀ hp.one_lt).mp <|
+          hcardg ▸ hcard g hg
+        refine hright.trans <| hchain.le_of_not_gt hg hes fun h ↦ ?_
+        have hdm := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
+          hcardg ▸ hcarde ▸ Subgroup.card_lt_of_lt h
+        refine hdm.not_ge <| Finset.min'_le _ (⟨d, hd⟩ : Fin (n + 1)) ?_
+        simp only [Finset.mem_filter, mem_compl]
+        constructor
+        · have := (hmissing ⟨d, hd⟩).mp ⟨g, hg, hcardg⟩
+          contrapose this
+          exact Finset.mem_insert_of_mem this
+        · rw [hcardg, pow_lt_pow_iff_right₀ hp.one_lt] at hjcardg
+          exact hjcardg
       · obtain ⟨K, hKcard, hleft, hright⟩ :=
           exists_subgroup_card_pow_prime_le_le hp (hiexist hj0).choose_spec.2
-          ((pow_dvd_pow _ (Nat.lt_add_one_iff.mp j.prop)).trans hdvd')
-          (by simp) (by simp)
+          ((pow_dvd_pow _ (Nat.lt_add_one_iff.mp j.prop)).trans hdvd') (by simp) (by simp)
         refine ⟨K, hKcard, hleft, fun g hg hgcard ↦ ?_⟩
         absurd hnonempty
         obtain ⟨l, hl⟩ := (hpgroup g hg).exists_card_eq
@@ -777,11 +805,7 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
         intro h
         absurd (hmissing ⟨l, hcard⟩).not_left.mpr (Finset.mem_insert_of_mem h)
         use g
-    let u : Subgroup G :=
-      if hj0 : j = 0 then
-        ⊥
-      else
-        (hiexist' (hj0)).choose
+    let u : Subgroup G := if hj0 : j = 0 then ⊥ else (hiexist' (hj0)).choose
     have hcardu : Nat.card u = p ^ j.val := by
       unfold u
       split_ifs with hj0
@@ -792,24 +816,24 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
       unfold u
       split_ifs with hj0
       · simp
-      · intro v hv huv
-        obtain ⟨l, hcardv⟩ := (hpgroup v hv).exists_card_eq
-        have hl := Nat.lt_add_one_iff.mpr <|
-          (pow_le_pow_iff_right₀ hp.one_lt).mp (hcardv.symm ▸ hcard v hv)
-        have hlj := (hmissing ⟨l, hl⟩).mp ⟨v, hv, hcardv⟩
-        simp only [mem_insert, not_or] at hlj
-        rcases lt_or_gt_of_ne hlj.1 with hlj | hlj
-        · right
-          apply le_trans ?_ (hiexist' hj0).choose_spec.2.1
-          apply hchain.le_of_not_gt (hiexist hj0).choose_spec.1 hv
-          intro h
-          have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
-            (hiexist hj0).choose_spec.2 ▸ hcardv ▸ Subgroup.card_lt_of_lt h
-          grind
-        · left
-          apply (hiexist' (hj0)).choose_spec.2.2 v hv
-          rw [hcardv, pow_lt_pow_iff_right₀ hp.one_lt]
-          exact hlj
+      intro v hv huv
+      obtain ⟨l, hcardv⟩ := (hpgroup v hv).exists_card_eq
+      have hl := Nat.lt_add_one_iff.mpr <|
+        (pow_le_pow_iff_right₀ hp.one_lt).mp (hcardv.symm ▸ hcard v hv)
+      have hlj := (hmissing ⟨l, hl⟩).mp ⟨v, hv, hcardv⟩
+      simp only [mem_insert, not_or] at hlj
+      rcases lt_or_gt_of_ne hlj.1 with hlj | hlj
+      · right
+        apply le_trans ?_ (hiexist' hj0).choose_spec.2.1
+        apply hchain.le_of_not_gt (hiexist hj0).choose_spec.1 hv
+        intro h
+        have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
+          (hiexist hj0).choose_spec.2 ▸ hcardv ▸ Subgroup.card_lt_of_lt h
+        grind
+      · left
+        apply (hiexist' (hj0)).choose_spec.2.2 v hv
+        rw [hcardv, pow_lt_pow_iff_right₀ hp.one_lt]
+        exact hlj
     have hpgroup' : ∀ g ∈ insert u s, IsPGroup p g := by
       intro g hg
       rcases Set.mem_insert_iff.mp hg with rfl | hg
@@ -819,8 +843,7 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
       intro g hg
       rcases Set.mem_insert_iff.mp hg with rfl | hg
       · rw [hcardu]
-        apply pow_right_mono₀ hp.one_le
-        exact Nat.lt_add_one_iff.mp j.prop
+        exact pow_right_mono₀ hp.one_le <| Nat.lt_add_one_iff.mp j.prop
       · exact hcard g hg
     have hmissing' (k : Fin (n + 1)) :
         (∃ g ∈ insert u s, Nat.card g = p ^ k.val) ↔ k ∉ missing := by
@@ -843,110 +866,21 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
     obtain ⟨f, hsf, hfcard⟩ := ih hchain' hpgroup' hcard' hmissing'
     exact ⟨f, Set.Subset.trans (s.subset_insert u) hsf, hfcard⟩
 
-/-theorem exists_subgroup_tower' [Finite G] {p n : ℕ} (hp : p.Prime)
-    {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s) (hpgroup : ∀ g ∈ s, IsPGroup p g)
-    (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) (hdvd : p ^ n ∣ Nat.card G) :
+theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
+    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
+    (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   classical
-  have : Fact p.Prime := ⟨hp⟩
-  obtain ⟨m, hmaxchain, hsubset⟩ := hchain.exists_maxChain
-  have : ∀ k : Fin (n + 1), ∃ g ∈ m, Nat.card g = p ^ k.val := by
-    by_contra! hk
-    obtain ⟨k, hk⟩ := hk
-    by_cases hk0 : k = 0
-    · contrapose! hk
-      exact ⟨⊥, hmaxchain.bot_mem, by simp [hk0]⟩
-    let leftset := {j | j < k.val ∧ ∃ g ∈ m, Nat.card g = p ^ j}
-    let rightset := {j | k.val < j ∧ j ≤ n ∧ ∃ g ∈ m, Nat.card g = p ^ j}
-    have hleft : sSup leftset ∈ leftset := by
-      apply Set.Nonempty.csSup_mem
-      · exact ⟨0, by simp [leftset, Fin.pos_of_ne_zero hk0, hmaxchain.bot_mem]⟩
-      · exact (Finset.range k.val).finite_toSet.subset (by grind)
-    obtain ⟨hleft, left, hleftm, hleftcard⟩ := hleft
-    have hright (hr0 : rightset.Nonempty) : sInf rightset ∈ rightset := by
-      apply Set.Nonempty.csInf_mem hr0
-      · apply (Finset.range (n + 1)).finite_toSet.subset
-        grind
-    choose hright hrightn right hrightm hrightcard using hright
-    let right' := if hr0 : rightset.Nonempty then right hr0 else ⊤
-    have hright : p ^ k.val ∣ Nat.card right' := by
-      unfold right'
-      split_ifs with hr0
-      · rw [hrightcard]
-        apply Nat.pow_dvd_pow
-        grind
-      · rw [Subgroup.card_top]
-        refine dvd_trans ?_ hdvd
-        apply Nat.pow_dvd_pow
-        grind
-    have hlr : left ≤ right' := by
-      unfold right'
-      split_ifs with hr0
-      · apply hmaxchain.isChain.le_of_not_gt (hrightm hr0) hleftm
-        intro h
-        have h := card_le_of_le h.le
-        rw [hleftcard, hrightcard, pow_le_pow_iff_right₀ hp.one_lt] at h
-        grind
-      · exact le_top
-    obtain ⟨J, hJcard, hleftJ, hrightJ⟩ :=
-      exists_subgroup_card_pow_prime_le_le hp hleftcard hright hlr hleft.le
-    have hmax := hmaxchain.2
-    contrapose! hmax
-    refine ⟨m.insert J, ?_, Set.subset_insert _ _, ?_⟩
-    · apply hmaxchain.1.insert
-      intro I hIm hIJ
-      by_cases hIleft : I ≤ left
-      · exact Or.inr (hIleft.trans hleftJ)
-      · rw [hmaxchain.isChain.not_le hIm hleftm] at hIleft
-        have hcardleftI := Subgroup.card_lt_of_lt hIleft
-        rw [hleftcard] at hcardleftI
-        sorry
-    · sorry
-  choose f hfm hfcard using this
-  have hf : StrictMono f := by
-    intro a b h
-    apply hmaxchain.isChain.lt_of_not_ge (hfm b) (hfm a)
-    contrapose! h
-    simpa [hfcard, pow_le_pow_iff_right₀ hp.one_lt] using Subgroup.card_le_of_le h
-  refine ⟨.ofStrictMono f hf, ?_, by simpa using hfcard⟩
-  intro g hg
-  obtain ⟨k, hk⟩ := (hpgroup g hg).exists_card_eq
-  simp only [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
-  have hklt : k < n + 1 := by simpa [hk, pow_le_pow_iff_right₀ hp.one_lt] using hcard g hg
-  use ⟨k, hklt⟩
-  rcases hmaxchain.isChain.total (hfm ⟨k, hklt⟩) (hsubset hg) with hfg | hfg
-  · apply Subgroup.eq_of_le_of_card_ge hfg
-    simp [hk, hfcard]
-  · refine (Subgroup.eq_of_le_of_card_ge hfg ?_).symm
-    simp [hk, hfcard]-/
+  apply exists_subgroup_tower_aux hp hdvd hchain hpgroup hcard
+    {k | ¬ ∃ g ∈ s, Nat.card g = p ^ k.val}
+  grind
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
 theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
-  suffices ∃ f : Fin (n + 1) →o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val by
-    obtain ⟨f, h⟩ := this
-    refine ⟨.ofStrictMono f (f.monotone.strictMono_of_injective fun a b hab ↦ ?_), h⟩
-    have hcard := h a ▸ h b ▸ congr(Nat.card $hab)
-    simpa [pow_right_inj₀ hp.pos hp.ne_one, Fin.ext_iff] using hcard
-  have : Fact p.Prime := ⟨hp⟩
-  induction n generalizing G with
-  | zero => exact ⟨⟨![⊥], by simp⟩, by simp⟩
-  | succ n ih =>
-    obtain ⟨s, hs⟩ := exists_subgroup_card_pow_prime p h
-    obtain ⟨f, hf⟩ := ih (show p ^ n ∣ Nat.card s by simp [hs, pow_add])
-    let f' := fun k ↦ if hk : k = Fin.last (n + 1) then s else (f (k.castPred hk)).map s.subtype
-    have hf' (k : Fin (n + 2)) : Nat.card (f' k) = p ^ k.val := by
-      by_cases hk : k = Fin.last (n + 1)
-      · simpa [f', hk] using hs
-      · simp only [hk, f', ↓reduceDIte, card_map_of_injective s.subtype_injective]
-        exact hf (k.castPred hk)
-    refine ⟨⟨f', monotone_iff_forall_lt.mpr fun a b hab ↦ ?_⟩, hf'⟩
-    · have ha : a ≠ Fin.last (n + 1) := Fin.ne_last_of_lt hab
-      by_cases hb : b = Fin.last (n + 1)
-      · simp only [↓reduceDIte, ha, hb, f']
-        apply map_subtype_le
-      · simpa [ha, hb, f'] using f.mono hab.le
+  obtain ⟨f, _, hcard⟩ := exists_subgroup_tower_subgroup hp h IsChain.empty (by simp) (by simp)
+  exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
 then there is a subgroup of cardinality `p ^ n`. -/
