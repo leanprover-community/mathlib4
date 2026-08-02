@@ -55,7 +55,7 @@ theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := rfl
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
-  rw [trace_apply, norm_def, discr_def]; ring
+  rw [trace_def, norm_def, discr_def]; ring
 
 /-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.map`), the
 discriminant is multiplied by `u ^ 2`. -/
@@ -153,7 +153,7 @@ theorem nonempty_algEquiv_iff (h : IsRegular (2 : R)) :
   refine ⟨fun ⟨e⟩ ↦ ?_, fun ⟨u, hu, ⟨k, hk⟩⟩ ↦ ⟨mapEquiv a' b' u k ?_ (by grind)⟩⟩
   · refine ⟨(isUnit_im_omega_of_algEquiv e).unit,
       by rw [discr_eq_im_sq_mul_discr' e, IsUnit.unit_spec], ⟨(e ω).re, ?_⟩⟩
-    rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_apply, eq_comm]
+    rw [IsUnit.unit_spec, sub_eq_iff_eq_add', add_comm, mul_comm _ b', ← trace_def, eq_comm]
     exact trace_map_omega e.toAlgHom (isUnit_im_omega_of_algEquiv e).isRegular
   · rw [discr_def, discr_def] at hu
     rw [← h.left.eq_iff, mul_sub, mul_sub, ← mul_rotate, ← mul_assoc, ← mul_assoc, ← mul_assoc,

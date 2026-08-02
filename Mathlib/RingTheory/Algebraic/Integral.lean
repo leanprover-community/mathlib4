@@ -5,12 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
-
-import Mathlib.RingTheory.Polynomial.Subring
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Algebraic elements and integral elements
@@ -547,8 +546,7 @@ theorem lift_rank_of_isFractionRing :
   rw [IsLocalization.rank_eq R' R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
-theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
-  simpa using! congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
+@[deprecated (since := "2026-07-13")] alias finrank_of_isFractionRing := IsFractionRing.finrank_eq
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
@@ -563,6 +561,25 @@ theorem rank_fractionRing [IsDomain S] :
   rank_of_isFractionRing ..
 
 end Algebra.IsAlgebraic
+
+attribute [local instance] FractionRing.liftAlgebra in
+/-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
+`Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
+free. -/
+theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
+    [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
+    Module.finrank R S * Module.finrank S T = Module.finrank R T := by
+  by_cases h : FaithfulSMul R S
+  · have : FaithfulSMul R T := .trans R S T
+    have : IsDomain R := (FaithfulSMul.algebraMap_injective R T).isDomain
+    have : IsDomain S := (FaithfulSMul.algebraMap_injective S T).isDomain
+    rw [← IsFractionRing.finrank_eq R (FractionRing R) S (FractionRing S),
+      ← IsFractionRing.finrank_eq S (FractionRing S) T (FractionRing T),
+      ← IsFractionRing.finrank_eq R (FractionRing R) T (FractionRing T),
+      Module.finrank_mul_finrank (FractionRing R) (FractionRing S) (FractionRing T)]
+  · rw [Module.finrank_eq_zero_of_not_faithfulSMul h, zero_mul,
+      Module.finrank_eq_zero_of_not_faithfulSMul]
+    exact fun _ ↦ h (FaithfulSMul.tower_bot R S T)
 
 section Polynomial
 
