@@ -33,10 +33,13 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
-@[simp, aesop safe (rule_sets := [SetLike]), membership .]
+@[simp, aesop safe (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
+
+/- `no_index` breaks the default pattern so we can't use the `grind` attribute -/
+grind_pattern [membership] ofNat_mem => OfNat.ofNat n ∈ s
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=

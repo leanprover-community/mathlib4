@@ -190,6 +190,11 @@ alias ⟨le_of_sup_eq', sup_of_le_left⟩ := sup_eq_left
 alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 
 attribute [to_dual (attr := simp)] sup_of_le_left sup_of_le_right
+grind_pattern sup_of_le_left => a ⊔ b, a ≤ b
+grind_pattern sup_of_le_right => a ⊔ b, a ≤ b
+grind_pattern inf_of_le_left => a ⊓ b, a ≤ b
+grind_pattern inf_of_le_right => a ⊓ b, a ≤ b
+
 attribute [to_dual le_of_inf_eq'] le_of_sup_eq
 attribute [to_dual le_of_inf_eq] le_of_sup_eq'
 
