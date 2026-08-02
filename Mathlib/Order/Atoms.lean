@@ -270,77 +270,53 @@ class IsAtomic [OrderBot α] : Prop where
   eq_bot_or_exists_atom_le : ∀ b : α, b = ⊥ ∨ ∃ a : α, IsAtom a ∧ a ≤ b
 
 /-- A lattice is coatomic iff every element other than `⊤` has a coatom above it. -/
-@[to_dual, mk_iff]
+@[to_dual existing, mk_iff]
 class IsCoatomic [OrderTop α] : Prop where
   /-- Every element other than `⊤` has an atom above it. -/
   eq_top_or_exists_le_coatom : ∀ b : α, b = ⊤ ∨ ∃ a : α, IsCoatom a ∧ b ≤ a
+
+attribute [to_dual existing] isAtomic_iff
 
 export IsAtomic (eq_bot_or_exists_atom_le)
 
 export IsCoatomic (eq_top_or_exists_le_coatom)
 
+@[to_dual]
 lemma IsAtomic.exists_atom [OrderBot α] [Nontrivial α] [IsAtomic α] : ∃ a : α, IsAtom a :=
   have ⟨b, hb⟩ := exists_ne (⊥ : α)
   have ⟨a, ha⟩ := (eq_bot_or_exists_atom_le b).resolve_left hb
   ⟨a, ha.1⟩
 
-lemma IsCoatomic.exists_coatom [OrderTop α] [Nontrivial α] [IsCoatomic α] : ∃ a : α, IsCoatom a :=
-  have ⟨b, hb⟩ := exists_ne (⊤ : α)
-  have ⟨a, ha⟩ := (eq_top_or_exists_le_coatom b).resolve_left hb
-  ⟨a, ha.1⟩
-
 variable {α}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem isCoatomic_dual_iff_isAtomic [OrderBot α] : IsCoatomic αᵒᵈ ↔ IsAtomic α :=
   ⟨fun h => ⟨fun b => by apply h.eq_top_or_exists_le_coatom⟩, fun h =>
     ⟨fun b => by apply h.eq_bot_or_exists_atom_le⟩⟩
-
-@[simp]
-theorem isAtomic_dual_iff_isCoatomic [OrderTop α] : IsAtomic αᵒᵈ ↔ IsCoatomic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_bot_or_exists_atom_le⟩, fun h =>
-    ⟨fun b => by apply h.eq_top_or_exists_le_coatom⟩⟩
 
 namespace IsAtomic
 
 variable [OrderBot α] [IsAtomic α]
 
+@[to_dual]
 instance _root_.OrderDual.instIsCoatomic : IsCoatomic αᵒᵈ :=
   isCoatomic_dual_iff_isAtomic.2 ‹IsAtomic α›
 
-instance Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
+@[to_dual]
+instance _root_.Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
   ⟨fun ⟨y, hy⟩ =>
     (eq_bot_or_exists_atom_le y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
       ⟨⟨a, hay.trans hy⟩, ha.Iic (hay.trans hy), hay⟩⟩
 
 end IsAtomic
 
-namespace IsCoatomic
-
-variable [OrderTop α] [IsCoatomic α]
-
-instance _root_.OrderDual.instIsAtomic : IsAtomic αᵒᵈ :=
-  isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
-
-instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
-  ⟨fun ⟨y, hy⟩ =>
-    (eq_top_or_exists_le_coatom y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
-      ⟨⟨a, le_trans hy hay⟩, ha.Ici (le_trans hy hay), hay⟩⟩
-
-end IsCoatomic
-
+@[to_dual]
 theorem isAtomic_iff_forall_isAtomic_Iic [OrderBot α] :
     IsAtomic α ↔ ∀ x : α, IsAtomic (Set.Iic x) :=
-  ⟨@IsAtomic.Set.Iic.isAtomic _ _ _, fun h =>
+  ⟨@Set.Iic.isAtomic _ _ _, fun h =>
     ⟨fun x =>
       ((@eq_bot_or_exists_atom_le _ _ _ (h x)) (⊤ : Set.Iic x)).imp Subtype.mk_eq_mk.1
         (Exists.imp' (↑) fun ⟨_, _⟩ => And.imp_left IsAtom.of_isAtom_coe_Iic)⟩⟩
-
-theorem isCoatomic_iff_forall_isCoatomic_Ici [OrderTop α] :
-    IsCoatomic α ↔ ∀ x : α, IsCoatomic (Set.Ici x) :=
-  isAtomic_dual_iff_isCoatomic.symm.trans <|
-    isAtomic_iff_forall_isAtomic_Iic.trans <|
-      forall_congr' fun _ => isCoatomic_dual_iff_isAtomic.symm.trans Iff.rfl
 
 section StronglyAtomic
 
@@ -361,7 +337,7 @@ alias LT.lt.exists_covby_le := exists_covBy_le_of_lt
 contains an element covered by `b`. -/
 @[mk_iff]
 class IsStronglyCoatomic (α : Type*) [Preorder α] : Prop where
-  (exists_le_covBy_of_lt : ∀ (a b : α), a < b → ∃ x, a ≤ x ∧ x ⋖ b)
+  exists_le_covBy_of_lt : ∀ (a b : α), a < b → ∃ x, a ≤ x ∧ x ⋖ b
 
 theorem exists_le_covBy_of_lt [IsStronglyCoatomic α] (h : a < b) : ∃ x, a ≤ x ∧ x ⋖ b :=
   IsStronglyCoatomic.exists_le_covBy_of_lt a b h
