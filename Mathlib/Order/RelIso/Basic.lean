@@ -98,7 +98,7 @@ protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → We
 protected theorem wellFounded' [RelHomClass F r s] (f : F) [i : WellFounded s] : WellFounded r :=
   RelHomClass.wellFounded f i
 
-@[deprecated (since := "2026-02-21")] alias isWellFounded := RelHomClass.wellFounded'
+@[deprecated (since := "2026-08-01")] alias isWellFounded := RelHomClass.wellFounded'
 
 end RelHomClass
 
@@ -383,7 +383,7 @@ protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFoun
 protected theorem wellFounded' (f : r ↪r s) [i : WellFounded s] : WellFounded r :=
   f.wellFounded i
 
-@[deprecated (since := "2026-02-21")] alias isWellFounded := RelEmbedding.wellFounded'
+@[deprecated (since := "2026-08-01")] alias isWellFounded := RelEmbedding.wellFounded'
 
 protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
   | f, _ => { f.isStrictTotalOrder with wf := f.wellFounded' }

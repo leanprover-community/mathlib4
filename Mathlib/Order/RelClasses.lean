@@ -162,12 +162,12 @@ instance InvImage.asymm [Std.Asymm r] (f : β → α) : Std.Asymm (InvImage r f)
 attribute [class] WellFounded
 
 /-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
-@[deprecated WellFounded (since := "2026-02-21"), mk_iff]
+@[deprecated WellFounded (since := "2026-08-01"), mk_iff]
 class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 
-attribute [deprecated "simply use `WellFounded" (since := "2026-02-21")] isWellFounded_iff
+attribute [deprecated "simply use `WellFounded`" (since := "2026-08-01")] isWellFounded_iff
 
 instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
     @WellFounded α WellFoundedRelation.rel :=
@@ -645,18 +645,18 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
   inferInstance
 
-@[deprecated (since := "2026-02-21")]
+@[deprecated (since := "2026-08-01")]
 alias transitive_ge := isTrans_ge
-@[to_dual existing transitive_ge, deprecated (since := "2026-02-21")]
+@[to_dual existing transitive_ge, deprecated (since := "2026-08-01")]
 alias transitive_le := isTrans_le
 
 @[to_dual isTrans_gt]
 theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
   inferInstance
 
-@[deprecated (since := "2026-02-21")]
+@[deprecated (since := "2026-08-01")]
 alias transitive_gt := isTrans_gt
-@[to_dual existing transitive_gt, deprecated (since := "2026-02-21")]
+@[to_dual existing transitive_gt, deprecated (since := "2026-08-01")]
 alias transitive_lt := isTrans_lt
 
 @[to_dual total_ge]
