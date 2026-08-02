@@ -102,19 +102,36 @@ variable {G : Type*} [Group G] [HasForget₂ V TopCat] [TopologicalSpace G]
 variable (V G) in
 abbrev isContinuous : ObjectProperty (Action V G) := IsContinuous
 
-variable [IsTopologicalGroup G] [CompactSpace G] [T2Space G]
-  [TotallyDisconnectedSpace G]
+variable [IsTopologicalGroup G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma trivialOnSet_le_isContinuous (H : OpenSubgroup G) :
-    trivialOnSet _ H ≤ isContinuous FintypeCat.{w} G := sorry
+    trivialOnSet _ H ≤ isContinuous FintypeCat.{w} G := by
+  intro R h
+  constructor
+  let s : G ⧸ H.toSubgroup → G := Function.surjInv Quotient.mk_surjective
+  have hs (g : G) : ∃ (x : H), s g = g * x :=
+    ⟨⟨g⁻¹ * s g, QuotientGroup.eq.1 (Function.rightInverse_surjInv _ _).symm⟩, by simp⟩
+  let φ (x : (G ⧸ H.toSubgroup) × R.V) : R.V := s x.1 • x.2
+  have : (fun (x : G × ((forget₂ _ TopCat).obj R)) ↦ x.1 • x.2) = fun x ↦
+      φ ⟨x.1, x.2⟩ := by
+    ext ⟨g, v⟩
+    obtain ⟨x, eq⟩ := hs g
+    dsimp [φ]
+    rw [eq, ← smul_smul]
+    congr 1
+    exact ConcreteCategory.congr_hom (h _ x.prop).symm v
+  dsimp [isContinuous, IsContinuous]
+  rw [this]
+  fun_prop
 
 lemma isContinuous_eq_iSup :
     isContinuous FintypeCat.{w} G = ⨆ (H : OpenSubgroup G), trivialOnSet _ H := by
-  have : IsTopologicalGroup G := inferInstance
-  have : CompactSpace G := inferInstance
-  have : T2Space G := inferInstance
-  have : TotallyDisconnectedSpace G := inferInstance
-  sorry
+  refine le_antisymm (fun R (h : _) ↦ ?_) (by simpa using trivialOnSet_le_isContinuous)
+  change ContinuousSMul G R.V.obj at h
+  simp only [ObjectProperty.prop_iSup_iff]
+  exact ⟨OpenSubgroup.iInfOfFinite (fun (v : R.V) ↦ ⟨_, stabilizer_isOpen G v⟩),
+    fun g hg ↦ ConcreteCategory.hom_ext _ _ (fun v ↦ OpenSubgroup.iInfOfFinite_le _ v hg)⟩
 
 instance : (isContinuous FintypeCat.{w} G).IsClosedUnderSubobjects := by
   rw [isContinuous_eq_iSup]
