@@ -209,13 +209,13 @@ section Ord
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq_eq_lt]
 
-lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq,
-    compareOfLessAndEq_eq_gt le_antisymm le_total not_le]
-
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   simp +contextual [apply_ite (· = Ordering.eq)]
+
+lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
+  rw [LinearOrder.compare_eq_compareOfLessAndEq,
+    compareOfLessAndEq_eq_gt le_antisymm le_total not_le]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b
