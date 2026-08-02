@@ -792,7 +792,24 @@ theorem exists_subgroup_tower'' [Finite G] {p n : ℕ} (hp : p.Prime) (hdvd : p 
       unfold u
       split_ifs with hj0
       · simp
-      · sorry
+      · intro v hv huv
+        obtain ⟨l, hcardv⟩ := (hpgroup v hv).exists_card_eq
+        have hl := Nat.lt_add_one_iff.mpr <|
+          (pow_le_pow_iff_right₀ hp.one_lt).mp (hcardv.symm ▸ hcard v hv)
+        have hlj := (hmissing ⟨l, hl⟩).mp ⟨v, hv, hcardv⟩
+        simp only [mem_insert, not_or] at hlj
+        rcases lt_or_gt_of_ne hlj.1 with hlj | hlj
+        · right
+          apply le_trans ?_ (hiexist' hj0).choose_spec.2.1
+          apply hchain.le_of_not_gt (hiexist hj0).choose_spec.1 hv
+          intro h
+          have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
+            (hiexist hj0).choose_spec.2 ▸ hcardv ▸ Subgroup.card_lt_of_lt h
+          grind
+        · left
+          apply (hiexist' (hj0)).choose_spec.2.2 v hv
+          rw [hcardv, pow_lt_pow_iff_right₀ hp.one_lt]
+          exact hlj
     have hpgroup' : ∀ g ∈ insert u s, IsPGroup p g := by
       intro g hg
       rcases Set.mem_insert_iff.mp hg with rfl | hg
