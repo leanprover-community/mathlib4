@@ -257,9 +257,9 @@ instance preservesLimitsOfShape_presheafToSheaf
     [PreservesLimits (forget D)] [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, t})
-  haveI : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
+  have : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
     Limits.hasLimitsOfShape_of_equivalence e
-  haveI : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
+  have : FinCategory (AsSmall.{t} (FinCategory.AsType K)) := by
     constructor
     · change Fintype (ULift _)
       infer_instance

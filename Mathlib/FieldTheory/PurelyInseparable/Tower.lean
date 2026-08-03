@@ -66,7 +66,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent E v := by
   obtain ⟨q, _⟩ := ExpChar.exists F
-  haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
+  have := expChar_of_injective_algebraMap (algebraMap F K).injective q
   refine linearIndependent_iff.mpr fun l hl ↦ Finsupp.ext fun i ↦ ?_
   choose f hf using fun i ↦ (isPurelyInseparable_iff_pow_mem F q).1 ‹_› (l i)
   let n := l.support.sup f
@@ -149,7 +149,7 @@ intermediate result used to prove it. -/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
-  haveI : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  have : IsScalarTower F (separableClosure E K) K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [sepDegree, ← separableClosure.map_eq_of_separableClosure_eq_bot F
     (separableClosure.separableClosure_eq_bot E K)]
   exact (separableClosure F (separableClosure E K)).equivMap
@@ -227,10 +227,10 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
     rw [restrictScalars_adjoin_of_algEquiv (E := K) j rfl, restrictScalars_adjoin]
     exact adjoin.mono _ _ _ Set.subset_union_right
   let i : M →+* L := Subsemiring.inclusion hi
-  letI : Algebra M L := i.toAlgebra
-  letI : SMul M L := Algebra.toSMul
-  haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  haveI : IsPurelyInseparable M L := by
+  let : Algebra M L := i.toAlgebra
+  let : SMul M L := Algebra.toSMul
+  have : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  have : IsPurelyInseparable M L := by
     change IsPurelyInseparable M (extendScalars hi)
     obtain ⟨q, _⟩ := ExpChar.exists F
     have : extendScalars hi = adjoin M (E' : Set K) := restrictScalars_injective F <| by
@@ -270,8 +270,8 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
   have hsep' := IsSeparable.tower_top E hsep
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
+  have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
+  have := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,

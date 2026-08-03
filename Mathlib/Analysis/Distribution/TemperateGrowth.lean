@@ -343,7 +343,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   set t := {y : ℝ | 1 / 2 < y}
   have ht : Set.range (fun (x : H) ↦ (1 + ‖x‖ ^ 2)) ⊆ t := by
     rintro - ⟨y, rfl⟩
-    simp only [Set.mem_setOf_eq, t]
+    simp only [Set.mem_ofPred_eq, t]
     exact lt_add_of_lt_add_left (c := 0) (by norm_num) (by positivity)
   have hdiff : ContDiffOn ℝ ∞ (fun x ↦ x ^ r) t :=
     contDiffOn_fun_id.rpow_const_of_ne fun x hx ↦ (lt_trans (by norm_num) hx).ne'
@@ -392,7 +392,7 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
       congr
       simpa using hx''.le
     _ ≤ (2 : ℝ) ^ (n - r) := by
-      simp only [one_div, Set.mem_setOf_eq, t] at hx
+      simp only [one_div, Set.mem_ofPred_eq, t] at hx
       rw [Real.rpow_neg_eq_inv_rpow]
       gcongr
       exact ((inv_lt_comm₀ hx'' (by norm_num)).mpr hx).le
@@ -424,7 +424,7 @@ open scoped ENNReal
 class HasTemperateGrowth (μ : Measure E) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
-open Classical in
+open scoped Classical in
 /-- An integer exponent `l` such that `(1 + ‖x‖) ^ (-l)` is integrable if `μ` has
 temperate growth. -/
 def integrablePower (μ : Measure E) : ℕ :=

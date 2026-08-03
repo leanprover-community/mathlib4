@@ -123,6 +123,7 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
@@ -307,6 +308,7 @@ lemma ιTensorObj₃_associator_inv
 
 variable {X₁ X₂ X₃}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable [HasTensor Y₁ Y₂] [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₂ Y₃]
   [HasTensor Y₁ (tensorObj Y₂ Y₃)] in
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
@@ -415,6 +417,7 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasGoodTensorTensor₂₃ X₁ X₂ (tensorObj X₃ X₄)]
   [HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma pentagon_inv :
     tensorHom (𝟙 X₁) (associator X₂ X₃ X₄).inv ≫ (associator X₁ (tensorObj X₂ X₃) X₄).inv ≫
@@ -606,6 +609,7 @@ instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := 
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :

@@ -94,7 +94,7 @@ structure DividedPowers where
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
 noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
-  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
+  dpow n a := open scoped Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]

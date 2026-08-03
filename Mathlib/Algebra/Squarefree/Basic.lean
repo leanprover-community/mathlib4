@@ -270,7 +270,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
   rw [squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
-  haveI := nontrivial_of_ne x 0 x0
+  have := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
   · by_cases hmem : a ∈ normalizedFactors x
     · have ha := irreducible_of_normalized_factor _ hmem

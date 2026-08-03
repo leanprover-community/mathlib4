@@ -261,7 +261,7 @@ theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
 theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by
-  simp [← mk_congr (Equiv.ofBijective _ Set.setOf_bijective), ← one_add_one_eq_two]
+  simp [← mk_congr (Equiv.ofBijective _ Set.ofPred_bijective), ← one_add_one_eq_two]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -362,7 +362,7 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
     by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
-      haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
+      have hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
         Embedding.min_injective fun i => (f i).out
       refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
@@ -483,6 +483,7 @@ theorem le_sum {ι : Type u} (f : ι → Cardinal.{max u v}) (i) : f i ≤ sum f
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_add_distrib {ι} (f g : ι → Cardinal) : sum (f + g) = sum f + sum g := by
   have := mk_congr (Equiv.sigmaSumDistrib (Quotient.out ∘ f) (Quotient.out ∘ g))
@@ -513,7 +514,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage_symm]
-                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
+                  simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_ofPred_eq, coe_ofPred]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
         (hf b)

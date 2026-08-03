@@ -262,7 +262,7 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 @[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
-  open Classical in
+  open scoped Classical in
   -- TODO: why does `inferInstanceAs` not work here?
   fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
 
@@ -605,7 +605,6 @@ s = ⊤ with a junk value ⊥. -/
 s = ⊤ with a junk value ⊥. -/]
 noncomputable
 def subgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
-  open Classical in
   if hs : s = ⊤ then
     ⊥
   else {
@@ -865,6 +864,7 @@ theorem subsemigroup_eq_subgroup :
     MulArchimedeanClass.subsemigroup (toUpperSetMulArchimedeanClass s) = (subgroup s : Set M) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[to_additive (attr := simp)]
 theorem subgroup_eq_bot : subgroup (M := M) ⊤ = ⊥ := by
@@ -901,28 +901,5 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : FiniteMulArchimedeanClass M} :
 @[to_additive]
 theorem ballSubgroup_strictAnti : StrictAnti (ballSubgroup (M := M)) :=
   fun _ _ h ↦ subgroup_strictAnti <| UpperSet.Ioi_strictMono _ h
-
-attribute [deprecated subgroup (since := "2025-12-14")] MulArchimedeanClass.subgroup
-attribute [deprecated subsemigroup_eq_subgroup (since := "2025-12-14")]
-  MulArchimedeanClass.subsemigroup_eq_subgroup_of_ne_top
-attribute [deprecated subgroup_eq_bot (since := "2025-12-14")] MulArchimedeanClass.subgroup_eq_bot
-attribute [deprecated mem_subgroup_iff (since := "2025-12-14")] MulArchimedeanClass.mem_subgroup_iff
-attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.subgroup_strictAntiOn
-attribute [deprecated subgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.subgroup_antitone
-attribute [deprecated ballSubgroup (since := "2025-12-14")] MulArchimedeanClass.ballSubgroup
-attribute [deprecated closedBallSubgroup (since := "2025-12-14")]
-  MulArchimedeanClass.closedBallSubgroup
-attribute [deprecated mem_ballSubgroup_iff (since := "2025-12-14")]
-  MulArchimedeanClass.mem_ballSubgroup_iff
-attribute [deprecated mem_closedBallSubgroup_iff (since := "2025-12-14")]
-  MulArchimedeanClass.mem_closedBallSubgroup_iff
-attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
-  MulArchimedeanClass.ballSubgroup_top
-attribute [deprecated "Lemma for junk value." (since := "2025-12-14")]
-  MulArchimedeanClass.closedBallSubgroup_top
-attribute [deprecated ballSubgroup_strictAnti (since := "2025-12-14")]
-  MulArchimedeanClass.ballSubgroup_antitone
 
 end FiniteMulArchimedeanClass

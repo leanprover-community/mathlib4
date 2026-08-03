@@ -267,6 +267,7 @@ lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : �
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
   HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g x hx))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Reformulation of a finsum that appears in Jensen's formula and in the definition of the counting
 function of Value Distribution Theory, as discussed in

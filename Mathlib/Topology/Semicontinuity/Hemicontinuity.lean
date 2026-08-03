@@ -68,7 +68,6 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
   case h₂ =>
     intro s t hst
     gcongr
-    exact hst
   case h₁ =>
     intro s t hst
     gcongr
@@ -96,8 +95,7 @@ lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
   simp_rw [upperHemicontinuous_iff_preimage_Iic, isOpen_iff_mem_nhds (s := f ⁻¹' Iic _)]
   conv =>
     enter [1, x]
-    rw [hasBasis_nhdsSet (f x) |>.forall_iff <|
-      fun s t hst ↦ by gcongr; exact hst]
+    rw [hasBasis_nhdsSet (f x) |>.forall_iff fun s t hst ↦ by gcongr]
   simp [forall_comm (α := α)]
 
 /-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *lower inverse*
@@ -118,7 +116,7 @@ lemma isClosedMap_iff_upperHemicontinuous {f : α → β} :
 lemma lowerHemicontinuous_iff_isOpen_inter_nonempty :
     LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen {x | (f x ∩ u).Nonempty} := by
   simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, isOpen_iff_mem_nhds,
-    forall_comm (α := α), mem_setOf, Filter.Eventually]
+    forall_comm (α := α), mem_ofPred, Filter.Eventually]
 
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *lower inverse*
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
@@ -343,7 +341,7 @@ The more general fact is that if `f` is upper hemicontinuous at `x₀` within `s
 `x₀` is a cluster point of `s ∩ {x | (f x).Nonempty}`, then `(f x₀).Nonempty`. -/
 lemma UpperHemicontinuous.isClosed_domain (hf : UpperHemicontinuous f) :
     IsClosed {x | (f x).Nonempty} := by
-  simp only [← isOpen_compl_iff, compl_setOf, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
+  simp only [← isOpen_compl_iff, compl_ofPred, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
   intro x (hx : f x = ∅)
   simp_rw [upperHemicontinuous_iff, upperHemicontinuousAt_iff] at hf
   simpa [hx, empty_mem_iff_bot, nhdsSet_eq_bot_iff] using! hf x ∅
@@ -391,7 +389,7 @@ lemma UpperHemicontinuousAt.mem_of_tendsto {ι : Type*} [RegularSpace β] {x₀ 
     exact hst.notMem_of_mem_left hyn hn
   apply hy.mp
   filter_upwards [hx (hf s hs)] with n hn hyn
-  simp only [← subset_interior_iff_mem_nhdsSet, preimage_setOf_eq, mem_setOf_eq] at hn
+  simp only [← subset_interior_iff_mem_nhdsSet, preimage_ofPred_eq, mem_ofPred_eq] at hn
   exact interior_subset <| hn hyn
 
 /-! ### Open lower sections -/

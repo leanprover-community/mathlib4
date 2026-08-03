@@ -19,18 +19,38 @@ name: Lake cache shadow (master)
 #     # host than the S3 API endpoint; e.g. an R2 public r2.dev/custom domain).
 #     LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/artifacts
 #     LAKE_CACHE_REVISION_ENDPOINT_PUBLIC    — e.g. https://pub-<hash>.r2.dev/<prefix>/revisions
+#     # Optional. Default toolchain override for every run, including
+#     # scheduled ones; the dispatch input takes precedence. Unset to run
+#     # on the repo pin.
+#     LAKE_SHADOW_TOOLCHAIN_OVERRIDE         — e.g. leanprover/lean4-pr-releases:pr-release-14301
 #
 # Jobs:
 #   build_and_stage  Build mathlib + deps with Lake's artifact cache
 #                    enabled, then stage the resulting .ltar files.
 #   upload           Push staged artifacts to the cache bucket via
 #                    `lake cache put-staged`, then record a per-run manifest
-#                    under cache/analysis/ and report carryover vs the prior run.
+#                    under cache/analysis/<toolchain-slug>/ and report
+#                    carryover vs the prior run on the same toolchain.
 #   consume          Fresh checkout, fetch from the cache bucket via
 #                    `lake cache get`, run `lake build` against the
 #                    rehydrated cache, then verify with `--rehash`.
 #   report           Post a per-run summary to the `CI admins` Zulip
 #                    stream (topic `Lake cache shadow`).
+#
+# Toolchain override:
+#   The `toolchain_override` input, or else the LAKE_SHADOW_TOOLCHAIN_OVERRIDE
+#   variable, swaps the toolchain the whole pipeline runs on: build_and_stage
+#   resolves it into its `toolchain` output, and the downstream jobs stamp
+#   that output into their checkouts, so every job runs the same lake. Its
+#   lean must be behaviorally compatible with the repo pin, e.g. a Lake change
+#   cherry-picked onto the pinned release's lineage as a lean4 pr-release.
+#   Input hashes incorporate the toolchain, so all runs safely share one
+#   artifact scope. The analysis chain (warm-start pointer + carryover
+#   manifests) is keyed per toolchain under analysis/<slug>/, so pinned and
+#   override runs each warm-start from and diff against their own lineage.
+#   A toolchain's first run — or a pr-release tag republished under the same
+#   name — misses the legacy cache and all prior artifacts, costing one
+#   full-turnover source build.
 
 on:
   schedule:
@@ -54,6 +74,15 @@ on:
         #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
         # or add `Archive Counterexamples` to also shadow those libraries.
         default: Mathlib
+      toolchain_override:
+        description: >-
+          optional Lean toolchain to run the pipeline on instead of the repo
+          pin; see the "Toolchain override" note at the top of this file.
+          Empty falls back to the LAKE_SHADOW_TOOLCHAIN_OVERRIDE repository
+          variable; the pipeline runs on the repo pin when both are empty.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -67,6 +96,9 @@ defaults:
     shell: bash -euo pipefail {0}
 
 env:
+  # Effective toolchain override: dispatch input, else repository variable,
+  # else the repo pin.
+  TOOLCHAIN_OVERRIDE: ${{ inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE || '' }}
   # Scope prefix for all puts and gets in this workflow. Namespaces the
   # workflow's artifacts within the cache bucket.
   SHADOW_SCOPE: mathlib4-master-shadow
@@ -78,7 +110,8 @@ jobs:
     name: Build + stage
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: pr
-    timeout-minutes: 90
+    # 240 covers the full source build of a toolchain generation's first run.
+    timeout-minutes: ${{ (inputs.toolchain_override || vars.LAKE_SHADOW_TOOLCHAIN_OVERRIDE) && 240 || 90 }}
     outputs:
       sha: ${{ steps.resolve.outputs.sha }}
       toolchain: ${{ steps.resolve.outputs.toolchain }}
@@ -110,6 +143,15 @@ jobs:
           fetch-depth: 2
           path: pr-branch
 
+      # Before the resolve step, so the run's recorded toolchain is the one
+      # actually used.
+      - name: Apply toolchain override
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
+        shell: bash -euo pipefail {0}
+        run: |
+          printf '%s\n' "$TOOLCHAIN_OVERRIDE" > pr-branch/lean-toolchain
+          echo "::notice::toolchain override: $TOOLCHAIN_OVERRIDE"
+
       - name: Resolve sha & toolchain
         id: resolve
         shell: bash -euo pipefail {0}
@@ -124,7 +166,10 @@ jobs:
         shell: bash -euo pipefail {0}
         run: |
           mkdir -p pr-branch/.lake/
-          mkdir -p .cache/mathlib/
+          # The landrun ruleset mounts $HOME/.cache/mathlib read-only and
+          # errors out if the path is missing. Runs that skip legacy hydration
+          # reach the first landrun step with it absent.
+          mkdir -p "$HOME/.cache/mathlib/"
           mkdir -p _work
 
       - name: install elan
@@ -134,6 +179,17 @@ jobs:
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      # `elan which` below does not auto-install non-pinned toolchains. The
+      # uninstall forces a fresh download: pr-release tags are republished in
+      # place, and elan skips toolchains it already has, so a persistent
+      # runner would otherwise keep running a stale binary under that name.
+      - name: Install override toolchain
+        if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
+        shell: bash -euo pipefail {0}
+        run: |
+          elan toolchain uninstall "$TOOLCHAIN_OVERRIDE" || true
+          elan toolchain install "$TOOLCHAIN_OVERRIDE"
 
       - name: set toolchain directory
         shell: bash -euo pipefail {0}
@@ -168,7 +224,10 @@ jobs:
           cd pr-branch
           lake env
 
+      # The legacy cache is keyed to the repo's pinned toolchain — cold for an
+      # override toolchain, where the warm-start step below takes its place.
       - name: Hydrate .lake/build via legacy cache
+        if: ${{ env.TOOLCHAIN_OVERRIDE == '' }}
         shell: bash -euo pipefail {0}
         run: |
           cd pr-branch
@@ -198,6 +257,28 @@ jobs:
           echo "::group::patched package block"
           awk '/^package mathlib where/,/^$/' lakefile.lean
           echo "::endgroup::"
+
+      # Seed Lake's artifact cache from the previous run on the same
+      # toolchain, whose rev comes from that toolchain's analysis chain
+      # (`analysis/<slug>/_latest.txt`). Only content the cache can't serve
+      # is packed or built; a toolchain's first run has no chain yet and
+      # proceeds from source.
+      - name: Warm start from shadow scope
+        shell: bash -euo pipefail {0}
+        env:
+          LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT_PUBLIC }}
+          LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
+        run: |
+          # Must mirror the slug in the upload job's carryover step.
+          slug="$(printf %s "$(cat pr-branch/lean-toolchain)" | tr -c 'A-Za-z0-9._-' '-')"
+          prev="$(curl -fsS "${LAKE_CACHE_ARTIFACT_ENDPOINT%/artifacts}/analysis/$slug/_latest.txt" 2>/dev/null || true)"
+          if [ -z "$prev" ]; then
+            echo "::notice::no prior run recorded for chain $slug; proceeding without a warm start"
+            exit 0
+          fi
+          cd pr-branch
+          lake cache get --scope="$SHADOW_SCOPE" --rev="$prev" \
+            || echo "::warning::warm start from rev ${prev:0:12} failed; proceeding without it"
 
       # Incremental build: with the legacy cache having hydrated .lake/build/
       # and the lakefile patched, Lake's pipeline runs to pack/cache any
@@ -277,12 +358,20 @@ jobs:
       LAKE_CACHE_ARTIFACT_ENDPOINT: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
-      - name: Checkout mathlib (for lean-toolchain pin)
+      - name: Checkout mathlib (workspace for put-staged)
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
           fetch-depth: 1
+
+      # Stamp the effective toolchain from build_and_stage's resolve step, so
+      # put-staged runs the same lake that produced the staging; the elan
+      # proxy auto-installs it on first use.
+      - name: Pin effective toolchain
+        env:
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+        run: printf '%s\n' "$EFFECTIVE_TOOLCHAIN" > pr-branch/lean-toolchain
 
       - name: install elan + matching lake
         run: |
@@ -318,7 +407,8 @@ jobs:
             --toolchain="${{ needs.build_and_stage.outputs.toolchain }}" 2>&1 | tee /tmp/put.log
 
       # Cache carryover analysis: diff this run's uploaded artifact set against
-      # the previous run's, using a tiny per-run manifest kept in the bucket.
+      # the previous run's on the same toolchain, via tiny per-run manifests
+      # kept in the bucket under the toolchain's analysis/<slug>/ prefix.
       # Here:
       #   carryover = artifacts also present last run;
       #   new = this run's churn (≈ how much Mathlib changed since the last build).
@@ -331,8 +421,11 @@ jobs:
           AUTH: ${{ vars.LAKE_CACHE_ARTIFACT_ENDPOINT }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
         run: |
-          base="${AUTH%/artifacts}/analysis"
+          # Must mirror the slug in build_and_stage's warm-start step.
+          slug="$(printf %s "$EFFECTIVE_TOOLCHAIN" | tr -c 'A-Za-z0-9._-' '-')"
+          base="${AUTH%/artifacts}/analysis/$slug"
           sha="${{ needs.build_and_stage.outputs.sha }}"
           sig=(--aws-sigv4 aws:amz:auto:s3 --user "$LAKE_CACHE_KEY")
           # grep exits 1 on no match (handled by the total==0 branch); tolerate it under pipefail.
@@ -379,7 +472,7 @@ jobs:
             new_content="$(numfmt --to=iec-i --suffix=B "$new_bytes") across ${new} new artifact(s) vs rev ${prev:0:12}${distnote}"
             pct=$(awk "BEGIN{printf \"%.1f\", ($total>0)?100*$carry/$total:0}")
             note=""
-            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a toolchain/generation change, not source churn"
+            [ "$total" -gt 0 ] && [ "$new" -eq "$total" ] && note=" — full turnover, likely a republished toolchain binary, not source churn"
             summary="${carry}/${total} (${pct}%) carried over, ${new} new vs rev ${prev:0:12}${note}"
           fi
           echo "::notice::cache carryover: ${summary}"
@@ -396,7 +489,7 @@ jobs:
     needs: [build_and_stage, upload]
     if: ${{ github.repository == 'leanprover-community/mathlib4' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     outputs:
       cache_health: ${{ steps.cachehealth.outputs.health }}
     env:
@@ -415,6 +508,14 @@ jobs:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
           fetch-depth: 1
+
+      # Stamp the effective toolchain from build_and_stage's resolve step, so
+      # the replay runs the same lake that built the artifacts; the elan
+      # proxy auto-installs it on first use.
+      - name: Pin effective toolchain
+        env:
+          EFFECTIVE_TOOLCHAIN: ${{ needs.build_and_stage.outputs.toolchain }}
+        run: printf '%s\n' "$EFFECTIVE_TOOLCHAIN" > pr-branch/lean-toolchain
 
       - name: install elan
         run: |
@@ -533,6 +634,9 @@ jobs:
           {
             echo "msg<<MSG_EOF"
             echo "**Lake cache shadow** ([run](${RUN_URL}), rev \`${SHA:0:12}\`)"
+            if [ -n "${TOOLCHAIN_OVERRIDE:-}" ]; then
+              echo "🧪 toolchain override: \`${TOOLCHAIN_OVERRIDE}\`"
+            fi
             echo ""
             echo "- $(emoji "$BUILD") build_and_stage: \`$BUILD\`"
             echo "- $(emoji "$UPLOAD") upload: \`$UPLOAD\`"

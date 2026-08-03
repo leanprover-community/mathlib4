@@ -82,6 +82,9 @@ attribute [local instance] Associated.setoid
 theorem Associated.of_eq [Monoid M] {a b : M} (h : a = b) : a ~ᵤ b :=
   ⟨1, by rwa [Units.val_one, mul_one]⟩
 
+@[nontriviality] theorem Associated.of_subsingleton [Subsingleton M] [Monoid M] (a b : M) :
+    Associated a b := .of_eq (Subsingleton.elim ..)
+
 theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
   ⟨u⁻¹, Units.mul_inv u⟩
 
@@ -162,15 +165,19 @@ theorem associated_unit_mul_right_iff {N : Type*} [CommMonoid N] {a b : N} {u : 
     Associated a (↑u * b) ↔ Associated a b :=
   associated_isUnit_mul_right_iff u.isUnit
 
+@[gcongr]
 theorem Associated.mul_left [Monoid M] (a : M) {b c : M} (h : b ~ᵤ c) : a * b ~ᵤ a * c := by
   obtain ⟨d, rfl⟩ := h; exact ⟨d, mul_assoc _ _ _⟩
 
+@[gcongr]
 theorem Associated.mul_right [CommMonoid M] {a b : M} (h : a ~ᵤ b) (c : M) : a * c ~ᵤ b * c := by
   obtain ⟨d, rfl⟩ := h; exact ⟨d, mul_right_comm _ _ _⟩
 
+@[gcongr]
 theorem Associated.mul_mul [CommMonoid M] {a₁ a₂ b₁ b₂ : M}
     (h₁ : a₁ ~ᵤ b₁) (h₂ : a₂ ~ᵤ b₂) : a₁ * a₂ ~ᵤ b₁ * b₂ := (h₁.mul_right _).trans (h₂.mul_left _)
 
+@[gcongr]
 theorem Associated.pow_pow [CommMonoid M] {a b : M} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction n with
   | zero => simp [Associated.refl]
@@ -406,6 +413,7 @@ theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
 theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
   rw [← quot_mk_eq_mk, Quot.out_eq]
@@ -723,12 +731,37 @@ end Associates
 
 section CommMonoidWithZero
 
-theorem dvdNotUnit_of_dvdNotUnit_associated [CommMonoidWithZero M] [Nontrivial M] {p q r : M}
+variable [CommMonoidWithZero M] {p q r : M}
+
+theorem dvdNotUnit_of_dvdNotUnit_associated
     (h : DvdNotUnit p q) (h' : Associated q r) : DvdNotUnit p r := by
-  obtain ⟨u, rfl⟩ := Associated.symm h'
+  obtain ⟨u, rfl⟩ := h'
   obtain ⟨hp, x, hx⟩ := h
-  refine ⟨hp, x * ↑u⁻¹, DvdNotUnit.not_unit ⟨u⁻¹.ne_zero, x, hx.left, mul_comm _ _⟩, ?_⟩
-  rw [← mul_assoc, ← hx.right, mul_assoc, Units.mul_inv, mul_one]
+  refine ⟨hp, x * u, mt isUnit_of_mul_isUnit_left hx.1, ?_⟩
+  rw [← mul_assoc, ← hx.right]
+
+alias Associated.dvdNotUnit_right := dvdNotUnit_of_dvdNotUnit_associated
+
+theorem Associated.dvdNotUnit_left (h : DvdNotUnit p r) (h' : Associated p q) :
+    DvdNotUnit q r := by
+  obtain ⟨u, rfl⟩ := h'.symm
+  obtain ⟨hp, x, hx⟩ := h
+  have hq : q ≠ 0 := by simp_all
+  refine ⟨hq, x * u, mt isUnit_of_mul_isUnit_left hx.1, ?_⟩
+  rw [mul_comm x, ← mul_assoc, ← hx.2]
+
+theorem Associated.dvdNotUnit_left_iff (h : Associated p q) : DvdNotUnit p r ↔ DvdNotUnit q r where
+  mp := (h.dvdNotUnit_left ·)
+  mpr := (h.symm.dvdNotUnit_left ·)
+
+theorem Associated.dvdNotUnit_right_iff (h : Associated q r) : DvdNotUnit p q ↔ DvdNotUnit p r where
+  mp := (h.dvdNotUnit_right ·)
+  mpr := (h.symm.dvdNotUnit_right ·)
+
+theorem Associated.acc_dvdNotUnit_iff (h : Associated p q) :
+    Acc DvdNotUnit p ↔ Acc DvdNotUnit q where
+  mp acc := .intro _ fun _r hr ↦ acc.inv (h.dvdNotUnit_right_iff.mpr hr)
+  mpr acc := .intro _ fun _r hr ↦ acc.inv (h.dvdNotUnit_right_iff.mp hr)
 
 end CommMonoidWithZero
 

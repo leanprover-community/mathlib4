@@ -566,7 +566,7 @@ lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
 
 lemma exists_cube_associated :
     (∃ X, Associated (X ^ 3) S.x) ∧ (∃ Y, Associated (Y ^ 3) S.y) ∧
-      ∃ Z, Associated (Z ^ 3) S.z := by classical
+      ∃ Z, Associated (Z ^ 3) S.z := by
   have h₁ := S.isCoprime_x_z.mul_left S.isCoprime_y_z
   have h₂ : Associated (S.w ^ 3) (S.x * S.y * S.z) :=
     ⟨S.u, by rw [x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm]⟩
@@ -733,7 +733,7 @@ lemma Solution'_descent_multiplicity_lt :
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
 theorem exists_Solution_multiplicity_lt :
-    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by classical
+    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by
   obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_descent S)
   exact ⟨S', hS' ▸ Solution'_descent_multiplicity_lt S⟩
 
@@ -749,7 +749,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
-  classical
   let K := CyclotomicField 3 ℚ
   let hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have : NumberField K := IsCyclotomicExtension.numberField {3} ℚ _

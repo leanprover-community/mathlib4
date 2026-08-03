@@ -209,7 +209,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 open WithZero Multiplicative
 open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
-open Classical in
+open scoped Classical in
 /-- The valuation of the discriminant of a Weierstrass curve `W`,
 which is at most 1 if `W` is integral. Zero otherwise. -/
 noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :

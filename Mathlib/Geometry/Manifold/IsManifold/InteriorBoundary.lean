@@ -362,7 +362,7 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ E' := NormedSpace.restrictScalars ℝ 𝕜 E'
   -- Write everything in terms of extended charts around `x` and `f x`.
-  simp only [mfderiv, hf, ite_true] at hf'
+  simp only [mfderiv, hf] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
     simpa [← mem_interior_iff_mem_nhds] using! hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
@@ -491,7 +491,6 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
