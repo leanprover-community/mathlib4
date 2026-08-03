@@ -11,31 +11,31 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 
 If a sequence `f : ℕ → ℝ` grows linearly, `f n / n → τ` with `0 < τ`, and `c : ℝ → ℕ` counts
 it, in the sense of the two one-sided bounds `t ≤ f (c t)` and `∀ k < c t, f k ≤ t`, then `c`
-grows at the inverse rate: `c t / t → τ⁻¹` (`count_div_tendsto`). Monotonicity of `f` is not
+grows at the inverse rate: `c t / t → τ⁻¹` (`tendsto_count_div_atTop`). Monotonicity of `f` is not
 required; the two bounds alone invert the rate.
 
-`count_comp_div_tendsto` composes a Cesàro limit `S n / n → L` with such a count:
+`tendsto_comp_count_div_atTop` composes a Cesàro limit `S n / n → L` with such a count:
 `S (c t) / t → L * ρ` whenever `c t / t → ρ` and `c → ∞`.
 
 ## Main results
 
-* `count_div_tendsto`: a counting function of a linearly growing sequence grows at the
+* `tendsto_count_div_atTop`: a counting function of a linearly growing sequence grows at the
   inverse rate.
-* `count_comp_div_tendsto`: Cesàro averages compose with a linearly growing count.
-* `count_tendsto_atTop`: a counting function dominated below through `f` diverges.
+* `tendsto_comp_count_div_atTop`: Cesàro averages compose with a linearly growing count.
+* `tendsto_count_atTop`: a counting function dominated below through `f` diverges.
 
 ## Tags
 
-counting function, Cesaro average, specific limit
+counting function, Cesàro average, specific limit
 -/
 
 @[expose] public section
 
-open Filter
+open Filter Topology
 
 /-- A counting function dominated below through `f` diverges: if `t ≤ f (c t)` for every `t`,
 then `c` leaves every finite prefix, because `f` is bounded on it. -/
-theorem count_tendsto_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} (hub : ∀ t, t ≤ f (c t)) :
+theorem tendsto_count_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} (hub : ∀ t, t ≤ f (c t)) :
     Tendsto c atTop atTop := by
   rw [tendsto_atTop]
   intro M
@@ -54,28 +54,28 @@ the two one-sided bounds — `t` never exceeds `f` at the count, and `f` below t
 exceeds `t` — then `c t / t → τ⁻¹`. `f` need not be monotone. The proof squeezes `t / c t`
 between `f (c t - 1) / c t` and `f (c t) / c t`, both converging to `τ` by composition, and
 inverts. -/
-theorem count_div_tendsto {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : 0 < τ)
-    (hf : Tendsto (fun n ↦ f n / n) atTop (nhds τ)) (hub : ∀ t, t ≤ f (c t))
+theorem tendsto_count_div_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : 0 < τ)
+    (hf : Tendsto (fun n ↦ f n / n) atTop (𝓝 τ)) (hub : ∀ t, t ≤ f (c t))
     (hlb : ∀ t, ∀ k < c t, f k ≤ t) :
-    Tendsto (fun t ↦ (c t : ℝ) / t) atTop (nhds τ⁻¹) := by
-  have hc_top : Tendsto c atTop atTop := count_tendsto_atTop hub
-  have hupper : Tendsto (fun t ↦ f (c t) / (c t : ℝ)) atTop (nhds τ) := hf.comp hc_top
-  have hg : Tendsto (fun n : ℕ ↦ f (n - 1) / n) atTop (nhds τ) := by
-    have hpred : Tendsto (fun n : ℕ ↦ ((n - 1 : ℕ) : ℝ) / n) atTop (nhds 1) := by
+    Tendsto (fun t ↦ (c t : ℝ) / t) atTop (𝓝 τ⁻¹) := by
+  have hc_top : Tendsto c atTop atTop := tendsto_count_atTop hub
+  have hupper : Tendsto (fun t ↦ f (c t) / (c t : ℝ)) atTop (𝓝 τ) := hf.comp hc_top
+  have hg : Tendsto (fun n : ℕ ↦ f (n - 1) / n) atTop (𝓝 τ) := by
+    have hpred : Tendsto (fun n : ℕ ↦ ((n - 1 : ℕ) : ℝ) / n) atTop (𝓝 1) := by
       have h := (tendsto_natCast_div_add_atTop (-1 : ℝ)).inv₀ one_ne_zero
       rw [inv_one] at h
       refine h.congr' ?_
       filter_upwards [eventually_ge_atTop 1] with n hn
       rw [inv_div, Nat.cast_sub hn, Nat.cast_one, ← sub_eq_add_neg]
-    have h1 : Tendsto (fun n : ℕ ↦ f (n - 1) / ((n - 1 : ℕ) : ℝ)) atTop (nhds τ) :=
+    have h1 : Tendsto (fun n : ℕ ↦ f (n - 1) / ((n - 1 : ℕ) : ℝ)) atTop (𝓝 τ) :=
       hf.comp (tendsto_sub_atTop_nat 1)
     have h2 := h1.mul hpred
     rw [mul_one] at h2
     refine h2.congr' ?_
     filter_upwards [eventually_ge_atTop 2] with n hn
     rw [div_mul_div_cancel₀ (Nat.cast_ne_zero.mpr (by omega : (n - 1 : ℕ) ≠ 0))]
-  have hlower : Tendsto (fun t ↦ f (c t - 1) / (c t : ℝ)) atTop (nhds τ) := hg.comp hc_top
-  have hmid : Tendsto (fun t ↦ t / (c t : ℝ)) atTop (nhds τ) := by
+  have hlower : Tendsto (fun t ↦ f (c t - 1) / (c t : ℝ)) atTop (𝓝 τ) := hg.comp hc_top
+  have hmid : Tendsto (fun t ↦ t / (c t : ℝ)) atTop (𝓝 τ) := by
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le' hlower hupper ?_ ?_
     · filter_upwards [hc_top.eventually_ge_atTop 1] with t hct
       exact div_le_div_of_nonneg_right (hlb t _ (by omega)) (Nat.cast_nonneg _)
@@ -84,12 +84,12 @@ theorem count_div_tendsto {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : 
 
 /-- Cesàro composition with a count: if the partial-sum averages converge, `S n / n → L`, and
 the count grows linearly, `c t / t → ρ` with `c → ∞`, then `S (c t) / t → L * ρ`. -/
-theorem count_comp_div_tendsto {S : ℕ → ℝ} {c : ℝ → ℕ} {L ρ : ℝ}
-    (hS : Tendsto (fun n ↦ S n / n) atTop (nhds L))
-    (hc : Tendsto (fun t ↦ (c t : ℝ) / t) atTop (nhds ρ))
+theorem tendsto_comp_count_div_atTop {S : ℕ → ℝ} {c : ℝ → ℕ} {L ρ : ℝ}
+    (hS : Tendsto (fun n ↦ S n / n) atTop (𝓝 L))
+    (hc : Tendsto (fun t ↦ (c t : ℝ) / t) atTop (𝓝 ρ))
     (hc_top : Tendsto c atTop atTop) :
-    Tendsto (fun t ↦ S (c t) / t) atTop (nhds (L * ρ)) := by
-  have h1 : Tendsto (fun t ↦ S (c t) / (c t : ℝ)) atTop (nhds L) := hS.comp hc_top
+    Tendsto (fun t ↦ S (c t) / t) atTop (𝓝 (L * ρ)) := by
+  have h1 : Tendsto (fun t ↦ S (c t) / (c t : ℝ)) atTop (𝓝 L) := hS.comp hc_top
   have h2 := h1.mul hc
   refine h2.congr' ?_
   filter_upwards [hc_top.eventually_ge_atTop 1] with t hct
