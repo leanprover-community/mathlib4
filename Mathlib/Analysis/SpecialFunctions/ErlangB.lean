@@ -41,7 +41,7 @@ For every result below, `0 ≤ a`.
 ## References
 
 The recursion and its equality with the closed form are classical; see for example
-R. B. Cooper, *Introduction to Queueing Theory*.
+[R. B. Cooper, *Introduction to queueing theory*][cooper1981].
 
 ## Tags
 
@@ -110,9 +110,7 @@ theorem erlangB_carried_le {a : ℝ} (ha : 0 ≤ a) : ∀ c : ℕ, a * (1 - erla
       ring
     rw [erlangB_succ, key, div_le_iff₀ hD]
     have haD : a ≤ (c : ℝ) + 1 + a * erlangB a c := by linarith
-    have hc1 : (0 : ℝ) ≤ (c : ℝ) + 1 := by
-      have hc : (0 : ℝ) ≤ c := Nat.cast_nonneg c
-      linarith
+    have hc1 : (0 : ℝ) ≤ (c : ℝ) + 1 := by positivity
     push_cast
     linarith [mul_le_mul_of_nonneg_left haD hc1]
 
@@ -141,9 +139,7 @@ theorem erlangB_mono_load {a a' : ℝ} (ha : 0 ≤ a) (haa' : a ≤ a') :
     have h1 := erlangB_denom_pos ha c
     have h2 := erlangB_denom_pos (ha.trans haa') c
     rw [erlangB_succ, erlangB_succ, div_le_iff₀ h1, div_mul_eq_mul_div, le_div_iff₀ h2]
-    have hc1 : (0 : ℝ) ≤ (c : ℝ) + 1 := by
-      have hc : (0 : ℝ) ≤ c := Nat.cast_nonneg c
-      linarith
+    have hc1 : (0 : ℝ) ≤ (c : ℝ) + 1 := by positivity
     linarith [mul_le_mul_of_nonneg_right hx hc1]
 
 /-- `erlangB` multiplied against the normalizing sum telescopes to the top term: the
@@ -156,9 +152,7 @@ theorem erlangB_mul_sum {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
     have hB0 := erlangB_nonneg ha c
     have hD := erlangB_denom_pos ha c
     have hc0 : (c.factorial : ℝ) ≠ 0 := by exact_mod_cast c.factorial_pos.ne'
-    have hcpos : (0 : ℝ) < (c : ℝ) + 1 := by
-      have hc : (0 : ℝ) ≤ c := Nat.cast_nonneg c
-      linarith
+    have hcpos : (0 : ℝ) < (c : ℝ) + 1 := by positivity
     have hc1 : (c : ℝ) + 1 ≠ 0 := hcpos.ne'
     have hfact : ((c + 1).factorial : ℝ) = ((c : ℝ) + 1) * (c.factorial : ℝ) := by
       push_cast [Nat.factorial_succ]
