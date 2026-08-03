@@ -38,7 +38,7 @@ private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
     qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -
       qExpansion 1 E₆ * qExpansion 1 E₆ := by
-  simp only [E₄CubeSubE₆SqForm, coe_sub, coe_mcast,
+  simp only [E₄CubeSubE₆SqForm, FunLike.coe_sub, coe_mcast,
     ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL,
     ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL]
   ring
