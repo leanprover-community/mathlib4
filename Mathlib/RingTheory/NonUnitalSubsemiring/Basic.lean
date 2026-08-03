@@ -296,7 +296,7 @@ theorem comap_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
 @[simp]
 theorem map_center_eq [NonUnitalNonAssocSemiring S] (f : R ≃+* S) :
     map f (center R) = center S :=
-  SetLike.coe_injective Set.image_center_eq
+  SetLike.coe_injective <| Set.image_center_eq _
 
 @[simp]
 theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=

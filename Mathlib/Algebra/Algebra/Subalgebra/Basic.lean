@@ -937,7 +937,7 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 
 @[simp]
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
-  SetLike.coe_injective <| Set.image_center_eq (f := f)
+  SetLike.coe_injective <| Set.image_center_eq _
 
 end Center
 

@@ -387,9 +387,9 @@ theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
   NonUnitalSubsemiring.comap_center_le_center hf
 
 @[simp]
-theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] {f : F} :
+theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     map f (center R) = center S :=
-  SetLike.coe_injective Set.image_center_eq
+  SetLike.coe_injective <| Set.image_center_eq _
 
 @[simp]
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
