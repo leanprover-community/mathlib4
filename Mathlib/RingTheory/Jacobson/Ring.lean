@@ -338,7 +338,7 @@ theorem jacobson_bot_of_integral_localization
     have hRₘ : IsJacobsonRing Rₘ := isJacobsonRing_localization x
     have hSₘ : IsJacobsonRing Sₘ := isJacobsonRing_of_isIntegral' φ' hφ'
     refine eq_bot_iff.mpr (le_trans ?_ (le_of_eq hϕ'))
-    rw [← hSₘ.out isRadical_bot_of_noZeroDivisors, comap_jacobson]
+    rw [← hSₘ.out isRadical_bot, comap_jacobson]
     exact sInf_le_sInf fun j hj => ⟨bot_le,
       let ⟨J, hJ⟩ := hj
       hJ.2 ▸ this J hJ.1.2⟩
@@ -370,7 +370,7 @@ private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [Is
     P.jacobson = P := by
   by_cases Pb : P = ⊥
   · exact Pb.symm ▸
-      jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot_of_noZeroDivisors)
+      jacobson_bot_polynomial_of_jacobson_bot (hR.out isRadical_bot)
   · rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
     let P' := P.comap (C : R →+* R[X])
     have : P'.IsPrime := comap_isPrime C P
