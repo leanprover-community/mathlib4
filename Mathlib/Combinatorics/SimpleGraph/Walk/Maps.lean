@@ -86,6 +86,7 @@ theorem map_eq_nil_iff {p : G.Walk u u} : p.map f = nil ↔ p = nil := by cases 
 @[simp]
 theorem length_map : (p.map f).length = p.length := by induction p <;> simp [*]
 
+@[simp]
 theorem map_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).map f = (p.map f).append (q.map f) := by induction p <;> simp [*]
 
@@ -129,30 +130,24 @@ variable {G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v)
 abbrev mapLe : G'.Walk u v :=
   p.map (.ofLE h)
 
-@[simp]
-theorem length_mapLe : (p.mapLe h).length = p.length :=
-  p.length_map _
+theorem length_mapLe : (p.mapLe h).length = p.length := by
+  simp
 
-@[simp]
 lemma support_mapLe_eq_support : (p.mapLe h).support = p.support := by
-  simpa using p.support_map <| .ofLE h
+  simp
 
-@[simp]
 lemma edges_mapLe_eq_edges : (p.mapLe h).edges = p.edges := by
-  simpa using p.edges_map <| .ofLE h
+  simp
 
-@[simp]
 lemma edgeSet_mapLe_eq_edgeSet : (p.mapLe h).edgeSet = p.edgeSet := by
-  simpa using p.edgeSet_map <| .ofLE h
+  simp
 
-@[simp]
-theorem reverse_mapLe : (p.mapLe h).reverse = p.reverse.mapLe h :=
-  reverse_map ..
+theorem reverse_mapLe : (p.mapLe h).reverse = p.reverse.mapLe h := by
+  simp
 
-@[simp]
 theorem mapLe_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
-    (p.append q).mapLe h = (p.mapLe h).append (q.mapLe h) :=
-  map_append ..
+    (p.append q).mapLe h = (p.mapLe h).append (q.mapLe h) := by
+  simp
 
 end mapLe
 
