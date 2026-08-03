@@ -219,7 +219,7 @@ have the same length, and in fact they have to agree. -/
 non-zero element `n : ℕ` is injective. See the instance for free groups for an overview over the
 proof. -/]
 instance : IsMulTorsionFree (FreeGroup α) where
-  pow_left_injective n hn x y heq := by
+  pow_left_injective n hn x y _ heq := by
     classical
     let f (a : FreeGroup α) (n : ℕ) : ℕ :=
         (conjugator a.toWord).length + (n * (reduceCyclically a.toWord).length +

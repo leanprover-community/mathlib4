@@ -45,6 +45,8 @@ We register the following instances:
 
 -/
 
+set_option linter.style.longFile 1600
+
 @[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
