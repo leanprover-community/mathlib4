@@ -24,6 +24,16 @@ birationality and rationality.
 - `Scheme.IsRationalOver sX`: `X` is rational over `S` via structure map `sX : X ⟶ S`,
   i.e. birational over `S` to some affine space `𝔸(n; S)`.
 
+## Implementation notes
+
+Our definition of "birational" differs slightly from the Stacks project: Stacks 0A20 defines two
+irreducible schemes to be birational if they are isomorphic in the category of irreducible schemes
+with dominant rational maps, i.e. if there exists a birational map between them. This definition
+requires irreducibility, since composition of rational maps needs it (see RationalMap.comp).
+Here, we instead define two schemes to be birational if there exists a partial isomorphism, which
+doesn't need irreducibility. The fact that these are equivalent is Stacks lemma 0BAA, which we
+prove (currently only one direction of) in BirationalMap.lean.
+
 -/
 
 @[expose] public section

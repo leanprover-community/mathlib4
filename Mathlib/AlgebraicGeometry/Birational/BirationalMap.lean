@@ -21,11 +21,11 @@ maps that are mutually inverse. For schemes over a base `S`, the predicate
   `BirationalMap X X`. Those defined over a base scheme `S` form a subgroup, see
   `birationalAutOver`.
 - A partial isomorphism gives rise to a birational map, see `PartialIso.toBirationalMap`
-  (stacks 0BAA 'if' part).
+  (Stacks 0BAA 'if' part).
 
 ## Future work
 
-- Show the 'only if' part of stacks 0BAA: A birational map yields a partial isomorphism.
+- Show the 'only if' part of Stacks 0BAA: A birational map yields a partial isomorphism.
 - Show that over a field `S = Spec K`, birational maps over `Spec K` between `X` and `Y`
   correspond to algebra isomorphisms between their function fields.
 
