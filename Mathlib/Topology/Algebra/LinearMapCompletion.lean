@@ -64,7 +64,7 @@ end completion
 
 section fromCompletion
 
-variable [T2Space β] [CompleteSpace β]
+variable [T0Space β] [CompleteSpace β]
 
 /-- Extension of a linear function to a linear function over the completion. This is the continuous
 linear version of `UniformSpace.Completion.extension`. -/
