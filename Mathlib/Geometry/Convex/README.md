@@ -10,4 +10,5 @@ The topics currently covered are:
 * Convex spaces
 * Convex sets
 * Star-convex sets
+* Convex hulls
 * Cones
