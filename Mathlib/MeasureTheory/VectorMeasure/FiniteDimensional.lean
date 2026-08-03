@@ -29,25 +29,29 @@ open scoped ENNReal NNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X}
-  {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+  {V : Type*} [AddCommGroup V] [TopologicalSpace V] [T2Space V] [IsTopologicalAddGroup V]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [FiniteDimensional 𝕜 V]
   {ι : Type*}
 
 /-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
 `i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure X`. -/
-noncomputable def coeff (b : Basis ι ℝ V) (μ : VectorMeasure X V) : ι → SignedMeasure X :=
+noncomputable def coeff (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) : ι → VectorMeasure X 𝕜 :=
   fun i ↦ mapRangeₗ (b.coord i) (b.coord i).continuous_of_finiteDimensional μ
 
 @[simp]
-lemma coeff_apply (b : Basis ι ℝ V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
+lemma coeff_apply (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
 
-theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι ℝ V) (μ : VectorMeasure X V) (E : Set X) :
+@[simp]
+theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (E : Set X) :
     ∑ i, (μ.coeff b i E) • b i = μ E := by
   simp
 
-theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι ℝ V) (μ : VectorMeasure X V) :
-    ∑ i, mapRangeₗ (toSpanSingleton ℝ V (b i))
-      ((toSpanSingleton ℝ V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
+@[simp]
+theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) :
+    ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
+      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
   ext; simp
 
 end MeasureTheory.VectorMeasure

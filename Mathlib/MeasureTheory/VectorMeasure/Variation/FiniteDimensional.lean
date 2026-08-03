@@ -33,13 +33,14 @@ open scoped ENNReal NNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X}
-  {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+  {V : Type*} [NormedAddCommGroup V]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V]
 
 /-- If a vector measure decomposes as a finite `ℝ`-linear combination `μ E = ∑ i, s i E • v i` of
 signed measures `s i` with coefficients the vectors `v i`, then its variation is bounded by
 `∑ i, ‖v i‖₊ • (s i).variation`. -/
 lemma variation_le_sum_smul {ι : Type*} [Fintype ι] (μ : VectorMeasure X V)
-    (s : ι → VectorMeasure X ℝ) (v : ι → V) (h : ∀ E, μ E = ∑ i, s i E • v i) :
+    (s : ι → VectorMeasure X 𝕜) (v : ι → V) (h : ∀ E, μ E = ∑ i, s i E • v i) :
     μ.variation ≤ ∑ i, ‖v i‖₊ • (s i).variation := by
   refine variation_le_of_forall_enorm_le fun E _ ↦ ?_
   calc ‖μ E‖ₑ = ‖∑ i, s i E • v i‖ₑ := by rw [h]
@@ -51,7 +52,8 @@ lemma variation_le_sum_smul {ι : Type*} [Fintype ι] (μ : VectorMeasure X V)
 
 /-- The variation of a vector measure with values in a finite-dimensional real normed vector
 space is finite. -/
-instance [FiniteDimensional ℝ V] (μ : VectorMeasure X V) : IsFiniteMeasure μ.variation := by
+instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) :
+    IsFiniteMeasure μ.variation := by
   obtain b := Module.finBasis ℝ V
   apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coeff b i).variation)
   apply variation_le_sum_smul
