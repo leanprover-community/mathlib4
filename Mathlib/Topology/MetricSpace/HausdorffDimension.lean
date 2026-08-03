@@ -580,8 +580,7 @@ theorem DifferentiableOn.hausdorffMeasure_image_eq_zero [MeasurableSpace E] [Bor
 theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
     dimH (f '' t) ≤ dimH t := by
   borelize E F
-  exact dimH_le fun d hd ↦ not_lt.1 fun hlt ↦ ENNReal.zero_ne_top <|
-    (hf.hausdorffMeasure_image_eq_zero d.coe_nonneg (hausdorffMeasure_of_dimH_lt hlt)).symm.trans hd
+  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.2)
 
 /-- If `f` is `C¹`-smooth on a set `t`, then `dimH (f '' t) ≤ dimH t`. -/
 theorem ContDiffOn.dimH_image_le (hf : ContDiffOn 𝕜 1 f t) : dimH (f '' t) ≤ dimH t :=
