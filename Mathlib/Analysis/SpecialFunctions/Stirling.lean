@@ -73,7 +73,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
 `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`. -/
-theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
+theorem log_stirlingSeq_sdiff_hasSum (m : ℕ) :
     HasSum (fun k : ℕ => (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
@@ -90,14 +90,17 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
 
+@[deprecated (since := "2026-06-03")]
+alias log_stirlingSeq_diff_hasSum := log_stirlingSeq_sdiff_hasSum
+
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
 theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ) :=
   antitone_nat_of_succ_le fun n =>
-    sub_nonneg.mp <| (log_stirlingSeq_diff_hasSum n).nonneg fun m => by positivity
+    sub_nonneg.mp <| (log_stirlingSeq_sdiff_hasSum n).nonneg fun m => by positivity
 
 /-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`. -/
-@[deprecated "Use `log_stirlingSeq_diff_le` instead." (since := "2026-03-16")]
-theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
+@[deprecated "Use `log_stirlingSeq_sdiff_le` instead." (since := "2026-03-16")]
+theorem log_stirlingSeq_sdiff_le_geo_sum (n : ℕ) :
     log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤
       ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) := by
   have h_nonneg : (0 : ℝ) ≤ ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
@@ -113,11 +116,14 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
     rw [one_div]
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
-  exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
+  exact hasSum_le hab (log_stirlingSeq_sdiff_hasSum n) g
+
+@[deprecated (since := "2026-06-03")]
+alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le_geo_sum
 
 /-- **Robbins' sharp stepwise bound** for the Stirling sequence:
 `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
-theorem log_stirlingSeq_diff_le (n : ℕ) :
+theorem log_stirlingSeq_sdiff_le (n : ℕ) :
     log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (12 * n * (n + 1)) := by
   rcases n with (_ | n)
   · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
@@ -127,15 +133,17 @@ theorem log_stirlingSeq_diff_le (n : ℕ) :
   set r := ((1 : ℝ) / (2 * (n + 1) + 1)) ^ 2 with hr
   have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
-    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum n) this
+    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
     simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
+@[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
+
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
-@[deprecated "Use `log_stirlingSeq_diff_le` instead." (since := "2026-03-16")]
+@[deprecated "Use `log_stirlingSeq_sdiff_le` instead." (since := "2026-03-16")]
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (4 * n ^ 2) := by
-  grw [log_stirlingSeq_diff_le]
+  grw [log_stirlingSeq_sdiff_le]
   cases n <;> simp [field]; grind
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
@@ -144,7 +152,7 @@ theorem log_stirlingSeq_bounded_aux (n : ℕ) :
   let f (k : ℕ) : ℝ := log (stirlingSeq (k + 1))
   let g (k : ℕ) : ℝ := 1 / (12 * (k + 1))
   have hf k (hk : k ∈ range n) : f k - (f (k + 1)) ≤ g k - g (k + 1) := by
-    grw [log_stirlingSeq_diff_le]
+    grw [log_stirlingSeq_sdiff_le]
     simp [field]
   replace hf := Finset.sum_le_sum hf
   rw [Finset.sum_range_sub', Finset.sum_range_sub'] at hf
@@ -262,7 +270,7 @@ The left-hand side is formulated to mimic the usual informal description of the 
 See also `factorial_isEquivalent_stirling` which says these are asymptotically equivalent. That
 statement gives an upper bound also, but requires sufficiently large `n`. In contrast, this one is
 only a lower bound, but holds for all `n`.
-See also `log_stirlingSeq_diff_le` for Robbins' sharp bound on successive differences in the
+See also `log_stirlingSeq_sdiff_le` for Robbins' sharp bound on successive differences in the
 Stirling sequence.
 -/
 theorem le_factorial_stirling (n : ℕ) : √(2 * π * n) * (n / exp 1) ^ n ≤ n ! := by
@@ -279,7 +287,7 @@ The left-hand side is formulated in decreasing order in `n`: the higher order te
 This is a consequence of `le_factorial_stirling`, but is stated separately since the logarithmic
 version is sometimes more practical, and having this version eases algebraic calculations for
 applications.
-See also `log_stirlingSeq_diff_le` for Robbins' sharp bound of `1/(12k(k+1))` on successive
+See also `log_stirlingSeq_sdiff_le` for Robbins' sharp bound of `1/(12k(k+1))` on successive
 differences in the Stirling sequence, which provides finer control over the convergence rate.
 -/
 theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :

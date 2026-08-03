@@ -6,7 +6,6 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Products of finite measures and probability measures
@@ -67,11 +66,9 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
   rw [← ENNReal.toNNReal_mul]
   exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, zero_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 
@@ -168,8 +165,8 @@ theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCount
   apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
   · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
     exact ameas.prod bmeas
-  · letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
-    letI : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
+  · let : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
+    let : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
     intro u u_open x xu
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
     rcases exists_null_frontier_thickening (μ.1 : Measure α) {x.1} εpos with ⟨r, hr, μr⟩

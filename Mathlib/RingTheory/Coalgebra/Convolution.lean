@@ -16,8 +16,9 @@ public import Mathlib.Tactic.SuppressCompilation
 /-!
 # Convolution product on linear maps from a coalgebra to an algebra
 
-This file constructs the ring structure on linear maps `C → A` where `C` is a coalgebra and `A` an
-algebra, where multiplication is given by `(f * g)(x) = ∑ f x₍₁₎ * g x₍₂₎` in Sweedler notation or
+This file constructs the ring and algebra structure on linear maps `C → A` where `C` is a
+coalgebra and `A` an algebra, where multiplication is given by
+`(f * g)(x) = ∑ f x₍₁₎ * g x₍₂₎` in Sweedler notation or
 ```
          |
          μ
@@ -43,7 +44,7 @@ suppress_compilation
 open Coalgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R S A B C ι : Type*} [CommSemiring R]
 
 namespace LinearMap
 section NonUnitalNonAssocSemiring
@@ -62,7 +63,7 @@ lemma convMul_def (f g : WithConv (C →ₗ[R] A)) :
 lemma convMul_apply (f g : WithConv (C →ₗ[R] A)) (c : C) :
     (f * g) c = mul' R A (.map f.ofConv g.ofConv (comul c)) := rfl
 
-lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a)
+lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a ι)
     (f g : WithConv (C →ₗ[R] A)) : (f * g) a = ∑ i ∈ 𝓡.index, f (𝓡.left i) * g (𝓡.right i) := by
   simp [convMul_def, ← 𝓡.eq]
 
@@ -73,6 +74,14 @@ instance convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (WithConv (C 
   right_distrib f g h := by ext; simp [map_add_left]
   zero_mul f := by ext; simp
   mul_zero f := by ext; simp
+
+instance [Monoid S] [DistribMulAction S A] [SMulCommClass R S A] [IsScalarTower S A A] :
+    IsScalarTower S (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
+  smul_assoc s f g := by ext c; simp [(ℛ R c).convMul_apply, Finset.smul_sum, smul_mul_assoc]
+
+instance [Monoid S] [DistribMulAction S A] [SMulCommClass R S A] [SMulCommClass S A A] :
+    SMulCommClass S (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
+  smul_comm s f g := by ext c; simp [(ℛ R c).convMul_apply, Finset.smul_sum, mul_smul_comm]
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
@@ -173,6 +182,15 @@ lemma convOne_def : (1 : WithConv (C →ₗ[R] A)) = toConv (Algebra.linearMap R
 instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
   one_mul f := by ext; simp [convOne_def, ← map_comp_rTensor]
   mul_one f := by ext; simp [convOne_def, ← map_comp_lTensor]
+
+/-- Convolution algebra structure on linear maps from a coalgebra to an algebra. -/
+instance convAlgebra [CommSemiring S] [Algebra S A] [SMulCommClass R S A] :
+    Algebra S (WithConv (C →ₗ[R] A)) :=
+  .ofModule smul_mul_assoc mul_smul_comm
+
+@[simp]
+lemma convAlgebraMap_apply [CommSemiring S] [Algebra S A] [SMulCommClass R S A] (s : S) (c : C) :
+    algebraMap S (WithConv (C →ₗ[R] A)) s c = s • algebraMap R A (counit c) := rfl
 
 end Semiring
 

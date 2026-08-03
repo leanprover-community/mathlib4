@@ -75,7 +75,7 @@ variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
 instance : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe X := X.toSubmodule
-  coe_injective' := by
+  coe_injective := by
     rintro ⟨p, hp⟩ ⟨q, hq⟩ (h : (p : Set M) = q)
     simpa using h
 
@@ -102,7 +102,7 @@ theorem HomogeneousSubmodule.toSubmodule_injective :
 
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule 𝒜 ℳ) M where
   coe p := p.toSubmodule
-  coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
+  coe_injective _ _ h := HomogeneousSubmodule.toSubmodule_injective 𝒜 ℳ <| SetLike.coe_injective h
 
 instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike (HomogeneousSubmodule 𝒜 ℳ) M
 

@@ -64,16 +64,15 @@ instance : Union (Finset α) :=
 instance : Inter (Finset α) :=
   ⟨fun s t => ⟨_, s.2.ndinter t.1⟩⟩
 
-instance : Lattice (Finset α) :=
-  { Finset.partialOrder with
-    sup := (· ∪ ·)
-    sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
-    le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
-    le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
-    inf := (· ∩ ·)
-    le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
-    inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
-    inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
+instance : Lattice (Finset α) where
+  sup := (· ∪ ·)
+  sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
+  le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
+  le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
+  inf := (· ∩ ·)
+  le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
+  inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
+  inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2
 
 @[simp]
 theorem sup_eq_union' : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
@@ -120,14 +119,14 @@ theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ 
   Set.ext fun _ => mem_union
 
 theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
-  sup_le <| le_iff_subset.2 hs
+  sup_le hs
 
 @[simp] lemma subset_union_left : s₁ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_left _
 @[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_right _
 
 @[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
-  sup_le_sup (le_iff_subset.2 hsu) htv
+  sup_le_sup hsu htv
 
 theorem union_subset_union_left (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
@@ -240,7 +239,8 @@ theorem inter_union_self (s t : Finset α) : s ∩ (t ∪ s) = s := by
   rw [inter_comm, union_inter_cancel_right]
 
 @[mono, gcongr]
-theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by grind
+theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t :=
+  inf_le_inf h h'
 
 theorem inter_subset_inter_left (h : t ⊆ u) : s ∩ t ⊆ s ∩ u :=
   inter_subset_inter Subset.rfl h
@@ -249,12 +249,12 @@ theorem inter_subset_inter_right (h : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter h Subset.rfl
 
 theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
-  le_iff_subset.1 inf_le_sup
+  inf_le_sup
 
 instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
       simp +contextual only
-        [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
+        [sup_eq_union, inf_eq_inter, subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }
 
 @[simp]

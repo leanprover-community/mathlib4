@@ -48,34 +48,33 @@ exactly one assuming stronger assumptions on the underlying field, see
 `riesz_lemma_of_lt_one`. -/
 theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) {r : ℝ}
     (hr : r < 1) : ∃ x₀ : E, x₀ ∉ F ∧ ∀ y ∈ F, r * ‖x₀‖ ≤ ‖x₀ - y‖ := by
-  classical
-    obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
-    let d := Metric.infDist x F
-    have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩
-    have hdp : 0 < d :=
-      lt_of_le_of_ne Metric.infDist_nonneg fun heq =>
-        hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
-    let r' := max r 2⁻¹
-    have hr' : r' < 1 := by
-      simp only [r', max_lt_iff, hr, true_and]
-      norm_num
-    have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
-    have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
-    obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
-    have x_ne_y₀ : x - y₀ ∉ F := by
-      by_contra h
-      have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
-      simp only [neg_add_cancel_right, sub_eq_add_neg] at this
-      exact hx this
-    refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
-    have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
-    calc
-      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
-      _ < d := by
-        rw [← dist_eq_norm]
-        exact (lt_div_iff₀' hlt).1 hxy₀
-      _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
-      _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
+  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
+  let d := Metric.infDist x F
+  have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩
+  have hdp : 0 < d :=
+    lt_of_le_of_ne Metric.infDist_nonneg fun heq =>
+      hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
+  let r' := max r 2⁻¹
+  have hr' : r' < 1 := by
+    simp only [r', max_lt_iff, hr, true_and]
+    norm_num
+  have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
+  have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
+  obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
+  have x_ne_y₀ : x - y₀ ∉ F := by
+    by_contra h
+    have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
+    simp only [neg_add_cancel_right, sub_eq_add_neg] at this
+    exact hx this
+  refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
+  have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
+  calc
+    r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
+    _ < d := by
+      rw [← dist_eq_norm]
+      exact (lt_div_iff₀' hlt).1 hxy₀
+    _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
+    _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`

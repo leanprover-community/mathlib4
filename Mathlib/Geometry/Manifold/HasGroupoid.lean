@@ -105,6 +105,16 @@ theorem mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
     e ∈ G.maximalAtlas M ↔ ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G :=
   Iff.rfl
 
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas_right
+    {e' : OpenPartialHomeomorph M H} {x : M}
+    (he' : e' ∈ G.maximalAtlas M) : (chartAt H x).symm ≫ₕ e' ∈ G :=
+  (he' _ (ChartedSpace.chart_mem_atlas x)).2
+
+theorem StructureGroupoid.compatible_of_mem_maximalAtlas_left
+    {e' : OpenPartialHomeomorph M H} {x : M}
+    (he' : e' ∈ G.maximalAtlas M) : e'.symm ≫ₕ chartAt H x ∈ G :=
+  (he' _ (ChartedSpace.chart_mem_atlas x)).1
+
 /-- Changing coordinates between two elements of the maximal atlas gives rise to an element
 of the structure groupoid. -/
 theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : OpenPartialHomeomorph M H}
@@ -201,7 +211,7 @@ variable (e : OpenPartialHomeomorph α H)
 whole space `α`, then that open partial homeomorphism induces an `H`-charted space structure on `α`.
 (This condition is equivalent to `e` being an open embedding of `α` into `H`; see
 `IsOpenEmbedding.singletonChartedSpace`.) -/
-@[implicit_reducible]
+@[instance_reducible]
 def singletonChartedSpace (h : e.source = Set.univ) : ChartedSpace H α where
   atlas := {e}
   chartAt _ := e
@@ -243,7 +253,7 @@ variable [Nonempty α]
 
 /-- An open embedding of `α` into `H` induces an `H`-charted space structure on `α`.
 See `OpenPartialHomeomorph.singletonChartedSpace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def singletonChartedSpace {f : α → H} (h : IsOpenEmbedding f) : ChartedSpace H α :=
   (h.toOpenPartialHomeomorph f).singletonChartedSpace (toOpenPartialHomeomorph_source _ _)
 

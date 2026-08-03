@@ -248,7 +248,6 @@ noncomputable def ofFactorizationData : PathObject A where
   p₁ := h.p ≫ prod.snd
   ι := h.i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
