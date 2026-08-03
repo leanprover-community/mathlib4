@@ -89,11 +89,8 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
 lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
-  have : {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩ ⋂ x : n →₀ 𝕜,
-        {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} := by
-      ext
-      simp
-      rfl
+  rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩ 
+    ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} from by aesop]
   rw [this]
   refine IsClosed.inter ?_ ?_
   · exact isClosed_eq (by fun_prop) (by fun_prop)
