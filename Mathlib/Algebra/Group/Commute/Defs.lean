@@ -210,3 +210,22 @@ end Commute
 @[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup S] {a b : S}
     (reg : IsRightRegular a) : Commute (b * a) a ↔ Commute a b := by
   simp [commute_iff_eq, ← mul_assoc, reg.eq_iff, eq_comm]
+
+section TorsionFree
+
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+injective. -/
+@[mk_iff]
+class IsAddTorsionFree (M : Type*) [AddMonoid M] where
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
+    (hn : n • a = n • b) : a = b
+
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+@[to_additive, mk_iff]
+class IsMulTorsionFree (M : Type*) [Monoid M] where
+  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
+    (hn : a ^ n = b ^ n) : a = b
+
+attribute [to_additive existing] isMulTorsionFree_iff
+
+end TorsionFree

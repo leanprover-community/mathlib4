@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # The natural numbers form a monoid
@@ -55,10 +55,10 @@ instance instCommMonoid : CommMonoid ℕ where
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 
 instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
-  pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
+  pow_left_injective _ h _ _ _ := (Nat.pow_left_inj h).mp
 
 instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
-  nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
+  nsmul_right_injective _n hn _x _y _ hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 /-!
 ### Extra instances to short-circuit type class resolution

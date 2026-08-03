@@ -17,9 +17,11 @@ public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
+variable {F M N : Type*} [FunLike F M N]
+
 section Commute
 
-variable {F M N : Type*} [Mul M] [Mul N] {a x y : M} [FunLike F M N]
+variable [Mul M] [Mul N] {a x y : M}
 
 @[to_additive (attr := simp)]
 protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f : F) :
@@ -50,3 +52,11 @@ theorem commute_map_iff [MulHomClass F M N] {f : F} (hf : Function.Injective f) 
   ⟨.of_map hf, (.map · f)⟩
 
 end Commute
+
+/-- If the codomain of an injective monoid homomorphism is torsion free, then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
+then so is the domain. -/]
+theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
+    (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
+  pow_left_injective n hn x y h hxy := hf <| IsMulTorsionFree.pow_left_injective hn (h.map f) <| by
+    simpa using congrArg f hxy
