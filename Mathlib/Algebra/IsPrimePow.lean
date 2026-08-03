@@ -45,7 +45,7 @@ theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
 
 theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
   let ⟨_p, _k, hp, hk, hn⟩ := h
-  hn ▸ (isUnit_pow_iff hk.ne').not.mpr hp.not_unit
+  hn ▸ (isUnit_pow_iff hk.ne').not.mpr hp.not_isUnit
 
 theorem IsUnit.not_isPrimePow {n : R} (h : IsUnit n) : ¬IsPrimePow n := fun h' => h'.not_unit h
 
