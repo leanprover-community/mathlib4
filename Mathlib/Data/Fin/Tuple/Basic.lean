@@ -120,6 +120,11 @@ theorem tail_cons : tail (cons x p) = p := by
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 
 @[simp]
+theorem cons_comp_succ {α : Sort*} (x : α) (p : Fin n → α) :
+    cons x p ∘ Fin.succ = p :=
+  funext fun _ ↦ Fin.cons_succ ..
+
+@[simp]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 
 @[simp]
@@ -165,6 +170,10 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   cases j using Fin.cases <;> simp [tail]
+
+@[simp]
+theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
+  cons_self_tail id
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
@@ -870,6 +879,11 @@ lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
     p.removeNth f i = f (p.succAbove i) :=
   rfl
 
+@[simp]
+theorem cons_comp_succ_succAbove (x : β) (p : Fin (n + 1) → β) (i : Fin (n + 1)) :
+    cons x p ∘ i.succ.succAbove = cons x (i.removeNth p) :=
+  funext (Fin.cases rfl fun _ ↦ by simp [removeNth])
+
 lemma removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
     i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
   rfl
@@ -1026,6 +1040,12 @@ lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAb
 
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
+
+@[simp]
+lemma range_insertNth {α : Type*} (p : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    Set.range (p.insertNth x f) = Set.insert x (Set.range f) := by
+  ext y
+  simp [Fin.exists_iff_succAbove p, Set.insert, eq_comm]
 
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
