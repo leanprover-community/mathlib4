@@ -47,8 +47,6 @@ example [Monoid M] (x y z w : M) (n : ℕ) : (x * y) ^ n * w ∈ Submonoid.closu
 example [Group M] (x : M) (n : ℤ) : x ^ n ∈ Subgroup.closure {x} := by
   membership
 
-grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
-
 example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₂ := by
