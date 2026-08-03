@@ -501,7 +501,8 @@ lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 
 end mul_one
 
-/-- If the codomain of an injective monoid homomorphism is torsion free, then so is the domain. -/
+/-- If the codomain of an injective monoid homomorphism is torsion free,
+then so is the domain. -/
 @[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
 then so is the domain. -/]
 theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]

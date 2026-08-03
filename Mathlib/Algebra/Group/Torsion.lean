@@ -29,7 +29,7 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_right_injective]
 lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  fun a b h ↦ IsMulTorsionFree.pow_left_injective hn (mul_comm a b) h
+  fun a b ↦ IsMulTorsionFree.pow_left_injective hn (mul_comm a b)
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff

@@ -210,7 +210,3 @@ end Commute
 @[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup S] {a b : S}
     (reg : IsRightRegular a) : Commute (b * a) a ↔ Commute a b := by
   simp [commute_iff_eq, ← mul_assoc, reg.eq_iff, eq_comm]
-
-section TorsionFree
-
-end TorsionFree

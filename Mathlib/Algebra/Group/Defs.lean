@@ -784,8 +784,8 @@ end IsDedekindFiniteMonoid
 
 end Monoid
 
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ`
-is injective on commuting elements (i.e., `a + b = b + a → n • a = n • b → a = b`).
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+injective on commuting elements (i.e., `a + b = b + a → n • a = n • b → a = b`).
 
 For commutative additive monoids, this is equivalent to `n • a = n • b → a = b`.
 For additive groups, this is equivalent to `n • a = 0 → a = 0`.
@@ -801,8 +801,8 @@ class IsAddTorsionFree (M : Type*) [AddMonoid M] where
   protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : a + b = b + a)
     (hn : n • a = n • b) : a = b
 
-/-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ`
-is injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
+/-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
+injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
 
 For commutative monoids, this is equivalent to `a ^ n = b ^ n → a = b`.
 For groups, this is equivalent to `a ^ n = 1 → a = 1`.
