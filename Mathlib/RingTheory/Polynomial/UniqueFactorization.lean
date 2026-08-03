@@ -90,14 +90,14 @@ open UniqueFactorizationMonoid
 namespace Polynomial
 
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  let := Classical.arbitrary (NormalizedGCDMonoid D)
   exact ufm_of_decomposition_of_wfDvdMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
 only finitely many monic factors.
 (Note that its factors up to unit may be more than monic factors.)
 See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
     Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
   set G := { g : D[X] // g.Monic ∧ g ∣ f }

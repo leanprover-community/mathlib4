@@ -59,7 +59,6 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where

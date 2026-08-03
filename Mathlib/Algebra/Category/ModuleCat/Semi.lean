@@ -45,7 +45,6 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not

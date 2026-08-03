@@ -133,6 +133,7 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 
 variable {C : Type v} [Category.{w} C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a function `f : C → G` from a category to a group, we get a functor
 `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]

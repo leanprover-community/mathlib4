@@ -379,7 +379,7 @@ inclusion into a larger affine subspace `S₂` is cospherical. -/
 theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
-  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
+  have : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
   simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
     Set.image_image]
 
@@ -455,6 +455,7 @@ theorem Sphere.inner_vsub_center_midpoint_vsub {p₁ p₂ : P} {s : Sphere P}
     (dist_left_midpoint_eq_dist_right_midpoint p₁ p₂)
     (dist_center_eq_dist_center_of_mem_sphere hp₁ hp₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the center of a sphere to any point strictly between
 two points on the sphere is strictly less than the radius. -/
 theorem Sphere.dist_center_lt_radius_of_sbtw {p₁ p₂ p : P} {s : Sphere P}
@@ -604,16 +605,17 @@ lemma isDiameter_iff_mem_and_mem_and_wbtw :
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd
   exact isDiameter_iff_mem_and_mem_and_dist.2 ⟨h₁, h₂, hd⟩
 
-/-- The center lies on the line through two distinct points of a sphere if and only if those
+/-- The center lies on the line through two points of a sphere if and only if those
 points are the endpoints of a diameter. -/
-theorem center_mem_affineSpan_pair_iff_isDiameter
-    (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) (hp₁p₂ : p₁ ≠ p₂) :
+theorem center_mem_affineSpan_pair_iff_isDiameter (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
     s.center ∈ line[ℝ, p₁, p₂] ↔ s.IsDiameter p₁ p₂ := by
-  rw [isDiameter_iff_mem_and_mem_and_wbtw]
-  refine ⟨fun h => ⟨hp₁, hp₂, ?_⟩, fun h => h.2.2.mem_affineSpan⟩
-  refine wbtw_of_collinear_of_dist_center_le_radius ?_ hp₁ ?_ hp₂ hp₁p₂
-  · rw [Set.insert_comm]; exact collinear_insert_of_mem_affineSpan_pair h
-  · simpa using radius_nonneg_of_mem hp₁
+  rcases eq_or_ne p₁ p₂ with rfl | hp₁p₂
+  · simp [isDiameter_iff_left_mem_and_midpoint_eq_center, hp₁, eq_comm]
+  · rw [isDiameter_iff_mem_and_mem_and_wbtw]
+    refine ⟨fun h => ⟨hp₁, hp₂, ?_⟩, fun h => h.2.2.mem_affineSpan⟩
+    refine wbtw_of_collinear_of_dist_center_le_radius ?_ hp₁ ?_ hp₂ hp₁p₂
+    · rw [Set.insert_comm]; exact collinear_insert_of_mem_affineSpan_pair h
+    · simpa using radius_nonneg_of_mem hp₁
 
 end Sphere
 

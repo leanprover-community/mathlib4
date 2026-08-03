@@ -306,7 +306,7 @@ and all the API applies to this declaration. For more information, see the modul
 for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
 noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
-    then cfcHom h.1 ⟨_, h.2.restrict⟩
+    then cfcHom h.1 ⟨_, h.2.domRestrict⟩
     else 0
 
 variable (f g : R → R) (a : A) (ha : p a := by cfc_tac)
@@ -314,12 +314,12 @@ variable (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
 set_option backward.privateInPublic true in
-lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
+lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.domRestrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩]
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).domRestrict⟩) := by
   ext i
   simp only [cfc_apply (f i) a ha (hf i)]
 
@@ -337,21 +337,21 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn 
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
-  have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
+  have h : f = (spectrum R a).domRestrict (Function.extend Subtype.val f g) := by
     ext; simp
   have hg : ContinuousOn (Function.extend Subtype.val f g) (spectrum R a) :=
-    continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
+    continuousOn_iff_continuous_domRestrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
   congr!
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
-    cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
+    cfc f a = cfcL ha ⟨_, hf.domRestrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
 set_option backward.privateInPublic true in
 /-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
 lemma cfc_apply_mkD :
-    cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).restrict f) 0) := by
+    cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).domRestrict f) 0) := by
   by_cases hf : ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a, mkD_of_continuousOn hf]
   · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
@@ -360,11 +360,11 @@ lemma cfc_apply_mkD :
 set_option backward.privateInPublic true in
 /-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
 lemma cfc_eq_cfcL_mkD :
-    cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).restrict f) 0) :=
+    cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).domRestrict f) 0) :=
   cfc_apply_mkD _ _
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
-    (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
+    (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.domRestrict⟩)) :
     P (cfc f a) := by
   by_cases h : p a ∧ ContinuousOn f (spectrum R a)
   · rw [cfc_apply f a h.1 h.2]
@@ -418,7 +418,7 @@ lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
   by_cases h : p a ∧ ContinuousOn g (spectrum R a)
   · rw [cfc_apply (ha := h.1) (hf := h.2.congr hfg), cfc_apply (ha := h.1) (hf := h.2)]
     congr 2
-    exact Set.restrict_eq_iff.mpr hfg
+    exact Set.domRestrict_eq_iff.mpr hfg
   · obtain (ha | hg) := not_and_or.mp h
     · simp [cfc_apply_of_not_predicate a ha]
     · rw [cfc_apply_of_not_continuousOn a hg, cfc_apply_of_not_continuousOn]
@@ -604,7 +604,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc (g ∘ f) a = cfc g (cfc f a) := by
   have := hg.comp hf <| (spectrum R a).mapsTo_image f
-  have sp_eq : spectrum R (cfcHom (show p a from ha) (ContinuousMap.mk _ hf.restrict)) =
+  have sp_eq : spectrum R (cfcHom (show p a from ha) (ContinuousMap.mk _ hf.domRestrict)) =
       f '' (spectrum R a) := by
     rw [cfcHom_map_spectrum (by exact ha) _]
     ext
@@ -612,7 +612,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
   rw [cfc_apply .., cfc_apply f a,
     cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert! hg), ← cfcHom_comp _ _]
   swap
-  · exact ContinuousMap.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
+  · exact ContinuousMap.mk _ <| hf.domRestrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
   · exact fun _ ↦ rfl
 
