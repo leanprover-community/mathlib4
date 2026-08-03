@@ -94,6 +94,7 @@ private lemma mul_le_ker_of_range_le_mul_of_sq_zero {J I : Ideal R} (sq : I ^ 2 
   rcases Submodule.mem_map.mp hx with ⟨x', hx', eq⟩
   simpa [← eq] using this hx'
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`. -/
 @[stacks 031L]

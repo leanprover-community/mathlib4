@@ -27,7 +27,7 @@ closed disc of radius `R` and center `c`, then the circle average `circleAverage
 theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|)) :
     circleAverage f c R = f c := by
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c |R|).exists_thickening_subset_open
-    (isOpen_setOf_harmonicAt f) hf
+    (isOpen_setOfPred_harmonicAt f) hf
   rw [thickening_closedBall h₁e (abs_nonneg R)] at h₂e
   obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c |R|)) := by

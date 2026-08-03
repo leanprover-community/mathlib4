@@ -93,7 +93,7 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
   add_mem' {f g} hf hg := by
     simp [eLpNorm_congr_ae (AEEqFun.coeFn_add f g),
       eLpNorm_add_lt_top ⟨f.aestronglyMeasurable, hf⟩ ⟨g.aestronglyMeasurable, hg⟩]
-  neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
+  neg_mem' {f} hf := by rwa [Set.mem_ofPred_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
 
 /-- `α →₁[μ] E` is the type of `L¹` or integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
@@ -111,9 +111,11 @@ theorem toLp_val {f : α → E} (h : MemLp f p μ) : (toLp f h).1 = AEEqFun.mk f
 theorem coeFn_toLp {f : α → E} (hf : MemLp f p μ) : hf.toLp f =ᵐ[μ] f :=
   AEEqFun.coeFn_mk _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toLp_congr {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) (hfg : f =ᵐ[μ] g) :
     hf.toLp f = hg.toLp g := by simp [toLp, hfg]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem toLp_eq_toLp_iff {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     hf.toLp f = hg.toLp g ↔ f =ᵐ[μ] g := by simp [toLp]

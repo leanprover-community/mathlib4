@@ -304,7 +304,7 @@ private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
     BddBelow {a : ℝ |
       ∀ᶠ n : ℝ in map (fun n : ℕ => μ x ^ (↑(s (ψ n)) * (1 / (ψ n : ℝ)))) atTop, n ≤ a} := by
   use 0
-  simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_setOf_eq,
+  simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_ofPred_eq,
     forall_exists_index]
   intro r m hm
   exact le_trans (rpow_nonneg (apply_nonneg μ _) _) (hm m (le_refl _))
@@ -340,11 +340,11 @@ private theorem μ_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {
       n ≤ a}.Nonempty := by
   by_cases hμx : μ x < 1
   · use 1
-    simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq]
+    simp only [eventually_map, eventually_atTop, Set.mem_ofPred_eq]
     exact ⟨0, fun _ _ ↦ rpow_le_one (apply_nonneg _ _) (le_of_lt hμx)
       (mul_nonneg (cast_nonneg _) (one_div_nonneg.mpr (cast_nonneg _)))⟩
   · use μ x
-    simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq]
+    simp only [eventually_map, eventually_atTop, Set.mem_ofPred_eq]
     use 0
     intro b _
     nth_rw 2 [← rpow_one (μ x)]
@@ -358,7 +358,7 @@ private theorem μ_limsup_le_one {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤
   simp only [limsup, limsSup]
   rw [csInf_le_iff (μ_bddBelow μ s ψ) (μ_nonempty μ hs_le ψ)]
   · intro c hc_bd
-    simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_setOf_eq,
+    simp only [mem_lowerBounds, eventually_map, eventually_atTop, Set.mem_ofPred_eq,
       forall_exists_index] at hc_bd
     by_cases hμx : μ x < 1
     · apply hc_bd (1 : ℝ) 0
@@ -390,7 +390,7 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
           limsup (fun n : ℕ => μ x ^ ((s (ψ n) : ℝ) * (1 / (ψ n : ℝ)))) atTop := by
           apply csInf_le_csInf _ (μ_nonempty μ hs_le ψ)
           · intro b hb
-            simp only [eventually_map, eventually_atTop, Set.mem_setOf_eq] at hb ⊢
+            simp only [eventually_map, eventually_atTop, Set.mem_ofPred_eq] at hb ⊢
             obtain ⟨m, hm⟩ := hb
             use m
             intro k hkm
@@ -400,7 +400,7 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
             exact map_pow_le_pow' hμ1 x _
           · use 0
             simp only [mem_lowerBounds, eventually_map, eventually_atTop,
-              Set.mem_setOf_eq, forall_exists_index]
+              Set.mem_ofPred_eq, forall_exists_index]
             exact fun _ m hm ↦ le_trans (by positivity) (hm m (le_refl _))
       _ ≤ 1 := (μ_limsup_le_one μ hs_le hψ_lim)
       _ = smoothingFun μ x ^ a := by rw [ha, rpow_zero]

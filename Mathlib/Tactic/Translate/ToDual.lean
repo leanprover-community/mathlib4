@@ -217,6 +217,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cofan", ["Fan"]),
   ("limit", ["Colimit"]),
   ("colimit", ["Limit"]),
+  ("lim", ["Colim"]),
+  ("colim", ["Lim"]),
   ("limits", ["Colimits"]),
   ("colimits", ["Limits"]),
   ("product", ["Coproduct"]),
@@ -262,8 +264,10 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("leftOrdContinuous", "RightOrdContinuous"),
   ("rightOrdContinuous", "LeftOrdContinuous"),
 
+  -- Revert translations if they should not happen in certain word combinations:
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
+  ("ofSucc", "OfPred"),
 ]
 
 @[inherit_doc GuessName.GuessNameExt]

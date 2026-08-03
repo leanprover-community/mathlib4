@@ -112,6 +112,7 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
     smul_inv_smul₀ (sub_ne_zero.2 <| Ne.symm hab), smul_inv_smul₀ (sub_ne_zero.2 <| Ne.symm hbc),
     vsub_add_vsub_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `slope f a c` is an affine combination of `slope f a b` and `slope f b c`. This version uses
 `lineMap` to express this property. -/
 theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c) :
@@ -121,6 +122,7 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
   match_scalars
   field [sub_ne_zero.2 h.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `slope f a b` is an affine combination of `slope f a (lineMap a b r)` and
 `slope f (lineMap a b r) b`. We use `lineMap` to express this property. -/
 theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :

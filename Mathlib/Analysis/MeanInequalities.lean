@@ -785,7 +785,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate 
       have B : ∀ y : ℝ≥0, y * y ^ p / y = y ^ p := by
         refine fun y => mul_div_cancel_left_of_imp fun h => ?_
         simp [h, hpq.ne_zero]
-      simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
+      simp only [Set.mem_ofPred_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff₀ hf, one_mul, hpq.mul_eq_add, ←
         rpow_sub' A, add_sub_cancel_right, le_refl, true_and, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_eq_one, rpow_one]
@@ -884,6 +884,7 @@ theorem inner_le_Lp_mul_Lq (hpq : HolderConjugate p q) :
   refine le_trans (sum_le_sum fun i _ ↦ ?_) (by simpa using Lr_rpow_le_Lp_mul_Lq s f g hpq)
   simp only [← abs_mul, le_abs_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the
 sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ`-valued functions. -/
 theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
