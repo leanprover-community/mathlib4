@@ -2741,6 +2741,7 @@ public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Galois.Action
 public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Galois.Decomposition
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.EssSurj
@@ -3229,6 +3230,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits

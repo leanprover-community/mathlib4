@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Galois.Basic
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 
 /-!
 # Full subcategories of Galois categories
@@ -43,6 +43,13 @@ class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
     P.IsClosedUnderColimitsOfShape (SingleObj G) := by intros; infer_instance
   isClosedUnderSubobjects : P.IsClosedUnderSubobjects := by infer_instance
   preservesEpimorphisms : P.ι.PreservesEpimorphisms := by infer_instance
+
+instance (P : ObjectProperty C) [P.IsClosedUnderFiniteColimits]
+    (G : Type w) [Group G] [Finite G] :
+    P.IsClosedUnderColimitsOfShape (SingleObj G) := by
+  obtain ⟨G', _, _, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
+  rw [isClosedUnderColimitsOfShape_iff_of_equivalence _ e.toSingleObjEquiv]
+  infer_instance
 
 namespace IsGaloisSubcategory
 
