@@ -398,6 +398,21 @@ protected theorem ciSup_add_ciSup (hf : BddAbove (range f)) (g : ι' → Cardina
     (⨆ i, f i) + (⨆ j, g j) = ⨆ (i) (j), f i + g j := by
   simp_rw [Cardinal.ciSup_add f hf, Cardinal.add_ciSup g hg]
 
+/-- A diagonal strengthening of `Cardinal.ciSup_add_ciSup`: if the diagonal sums are cofinal among
+all pairwise sums, its double supremum collapses to the diagonal. -/
+protected theorem ciSup_add_ciSup_diagonal {ι : Type*} [Nonempty ι]
+    (f g : ι → Cardinal)
+    (hf : BddAbove (range f)) (hg : BddAbove (range g))
+    (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) :
+    (⨆ i, f i) + (⨆ j, g j) = ⨆ k, f k + g k := by
+  rw [Cardinal.ciSup_add_ciSup f hf g hg]
+  apply ciSup₂_eq_ciSup_diagonal' (fun i j ↦ f i + g j) h
+  obtain ⟨bf, hbf⟩ := hf
+  obtain ⟨bg, hbg⟩ := hg
+  exact ⟨bf + bg, by
+    rintro _ ⟨k, rfl⟩
+    exact add_le_add (hbf ⟨k, rfl⟩) (hbg ⟨k, rfl⟩)⟩
+
 end add
 
 protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i * c := by
