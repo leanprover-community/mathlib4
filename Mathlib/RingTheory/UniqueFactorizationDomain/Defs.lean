@@ -84,7 +84,7 @@ theorem exists_factors (a : α) :
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
 
-theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
+theorem not_isUnit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     ¬IsUnit a ↔ ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod = a ∧ f ≠ ∅ :=
   ⟨fun hnu => by
     obtain ⟨f, hi, u, rfl⟩ := exists_factors a hn0
@@ -97,6 +97,9 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
+
+@[deprecated (since := "2026-08-02")]
+alias not_unit_iff_exists_factors_eq := not_isUnit_iff_exists_factors_eq
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
