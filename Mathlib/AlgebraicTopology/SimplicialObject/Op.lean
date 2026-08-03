@@ -41,13 +41,13 @@ def opObjIso {X : SimplicialObject C} {n : SimplexCategoryᵒᵖ} :
 @[simp]
 lemma opFunctor_map_app {X Y : SimplicialObject C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
     (opFunctor.map f).app n = opObjIso.hom ≫ f.app n ≫ opObjIso.inv := by
-  simp [opObjIso, opFunctor]
+  simp [opFunctor, opObjIso]
 
 @[simp]
 lemma opFunctor_obj_map (X : SimplicialObject C) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) :
     (opFunctor.obj X).map f =
       opObjIso.hom ≫ X.map (SimplexCategory.rev.map f.unop).op ≫ opObjIso.inv := by
-  simp [opObjIso, opFunctor]
+  simp [opFunctor, opObjIso]
 
 @[simp]
 lemma opFunctor_obj_δ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
