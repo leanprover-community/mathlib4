@@ -24,7 +24,7 @@ follows a geometric distribution with parameter `p`.
 
 ## Main definition
 
-* `geometricMeasure p`: a geometric measure on a semiring `R`,
+* `geometricMeasure p`: a geometric measure on `ℕ`,
   parametrized by its success probability `p`.
 
 ## Implementation note
@@ -60,7 +60,7 @@ lemma geometricMeasure_eq (hp : p ≠ 0) :
       Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n) :=
   if_pos hp
 
-/-- The `positivty` tactic does not work for this goal. Use this lemma to rewrite
+/-- The `positivity` tactic does not work for this goal. Use this lemma to rewrite
 `(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/
 lemma geometricMeasure_nonneg (p : unitInterval) n :
     0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.2.1
