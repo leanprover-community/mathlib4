@@ -351,8 +351,7 @@ noncomputable instance semifield : Semifield (FractionalIdeal A⁰ K) where
   inv_zero := inv_zero' K
   mul_inv_cancel := isDedekindDomain_iff_mul_inv_cancel.mp ‹_›
   div_eq_mul_inv := by
-    let := IsDedekindDomainInv.commGroupWithZero K
-      (isDedekindDomain_iff_isDedekindDomainInv.mp ‹_›)
+    let := (isDedekindDomain_iff_isDedekindDomainInv.mp ‹_›).commGroupWithZero K
     exact div_eq_mul_inv
   nnqsmul := _
 
