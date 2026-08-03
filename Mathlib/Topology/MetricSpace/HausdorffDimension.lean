@@ -57,9 +57,9 @@ properties of Hausdorff dimension.
   with nonempty interior, then the Hausdorff dimension of `s` is equal to the dimension of `E`.
 * `dense_compl_of_dimH_lt_finrank`: if `s` is a set in a finite-dimensional real vector space `E`
   with Hausdorff dimension strictly less than the dimension of `E`, the `s` has a dense complement.
-* `ContDiff.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a `C¹`
-  smooth map is dense provided that the dimension of the domain is strictly less than the dimension
-  of the codomain.
+* `Differentiable.dense_compl_range_of_finrank_lt_finrank`: the complement to the range of a
+  differentiable map is dense provided that the dimension of the domain is strictly less than the
+  dimension of the codomain.
 
 ## Notation
 
@@ -521,11 +521,9 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
 
 end Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
-
-theorem dense_compl_of_dimH_lt_finrank [FiniteDimensional ℝ E] {s : Set E}
-    (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
+theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
+  have : FiniteDimensional ℝ E := .of_finrank_pos <| by simpa using zero_le.trans_lt hs
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
   rw [← sdiff_eq, sdiff_eq_empty] at he
   rw [← Real.dimH_of_mem_nhds ht]
@@ -582,36 +580,60 @@ theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
   borelize E F
   simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.2)
 
-/-- If `f` is `C¹`-smooth on a set `t`, then `dimH (f '' t) ≤ dimH t`. -/
-theorem ContDiffOn.dimH_image_le (hf : ContDiffOn 𝕜 1 f t) : dimH (f '' t) ≤ dimH t :=
-  (hf.differentiableOn one_ne_zero).dimH_image_le
+variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
-end Differentiable
-
-/-- The Hausdorff dimension of the range of a `C¹`-smooth function defined on a finite-dimensional
-real normed space is at most the dimension of its domain as a vector space over `ℝ`. -/
-theorem ContDiff.dimH_range_le [FiniteDimensional ℝ E] {f : E → F} (h : ContDiff ℝ 1 f) :
+/-- The Hausdorff dimension of the range of a differentiable function defined on a
+finite-dimensional real normed space is at most the dimension of its domain as a vector space over
+`ℝ`. -/
+theorem Differentiable.dimH_range_le [FiniteDimensional ℝ E] (h : Differentiable ℝ f) :
     dimH (range f) ≤ finrank ℝ E :=
   calc
     dimH (range f) = dimH (f '' univ) := by rw [image_univ]
-    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le
+    _ ≤ dimH (univ : Set E) := h.differentiableOn.dimH_image_le
     _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
 
-/-- A particular case of Sard's Theorem. Let `f : E → F` be a map between finite-dimensional real
-vector spaces. Suppose that `f` is `C¹` smooth on a set `s` of Hausdorff dimension strictly
-less than the dimension of `F`. Then the complement of the image `f '' s` is dense in `F`. -/
-theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F] {f : E → F}
-    {t : Set E} (h : ContDiffOn ℝ 1 f t)
+/-- A particular case of Sard's Theorem. Let `f : E → F` be a map between real normed spaces.
+Suppose that `f` is differentiable on a set `t` of Hausdorff dimension strictly less than the
+dimension of `F`. Then the complement of the image `f '' t` is dense in `F`. -/
+theorem DifferentiableOn.dense_compl_image_of_dimH_lt_finrank (h : DifferentiableOn ℝ f t)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_image_le.trans_lt htF
 
-/-- A particular case of Sard's Theorem. If `f` is a `C¹` smooth map from a real vector space to a
-real vector space `F` of strictly larger dimension, then the complement of the range of `f` is dense
-in `F`. -/
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ E]
-    [FiniteDimensional ℝ F] {f : E → F}
+/-- A particular case of Sard's Theorem. If `f` is a differentiable map from a real vector space
+to a real vector space `F` of strictly larger dimension, then the complement of the range of `f`
+is dense in `F`. -/
+theorem Differentiable.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ E]
+    (h : Differentiable ℝ f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
+  dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+variable [FiniteDimensional ℝ E] {s : Set E}
+
+@[deprecated DifferentiableOn.dimH_image_le (since := "2026-08-03")]
+theorem ContDiffOn.dimH_image_le (hf : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s) :
+    dimH (f '' t) ≤ dimH t :=
+  dimH_image_le_of_locally_lipschitzOn fun x hx =>
+    let ⟨C, u, hu, hf⟩ := (hf x (ht hx)).exists_lipschitzOnWith hc
+    ⟨C, u, nhdsWithin_mono _ ht hu, hf⟩
+
+@[deprecated Differentiable.dimH_range_le (since := "2026-08-03")]
+theorem ContDiff.dimH_range_le (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finrank ℝ E :=
+  calc
+    dimH (range f) = dimH (f '' univ) := by rw [image_univ]
+    _ ≤ dimH (univ : Set E) := h.contDiffOn.dimH_image_le convex_univ Subset.rfl
+    _ = finrank ℝ E := Real.dimH_univ_eq_finrank E
+
+@[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank (since := "2026-08-03")]
+theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F]
+    (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
+    (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
+  dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
+
+@[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank (since := "2026-08-03")]
+theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F]
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
+
+end Differentiable
 
 /--
 The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspace `K`
