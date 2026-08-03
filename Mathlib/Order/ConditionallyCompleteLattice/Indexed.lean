@@ -617,8 +617,8 @@ theorem ciSup₂_eq_ciSup_diagonal' {α : Type*} {ι : Sort*}
         obtain ⟨k, hik⟩ := h i j
         exact hik.trans (hb' ⟨k, rfl⟩)⟩
   apply le_antisymm
-  · exact ciSup_le' fun i ↦ ciSup_mono_of_forall_exists' hb (h i)
-  · exact ciSup_mono_of_forall_exists' hfi fun k ↦
+  · exact ciSup_le' fun i ↦ ciSup_mono' hb (h i)
+  · exact ciSup_mono' hfi fun k ↦
       ⟨k, le_ciSup (hf k) k⟩
 
 theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
