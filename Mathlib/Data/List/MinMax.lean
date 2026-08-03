@@ -363,13 +363,13 @@ theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum :=
     · simp [h]
     · simp [IH h]
 
-@[to_dual]
+@[to_dual le_min_of_forall_le]
 theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
   induction l with
   | nil => simp
   | cons y l IH => simpa [h y mem_cons_self] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 
-@[to_dual]
+@[to_dual min_le_of_le]
 theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
   induction l with
   | nil => exact absurd hx not_mem_nil
