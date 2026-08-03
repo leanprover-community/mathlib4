@@ -958,10 +958,10 @@ variable [IsTopologicalAddGroup M₄]
   and `f` is a rectangular block below the diagonal. -/
 def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) : (M × M₃) ≃L[R] M₂ × M₄ where
   __ := e.toLinearEquiv.skewProd e'.toLinearEquiv ↑f
-  continuous_invFun :=
-    (e.continuous_invFun.comp continuous_fst).prodMk
-      (e'.continuous_invFun.comp <|
-        continuous_snd.sub <| f.continuous.comp <| e.continuous_invFun.comp continuous_fst)
+  continuous_invFun := by
+    eta_expand
+    simp only [LinearEquiv.invFun_eq_symm, LinearEquiv.skewProd_symm_apply, coe_symm_toLinearEquiv]
+    fun_prop
 
 @[simp]
 theorem skewProd_apply (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) (x) :
