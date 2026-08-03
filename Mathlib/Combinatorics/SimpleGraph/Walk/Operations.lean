@@ -805,7 +805,7 @@ lemma length_dropLast (p : G.Walk u v) : p.dropLast.length = p.length - 1 := by
 
 theorem getVert_dropLast {n} {p : G.Walk u v} (h : n < p.length) :
     p.dropLast.getVert n = p.getVert n := by
-  grind [getVert_eq_support_getElem, length_dropLast, support_dropLast, length_eq_zero_iff]
+  grind [getVert_eq_support_getElem, length_dropLast, support_dropLast]
 
 @[simp]
 theorem reverse_tail (p : G.Walk u v) :
@@ -814,6 +814,7 @@ theorem reverse_tail (p : G.Walk u v) :
   | nil => simp
   | cons hadj p =>
     apply ext_support
+    rw [support_copy]
     simp [-reverse_cons]
 
 @[simp]
