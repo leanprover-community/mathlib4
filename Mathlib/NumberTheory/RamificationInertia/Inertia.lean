@@ -159,7 +159,6 @@ lemma absNorm_eq_pow_inertiaDeg'_of_liesOver {S : Type*} [CommRing S] [IsDedekin
     (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
     absNorm P = absNorm p ^ (p.inertiaDeg' P) := by
   have : p.IsMaximal := hp.isMaximal hp_ne_bot
-  let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
 @[deprecated (since := "2026-07-03")] alias absNorm_eq_pow_inertiaDeg_of_liesOver :=
@@ -199,10 +198,10 @@ theorem inertiaDeg'_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.I
   have h₂ := I.over_def P
   have h₃ := (LiesOver.trans I P p).over
   simp only [inertiaDeg', dif_pos h₁.symm, dif_pos h₂.symm, dif_pos h₃.symm]
-  letI : Algebra (R ⧸ p) (S ⧸ P) := Ideal.Quotient.algebraQuotientOfLEComap h₁.le
-  letI : Algebra (S ⧸ P) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₂.le
-  letI : Algebra (R ⧸ p) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₃.le
-  letI : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq <| by
+  let : Algebra (R ⧸ p) (S ⧸ P) := Ideal.Quotient.algebraQuotientOfLEComap h₁.le
+  let : Algebra (S ⧸ P) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₂.le
+  let : Algebra (R ⧸ p) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap h₃.le
+  let : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq <| by
     rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
   exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
 

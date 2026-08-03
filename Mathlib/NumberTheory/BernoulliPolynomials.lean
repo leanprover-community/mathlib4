@@ -29,7 +29,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 ## Main theorems
 
-- `sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
+- `Polynomial.sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
   coefficients up to `n` is `(n + 1) * X^n`.
 - `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.

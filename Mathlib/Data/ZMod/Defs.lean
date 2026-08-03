@@ -132,8 +132,8 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
-  open Fin.CommRing in inferInstance
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) where
+  out := by simp
 
 end Fin
 

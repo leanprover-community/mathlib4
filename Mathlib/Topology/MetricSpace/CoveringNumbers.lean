@@ -384,7 +384,6 @@ See `Isometry.coveringNumber_image` for the version in an `EMetricSpace`, in whi
 a consequence of being an isometry. -/
 lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_inj : Set.InjOn f A) :
     coveringNumber ε (f '' A) = coveringNumber ε A := by
-  classical
   refine le_antisymm ?_ ?_
   · simp only [coveringNumber, le_iInf_iff]
     intro C hC_subset hC_cover
