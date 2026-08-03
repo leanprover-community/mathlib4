@@ -31,10 +31,9 @@ open UniformSpace Completion
 variable {α β : Type*} {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ : R₁ →+* R₂} [UniformSpace α]
   [AddCommGroup α] [IsUniformAddGroup α] [Module R₁ α] [UniformContinuousConstSMul R₁ α]
   [UniformSpace β] [AddCommGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β]
+  [IsUniformAddGroup β]
 
 section completion
-
-variable [IsUniformAddGroup β]
 
 /--
 Lift a continuous semilinear map to a continuous semilinear map between the
@@ -65,34 +64,29 @@ end completion
 
 section fromCompletion
 
-variable [T2Space β] [ContinuousAdd β] [CompleteSpace β]
+variable [T2Space β] [CompleteSpace β]
 
 /-- Extension of a linear function to a linear function over the completion. This is the continuous
 linear version of `UniformSpace.Completion.extension`. -/
-noncomputable def fromCompletion {f : α →SL[σ] β} (hf : UniformContinuous f) :
+noncomputable def fromCompletion (f : α →SL[σ] β) :
     Completion α →SL[σ] β where
-  toFun := Completion.extension f
-  map_add' a b := induction_on₂ a b (isClosed_eq (by fun_prop) (by fun_prop)) <| by
-    simp [extension_coe, hf, ← coe_add]
+  __ := f.toAddMonoidHom.extension f.continuous
   map_smul' c a := induction_on a
-      (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by fun_prop)) <| by
-    simp [← Completion.coe_smul, hf, extension_coe]
+      (isClosed_eq (continuous_extension.comp (continuous_const_smul c))
+        ((AddMonoidHom.continuous_extension f.toAddMonoidHom f.continuous).const_smul (σ c))) <| by
+    simp [← Completion.coe_smul, AddMonoidHom.extension_coe]
+  cont := AddMonoidHom.continuous_extension f.toAddMonoidHom f.continuous
 
-lemma coe_fromCompletion {f : α →SL[σ] β} (hf : UniformContinuous f) :
-    fromCompletion hf = Completion.extension f := rfl
+lemma coe_fromCompletion (f : α →SL[σ] β) :
+    f.fromCompletion = Completion.extension f := rfl
 
 @[simp]
-lemma fromCompletion_apply {f : α →SL[σ] β} (hf : UniformContinuous f) (e : Completion α) :
-    fromCompletion hf e = Completion.extension f e := rfl
+lemma fromCompletion_apply (f : α →SL[σ] β) (e : Completion α) :
+    f.fromCompletion e = Completion.extension f e := rfl
 
-lemma uniformContinuous_fromCompletion {f : α →SL[σ] β} (hf : UniformContinuous f) :
-    UniformContinuous (fromCompletion hf) :=
-  uniformContinuous_def.mpr (uniformContinuous_extension)
-
-lemma fromCompletion_unique {f : α →SL[σ] β} (hf : UniformContinuous f)
-    {g : Completion α →SL[σ] β} (hg : UniformContinuous g) (h : ∀ (e : α), f e = g e) :
-    fromCompletion hf = g := by
-  ext; simp [extension_unique hf hg h]
+lemma fromCompletion_unique (f : α →SL[σ] β) (g : Completion α →SL[σ] β)
+    (h : ∀ (e : α), f e = g e) : f.fromCompletion = g := by
+  ext; simp [extension_unique f.uniformContinuous g.uniformContinuous h]
 
 end fromCompletion
 
