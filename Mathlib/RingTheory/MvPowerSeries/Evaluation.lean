@@ -24,7 +24,7 @@ consisting of ideals.
 
 Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
 `MvPowerSeries.eval₂ f φ a` is the evaluation of the multivariate power series `f` at `a`.
-It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
+If `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
 its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
 bundled in `MvPowerSeries.HasEval a` :
