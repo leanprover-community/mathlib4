@@ -882,7 +882,7 @@ theorem elim_cons {exp : ℝ}
   generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
   cases h <;> simp at h_ms; grind
 
-/-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
+/-- One can replace `f` in `Approximates` with the function that eventually equals `f`. -/
 theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
     (ms.replaceFun f).Approximates := by
