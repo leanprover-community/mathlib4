@@ -15,10 +15,7 @@ public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 ## Main results
 
-* `nonempty_linearEquiv_of_isSimpleModule_of_isSimpleRing`: any two simple modules over an Artinian
-  simple ring are isomorphic.
-* `directSum_simple_module_of_isSimpleRing `: any module over an Artinian simple ring is
-  isomorphic to a direct sum of copies of a simple module.
+* `directSum_simple_module_of_isSimpleRing`: any module over an Artinian simple ring is
 * `nonempty_linearEquiv_iff_length_eq_of_isSimpleRing`: two finite modules over a simple algebra `A`
   over a commutative Artinian ring `k` are isomorphic as `A`-modules if and only if they have the
   same length over `k`.
