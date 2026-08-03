@@ -156,15 +156,15 @@ def partscopyEquiv (P : Partition s) (hst : s = t) : ↥(P.copy hst) ≃ ↥P :=
 
 /-- A constructor for `Partition s` that removes `⊥` from the set of parts. -/
 @[simps]
-def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
+def removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) : Partition s where
   parts := P \ {⊥}
   sSupIndep' := indep.mono sdiff_subset
   bot_notMem' := by simp
-  sSup_eq' := by simp [← sSup_eq]
+  sSup_eq' := by simp [← hsSup]
 
 @[simp]
-lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) :
-    x ∈ removeBot P indep sSup_eq ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
+lemma mem_removeBot (P : Set α) (indep : _root_.sSupIndep P) (hsSup : sSup P = s) :
+    x ∈ removeBot P indep hsSup ↔ x ∈ P ∧ x ≠ ⊥ := Iff.rfl
 
 @[simp]
 lemma notMem_of_bot (P : Partition (⊥ : α)) (x : α) : x ∉ P := by

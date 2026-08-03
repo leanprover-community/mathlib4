@@ -137,6 +137,7 @@ theorem ContinuousMultilinearMap.uncurry_curryLeft (f : ContinuousMultilinearMap
 
 variable (𝕜 Ei G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The space of continuous multilinear maps on `Π(i : Fin (n+1)), E i` is canonically isomorphic to
 the space of continuous linear maps from `E 0` to the space of continuous multilinear maps on
 `Π(i : Fin n), E i.succ`, by separating the first variable. We register this isomorphism in
@@ -204,6 +205,7 @@ theorem ContinuousMultilinearMap.uncurryRight_apply
     (m : ∀ i, Ei i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a continuous multilinear map `f` in `n+1` variables, split the last variable to obtain
 a continuous multilinear map in `n` variables into continuous linear maps, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
@@ -244,6 +246,7 @@ theorem ContinuousMultilinearMap.uncurry_curryRight (f : ContinuousMultilinearMa
 
 variable (𝕜 Ei G)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The space of continuous multilinear maps on `Π(i : Fin (n+1)), Ei i` is canonically isomorphic to
 the space of continuous multilinear maps on `Π(i : Fin n), Ei <| castSucc i` with values in the
@@ -362,6 +365,7 @@ theorem ContinuousMultilinearMap.uncurryMid_curryMid (p : Fin (n + 1))
 
 variable (𝕜 Ei G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ContinuousMultilinearMap.curryMid` as a linear isometry equivalence. -/
 @[simps! apply symm_apply]
 def ContinuousMultilinearMap.curryMidEquiv (p : Fin (n + 1)) :
@@ -576,6 +580,7 @@ theorem uncurrySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
 
 variable (𝕜 ι ι' G G')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear isometric equivalence between the space of continuous multilinear maps with variables
 indexed by `ι ⊕ ι'` and the space of continuous multilinear maps with variables indexed by `ι`
 taking values in the space of continuous multilinear maps with variables indexed by `ι'`.

@@ -517,7 +517,7 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
     rw [eq_comm] at this
     rw [this, Nat.prod_properDivisors_prime_pow hp]
   induction n with
-  | zero => haveI := Fact.mk hp; simp [cyclotomic_prime]
+  | zero => have := Fact.mk hp; simp [cyclotomic_prime]
   | succ n_n n_ih =>
     rw [← (eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr ?_]
     rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]

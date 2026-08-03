@@ -47,7 +47,7 @@ instance : SemilatticeInf (Graph α β) where
     isLink_symm _ _ := { symm _ _ h := ⟨h.1.symm, h.2.symm⟩ }
     eq_or_eq_of_isLink_of_isLink _ _ _ _ _ h h' := h.1.left_eq_or_eq h'.1
     edge_mem_iff_exists_isLink e := by
-      simp only [edgeSet_eq_setOf_exists_isLink, mem_inter_iff, mem_setOf_eq]
+      simp only [edgeSet_eq_setOfPred_exists_isLink, mem_inter_iff, mem_ofPred_eq]
       exact ⟨fun ⟨⟨⟨x, y, hexy⟩, ⟨z, w, hezw⟩⟩, h⟩ ↦ ⟨x, y, hexy, by rwa [← h]⟩,
         fun ⟨x, y, hfG, hfH⟩ ↦ ⟨⟨⟨_, _, hfG⟩, ⟨_, _, hfH⟩⟩,
         fun z w ↦ by rw [hfG.isLink_iff_sym2_eq, hfH.isLink_iff_sym2_eq]⟩⟩
