@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The integers form a group

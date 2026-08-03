@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Patrick Luo
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
@@ -30,7 +29,7 @@ variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_right_injective]
 lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  fun a b h ↦ IsMulTorsionFree.pow_left_injective hn (.all a b) h
+  fun a b h ↦ IsMulTorsionFree.pow_left_injective hn (mul_comm a b) h
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
@@ -38,19 +37,21 @@ lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injecti
 end CommMonoid
 
 section Monoid
-variable [Monoid M]
 
 instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
-  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk (.all _ _) habk
+  no_nat_zero_divisors _ _ _ hk := IsAddTorsionFree.nsmul_right_injective hk (add_comm _ _)
 
-@[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
+variable [Monoid M]
+
+@[to_additive]
+instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
   pow_left_injective _ _ _ _ _ _ := Subsingleton.elim _ _
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective hn (Commute.one_right a)
+  simpa +contextual [iff_def] using IsMulTorsionFree.pow_left_injective (b := (1 : M)) hn (by simp)
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]

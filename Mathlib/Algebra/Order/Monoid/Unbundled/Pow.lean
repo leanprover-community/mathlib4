@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Tactic.Lift
