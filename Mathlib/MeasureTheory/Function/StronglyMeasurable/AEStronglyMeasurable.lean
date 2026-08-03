@@ -848,42 +848,39 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) 
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
-end MulAction
-
-section SMulFun
-
-variable {M G G₀ : Type*}
-
+omit [ContinuousConstSMul M β] in
 /-- Multiplying by a scalar *function* admitting an a.e. strongly measurable pointwise left
 inverse preserves a.e. strong measurability. This is the varying-scalar analogue of
 `IsUnit.aestronglyMeasurable_const_smul_iff`. -/
-theorem _root_.aestronglyMeasurable_smul_iff_of_mul_eq_one [Monoid M] [TopologicalSpace M]
-    [MulAction M β] [ContinuousSMul M β] {c d : α → M} (hc : AEStronglyMeasurable c μ)
+theorem _root_.aestronglyMeasurable_smul_iff_of_mul_eq_one [TopologicalSpace M]
+    [ContinuousSMul M β] {c d : α → M} (hc : AEStronglyMeasurable c μ)
     (hd : AEStronglyMeasurable d μ) (hdc : ∀ᵐ x ∂μ, d x * c x = 1) :
     AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
   refine ⟨fun h => (hd.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
   filter_upwards [hdc] with x hx
   rw [smul_smul, hx, one_smul]
 
+omit [ContinuousConstSMul G β] in
 /-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
 a.e. strong measurability. This is the varying-scalar analogue of
 `aestronglyMeasurable_const_smul_iff`. -/
-theorem _root_.aestronglyMeasurable_smul_iff [Group G] [TopologicalSpace G] [ContinuousInv G]
-    [MulAction G β] [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
+theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv G]
+    [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
     AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
   aestronglyMeasurable_smul_iff_of_mul_eq_one hc hc.fun_inv <|
     .of_forall fun x => inv_mul_cancel (c x)
 
+omit [ContinuousConstSMul G₀ β] in
 /-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
 measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
-theorem _root_.aestronglyMeasurable_smul_iff₀ [GroupWithZero G₀] [TopologicalSpace G₀]
-    [ContinuousInv₀ G₀] [MetrizableSpace G₀] [MulAction G₀ β] [ContinuousSMul G₀ β] {c : α → G₀}
+theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [ContinuousInv₀ G₀]
+    [MetrizableSpace G₀] [ContinuousSMul G₀ β] {c : α → G₀}
     (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
     AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
   aestronglyMeasurable_smul_iff_of_mul_eq_one hc hc.fun_inv₀ <|
     hc0.mono fun _ hx => inv_mul_cancel₀ hx
 
-end SMulFun
+end MulAction
 
 end AEStronglyMeasurable
 end AEStronglyMeasurable
