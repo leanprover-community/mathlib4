@@ -61,6 +61,23 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
 
+/-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
+`(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
+theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :
+    coeff k ((d⁄dX R)^[n] f) = (k + 1).ascFactorial n * coeff (k + n) f := by
+  induction n generalizing k with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', coeff_derivative, ih, Nat.ascFactorial_succ,
+      ← Nat.succ_ascFactorial]
+    grind
+
+/-- Specialisation of `coeff_iterate_derivative` at `k = 0`: the constant term of the `n`-th formal
+derivative recovers `n !` times the `n`-th coefficient, `constantCoeff (Dⁿ f) = n ! * coeff n f`. -/
+theorem constantCoeff_iterate_derivative (f : R⟦X⟧) (n : ℕ) :
+    constantCoeff ((d⁄dX R)^[n] f) = n ! * coeff n f := by
+  simpa using coeff_iterate_derivative f n 0
+
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := by
   ext
   rw [coeff_derivative, coeff_coe, coeff_coe, Polynomial.coeff_derivative]

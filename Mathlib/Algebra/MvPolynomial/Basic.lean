@@ -590,6 +590,16 @@ theorem coeff_monomial [DecidableEq σ] (m n) (a) :
     coeff m (monomial n a : MvPolynomial σ R) = if n = m then a else 0 :=
   Finsupp.single_apply
 
+/-- A polynomial all of whose support degrees equal a fixed `d₀` is the single monomial
+`monomial d₀ (coeff d₀ φ)`. -/
+theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ : σ →₀ ℕ}
+    (h : ∀ d ∈ φ.support, d = d₀) : φ = monomial d₀ (coeff d₀ φ) := by
+  classical
+  ext d
+  rcases eq_or_ne d d₀ with rfl | hd
+  · rw [coeff_monomial, if_pos rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial, if_neg fun e ↦ hd e.symm]
+
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
     coeff m (C a : MvPolynomial σ R) = if 0 = m then a else 0 :=
