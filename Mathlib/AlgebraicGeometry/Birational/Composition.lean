@@ -191,11 +191,11 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
   apply PartialMap.comp_equiv_of_equiv_right
   rw [toRationalMap_representative]
 
-instance isOver_comp {S : Scheme.{u}} [IrreducibleSpace Y] [Nonempty Z] [X.Over S] [Y.Over S]
-    [Z.Over S] (f : X ⤏ Y) [f.IsDominant] [f.IsOver S] (g : Y ⤏ Z) [g.IsDominant] [g.IsOver S] :
-    (f.comp g).IsOver S := by
+lemma isOver_comp {S : Scheme.{u}} {sX : X ⟶ S} {sY : Y ⟶ S} {sZ : Z ⟶ S}
+    [IrreducibleSpace Y] [Nonempty Z] (f : X ⤏ Y) [f.IsDominant] (hf : f.IsOver sX sY)
+    (g : Y ⤏ Z) [g.IsDominant] (hg : g.IsOver sY sZ) : (f.comp g).IsOver sX sZ := by
   rw [isOver_iff, ← comp_toRationalMap, comp_assoc, comp_toRationalMap,
-    isOver_iff.mp ‹g.IsOver S›, comp_toRationalMap, RationalMap.isOver_iff.mp ‹f.IsOver S›]
+    isOver_iff.mp hg, comp_toRationalMap, RationalMap.isOver_iff.mp hf]
 
 end RationalMap
 
