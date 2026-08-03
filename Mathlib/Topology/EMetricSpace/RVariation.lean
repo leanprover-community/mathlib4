@@ -17,7 +17,7 @@ We study the `r`-variation, a generalisation of the usual bounded variation.
 
 ## Main definitions and results
 
-* `rRVariationOn r f s` is the total `r`-variation of the function `f` on the set `s`, in `ℝ≥0∞`.
+* `rEVariationOn r f s` is the total `r`-variation of the function `f` on the set `s`, in `ℝ≥0∞`.
 * `BoundedrVariationOn r f s` registers that the variation of `f` on `s` is finite.
 * `LocallyBoundedrVariationOn r f s` registers that `f` has finite `r`-variation on any compact
   subinterval of `s`.
@@ -29,6 +29,13 @@ We define the variation as an extended nonnegative real, to allow for infinite v
 it possible to use the complete linear order structure of `ℝ≥0∞`. The proofs would be much
 more tedious with an `ℝ`-valued or `ℝ≥0`-valued variation, since one would always need to check
 that the sets one uses are nonempty and bounded above as these are only conditionally complete.
+
+## TODO
+
+* Basic properties, i.e. (Semi-)Continuity, limits, superadditivity of `r`-variation
+* Connections of bounded `r`-variation with Hölder functions
+
+
 -/
 
 @[expose] public section
@@ -121,7 +128,7 @@ theorem sum_le' (hr : r ≠ 0) (hr' : r ≠ ⊤) {f : α → E} {s : Set α} {n 
         edist (f (u (i + 1))) (f (u i)) ^ r.toReal) ^ r.toReal ⁻¹) ^ r.toReal := by
       rw [ENNReal.rpow_inv_rpow]
       exact ENNReal.toReal_ne_zero.mpr ⟨hr, hr'⟩
-    _ ≤ _ := by gcongr; exact sum_le hr hr' hu us
+    _ ≤ _ := ENNReal.rpow_le_rpow (sum_le hr hr' hu us) ENNReal.toReal_nonneg
 
 theorem edist_le (hr : r ≠ 0) (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
     edist (f x) (f y) ≤ rEVariationOn r f s := by
@@ -181,8 +188,7 @@ lemma iSup_rpow_eq_rpow_iSup {α : Type*} (f : α → ℝ≥0∞) {p : ℝ} (hp 
   · exact (Monotone.map_ciSup_of_continuousAt
       (Continuous.continuousAt ENNReal.continuous_rpow_const)
       (ENNReal.monotone_rpow_of_nonneg hp)).symm
-  · have : IsEmpty α := not_nonempty_iff.mp hα
-    simp only [iSup_of_empty', sSup_empty, bot_eq_zero',
+  · simp [not_nonempty_iff.mp hα,
       ENNReal.zero_rpow_of_pos (lt_of_le_of_ne hp (Ne.symm (h.resolve_right hα)))]
 
 /-- One may push out the exponent `r` out of the definition of `r`-variation. -/
@@ -196,20 +202,14 @@ theorem rEVariationOn_eq_iSup_rpow (f : α → E) (s : Set α) (hr : r ≠ 0) (h
 
 theorem mono (f : α → E) {s t : Set α} (hst : t ⊆ s) :
     rEVariationOn r f t ≤ rEVariationOn r f s := by
-  by_cases hr : r = 0
-  · simp only [hr, rEVariationOn_zero, iSup_le_iff, Subtype.forall, and_imp]
-    intro u u_mono u_mem
-    apply le_iSup_of_le ⟨u, u_mono, fun i ↦ hst (u_mem i)⟩
-    rfl
-  by_cases hr' : r = ⊤
-  · simp only [hr', rEVariationOn_top, iSup_le_iff, Prod.forall, Subtype.forall]
-    intro a ha b hb
-    rw [← rEVariationOn_top, ← hr']
-    exact edist_le hr f (hst ha) (hst hb)
+  rcases eq_or_ne r 0 with rfl | hr
+  · rw [rEVariationOn_zero, rEVariationOn_zero]
+    exact iSup_le fun ⟨u, u_mono, u_mem⟩ ↦ le_iSup_of_le ⟨u, u_mono, fun i ↦ hst (u_mem i)⟩ le_rfl
+  rcases eq_or_ne r ⊤ with rfl | hr'
+  · rw [rEVariationOn_top, rEVariationOn_top]
+    exact iSup_le fun ⟨⟨a, ha⟩, b, hb⟩ ↦ le_iSup_of_le ⟨⟨a, hst ha⟩, ⟨b, hst hb⟩⟩ le_rfl
   rw [rEVariationOn_ne_zero_ne_top hr hr']
-  simp only [iSup_le_iff, Prod.forall, Subtype.forall, and_imp]
-  intro n u hu ut
-  exact sum_le hr hr' hu fun i => hst (ut i)
+  exact iSup_le fun ⟨n, u, hu, ut⟩ ↦ sum_le hr hr' hu fun i ↦ hst (ut i)
 
 theorem rEVariationOn_of_empty (r : ℝ≥0∞) (f : α → E) : rEVariationOn r f ∅ = 0 := by
   unfold rEVariationOn; split_ifs <;> simp
@@ -231,9 +231,7 @@ theorem eVariationOn_top {f : α → E} {s : Set α}
     L < (∑ i ∈ Finset.range p.1,
     edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) ^ r.toReal) ^ (r.toReal ⁻¹) := by
   rw[rEVariationOn_ne_zero_ne_top h h' f s] at hv
-  refine lt_iSup_iff.mp ?_
-  rw[hv]
-  simp only [ENNReal.coe_lt_top]
+  exact lt_iSup_iff.mp (hv.symm ▸ ENNReal.coe_lt_top)
 
 theorem eVariationOn_top' {f : α → E} {s : Set α}
     (h : r ≠ 0) (h' : r ≠ ∞) (hv : rEVariationOn r f s = ∞) (L : ℝ≥0) :
@@ -241,14 +239,8 @@ theorem eVariationOn_top' {f : α → E} {s : Set α}
     L < (∑ i ∈ Finset.range p.1,
     edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) ^ r.toReal) := by
   obtain ⟨p, hp⟩ := eVariationOn_top h h' hv (L^ (r.toReal) ⁻¹)
-  use p
-  apply (ENNReal.rpow_lt_rpow_iff (z := r.toReal ⁻¹) ?_).mp
-  · have : (↑L : ℝ≥0∞) ^ r.toReal ⁻¹ = (↑(L ^ r.toReal ⁻¹) : ℝ≥0∞) := by
-      apply ENNReal.rpow_ofNNReal
-      simp only [inv_nonneg, ENNReal.toReal_nonneg]
-    rw[this]
-    exact hp
-  simp only [inv_pos, ENNReal.toReal_pos h h']
+  refine ⟨p, (ENNReal.rpow_lt_rpow_iff (inv_pos.mpr (ENNReal.toReal_pos h h'))).mp ?_⟩
+  rwa [ENNReal.coe_rpow_of_nonneg _ (inv_nonneg.mpr ENNReal.toReal_nonneg)] at hp
 
 theorem eVariationOn_top'' {f : α → E} {s : Set α}
     (h : r ≠ 0) (h' : r ≠ ∞) (hv : rEVariationOn r f s = ∞) (L : ℝ≥0) :
@@ -263,11 +255,7 @@ lemma ennreal_sum_rpow_le_rpow_sum (m : ℕ) (u : ℕ → ℝ≥0∞) {p : ℝ} 
   | zero => simp only [Finset.range_zero, Finset.sum_empty, zero_le]
   | succ m mh =>
     rw [Finset.sum_range_succ, Finset.sum_range_succ]
-    calc
-      ∑ x ∈ Finset.range m, u x ^ p + u m ^ p
-        ≤ (∑ x ∈ Finset.range m, u x) ^ p + u m ^ p := by gcongr
-      _ ≤ (∑ x ∈ Finset.range m, u x + u m) ^ p :=
-        ENNReal.add_rpow_le_rpow_add (∑ x ∈ Finset.range m, u x) (u m) hp
+    exact le_trans (by gcongr) (ENNReal.add_rpow_le_rpow_add _ _ hp)
 
 lemma sum_lp_mono_p (m : ℕ) (u : ℕ → ℝ≥0∞) {p q : ℝ} (hp : 0 < p) (pq : p ≤ q) :
     (∑ n ∈ Finset.range m, (u n) ^ q) ^ q ⁻¹ ≤ (∑ n ∈ Finset.range m, (u n) ^ p) ^ p⁻¹ := by
@@ -331,15 +319,15 @@ theorem mono' {r t : ℝ≥0∞} (f : α → E) (s : Set α) (hr : r ≠ 0) (ht 
   exact (sum_lp_mono_p _ _ hpr hrt).trans (sum_le hr hr' p.2.2.1 p.2.2.2)
 
 -- TODO : This also holds for `r, t ∈ {0, ⊤}`
-theorem boundedRVarationOn_mono {r t : ℝ≥0∞} (f : α → E) (s : Set α) (hr : r ≠ 0) (ht : t ≠ ⊤)
+theorem boundedRVariationOn_mono {r t : ℝ≥0∞} (f : α → E) (s : Set α) (hr : r ≠ 0) (ht : t ≠ ⊤)
     (rt : r ≤ t) (h : BoundedrVariationOn r f s) :
     BoundedrVariationOn t f s :=
   ne_top_of_le_ne_top h <| mono' f s hr ht rt
 
-theorem locallyBoundedRVarationOn_mono {r t : ℝ≥0∞} (f : α → E) (s : Set α) (hr : r ≠ 0)
+theorem locallyBoundedRVariationOn_mono {r t : ℝ≥0∞} (f : α → E) (s : Set α) (hr : r ≠ 0)
     (ht : t ≠ ⊤) (rt : r ≤ t) (h : LocallyBoundedrVariationOn r f s) :
     LocallyBoundedrVariationOn t f s :=
-  fun a b as bs ↦ boundedRVarationOn_mono f (s ∩ Icc a b) hr ht rt (h a b as bs)
+  fun a b as bs ↦ boundedRVariationOn_mono f (s ∩ Icc a b) hr ht rt (h a b as bs)
 
 theorem one_le_rEVariationOn_zero {f : α → E} {s : Set α}
       (h : ∃ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) ≠ 0) :
@@ -404,5 +392,3 @@ protected theorem subsingleton (f : α → E) {s : Set α} (hs : s.Subsingleton)
   constant_on (hs.image f)
 
 end rEVariationOn
-
--- TODO : (Semi-)Continuity, limits, superadditivity, connections with Hölder functions
