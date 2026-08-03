@@ -113,7 +113,7 @@ lemma geometricMeasure_Iio (hp : p ≠ 0) (m : ℕ) :
 `(1 - p) ^ m`. -/
 lemma geometricMeasure_Ici (hp : p ≠ 0) (m : ℕ) :
     geometricMeasure p (Ici m) = ENNReal.ofReal ((1 - p) ^ m) := by
-  have hle : ((1 - p : ℝ)) ^ m ≤ 1 :=
+  have hle : (1 - p : ℝ) ^ m ≤ 1 :=
     pow_le_one₀ (sub_nonneg.mpr p.2.2) (sub_le_self _ p.2.1)
   rw [← compl_Iio, measure_compl .of_discrete (measure_ne_top _ _), measure_univ,
     geometricMeasure_Iio hp, ← ENNReal.ofReal_one, ← ENNReal.ofReal_sub _ (sub_nonneg.mpr hle)]
