@@ -90,10 +90,12 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · obtain ⟨m, n, e⟩ := mem_lattice.mp H
     have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
-      (by simp; linear_combination e)
+      (by simp only [Complex.real_smul, Complex.ofReal_sub, Complex.ofReal_intCast,
+        Complex.ofReal_ratCast]; linear_combination e)
     simp only [sub_eq_zero] at this
     norm_cast at this
-    aesop
+    obtain ⟨rfl, rfl⟩ := this
+    exact ⟨Rat.den_intCast m, Rat.den_intCast n⟩
   · lift α to ℤ using h₁
     lift β to ℤ using h₂
     simp only [Rat.cast_intCast, ← zsmul_eq_mul]
@@ -231,7 +233,8 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
-  · simpa using! show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
+  · have : 0 ≤ 10 * r * (‖(l : ℂ)‖ ^ 3)⁻¹ := by positivity
+    simpa using! this
   · exact weierstrassP_bound r hr s hs l h
 
 lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
@@ -244,9 +247,10 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
     DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
     (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_sdiff
-  split_ifs
+  split_ifs with hil
   · simp
-  · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
+  · exact .sub (.div (by fun_prop) (by fun_prop) fun x hx ↦
+      pow_ne_zero _ (sub_ne_zero.mpr fun h ↦ hx ⟨h.symm ▸ i.2, h.symm ▸ hil⟩)) (by fun_prop)
 
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
@@ -348,7 +352,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
   split_ifs
   · simp
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
-  have : l ≠ 0 := by rintro rfl; simp_all; linarith
+  have : l ≠ 0 := by rintro rfl; simp only [ZeroMemClass.coe_zero, norm_zero] at h; linarith
   simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow]
   rw [Real.rpow_neg (by positivity), ← div_eq_mul_inv, div_le_div_iff₀, norm_sub_rev]
   · refine LE.le.trans_eq (b := 2 * (2 * ‖l - s‖) ^ 3) ?_ (by ring)
@@ -370,10 +374,10 @@ lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
   refine L.hasSumLocallyUniformly_derivWeierstrassPExcept l₀
     |>.tendstoLocallyUniformlyOn.differentiableOn
       (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_sdiff
-  split_ifs
+  split_ifs with hil
   · simp
   refine .div (by fun_prop) (by fun_prop) fun x hx ↦ ?_
-  have : x ≠ i := by rintro rfl; simp_all
+  have : x ≠ i := fun h ↦ hx ⟨h.symm ▸ i.2, h.symm ▸ hil⟩
   simpa [sub_eq_zero]
 
 lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
@@ -381,10 +385,10 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
   refine ((L.hasSumLocallyUniformly_weierstrassPExcept l₀).tendstoLocallyUniformlyOn.deriv
     (.of_forall fun s ↦ ?_) L.isOpen_compl_lattice_sdiff).unique ?_
   · refine .fun_sum fun i hi ↦ ?_
-    split_ifs
+    split_ifs with hil
     · simp
     refine .sub (.div (by fun_prop) (by fun_prop) fun x hx ↦ ?_) (by fun_prop)
-    have : x ≠ i := by rintro rfl; simp_all
+    have : x ≠ i := fun h ↦ hx ⟨h.symm ▸ i.2, h.symm ▸ hil⟩
     simpa [sub_eq_zero]
   · refine (L.hasSumLocallyUniformly_derivWeierstrassPExcept l₀).tendstoLocallyUniformlyOn.congr ?_
     intro s l hl
@@ -484,7 +488,11 @@ private lemma weierstrassP_add_coe_aux (z : ℂ) (l : L.lattice) (hl : l.1 / 2 �
 lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z := by
   let G : AddSubgroup ℂ :=
     { carrier := { z | (℘[L] <| · + z) = ℘[L] }
-      add_mem' := by simp_all [funext_iff, ← add_assoc]
+      add_mem' := by
+        intro a b ha hb
+        simp only [funext_iff] at ha hb ⊢
+        intro x
+        rw [← add_assoc, hb, ha]
       zero_mem' := by simp
       neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
   have : L.lattice ≤ G.toIntSubmodule := by
@@ -703,7 +711,9 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
       _ = ‖(p.1 + 2 : ℂ)‖ * ‖p.2 - x‖ ^ (-3 - p.1 : ℤ) * ‖z - x‖ ^ (p.1 + 1) := by
         norm_num; ring_nf; simp
       _ = ‖(p.1 + 2 : ℂ)‖ * ((‖↑p.2 - x‖ / ‖z - x‖) ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
-        simp [hpx, zpow_sub₀, div_pow]; field
+        simp only [Int.reduceNeg, ne_eq, hpx, not_false_eq_true, zpow_sub₀, zpow_neg, zpow_ofNat,
+          zpow_natCast, div_pow, inv_div]
+        field
       _ ≤ (p.1 + 2) * (κ ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
         gcongr
         · norm_cast
@@ -971,7 +981,7 @@ private lemma meromorphic_relation : Meromorphic L.relation := by
   refine fun z ↦ (this _).congr ?_
   filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds
     (L.compl_lattice_sdiff_singleton_mem_nhds _)] with w hw hw'
-  rw [relation, if_neg (by simp_all)]
+  rw [relation, if_neg (fun hwl : w ∈ L.lattice ↦ hw' ⟨hwl, hw⟩)]
 
 private lemma relation_mul_id_pow_six_eventuallyEq :
     (L.relation * id ^ 6) =ᶠ[nhds 0] fun z ↦
@@ -980,11 +990,12 @@ private lemma relation_mul_id_pow_six_eventuallyEq :
       (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6 := by
   filter_upwards [L.compl_lattice_sdiff_singleton_mem_nhds _] with z hz
   by_cases hz0 : z = 0
-  · simp [hz0, relation]; norm_num
-  replace hz : z ∉ L.lattice := by simp_all
+  · norm_num [hz0, relation]
+  replace hz : z ∉ L.lattice := fun hzl ↦ hz ⟨hzl, hz0⟩
   simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
     ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
-  simp
+  simp only [id_eq, ZeroMemClass.coe_zero, sub_zero, ne_eq, OfNat.ofNat_ne_zero,
+    not_false_eq_true, zero_pow, div_zero, one_div, zero_sub]
   field
 
 @[local fun_prop]
@@ -997,7 +1008,16 @@ private lemma analyticAt_relation_mul_id_pow_six :
 private lemma relation_neg (x) : L.relation (-x) = L.relation x := by
   classical simp [relation]
 
-attribute [local fun_prop] AnalyticAt.contDiffAt in
+@[local fun_prop]
+private lemma contDiffAt_weierstrassPExcept (n : WithTop ℕ∞) (l₀ : ℂ) :
+    ContDiffAt ℂ n ℘[L - l₀] l₀ :=
+  (L.analyticAt_weierstrassPExcept l₀).contDiffAt
+
+@[local fun_prop]
+private lemma contDiffAt_derivWeierstrassPExcept (n : WithTop ℕ∞) (l₀ : ℂ) :
+    ContDiffAt ℂ n ℘'[L - l₀] l₀ :=
+  (L.analyticAt_derivWeierstrassPExcept l₀).contDiffAt
+
 private lemma iteratedDeriv_six_relation_mul_id_pow_six :
     iteratedDeriv 6 (L.relation * id ^ 6) 0 = 0 := by
   rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
@@ -1005,11 +1025,11 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
     iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
-  simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃,
-    show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
+  have h₆₄ : Nat.choose 6 4 = 15 := rfl
+  have h₆₃ : Nat.choose 6 3 = 20 := rfl
+  simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃, h₆₄, h₆₃]
   ring
 
-attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])
   suffices 7 ≤ meromorphicOrderAt (L.relation * id ^ 6) 0 by
@@ -1021,12 +1041,14 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine ENat.monotone_map_iff.mpr Nat.mono_cast
     ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
   by_cases hi₂ : Odd i
-  · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using!
+  · have h₆ : Even 6 := ⟨3, rfl⟩
+    simpa [← CharZero.eq_neg_self_iff, hi₂, h₆.neg_pow] using!
       (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0 :)
   by_cases hi₃ : i = 0
   · simp [hi₃]
   by_cases hi₄ : i = 6
-  · exact hi₄ ▸ L.iteratedDeriv_six_relation_mul_id_pow_six
+  · subst hi₄
+    exact L.iteratedDeriv_six_relation_mul_id_pow_six
   rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
   simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
@@ -1034,7 +1056,9 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
   obtain rfl | rfl : i = 2 ∨ i = 4 := by grind
   · simp [Finset.sum_range_succ]
-  · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
+  · have h₄₂ : Nat.choose 4 2 = 6 := rfl
+    simp [Finset.sum_range_succ, h₄₂, g₂]
+    ring
 
 @[local simp]
 private lemma relation_add_coe (x : ℂ) (l : L.lattice) :
@@ -1062,7 +1086,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
       fun_prop
     apply this.congr
     filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
-    simp_all [relation]
+    rw [relation, if_neg (fun hxl : x ∈ L.lattice ↦ hx hxl)]
 
 private lemma relation_eq_zero : L.relation = 0 := by
   ext x
