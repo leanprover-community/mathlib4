@@ -108,13 +108,12 @@ def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
         | Neg.neg _ _ a => a
         | _ => e
       if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
-        throwError "division entries are supported only in characteristic zero; write the \
-          entry as a numeral{indentExpr e}"
+        throwError "division entries are supported only in characteristic zero{indentExpr e}"
     -- fallback: try to evaluate the expression
     let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
     let r ← Meta.NormNum.deriveSimp ctx (useSimp := false) e
     let some v := rat? (isDivRing && charZero) r.expr
-      | throwError "the entry does not evaluate to a numeral{indentExpr e}"
+      | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
     return v
 
 /-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
@@ -227,15 +226,13 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
       r := r + 1
   return { L, swaps, pivot := pivots }
 
-/-- The pre-commitment applicability check of the Bareiss method: `none` when the method
-applies over the element type `R`, or the reason it does not. The method requires a
-commutative domain with kernel-decidable equality. This is the one gate-side export of
-this file; everything else is committal. -/
-def bareissObstruction? (R : Expr) : MetaM (Option MessageData) := do
+/-- The pre-commitment applicability check of the Bareiss method, which requires a
+commutative domain with kernel-decidable equality. -/
+def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
   if (← synthInstance? (← mkAppM ``CommRing #[R])).isNone then
-    return some m!"expected the element type to be a commutative ring"
+    return .error m!"expected the element type to be a commutative ring"
   if (← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])).isNone then
-    return some m!"expected the element type to be a domain"
+    return .error m!"expected the element type to be a domain"
   -- verification runs in the kernel: probe one zero test so that element types without
   -- kernel-decidable equality are rejected before committing (drop the probe once a
   -- non-kernel verification route exists)
@@ -243,9 +240,9 @@ def bareissObstruction? (R : Expr) : MetaM (Option MessageData) := do
   have R : Q(Type u) := R
   try
     discard <| isZeroInR R 1
-    return none
+    return .ok ()
   catch e =>
-    return some m!"cannot verify the rank certificate: {e.toMessageData}"
+    return .error m!"cannot verify the rank certificate: {e.toMessageData}"
 
 /-- `bareiss_certify msg` proves a certificate condition by `decide +kernel`, wrapping a
 failure into an exception naming the condition `msg`. -/

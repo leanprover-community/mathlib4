@@ -61,6 +61,9 @@ def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Arr
   let some m := mE.nat?.orElse fun _ => mE.rawNatLit? | return none
   let some n := nE.nat?.orElse fun _ => nE.rawNatLit? | return none
   unless entries.size == m && entries.all (·.size == n) do return none
+  -- closedness: an entry with free variables (hypothesis- or let-bound) is not evaluable
+  -- here; unfold or substitute such variables before calling the tactic
+  unless entries.all (·.all fun e => !e.hasFVar && !e.hasExprMVar) do return none
   return some (m, n, R, entries)
 
 /-- Match `Matrix.rank` of a matrix literal: the commitment gate. Returns the matrix with
@@ -97,7 +100,7 @@ Bareiss decomposition. Other `rank` terms, and element types the Bareiss method 
 apply to, are skipped. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   let some (M, m, n, R, entries) ← matchRankLit? e | return .continue
-  if (← bareissObstruction? R).isSome then return .continue
+  let .ok _ ← checkBareissCommittal R | return .continue
   return .done (← normalizeRank e M m n R entries)
 
 /-- `eval_rank` reduces `Matrix.rank` of a closed matrix literal to a literal and tries to
@@ -110,10 +113,10 @@ elab (name := evalRank) "eval_rank" : tactic => do
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank]))
   if (← Tactic.getUnsolvedGoals).any (· == goal) then
     -- diagnose the skip: a rank literal over an unsupported element type reports the
-    -- method's obstruction; otherwise there was no rank literal to work on
+    -- method's rejection reason; otherwise there was no rank literal to work on
     if let some rankApp := (← goal.getType).find? (·.isAppOfArity ``Matrix.rank 6) then
       if let some (_, _, _, R, _) ← matchRankLit? rankApp then
-        if let some why ← bareissObstruction? R then
+        if let .error why ← checkBareissCommittal R then
           throwError why
     throwError "eval_rank: no closed `Matrix.rank` literal found in the goal"
   Tactic.evalTactic (← `(tactic| try omega))
