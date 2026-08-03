@@ -509,7 +509,8 @@ where
         -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace` and friends.
         match H with
         | mkApp2 (.const `EuclideanSpace _) k _n =>
-          mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean space over `{k}`"
+          mkAppOptM ``modelWithCornersSelf #[k, none, H, none, none]
         | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
           mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
         | mkApp (.const `EuclideanQuadrant _) n =>

@@ -811,6 +811,13 @@ section
 
 variable {X Y : Type*} {n : ℕ} [NeZero n] [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
+variable [ChartedSpace (EuclideanSpace ℝ (Fin n)) X] [ChartedSpace ℝ Y] in
+/--
+info: MDifferentiable (modelWithCornersSelf Real (EuclideanSpace Real (Fin n))) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in
+#check MDiff f
+
 variable [ChartedSpace (EuclideanHalfSpace n) X] [ChartedSpace ℝ Y] in
 /--
 info: MDifferentiable (modelWithCornersEuclideanHalfSpace n) (modelWithCornersSelf Real Real) f : Prop
