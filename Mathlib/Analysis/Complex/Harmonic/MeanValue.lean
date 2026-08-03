@@ -10,22 +10,20 @@ public import Mathlib.Analysis.Complex.MeanValue
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
+# The Mean Value Property of Vector-Valued Harmonic Functions
 
-The Mean Value Property of Vector-Valued Harmonic Functions
-The file Mathlib/Analysis/Complex/Harmonic/MeanValue.lean establishes the mean value property for
-harmonic functions f : ℂ → ℝ. Harmonicity is however defined for functions with values in an
-arbitrary real normed vector space F, and the mean value property holds in that generality, as
-soon as F is complete. This file proves the generalized statements; they are intended to replace
-the real-valued versions in Mathlib.
+This file establishes the mean value property for harmonic functions `f : ℂ → F`, where `F` is an
+arbitrary complete real normed vector space. This generalizes the mean value property for real-valued
+harmonic functions.
 
-Completeness of F cannot be dropped: circleAverage is defined in terms of the Bochner integral,
+Completeness of `F` cannot be dropped: `circleAverage` is defined in terms of the Bochner integral,
 which is junk (zero) whenever the target space is incomplete.
 
 The proof reduces to the real-valued case. Circle averages commute with continuous linear maps, and
-composition with continuous linear maps preserves harmonicity. So g (circleAverage f c R) equals
-circleAverage (g ∘ f) c R = g (f c) for every continuous linear functional g : F →L[ℝ] ℝ. Since
+composition with continuous linear maps preserves harmonicity. Thus, `g (circleAverage f c R)` equals
+`circleAverage (g ∘ f) c R = g (f c)` for every continuous linear functional `g : F →L[ℝ] ℝ`. Since
 continuous linear functionals separate the points of a normed space (Hahn-Banach, in the form of
-SeparatingDual.eq_iff_forall_dual_eq), this suffices.
+`SeparatingDual.eq_iff_forall_dual_eq`), this suffices.
 -/
 
 public section
@@ -35,8 +33,7 @@ open InnerProductSpace Metric Real
 namespace InnerProductSpace
 
 /-!
-
-Compatibility of HarmonicContOnCl with Linear Maps
+## Compatibility of `HarmonicContOnCl` with Linear Maps
 -/
 
 section
@@ -56,8 +53,7 @@ theorem HarmonicContOnCl.comp_CLM {f : E → F} {s : Set E} (h : HarmonicContOnC
 end
 
 /-!
-
-The Mean Value Property
+## The Mean Value Property
 -/
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
