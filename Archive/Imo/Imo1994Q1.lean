@@ -3,6 +3,8 @@ Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
+module
+
 public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Finset.Sort
@@ -26,6 +28,7 @@ Indeed, if we had `aᵢ + aₘ₊₁₋ᵢ ≤ n`, then `a₁ + aₘ₊₁₋ᵢ
 would be `m` elements of the set of `aᵢ`'s all larger than `aₘ₊₁₋ᵢ`, which is impossible.
 -/
 
+public section
 
 open Finset
 

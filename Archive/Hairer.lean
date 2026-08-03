@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
+module
+
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
@@ -20,7 +22,7 @@ whose integral against a multivariate polynomial `P` of total degree at most `N`
 This is a test of the state of the library suggested by Martin Hairer.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Metric Set MeasureTheory PiLp
 open MvPolynomial hiding support

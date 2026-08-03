@@ -3,6 +3,7 @@ Copyright (c) 2024 Alex Brodbelt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Brodbelt, Violeta Hernández
 -/
+module
 
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Linarith
@@ -40,6 +41,8 @@ We then conclude `f 1980 = 660` and then eventually determine that either
 In the latter case we derive a contradiction, because if `f 1982 = 661` then
 `3334 = 5 * f 1982 + 29 * f(3) + f(2) ≤ f (5 * 1982 + 29 * 3 + 2) = f 9999 = 3333`.
 -/
+
+public section
 
 namespace Imo1982Q1
 

@@ -3,6 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
+
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Rat.Defs
 public import Mathlib.Order.WellFounded
@@ -22,6 +24,8 @@ In this file we formalise constant descent Vieta jumping,
 and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
+
+public section
 
 attribute [local simp] sq
 
