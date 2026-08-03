@@ -239,6 +239,24 @@ theorem map_zero_left (g : N →ₛₗ[σ₁₂] N₂) : map (0 : M →ₛₗ[σ
 theorem map_zero_right (f : M →ₛₗ[σ₁₂] M₂) : map f (0 : N →ₛₗ[σ₁₂] N₂) = 0 :=
   (mapBilinear _ M N M₂ N₂ f).map_zero
 
+variable {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N'] [Module R M'] [Module R N']
+
+/-- `homTensorHomMap` is natural with respect to precomposition:
+
+```
+                        homTensorHomMap
+Hom(M, P) ⊗ Hom(N, Q) ---------------> Hom(M ⊗ N, P ⊗ Q)
+    |                                     |
+    | map f.lcomp f'.lcomp                | (map f f').lcomp
+    ↓                                     ↓
+Hom(M', P) ⊗ Hom(N', Q) -------------> Hom(M' ⊗ N', P ⊗ Q)
+                        homTensorHomMap
+```
+-/
+lemma homTensorHomMap_comp_map_lcomp (f : M' →ₗ[R] M) (f' : N' →ₗ[R] N) :
+    homTensorHomMap (.id R) M' N' P Q ∘ₗ map (f.lcomp R P) (f'.lcomp R Q) =
+      (map f f').lcomp R (P ⊗[R] Q) ∘ₗ homTensorHomMap (.id R) M N P Q := by ext; simp
+
 end
 
 variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
