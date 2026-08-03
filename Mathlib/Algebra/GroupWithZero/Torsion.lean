@@ -25,7 +25,7 @@ variable {M : Type*} [CommMonoidWithZero M]
 theorem IsMulTorsionFree.mk' [NoZeroDivisors M]
     (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
     IsMulTorsionFree M := by
-  refine ⟨fun n hn x y hxy ↦ ?_⟩
+  refine ⟨fun n hn x y _ hxy ↦ ?_⟩
   by_cases h : x ≠ 0 ∧ y ≠ 0
   · exact ih x h.1 y h.2 n hn hxy
   have : IsReduced M := inferInstance
@@ -36,7 +36,7 @@ variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree
 namespace UniqueFactorizationMonoid
 
 instance : IsMulTorsionFree M := by
-  refine .mk' fun x hx y hy n hn _ hxy ↦ ?_
+  refine .mk' fun x hx y hy n hn hxy ↦ ?_
   obtain ⟨u, hu⟩ : Associated x y := by
     have := (Associated.of_eq hxy).normalizedFactors_eq
     rwa [normalizedFactors_pow, normalizedFactors_pow, nsmul_right_inj hn,
