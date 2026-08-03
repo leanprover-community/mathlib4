@@ -68,7 +68,8 @@ public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,
-    `Mathlib.Tactic.«tacticRename_bvar_→__»
+    `Mathlib.Tactic.«tacticRename_bvar_→__»,
+    `Lean.Parser.Tactic.Conv.skip
   ]
 
 /--

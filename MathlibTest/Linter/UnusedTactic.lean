@@ -48,6 +48,23 @@ example : True := by
   constructor
   done
 
+/--
+warning: 'simp' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: 'show False' tactic does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True := by
+  conv =>
+    skip -- `skip` in `conv` mode does not warn.
+    simp -- other tactics in `conv` do warn
+  show True -- `show` does not warn.
+  trivial <;> show False -- But, if it doesn't run at all, `show` does warn.
+
 section allowing_more_unused_tactics
 
 /-- info: The `SyntaxNodeKind` is 'Lean.Parser.Tactic.refine'. -/
