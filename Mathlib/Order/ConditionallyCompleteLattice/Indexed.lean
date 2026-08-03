@@ -233,7 +233,7 @@ theorem ciSup₂_eq_ciSup_diagonal {α : Type*} {ι : Sort*}
   · exact ciSup_le fun i ↦ ciSup_mono_of_forall_exists hb (h i)
   · exact ciSup_mono_of_forall_exists hfi fun k ↦
       ⟨k, le_ciSup (hf k) k⟩
-      
+
 /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
 theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
