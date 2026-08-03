@@ -58,23 +58,21 @@ lemma op_map (X : SSet.{u}) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) (x : X.o
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma op_δ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X _⦋n + 1⦌) :
+lemma op_δ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X.op _⦋n + 1⦌) :
     X.op.δ i x = opObjEquiv.symm (X.δ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.δ, op_map]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X _⦋n⦌) :
+lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X.op _⦋n⦌) :
     X.op.σ i x = opObjEquiv.symm (X.σ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.σ, op_map]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma δ_opObjEquiv (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X.op _⦋n + 1⦌) :
     X.δ i (opObjEquiv x) = opObjEquiv (X.op.δ i.rev x) := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma σ_opObjEquiv (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X.op _⦋n⦌) :
     X.σ i (opObjEquiv x) = opObjEquiv (X.op.σ i.rev x) := by
   simp
