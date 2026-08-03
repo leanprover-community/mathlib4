@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
 
@@ -76,7 +77,7 @@ lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCon
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone R E) E where
   coe C := C.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
+  coe_injective _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (ProperCone R E) := .ofSetLike (ProperCone R E) E
 
@@ -104,7 +105,6 @@ lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
 end T1Space
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closure of image of a proper cone under an `R`-linear map is a proper cone. We
 use continuous maps here so that the comap of f is also a map between proper cones. -/
 abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
@@ -121,14 +121,12 @@ lemma mem_comap {C : ProperCone R F} {f : E →L[R] F} : x ∈ C.comap f ↔ f x
 
 variable [ContinuousAdd F] [ContinuousConstSMul R F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The closure of image of a proper cone under a linear map is a proper cone.
 
 We use continuous maps here to match `ProperCone.comap`. -/
 abbrev map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
   ClosedSubmodule.map (f.restrictScalars R≥0) C
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_id (C : ProperCone R F) : C.map (.id _ _) = C := ClosedSubmodule.map_id _
 
 @[simp, norm_cast]

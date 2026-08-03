@@ -232,7 +232,7 @@ def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ
 
 instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
-  coe_injective' p q h := by
+  coe_injective p q h := by
     rw [SetLike.coe_set_eq] at h
     cases p; cases q; congr
 
@@ -345,6 +345,7 @@ instance : SupSet (SubDPIdeal hI) :=
 
 theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
     (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
@@ -429,7 +430,7 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
-      simp only [Set.mem_insert_iff, Set.mem_setOf_eq] at hK
+      simp only [Set.mem_insert_iff, Set.mem_ofPred_eq] at hK
       rcases hK with rfl | hKS
       exacts [hS, hKS]
     rw [span_le]
@@ -492,7 +493,7 @@ def dpEqualizer : Ideal A where
 theorem mem_dpEqualizer_iff {x : A} :
     x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
   simp [dpEqualizer, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
 
 theorem dpEqualizer_is_dp_ideal_left :
     DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=
@@ -643,7 +644,7 @@ private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
- `I(A⧸J)` of the quotient. -/
+`I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=
   DividedPowers.Quotient.OfSurjective.dividedPowers
     hI Ideal.Quotient.mk_surjective (refl _) (isSubDPIdeal_aux hI hIJ)

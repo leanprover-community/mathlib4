@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ToAdditive
 
@@ -58,7 +57,7 @@ structure Fun (X Y : Type*) where
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 initialize_simps_projections Fun (toFun → apply)
 

@@ -142,9 +142,9 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) →
     ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) := by
   intro hne h
-  haveI : Nonempty s₁ := ⟨p', hp'₁⟩
-  haveI : Nonempty s₂ := ⟨p', hp'₂⟩
-  haveI : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'₁, hp'₂⟩
+  have : Nonempty s₁ := ⟨p', hp'₁⟩
+  have : Nonempty s₂ := ⟨p', hp'₂⟩
+  have : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'₁, hp'₂⟩
   have hp₁ : orthogonalProjection s₁ p ≠ p' := by
     intro hp
     rw [hp, eq_comm, dist_orthogonalProjection_eq_dist_iff_eq_of_mem hp'₂] at h
@@ -217,8 +217,8 @@ lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq {p p' : P}
       (2 : ℤ) • ∡ p p' (orthogonalProjection s₂ p) →
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) := by
   intro hp₁ hp₂ h
-  haveI : Nonempty s₁ := ⟨p', hp'₁⟩
-  haveI : Nonempty s₂ := ⟨p', hp'₂⟩
+  have : Nonempty s₁ := ⟨p', hp'₁⟩
+  have : Nonempty s₂ := ⟨p', hp'₂⟩
   have h' : ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) :=
     oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two h
       (angle_self_orthogonalProjection _ hp'₁) (angle_self_orthogonalProjection _ hp'₂)
@@ -293,14 +293,14 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_line_eq {p p₁ p₂ p₃
   · suffices p = p₁ by simp [this]
     have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
     have hinf : line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] = affineSpan ℝ {p₁} := by
-      convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
+      convert! (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2})
       · simp [Set.image_insert_eq]
       · simp [Set.image_insert_eq]
       · suffices {p₁} = ![p₁, p₂, p₃] '' {0} by grind
         simp
     have hsup : line[ℝ, p₁, p₂] ⊔ line[ℝ, p₁, p₃] = ⊤ := by
       rw [← AffineSubspace.span_union]
-      convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
+      convert! ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
       · simp
         grind
       · simpa using Fact.out

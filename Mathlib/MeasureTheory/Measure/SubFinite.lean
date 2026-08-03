@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.Sub
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
@@ -85,7 +84,7 @@ lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity
       infer_instance
     rw [withDensity_sub_of_le hg]
     refine ae_restrict_of_forall_mem ht.compl fun x hx ↦ ?_
-    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, t] at hx
+    simp only [Set.mem_compl_iff, Set.mem_ofPred_eq, not_le, t] at hx
     exact hx.le
   · refine sub_le_of_le_add ?_
     rw [← withDensity_add_right _ hg]

@@ -409,19 +409,19 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨s, s_meas, μs, hs⟩ : ∃ s, MeasurableSet s ∧ μ s = 0
       ∧ ∀ a ∉ s, IsProbabilityMeasure (κ a) := by
     refine ⟨toMeasurable μ {a | ¬ IsProbabilityMeasure (κ a)}, measurableSet_toMeasurable _ _,
-      by simpa [measure_toMeasurable] using h, ?_⟩
+      by simpa [measure_toMeasurable] using! h, ?_⟩
     intro a ha
     contrapose ha
     exact subset_toMeasurable _ _ ha
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
-    contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
+    contrapose! h'; simpa [μs, h'] using! measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
   · filter_upwards [measure_eq_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s
-    · simpa [hb, piecewise] using hs _ ha
-    · simpa [hb, piecewise] using hs _ hb
+    · simpa [hb, piecewise] using! hs _ ha
+    · simpa [hb, piecewise] using! hs _ hb
 
 section Bool
 

@@ -108,7 +108,7 @@ theorem areaForm_apply_self (x : E) : ω x x = 0 := by
 
 theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
   simp only [areaForm_to_volumeForm]
-  convert o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
+  convert! o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
   · ext i
     fin_cases i <;> rfl
   · simp
@@ -157,7 +157,7 @@ theorem areaForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F
 theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x y : E) :
     o.areaForm (φ x) (φ y) = o.areaForm x y := by
-  convert o.areaForm_map φ (φ x) (φ y)
+  convert! o.areaForm_map φ (φ x) (φ y)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [@Fact.out (finrank ℝ E = 2), Fintype.card_fin]
@@ -308,7 +308,7 @@ theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductS
 /-- `J` commutes with any positively-oriented isometric automorphism. -/
 theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : E) : φ (J x) = J (φ x) := by
-  convert (o.rightAngleRotation_map φ (φ x)).symm
+  convert! (o.rightAngleRotation_map φ (φ x)).symm
   · simp
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ

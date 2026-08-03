@@ -101,7 +101,7 @@ agree, except perhaps at radius 0.
 lemma proximity_congr_codiscrete {f g : ℂ → E} {a : WithTop E} {r : ℝ}
     (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
     proximity f a r = proximity g a r :=
-  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin.mono (by tauto))) hr
+  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin_mono (by tauto))) hr
 
 /--
 For finite values `a₀`, the proximity function `proximity f a₀` equals the proximity function for
@@ -151,6 +151,14 @@ theorem proximity_nonneg {a : WithTop E} :
 @[simp] lemma proximity_const {c : E} {r : ℝ} :
     proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
   simp [proximity, circleAverage_const]
+
+/--
+If `f` is continuous, then so is its proximitiy function at `⊤`.
+-/
+@[fun_prop] theorem continuous_proximity_top (hf : Continuous f) :
+    Continuous (proximity f ⊤) := by
+  simp only [proximity, reduceDIte]
+  fun_prop
 
 /-!
 ## Behaviour under Arithmetic Operations
@@ -220,8 +228,6 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x)
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
-@[deprecated (since := "2025-12-11")] alias proximity_top_mul_le := proximity_mul_top_le
-
 /--
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
@@ -234,8 +240,6 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
       apply proximity_mul_top_le h₁f₁.inv h₁f₂.inv
     _ = (proximity f₁ 0) + (proximity f₂ 0) := by
       rw [proximity_inv, proximity_inv]
-
-@[deprecated (since := "2025-12-11")] alias proximity_zero_mul_le := proximity_mul_zero_le
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity

@@ -270,17 +270,22 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  haveI := (algebraMap R K).domain_nontrivial
+  have := (algebraMap R K).domain_nontrivial
   simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  haveI := (algebraMap A K).domain_nontrivial
+  have := (algebraMap A K).domain_nontrivial
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property
   rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
   exact IsFractionRing.injective A K hxy
+
+theorem of_algHom [Algebra A L] (f : L →ₐ[A] K) : IsFractionRing A L := by
+  refine IsFractionRing.of_algEquiv <| .symm <| .ofBijective f ⟨f.injective, fun x ↦ ?_⟩
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective A x
+  exact ⟨algebraMap A L x / algebraMap A L y, by simp⟩
 
 section commutes
 
@@ -424,13 +429,18 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
 fraction rings `K ≃+* L`. -/
-@[simps!]
+@[simps! apply]
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp
+
+@[simp]
+lemma ringEquivOfRingEquiv_refl :
+    ringEquivOfRingEquiv (.refl A) = .refl K := by ext; simp
 
 @[simp]
 lemma ringEquivOfRingEquiv_symm :
@@ -443,6 +453,26 @@ theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C]
     (ringEquivOfRingEquiv (K := K) f).trans (ringEquivOfRingEquiv (K := L) (L := M) g) := by
   ext a
   simp [IsLocalization.map_map]
+
+variable (A K)
+
+/-- A ring automorphism of a ring induces an ring automorphism of its fraction field.
+
+This is a bundled version of `ringEquivOfRingEquiv`. -/
+noncomputable def ringEquivOfRingEquivHom : (A ≃+* A) →* (K ≃+* K) where
+  toFun := ringEquivOfRingEquiv
+  map_one' := ringEquivOfRingEquiv_refl
+  map_mul' f g := ringEquivOfRingEquiv_comp K K K g f
+
+@[simp]
+lemma ringEquivOfRingEquivHom_apply (f : A ≃+* A) :
+    ringEquivOfRingEquivHom A K f = ringEquivOfRingEquiv f :=
+  rfl
+
+lemma ringEquivOfRingEquivHom_injective : Function.Injective (ringEquivOfRingEquivHom A K) := by
+  intro f g h
+  ext b
+  simpa using RingEquiv.ext_iff.mp h (algebraMap A K b)
 
 end ringEquivOfRingEquiv
 
@@ -461,17 +491,21 @@ noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
 { ringEquivOfRingEquiv f with
   map_smul' r x := by simp [Algebra.smul_def] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_apply (x : K) :
     (semilinearEquivOfRingEquiv K L f) x = (ringEquivOfRingEquiv f) x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
     semilinearEquivOfRingEquiv K L f (algebraMap A K a) = algebraMap B L (f a) := by
   simp [semilinearEquivOfRingEquiv, ringEquivOfRingEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [CommRing M]
     [Algebra C M] [IsFractionRing C M] (g : B ≃+* C) :
     let : RingHomCompTriple f (g : B →+* C) (f.trans g : A →+* C) := ⟨rfl⟩
@@ -499,6 +533,7 @@ fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
   IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algEquivOfAlgEquiv_algebraMap
     (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
@@ -595,7 +630,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
-  convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
+  convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
@@ -618,22 +653,22 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
 
 /-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
 on the fraction field `L` of `B`. -/
-@[implicit_reducible]
-noncomputable def mulSemiringAction [SMulCommClass G A B] :
+@[instance_reducible]
+noncomputable def mulSemiringAction :
     MulSemiringAction G L :=
   MulSemiringAction.compHom L
-    ((fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+    ((ringEquivOfRingEquivHom B L).comp (MulSemiringAction.toRingEquiv G B))
 
 /-- The action of `G` on the fraction field `L` of `B` given by `IsFractionRing.mulSemiringAction`
 is compatible with the embedding `B ⊆ L`. -/
-instance smulDistribClass [SMulCommClass G A B] :
-    letI := mulSemiringAction G A B K L
+instance smulDistribClass :
+    letI := mulSemiringAction G B L
     SMulDistribClass G B L :=
-  let := mulSemiringAction G A B K L
+  let := mulSemiringAction G B L
   ⟨fun g b x ↦ by
     rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
     congr
-    apply fieldEquivOfAlgEquiv_algebraMap⟩
+    apply ringEquivOfRingEquiv_algebraMap⟩
 
 variable [MulSemiringAction G L] [SMulDistribClass G B L]
 

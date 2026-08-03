@@ -124,6 +124,7 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
@@ -145,6 +146,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   congr
   rw [add_assoc, add_tsub_cancel_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
   ext i : 2
@@ -177,7 +179,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
-    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and, and_imp,
+    · simp only [ite_self, max_eq_right, zero_le, Finset.fold_max_le, true_and, and_imp,
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx

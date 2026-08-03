@@ -149,17 +149,20 @@ theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRest
 theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
   (Homeomorph.surjective _).comp (Set.surjective_mapsTo_image_restrict _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
   simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe]
   simp_all
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
@@ -219,9 +222,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj,
-        Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
-        (leOfHom h.unop)]
+      simp only [Functor.const_obj_map,
+        ← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
@@ -380,6 +382,7 @@ end GoodProducts
 
 namespace Products
 
+set_option backward.defeqAttrib.useBackward true in
 theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _
@@ -392,15 +395,16 @@ theorem eval_eq (l : Products I) (x : C) :
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h
-    convert h with i
+    convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
     l.eval (π C J) ∘ ProjRestrict C J = l.eval C := by
   ext x
-  dsimp [ProjRestrict]
+  dsimp only [ProjRestrict, Function.comp_apply]
   rw [Products.eval_eq, Products.eval_eq]
   simp +contextual [h, Proj]
 
@@ -438,7 +442,6 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   suffices L l by assumption
   apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
   intro l h
-  dsimp
   by_cases hl : l.isGood C
   · apply subset_span
     exact ⟨⟨l, hl⟩, rfl⟩
@@ -597,7 +600,7 @@ theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
-  simpa only [← LocallyConstant.coe_inj] using evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj] using! evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
@@ -610,7 +613,7 @@ theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
     (πs C o) '' eval (π C (ord I · < o)) '' { m | m < l } := by
   ext f
-  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  simp only [Set.mem_image, Set.mem_ofPred_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
   apply and_congr_right; intro hm
   rw [eval_πs C (lt_ord_of_lt hm hl)]
@@ -619,7 +622,7 @@ theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o�
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (π C (ord I · < o₂)) '' { m | m < l } =
     (πs' C h) '' eval (π C (ord I · < o₁)) '' { m | m < l } := by
   ext f
-  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  simp only [Set.mem_image, Set.mem_ofPred_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
   apply and_congr_right; intro hm
   rw [eval_πs' C h (lt_ord_of_lt hm hl)]

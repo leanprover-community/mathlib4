@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -140,10 +140,18 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUnitalSemiring α,
+  NonAssocSemiring α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
+@[wikidata Q161172]
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+-- Add some short-cut instances to avoid going through the less used ring type classes.
+instance [Semiring α] : Distrib α := inferInstance
+instance [Semiring α] : MulZeroClass α := inferInstance
+instance [Semiring α] : MulZeroOneClass α := inferInstance
+attribute [instance] Semiring.toAddCommMonoid Semiring.toMonoid
 
 /-!
 ### Semirings
@@ -403,6 +411,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
   { s with }
 
 /-- A commutative ring is a ring with commutative multiplication. -/
+@[wikidata Q858656]
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 
 instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where

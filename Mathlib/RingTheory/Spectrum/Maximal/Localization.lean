@@ -87,7 +87,7 @@ variable {R S} (f : R →+* S) (g : S →+* P) (hf : Function.Bijective f) (hg :
 /-- Functoriality of `PiLocalization` but restricted to bijective ring homs.
 If R and S are commutative rings, surjectivity would be enough. -/
 noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
-  Pi.ringHom fun I ↦ (Localization.localRingHom _ _ f rfl).comp <|
+  RingHom.pi fun I ↦ (Localization.localRingHom _ _ f rfl).comp <|
     Pi.evalRingHom _ (⟨_, I.2.comap_bijective f hf⟩ : MaximalSpectrum R)
 
 theorem mapPiLocalization_naturality :
@@ -107,6 +107,7 @@ theorem mapPiLocalization_comp :
       (mapPiLocalization g hg).comp (mapPiLocalization f hf) :=
   RingHom.ext fun _ ↦ funext fun _ ↦ congr($(Localization.localRingHom_comp _ _ _ _ rfl _ rfl) _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapPiLocalization_bijective : Function.Bijective (mapPiLocalization f hf) := by
   let f := RingEquiv.ofBijective f hf
   let e := RingEquiv.ofRingHom (mapPiLocalization f hf)
@@ -147,6 +148,7 @@ theorem finite_of_toPiLocalization_pi_surjective
 
 end Pi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_toPiLocalization_surjective
     (surj : Function.Surjective (toPiLocalization R)) :
     Finite (MaximalSpectrum R) := by
@@ -174,11 +176,11 @@ theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) :=
 /-- The projection from the product of localizations at primes to the product of
 localizations at maximal ideals. -/
 def piLocalizationToMaximal : PiLocalization R →ₐ[R] MaximalSpectrum.PiLocalization R :=
-  Pi.algHom _ _  fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
+  AlgHom.pi fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
 
-open scoped Classical in
-theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=
-  fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
+theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) := by
+  classical
+  exact fun r ↦ ⟨fun I ↦ if h : I.1.IsMaximal then r ⟨_, h⟩ else 0, funext fun _ ↦ dif_pos _⟩
 
 variable {R}
 
@@ -186,7 +188,7 @@ variable {R}
 def piLocalizationToMaximalEquiv (h : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) :
     PiLocalization R ≃+* MaximalSpectrum.PiLocalization R where
   __ := piLocalizationToMaximal R
-  invFun := Pi.ringHom fun I ↦ Pi.evalRingHom _ (⟨_, h _ I.2⟩ : MaximalSpectrum R)
+  invFun := RingHom.pi fun I ↦ Pi.evalRingHom _ (⟨_, h _ I.2⟩ : MaximalSpectrum R)
 
 theorem piLocalizationToMaximal_bijective (h : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) :
     Function.Bijective (piLocalizationToMaximal R) :=
@@ -216,7 +218,7 @@ variable (f : R →+* S)
 
 /-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
 noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
-  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (comap f I))
+  RingHom.pi fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (comap f I))
 
 theorem mapPiLocalization_naturality :
     (mapPiLocalization f).comp (toPiLocalization R) = (toPiLocalization S).toRingHom.comp f := by

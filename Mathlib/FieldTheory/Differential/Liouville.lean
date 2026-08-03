@@ -124,7 +124,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     [IsGalois F K] : IsLiouville F K where
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
-    haveI : CharZero K := charZero_of_injective_algebraMap
+    have : CharZero K := charZero_of_injective_algebraMap
       (FaithfulSMul.algebraMap_injective F K)
     -- We sum `e x` over all isomorphisms `e : K ≃ₐ[F] K`.
     -- Because this is a Galois extension each of the relevant values will be in `F`.
@@ -187,7 +187,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       · rcongr e
         apply_fun e at h
         simp only [AlgEquiv.commutes, map_add, map_sum, map_mul] at h
-        convert h using 2
+        convert! h using 2
         · rcongr x
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']

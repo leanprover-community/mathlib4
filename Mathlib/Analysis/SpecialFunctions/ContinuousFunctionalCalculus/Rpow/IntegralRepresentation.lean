@@ -469,7 +469,7 @@ lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (
           refine cfcₙ_smul (R := ℝ) (t ^ ((p : ℝ) - 1)) _ a ?_
           refine ContinuousOn.mono ?_ hspec
           have := continuousOn_rpowIntegrand₀₁_Ici hp zero_lt_one
-          fun_prop (disch := assumption)
+          fun_prop
     _ = t ^ ((p : ℝ) - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
           congr! 1
           refine cfcₙ_comp_smul (R := ℝ) t⁻¹ (fun x => rpowIntegrand₀₁ p 1 x) a ?_

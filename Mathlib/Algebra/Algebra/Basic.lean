@@ -113,22 +113,8 @@ theorem coe_algebraMap_ofSubsemiring (S : C) : (algebraMap S R : S → R) = Subt
 theorem algebraMap_ofSubsemiring_apply (S : C) (x : S) : algebraMap S R x = x :=
   rfl
 
-/-- Algebra over a subring. This builds upon `Subring.module`. -/
-instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A := inferInstance
-
 theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S →+* R) = S.subtype :=
-  rfl
-
-@[deprecated coe_algebraMap_ofSubsemiring (since := "2025-11-23")]
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-@[deprecated algebraMap_ofSubsemiring_apply (since := "2025-11-23")]
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
   rfl
 
 end SubsemiringAlgebra
@@ -360,6 +346,32 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
 
 end FaithfulSMul
 
+/-- If `R` embeds faithfully into `A` and `G` satisfies `SMulDistribClass G R A`, then
+the `SMul` of `G` on `R` extends to a `MulSemiringAction`. -/
+@[implicit_reducible]
+noncomputable def mulSemiringActionOfSmulDistribClass (G : Type*) [Monoid G]
+    [MulSemiringAction G A] [SMul G R] [SMulDistribClass G R A] :
+    MulSemiringAction G R where
+  one_smul _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', one_smul]
+  smul_zero _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_zero, smul_zero]
+  mul_smul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', algebraMap.smul', algebraMap.smul', mul_smul]
+  smul_add _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_add, smul_add, ← algebraMap.smul', ← algebraMap.smul', ← map_add]
+  smul_one _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_one, smul_one]
+  smul_mul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_mul, map_mul, algebraMap.smul', algebraMap.smul',
+      MulSemiringAction.smul_mul]
+
 namespace algebraMap
 
 @[norm_cast, simp]
@@ -369,10 +381,6 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
 @[norm_cast]
 theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   FaithfulSMul.algebraMap_eq_zero_iff _ _
-
-@[deprecated coe_eq_zero_iff (since := "2025-10-21")]
-theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
-  coe_eq_zero_iff _ _ _
 
 end algebraMap
 

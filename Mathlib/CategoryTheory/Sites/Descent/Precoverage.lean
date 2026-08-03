@@ -32,6 +32,8 @@ that are part of `J`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 universe t t' v' v u' u
 
 namespace CategoryTheory
@@ -52,6 +54,7 @@ variable {J : GrothendieckTopology C} [F.IsPrestack J]
   {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j)
   (hf' : Sieve.ofArrows _ f' ∈ J S)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hf' in
 public lemma faithful_pullFunctor :
@@ -61,12 +64,12 @@ public lemma faithful_pullFunctor :
     refine F.presheafHomObjHomEquiv.injective ?_i
     have : (Sieve.overEquiv (Over.mk (𝟙 (X i)))).symm
       (Sieve.pullback (f i) (Sieve.ofArrows X' f')) ∈ J.over (X i) _ := by
-      simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+      simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
     refine (((isSheaf_iff_isSheaf_of_type _ _).1
       (IsPrestack.isSheaf _ _ _)).isSeparated _ this).ext ?_
     rintro Z g ⟨Y, p, c, ⟨j⟩, hp⟩
     dsimp at p hp
-    have : g.left = Z.hom := by simpa using Over.w g
+    have : g.left = Z.hom := by simpa using! Over.w g
     have (ψ : D₁ ⟶ D₂) :
       (F.presheafHom _ _).map g.op (F.presheafHomObjHomEquiv (ψ.hom i)) =
         D₁.hom (Z.hom ≫ f i) Z.hom (p ≫ p' j) ≫
@@ -101,8 +104,9 @@ abbrev sieve (i : ι) : Sieve (Over.mk (𝟙 (X i))) :=
 include hf' in
 variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
-  simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
+  simpa only [J.mem_over_iff, OrderIso.apply_symm_apply] using! J.pullback_stable (f i) hf'
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 (X i))) :=
@@ -113,6 +117,7 @@ namespace sieve
 variable {i : ι} {Z : C} {q : Z ⟶ X i}
   (hq : sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 X i)))
 
+set_option backward.defeqAttrib.useBackward true in
 include hq in
 lemma exists_fac : ∃ (j : ι') (a : Z ⟶ X' j), a ≫ f' j = q ≫ f i := by
   obtain ⟨_, q, _, ⟨j⟩, fac⟩ := hq
@@ -193,6 +198,7 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
   rw [mor_eq _ _ _ _ _ _ _ rfl rfl, mor_eq _ _ _ _ _ _ _ rfl rfl, this]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
 two objects `D₁ D₂ : F.DescentData f`, a morphism `φ` between the images in
 `F.DescentData f'` of `D₁` and `D₂` by a functor `pullFunctor`. This is
@@ -203,10 +209,11 @@ noncomputable def familyOfElements (i : ι) :
     Presieve.FamilyOfElements (F.presheafHom (D₁.obj i) (D₂.obj i)) (sieve f f' i).arrows :=
   fun Z q hq ↦
     mor w φ _ _ (sieve.fac (f := f) (f' := f') (q := Z.hom) (by
-      convert hq
+      convert! hq
       ext
       simpa using (Over.w q).symm))
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X i)))
     ⦃j : ι'⦄ (a : Z.left ⟶ X' j) (fac : a ≫ f' j = Z.hom ≫ f i := by cat_disch) :
     familyOfElements w φ i g (by
@@ -270,7 +277,7 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     Category.assoc, DescentData.hom_comp, D₂.hom_self _ _ hf₁, Category.comp_id]
   have H : (Sieve.overEquiv (Over.mk f₁)).symm
       (Sieve.pullback q (Sieve.ofArrows X' f')) ∈ J.over _ _ := by
-    rw [J.mem_over_iff, Equiv.apply_symm_apply]
+    rw [J.mem_over_iff, OrderIso.apply_symm_apply]
     exact J.pullback_stable _ hf'
   refine ((isSheaf_iff_isSheaf_of_type _ _).1
     (IsPrestack.isSheaf J (D₁.obj i₁) (D₂.obj i₁)) _ H).isSeparatedFor.ext ?_
@@ -294,6 +301,7 @@ end full_pullFunctor
 
 public section
 
+set_option backward.isDefEq.respectTransparency.types false in
 open full_pullFunctor in
 include w hf' in
 lemma full_pullFunctor :
@@ -373,6 +381,7 @@ section
 variable {F} [HasPullbacks C] {J : Precoverage C}
   [J.HasIsos] [J.IsStableUnderBaseChange] [J.IsStableUnderComposition]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and
 `IsStableUnderComposition` (which is a slightly stronger condition as compared
 to pretopologies), then in order to check that a pseudofunctor is a prestack
@@ -392,7 +401,7 @@ lemma IsPrestack.of_precoverage
     obtain ⟨R', hR'⟩ := (Sieve.overEquiv _).symm.surjective (Sieve.generate R)
     rw [Presieve.isSheafFor_iff_generate]
     apply IsPrestackFor.isSheafFor'
-    simpa [Sieve.overEquiv_generate, Presieve.functorPushforward_overForget]
+    simpa [Sieve.overEquiv_generate, ← Sieve.arrows_generate_map_eq_functorPushforward]
       using hF _ _ hR
 
 /-- If a precoverage satisfies `HasIsos`, `IsStableUnderBaseChange` and

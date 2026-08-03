@@ -100,7 +100,7 @@ lemma exactAt_iff_of_quasiIsoAt (f : K ⟶ L) (i : ι)
 
 instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
-  simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using hf
+  simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using! hf
 
 /-- The isomorphism `K.homology i ≅ L.homology i` induced by a morphism `f : K ⟶ L` such
 that `[QuasiIsoAt f i]` holds. -/
@@ -336,7 +336,6 @@ variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
 
 instance quasiIsoAt_hom (n : ι) [K.HasHomology n] [L.HasHomology n] :
     QuasiIsoAt e.hom n := by
-  classical
   rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
   exact (e.toHomologyIso n).isIso_hom
 

@@ -17,6 +17,7 @@ between them has no Eulerian trail.
 
 namespace Konigsberg
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The vertices for the Königsberg graph; four vertices for the bodies of land and seven
 vertices for the bridges. -/
 inductive Verts : Type
@@ -49,10 +50,8 @@ Eulerian property or switch this file to use multigraphs. -/
 @[simps]
 def graph : SimpleGraph Verts where
   Adj v w := adj v w
-  symm := by
-    dsimp [Symmetric, adj]
-    decide
-  loopless := ⟨by decide⟩
+  symm.symm := by decide
+  loopless.irrefl := by decide
 
 instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 
@@ -68,15 +67,17 @@ lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;>
 lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
   cases w <;> decide
 
-lemma setOf_odd_degree_eq :
+lemma setOfPred_odd_degree_eq :
     {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
   ext w
   simp [not_even_degree_iff, ← Nat.not_even_iff_odd]
 
+@[deprecated (since := "2026-07-09")] alias setOf_odd_degree_eq := setOfPred_odd_degree_eq
+
 /-- The Königsberg graph is not Eulerian. -/
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
   have h := h.card_odd_degree
-  have h' := setOf_odd_degree_eq
+  have h' := setOfPred_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
   simp at h

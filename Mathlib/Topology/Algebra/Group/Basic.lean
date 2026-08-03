@@ -48,7 +48,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 /-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
 lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
     [SeparatelyContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
-  rw [centralizer, setOf_forall]
+  rw [centralizer, ofPred_forall]
   refine isClosed_sInter ?_
   rintro - ⟨m, ht, rfl⟩
   refine isClosed_imp (by simp) <| isClosed_eq ?_ ?_
@@ -96,7 +96,7 @@ theorem IsClosed.leftCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (x �
 @[to_additive (attr := simp)]
 theorem Filter.map_mul_left_nhdsNE {c a : G} :
     map (c * ·) (𝓝[≠] a) = (𝓝[≠] (c * a)) := by
-  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  convert! (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 /-- Multiplication from the right in a topological group as a homeomorphism. -/
@@ -132,7 +132,7 @@ theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (op 
 @[to_additive (attr := simp)]
 theorem Filter.map_mul_right_nhdsNE {c a : G} :
     map (· * c) (𝓝[≠] a) = (𝓝[≠] (a * c)) := by
-  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  convert! (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive]
@@ -159,13 +159,13 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_one :
 lemma Filter.tendsto_mul_const_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · * b) l (𝓝 (c * b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.mul_const b⟩
-  convert Tendsto.mul_const b⁻¹ using 3 <;> rw [mul_inv_cancel_right]
+  convert! Tendsto.mul_const b⁻¹ using 3 <;> rw [mul_inv_cancel_right]
 
 @[to_additive]
 lemma Filter.tendsto_const_mul_iff (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (b * f ·) l (𝓝 (b * c)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨?_, Tendsto.const_mul b⟩
-  convert Tendsto.const_mul b⁻¹ using 3 <;> rw [inv_mul_cancel_left]
+  convert! Tendsto.const_mul b⁻¹ using 3 <;> rw [inv_mul_cancel_left]
 
 end ContinuousMulGroup
 
@@ -284,10 +284,16 @@ section PointwiseLimits
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 
 @[to_additive]
-theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
+theorem isClosed_setOfPred_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
-  simp only [setOf_forall]
+  simp only [ofPred_forall]
   exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_inv := isClosed_setOfPred_map_inv
+
+@[deprecated (since := "2026-07-09")]
+alias isClosed_setOf_map_neg := isClosed_setOfPred_map_neg
 
 end PointwiseLimits
 
@@ -373,8 +379,8 @@ lemma continuousOn_inv_iff : ContinuousOn f⁻¹ s ↔ ContinuousOn f s :=
 @[to_additive] alias ⟨ContinuousOn.of_inv, _⟩ := continuousOn_inv_iff
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsNE {a : G} : (𝓝[≠] a)⁻¹ = (𝓝[≠] (a⁻¹)) := by
-  convert (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.inv_nhdsNE {a : G} : (𝓝[≠] a)⁻¹ = 𝓝[≠] (a⁻¹) := by
+  convert! (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 end ContinuousInvolutiveInv
@@ -410,7 +416,7 @@ end LatticeOps
 theorem Topology.IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
     [TopologicalSpace H] [ContinuousInv H] {f : G → H} (hf : IsInducing f)
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
-  ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
+  ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.fun_inv⟩
 
 section IsTopologicalGroup
 
@@ -428,6 +434,16 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 
+open scoped Pointwise in
+instance [Group G] [Group H] [TopologicalSpace G] [MulDistribMulAction H G]
+    [ContinuousConstSMul H G] {𝒢 : Subgroup G} (h : H) [DiscreteTopology 𝒢] :
+    DiscreteTopology ↑(h • 𝒢) := by
+  simp only [← SetLike.coe_sort_coe, ← isDiscrete_iff_discreteTopology] at *
+  refine IsDiscrete.image_of_isOpenMap ‹_› ?_ fun x y ↦ by simp
+  apply IsOpenMap.of_inverse (f' := fun x ↦ h⁻¹ • x) (continuous_const_smul _) <;>
+  · intro x
+    simp
+
 variable [TopologicalSpace G] [Inv G] [Mul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
@@ -443,6 +459,10 @@ theorem IsTopologicalGroup.continuous_conj_prod [ContinuousMul G] [ContinuousInv
 theorem IsTopologicalGroup.continuous_conj [SeparatelyContinuousMul G] (g : G) :
     Continuous fun h : G => g * h * g⁻¹ :=
   (continuous_mul_const g⁻¹).comp (continuous_const_mul g)
+
+instance {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G] :
+    ContinuousConstSMul (ConjAct G) G where
+  continuous_const_smul h := IsTopologicalGroup.continuous_conj (ConjAct.ofConjAct h)
 
 /-- Conjugation acting on fixed element of the group is continuous when both `mul` and
 `inv` are continuous. -/
@@ -465,7 +485,7 @@ section ZPow
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
-  | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv
+  | Int.negSucc n => by simpa using (continuous_pow (n + 1)).fun_inv
 
 instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [IsTopologicalAddGroup A] : ContinuousConstSMul ℤ A :=
@@ -475,8 +495,8 @@ instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [IsTopologicalAddGroup A] : ContinuousSMul ℤ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b => f b ^ z :=
+@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous (f ^ z) :=
   (continuous_zpow z).comp h
 
 @[to_additive]
@@ -492,19 +512,19 @@ theorem Filter.Tendsto.zpow {α} {l : Filter α} {f : α → G} {x : G} (hf : Te
     (z : ℤ) : Tendsto (fun x => f x ^ z) l (𝓝 (x ^ z)) :=
   (continuousAt_zpow _ _).tendsto.comp hf
 
-@[to_additive]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousWithinAt.zpow {f : α → G} {x : α} {s : Set α} (hf : ContinuousWithinAt f s x)
-    (z : ℤ) : ContinuousWithinAt (fun x => f x ^ z) s x :=
+    (z : ℤ) : ContinuousWithinAt (f ^ z) s x :=
   Filter.Tendsto.zpow hf z
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousAt.zpow {f : α → G} {x : α} (hf : ContinuousAt f x) (z : ℤ) :
-    ContinuousAt (fun x => f x ^ z) x :=
+    ContinuousAt (f ^ z) x :=
   Filter.Tendsto.zpow hf z
 
-@[to_additive (attr := fun_prop)]
+@[to_fun (attr := to_additive (attr := fun_prop))]
 theorem ContinuousOn.zpow {f : α → G} {s : Set α} (hf : ContinuousOn f s) (z : ℤ) :
-    ContinuousOn (fun x => f x ^ z) s := fun x hx => (hf x hx).zpow z
+    ContinuousOn (f ^ z) s := fun x hx => (hf x hx).zpow z
 
 end ZPow
 
@@ -517,23 +537,23 @@ section mul
 variable [ContinuousMul H]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_left_nhdsGT {c a : H} : map (c * ·) (𝓝[>] a) = (𝓝[>] (c * a)) := by
-  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.map_mul_left_nhdsGT {c a : H} : map (c * ·) (𝓝[>] a) = 𝓝[>] (c * a) := by
+  convert! (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp [mul_comm]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_left_nhdsLT {c a : H} : map (c * ·) (𝓝[<] a) = (𝓝[<] (c * a)) := by
-  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.map_mul_left_nhdsLT {c a : H} : map (c * ·) (𝓝[<] a) = 𝓝[<] (c * a) := by
+  convert! (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp [mul_comm]
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_right_nhdsGT {c a : H} : map (· * c) (𝓝[>] a) = (𝓝[>] (a * c)) := by
-  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.map_mul_right_nhdsGT {c a : H} : map (· * c) (𝓝[>] a) = 𝓝[>] (a * c) := by
+  convert! (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive (attr := simp)]
-theorem Filter.map_mul_right_nhdsLT {c a : H} : map (· * c) (𝓝[<] a) = (𝓝[<] (a * c)) := by
-  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.map_mul_right_nhdsLT {c a : H} : map (· * c) (𝓝[<] a) = 𝓝[<] (a * c) := by
+  convert! (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 end mul
@@ -543,13 +563,13 @@ section inv
 variable [ContinuousInv H]
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsGT {a : H} : (𝓝[>] a)⁻¹ = (𝓝[<] (a⁻¹)) := by
-  convert (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.inv_nhdsGT {a : H} : (𝓝[>] a)⁻¹ = 𝓝[<] (a⁻¹) := by
+  convert! (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive (attr := simp)]
-theorem Filter.inv_nhdsLT {a : H} : (𝓝[<] a)⁻¹ = (𝓝[>] (a⁻¹)) := by
-  convert (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
+theorem Filter.inv_nhdsLT {a : H} : (𝓝[<] a)⁻¹ = 𝓝[>] (a⁻¹) := by
+  convert! (Homeomorph.inv H).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
 
 @[to_additive]
@@ -627,6 +647,7 @@ theorem nhds_one_symm' : map Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
 theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ ∈ 𝓝 (1 : G) := by
   rwa [← nhds_one_symm'] at hS
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map `(x, y) ↦ (x, x * y)` as a homeomorphism. This is a shear mapping. -/
 @[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a homeomorphism. This is a shear mapping. -/]
 protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=
@@ -803,7 +824,7 @@ theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → S
 theorem mem_closure_iff_nhds_one {x : G} {s : Set G} :
     x ∈ closure s ↔ ∀ U ∈ (𝓝 1 : Filter G), ∃ y ∈ s, y / x ∈ U := by
   rw [mem_closure_iff_nhds_basis ((𝓝 1 : Filter G).basis_sets.nhds_of_one x)]
-  simp_rw [Set.mem_setOf, id]
+  simp_rw [Set.mem_ofPred, id]
 
 /-- A monoid homomorphism (a bundled morphism of a type that implements `MonoidHomClass`)
 from a topological group to a topological monoid is continuous
@@ -873,7 +894,7 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
     IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
   refine ⟨fun H ↦ map_one f ▸ H.nhds_le 1, fun h ↦ IsOpenMap.of_nhds_le fun x ↦ ?_⟩
   have : Filter.map (f x * ·) (𝓝 1) = 𝓝 (f x) := by
-    simpa [-Homeomorph.map_nhds_eq, Units.smul_def] using
+    simpa [-Homeomorph.map_nhds_eq, Units.smul_def] using!
       (Homeomorph.smul ((toUnits x).map (MonoidHomClass.toMonoidHom f))).map_nhds_eq (1 : H)
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
@@ -912,6 +933,13 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
         use x * k, hx
         rw [map_mul, hk, mul_one]
+
+@[to_additive]
+lemma MonoidHom.isOpenQuotientMap_iff_isQuotientMap {A : Type*} [Group A]
+    [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
+    {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F} :
+    IsOpenQuotientMap φ ↔ IsQuotientMap φ :=
+  ⟨fun hf => hf.isQuotientMap, MonoidHom.isOpenQuotientMap_of_isQuotientMap⟩
 
 @[to_additive]
 theorem IsTopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
@@ -969,7 +997,7 @@ theorem IsTopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topol
     (hmul : Tendsto (uncurry ((· * ·) : G → G → G)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1)) : IsTopologicalGroup G :=
-  IsTopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using tendsto_id)
+  IsTopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using! tendsto_id)
 
 variable (G) in
 /-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
@@ -1013,7 +1041,7 @@ lemma Filter.tendsto_div_const_iff {G : Type*}
     {b : G} (hb : b ≠ 0) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
-  convert h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel₀ hb, div_one]
+  convert! h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel₀ hb, div_one]
 
 @[to_additive tendsto_sub_const_iff]
 lemma Filter.tendsto_div_const_iff' {G : Type*}
@@ -1021,7 +1049,7 @@ lemma Filter.tendsto_div_const_iff' {G : Type*}
     (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
-  convert h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel, div_one]
+  convert! h.div_const' b⁻¹ with k <;> rw [← div_mul_eq_div_div_swap, inv_mul_cancel, div_one]
 
 @[to_additive const_sub]
 theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
@@ -1044,17 +1072,20 @@ variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 lemma Filter.tendsto_const_div_iff' (b : G) {c : G} {f : α → G} {l : Filter α} :
     Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
   refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
-  convert h.inv.mul_const b with k <;> rw [inv_div, div_mul_cancel]
+  convert! h.inv.mul_const b with k <;> rw [inv_div, div_mul_cancel]
 
 @[deprecated (since := "2026-02-03")]
 alias Filter.tendsto_const_div_iff := Filter.tendsto_const_div_iff'
-
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
 @[to_additive (attr := simps! +simpRhs)
   /-- A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`. -/]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with }
+
+@[to_additive (attr := simp)]
+theorem Homeomorph.coe_divLeft (a : G) : ⇑(Homeomorph.divLeft a) = (a / ·) :=
+  rfl
 
 @[to_additive]
 theorem isOpenMap_div_left (a : G) : IsOpenMap (a / ·) :=
@@ -1070,6 +1101,10 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with }
 
+@[to_additive (attr := simp)]
+theorem Homeomorph.coe_divRight (a : G) : ⇑(Homeomorph.divRight a) = (· / a) :=
+  rfl
+
 @[to_additive]
 lemma isOpenMap_div_right (a : G) : IsOpenMap (· / a) := (Homeomorph.divRight a).isOpenMap
 
@@ -1082,9 +1117,66 @@ theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α �
   haveI A : Tendsto (fun _ : α => x) l (𝓝 x) := tendsto_const_nhds
   ⟨fun h => by simpa using h.mul A, fun h => by simpa using h.div' A⟩
 
+/-- If `f → a` and `g → b` along a nontrivial filter on the domain, valued in a
+Hausdorff topological group, then `f / g → 1` if and only if `a = b`. -/
+@[to_additive]
+theorem tendsto_div_nhds_one_iff_eq {α : Type*} {l : Filter α} [l.NeBot] [T2Space G]
+    {f g : α → G} {a b : G} (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) :
+    Tendsto (fun x ↦ f x / g x) l (𝓝 1) ↔ a = b :=
+  ⟨fun hfg => tendsto_nhds_unique hf <| by simpa using hfg.mul hg,
+   fun h => by subst h; simpa using hf.div' hg⟩
+
+@[to_additive]
+alias ⟨eq_of_tendsto_div_nhds_one, _⟩ := tendsto_div_nhds_one_iff_eq
+
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
   simpa only [div_eq_mul_inv] using nhds_translation_mul_inv x
+
+variable [TopologicalSpace H] [CommGroup H] [IsTopologicalGroup H]
+  [PartialOrder H] [IsOrderedMonoid H]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsGT {c a : H} : map (· / c) (𝓝[>] a) = 𝓝[>] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsLT {c a : H} : map (· / c) (𝓝[<] a) = 𝓝[<] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhdsNE {c a : G} :
+    map (· / c) (𝓝[≠] a) = 𝓝[≠] (a / c) := by
+  convert! (Homeomorph.divRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [div_eq_mul_inv]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divRight_nhds {c a : G} :
+    map (· / c) (𝓝 a) = 𝓝 (a / c) := by
+  convert! (Homeomorph.divRight c).map_nhds_eq .. using 2
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsGT {c a : H} : map (c / ·) (𝓝[>] a) = 𝓝[<] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsLT {c a : H} : map (c / ·) (𝓝[<] a) = 𝓝[>] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhdsNE {c a : G} :
+    map (c / ·) (𝓝[≠] a) = 𝓝[≠] (c / a) := by
+  convert! (Homeomorph.divLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [image_div_left]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_divLeft_nhds {c a : G} :
+    map (c / ·) (𝓝 a) = 𝓝 (c / a) := by
+  convert! (Homeomorph.divLeft c).map_nhds_eq .. using 2
 
 end DivInvTopologicalGroup
 
@@ -1119,9 +1211,9 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       intro K L hK hL
       have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
       rw [preimage_compl, compl_compl] at H
-      convert H
+      convert! H
       ext x
-      simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -1146,9 +1238,9 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
       apply Finite.of_preimage _ (equivOp S).surjective
-      convert H using 1
+      convert! H using 1
       ext x
-      simp only [image_smul, mem_setOf_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

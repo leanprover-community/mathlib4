@@ -58,17 +58,18 @@ attribute [instance] isCommRing isTopologicalSpace isTopologicalRing
 
 instance : Category TopCommRingCat.{u} where
   Hom R S := { f : R →+* S // Continuous f }
-  id R := ⟨RingHom.id R, by rw [RingHom.id]; continuity⟩
+  id R := ⟨RingHom.id R, by rw [RingHom.id]; dsimp; fun_prop⟩
   comp f g :=
     ⟨g.val.comp f.val, by
       -- TODO automate
       cases f
       cases g
-      continuity⟩
+      dsimp
+      fun_prop⟩
 
 instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } R S where
   coe f := f.val
-  coe_injective' _ _ h := Subtype.ext (DFunLike.coe_injective h)
+  coe_injective _ _ h := Subtype.ext (DFunLike.coe_injective h)
 
 instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
   hom f := f

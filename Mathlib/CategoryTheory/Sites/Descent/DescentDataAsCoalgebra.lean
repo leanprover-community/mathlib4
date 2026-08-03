@@ -65,8 +65,8 @@ structure DescentDataAsCoalgebra
   hom (i₁ i₂ : ι) : obj i₁ ⟶
     (F.map (f i₁).op.toLoc).l.toFunctor.obj
       ((F.map (f i₂).op.toLoc).r.toFunctor.obj (obj i₂))
-  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ :=
-    by cat_disch
+  counit (i : ι) : hom i i ≫ (F.map (f i).op.toLoc).adj.counit.toNatTrans.app _ = 𝟙 _ := by
+    cat_disch
   coassoc (i₁ i₂ i₃ : ι) :
     hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.toFunctor.map
       ((F.map (f i₂).op.toLoc).r.toFunctor.map (hom i₂ i₃)) =
@@ -76,6 +76,9 @@ structure DescentDataAsCoalgebra
 
 namespace DescentDataAsCoalgebra
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [reassoc (attr := simp)] counit coassoc
 
 section
@@ -129,6 +132,7 @@ def isoMk {D₁ D₂ : F.DescentDataAsCoalgebra f} (e : ∀ (i : ι), D₁.obj i
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- When the index type `ι` contains a unique element, the category

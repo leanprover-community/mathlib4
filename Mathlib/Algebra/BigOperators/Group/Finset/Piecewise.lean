@@ -182,43 +182,54 @@ theorem prod_piecewise [DecidableEq ι] (s t : Finset ι) (f g : ι → M) :
   rw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
 
 @[to_additive]
-theorem prod_inter_mul_prod_diff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
+theorem prod_inter_mul_prod_sdiff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
-  convert (s.prod_piecewise t f f).symm
+  convert! (s.prod_piecewise t f f).symm
   simp +unfoldPartialApp [Finset.piecewise]
 
+@[deprecated (since := "2026-06-03")] alias prod_inter_mul_prod_diff := prod_inter_mul_prod_sdiff
+
 @[to_additive]
-theorem prod_eq_mul_prod_diff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
+theorem prod_eq_mul_prod_sdiff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
   by_cases hs : i ∈ s
-  · convert (s.prod_inter_mul_prod_diff {i} f).symm
+  · convert! (s.prod_inter_mul_prod_sdiff { i } f).symm
     simp [hs]
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop
 
-@[to_additive]
-theorem prod_eq_mul_prod_diff_singleton_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
-    (f : ι → M) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x :=
-  prod_eq_mul_prod_diff_singleton _ _ (by simp_all)
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton := prod_eq_mul_prod_sdiff_singleton
 
 @[to_additive]
-theorem prod_eq_prod_diff_singleton_mul [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
+theorem prod_eq_mul_prod_sdiff_singleton_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
+    (f : ι → M) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x :=
+  prod_eq_mul_prod_sdiff_singleton _ _ (by simp_all)
+
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_mul_prod_diff_singleton_of_mem := prod_eq_mul_prod_sdiff_singleton_of_mem
+
+@[to_additive]
+theorem prod_eq_prod_sdiff_singleton_mul [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s)
     (f : ι → M) : ∏ x ∈ s, f x = (∏ x ∈ s \ {i}, f x) * f i := by
-  rw [prod_eq_mul_prod_diff_singleton_of_mem h, mul_comm]
+  rw [prod_eq_mul_prod_sdiff_singleton_of_mem h, mul_comm]
+
+@[deprecated (since := "2026-06-03")]
+alias prod_eq_prod_diff_singleton_mul := prod_eq_prod_sdiff_singleton_mul
 
 @[to_additive]
 theorem _root_.Fintype.prod_eq_mul_prod_compl [DecidableEq ι] [Fintype ι] (a : ι) (f : ι → M) :
     ∏ i, f i = f a * ∏ i ∈ {a}ᶜ, f i :=
-  prod_eq_mul_prod_diff_singleton_of_mem (mem_univ a) f
+  prod_eq_mul_prod_sdiff_singleton_of_mem (mem_univ a) f
 
 @[to_additive]
 theorem _root_.Fintype.prod_eq_prod_compl_mul [DecidableEq ι] [Fintype ι] (a : ι) (f : ι → M) :
     ∏ i, f i = (∏ i ∈ {a}ᶜ, f i) * f a :=
-  prod_eq_prod_diff_singleton_mul (mem_univ a) f
+  prod_eq_prod_sdiff_singleton_mul (mem_univ a) f
 
 theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) : f a ∣ ∏ i ∈ s, f i := by
   classical
-    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem ha]
+    rw [Finset.prod_eq_mul_prod_sdiff_singleton_of_mem ha]
     exact dvd_mul_right _ _
 
 @[to_additive]
@@ -258,7 +269,7 @@ theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) 
 lemma prod_eq_prod_iff_single [IsRightCancelMul M] {f g : ι → M} {i : ι} (hi : i ∈ s)
     (hfg : ∀ j ∈ s, j ≠ i → f j = g j) : ∏ j ∈ s, f j = ∏ j ∈ s, g j ↔ f i = g i := by
   classical
-  rw [prod_eq_mul_prod_diff_singleton_of_mem hi, prod_eq_mul_prod_diff_singleton_of_mem hi,
+  rw [prod_eq_mul_prod_sdiff_singleton_of_mem hi, prod_eq_mul_prod_sdiff_singleton_of_mem hi,
     prod_congr rfl (by simpa), mul_left_inj]
 
 end CommMonoid

@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
@@ -123,6 +123,7 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [discriminant] using eta_ne_zero z.2
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
@@ -138,6 +139,7 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
@@ -164,7 +166,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
-  convert this using 2 with τ
+  convert! this using 2 with τ
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
@@ -191,6 +193,33 @@ lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImI
     have h1 := norm_sub_norm_le 1 (∏' n, (1 - eta_q n τ) ^ 24)
     grind [norm_one, norm_sub_rev]
   linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
+
+/-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
+on the open unit disc. -/
+lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
+    (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
+  intro q hq
+  by_cases hq0 : q = 0
+  · simpa [hq0] using! Periodic.cuspFunction_zero_of_zero_at_inf one_pos
+      discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
+  · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
+      (by simpa [dist_zero_right] using hq) hq0
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
+      ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
+      Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
+
+/-- The first q-expansion coefficient of the modular discriminant is 1. -/
+lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
+  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
+  calc (qExpansion 1 Δ).coeff 1
+      = derivWithin (cuspFunction 1 Δ) (Metric.ball 0 1) 0 := by
+        simp [qExpansion_coeff, ← derivWithin_of_isOpen Metric.isOpen_ball hmem]
+    _ = derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) 0 :=
+        derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)
+    _ = 1 := by
+        simp [derivWithin_fun_mul differentiableWithinAt_fun_id
+          (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
+          derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
 
 end
 

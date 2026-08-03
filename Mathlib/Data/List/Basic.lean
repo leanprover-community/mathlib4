@@ -57,8 +57,10 @@ instance : Std.Associative (α := List α) Append.append where
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
 
-theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
+theorem setOfPred_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
   Set.ext fun _ => mem_cons
+
+@[deprecated (since := "2026-07-13")] alias set_of_mem_cons := setOfPred_mem_cons
 
 /-! ### mem -/
 
@@ -499,6 +501,10 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
+theorem getElem_mem_tail {k : ℕ} (l : List α) (h : k ≠ 0) (hk : k < l.length) :
+    l[k]'hk ∈ l.tail := by
+  cases l <;> grind
+
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl
@@ -616,11 +622,6 @@ theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
   (getLast_eq_getElem _).symm
 
-theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
-    (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
-  rw [drop_eq_getElem_cons h, take, take]
-  simp
-
 theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]?) :
     l₁ = l₂ := by
   apply ext_getElem?
@@ -665,7 +666,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
-  refine ext_get (by convert h) (by grind)
+  refine ext_get (by convert! h) (by grind)
 
 end deprecated
 
@@ -1008,7 +1009,7 @@ theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
 
 theorem map_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
+  have : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
   rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 
 theorem map_foldl_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :

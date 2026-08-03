@@ -185,8 +185,17 @@ lemma Functor.hasLiftingProperty_iff_of_isEquivalence
     {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty (G.map i) (G.map p) ↔
       HasLiftingProperty i p := by
+  #adaptation_note /-- Prior to nightly-2026-05-07, the next three lines were just
+  ```
   simp only [dsimp% G.asEquivalence.toAdjunction.hasLiftingProperty_iff,
     ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
+  ```
+  This is a temporary repair, and authors/maintainers are encouraged to either find a better repair,
+  or identify a minimal example of an underlying problem in Lean.
+  -/
+  change HasLiftingProperty (G.asEquivalence.functor.map i) (G.asEquivalence.functor.map p) ↔ _
+  rw [G.asEquivalence.toAdjunction.hasLiftingProperty_iff]
+  simp only [← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
   exact MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk (G.asEquivalence.unitIso.symm.app _)
       (G.asEquivalence.unitIso.symm.app _)

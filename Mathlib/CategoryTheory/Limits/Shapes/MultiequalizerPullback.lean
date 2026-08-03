@@ -29,7 +29,7 @@ namespace isPushout
 
 variable (s : PushoutCocone (I.fst default) (I.snd default))
 
-open Classical in
+open scoped Classical in
 /-- Given a multispan shape `J` which is essentially `.ofLinearOrder ι`
 (where `ι` has exactly two elements), this is the multicofork
 deduced from a pushout cocone. -/
@@ -70,15 +70,15 @@ lemma isPushout (hc : IsColimit c) :
   w := c.condition _
   isColimit' := ⟨PushoutCocone.IsColimit.mk _
     (fun s ↦ hc.desc (isPushout.multicofork h h' s))
-    (fun s ↦ by simpa using hc.fac (isPushout.multicofork h h' s) (.right (J.fst default)))
-    (fun s ↦ by simpa using hc.fac (isPushout.multicofork h h' s) (.right (J.snd default)))
+    (fun s ↦ by simpa using! hc.fac (isPushout.multicofork h h' s) (.right (J.fst default)))
+    (fun s ↦ by simpa using! hc.fac (isPushout.multicofork h h' s) (.right (J.snd default)))
     (fun s m h₁ h₂ ↦ by
       apply Multicofork.IsColimit.hom_ext hc
       intro k
       have := h.symm.le (Set.mem_univ k)
       push _ ∈ _ at this
       obtain rfl | rfl := this
-      · simpa [h₁] using (hc.fac (isPushout.multicofork h h' s) (.right (J.fst default))).symm
-      · simpa [h₂] using (hc.fac (isPushout.multicofork h h' s) (.right (J.snd default))).symm)⟩
+      · simpa [h₁] using! (hc.fac (isPushout.multicofork h h' s) (.right (J.fst default))).symm
+      · simpa [h₂] using! (hc.fac (isPushout.multicofork h h' s) (.right (J.snd default))).symm)⟩
 
 end CategoryTheory.Limits.Multicofork.IsColimit

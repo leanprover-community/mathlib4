@@ -37,15 +37,19 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cone for the empty diagram given an object. -/
-@[simps]
+@[simps, implicit_reducible]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π :=
     { app := by cat_disch } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cocone for the empty diagram given an object. -/
-@[simps]
+@[implicit_reducible, simps]
 def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι :=
@@ -191,11 +195,11 @@ theorem IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSp
 
 /-- Any morphism from a terminal object is mono. -/
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
-  haveI := t.isSplitMono_from f; infer_instance
+  have := t.isSplitMono_from f; infer_instance
 
 /-- Any morphism to an initial object is epi. -/
 theorem IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
-  haveI := t.isSplitEpi_to f; infer_instance
+  have := t.isSplitEpi_to f; infer_instance
 
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
 @[simps]
@@ -336,7 +340,7 @@ variable {J : Type u} [Category.{v} J]
 
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.
 In `limitOfDiagramInitial` we show it is a limit cone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
@@ -355,11 +359,10 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `limitOfDiagramTerminal` we show it is a limit cone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
@@ -379,7 +382,7 @@ def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
 
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cocone for `J`.
 In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F where
   pt := F.obj X
   ι :=
@@ -401,11 +404,10 @@ lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : Is
   change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cocone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `colimitOfDiagramInitial` we show it is a colimit cocone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
