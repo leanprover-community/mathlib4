@@ -111,6 +111,7 @@ theorem adj_symm (G' : Subgraph G) {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
 protected theorem Adj.symm {G' : Subgraph G} {u v : V} (h : G'.Adj u v) : G'.Adj v u :=
   G'.adj_symm h
 
+@[grind →]
 protected theorem Adj.adj_sub {H : G.Subgraph} {u v : V} (h : H.Adj u v) : G.Adj u v :=
   H.adj_sub h
 
@@ -169,11 +170,13 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless.irrefl _ hadj := G.irrefl hadj.adj_sub
 
+attribute [grind =] Subgraph.spanningCoe_adj
+
 @[simp]
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
   ext
   simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
-  grind [spanningCoe_adj, coe_adj, edge_vert, adj_symm]
+  grind [coe_adj, edge_vert, adj_symm]
 
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
