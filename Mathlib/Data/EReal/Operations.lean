@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -323,9 +322,16 @@ theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   obtain rfl : y.toENNReal = x := by simp [← hy]
   simp [recENNReal, H₁]
 
-proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+@[simp]
+theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
-    recENNReal coe neg_coe (-x) = neg_coe x hx
+    recENNReal coe neg_coe (-x) = neg_coe x hx := by
+  suffices ∀ y : EReal, -x = y → (recENNReal coe neg_coe y : motive y) ≍ neg_coe x hx from
+    heq_iff_eq.mp (this (-x) rfl)
+  intro y hy
+  have H₁ : ¬0 ≤ y := by simpa [← hy] using hx
+  obtain rfl : (-y).toENNReal = x := by simp [← hy]
+  simp [recENNReal, H₁]
 
 /-!
 ### Subtraction
