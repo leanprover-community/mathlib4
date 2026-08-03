@@ -38,8 +38,8 @@ a conditionally complete lattice is a complete lattice (`Mathlib.Order.CompleteL
 so these results are in principle available by bundling the restriction of `f` as an order hom on
 the subtype `↥(Set.Icc a b)`. The definitions here are the unbundled ambient-valued versions: they
 take `MonotoneOn` and `Set.MapsTo` hypotheses directly, need no `Fact (a ≤ b)` instance, and
-produce elements of `α` rather than of a subtype. This is the form in which the theorem is used on
-concrete intervals of `ℝ`.
+produce elements of `α` rather than of a subtype. This is the convenient form for applying the
+theorem on concrete intervals of `ℝ`.
 
 `lfpIcc` and `gfpIcc` are total. Without the hypotheses, they are the infimum and supremum of
 possibly empty sets, hence junk values; every theorem states the hypotheses it needs.
@@ -69,28 +69,28 @@ def gfpIcc (f : α → α) (a b : α) : α :=
   sSup {x ∈ Icc a b | x ≤ f x}
 
 theorem lfpIcc_le (hx : x ∈ Icc a b) (hfx : f x ≤ x) : lfpIcc f a b ≤ x :=
-  csInf_le ⟨a, fun _ hy => hy.1.1⟩ ⟨hx, hfx⟩
+  csInf_le ⟨a, fun _ hy ↦ hy.1.1⟩ ⟨hx, hfx⟩
 
 theorem le_gfpIcc (hx : x ∈ Icc a b) (hfx : x ≤ f x) : x ≤ gfpIcc f a b :=
-  le_csSup ⟨b, fun _ hy => hy.1.2⟩ ⟨hx, hfx⟩
+  le_csSup ⟨b, fun _ hy ↦ hy.1.2⟩ ⟨hx, hfx⟩
 
 theorem le_lfpIcc (hab : a ≤ b) (hf : MapsTo f (Icc a b) (Icc a b))
     (h : ∀ x ∈ Icc a b, f x ≤ x → c ≤ x) : c ≤ lfpIcc f a b :=
-  le_csInf ⟨b, right_mem_Icc.mpr hab, (hf (right_mem_Icc.mpr hab)).2⟩ fun _ hx => h _ hx.1 hx.2
+  le_csInf ⟨b, right_mem_Icc.mpr hab, (hf (right_mem_Icc.mpr hab)).2⟩ fun _ hx ↦ h _ hx.1 hx.2
 
 theorem gfpIcc_le (hab : a ≤ b) (hf : MapsTo f (Icc a b) (Icc a b))
     (h : ∀ x ∈ Icc a b, x ≤ f x → x ≤ c) : gfpIcc f a b ≤ c :=
-  csSup_le ⟨a, left_mem_Icc.mpr hab, (hf (left_mem_Icc.mpr hab)).1⟩ fun _ hx => h _ hx.1 hx.2
+  csSup_le ⟨a, left_mem_Icc.mpr hab, (hf (left_mem_Icc.mpr hab)).1⟩ fun _ hx ↦ h _ hx.1 hx.2
 
 theorem lfpIcc_mem_Icc (hab : a ≤ b) (hf : MapsTo f (Icc a b) (Icc a b)) :
     lfpIcc f a b ∈ Icc a b :=
-  ⟨le_lfpIcc hab hf fun _ hx _ => hx.1,
+  ⟨le_lfpIcc hab hf fun _ hx _ ↦ hx.1,
     lfpIcc_le (right_mem_Icc.mpr hab) (hf (right_mem_Icc.mpr hab)).2⟩
 
 theorem gfpIcc_mem_Icc (hab : a ≤ b) (hf : MapsTo f (Icc a b) (Icc a b)) :
     gfpIcc f a b ∈ Icc a b :=
   ⟨le_gfpIcc (left_mem_Icc.mpr hab) (hf (left_mem_Icc.mpr hab)).1,
-    gfpIcc_le hab hf fun _ hx _ => hx.2⟩
+    gfpIcc_le hab hf fun _ hx _ ↦ hx.2⟩
 
 /-- A function that is monotone on `[a, b]` and maps `[a, b]` into itself fixes `lfpIcc f a b`:
 the existence half of `isLeast_lfpIcc`. -/
@@ -98,7 +98,7 @@ theorem isFixedPt_lfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
     (hf : MapsTo f (Icc a b) (Icc a b)) : IsFixedPt f (lfpIcc f a b) := by
   have hmem : lfpIcc f a b ∈ Icc a b := lfpIcc_mem_Icc hab hf
   have h₁ : f (lfpIcc f a b) ≤ lfpIcc f a b :=
-    le_lfpIcc hab hf fun x hx hfx => (hm hmem hx (lfpIcc_le hx hfx)).trans hfx
+    le_lfpIcc hab hf fun x hx hfx ↦ (hm hmem hx (lfpIcc_le hx hfx)).trans hfx
   exact h₁.antisymm (lfpIcc_le (hf hmem) (hm (hf hmem) hmem h₁))
 
 /-- A function that is monotone on `[a, b]` and maps `[a, b]` into itself fixes `gfpIcc f a b`:
@@ -107,7 +107,7 @@ theorem isFixedPt_gfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
     (hf : MapsTo f (Icc a b) (Icc a b)) : IsFixedPt f (gfpIcc f a b) := by
   have hmem : gfpIcc f a b ∈ Icc a b := gfpIcc_mem_Icc hab hf
   have h₁ : gfpIcc f a b ≤ f (gfpIcc f a b) :=
-    gfpIcc_le hab hf fun x hx hfx => hfx.trans (hm hx hmem (le_gfpIcc hx hfx))
+    gfpIcc_le hab hf fun x hx hfx ↦ hfx.trans (hm hx hmem (le_gfpIcc hx hfx))
   exact (le_gfpIcc (hf hmem) (hm hmem (hf hmem) h₁)).antisymm h₁
 
 /-- **Knaster–Tarski on an interval**: `lfpIcc f a b` is the least fixed point of `f` in
@@ -115,14 +115,14 @@ theorem isFixedPt_gfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
 theorem isLeast_lfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
     (hf : MapsTo f (Icc a b) (Icc a b)) :
     IsLeast {x ∈ Icc a b | IsFixedPt f x} (lfpIcc f a b) :=
-  ⟨⟨lfpIcc_mem_Icc hab hf, isFixedPt_lfpIcc hab hm hf⟩, fun _ hx => lfpIcc_le hx.1 hx.2.eq.le⟩
+  ⟨⟨lfpIcc_mem_Icc hab hf, isFixedPt_lfpIcc hab hm hf⟩, fun _ hx ↦ lfpIcc_le hx.1 hx.2.eq.le⟩
 
 /-- **Knaster–Tarski on an interval**: `gfpIcc f a b` is the greatest fixed point of `f` in
 `[a, b]`. -/
 theorem isGreatest_gfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
     (hf : MapsTo f (Icc a b) (Icc a b)) :
     IsGreatest {x ∈ Icc a b | IsFixedPt f x} (gfpIcc f a b) :=
-  ⟨⟨gfpIcc_mem_Icc hab hf, isFixedPt_gfpIcc hab hm hf⟩, fun _ hx => le_gfpIcc hx.1 hx.2.eq.ge⟩
+  ⟨⟨gfpIcc_mem_Icc hab hf, isFixedPt_gfpIcc hab hm hf⟩, fun _ hx ↦ le_gfpIcc hx.1 hx.2.eq.ge⟩
 
 theorem lfpIcc_le_gfpIcc (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
     (hf : MapsTo f (Icc a b) (Icc a b)) : lfpIcc f a b ≤ gfpIcc f a b :=
@@ -153,15 +153,15 @@ theorem gfpIcc_le_iterate (hab : a ≤ b) (hm : MonotoneOn f (Icc a b))
 `f` or `g`; under the hypotheses of `isLeast_lfpIcc` it compares the least fixed points. -/
 theorem lfpIcc_le_lfpIcc (hab : a ≤ b) (hg : MapsTo g (Icc a b) (Icc a b))
     (h : ∀ x ∈ Icc a b, f x ≤ g x) : lfpIcc f a b ≤ lfpIcc g a b :=
-  csInf_le_csInf ⟨a, fun _ hy => hy.1.1⟩
+  csInf_le_csInf ⟨a, fun _ hy ↦ hy.1.1⟩
     ⟨b, right_mem_Icc.mpr hab, (hg (right_mem_Icc.mpr hab)).2⟩
-    fun x hx => ⟨hx.1, (h x hx.1).trans hx.2⟩
+    fun x hx ↦ ⟨hx.1, (h x hx.1).trans hx.2⟩
 
 /-- `gfpIcc` is monotone in the function: if `f ≤ g` pointwise on `[a, b]`, then
 `gfpIcc f a b ≤ gfpIcc g a b`. This compares the defining suprema, so it needs no monotonicity of
 `f` or `g`; under the hypotheses of `isGreatest_gfpIcc` it compares the greatest fixed points. -/
 theorem gfpIcc_le_gfpIcc (hab : a ≤ b) (hf : MapsTo f (Icc a b) (Icc a b))
     (h : ∀ x ∈ Icc a b, f x ≤ g x) : gfpIcc f a b ≤ gfpIcc g a b :=
-  csSup_le_csSup ⟨b, fun _ hy => hy.1.2⟩
+  csSup_le_csSup ⟨b, fun _ hy ↦ hy.1.2⟩
     ⟨a, left_mem_Icc.mpr hab, (hf (left_mem_Icc.mpr hab)).1⟩
-    fun x hx => ⟨hx.1, hx.2.trans (h x hx.1)⟩
+    fun x hx ↦ ⟨hx.1, hx.2.trans (h x hx.1)⟩
