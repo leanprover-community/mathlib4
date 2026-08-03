@@ -452,9 +452,8 @@ theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
 theorem exists_pullback_eq_inf_of_mono [HasImages C] (f : X ⟶ Y) [Mono f] (Y' : Subobject Y) :
     («exists» f).obj ((pullback f).obj Y') = Y' ⊓ mk f := by
   rw [exists_iso_map]
-  change (map (MonoOver.mk f).arrow).obj
-      ((pullback (MonoOver.mk f).arrow).obj Y') = _
-  rw [← inf_eq_map_pullback' (MonoOver.mk f) Y', inf_comm]
+  change (map (MonoOver.mk f).arrow).obj ((pullback (MonoOver.mk f).arrow).obj Y') = _
+  rw [← inf_eq_map_pullback', inf_comm]
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : Subobject A) (f₂ : Subobject A) :

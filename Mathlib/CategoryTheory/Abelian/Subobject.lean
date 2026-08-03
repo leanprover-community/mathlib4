@@ -165,20 +165,18 @@ lemma pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X) (h : kernelSubob
     rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]
   rw [← hX', exists_pullback_eq_self_of_epi]
 
-lemma pullback_exists_eq_sup_of_epi [Epi f] (X' : Subobject X) :
-    (Subobject.pullback f).obj ((«exists» f).obj X') = X' ⊔ kernelSubobject f := by
-  apply le_antisymm
-  · rw [← pullback_exists_eq_self_of_epi f (X' ⊔ kernelSubobject f) le_sup_right]
-    exact (Subobject.pullback f).monotone ((«exists» f).monotone le_sup_left)
-  · apply sup_le
-    · exact (existsPullbackAdj f).gc.le_u_l X'
-    · rw [pullback_eq_kernelSubobject]
-      exact kernelSubobject_comp_le f _
-
 theorem pullback_exists_eq_sup (X' : Subobject X) :
     (Subobject.pullback f).obj ((«exists» f).obj X') = X' ⊔ kernelSubobject f := by
   rw [← imageSubobject_arrow_comp f, exists_comp, pullback_comp, exists_iso_map, pullback_map_self,
-    pullback_exists_eq_sup_of_epi, kernelSubobject_comp_mono]
+    kernelSubobject_comp_mono]
+  let f' := (factorThruImageSubobject f)
+  apply le_antisymm
+  · rw [← pullback_exists_eq_self_of_epi f' (X' ⊔ kernelSubobject f') le_sup_right]
+    exact (Subobject.pullback f').monotone ((«exists» f').monotone le_sup_left)
+  · apply sup_le
+    · exact (existsPullbackAdj f').gc.le_u_l X'
+    · rw [pullback_eq_kernelSubobject]
+      exact kernelSubobject_comp_le f' _
 
 theorem exists_pullback_eq_inf (Y' : Subobject Y) :
     («exists» f).obj ((Subobject.pullback f).obj Y') = Y' ⊓ imageSubobject f := by
