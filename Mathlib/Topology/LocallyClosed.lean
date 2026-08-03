@@ -34,6 +34,8 @@ open scoped Set.Notation
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {f : X → Y}
 
+section coborder
+
 lemma subset_coborder :
     s ⊆ coborder s := by
   rw [coborder, subset_compl_iff_disjoint_right]
@@ -101,6 +103,19 @@ lemma Topology.IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : S
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
+
+end coborder
+
+section IsLocallyClosedAt
+
+lemma IsLocallyClosed.isLocallyClosedAt (hs : IsLocallyClosed s) {x : X} (hx : x ∈ s) :
+    IsLocallyClosedAt s x := by
+  obtain ⟨U, Z, U_open, Z_closed, s_eq⟩ := hs
+  exact ⟨U, Z, U_open.mem_nhds (s_eq ▸ hx).1, Z_closed, by simp [s_eq]⟩
+
+end IsLocallyClosedAt
+
+section IsLocallyClosed
 
 lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
     IsLocallyClosed (s ∩ t) := by
@@ -194,3 +209,5 @@ alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_cob
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
   ((isLocallyClosed_tfae s).out 0 4).mp hs
+
+end IsLocallyClosed
