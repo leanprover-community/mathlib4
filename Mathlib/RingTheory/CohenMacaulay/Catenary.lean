@@ -118,7 +118,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
     use []
     simp only [List.append_nil, le_antisymm le len, List.length_nil, CharP.cast_eq_zero, add_zero,
       hd, and_true]
-    apply Ideal.mem_minimalPrimes_of_height_eq this
+    apply Ideal.mem_minimalPrimes_of_height_le this
     rw [ht, le_antisymm le len, ← WithBot.coe_le_coe]
     simp [hd, ← ENat.WithBot.coe_eq_natCast]
   | succ k hk =>
@@ -337,7 +337,7 @@ lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim_of_isPrime [IsCohen
   have ass : p ∈ associatedPrimes R (R ⧸ ofList rs • (⊤ : Ideal R)) := by
     apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
     simp only [smul_eq_mul, annihilator_quotient, mul_top]
-    apply Ideal.mem_minimalPrimes_of_height_eq
+    apply Ideal.mem_minimalPrimes_of_height_le
     · exact (span_le.mpr mem)
     · simp [← len, ← ht_eq]
   have : Nontrivial (R ⧸ ofList rs • (⊤ : Ideal R)) := IsRegular.quot_ofList_smul_nontrivial reg ⊤
