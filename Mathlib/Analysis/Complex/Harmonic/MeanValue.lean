@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stefan Kebekus
+Authors: Stefan Kebekus, Yi Yuan
 -/
 module
 
@@ -28,6 +28,8 @@ continuous linear functionals separate the points of a normed space (Hahn-Banach
 SeparatingDual.eq_iff_forall_dual_eq), this suffices.
 -/
 
+public section
+
 open InnerProductSpace Metric Real
 
 namespace InnerProductSpace
@@ -48,7 +50,7 @@ Compositions of continuous ℝ-linear maps with functions that are harmonic on a
 on its closure are again harmonic on the set and continuous on its closure.
 -/
 theorem HarmonicContOnCl.comp_CLM {f : E → F} {s : Set E} (h : HarmonicContOnCl f s)
-  (l : F →L[ℝ] G) : HarmonicContOnCl (l ∘ f) s :=
+    (l : F →L[ℝ] G) : HarmonicContOnCl (l ∘ f) s :=
   ⟨h.1.comp_CLM l, l.continuous.comp_continuousOn h.2⟩
 
 end
@@ -74,7 +76,7 @@ theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|))
   intro g
   rw [← g.circleAverage_comp_comm h]
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c |R|).exists_thickening_subset_open
-    (isOpen_setOfPred_harmonicAt (⇑g ∘ f)) (hf.comp_CLM g)
+    (isOpen_setOfPred_harmonicAt (g ∘ f)) (hf.comp_CLM g)
   rw [thickening_closedBall h₁e (abs_nonneg R)] at h₂e
   obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c |R|)) := by
@@ -103,7 +105,7 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   rw [← g.circleAverage_comp_comm h]
   by_cases hR : R = 0
   · simp_all
-  have H : ContinuousOn (circleAverage (⇑g ∘ f) c) (Set.Ioc 0 |R|) := by
+  have H : ContinuousOn (circleAverage (g ∘ f) c) (Set.Ioc 0 |R|) := by
     refine ((hf.comp_CLM g).2.mono ?_).circleAverage (fun z hz ↦ hz.1.le)
     intro x hx
     rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
