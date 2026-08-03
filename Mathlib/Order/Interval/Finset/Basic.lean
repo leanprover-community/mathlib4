@@ -671,6 +671,29 @@ theorem card_Ioo_eq_card_Icc_sub_two (a b : α) : #(Ioo a b) = #(Icc a b) - 2 :=
 
 end PartialOrder
 
+section OrderEmbedding
+
+variable {β : Type*} [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+  (e : α ↪o β)
+
+theorem _root_.OrderEmbedding.map_Icc (he : (Set.range e).OrdConnected) (a b : α) :
+    (Icc a b).map e.toEmbedding = Icc (e a) (e b) :=
+  coe_injective <| by simp [e.image_Icc he]
+
+theorem _root_.OrderEmbedding.map_Ico (he : (Set.range e).OrdConnected) (a b : α) :
+    (Ico a b).map e.toEmbedding = Ico (e a) (e b) :=
+  coe_injective <| by simp [e.image_Ico he]
+
+theorem _root_.OrderEmbedding.map_Ioc (he : (Set.range e).OrdConnected) (a b : α) :
+    (Ioc a b).map e.toEmbedding = Ioc (e a) (e b) :=
+  coe_injective <| by simp [e.image_Ioc he]
+
+theorem _root_.OrderEmbedding.map_Ioo (he : (Set.range e).OrdConnected) (a b : α) :
+    (Ioo a b).map e.toEmbedding = Ioo (e a) (e b) :=
+  coe_injective <| by simp [e.image_Ioo he]
+
+end OrderEmbedding
+
 section Prod
 
 variable {β : Type*}
@@ -678,48 +701,60 @@ variable {β : Type*}
 section sectL
 
 lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableLE (α × β)] (a b : α) (c : β) :
-    (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm])
+    [DecidableLE (α × β)] (a b : α) (c : β) : (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
+  rw [← product_singleton, ← uIcc_product_uIcc]
+  simp [uIcc]
+
+lemma _root_.Set.ordConnected_range_sectL [Preorder α] [PartialOrder β] (c : β) :
+    (Set.range (Function.Embedding.sectL α c)).OrdConnected := by
+  constructor
+  rintro _ ⟨x₁, rfl⟩ _ ⟨x₂, rfl⟩ ⟨p₁, p₂⟩ ⟨h₁, h₂⟩
+  exact ⟨p₁, Prod.ext rfl (le_antisymm h₁.2 h₂.2)⟩
 
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableLE (α × β)] (a b : α) (c : β)
 
-lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm])
+lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) :=
+  OrderEmbedding.map_Icc ⟨.sectL _ c, Prod.mk_le_mk_iff_left⟩ (Set.ordConnected_range_sectL c) a b
 
-lemma Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) :=
+  OrderEmbedding.map_Ioc ⟨.sectL _ c, Prod.mk_le_mk_iff_left⟩ (Set.ordConnected_range_sectL c) a b
 
-lemma Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) :=
+  OrderEmbedding.map_Ico ⟨.sectL _ c, Prod.mk_le_mk_iff_left⟩ (Set.ordConnected_range_sectL c) a b
 
-lemma Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) :=
+  OrderEmbedding.map_Ioo ⟨.sectL _ c, Prod.mk_le_mk_iff_left⟩ (Set.ordConnected_range_sectL c) a b
 
 end sectL
 
 section sectR
 
 lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableLE (α × β)] (c : α) (a b : β) :
-    (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm])
+    [DecidableLE (α × β)] (c : α) (a b : β) : (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
+  rw [← singleton_product, ← uIcc_product_uIcc]
+  simp [uIcc]
+
+lemma _root_.Set.ordConnected_range_sectR [PartialOrder α] [Preorder β] (c : α) :
+    (Set.range (Function.Embedding.sectR c β)).OrdConnected := by
+  constructor
+  rintro _ ⟨y₁, rfl⟩ _ ⟨y₂, rfl⟩ ⟨p₁, p₂⟩ ⟨h₁, h₂⟩
+  exact ⟨p₂, Prod.ext (le_antisymm h₁.1 h₂.1) rfl⟩
 
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableLE (α × β)] (c : α) (a b : β)
 
-lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm])
+lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) :=
+  OrderEmbedding.map_Icc ⟨.sectR c _, Prod.mk_le_mk_iff_right⟩ (Set.ordConnected_range_sectR c) a b
 
-lemma Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) :=
+  OrderEmbedding.map_Ioc ⟨.sectR c _, Prod.mk_le_mk_iff_right⟩ (Set.ordConnected_range_sectR c) a b
 
-lemma Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) :=
+  OrderEmbedding.map_Ico ⟨.sectR c _, Prod.mk_le_mk_iff_right⟩ (Set.ordConnected_range_sectR c) a b
 
-lemma Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) := by
-  aesop (add safe forward [le_antisymm, le_of_lt])
+lemma Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) :=
+  OrderEmbedding.map_Ioo ⟨.sectR c _, Prod.mk_le_mk_iff_right⟩ (Set.ordConnected_range_sectR c) a b
 
 end sectR
 
