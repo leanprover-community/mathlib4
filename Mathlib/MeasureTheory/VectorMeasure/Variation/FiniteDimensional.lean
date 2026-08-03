@@ -57,6 +57,6 @@ instance [NormedSpace ℝ V] [FiniteDimensional ℝ V] (μ : VectorMeasure X V) 
   obtain b := Module.finBasis ℝ V
   apply isFiniteMeasure_of_le (∑ i, ‖b i‖₊ • (μ.coeff b i).variation)
   apply variation_le_sum_smul
-  exact fun E ↦ (sum_coeff_smul_eq b μ E).symm
+  simp
 
 end MeasureTheory.VectorMeasure

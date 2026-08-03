@@ -43,10 +43,8 @@ noncomputable def coeff (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) : ι → 
 lemma coeff_apply (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
     μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
 
-@[simp]
 theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (E : Set X) :
-    ∑ i, (μ.coeff b i E) • b i = μ E := by
-  simp
+    ∑ i, (μ.coeff b i E) • b i = μ E := by simp
 
 @[simp]
 theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) :
