@@ -104,12 +104,12 @@ example (h₁ : X ⊆ Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : False := by
 
 example (h₁ : Y ⊇ W) : X ⊂ (Y ∪ Z) := by
   grw [h₁]
-  guard_target =ₛ X ⊂ (W ∪ Z)
+  guard_target = X ⊂ (W ∪ Z)
   exact test_sorry
 
 example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   grw [← h₁]
-  guard_target =ₛ X ⊂ (W ∪ Z)
+  guard_target = X ⊂ (W ∪ Z)
   exact h₂
 
 -- Binder names are preserved:
@@ -222,7 +222,7 @@ example {s s' : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove s) : BddAbove s' := by
 
 example {s s' t : Set α} (h : s ⊆ s') : (s' ∩ t).Nonempty := by
   grw [← h]
-  guard_target =ₛ (s ∩ t).Nonempty
+  guard_target = (s ∩ t).Nonempty
   exact test_sorry
 
 end nontransitive_grw_lemmas
