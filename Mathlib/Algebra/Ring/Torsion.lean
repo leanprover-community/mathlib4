@@ -24,7 +24,7 @@ namespace IsDomain
 -- Please keep it as a scoped instance.
 scoped instance (R : Type*) [Semiring R] [IsDomain R] [CharZero R] :
     IsAddTorsionFree R where
-  nsmul_right_injective n h a b w := by
+  nsmul_right_injective n h a b _ w := by
     simp only [nsmul_eq_mul, mul_eq_mul_left_iff, Nat.cast_eq_zero] at w
     grind
 
