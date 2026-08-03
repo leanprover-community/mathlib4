@@ -41,6 +41,7 @@ noncomputable def SimplexCategory.sd : SimplexCategory ⥤ SSet.{u} :=
 
 namespace SSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The subdivision functor on simplicial sets. -/
 noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
   stdSimplex.leftKanExtension SimplexCategory.sd
@@ -62,12 +63,14 @@ instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 
 namespace stdSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
   Presheaf.isExtensionAlongULiftYoneda _
 
 end stdSimplex
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : sd.{u}.IsLeftKanExtension stdSimplex.sdIso.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.leftKanExtensionUnit SimplexCategory.sd.{u}))

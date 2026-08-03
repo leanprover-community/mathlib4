@@ -245,7 +245,6 @@ structure CanonicalDecomp (f g : ℂ → E) (R : ℝ) : Prop where
 -- decomposition is meromorphic in normal form.
 private lemma canonicalDecomposition_aux₁ (F : locallyFinsuppWithin (ball (0 : ℂ) R) ℤ) :
     MeromorphicNFOn (∏ᶠ u, (canonicalFactor R u) ^ (F u)) (ball (0 : ℂ) R) := by
-  classical
   refine meromorphicNFOn_finprod (fun w ↦ ?_) fun z hz a ha b hb ↦ ?_
   · by_cases hw : w ∈ ball 0 R
     · exact fun _ _ ↦ (meromorphicNFOn_canonicalFactor hw).zpow (by trivial)

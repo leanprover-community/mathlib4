@@ -50,7 +50,6 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s
 lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
     ∃ b : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E,
       x ∈ interior (convexHull ℝ (range b)) ∧ convexHull ℝ (range b) ⊆ s := by
-  classical
   -- By translating, WLOG `x` is the origin.
   wlog hx : x = 0
   · obtain ⟨b, hb⟩ := this (s := -x +ᵥ s) (by simpa using vadd_mem_nhds_vadd (-x) hs) rfl

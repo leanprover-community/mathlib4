@@ -108,7 +108,7 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
   uniq := eq_zero_of_zero_eq_one h
@@ -324,6 +324,22 @@ an element other than one must be zero. -/
 theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : b * a = a) :
     a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_right_cancel₀ ha <| h₂.symm ▸ (one_mul a).symm
+
+variable {M₀ : Type*} [MonoidWithZero M₀]
+
+instance (priority := 100) [IsLeftCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+  mul_eq_one_symm h := by
+    cases subsingleton_or_nontrivial M₀
+    · exact Subsingleton.elim _ _
+    exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero
+      (left_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
+
+instance (priority := 100) [IsRightCancelMulZero M₀] : IsDedekindFiniteMonoid M₀ where
+  mul_eq_one_symm h := by
+    cases subsingleton_or_nontrivial M₀
+    · exact Subsingleton.elim _ _
+    exact (IsRightCancelMulZero.mul_right_cancel_of_ne_zero
+      (right_ne_zero_of_mul_eq_one h)).mul_eq_one_symm h
 
 end CancelMonoidWithZero
 
