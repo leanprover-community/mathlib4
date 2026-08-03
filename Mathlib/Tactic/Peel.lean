@@ -92,8 +92,6 @@ syntax (name := peel)
 
 deprecated_syntax peel "use `gconvert` or `congr!` instead of `peel`" (since := "2026-08-03")
 
-deprecated_module "use `gconvert` or `congr!` instead of `peel`" (since := "2026-08-03")
-
 lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
 theorem eventually_imp {α : Type*} {p q : α → Prop} {f : Filter α}

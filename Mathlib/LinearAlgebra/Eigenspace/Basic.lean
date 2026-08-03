@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues

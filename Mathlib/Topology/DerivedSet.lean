@@ -6,6 +6,7 @@ Authors: Daniel Weber
 module
 
 public import Mathlib.Topology.Perfect
+public import Mathlib.Tactic.Peel
 
 /-!
 # Derived set

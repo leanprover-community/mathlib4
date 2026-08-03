@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Positivity
 
 /-!

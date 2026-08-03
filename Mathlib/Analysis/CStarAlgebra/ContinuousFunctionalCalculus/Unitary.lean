@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Tactic.Peel
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.Complex.Basic
 

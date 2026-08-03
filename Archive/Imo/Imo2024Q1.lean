@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.ToIntervalMod
+import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Recall
 
 /-!
