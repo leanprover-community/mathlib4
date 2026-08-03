@@ -411,7 +411,7 @@ end PreGaloisCategory
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
 class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
     extends PreGaloisCategory C where
-  hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
+  hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, PreGaloisCategory.FiberFunctor F
 
 namespace PreGaloisCategory
 
@@ -423,7 +423,7 @@ noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
 
 /-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
 noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
-  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+  Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
 
 variable {C}
 

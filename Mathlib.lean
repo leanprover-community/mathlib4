@@ -2745,6 +2745,7 @@ public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.EssSurj
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Full
+public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
 public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
