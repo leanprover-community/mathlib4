@@ -44,18 +44,6 @@ namespace HopfAlgebra
 section Semiring
 variable [Semiring A] [HopfAlgebra R A]
 
-/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `S`
-with `S * id = 1` in the convolution monoid equals the antipode. -/
-theorem eq_antipode_of_convMul_id_eq_one {S : A →ₗ[R] A}
-    (h : toConv S * toConv LinearMap.id = 1) : S = antipode R :=
-  toConv_injective (left_inv_eq_right_inv h (congrArg toConv mul_antipode_lTensor_comul))
-
-/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `S`
-with `id * S = 1` in the convolution monoid equals the antipode. -/
-theorem eq_antipode_of_id_convMul_eq_one {S : A →ₗ[R] A}
-    (h : toConv LinearMap.id * toConv S = 1) : S = antipode R :=
-  toConv_injective (left_inv_eq_right_inv (congrArg toConv mul_antipode_rTensor_comul) h).symm
-
 lemma antipode_comp_mul_comp_comm :
     antipode R ∘ₗ .mul' R A ∘ₗ (TensorProduct.comm R A A).toLinearMap =
       .mul' R A ∘ₗ map (antipode R) (antipode R) := by
@@ -112,6 +100,25 @@ variable [Semiring C] [HopfAlgebra R C]
   ext c; rw [(ℛ R c).convMul_apply]; simp [sum_mul_antipode_eq_algebraMap_counit (ℛ R c)]
 
 end LinearMap
+
+namespace HopfAlgebra
+section Semiring
+variable [Semiring A] [HopfAlgebra R A]
+
+/-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `S`
+with `S * id = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_convMul_id_eq_one {S : A →ₗ[R] A}
+    (h : toConv S * toConv LinearMap.id = 1) : S = antipode R :=
+  toConv_injective (left_inv_eq_right_inv h LinearMap.id_mul_antipode)
+
+/-- The antipode is the unique right convolution inverse of the identity: any `R`-linear map `S`
+with `id * S = 1` in the convolution monoid equals the antipode. -/
+theorem eq_antipode_of_id_convMul_eq_one {S : A →ₗ[R] A}
+    (h : toConv LinearMap.id * toConv S = 1) : S = antipode R :=
+  toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
+
+end Semiring
+end HopfAlgebra
 
 namespace LinearMap
 variable [Semiring C] [HopfAlgebra R C]
