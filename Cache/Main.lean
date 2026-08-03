@@ -256,7 +256,7 @@ def main (args : List String) : IO Unit := do
       unstageFiles stagingDir?.get! overwrite
   let putStaged (stagingDir : FilePath) := do
     let repo := repo?.getD MATHLIBREPO
-    if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
+    if !(← stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
       let auth ← getUploadAuth

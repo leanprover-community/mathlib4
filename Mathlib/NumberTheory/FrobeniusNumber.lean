@@ -50,7 +50,7 @@ def FrobeniusNumber (n : ℕ) (s : Set ℕ) : Prop :=
 
 theorem frobeniusNumber_iff {n : ℕ} {s : Set ℕ} :
     FrobeniusNumber n s ↔ n ∉ AddSubmonoid.closure s ∧ ∀ k > n, k ∈ AddSubmonoid.closure s := by
-  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_setOf, not_imp_comm, not_le]
+  simp_rw [FrobeniusNumber, IsGreatest, upperBounds, Set.mem_ofPred, not_imp_comm, not_le]
 
 variable {m n : ℕ}
 
@@ -173,11 +173,14 @@ theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ 
   ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoidClosure s).le
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
-theorem finite_setOf_setGcd_dvd_and_mem_span :
+theorem finite_setOfPred_setGcd_dvd_and_mem_span :
     {n | setGcd s ∣ n ∧ n ∉ Ideal.span s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
   (Finset.range n).finite_toSet.subset fun m h ↦ Finset.mem_range.mpr <|
     lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoidClosure s).ge (hn m ge h.1)
+
+@[deprecated (since := "2026-07-09")]
+alias finite_setOf_setGcd_dvd_and_mem_span := finite_setOfPred_setGcd_dvd_and_mem_span
 
 /-- `ℕ` is a Noetherian `ℕ`-module, i.e., `ℕ` is a Noetherian semiring. -/
 instance : IsNoetherian ℕ ℕ where

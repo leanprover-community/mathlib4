@@ -97,11 +97,6 @@ theorem commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
   simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← toLinearMap_comp] using!
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
 
-@[deprecated (since := "2025-12-27")] alias range_eq_ker :=
-  LinearMap.IsIdempotentElem.range_eq_ker
-@[deprecated (since := "2025-12-27")] alias ker_eq_range :=
-  LinearMap.IsIdempotentElem.ker_eq_range
-
 theorem isClosed_range [T1Space M] {p : M →L[R] M}
     (hp : IsIdempotentElem p) : IsClosed (p.range : Set M) :=
   LinearMap.IsIdempotentElem.range_eq_ker hp.toLinearMap ▸ isClosed_ker (.id R M - p)

@@ -70,7 +70,7 @@ nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
-      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
+      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_ofPred_eq, Prod.map_apply, mem_ofPred]
 
 nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
@@ -106,7 +106,7 @@ theorem totallyBounded_of_finite_discretization {s : Set α}
   · rw [hs]
     exact totallyBounded_empty
   rcases hs with ⟨x0, hx0⟩
-  haveI : Inhabited s := ⟨⟨x0, hx0⟩⟩
+  have : Inhabited s := ⟨⟨x0, hx0⟩⟩
   refine totallyBounded_iff.2 fun ε ε0 => ?_
   rcases H ε ε0 with ⟨β, fβ, F, hF⟩
   let Finv := Function.invFun F
@@ -214,7 +214,7 @@ namespace Topology
 protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
     [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
-  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  let : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
   have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
@@ -285,4 +285,4 @@ theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [Pseud
     [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.domRestrict

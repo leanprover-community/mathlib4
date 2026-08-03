@@ -22,7 +22,7 @@ to `B.filter` if and only if it contains an element of `B`.
 
 Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → Set α`,
 the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
-(i.e. `s '' setOf p`) defines a filter basis `h.filterBasis`.
+(i.e. `s '' Set.ofPred p`) defines a filter basis `h.filterBasis`.
 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → Set α` as above) means that a set belongs to `l` if and
@@ -485,7 +485,7 @@ theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
 theorem HasBasis.inf_principal (hl : l.HasBasis p s) (s' : Set α) :
     (l ⊓ 𝓟 s').HasBasis p fun i => s i ∩ s' :=
   ⟨fun t => by
-    simp only [mem_inf_principal, hl.mem_iff, subset_def, mem_setOf_eq, mem_inter_iff, and_imp]⟩
+    simp only [mem_inf_principal, hl.mem_iff, subset_def, mem_ofPred_eq, mem_inter_iff, and_imp]⟩
 
 theorem HasBasis.principal_inf (hl : l.HasBasis p s) (s' : Set α) :
     (𝓟 s' ⊓ l).HasBasis p fun i => s' ∩ s i := by
@@ -744,7 +744,7 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
 
 lemma eventually_prod_self_iff {r : α → α → Prop} :
     (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
-  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_ofPred_eq]
 
 /-- A version of `eventually_prod_self_iff` that is more suitable for forward rewriting. -/
 lemma eventually_prod_self_iff' {r : α × α → Prop} :

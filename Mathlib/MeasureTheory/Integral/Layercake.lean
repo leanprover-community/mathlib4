@@ -97,6 +97,7 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -289,7 +290,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       exists_seq_strictMono_tendsto M
     have I : ∀ n, g =ᵐ[volume.restrict (Ioc (0 : ℝ) (u n))] 0 := by
       intro n
-      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᶠ[ae (Measure.restrict volume (Ioc 0 s))] 0 ∧ u n < s :=
+      obtain ⟨s, hs, uns⟩ : ∃ s, g =ᵐ[Measure.restrict volume (Ioc 0 s)] 0 ∧ u n < s :=
         exists_lt_of_lt_csSup (Set.nonempty_of_mem zero_mem) (uM n)
       exact ae_restrict_of_ae_restrict_of_subset (Ioc_subset_Ioc_right uns.le) hs
     have : g =ᵐ[volume.restrict (⋃ n, Ioc (0 : ℝ) (u n))] 0 := (ae_restrict_iUnion_iff _ _).2 I
@@ -420,7 +421,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     rw [ht]
     congr 1
     apply measure_congr
-    filter_upwards [f_eq_F] with a ha using by simp [setOf, ha]
+    filter_upwards [f_eq_F] with a ha using by simp [Set.ofPred, ha]
   have eq₂ : ∀ᵐ ω ∂μ,
       ENNReal.ofReal (∫ t in 0..f ω, g t) = ENNReal.ofReal (∫ t in 0..F ω, G t) := by
     filter_upwards [f_eq_F] with ω fω_nn

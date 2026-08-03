@@ -318,6 +318,7 @@ noncomputable def fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq
   obj D := .ofDescentData _ _ D
   map φ := { hom := φ.hom }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.DescentData' sq sq₃ ≌ F.DescentData f`. -/
 @[simps]
