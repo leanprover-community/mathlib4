@@ -424,11 +424,13 @@ def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀�
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv ⟨⟦a⟧, ha⟩ = ⟦⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩⟧ := rfl
+    associatesNonZeroDivisorsEquiv ⟨.mk a, ha⟩ = .mk ⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩ :=
+  rfl
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv.symm ⟦⟨a, ha⟩⟧ = ⟨⟦a⟧, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
+    associatesNonZeroDivisorsEquiv.symm (.mk ⟨a, ha⟩) =
+      ⟨.mk a, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
   rfl
 
 end CommMonoidWithZero
