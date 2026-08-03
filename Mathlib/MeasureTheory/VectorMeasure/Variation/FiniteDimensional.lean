@@ -21,7 +21,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.FiniteDimensional
 ## Note
 
 The finite-dimensionality of `ℂ` over `ℝ` is given in
-`Mathlib.LinearAlgebra.Complex.FiniteDimensional`. When one needs `IsFiniteMeasure μ` for
+`Mathlib.LinearAlgebra.Complex.FiniteDimensional`. When one needs `IsFiniteMeasure μ.variation` for
 `μ : ComplexMeasure V`, one should import that and this file.
 
 -/
