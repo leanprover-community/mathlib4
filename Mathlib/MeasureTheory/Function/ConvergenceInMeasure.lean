@@ -364,7 +364,8 @@ lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
     {p : ℝ≥0∞} (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
   obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
-  exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n)) hl.2
+  exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n))
+    (aestronglyMeasurable_of_tendsto_ae atTop (fun n => hf (l n)) hl.2) hl.2
 
 section TendstoInMeasureUnique
 
@@ -438,17 +439,23 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
   refine tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
     hp_ne_zero hp_ne_top (fun i => (hf i).stronglyMeasurable_mk) hg.stronglyMeasurable_mk ?_
   have : (fun n => eLpNorm ((hf n).mk (f n) - hg.mk g) p μ) = fun n => eLpNorm (f n - g) p μ := by
-    ext1 n; refine eLpNorm_congr_ae (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
+    ext1 n
+    exact eLpNorm_congr_ae
+      ((hf n).stronglyMeasurable_mk.aestronglyMeasurable.sub
+        hg.stronglyMeasurable_mk.aestronglyMeasurable)
+      (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
   rw [this]
   exact hfg
 
 /-- See also `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` which work for general
 Lp-convergence for all `p ≠ 0`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {f : ι → α → E}
-    {g : α → E} {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
+    {g : α → E} {l : Filter ι} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (hg : AEStronglyMeasurable g μ)
+    (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   refine tendstoInMeasure_of_ne_top fun δ hδ hδ_top ↦ ?_
-  simp only [eLpNorm_exponent_top, eLpNormEssSup] at hfg
+  simp only [eLpNorm_exponent_top ((hf _).sub hg), eLpNormEssSup] at hfg
   rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro ε hε
   specialize hfg (δ / 2) (ENNReal.div_pos_iff.2 ⟨hδ.ne', ENNReal.ofNat_ne_top⟩)
@@ -467,7 +474,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
   by_cases hp_ne_top : p = ∞
   · subst hp_ne_top
-    exact tendstoInMeasure_of_tendsto_eLpNorm_top hfg
+    exact tendstoInMeasure_of_tendsto_eLpNorm_top hf hg hfg
   · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hf hg hfg
 
 /-- Convergence in Lp implies convergence in measure. -/

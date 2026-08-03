@@ -159,14 +159,16 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine (lt_of_le_of_lt this (ENNReal.div_lt_top ?_ ?_)).ne
     · have hR' : ∀ n, ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ R + ‖a‖₊ * μ Set.univ := by
-        simp_rw [eLpNorm_one_eq_lintegral_enorm] at hbdd
         intro n
+        have hb := hbdd n
+        rw [eLpNorm_one_eq_lintegral_enorm
+          ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable] at hb
         refine (lintegral_mono ?_ : ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ ∫⁻ ω, ‖f n ω‖₊ + ‖a‖₊ ∂μ).trans ?_
         · intro ω
           simp_rw [sub_eq_add_neg, ← nnnorm_neg a, ← ENNReal.coe_add, ENNReal.coe_le_coe]
           exact nnnorm_add_le _ _
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
-          exact add_le_add (hbdd _) le_rfl
+          exact add_le_add hb le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
         ⟨ENNReal.coe_lt_top, by finiteness⟩,
         fun n => le_trans ?_ (hR' n)⟩)
@@ -191,7 +193,8 @@ theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartin
 theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   filter_upwards [hf.upcrossings_ae_lt_top hbdd, ae_bdd_liminf_atTop_of_eLpNorm_bdd one_ne_zero
-    (fun n => (hf.stronglyMeasurable n).measurable.mono (ℱ.le n) le_rfl) hbdd] with ω h₁ h₂
+    (fun n => (hf.stronglyMeasurable n).measurable.mono (ℱ.le n) le_rfl)
+    (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd] with ω h₁ h₂
   exact tendsto_of_uncrossing_lt_top h₂ h₁
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -337,7 +340,9 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le)
       fun m => eLpNorm_condExp_le_eLpNorm _ le_rfl
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by
-    refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
+    refine fun m hm => eLpNorm_congr_ae
+      (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable
+      ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
@@ -443,7 +448,9 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
     integrable_condExp.tendsto_eLpNorm_condExp stronglyMeasurable_condExp
   have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
     condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
-  refine ht.congr fun n => eLpNorm_congr_ae ?_
+  refine ht.congr fun n => eLpNorm_congr_ae
+    ((stronglyMeasurable_condExp.mono (ℱ.le n)).sub
+      (stronglyMeasurable_condExp.mono (iSup_le fun n => ℱ.le n))).aestronglyMeasurable ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
 

@@ -87,7 +87,7 @@ namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
     ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, μ.real (toSimpleFunc f ⁻¹' {x}) * ‖x‖ := by
-  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm]
+  rw [norm_toSimpleFunc, eLpNorm_one_eq_lintegral_enorm (toSimpleFunc f).aestronglyMeasurable]
   have h_eq := SimpleFunc.map_apply (‖·‖ₑ) (toSimpleFunc f)
   simp_rw [← h_eq, measureReal_def]
   rw [SimpleFunc.lintegral_eq_lintegral, SimpleFunc.map_lintegral, ENNReal.toReal_sum]
@@ -921,7 +921,8 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
   let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
   have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
     rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm']
-    simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
+    simp_rw [eLpNorm_one_eq_lintegral_enorm
+      ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _)), Pi.sub_apply]
     refine (tendsto_congr' ?_).mp hfs
     filter_upwards [hfsi] with i hi
     refine lintegral_congr_ae ?_
@@ -944,7 +945,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi.aestronglyMeasurable
     (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
-    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs (hfi.sub h₀i).2)
+    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs hfi.1 (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}
@@ -1025,15 +1026,21 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   have :
     eLpNorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
       eLpNorm (⇑g - ⇑f) 1 μ' :=
-    eLpNorm_congr_ae ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
+    eLpNorm_congr_ae ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
+      ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
   rw [this]
   have h_eLpNorm_ne_top : eLpNorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
-    rw [← eLpNorm_congr_ae (Lp.coeFn_sub _ _)]; exact Lp.eLpNorm_ne_top _
+    rw [← eLpNorm_congr_ae (Lp.aestronglyMeasurable (g - f)) (Lp.coeFn_sub _ _)]
+    exact Lp.eLpNorm_ne_top _
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
       refine toReal_mono (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top) ?_
-      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le).trans_eq ?_
-      rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
+      have hmeas : AEStronglyMeasurable (⇑g - ⇑f) μ :=
+        (Lp.aestronglyMeasurable g).sub (Lp.aestronglyMeasurable f)
+      have hmeas' : AEStronglyMeasurable (⇑g - ⇑f) (c' • μ) :=
+        hmeas.mono_ac Measure.smul_absolutelyContinuous
+      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le hmeas').trans_eq ?_
+      rw [eLpNorm_smul_measure_of_ne_zero hc'0 _ _ _ hmeas' hmeas, smul_eq_mul]
       simp
     _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) := by gcongr
@@ -1484,8 +1491,7 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
   continuous_iff_continuousAt.mpr fun _ =>
     continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
-        (Eventually.of_forall h_bound) ‹_› <|
-      h_cont.mono fun _ => Continuous.continuousAt
+        (Eventually.of_forall h_bound) ‹_› <| h_cont.mono fun _ => Continuous.continuousAt
 
 end Function
 

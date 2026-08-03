@@ -200,16 +200,22 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
     rw [h.aestronglyMeasurable_iff] at hf
     rw [integral_non_aestronglyMeasurable hf]
 
-theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
+  by_cases hf : AEStronglyMeasurable f μ
+  swap
+  · have hg : ¬ AEStronglyMeasurable g ν := by simpa [h.aestronglyMeasurable_iff] using hf
+    simp [eLpNorm, hf, hg]
+  have hg : AEStronglyMeasurable g ν := h.aestronglyMeasurable_iff.mp hf
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp [h0, hf, hg]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, if_true,
-      if_false]
+  · simp only [h_top, eLpNorm_exponent_top hf, eLpNorm_exponent_top hg,
+      eLpNormEssSup]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
-  simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
+  simp only [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg,
+    eLpNorm', one_div]
   congr 1
   apply lintegral_eq
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
@@ -217,9 +223,9 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
-  refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
+  unfold MemLp
   rw [← h.eLpNorm_eq]
-  exact hf.2
+  exact hf
 
 theorem memLp_iff [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
@@ -312,7 +318,16 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
     ext x
     simp_rw [← norm_toNNReal]
     exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
-  rw [this, ← eLpNorm_norm, ← eLpNorm_norm (Set.indicator _ _)]
+  have hmi : MeasurableSet {x | C ≤ ‖f i x‖} :=
+    measurableSet_le measurable_const (hfmeas i).norm.measurable
+  have hmj : MeasurableSet {x | C ≤ (‖f j x‖₊ : ℝ)} :=
+    by simpa only [coe_nnnorm] using
+      measurableSet_le measurable_const (hfmeas j).norm.measurable
+  rw [this, ← eLpNorm_norm
+    (f := {x | C ≤ ‖f i x‖}.indicator (f i))
+      ((hfmeas i).aestronglyMeasurable.indicator hmi),
+    ← eLpNorm_norm (f := {x | C ≤ (‖f j x‖₊ : ℝ)}.indicator (f j))
+      ((hfmeas j).aestronglyMeasurable.indicator hmj)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
   let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
@@ -329,7 +344,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : MemLp (f j) p μ) (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) :
     UniformIntegrable f p μ := by
   have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
-    (hf i).aestronglyMeasurable_iff.2 hℒp.1
+    (hf i).aestronglyMeasurable_iff.2 hℒp.aestronglyMeasurable
   set g : ι → α → E := fun i => (hfmeas i).choose
   have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
   have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm

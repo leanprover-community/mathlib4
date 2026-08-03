@@ -257,13 +257,13 @@ theorem MemLp.lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 �
     by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
     · simp [condExp_of_not_sigmaFinite hm hsig]
     · by_cases! hpt : p ≠ ⊤
-      · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hf.1,
+      · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hf.aestronglyMeasurable,
           lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt integrable_condExp.1]
         gcongr ?_ ^ ?_
         have : 1 ≤ p.toReal := by
           rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
         exact integral_norm_condExp_rpow_le this <|
-          (integrable_norm_rpow_iff hf.1 hp'.ne.symm hpt).2 hf
+          (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
       · by_cases! h : MemLp μ[f | m] ⊤ μ
         · simp_all only [lpNorm_exponent_top_eq_essSup]
           exact hf.essSup_norm_condExp_le_essSup_norm
@@ -278,7 +278,7 @@ theorem MemLp.condExp {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp
     have hp : 1 ≤ p.toReal := by
       rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hpt]
     have := Integrable.norm_condExp_rpow_le (m := m) hp <|
-      (integrable_norm_rpow_iff hf.1 hp'.ne.symm hpt).2 hf
+      (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
     refine Integrable.mono_nonneg integrable_condExp ?_ ?_ this
     · fun_prop (discharger := simp)
     · filter_upwards with a; positivity
@@ -290,10 +290,8 @@ theorem eLpNorm_condExp_le_eLpNorm (f : α → E) {p : ℝ≥0∞} (hp : 1 ≤ p
   by_cases! hf : MemLp f p μ
   · rw [← ofReal_lpNorm hf, ← ofReal_lpNorm (hf.condExp hp)]
     exact ENNReal.ofReal_le_ofReal (hf.lpNorm_condExp_le_lpNorm hp)
-  · simp only [MemLp, not_and, not_lt, top_le_iff] at hf
-    by_cases! ha : AEStronglyMeasurable f μ
-    · simp [hf ha]
-    · simp [condExp_of_not_integrable (fun h => ha h.aestronglyMeasurable)]
+  · simp only [MemLp, not_lt, top_le_iff] at hf
+    simp [hf]
 
 @[deprecated eLpNorm_condExp_le_eLpNorm (since := "2026-07-01")]
 theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ ≤ eLpNorm f 1 μ :=
@@ -313,7 +311,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   refine uniformIntegrable_of le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
   by_cases hne : eLpNorm g 1 μ = 0
-  · rw [eLpNorm_eq_zero_iff hg.1 one_ne_zero] at hne
+  · rw [eLpNorm_eq_zero_iff hg.aestronglyMeasurable one_ne_zero] at hne
     refine ⟨0, fun n => (le_of_eq <|
       (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
         (hmeas n 0)) one_ne_zero).2 ?_).trans zero_le⟩
@@ -346,7 +344,8 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
       (@Measurable.nnnorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)
-  rw [← eLpNorm_congr_ae (condExp_indicator hint hmeasℱ)]
+  rw [← eLpNorm_congr_ae (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable
+    (condExp_indicator hint hmeasℱ)]
   exact eLpNorm_condExp_le_eLpNorm _ le_rfl
 
 end MeasureTheory
