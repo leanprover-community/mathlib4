@@ -96,7 +96,7 @@ open DirectedSystem
 variable [IsDirectedOrder ι]
 
 /-- The setoid on the sigma type defining the direct limit. -/
-@[implicit_reducible]
+@[instance_reducible]
 def setoid : Setoid (Σ i, F i) where
   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
@@ -225,7 +225,6 @@ protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit
         (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
         ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
 
-set_option backward.privateInPublic true in
 theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
     DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
   (lift₂Aux _ _ _ compat _ _).2 ..
@@ -325,6 +324,7 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
   right_inv f := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
 
@@ -354,6 +354,8 @@ theorem piEquivSucc_self {x} :
   simp [piEquivSucc]
 
 variable {equiv e}
+
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isNatEquiv_piEquivSucc [InverseSystem f] (H : ∀ x, (e x).1 = f (le_succ i) x)
     (nat : IsNatEquiv f equiv) : IsNatEquiv f (piEquivSucc equiv e hi) := fun j k hj hk h x ↦ by
   have lt_succ {j} := (lt_succ_iff_of_not_isMax (b := j) hi).mpr
@@ -449,6 +451,7 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
        (e₂.restrict inter_subset_right).equiv ⟨i, his, hit⟩ from
   congr_fun (congr_arg _ <| unique_pEquivOn h) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
 def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
@@ -501,7 +504,6 @@ set_option backward.privateInPublic.warn false in
 noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
-set_option backward.privateInPublic true in
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :
     letI e := globalEquiv equivSucc equivLim
     e i (f h x) = piLTProj h (e j x) := by

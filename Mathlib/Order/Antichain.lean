@@ -267,19 +267,25 @@ theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (
 
 /-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
 then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+theorem IsAntichain.eq_setOfPred_maximal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
     {x | Maximal (· ∈ s) x} = t := by
   refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
   obtain ⟨y, hyx, hy⟩ := hs x hx
   rwa [← ht.eq (h y hy) hx hyx]
 
+@[deprecated (since := "2026-07-09")]
+alias IsAntichain.eq_setOf_maximal := IsAntichain.eq_setOfPred_maximal
+
 /-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
 then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+theorem IsAntichain.eq_setOfPred_minimal (ht : IsAntichain (· ≤ ·) t)
     (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
     {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_setOf_maximal h hs
+  ht.to_dual.eq_setOfPred_maximal h hs
+
+@[deprecated (since := "2026-07-09")]
+alias IsAntichain.eq_setOf_minimal := IsAntichain.eq_setOfPred_minimal
 
 end Preorder
 
@@ -299,11 +305,16 @@ theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
 
-theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
+theorem setOfPred_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
   fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
 
-theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
-  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
+@[deprecated (since := "2026-07-09")]
+alias setOf_maximal_antichain := setOfPred_maximal_antichain
+
+theorem setOfPred_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
+  (setOfPred_maximal_antichain (α := αᵒᵈ) P).swap
+
+@[deprecated (since := "2026-07-09")] alias setOf_minimal_antichain := setOfPred_minimal_antichain
 
 end PartialOrder
 

@@ -58,6 +58,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
     p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
   apply ext_support
@@ -105,6 +106,7 @@ lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h =
   unfold dropUntil
   split <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
     p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
   apply ext_support

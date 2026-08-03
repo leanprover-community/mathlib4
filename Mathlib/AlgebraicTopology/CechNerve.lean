@@ -52,7 +52,7 @@ variable [∀ n : ℕ, HasWidePullback.{0} f.right (fun _ : Fin (n + 1) => f.lef
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Čech nerve associated to an arrow. -/
-@[simps]
+@[simps, implicit_reducible]
 def cechNerve : SimplicialObject C where
   obj n := widePullback.{0} f.right (fun _ : Fin (n.unop.len + 1) => f.left) fun _ => f.hom
   map g := WidePullback.lift (WidePullback.base _)
@@ -114,6 +114,7 @@ def augmentedCechNerve : Arrow C ⥤ SimplicialObject.Augmented C where
   obj f := f.augmentedCechNerve
   map F := Arrow.mapAugmentedCechNerve F
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech adjunction. -/
 @[simps]
@@ -254,6 +255,7 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map F := Arrow.mapAugmentedCechConerve F
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
@@ -344,6 +346,7 @@ namespace CechNerveTerminalFrom
 variable [HasTerminal C] (ι : Type w)
 
 /-- The diagram `Option ι ⥤ C` sending `none` to the terminal object and `some j` to `X`. -/
+@[implicit_reducible]
 def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
   WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
 
@@ -405,6 +408,7 @@ lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).hom ≫ Pi.π _ j = WidePullback.π _ j := by

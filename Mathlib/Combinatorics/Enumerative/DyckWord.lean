@@ -277,6 +277,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
@@ -374,6 +375,7 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   rw [DyckWord.ext_iff]; apply drop_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by

@@ -486,7 +486,7 @@ coordinate. Here, we give an auxiliary statement tailored for an inductive proof
 `map_sum_finset`. -/
 theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, #(A i)) = n) :
     (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) := by
-  letI := fun i => Classical.decEq (α i)
+  let := fun i => Classical.decEq (α i)
   induction n using Nat.strong_induction_on generalizing A with | h n IH =>
   -- If one of the sets is empty, then all the sums are zero
   by_cases! Ai_empty : ∃ i, A i = ∅
@@ -678,11 +678,11 @@ def domDomCongr (σ : ι₁ ≃ ι₂) (m : MultilinearMap R (fun _ : ι₁ => M
     MultilinearMap R (fun _ : ι₂ => M₂) M₃ where
   toFun v := m fun i => v (σ i)
   map_update_add' v i a b := by
-    letI := σ.injective.decidableEq
+    let := σ.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_add]
   map_update_smul' v i a b := by
-    letI := σ.injective.decidableEq
+    let := σ.injective.decidableEq
     simp_rw [Function.update_apply_equiv_apply v]
     rw [m.map_update_smul]
 
@@ -947,24 +947,24 @@ def domDomCongrLinearEquiv' {ι' : Type*} (σ : ι ≃ ι') :
   toFun f :=
     { toFun := f ∘ (σ.piCongrLeft' M₁).symm
       map_update_add' := fun m i => by
-        letI := σ.decidableEq
+        let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        letI := σ.decidableEq
+        let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
   invFun f :=
     { toFun := f ∘ σ.piCongrLeft' M₁
       map_update_add' := fun m i => by
-        letI := σ.symm.decidableEq
+        let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_update, f.map_update_add]
       map_update_smul' := fun m i c => by
-        letI := σ.symm.decidableEq
+        let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_update, f.map_update_smul] }
@@ -1424,7 +1424,7 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
   carrier := f '' { v | ∀ i, v i ∈ p i }
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›
-    letI := Classical.decEq ι
+    let := Classical.decEq ι
     refine ⟨update x i (c • x i), fun j => if hij : j = i then ?_ else ?_, hf ▸ ?_⟩
     · rw [hij, update_self]
       exact (p i).smul_mem _ (hx i)

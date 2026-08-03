@@ -343,7 +343,7 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_sub_eq_sub {f₁ f₂ : 𝕜 �
   rw [sub_eq_add_neg, hf₁.meromorphicTrailingCoeffAt_add_eq_add (by fun_prop)]
   · rw [meromorphicTrailingCoeffAt_neg, sub_eq_add_neg]
   · rwa [← meromorphicOrderAt_neg]
-  · rwa [meromorphicTrailingCoeffAt_neg, ←sub_eq_add_neg]
+  · rwa [meromorphicTrailingCoeffAt_neg, ← sub_eq_add_neg]
 
 /--
 If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients do not cancel, then the
