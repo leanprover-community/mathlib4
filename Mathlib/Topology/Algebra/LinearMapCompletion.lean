@@ -75,18 +75,21 @@ noncomputable def fromCompletion (f : α →SL[σ] β) :
       (isClosed_eq (continuous_extension.comp (continuous_const_smul c))
         ((AddMonoidHom.continuous_extension f.toAddMonoidHom f.continuous).const_smul (σ c))) <| by
     simp [← Completion.coe_smul, AddMonoidHom.extension_coe]
-  cont := AddMonoidHom.continuous_extension f.toAddMonoidHom f.continuous
+
+@[simp]
+lemma toAddMonoidHom_fromCompletion (f : α →SL[σ] β) :
+    f.fromCompletion.toAddMonoidHom = f.toAddMonoidHom.extension f.continuous := rfl
 
 lemma coe_fromCompletion (f : α →SL[σ] β) :
     f.fromCompletion = Completion.extension f := rfl
 
 @[simp]
-lemma fromCompletion_apply (f : α →SL[σ] β) (e : Completion α) :
-    f.fromCompletion e = Completion.extension f e := rfl
+lemma fromCompletion_apply_coe (f : α →SL[σ] β) (e : α) :
+    f.fromCompletion e = f e := by simp [coe_fromCompletion, extension_coe]
 
 lemma fromCompletion_unique (f : α →SL[σ] β) (g : Completion α →SL[σ] β)
     (h : ∀ (e : α), f e = g e) : f.fromCompletion = g := by
-  ext; simp [extension_unique f.uniformContinuous g.uniformContinuous h]
+  ext; simp [coe_fromCompletion, extension_unique f.uniformContinuous g.uniformContinuous h]
 
 end fromCompletion
 
