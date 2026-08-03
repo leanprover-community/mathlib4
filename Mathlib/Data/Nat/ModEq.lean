@@ -125,6 +125,8 @@ theorem ModEq.dvd' (h : a ≡ b [MOD n]) : n ∣ b - a := by
   · rw [Nat.sub_eq_zero_of_le h0]
     exact Nat.dvd_zero n
 
+alias ⟨_, modEq_of_dvd'⟩ := modEq_iff_dvd'
+
 theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
   mod_mod _ _
 
