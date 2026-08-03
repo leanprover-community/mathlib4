@@ -1181,9 +1181,9 @@ theorem comap_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [
   NonUnitalSubsemiring.comap_center_le_center hf
 
 @[simp]
-theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] {f : A ≃⋆ₐ[R] B} :
+theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] (f : A ≃⋆ₐ[R] B) :
     map f (center R A) = center R B :=
-  SetLike.coe_injective <| Set.image_center_eq (f := f)
+  SetLike.coe_injective <| Set.image_center_eq _
 
 protected theorem center_prod [IsScalarTower R B B] [SMulCommClass R B B] :
     center R (A × B) = prod (center R A) (center R B) :=

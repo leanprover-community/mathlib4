@@ -1136,9 +1136,9 @@ variable {R A}
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
 
-theorem map_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B]
-    [IsScalarTower R B B] [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-    {f : F} (hf : Function.Surjective f) : map f (center R A) ≤ center R B :=
+theorem map_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
+    [SMulCommClass R B B] [FunLike F A B] [NonUnitalAlgHomClass F R A B] {f : F}
+    (hf : Function.Surjective f) : map f (center R A) ≤ center R B :=
   NonUnitalSubsemiring.map_center_le_center hf
 
 theorem comap_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B]
