@@ -484,7 +484,7 @@ variable [DistribLattice α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine (associative_of_commutative_of_le inferInstance ?_).assoc
-  simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
+  simp only [disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩

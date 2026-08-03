@@ -31,6 +31,7 @@ variable {α β : Type*} {R₁ R₂ : Type*} [UniformSpace α] [AddCommGroup α]
   [AddCommGroup β] [IsUniformAddGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β]
   {σ : R₁ →+* R₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Lift a continuous semilinear map to a continuous semilinear map between the
 `UniformSpace.Completion`s of the spaces. This is `UniformSpace.Completion.map` bundled as a
@@ -42,7 +43,7 @@ noncomputable def completion (f : α →SL[σ] β) : Completion α →SL[σ] Com
     induction x using induction_on with
     | hp =>
       exact isClosed_eq (continuous_map.comp <| continuous_const_smul r)
-        (continuous_map.const_smul _)
+        (continuous_map.fun_const_smul _)
     | ih x => simp [← Completion.coe_smul]
 
 @[simp]

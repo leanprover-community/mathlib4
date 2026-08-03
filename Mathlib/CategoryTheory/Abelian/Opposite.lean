@@ -105,10 +105,12 @@ def cokernelOpOp : cokernel f.op ≅ Opposite.op (kernel f) :=
 def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
   (kernelUnopOp g).unop.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem kernel.ι_unop :
     (kernel.ι g.unop).op = eqToHom (Opposite.op_unop _) ≫ cokernel.π g ≫ (kernelUnopOp g).inv := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cokernel.π_unop :
     (cokernel.π g.unop).op =
       (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm := by
