@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.TypeTags
+module
+
+public import Mathlib.Algebra.Group.Action.TypeTags
 
 /-!
 # Pretransitive group actions
@@ -24,6 +26,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -74,14 +78,27 @@ lemma exists_smul_eq (x y : α) : ∃ m : M, m • x = y := IsPretransitive.exis
 lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul_eq M x
 
 /-- The left regular action of a group on itself is transitive. -/
-@[to_additive "The regular action of a group on itself is transitive."]
+@[to_additive /-- The regular action of a group on itself is transitive. -/]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
 
 /-- The right regular action of a group on itself is transitive. -/
-@[to_additive "The right regular action of an additive group on itself is transitive."]
+@[to_additive /-- The right regular action of an additive group on itself is transitive. -/]
 instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
+
+/-- If `G` is a group acting multiplicatively on a set, then the action is transitive if there is
+a single element whose orbit is everything. -/
+@[to_additive /-- If `G` is a group acting additively on a set, then the action is transitive if
+there is a single element whose orbit is everything. -/]
+lemma IsPretransitive.of_orbit {X : Type*} [Group G] [MulAction G X] {x₀ : X}
+    (ha : ∀ x, ∃ g : G, g • x₀ = x) :
+    IsPretransitive G X := by
+  constructor
+  intro x y
+  rcases ha x with ⟨g, rfl⟩
+  rcases ha y with ⟨h, rfl⟩
+  exact ⟨h * g⁻¹, by simp [mul_smul]⟩
 
 end MulAction
 

@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Lemmas about functors out of product categories.
 -/
+
+public section
 
 
 open CategoryTheory
@@ -19,7 +23,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 @[simp]
 theorem map_id (F : C × D ⥤ E) (X : C) (Y : D) :

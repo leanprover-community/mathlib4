@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Int.AbsoluteValue
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Int.AbsoluteValue
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Absolute values and matrices
@@ -22,6 +24,8 @@ This file proves some bounds on matrices involving absolute values.
   a constant bounded by `y`, and the entries of each matrix are bounded by `x`,
   then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
 -/
+
+public section
 
 
 open Matrix
@@ -60,7 +64,7 @@ theorem det_sum_smul_le {ι : Type*} (s : Finset ι) {c : ι → R} {A : ι → 
     (hy : ∀ k, abv (c k) ≤ y) :
     abv (det (∑ k ∈ s, c k • A k)) ≤
       Nat.factorial (Fintype.card n) • (#s • y * x) ^ Fintype.card n := by
-  simpa only [smul_mul_assoc] using
+  simpa only [smul_mul_assoc] using!
     det_sum_le s fun k i j =>
       calc
         abv (c k * A k i j) = abv (c k) * abv (A k i j) := abv.map_mul _ _

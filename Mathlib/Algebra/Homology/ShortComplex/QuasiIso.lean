@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
 
 /-!
 # Quasi-isomorphisms of short complexes
@@ -15,13 +16,15 @@ morphism `homologyMap φ` in homology is an isomorphism.
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
+variable {C : Type _} [Category* C] [HasZeroMorphisms C]
   {S₁ S₂ S₃ S₄ : ShortComplex C}
   [S₁.HasHomology] [S₂.HasHomology] [S₃.HasHomology] [S₄.HasHomology]
 
@@ -80,6 +83,7 @@ lemma quasiIso_iff_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ' :
   · intro
     exact quasiIso_comp φ φ'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   let α : S₃ ⟶ S₁ := e.inv.left
@@ -87,7 +91,7 @@ lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : A
   suffices φ' = α ≫ φ ≫ β by
     rw [this]
     infer_instance
-  simp only [α, β, Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
+  simp only [α, β, Arrow.w_mk_right_assoc, Arrow.mk_hom,
     ← Arrow.comp_right, e.inv_hom_id, Arrow.id_right, comp_id]
 
 lemma quasiIso_iff_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ') :
@@ -100,7 +104,7 @@ lemma LeftHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHom
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (LeftHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (LeftHomologyData.homologyIso h₂).inv
   · intro h
@@ -112,7 +116,7 @@ lemma RightHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.RightH
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (RightHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (RightHomologyData.homologyIso h₂).inv
   · intro h
@@ -135,12 +139,14 @@ lemma quasiIso_iff_isIso_homologyMap' (φ : S₁ ⟶ S₂)
     QuasiIso φ ↔ IsIso (homologyMap' φ h₁ h₂) :=
   quasiIso_iff_isIso_leftHomologyMap' _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     QuasiIso φ := by
   rw [((LeftHomologyMapData.ofEpiOfIsIsoOfMono φ) S₁.leftHomologyData).quasiIso_iff]
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_opMap_iff (φ : S₁ ⟶ S₂) :
     QuasiIso (opMap φ) ↔ QuasiIso φ := by
   have γ : HomologyMapData φ S₁.homologyData S₂.homologyData := default
@@ -164,6 +170,8 @@ lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S�
   change QuasiIso φ
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
     (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
     QuasiIso φ ↔ IsIso (S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp])) := by
@@ -173,6 +181,8 @@ lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
       φH := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp]) }
   exact H.quasiIso_iff
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_isIso_descOpcycles (φ : S₁ ⟶ S₂)
     (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     QuasiIso φ ↔ IsIso (S₁.descOpcycles φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])) := by

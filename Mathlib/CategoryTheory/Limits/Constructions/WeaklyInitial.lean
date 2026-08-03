@@ -3,9 +3,10 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Constructions related to weakly initial objects
@@ -17,6 +18,8 @@ This file gives constructions related to weakly initial objects, namely:
 
 These are primarily useful to show the General Adjoint Functor Theorem.
 -/
+
+public section
 
 
 universe v u
@@ -44,7 +47,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v
     (hT : ∀ X, Nonempty (T ⟶ X)) : HasInitial C := by
   let endos := T ⟶ T
   let i := wideEqualizer.ι (id : endos → endos)
-  haveI : Nonempty endos := ⟨𝟙 _⟩
+  have : Nonempty endos := ⟨𝟙 _⟩
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
     refine ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => ?_⟩
@@ -55,7 +58,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v
       rw [Category.assoc, Category.assoc]
       apply wideEqualizer.condition (id : endos → endos) (h ≫ e ≫ i)
     rw [Category.comp_id, cancel_mono_id i] at this
-    haveI : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
+    have : IsSplitEpi e := IsSplitEpi.mk' ⟨i ≫ h, this⟩
     rw [← cancel_epi e]
     apply equalizer.condition
   exact hasInitial_of_unique (wideEqualizer (id : endos → endos))

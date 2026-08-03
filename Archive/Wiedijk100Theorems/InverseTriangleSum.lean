@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Jalex Stark, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
 -/
@@ -31,6 +31,6 @@ theorem Theorems100.inverse_triangle_sum (n : ℕ) :
   apply sum_range_induction _ _ rfl
   rintro (_ | _)
   · norm_num
-  · field_simp
+  · simp [field]
     ring_nf
     simp

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -22,11 +24,11 @@ In this file we prove that tensoring with a flat module is an exact functor.
 
 ## TODO
 
-- Prove that tensoring with a flat module is an exact functor in the sense that it preserves both
-  finite limits and colimits.
 - Relate flatness with `Tor`
 
 -/
+
+public section
 
 universe u
 
@@ -65,5 +67,27 @@ lemma iff_rTensor_preserves_shortComplex_exact :
       H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
         (ModuleCat.hom_ext (DFunLike.ext _ _ h.apply_apply_eq_zero)))
           (moduleCat_exact_iff_function_exact _ |>.2 h)⟩
+
+open Limits
+
+lemma iff_preservesFiniteLimits_tensorLeft :
+    Flat R M ↔ PreservesFiniteLimits (tensorLeft M) := by
+  rw [Module.Flat.iff_lTensor_preserves_shortComplex_exact,
+    ((Functor.exact_tfae <| tensorLeft M).out 1 3 :)]
+  simp [show PreservesFiniteColimits (tensorLeft M) from inferInstance]
+
+instance [Module.Flat R M] : PreservesFiniteLimits <| tensorLeft M := by
+  rw [← iff_preservesFiniteLimits_tensorLeft]
+  infer_instance
+
+lemma iff_preservesFiniteLimits_tensorRight :
+    Flat R M ↔ PreservesFiniteLimits (tensorRight M) where
+  mp _ := preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M)
+  mpr _ := by
+    rw [iff_preservesFiniteLimits_tensorLeft]
+    exact preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M).symm
+
+instance [Module.Flat R M] : PreservesFiniteLimits (tensorRight M) :=
+  preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M)
 
 end Module.Flat

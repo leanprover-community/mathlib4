@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Factors as finsupp
@@ -13,13 +15,15 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `UniqueFactorizationMonoid.factorization`: the multiset of irreducible factors as a `Finsupp`.
 -/
 
+@[expose] public section
+
 variable {α : Type*}
 
 local infixl:50 " ~ᵤ " => Associated
 
 section Finsupp
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 variable [NormalizationMonoid α] [DecidableEq α]
 
 open UniqueFactorizationMonoid

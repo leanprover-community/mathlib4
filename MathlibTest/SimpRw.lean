@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro
 -/
-
+module
 import Mathlib.Tactic.SimpRw
 
 private axiom test_sorry : ∀ {α}, α
@@ -44,7 +44,7 @@ example : 1 = 2 := by
   exact test_sorry
 
 /--
-error: no goals to be solved
+error: No goals to be solved
 -/
 -- check that `simp_rw` does not "spill over" goals
 #guard_msgs in

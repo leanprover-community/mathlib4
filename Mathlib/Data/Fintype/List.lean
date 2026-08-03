@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.List.Permutation
+module
+
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Permutation
 
 /-!
 
@@ -21,6 +23,8 @@ This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 -/
 
+@[expose] public section
+
 
 variable {α : Type*}
 open List
@@ -30,7 +34,6 @@ namespace Multiset
 /-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
-    simp only
     refine coe_eq_coe.mpr ?_
     exact Perm.permutations h
 
@@ -52,13 +55,8 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 
 end Multiset
 
-@[simp]
-theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
-  ⟨fun h => Finset.ext_iff.mpr (fun x => by simpa [← Finset.mem_toList] using Perm.mem_iff h),
-   fun h ↦ Perm.of_eq <| congrArg Finset.toList h⟩
-
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
-  refine Fintype.ofFinset ?_ ?_
+  refine Fintype.subtype ?_ ?_
   · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
     let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
     refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
@@ -68,18 +66,14 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · simp only [Finset.coe_toList]
       rfl
-    · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
-      ext l
-      unfold Nodup
-      refine Pairwise.iff ?_
-      intro m n
+    · -- Unfold `List.Nodup` in the type of the proof term to make it match with the goal.
+      convert dsimp% [List.Nodup] Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
+        with m n
       simp only [_root_.Disjoint]
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
-      rw  [_root_.Disjoint] at this
-      rw [this]
-      simp only [ne_eq]
-      rw [List.disjoint_iff_ne]
+      rw [_root_.Disjoint] at this
+      rw [this, List.disjoint_iff_ne]
       constructor
       · intro h
         by_contra hc
@@ -93,14 +87,14 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         by_contra hab
         absurd h
         rw [hab] at ha
-        exact perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
+        exact Finset.perm_toList.mp <| Perm.trans ha.symm hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert f.nodup
+      convert! f.nodup
       rw [hf]
       rfl
     · intro h

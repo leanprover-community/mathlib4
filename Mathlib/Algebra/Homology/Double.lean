@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HasNoLoop
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Homology.HasNoLoop
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees
@@ -17,18 +19,20 @@ with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject Opposite
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 section
 
 variable {X₀ X₁ : C} (f : X₀ ⟶ X₁) {ι : Type*} {c : ComplexShape ι}
   {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁)
 
-open Classical in
+open scoped Classical in
 /-- Given a complex shape `c`, two indices `i₀` and `i₁` such that `c.Rel i₀ i₁`,
 and `f : X₀ ⟶ X₁`, this is the homological complex which, if `i₀ ≠ i₁`, only
 consists of the map `f` in degrees `i₀` and `i₁`, and zero everywhere else. -/
@@ -108,7 +112,7 @@ variable {f} (h : i₀ ≠ i₁) {K : HomologicalComplex C c} (φ₀ : X₀ ⟶ 
   (comm : φ₀ ≫ K.d i₀ i₁ = f ≫ φ₁)
   (hφ : ∀ (k : ι), c.Rel i₁ k → φ₁ ≫ K.d i₁ k = 0)
 
-open Classical in
+open scoped Classical in
 /-- Constructor for morphisms from a homological complex `double f hi₀₁`. -/
 noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
   f k :=
@@ -147,6 +151,7 @@ lemma mkHomFromDouble_f₁ :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
@@ -167,6 +172,7 @@ end
 
 variable {ι : Type*} (c : ComplexShape ι)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/
@@ -177,13 +183,13 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
   homEquiv {K} :=
     { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
       invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
+      left_inv g := by cat_disch
       right_inv f := by simp }
   homEquiv_comp := by simp
 
 variable [c.HasNoLoop]
 
-open Classical in
+open scoped Classical in
 /-- Given a complex shape `c : ComplexShape ι` (with no loop), `X : C` and `j : ι`,
 this is a quite explicit choice of corepresentative of the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X j`. -/

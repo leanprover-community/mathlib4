@@ -3,11 +3,13 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Richard M. Hill
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+public import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials
 
@@ -17,6 +19,8 @@ builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace Polynomial
@@ -25,6 +29,7 @@ section CommSemiring
 
 variable {R A : Type*} [CommSemiring R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.derivative` as a derivation. -/
 @[simps]
 def derivative' : Derivation R R[X] R[X] where
@@ -67,6 +72,7 @@ lemma mkDerivation_apply (a : A) (f : R[X]) :
 @[simp]
 theorem mkDerivation_X (a : A) : mkDerivation R a X = a := by simp [mkDerivation_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkDerivation_one_eq_derivative' : mkDerivation R (1 : R[X]) = derivative' := by
   ext : 1
   simp [derivative']
@@ -102,6 +108,8 @@ variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCom
 
 open Polynomial Module
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 For a derivation `d : A → M` and an element `a : A`, `d.compAEval a` is the
 derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
@@ -131,10 +139,7 @@ For the same equation in `M`, see `Derivation.compAEval_eq`.
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
-  rw [← mkDerivation_apply]
-  congr
-  apply derivation_ext
-  simp
+  simpa using AEval.of_aeval_smul _ _ _
 
 /--
 A form of the chain rule: if `f` is a polynomial over `R`

@@ -3,10 +3,12 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
@@ -15,6 +17,8 @@ This file proves results about betweenness for points in an affine space for a s
 space.
 
 -/
+
+@[expose] public section
 
 open Metric
 open scoped Convex
@@ -107,6 +111,7 @@ variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [Norm
   [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE]
   [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by

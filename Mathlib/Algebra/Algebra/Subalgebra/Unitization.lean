@@ -3,9 +3,11 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Relating unital and non-unital substructures
@@ -43,6 +45,8 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   a version of `NonUnitalSubalgebra.unitizationAlgEquiv` for star algebras.
 -/
 
+@[expose] public section
+
 /-! ## Subalgebras -/
 
 namespace Unitization
@@ -57,7 +61,7 @@ theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
     induction x with
-    | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
+    | _ r a => simpa using! add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem lift_range (f : A →ₙₐ[R] C) :
     (lift f).range = Algebra.adjoin R (NonUnitalAlgHom.range f : Set C) :=
@@ -207,7 +211,7 @@ theorem starLift_range_le
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
     induction x with
-    | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
+    | _ r a => simpa using! add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem starLift_range (f : A →⋆ₙₐ[R] C) :
     (starLift f).range = StarAlgebra.adjoin R (NonUnitalStarAlgHom.range f : Set C) :=

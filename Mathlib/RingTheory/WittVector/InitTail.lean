@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 
@@ -32,6 +34,8 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+
+@[expose] public section
 
 
 variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]
@@ -85,7 +89,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
     IsPoly₂.diag (hf := IsPoly₂.comp)
   ghost_calc x
   intro n
-  simp only [RingHom.map_add]
+  simp only [map_add]
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
         (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
@@ -104,7 +108,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
     (x + y).coeff n = x.coeff n + y.coeff n := by
   let P : ℕ → Prop := fun n => y.coeff n = 0
-  haveI : DecidablePred P := Classical.decPred P
+  have : DecidablePred P := Classical.decPred P
   set z := mk p fun n => if P n then x.coeff n else y.coeff n
   have hx : select P z = x := by
     ext1 n; rw [select, coeff_mk, coeff_mk]
@@ -154,7 +158,7 @@ syntax (name := initRing) "init_ring" (" using " term)? : tactic
 
 -- Porting note: this tactic requires that we turn hygiene off (note the free `n`).
 -- TODO: make this tactic hygienic.
-open Lean Elab Tactic in
+open Lean Elab Elab.Tactic in
 elab_rules : tactic
 | `(tactic| init_ring $[ using $a:term]?) => withMainContext <| set_option hygiene false in do
   evalTactic <|← `(tactic|(
@@ -171,7 +175,7 @@ elab_rules : tactic
       rintro ⟨b, k⟩ h -
       replace h := $e:term p _ h
       simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
-      have hk : k < n := by omega
+      have hk : k < n := by lia
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
         WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk, Fin.mk_zero, Matrix.cons_val',
         Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_zero,

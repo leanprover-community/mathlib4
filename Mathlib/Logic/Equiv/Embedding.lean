@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Equivalences on embeddings
@@ -11,6 +13,8 @@ import Mathlib.Logic.Embedding.Set
 This file shows some advanced equivalences on embeddings, useful for constructing larger
 embeddings from smaller ones.
 -/
+
+@[expose] public section
 
 
 open Function.Embedding
@@ -46,7 +50,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     cases x <;> simp!
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
     simp only
-    constructor
+    rfl
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
 This is `Function.Embedding.codRestrict` as an equiv. -/
@@ -77,6 +81,7 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Embeddings from a single-member type are equivalent to members of the target type. -/
 def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     (α ↪ β) ≃ β where

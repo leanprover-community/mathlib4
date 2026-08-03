@@ -3,14 +3,18 @@ Copyright (c) 2024 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Sums in `WithTop`
 
 This file proves results about finite sums over monoids extended by a bottom or top element.
 -/
+
+public section
 
 open Finset
 
@@ -40,7 +44,7 @@ end AddCommMonoid
 
 section CommMonoidWithZero
 variable [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀] [DecidableEq M₀]
-  {s : Finset ι} {f : ι → WithTop M₀}
+  {s : Finset ι} {f : ι → WithTop M₀} {i : ι}
 
 /-- A product of finite terms is finite. -/
 lemma prod_ne_top (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i ∈ s, f i ≠ ⊤ :=
@@ -49,6 +53,31 @@ lemma prod_ne_top (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i ∈ s, f i ≠ ⊤ :=
 /-- A product of finite terms is finite. -/
 lemma prod_lt_top [LT M₀] (h : ∀ i ∈ s, f i < ⊤) : ∏ i ∈ s, f i < ⊤ :=
   prod_induction f (· < ⊤) (fun _ _ ↦ mul_lt_top) (coe_lt_top _) h
+
+lemma prod_eq_top (hi : i ∈ s) (hi' : f i = ⊤) (h : ∀ j ∈ s, f j ≠ 0) :
+    ∏ j ∈ s, f j = ⊤ := by
+  classical rw [← prod_erase_mul _ _ hi]
+  refine WithTop.mul_eq_top_iff.mpr (Or.inl ⟨?_, hi'⟩)
+  refine prod_ne_zero_iff.mpr ?_
+  intros
+  simp_all only [ne_eq, mem_erase, not_false_eq_true]
+
+lemma prod_eq_top_ne_zero (hi : i ∈ s) (h : ∏ j ∈ s, f j = ⊤) : f i ≠ 0 := by
+  by_contra! h0
+  apply WithTop.top_ne_zero (α := M₀)
+  calc
+    ⊤ = ∏ j ∈ s, f j := Eq.symm h
+    _ = 0 := prod_eq_zero hi h0
+
+lemma prod_eq_top_ex_top (h : ∏ j ∈ s, f j = ⊤) : ∃ i ∈ s, f i = ⊤ := by
+  contrapose! h
+  exact WithTop.prod_ne_top h
+
+/-- A product is infinite iff each factor is nonzero and some factor is infinite -/
+lemma prod_eq_top_iff : ∏ j ∈ s, f j = ⊤ ↔ (∃ i ∈ s, f i = ⊤) ∧ (∀ i ∈ s, f i ≠ 0) := by
+  constructor
+  · exact fun h ↦ ⟨prod_eq_top_ex_top h, fun _ ih ↦ prod_eq_top_ne_zero ih h⟩
+  · exact fun ⟨h, h'⟩ ↦ prod_eq_top (Exists.choose_spec h).1 (Exists.choose_spec h).2 h'
 
 end CommMonoidWithZero
 end WithTop

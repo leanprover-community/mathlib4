@@ -3,12 +3,16 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.Lemmas
+module
+
+public import Mathlib.Data.Rat.Cast.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 ## `norm_num` plugin for scientific notation.
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean
@@ -20,36 +24,32 @@ open Qq
 variable {α : Type*}
 
 -- see note [norm_num lemma function equality]
-theorem isRat_ofScientific_of_true [DivisionRing α] :
-    {m e : ℕ} → {n : ℤ} → {d : ℕ} →
-    IsRat (mkRat m (10 ^ e) : α) n d → IsRat (OfScientific.ofScientific m true e : α) n d
-  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
-    rwa [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_true_def]⟩
+theorem isNNRat_ofScientific_of_true [DivisionSemiring α] :
+    {m e : ℕ} → {n : ℕ} → {d : ℕ} →
+    IsNNRat (NNRat.divNat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
+  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by rwa [NNRatCast.ofScientific_eq_ite, if_pos rfl]⟩
 
 -- see note [norm_num lemma function equality]
-theorem isNat_ofScientific_of_false [DivisionRing α] : {m e nm ne n : ℕ} →
+theorem isNat_ofScientific_of_false [DivisionSemiring α] : {m e nm ne n : ℕ} →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (OfScientific.ofScientific m false e : α) n
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by
-    rw [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific]
-    simp only [Nat.cast_id, Rat.ofScientific_false_def, Nat.cast_mul, Nat.cast_pow,
-      Nat.cast_ofNat, h, Nat.mul_eq]
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, (rfl : (_ : ℕ) = _ * _) => ⟨by
+    rw [NNRatCast.ofScientific_eq_ite, if_neg Bool.false_ne_true]
     norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
 to rat casts if the scientific notation is inherited from the one for rationals. -/
 @[norm_num OfScientific.ofScientific _ _ _] def evalOfScientific :
     NormNumExt where eval {u α} e := do
-  let .app (.app (.app f (m : Q(ℕ))) (b : Q(Bool))) (exp : Q(ℕ)) ← whnfR e | failure
-  let dα ← inferDivisionRing α
+  let mkApp3 f (m : Q(ℕ)) (b : Q(Bool)) (exp : Q(ℕ)) ← whnfR e | failure
+  let dα ← inferDivisionSemiring α
   guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
-  assumeInstancesCommute
   haveI' : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
   match b with
   | ~q(true) =>
-    let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
-    let some ⟨q, n, d, p⟩ := rme.toRat' dα | failure
-    return .isRat' dα q n d q(isRat_ofScientific_of_true $p)
+    let rme ← derive (q(NNRat.divNat $m (10 ^ $exp)) : Q($α))
+    let some ⟨q, n, d, p⟩ := rme.toNNRat' dα | failure
+    return .isNNRat dα q n d q(isNNRat_ofScientific_of_true $p)
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)

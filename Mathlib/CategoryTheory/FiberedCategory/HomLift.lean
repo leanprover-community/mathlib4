@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 
@@ -17,14 +18,21 @@ does not make sense when the domain and/or codomain of `φ` and `f` are not defi
 
 ## Main definition
 
-Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class, defined
-using the auxiliary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
+Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class
+which expresses the fact that `f = p(φ)`.
 
 We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
-goal, this tactic is just short for `obtain ⟨⟩ := Functor.IsHomLift.cond (p:=p) (f:=f) (φ:=φ)`, and
+goal, this tactic is just short for `obtain ⟨⟩ := (inferInstance : p.IsHomLift f φ)`, and
 it is used to make the code more readable.
 
+## Implementation
+The class `IsHomLift` is defined as an inductive with the single constructor
+`.map (φ : a ⟶ b) : IsHomLift p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
+`.rfl (a : α) : Eq a a`.
+
 -/
+
+@[expose] public section
 
 universe u₁ v₁ u₂ v₂
 
@@ -33,10 +41,6 @@ open CategoryTheory Category
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒳] [Category.{v₂} 𝒮] (p : 𝒳 ⥤ 𝒮)
 
 namespace CategoryTheory
-
-/-- Helper-type for defining `IsHomLift`. -/
-inductive IsHomLiftAux : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) (_ : a ⟶ b), Prop
-  | map {a b : 𝒳} (φ : a ⟶ b) : IsHomLiftAux (p.map φ) φ
 
 /-- Given a functor `p : 𝒳 ⥤ 𝒮`, an arrow `φ : a ⟶ b` in `𝒳` and an arrow `f : R ⟶ S` in `𝒮`,
 `p.IsHomLift f φ` expresses the fact that `φ` lifts `f` through `p`.
@@ -48,19 +52,18 @@ This is often drawn as:
   v        v
   R --f--> S
 ``` -/
-class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) : Prop where
-  cond : IsHomLiftAux p f φ
+class inductive Functor.IsHomLift : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) (_ : a ⟶ b), Prop
+  | map {a b : 𝒳} (φ : a ⟶ b) : IsHomLift (p.map φ) φ
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
 macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
-  `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
+  `(tactic| obtain ⟨⟩ := (inferInstance : Functor.IsHomLift $p $f $φ))
 
 namespace IsHomLift
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`. -/
 @[simp]
-instance map {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
-  cond := by constructor
+instance map {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ := .map φ
 
 @[simp]
 instance (a : 𝒳) : p.IsHomLift (𝟙 (p.obj a)) (𝟙 a) := by
@@ -130,7 +133,7 @@ instance comp_of_lift_id (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
 
 instance comp_lift_id_right {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (φ : a ⟶ b) [p.IsHomLift f φ]
     (ψ : b ⟶ c) [p.IsHomLift (𝟙 T) ψ] : p.IsHomLift f (φ ≫ ψ) := by
-  simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
+  simpa using (inferInstance : p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ ≫ ψ` lifts `f` -/
 lemma comp_lift_id_right' {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
@@ -140,7 +143,7 @@ lemma comp_lift_id_right' {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ 
 
 instance comp_lift_id_left {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ]
     (φ : a ⟶ b) [p.IsHomLift (𝟙 S) φ] : p.IsHomLift f (φ ≫ ψ) := by
-  simpa using inferInstanceAs (p.IsHomLift (𝟙 S ≫ f) (φ ≫ ψ))
+  simpa using (inferInstance : p.IsHomLift (𝟙 S ≫ f) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_left' {a b c : 𝒳} (R : 𝒮) (φ : a ⟶ b) [p.IsHomLift (𝟙 R) φ]

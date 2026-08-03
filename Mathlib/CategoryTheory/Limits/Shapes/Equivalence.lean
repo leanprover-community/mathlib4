@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Transporting existence of specific limits across equivalences
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 For now, we only treat the case of initial and terminal objects, but other special shapes can be
 added in the future.
 -/
+
+public section
 
 
 open CategoryTheory CategoryTheory.Limits

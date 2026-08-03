@@ -3,11 +3,13 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Nilpotent.Exp
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.RingTheory.Nilpotent.Exp
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -17,24 +19,26 @@ This file defines *Lie derivations* and establishes some basic properties.
 ## Main definitions
 
 - `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
-`R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
+  `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
 - `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
 - `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
 - `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
-algebra.
+  algebra.
 
 ## Implementation notes
 
 - Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
-implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
-incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
-the `RingTheory.Derivation.Basic.lean` file.
+  implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
+  incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
+  the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
-as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
+  as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
+
+@[expose] public section
 
 /-- A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an `R`-linear map
 that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`. -/
@@ -57,7 +61,7 @@ variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
-  coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+  coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
   map_add D := D.toLinearMap.map_add'
@@ -103,6 +107,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
     D ⁅a, b⁆ = ⁅a, D b⁆ + ⁅D a, b⁆ := by
   rw [LieDerivation.apply_lie_eq_sub, sub_eq_add_neg, lie_skew]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) := by
@@ -313,6 +318,7 @@ instance : LieRing (LieDerivation R L L) where
   leibniz_lie d e f := by
     ext a; simp only [commutator_apply, add_apply, map_sub]; abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
@@ -327,17 +333,21 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
+attribute [local instance 100] LieRing.ofAssociativeRing
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The Lie algebra morphism from Lie derivations into linear endomorphisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
   map_add' := by intro D1 D2; dsimp
   map_smul' := by intro D1 D2; dsimp
   map_lie' := by intro D1 D2; dsimp
 
-/-- The map from Lie derivations to linear endormophisms is injective. -/
+/-- The map from Lie derivations to linear endomorphisms is injective. -/
 lemma toLinearMapLieHom_injective : Function.Injective (toLinearMapLieHom R L) :=
   fun _ _ h ↦ ext fun a ↦ congrFun (congrArg DFunLike.coe h) a
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lie derivations over a Noetherian Lie algebra form a Noetherian module. -/
 instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L) :=
   isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
@@ -349,6 +359,7 @@ section Inner
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
     [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from a Lie module to the derivations taking values in it. -/
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
@@ -372,6 +383,7 @@ instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
     ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance instLieModule : LieModule R L (LieDerivation R L M) where
   smul_lie t x D := by ext; simp
   lie_smul t x D := by ext; simp

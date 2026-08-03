@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 ### Restricting Scalars in Iterated Fréchet Derivatives
@@ -15,6 +17,8 @@ a subfield `𝕜 ⊆ 𝕜'`. The results are analogous to those found in
 `Mathlib.Analysis.Calculus.FDeriv.RestrictScalars`.
 -/
 
+public section
+
 variable
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
@@ -23,7 +27,7 @@ variable
 
 open ContinuousMultilinearMap Topology
 
-/-- Derviation rule for compositions of scalar restriction with continuous multilinear maps. -/
+/-- Derivation rule for compositions of scalar restriction with continuous multilinear maps. -/
 lemma fderivWithin_restrictScalars_comp
     {φ : E → (ContinuousMultilinearMap 𝕜' (fun _ : Fin n ↦ E) F)}
     (h : DifferentiableWithinAt 𝕜' φ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
@@ -76,7 +80,7 @@ to `𝕜'`.
 theorem ContDiffAt.restrictScalars_iteratedFDeriv_eventuallyEq (h : ContDiffAt 𝕜' n f x) :
     (restrictScalars 𝕜) ∘ (iteratedFDeriv 𝕜' n f) =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f := by
   have h' : ContDiffWithinAt 𝕜' n f Set.univ x := h
-  convert (h'.restrictScalars_iteratedFDerivWithin_eventuallyEq _ trivial)
+  convert! (h'.restrictScalars_iteratedFDerivWithin_eventuallyEq _ trivial)
   <;> simp [iteratedFDerivWithin_univ.symm, uniqueDiffOn_univ]
 
 /--

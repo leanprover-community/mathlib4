@@ -1,16 +1,16 @@
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Data.List.Perm.Lattice
 
-mk_iff_of_inductive_prop List.Chain test.chain_iff
-example {α : Type _} (R : α → α → Prop) (a : α) (al : List α) :
-    List.Chain R a al ↔
-      al = List.nil ∨ ∃ (b : α) (l : List α), R a b ∧ List.Chain R b l ∧ al = b :: l :=
-  test.chain_iff R a al
+mk_iff_of_inductive_prop List.IsChain test.chain_iff
+example {α : Type _} (R : α → α → Prop) (al : List α) :
+    List.IsChain R al ↔
+      al = List.nil ∨ (∃ a, al = [a]) ∨
+      ∃ (a b : α) (l : List α), R a b ∧ List.IsChain R (b :: l) ∧ al = a :: b :: l :=
+  test.chain_iff R  al
 
--- check that the statement prints nicely
 /--
-info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) (a✝ : α) (a✝¹ : List α) :
-  List.Chain R a✝ a✝¹ ↔ a✝¹ = [] ∨ ∃ b l, R a✝ b ∧ List.Chain R b l ∧ a✝¹ = b :: l
+info: test.chain_iff.{u_1} {α : Type u_1} (R : α → α → Prop) (a✝ : List α) :
+  List.IsChain R a✝ ↔ a✝ = [] ∨ (∃ a, a✝ = [a]) ∨ ∃ a b l, R a b ∧ List.IsChain R (b :: l) ∧ a✝ = a :: b :: l
 -/
 #guard_msgs in
 #check test.chain_iff
@@ -79,4 +79,4 @@ inductive ReflTransGen {α : Type _} (r : α → α → Prop) (a : α) : α → 
 
 example {α : Type} (r : α → α → Prop) (a c : α) :
     ReflTransGen r a c ↔ c = a ∨ ∃ b : α, ReflTransGen r a b ∧ r b c :=
- reflTransGen_iff r a c
+  reflTransGen_iff r a c

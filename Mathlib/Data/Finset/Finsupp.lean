@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Data.Finsupp.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Data.Finsupp.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Finitely supported product of finsets
@@ -26,12 +28,14 @@ We make heavy use of the fact that `0 : Finset α` is `{0}`. This scalar actions
 to be precisely what we want here too.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open Finsupp
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
@@ -48,7 +52,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
     refine ⟨support_indicator_subset _ _, fun i hi => ?_⟩
-    convert mem_pi.1 hf i hi
+    convert! mem_pi.1 hf i hi
     exact indicator_of_mem hi _
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i

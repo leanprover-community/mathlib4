@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Elab.SyntheticMVars
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
 
 /-!
 # `clean%` term elaborator
 
 Remove identity functions from a term.
 -/
+
+public meta section
 
 open Lean Meta Elab
 

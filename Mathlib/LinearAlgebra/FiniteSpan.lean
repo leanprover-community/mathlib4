@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Algebra.Module.Equiv.Basic
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 
@@ -13,9 +15,12 @@ import Mathlib.Algebra.Module.Equiv.Basic
 
 -/
 
+public section
+
 open Set Function
 open Submodule (span)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence which preserves a finite spanning set must have finite order. -/
 lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
     {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]

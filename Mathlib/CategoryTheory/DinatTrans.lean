@@ -3,10 +3,13 @@ Copyright (c) 2023 Andrea Laretto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrea Laretto, Fernando Chu
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Dinatural transformations
+
 Dinatural transformations are special kinds of transformations between
 functors `F G : Cᵒᵖ ⥤ C ⥤ D` which depend both covariantly and contravariantly
 on the same category (also known as difunctors).
@@ -20,6 +23,8 @@ ordinary natural transformations.
 ## References
 * <https://ncatlab.org/nlab/show/dinatural+transformation>
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -36,7 +41,7 @@ structure DinatTrans (F G : Cᵒᵖ ⥤ C ⥤ D) : Type max u₁ v₂ where
   /-- The commutativity square for a given morphism. -/
   dinaturality {X Y : C} (f : X ⟶ Y) :
     (F.map f.op).app X ≫ app X ≫ (G.obj (op X)).map f =
-    (F.obj (op Y)).map f ≫ app Y ≫ (G.map f.op).app Y := by aesop_cat
+    (F.obj (op Y)).map f ≫ app Y ≫ (G.map f.op).app Y := by cat_disch
 
 attribute [reassoc (attr := simp)] DinatTrans.dinaturality
 

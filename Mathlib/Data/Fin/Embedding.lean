@@ -3,8 +3,10 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embeddings of `Fin n`
@@ -17,7 +19,6 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.succEmb` : `Fin.succ` as an `Embedding`;
 * `Fin.castLEEmb h` : `Fin.castLE` as an `Embedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `Embedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n+1)`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
@@ -25,6 +26,8 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -66,9 +69,6 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
 @[simp]
 theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
   rfl
-
-@[deprecated (since := "2025-04-12")]
-alias val_succEmb := coe_succEmb
 
 attribute [simp] castSucc_inj
 
@@ -139,6 +139,21 @@ variable {p : Fin (n + 1)}
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
 
 @[simp, norm_cast] lemma coe_succAboveEmb (p : Fin (n + 1)) : p.succAboveEmb = p.succAbove := rfl
+
+/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, by appending the former
+at the end of the latter.
+`natAdd_castLEEmb hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
+@[simps!]
+def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
+  (addNatEmb (m - n)).trans (finCongr (by lia)).toEmbedding
+
+lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
+    Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
+  simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
+  ext y
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; lia,
+    fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
+    (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
 end SuccAbove
 

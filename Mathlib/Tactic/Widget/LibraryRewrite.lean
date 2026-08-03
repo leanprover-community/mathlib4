@@ -3,9 +3,15 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree
-import Mathlib.Tactic.Widget.InteractiveUnfold
-import ProofWidgets.Component.FilterDetails
+module
+
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Tactic.NthRewrite
+public import ProofWidgets.Component.FilterDetails
+public import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click library rewriting
@@ -54,6 +60,8 @@ Ways to extend `rw??`:
   just point & click.
 
 -/
+
+public meta section
 
 /-! ### Caching -/
 
@@ -108,7 +116,7 @@ where
   else
     guard (t == s); some swaps
 
-/-- Extract the left and right hand sides of an equality or iff statement. -/
+/-- Extract the left and right-hand sides of an equality or iff statement. -/
 @[inline] def eqOrIff? (e : Expr) : Option (Expr × Expr) :=
   match e.eq? with
   | some (_, lhs, rhs) => some (lhs, rhs)
@@ -144,16 +152,16 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
 
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
-    MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) :=
-  withReducible do
-  let (_, _, eqn) ← forallMetaTelescope decl.type
-  let some (lhs, rhs) := eqOrIff? eqn | return []
+    MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) := do
+  -- The transparency is set to `reducible`. Stronger reduction may give unexpected results.
+  let (_, _, eqn) ← forallMetaTelescopeReducing decl.type
+  let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return []
   let result := ((decl.fvarId, false), ← initializeLazyEntryWithEta lhs)
   return [result, ((decl.fvarId, true), ← initializeLazyEntryWithEta rhs)]
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
 
-private builtin_initialize ExtState.default : ExtState ←
+private initialize ExtState.default : ExtState ←
   IO.mkRef none
 
 private instance : Inhabited ExtState where
@@ -207,12 +215,13 @@ structure Rewrite where
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
-  withTraceNodeBefore `rw?? (return m!
+  withTraceNodeBefore `rw?? (fun _ => return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
-  let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
-  let some (lhs, rhs) := eqOrIff? eqn | return none
+  let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
+  let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
+    throwError "Expected equation, not {indentExpr eqn}"
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+  let unifies ← withTraceNodeBefore `rw?? (fun _ =>return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
   -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments
@@ -263,7 +272,8 @@ def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
 /-! ### Rewriting by hypotheses -/
 
 /-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
-def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) := do
+def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) :=
+  withReducible do
   let mut tree : PreDiscrTree (FVarId × Bool) := {}
   for decl in ← getLCtx do
     if !decl.isImplementationDetail && except.all (· != decl.fvarId) then
@@ -276,7 +286,7 @@ def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × 
 def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
     MetaM (Array (Array (Rewrite × FVarId))) := do
   let (candidates, _) ← (← getHypotheses except).getMatch e (unify := false) (matchRootStar := true)
-  let candidates := (← MonadExcept.ofExcept candidates).flatten
+  let candidates := candidates.flatten
   candidates.mapM <| Array.filterMapM fun (fvarId, symm) =>
     tryCatchRuntimeEx do
       Option.map (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
@@ -338,6 +348,23 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 
 
 /-! ### User interface -/
+
+
+/-- Return syntax for the rewrite tactic `rw [e]`. -/
+def mkRewrite (occ : Option Nat) (symm : Bool) (e : Term) (loc : Option Name) :
+    CoreM (TSyntax `tactic) := do
+  let loc ← loc.mapM fun h => `(Lean.Parser.Tactic.location| at $(mkIdent h):term)
+  let rule ← if symm then `(Parser.Tactic.rwRule| ← $e) else `(Parser.Tactic.rwRule| $e:term)
+  match occ with
+  | some n => `(tactic| nth_rw $(Syntax.mkNatLit n):num [$rule] $(loc)?)
+  | none => `(tactic| rw [$rule] $(loc)?)
+
+/-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
+This function respects the 100 character limit for long lines. -/
+def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
+  let column := range.start.character
+  let indent := column
+  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 /-- Return the rewrite tactic that performs the rewrite. -/
 def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
@@ -425,18 +452,15 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name) (exce
 /-- Render the matching side of the rewrite lemma.
 This is shown at the header of each section of rewrite results. -/
 def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α := do
-  forallTelescope type fun _ e => do
-    let some (lhs, rhs) := eqOrIff? e | throwError "Expected equation, not {indentExpr e}"
+  forallTelescopeReducing type fun _ e => do
+    let some (lhs, rhs) := eqOrIff? (← whnf e) | throwError "Expected equation, not {indentExpr e}"
     k (if symm then rhs else lhs)
 
 /-- Render the given rewrite results. -/
-def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind)) (init : Option Html)
+def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) :
     MetaM Html := do
   let htmls ← results.filterMapM (renderSection showNames)
-  let htmls := match init with
-    | some html => #[html] ++ htmls
-    | none => htmls
   if htmls.isEmpty then
     return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
   else
@@ -475,8 +499,9 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
-@[server_rpc_method_cancellable]
-private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+/-- The rpc method of the `rw??` widget. -/
+@[server_rpc_method]
+def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
@@ -500,11 +525,9 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
           This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
 
-      let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
-
       let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
-      let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
-      let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
+      let filtered ← renderRewrites subExpr filtered props.replaceRange doc false
+      let all      ← renderRewrites subExpr all      props.replaceRange doc true
       return <FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
@@ -527,7 +550,7 @@ are filtered out, as well as rewrites that have new metavariables in the replace
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 
@@ -552,7 +575,7 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
 /-- `#rw?? e` gives all possible rewrites of `e`. It is a testing command for the `rw??` tactic -/
-syntax (name := rw??Command) "#rw??" ("all")? term : command
+syntax (name := rw??Command) "#rw??" (&"all")? term : command
 
 open Elab
 /-- Elaborate a `#rw??` command. -/

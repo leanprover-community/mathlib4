@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Sigma types
@@ -24,10 +26,12 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 
 ## Notes
 
-The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`- valued sigma
+The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`-valued sigma
 types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -47,8 +51,10 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h ↦
+        Sigma.noConfusion rfl .rfl (heq_of_eq h) fun _ e₂ ↦ n (eq_of_heq e₂)
+    | _, _, _, _, isFalse n => isFalse fun h ↦
+      Sigma.noConfusion rfl .rfl (heq_of_eq h) fun e₁ _ ↦ n (eq_of_heq e₁)
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ b₁ ≍ b₂ := by simp
@@ -163,12 +169,8 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   ext ja jb
   unfold Sigma.curry
   obtain rfl | ha := eq_or_ne ia ja
-  · obtain rfl | hb := eq_or_ne ib jb
-    · simp
-    · simp only [update_self]
-      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
-      rintro h
-      injection h
+  · simp
+    grind
   · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm
@@ -193,6 +195,14 @@ theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :
 theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
+theorem Prod.toSigma_injective {α β} : Function.Injective (α := α × β) Prod.toSigma := by
+  rintro ⟨a, b⟩ ⟨c, d⟩ h
+  simp_all
+
+@[simp]
+theorem Prod.toSigma_inj {α β} {x y : α × β} : x.toSigma = y.toSigma ↔ x = y :=
+  Prod.toSigma_injective.eq_iff
+
 end Sigma
 
 namespace PSigma
@@ -216,8 +226,10 @@ instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] 
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>
       match b₁, b₂, h₂ _ b₁ b₂ with
       | _, _, isTrue (Eq.refl _) => isTrue rfl
-      | _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
-    | _, _, _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun e₁ _ ↦ n e₁
+      | _, _, isFalse n => isFalse fun h ↦
+        PSigma.noConfusion rfl .rfl (heq_of_eq h) fun _ e₂ ↦ n (eq_of_heq e₂)
+    | _, _, _, _, isFalse n => isFalse fun h ↦
+      PSigma.noConfusion rfl .rfl (heq_of_eq h) fun e₁ _ ↦ n (eq_of_heq e₁)
 
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     @PSigma.mk α β a₁ b₁ = @PSigma.mk α β a₂ b₂ ↔ a₁ = a₂ ∧ b₁ ≍ b₂ :=
