@@ -180,6 +180,17 @@ theorem isClosed_setOfPred_map_smul {N : Type*} (α β) [SMul M α] [SMul N β]
 
 end SMul
 
+section SMulZeroClass
+
+variable [TopologicalSpace α] [Zero α] [SMulZeroClass M α] [ContinuousConstSMul M α]
+
+protected theorem Filter.Tendsto.const_smul_zero {g : β → α} {l : Filter β}
+    (c : M) (hg : Tendsto g l (𝓝 0)) :
+    Tendsto (fun x ↦ c • g x) l (𝓝 0) :=
+  smul_zero c (A := α) ▸ hg.const_smul c
+
+end SMulZeroClass
+
 section Monoid
 
 variable [TopologicalSpace α]

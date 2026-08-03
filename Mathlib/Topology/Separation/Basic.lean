@@ -348,6 +348,7 @@ class T1Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- A singleton in a T₁ space is a closed set. -/
   t1 : ∀ x, IsClosed ({x} : Set X)
 
+@[closedness .]
 theorem isClosed_singleton [T1Space X] {x : X} : IsClosed ({x} : Set X) :=
   T1Space.t1 x
 
@@ -568,6 +569,7 @@ theorem compl_singleton_mem_nhds_iff [T1Space X] {x y : X} : {x}ᶜ ∈ 𝓝 y �
 theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ ∈ 𝓝 y :=
   compl_singleton_mem_nhds_iff.mpr h
 
+@[closedness =]
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
@@ -807,7 +809,7 @@ lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
-  rw [continuousOn_iff_continuous_restrict]
+  rw [continuousOn_iff_continuous_domRestrict]
   have : Finite s := hs
   fun_prop
 
