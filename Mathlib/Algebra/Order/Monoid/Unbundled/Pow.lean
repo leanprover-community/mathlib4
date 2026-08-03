@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Tactic.Lift
@@ -296,7 +297,7 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
 
 @[to_additive]
 instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
-  pow_left_injective _ hn := (pow_left_strictMono hn).injective
+  pow_left_injective _ hn _ _ _ h := (pow_left_strictMono hn).injective h
 
 end LinearOrder
 

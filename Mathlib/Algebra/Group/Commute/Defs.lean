@@ -213,14 +213,27 @@ end Commute
 
 section TorsionFree
 
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
-injective. -/
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ`
+is injective on commuting elements (i.e., `a + b = b + a → n • a = n • b → a = b`).
+
+For additive groups this is equivalent to the usual definition `n • a = 0 → a = 0`.
+
+For additive semigroups this is slightly weaker than full injectivity `n • a = n • b → a = b`,
+see https://mathoverflow.net/questions/106193/on-the-notion-of-torsion-freeness-in-semigroup-theory
+-/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
   protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
     (hn : n • a = n • b) : a = b
 
-/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ`
+is injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
+
+For additive groups this is equivalent to the usual definition `a ^ n = 1 → a = 1`.
+
+For semigroups this is slightly weaker than full injectivity `a ^ n = b ^ n → a = b`,
+see https://mathoverflow.net/questions/106193/on-the-notion-of-torsion-freeness-in-semigroup-theory
+-/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
