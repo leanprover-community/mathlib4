@@ -150,6 +150,7 @@ theorem degrees_eq_zero_iff_support_subset_zero : p.degrees = 0 ↔ p.support �
   have := Finsupp.support_eq_empty.mpr (h s <| mem_support_iff.mpr hs1) ▸ hs2
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
@@ -250,7 +251,6 @@ theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 :
 
 theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
-  classical
   by_cases c : i = j
   · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
@@ -578,13 +578,12 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
     (h : f.totalDegree < ∑ i ∈ d.support, d i) : coeff d f = 0 := by
-  classical
-    rw [totalDegree, Finset.sup_lt_iff] at h
-    · specialize h d
-      rw [mem_support_iff] at h
-      refine not_not.mp (mt h ?_)
-      exact lt_irrefl _
-    · exact lt_of_le_of_lt (Nat.zero_le _) h
+  rw [totalDegree, Finset.sup_lt_iff] at h
+  · specialize h d
+    rw [mem_support_iff] at h
+    refine not_not.mp (mt h ?_)
+    exact lt_irrefl _
+  · exact lt_of_le_of_lt (Nat.zero_le _) h
 
 theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ p = C (p.coeff 0) := by

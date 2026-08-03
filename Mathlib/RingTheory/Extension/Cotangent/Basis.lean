@@ -132,6 +132,7 @@ lemma ker_presLeft_le : D.presLeft.ker ≤ P.ker := by
     toExtension_algebra₂, algebraMap_apply, Ideal.Quotient.algebraMap_eq,
     map_zero] using! (algebraMap D.T S).congr_arg hx
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the isomorphism `S ⊗[T] J/J² ≃ₗ[S] I/I²`. -/
 def tensorCotangentHom : S ⊗[D.T] D.presLeft.toExtension.Cotangent →ₗ[S] P.toExtension.Cotangent :=
   LinearMap.liftBaseChange _ (Extension.Cotangent.map D.fhom.toExtensionHom)
@@ -155,6 +156,7 @@ lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
   Module.Basis.constr_basis _ _ _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma span_range_mk_kerGen : Submodule.span D.T
     (Set.range fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
@@ -234,6 +236,7 @@ set_option backward.isDefEq.respectTransparency false in
 def basisRight : Module.Basis Unit S D.presRight.toExtension.Cotangent :=
   Generators.basisCotangentAway S D.gbar
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The basis on the cotangent space of the constructed presentation. -/
 def basis [Nontrivial S] : Module.Basis (Unit ⊕ σ) S D.pres.toExtension.Cotangent :=
   (Module.Basis.prod D.basisRight D.basisLeft).map D.cotangentEquivProd.symm
@@ -244,6 +247,7 @@ lemma basis_inl [Nontrivial S] :
       D.cotangentEquivProd.symm (Generators.cMulXSubOneCotangent S D.gbar, 0) := by
   simpa [basis] using! Generators.basisCotangentAway_apply _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma basis_inr [Nontrivial S] (i : σ) :
     D.basis (.inr i) = D.cotangentEquivProd.symm (0, D.basisLeft i) := by
   simp [basis]
@@ -294,7 +298,6 @@ public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation 
         span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
     have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
     exact ⟨P', default, by subsingleton, by subsingleton⟩
-  classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
   let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)

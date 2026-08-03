@@ -94,7 +94,6 @@ protected theorem dfinsuppProd {ι : Type*} {β : ι → Type*} {M : Type*}
     c (f.prod h) (g.prod h') := by
   refine Quotient.exact (show c.mk' _ = c.mk' _ from ?_)
   rw [map_dfinsuppProd, map_dfinsuppProd]
-  classical
   exact DFinsupp.prod_congr_of_eq_on_union
     (fun _ _ => Quotient.sound <| H _)
     (fun _ _ => Quotient.sound <| hf _) (fun _ _ => Quotient.sound <| hf' _)
