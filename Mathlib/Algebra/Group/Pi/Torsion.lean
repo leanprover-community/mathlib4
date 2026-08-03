@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Torsion
 This file proves that products of torsion-free monoids are torsion-free.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists AddMonoidWithOne MonoidWithZero
 
