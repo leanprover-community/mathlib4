@@ -79,7 +79,7 @@ protected abbrev module [IsZeroApply F α β] [IsAddApply F α β] [SMul M F] [I
 
 protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F α β]
     [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
-  DFunLike.coe_injective.moduleIsTorsionFree (fun f ↦ (f : α → β)) FunLike.coe_smul
+  DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
 end ModuleInstance
 
