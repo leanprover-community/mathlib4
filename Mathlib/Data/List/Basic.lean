@@ -505,9 +505,11 @@ theorem getElem_mem_tail {k : ℕ} (l : List α) (h : k ≠ 0) (hk : k < l.lengt
     l[k]'hk ∈ l.tail := by
   cases l <;> grind
 
+@[simp]
 theorem tail_eq_nil_iff : l.tail = [] ↔ l.length ≤ 1 := by
   grind [List.length_tail, List.length_eq_zero_iff]
 
+@[simp]
 theorem dropLast_eq_nil_iff : l.dropLast = [] ↔ l.length ≤ 1 := by
   grind [List.length_dropLast, List.length_eq_zero_iff]
 
