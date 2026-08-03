@@ -336,7 +336,6 @@ theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
 
 end
 
-
 theorem ceil_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
     contrapose!
