@@ -54,7 +54,7 @@ variable {ι : Sort*} {S T : Sublocale X} {s : Set X} {f : ι → X} {a b : X}
 
 instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
-  coe_injective' s1 s2 h := by cases s1; congr
+  coe_injective s1 s2 h := by cases s1; congr
 
 instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
 
@@ -215,6 +215,7 @@ lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n
 
 end Nucleus
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
 def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
@@ -231,6 +232,7 @@ lemma nucleusIsoSublocale.symm_eq_toNucleus :
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
+set_option backward.isDefEq.respectTransparency false in
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,

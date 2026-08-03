@@ -45,6 +45,12 @@ Let `E` be a real, finite-dimensional, inner product space and `s` be a subset o
 -/
 def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 
+/--
+Harmonic functions are two times continuously differentiable.
+-/
+lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :=
+  fun x hx ↦ (hf x hx).1.contDiffWithinAt
+
 /-!
 ## Elementary Properties
 -/
@@ -82,8 +88,10 @@ variable (f) in
 /--
 Harmonicity is an open property.
 -/
-theorem isOpen_setOf_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
+theorem isOpen_setOfPred_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
   isOpen_iff_mem_nhds.2 (fun _ hx ↦ hx.eventually)
+
+@[deprecated (since := "2026-07-09")] alias isOpen_setOf_harmonicAt := isOpen_setOfPred_harmonicAt
 
 /--
 If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of every subset.
@@ -140,7 +148,7 @@ The negative of a harmonic function is harmonic.
 theorem HarmonicAt.neg (h : HarmonicAt f x) :
     HarmonicAt (-f) x := by
   constructor
-  · simpa using h.1.neg
+  · simpa using! h.1.neg
   · filter_upwards [h.2] with x hx
     simp_all [laplacian_neg]
 

@@ -42,7 +42,7 @@ variable (X : Scheme.{u}) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) [IsNo
 def irreducibleComponentOpen : Opens X :=
   ⟨(⋃₀ (irreducibleComponents X \ {Z}))ᶜ, by
     rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
+    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.sdiff.isClosed_biUnion
       fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
 
 /-- The ideal sheaf data associated to an irreducible component of a Noetherian scheme. -/
@@ -51,7 +51,7 @@ def irreducibleComponentIdeal : X.IdealSheafData where
   supportSet := Z
   supportSet_eq_iInter_zeroLocus := by
     rw [← IdealSheafData.coe_support_eq_eq_iInter_zeroLocus, Hom.support_ker, Opens.range_ι]
-    exact (closure_sUnion_irreducibleComponents_diff_singleton
+    exact (closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents Z hZ).symm
 
 theorem irreducibleComponentIdeal_def :
@@ -83,6 +83,7 @@ theorem irreducibleComponentOpen_eq_top [IrreducibleSpace X] :
   rw [irreducibleComponents_eq_singleton, Set.mem_singleton_iff] at hZ
   simp [irreducibleComponentOpen, irreducibleComponents_eq_singleton, hZ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IrreducibleSpace X] : CategoryTheory.IsIso (X.irreducibleComponentι Z hZ) := by
   have : CategoryTheory.IsIso (irreducibleComponentOpen X Z).ι := by
     rw [irreducibleComponentOpen_eq_top X Z hZ]

@@ -17,7 +17,7 @@ that `P` is closed under subobjects (resp. quotients).
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

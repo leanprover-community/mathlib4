@@ -72,6 +72,12 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
 lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop α) = n := rfl
 
 @[simp]
+theorem untop₀_one {α : Type*} [AddMonoidWithOne α] :
+    (1 : WithTop α).untop₀ = 1 := by
+  convert WithTop.untop₀_natCast 1
+  all_goals exact Nat.cast_one.symm
+
+@[simp]
 lemma untop₀_ofNat [AddMonoidWithOne α] (n : ℕ) [n.AtLeastTwo] :
     untop₀ (ofNat(n) : WithTop α) = ofNat(n) := rfl
 
@@ -80,23 +86,14 @@ lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.un
   | ⊤ => by simp
   | (a : α) => rfl
 
-/-!
-## Simplifying Lemmas in cases where α is a MulZeroClass
--/
-
 @[simp]
 lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
-
-/-!
-## Simplifying Lemmas in cases where α is an OrderedAddCommGroup
--/
 
 section OrderedAddCommGroup
 
 variable [AddCommGroup α] [PartialOrder α] {a b : WithTop α}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
@@ -105,7 +102,6 @@ Elements of ordered additive commutative groups are nonnegative iff their untop�
   | top => tauto
   | coe a => simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) : a ≤ b := by
   lift a to α using ha
   by_cases hb : b = ⊤
@@ -113,7 +109,6 @@ theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop�
   lift b to α using hb
   simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, gcongr] theorem untop₀_le_untop₀ (hb : b ≠ ⊤) (h : a ≤ b) : a.untop₀ ≤ b.untop₀ := by
   lift b to α using hb
   by_cases ha : a = ⊤
@@ -121,7 +116,6 @@ set_option backward.isDefEq.respectTransparency false in
   lift a to α using ha
   simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     a.untop₀ ≤ b.untop₀ ↔ a ≤ b := by
   lift a to α using ha
@@ -129,10 +123,6 @@ theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
   simp
 
 end OrderedAddCommGroup
-
-/-!
-## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
--/
 
 section LinearOrderedAddCommGroup
 

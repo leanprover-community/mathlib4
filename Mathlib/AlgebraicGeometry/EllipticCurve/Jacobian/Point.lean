@@ -14,7 +14,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points of `W` can be
 endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean` and follows from an equivalence with
-the nonsingular points `W⟮F⟯` in affine coordinates.
+the nonsingular points in affine coordinates.
 
 This file defines the group law on nonsingular Jacobian points.
 
@@ -28,7 +28,7 @@ This file defines the group law on nonsingular Jacobian points.
 * `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular Jacobian point.
 * `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular Jacobian points.
 * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
-  nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+  nonsingular Jacobian points with the type of nonsingular points in affine coordinates.
 
 ## Main statements
 
@@ -123,7 +123,9 @@ lemma neg_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) 
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] := by
-  erw [neg, smul_fin3, mul_div_cancel₀ _ <| pow_ne_zero 2 hPz, ← negY_of_Z_ne_zero hPz,
+  rw [neg, smul_fin3]
+  simp only [fin3_def_ext]
+  rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hPz, ← negY_of_Z_ne_zero hPz,
     mul_div_cancel₀ _ <| pow_ne_zero 3 hPz, mul_one]
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
@@ -156,8 +158,8 @@ lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -
 
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
-  erw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3, neg_sq, mul_one,
-    Odd.neg_pow <| by decide, mul_one, mul_zero]
+  rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3]
+  simp +decide [fin3_def_ext, Odd.neg_pow]
 
 variable (W') in
 /-- The negation of a Jacobian point class on a Weierstrass curve `W`.
@@ -215,8 +217,8 @@ lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : 
 lemma add_smul_equiv (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) ≈ W'.add P Q := by
   by_cases h : P ≈ Q
-  · exact ⟨hu.unit ^ 4, by convert (add_smul_of_equiv h hu hv).symm⟩
-  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert (add_smul_of_not_equiv h hu hv).symm⟩
+  · exact ⟨hu.unit ^ 4, by convert! (add_smul_of_equiv h hu hv).symm⟩
+  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert! (add_smul_of_not_equiv h hu hv).symm⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
     W'.add P Q ≈ W'.add P' Q' := by
@@ -394,17 +396,17 @@ lemma mk_ne_zero [Nontrivial R] {X Y : R} (h : W'.NonsingularLift ⟦![X, Y, 1]�
 corresponding nonsingular Jacobian point. -/
 def fromAffine [Nontrivial R] : W'.toAffine.Point → W'.Point
   | 0 => 0
-  | .some h => ⟨(nonsingularLift_some ..).mpr h⟩
+  | .some _ _ h => ⟨(nonsingularLift_some ..).mpr h⟩
 
 lemma fromAffine_zero [Nontrivial R] : fromAffine 0 = (0 : W'.Point) :=
   rfl
 
 lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
+    fromAffine (.some _ _ h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
 lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
-    fromAffine (.some h) ≠ 0 :=
+    fromAffine (.some _ _ h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
 /-- The negation of a nonsingular Jacobian point on a Weierstrass curve `W`.
@@ -444,7 +446,7 @@ variable (W) in
 /-- The natural map from a nonsingular Jacobian point representative on a Weierstrass curve to its
 corresponding nonsingular point in affine coordinates. -/
 noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
-  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
+  if hP : W.Nonsingular P ∧ P z ≠ 0 then .some _ _ <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
 lemma toAffine_of_singular {P : Fin 3 → F} (hP : ¬W.Nonsingular P) : toAffine W P = 0 := by
   rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
@@ -456,11 +458,11 @@ lemma toAffine_zero : toAffine W ![1, 1, 0] = 0 :=
   toAffine_of_Z_eq_zero rfl
 
 lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
-    toAffine W P = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
+    toAffine W P = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
   rw [toAffine, dif_pos ⟨hP, hPz⟩]
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
-    toAffine W ![X, Y, 1] = .some ((nonsingular_some ..).mp h) := by
+    toAffine W ![X, Y, 1] = .some _ _ ((nonsingular_some ..).mp h) := by
   simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
 
 lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
@@ -546,11 +548,11 @@ lemma toAffineLift_zero : toAffineLift (0 : W.Point) = 0 :=
   toAffine_zero
 
 lemma toAffineLift_of_Z_ne_zero {P : Fin 3 → F} {hP : W.NonsingularLift ⟦P⟧} (hPz : P z ≠ 0) :
-    toAffineLift ⟨hP⟩ = .some ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
+    toAffineLift ⟨hP⟩ = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) :=
   toAffine_of_Z_ne_zero hP hPz
 
 lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
-    toAffineLift ⟨h⟩ = .some ((nonsingular_some ..).mp h) :=
+    toAffineLift ⟨h⟩ = .some _ _ ((nonsingular_some ..).mp h) :=
   toAffine_some h
 
 lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
@@ -565,7 +567,7 @@ lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
 set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
-Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
+Weierstrass curve `W` and the type of nonsingular points in affine coordinates. -/
 @[simps]
 noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
@@ -612,29 +614,26 @@ end Point
 /-! ## Maps and base changes -/
 
 @[simp]
-protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) :
-    (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
+protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) : (W'.map f).neg (f ∘ P) = f ∘ W'.neg P := by
   simp only [neg, map_negY, comp_fin3]
   map_simp
 
 @[simp]
 protected lemma map_add (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) : (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+    (hQ : W.Nonsingular Q) : (W.map f).add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
   · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
   · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
 
 lemma baseChange_neg [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
     [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A) :
-    (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
+    (W'⁄B).neg (f ∘ P) = f ∘ (W'⁄A).neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
 lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K]
     [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : Fin 3 → F}
-    (hP : (W'.baseChange F).toJacobian.Nonsingular P)
-    (hQ : (W'.baseChange F).toJacobian.Nonsingular Q) :
-    (W'.baseChange K).toJacobian.add (f ∘ P) (f ∘ Q) =
-      f ∘ (W'.baseChange F).toJacobian.add P Q := by
+    (hP : (W'⁄F).Nonsingular P) (hQ : (W'⁄F).Nonsingular Q) :
+    (W'⁄K).add (f ∘ P) (f ∘ Q) = f ∘ (W'⁄F).add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add _ hP hQ, map_baseChange]
 
 end Jacobian

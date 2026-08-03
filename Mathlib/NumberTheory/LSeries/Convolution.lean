@@ -41,12 +41,14 @@ def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFuncti
   toFun n := if n = 0 then 0 else f n
   map_zero' := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
     (h : ∀ {n}, n ≠ 0 → f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
   ext
   simp_all [toArithmeticFunction]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we consider an arithmetic function just as a function and turn it back into an
 arithmetic function, it is the same as before. -/
 @[simp]
@@ -78,6 +80,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 
 namespace LSeries
 
+set_option backward.isDefEq.respectTransparency false in
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n
@@ -106,7 +109,6 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`

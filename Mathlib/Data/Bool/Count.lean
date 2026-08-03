@@ -53,9 +53,6 @@ theorem IsChain.count_not_cons :
   | b, x :: l, h => by
     grind [h.of_cons.count_not_cons]
 
-@[deprecated (since := "2025-09-21")]
-alias Chain.count_not := IsChain.count_not_cons
-
 namespace IsChain
 
 variable {l : List Bool}
@@ -72,8 +69,8 @@ theorem count_false_eq_count_true (hl : IsChain (· ≠ ·) l) (h2 : Even (lengt
 
 theorem count_not_le_count_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
-  rcases l with - | ⟨x, l⟩
-  · exact zero_le _
+  cases l
+  · exact zero_le
   grind [hl.count_not_cons]
 
 theorem count_false_le_count_true_add_one (hl : IsChain (· ≠ ·) l) :

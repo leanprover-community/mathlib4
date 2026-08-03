@@ -145,7 +145,6 @@ def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, one_mul])).toLinearMap ∘ₗ
       (mulMap _ N).rangeRestrict
 
-set_option backward.isDefEq.respectTransparency false in
 variable {N} in
 @[simp]
 theorem lTensorOne'_tmul (y : R) (n : N) :
@@ -197,7 +196,6 @@ def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, mul_one])).toLinearMap ∘ₗ
       (mulMap M _).rangeRestrict
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 @[simp]
 theorem rTensorOne'_tmul (y : R) (m : M) :

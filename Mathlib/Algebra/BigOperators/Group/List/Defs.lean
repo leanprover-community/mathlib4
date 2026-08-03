@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Sums and products from lists
@@ -23,7 +23,6 @@ variable {ι M N : Type*}
 namespace List
 section Defs
 
-set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod prod_nil prod_cons prod_one_cons prod_append prod_concat
   prod_flatten prod_eq_foldl
 

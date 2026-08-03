@@ -153,12 +153,13 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
-    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+    (∏ x ∈ s with (Xor (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  simp only [Xor']
+  simp only [Xor]
 
 @[to_additive]
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
@@ -310,9 +311,8 @@ lemma prod_mul_prod_comm (f g h i : ι → M) :
 theorem prod_filter_of_ne {p : ι → Prop} [DecidablePred p] (hp : ∀ x ∈ s, f x ≠ 1 → p x) :
     ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x :=
   (prod_subset (filter_subset _ _)) fun x => by
-    classical
-      rw [not_imp_comm, mem_filter]
-      exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
+    rw [not_imp_comm, mem_filter]
+    exact fun h₁ h₂ => ⟨h₁, by simpa using hp _ h₁ h₂⟩
 
 -- If we use `[DecidableEq M]` here, some rewrites fail because they find a wrong `Decidable`
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
@@ -393,7 +393,7 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; let s' := ({a, b} : Finset ι)
+  have := Classical.decEq ι; let s' := ({a, b} : Finset ι)
   have hu : s' ⊆ s := by grind
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by grind
   rw [← Finset.prod_subset hu hf]
@@ -403,7 +403,7 @@ theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈
 theorem prod_eq_mul {s : Finset ι} {f : ι → M} (a b : ι) (hn : a ≠ b)
     (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) (ha : a ∉ s → f a = 1) (hb : b ∉ s → f b = 1) :
     ∏ x ∈ s, f x = f a * f b := by
-  haveI := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
+  have := Classical.decEq ι; by_cases h₁ : a ∈ s <;> by_cases h₂ : b ∈ s
   · exact prod_eq_mul_of_mem a b h₁ h₂ hn h₀
   · rw [hb h₂, mul_one]
     apply prod_eq_single_of_mem a h₁
@@ -596,7 +596,7 @@ theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [
 @[to_additive]
 theorem prod_multiset_count [DecidableEq M] (s : Multiset M) :
     s.prod = ∏ m ∈ s.toFinset, m ^ s.count m := by
-  convert prod_multiset_map_count s id
+  convert! prod_multiset_map_count s id
   rw [Multiset.map_id]
 
 @[to_additive]
@@ -896,11 +896,17 @@ additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- A reversed telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function
+reduces to the ratio of the first and last factors. -/
+@[to_additive /-- A reversed telescoping sum along `{0, ..., n - 1}` of a function valued in a
+commutative additive group reduces to the difference of the first and last terms. -/]
 lemma prod_range_div' (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f i / f (i + 1)) = f 0 / f n := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- Express `f n` as `f 0` multiplied by the telescoping product of consecutive ratios from
+`0` to `n - 1`. -/
+@[to_additive /-- Express `f n` as `f 0` plus the telescoping sum of consecutive differences from
+`0` to `n - 1`. -/]
 lemma eq_prod_range_div (f : ℕ → G) (n : ℕ) : f n = f 0 * ∏ i ∈ range n, f (i + 1) / f i := by
   rw [prod_range_div, mul_div_cancel]
 
@@ -1066,10 +1072,6 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
     a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
   induction s using Finset.cons_induction with grind
 
-@[deprecated Multiset.mem_sum (since := "2025-08-24")]
-theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
-    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
-
 @[to_additive]
 lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
     (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
@@ -1111,6 +1113,13 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
   induction s using Finset.cons_induction with grind
 
 end Multiset
+
+@[to_additive (attr := simp)]
+lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+    IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simpa using fun _ ↦ ih
 
 @[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :

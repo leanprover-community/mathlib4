@@ -32,12 +32,12 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
     d ∣ a ^ n + b ↔ (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) + b = 0 := by
   rcases hd with ⟨k, hk⟩
   rw [← ZMod.natCast_eq_zero_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   push_cast
   congr
   suffices (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) =
       (((ZMod.unitOfCoprime _ ha) ^ (n : ℤ) : (ZMod d)ˣ) : ZMod d) by
-    convert this
+    convert! this
   rw [sub_eq_iff_eq_add] at hk
   rw [hk, zpow_add, zpow_mul]
   norm_cast
@@ -139,11 +139,11 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
   norm_cast
   simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
   norm_cast
-  convert ZMod.natCast_self (a * b + 1) using 2
+  convert! ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _
 
 lemma ab_add_one_dvd_b_pow_large_n_add_a : a * b + 1 ∣ b ^ h.large_n + a := by
-  convert h.symm.ab_add_one_dvd_a_pow_large_n_add_b using 1
+  convert! h.symm.ab_add_one_dvd_a_pow_large_n_add_b using 1
   · rw [mul_comm]
   · rw [h.symm_large_n]
 

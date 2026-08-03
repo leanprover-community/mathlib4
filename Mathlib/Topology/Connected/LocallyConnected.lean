@@ -17,7 +17,7 @@ of connected (not necessarily open) sets --- but in a non-trivial way, so we cho
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
 
-@[expose] public section
+public section
 
 open Set Topology
 

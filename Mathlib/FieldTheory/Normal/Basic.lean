@@ -6,9 +6,9 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
-public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.GroupTheory.Solvable
 
 /-!
 # Normal field extensions
@@ -59,7 +59,6 @@ variable {E F}
 
 open IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 09HU "Normal part"]
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
@@ -68,17 +67,17 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     exact Normal.of_algEquiv
       (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine normal_iff.mpr fun x ↦ ?_
-  haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
+  have : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
   have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := SplittingField.splits (p * minpoly F x)
-  rw [Polynomial.map_mul, splits_mul_iff _ (map_ne_zero (minpoly.ne_zero hx))] at hL
+  rw [Polynomial.map_mul, splits_mul _ (map_ne_zero (minpoly.ne_zero hx))] at hL
   · obtain ⟨hL1, hL2⟩ := hL
     let j : E →ₐ[F] L := IsSplittingField.lift E p hL1
     rw [← j.comp_algebraMap, ← Polynomial.map_map] at hL2
     refine ⟨hx, Splits.of_splits_map (j : E →+* L) hL2 fun a ha ↦ ?_⟩
     rw [Polynomial.map_map, j.comp_algebraMap] at ha
-    letI : Algebra F⟮x⟯ L := ((algHomAdjoinIntegralEquiv F hx).symm ⟨a, ha⟩).toRingHom.toAlgebra
+    let : Algebra F⟮x⟯ L := ((algHomAdjoinIntegralEquiv F hx).symm ⟨a, ha⟩).toRingHom.toAlgebra
     let j' : E →ₐ[F⟮x⟯] L := IsSplittingField.lift E (p.map (algebraMap F F⟮x⟯)) ?_
     · change a ∈ j.range
       rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
@@ -101,10 +100,10 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
-    haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
+    have : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
       refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
-      · simpa [Polynomial.map_map] using ((h i.1).splits i.2).map (algebraMap (t i.1) K)
+      · simpa [Polynomial.map_map] using! ((h i.1).splits i.2).map (algebraMap (t i.1) K)
     apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
     refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
@@ -128,7 +127,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   have : ∀ x ∈ S, ((minpoly F x).map (algebraMap F E)).Splits := fun x hx ↦ splits_of_splits
     (splits x hx).2 fun y hy ↦ (le_iSup _ ⟨x, hx⟩ : _ ≤ E) (subset_adjoin F _ <| by exact hy)
   obtain ⟨φ⟩ := nonempty_algHom_adjoin_of_splits fun x hx ↦ ⟨(splits x hx).1, this x hx⟩
-  convert (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
+  convert! (normal.splits <| φ ⟨x, hx⟩).map E.val.toRingHom
   simp [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective,
     Polynomial.map_map]
 
@@ -137,7 +136,6 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_ | _) <;> infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An intersection of normal extensions is normal. -/
 @[stacks 09HP]
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
@@ -172,7 +170,6 @@ section Restrict
 variable (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] [Algebra E K₃]
   [IsScalarTower F E K₁] [IsScalarTower F E K₂] [IsScalarTower F E K₃]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
   let g := f.restrictNormal' E
@@ -246,8 +243,8 @@ theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
 
 variable (F K₁)
 
-theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
-    [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable Gal(E/F) := by
+theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : Group.IsSolvable (K₁ ≃ₐ[F] K₁)]
+    [h2 : Group.IsSolvable (E ≃ₐ[K₁] E)] : Group.IsSolvable Gal(E/F) := by
   let f : (E ≃ₐ[K₁] E) →* Gal(E/F) :=
     { toFun := fun ϕ =>
         AlgEquiv.ofAlgHom (ϕ.toAlgHom.restrictScalars F) (ϕ.symm.toAlgHom.restrictScalars F)
@@ -255,7 +252,7 @@ theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃�
       map_one' := AlgEquiv.ext fun _ => rfl
       map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
   refine
-    solvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
+    Group.isSolvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
       ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 
@@ -267,7 +264,6 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : Gal(L/K))` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
 theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)

@@ -86,14 +86,12 @@ theorem unop_injective : (@Subsemiring.unop R _).Injective := opEquiv.symm.injec
 @[simp]
 theorem unop_inj {S T : Subsemiring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem op_bot : (⊥ : Subsemiring R).op = ⊥ := opEquiv.map_bot
 
 @[simp]
 theorem op_eq_bot {S : Subsemiring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unop_bot : (⊥ : Subsemiring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
@@ -145,7 +143,7 @@ theorem unop_iInf (S : ι → Subsemiring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

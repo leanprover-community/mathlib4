@@ -28,10 +28,11 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi CategoryTheory.Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A natural transformation between functors `Karoubi C ⥤ D` is determined
 by its value on objects coming from `C`. -/
 theorem natTrans_eq {F G : Karoubi C ⥤ D} (φ : F ⟶ G) (P : Karoubi C) :
@@ -43,13 +44,14 @@ theorem natTrans_eq {F G : Karoubi C ⥤ D} (φ : F ⟶ G) (P : Karoubi C) :
 
 namespace FunctorExtension₁
 
+set_option linter.style.longLine false in
 /-- The canonical extension of a functor `C ⥤ Karoubi D` to a functor
 `Karoubi C ⥤ Karoubi D` -/
 @[simps]
 def obj (F : C ⥤ Karoubi D) : Karoubi C ⥤ Karoubi D where
   obj P :=
-    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map P.idem⟩
-  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using F.congr_map f.comm⟩
+    ⟨(F.obj P.X).X, (F.map P.p).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map P.idem⟩
+  map f := ⟨(F.map f.f).f, by simpa only [F.map_comp, hom_ext_iff] using! F.congr_map f.comm⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a natural transformation `φ` between functors
@@ -99,6 +101,8 @@ def functorExtension₁ : (C ⥤ Karoubi D) ⥤ Karoubi C ⥤ Karoubi D where
     slice_rhs 1 2 => rw [h']
     simp only [assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
 using `functorExtension₁` actually extend the original functors `C ⥤ Karoubi D`. -/
 @[simps!]
@@ -112,6 +116,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun {X Y} f => by simp))
     (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
@@ -122,27 +127,27 @@ def KaroubiUniversal₁.counitIso :
           { app := fun P =>
               { f := (G.map (decompId_p P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp]
-                using (G.congr_map (decompId_p_naturality f)).symm }
+                using! (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
           { app := fun P =>
               { f := (G.map (decompId_i P)).f
                 comm := by
-                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using
+                  simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
             naturality := fun P Q f => by
-              simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
+              simpa only [hom_ext_iff, G.map_comp] using! G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decomp_p.symm
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decomp_p.symm
         inv_hom_id := by
           ext P
-          simpa only [hom_ext_iff, G.map_comp, G.map_id] using G.congr_map P.decompId.symm })
+          simpa only [hom_ext_iff, G.map_comp, G.map_id] using! G.congr_map P.decompId.symm })
     (fun {X Y} φ => by
       ext P
       dsimp
@@ -152,6 +157,8 @@ def KaroubiUniversal₁.counitIso :
 
 attribute [simps!] KaroubiUniversal₁.counitIso
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 @[simps]
 def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
@@ -164,6 +171,7 @@ def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
     dsimp
     rw [comp_p, ← comp_f, ← F.map_comp, P.idem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Compatibility isomorphisms of `functorExtension₁` with respect to the
 composition of functors. -/
 def functorExtension₁Comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
@@ -171,11 +179,14 @@ def functorExtension₁Comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
       (functorExtension₁ C D).obj F ⋙ (functorExtension₁ D E).obj G :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical functor `(C ⥤ D) ⥤ (Karoubi C ⥤ Karoubi D)` -/
 @[simps!]
 def functorExtension₂ : (C ⥤ D) ⥤ Karoubi C ⥤ Karoubi D :=
   (whiskeringRight C D (Karoubi D)).obj (toKaroubi D) ⋙ functorExtension₁ C D
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism expressing that functors `Karoubi C ⥤ Karoubi D` obtained
 using `functorExtension₂` actually extend the original functors `C ⥤ D`. -/
 @[simps!]
@@ -238,6 +249,8 @@ instance : ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).IsEquivalence :=
 
 variable {C D}
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
     (τ : toKaroubi _ ⋙ F ⟶ toKaroubi _ ⋙ G) (P : Karoubi C) :
     (((whiskeringLeft _ _ _).obj (toKaroubi _)).preimage τ).app P =
@@ -250,6 +263,7 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
 
 end IsIdempotentComplete
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {C D} in
 /-- The precomposition of functors with `toKaroubi C` is fully faithful. -/

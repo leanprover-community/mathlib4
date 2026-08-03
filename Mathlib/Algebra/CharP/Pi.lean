@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Pi
 # Characteristic of semirings of functions
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

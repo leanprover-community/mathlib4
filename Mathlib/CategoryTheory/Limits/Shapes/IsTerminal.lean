@@ -31,21 +31,25 @@ noncomputable section
 
 universe w w' v v₁ v₂ u u₁ u₂
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cone for the empty diagram given an object. -/
-@[simps]
+@[simps, implicit_reducible]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
   { pt := X
     π :=
     { app := by cat_disch } }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- Construct a cocone for the empty diagram given an object. -/
-@[simps]
+@[implicit_reducible, simps]
 def asEmptyCocone (X : C) : Cocone (Functor.empty.{0} C) :=
   { pt := X
     ι :=
@@ -115,9 +119,7 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
-  right_inv := by
-    #adaptation_note /-- 19-07-2025 grind stopped working -/
-    intro x; dsimp
+  right_inv := by grind
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -193,11 +195,11 @@ theorem IsInitial.isSplitEpi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : IsSp
 
 /-- Any morphism from a terminal object is mono. -/
 theorem IsTerminal.mono_from {X Y : C} (t : IsTerminal X) (f : X ⟶ Y) : Mono f := by
-  haveI := t.isSplitMono_from f; infer_instance
+  have := t.isSplitMono_from f; infer_instance
 
 /-- Any morphism to an initial object is epi. -/
 theorem IsInitial.epi_to {X Y : C} (t : IsInitial X) (f : Y ⟶ X) : Epi f := by
-  haveI := t.isSplitEpi_to f; infer_instance
+  have := t.isSplitEpi_to f; infer_instance
 
 /-- If `T` and `T'` are terminal, they are isomorphic. -/
 @[simps]
@@ -338,7 +340,7 @@ variable {J : Type u} [Category.{v} J]
 
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.
 In `limitOfDiagramInitial` we show it is a limit cone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
@@ -347,7 +349,6 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `coneOfDiagramInitial` is a limit. -/
 def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
@@ -358,11 +359,10 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `limitOfDiagramTerminal` we show it is a limit cone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
@@ -374,7 +374,6 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coneOfDiagramTerminal` is a limit. -/
 def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
@@ -383,7 +382,7 @@ def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
 
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cocone for `J`.
 In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F where
   pt := F.obj X
   ι :=
@@ -392,7 +391,6 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
 `coconeOfDiagramTerminal` is a colimit. -/
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
@@ -406,11 +404,10 @@ lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : Is
   change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cocone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `colimitOfDiagramInitial` we show it is a colimit cocone. -/
-@[simps]
+@[implicit_reducible, simps]
 def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
@@ -422,7 +419,6 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coconeOfDiagramInitial` is a colimit. -/
 def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
@@ -451,4 +447,50 @@ lemma isIso_of_isInitial {X Y : C} (hX : IsInitial X) (hY : IsInitial Y) (f : X 
 
 end
 
-end CategoryTheory.Limits
+/-- An initial object is terminal in the opposite category. -/
+def IsInitial.op {X : C} (hX : IsInitial X) : IsTerminal (op X) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (hX.to _).op)
+    (fun _ _ ↦ Quiver.Hom.unop_inj (hX.hom_ext _ _))
+
+/-- An initial object in the opposite category is terminal in the original category. -/
+def IsInitial.unop {X : Cᵒᵖ} (hX : IsInitial X) : IsTerminal X.unop :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (hX.to _).unop)
+    (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
+
+/-- A terminal object is initial in the opposite category. -/
+def IsTerminal.op {X : C} (hX : IsTerminal X) : IsInitial (op X) :=
+  IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).op)
+    (fun _ _ ↦ Quiver.Hom.unop_inj (hX.hom_ext _ _))
+
+/-- A terminal object in the opposite category is initial in the original category. -/
+def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
+  IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
+    (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
+
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
+def isTerminalConst {X : D} (hX : IsTerminal X) :
+    IsTerminal ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.from (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+/-- The constant functor returning a specific initial object is indeed initial. -/
+def isInitialConst {X : D} (hX : IsInitial X) :
+    IsInitial ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.to (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialConst_to_app {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialConst C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory

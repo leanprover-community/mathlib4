@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 /-!
 # Basic facts about real (semi)normed spaces
 
-In this file we prove some theorems about (semi)normed spaces over real numberes.
+In this file we prove some theorems about (semi)normed spaces over real numbers.
 
 ## Main results
 
@@ -22,7 +22,7 @@ In this file we prove some theorems about (semi)normed spaces over real numberes
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology
@@ -59,7 +59,7 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
 theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
   refine Subset.antisymm closure_ball_subset_closedBall fun y hy => ?_
   have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 := by fun_prop
-  convert this.mem_closure _ _
+  convert! this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
   · simp [closure_Ico zero_ne_one, zero_le_one]
   · rintro c ⟨hc0, hc1⟩
@@ -71,7 +71,7 @@ theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = clo
 
 theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
-  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
+  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_sdiff_ball]
 
 theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
@@ -92,13 +92,13 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
 
 theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (closedBall x r) = sphere x r := by
-  rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
+  rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_sdiff_ball]
 
 theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall x hr, interior_frontier isClosed_closedBall]
 
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
-  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, sdiff_empty]
 
 variable [NontrivialTopology E]
 
@@ -144,7 +144,7 @@ theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = bal
   · exact interior_closedBall x hr
 
 theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sphere x r := by
-  rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
+  rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_sdiff_ball]
 
 @[simp]
 theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
@@ -152,6 +152,6 @@ theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
 
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
-  rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere' x, sdiff_empty]
 
 end Normed

@@ -24,6 +24,8 @@ right Kan extension along `L`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory
@@ -46,6 +48,7 @@ noncomputable def lan : (C ⥤ H) ⥤ (D ⥤ H) where
   map {F₁ F₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit L F₁) _
     (φ ≫ leftKanExtensionUnit L F₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `F ⟶ L ⋙ (L.lan).obj G`. -/
 noncomputable def lanUnit : (𝟭 (C ⥤ H)) ⟶ L.lan ⋙ (whiskeringLeft C D H).obj L where
   app F := leftKanExtensionUnit L F
@@ -77,6 +80,7 @@ noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
@@ -101,6 +105,7 @@ lemma leftKanExtensionUnit_leftKanExtension_map_leftKanExtensionObjIsoColimit_ho
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X) f
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom (X : C) :
     (L.leftKanExtensionUnit F).app X ≫ (L.leftKanExtensionObjIsoColimit F (L.obj X)).hom =
@@ -237,6 +242,7 @@ lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.
     colimit.ι G ((CostructuredArrow.proj L X.base).obj X.fiber) := by
   simp [colimitIsoColimitGrothendieck]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
     colimit.ι G X ≫ (colimitIsoColimitGrothendieck L G).hom =
@@ -300,7 +306,6 @@ instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) :
   dsimp [ran, ranCounit]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If there exists a pointwise right Kan extension of `F` along `L`,
 then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
 noncomputable def isPointwiseRightKanExtensionRanCounit

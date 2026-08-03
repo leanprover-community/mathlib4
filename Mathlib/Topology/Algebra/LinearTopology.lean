@@ -76,7 +76,7 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   typeclass inference.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter
@@ -292,6 +292,7 @@ theorem hasBasis_right_ideal [IsLinearTopology Rᵐᵒᵖ R] :
     (𝓝 0).HasBasis (fun I : Submodule Rᵐᵒᵖ R ↦ (I : Set R) ∈ 𝓝 0) (fun I ↦ (I : Set R)) :=
   hasBasis_submodule Rᵐᵒᵖ
 
+set_option backward.isDefEq.respectTransparency false in
 open Set Pointwise in
 /-- If a ring `R` is linearly ordered as a left *and* right module over itself,
 then it has a basis of neighborhoods of zero made of *two-sided* ideals.

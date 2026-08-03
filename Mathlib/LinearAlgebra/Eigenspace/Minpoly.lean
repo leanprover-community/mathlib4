@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 eigenvalue, minimal polynomial
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -46,9 +46,10 @@ end CommSemiring
 section CommRing
 
 variable {R : Type v} {M : Type w} [CommRing R] [AddCommGroup M] [Module R M] {f : End R M} {μ : R}
+  {x : M} {p : R[X]}
 
-theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
-    (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x := by
+theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
+    aeval f p x = p.eval μ • x := by
   refine p.induction_on ?_ ?_ ?_
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
@@ -56,6 +57,13 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
+
+/-- A variant of `Module.End.aeval_apply_of_hasEigenvector` which does not require `x ≠ 0`. -/
+lemma aeval_apply_of_mem_apply_eq_smul (hx : f x = μ • x) :
+    aeval f p x = p.eval μ • x := by
+  rcases eq_or_ne x 0 with rfl | hne
+  · simp
+  · exact aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
 
 theorem isRoot_of_hasEigenvalue [IsDomain R] [IsTorsionFree R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by
@@ -89,12 +97,11 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly R f).IsRoot �
 
 variable (f)
 
-lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+set_option backward.isDefEq.respectTransparency.types false in
+lemma finite_hasEigenvalue : Set.Finite {μ | f.HasEigenvalue μ} := by
   have h : minpoly R f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := R) f)
-  convert (minpoly R f).rootSet_finite R
-  ext μ
-  change f.HasEigenvalue μ ↔ _
-  rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
+  refine ((minpoly R f).rootSet_finite R).subset ?_
+  simp [Set.subset_def, hasEigenvalue_iff_isRoot, mem_rootSet, h]
 
 /-- An endomorphism of a finite-dimensional vector space has finitely many eigenvalues. -/
 noncomputable instance : Fintype f.Eigenvalues :=
@@ -128,12 +135,13 @@ end Module
 
 section FiniteSpectrum
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
-  convert f.finite_hasEigenvalue
-  ext f x
+  convert! f.finite_hasEigenvalue using 1
+  ext x
   exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]

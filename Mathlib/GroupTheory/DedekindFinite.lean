@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Card
 # Finite monoids are Dedekind-finite
 -/
 
-@[expose] public section
+public section
 
 instance (M) [Monoid M] [Finite M] : IsDedekindFiniteMonoid M where
   mul_eq_one_symm {a b} hab := by

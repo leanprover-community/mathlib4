@@ -85,7 +85,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
     exact ⟨n, _, (@mabs_mem_iff (Subgroup G) G _ _).2 hgH, hn⟩
   classical rcases Nat.findX this with ⟨n, ⟨x, hxH, hnx, hxn⟩, hmin⟩
   by_contra hxmin
-  simp only [IsLeast, not_and, mem_setOf_eq, mem_lowerBounds, not_exists, not_forall,
+  simp only [IsLeast, not_and, mem_ofPred_eq, mem_lowerBounds, not_exists, not_forall,
     not_le] at hxmin
   rcases hxmin x ⟨hxH, (one_le_pow_of_one_le'  h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   obtain ⟨m, hm, hya⟩ := hex y hy₀
@@ -108,7 +108,6 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
   · exact ⟨1, closure_singleton_one.symm⟩
   · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => cyclic_of_min
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>

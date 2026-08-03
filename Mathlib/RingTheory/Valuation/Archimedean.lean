@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 
 -/
 
-@[expose] public section
+public section
 
 section Field
 
@@ -22,9 +22,9 @@ variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
 
 instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
-  bot := ⟨⊥, by simp [bot_eq_zero'']⟩
-  bot_le a := by simp [bot_eq_zero'', ← Subtype.coe_le_coe]
-  zero_le a := by simp [← Subtype.coe_le_coe]
+  bot := ⟨⊥, by simp [bot_eq_zero]⟩
+  bot_le a := by simp [bot_eq_zero, ← Subtype.coe_le_coe]
+  isBot_zero a := by simp [← Subtype.coe_le_coe]
   mul_lt_mul_of_pos_left := by
     simp only [← Subtype.coe_lt_coe, val_mrange_zero, Submonoid.coe_mul, Subtype.forall,
       MonoidHom.mem_mrange, forall_exists_index, forall_apply_eq_imp_iff]
@@ -33,7 +33,7 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
-  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (.ofClass v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 
@@ -43,31 +43,30 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function WithZero in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
       Nonempty (MonoidHom.mrange v ≃*o ℤᵐ⁰) := by
-  rw [← LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+  rw [←
+    LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
   classical
   refine ⟨fun h ↦ (h.mapsTo Subtype.val ?_).mono' (by simp), fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩
   · rintro ⟨_, x, rfl⟩
-    simp only [← Subtype.coe_le_coe, OneMemClass.coe_one, Set.mem_setOf_eq, Set.mem_range,
+    simp only [← Subtype.coe_le_coe, OneMemClass.coe_one, Set.mem_ofPred_eq, Set.mem_range,
       Function.comp_apply]
     intro hx
     obtain ⟨y, rfl⟩ := hv.exists_of_le_one hx
     exact ⟨y, by simp⟩
   · exact fun x ↦ if hx : x ∈ MonoidHom.mrange v then ⟨x, hx⟩ else 1
   · intro
-    simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_setOf_eq,
+    simp only [Set.mem_range, Function.comp_apply, MonoidHom.mem_mrange, Set.mem_ofPred_eq,
       forall_exists_index]
     rintro x rfl
     simp [← Subtype.coe_le_coe, hv.map_le_one]
   · simp [Function.onFun]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
     (hv : Integers v O) :
     IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by

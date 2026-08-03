@@ -18,6 +18,7 @@ public section
 
 
 open Filter ENNReal
+open scoped NNReal
 
 namespace Real
 variable {ι : Type*} {f : Filter ι} {u : ι → ℝ}
@@ -29,7 +30,7 @@ lemma limsSup_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≤
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup]
-  convert sInf_empty
+  convert! sInf_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -39,7 +40,7 @@ lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥
 @[simp]
 lemma limsInf_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≥ ·)) : limsInf f = 0 := by
   rw [limsInf]
-  convert sSup_empty
+  convert! sSup_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -104,11 +105,10 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
     · exact hx₀.trans hb₀
     · exact hb _ hx₀ hx
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
-  convert sInf_empty
+  convert! sInf_empty
   simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
@@ -123,7 +123,6 @@ lemma limsup_of_not_isBoundedUnder (hf : ¬ f.IsBoundedUnder (· ≤ ·) u) : li
 lemma liminf_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≥ ·) u) : liminf u f = 0 :=
   limsInf_of_not_isCobounded hf
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   by_cases hf : f.IsCoboundedUnder (· ≥ ·) u; swap
@@ -131,11 +130,10 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_liminf_iff (by simpa) ⟨0, by simp⟩, le_liminf_iff]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
@@ -146,7 +144,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   refine eq_of_forall_le_iff fun c ↦ ?_
   rw [← Real.toNNReal_le_iff_le_coe, le_limsup_iff (by simpa) (by simpa), le_limsup_iff ‹_›]
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
-    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
+    zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_comm (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
@@ -173,6 +171,33 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
     ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
   exact g_iso.limsup_apply.symm
 
+theorem limsup_mul_const_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    f.limsup (fun x : α => u x * a) = a * f.limsup u := by
+  simpa [mul_comm] using limsup_const_mul_of_ne_top ha_top
+
+theorem liminf_const_mul_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
+    (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
+    f.liminf (fun x : α => a * u x) = a * f.liminf u := by
+  let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
+    ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
+  exact g_iso.liminf_apply.symm
+
+theorem liminf_mul_const_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
+    (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
+    f.liminf (fun x : α => u x * a) = a * f.liminf u := by
+  simpa [mul_comm] using liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
+
+theorem liminf_const_mul_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    f.liminf (fun x : α => a * u x) = a * f.liminf u := by
+  by_cases ha₀ : a = 0
+  · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
+    apply liminf_const
+  exact liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
+
+theorem liminf_mul_const_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
+    f.liminf (fun x : α => u x * a) = a * f.liminf u := by
+  simpa [mul_comm] using liminf_const_mul_of_ne_top ha_top
+
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
   by_cases! ha_top : a ≠ ⊤
@@ -184,13 +209,15 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     simp
   · have hu_mul : ∃ᶠ x : α in f, ⊤ ≤ ite (u x = 0) (0 : ℝ≥0∞) ⊤ := by
       rw [EventuallyEq, not_eventually] at hu
-      refine hu.mono fun x hx => ?_
-      rw [Pi.zero_apply] at hx
-      simp [hx]
+      exact hu.mono fun x hx => by simpa
     have h_top_le : (f.limsup fun x : α => ite (u x = 0) (0 : ℝ≥0∞) ⊤) = ⊤ :=
       eq_top_iff.mpr (le_limsup_of_frequently_le hu_mul)
-    have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
-    simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
+    have hfu : f.limsup u ≠ 0 := mt limsup_eq_bot.1 hu
+    simp [ha_top, top_mul', h_top_le, hfu]
+
+theorem limsup_mul_const [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
+    f.limsup (u · * a) = a * f.limsup u := by
+  simpa [mul_comm] using limsup_const_mul
 
 /-- See also `limsup_mul_le'` -/
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
@@ -234,6 +261,18 @@ lemma ofReal_limsup {u : α → ℝ}
     filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with a ha
     exact (toReal_lt_of_lt_ofReal ha).trans_le' (by simp [toReal_ofReal'])
 
+lemma ofReal_limsup_toReal [f.NeBot] {u : α → ℝ≥0∞} {C : ℝ≥0} (hf : ∀ᶠ a in f, u a ≤ C) :
+    ENNReal.ofReal (limsup (fun a ↦ (u a).toReal) f) = limsup u f := by
+  have h₁ : IsCoboundedUnder (· ≤ ·) f (fun a ↦ (u a).toReal) :=
+    IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ by positivity
+  have h₂ : IsBoundedUnder (· ≤ ·) f (fun a ↦ (u a).toReal) := by
+    refine isBoundedUnder_of_eventually_le (a := C) ?_
+    filter_upwards [hf] with a ha
+    exact ENNReal.toReal_le_coe_of_le_coe ha
+  refine (ENNReal.ofReal_limsup h₁ h₂).trans (limsup_congr ?_)
+  filter_upwards [hf] with x hx
+  exact ENNReal.ofReal_toReal (ne_top_of_le_ne_top (by simp : C ≠ ∞) hx)
+
 lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
     (h₂ : IsBoundedUnder (· ≤ ·) f fun a ↦ (u a).toReal := by isBoundedDefault) :
     (limsup u f).toReal = limsup (fun a ↦ (u a).toReal) f := by
@@ -257,7 +296,7 @@ lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
   obtain ⟨x, hx⟩ := h₂
   rw [eventually_map] at hx
   have hx₀ : 0 ≤ x := by obtain ⟨i, hi⟩ := hx.exists; exact toReal_nonneg.trans hi
-  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  simp only [limsup, limsSup, eventually_map, ne_eq, sInf_eq_top, Set.mem_ofPred_eq, not_forall]
   refine ⟨.ofReal x, ?_, by simp⟩
   filter_upwards [h₁, hx] with i hi
   simp [le_ofReal_iff_toReal_le, *]

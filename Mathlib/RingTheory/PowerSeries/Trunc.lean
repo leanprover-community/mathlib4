@@ -38,31 +38,31 @@ variable [Semiring R]
 open Finset Nat
 
 set_option backward.privateInPublic true in
-private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
+private def truncAux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
-private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
-    (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc_aux, Polynomial.coeff_monomial]
+private theorem coeff_truncAux (m) (n) (φ : R⟦X⟧) :
+    (truncAux n φ).coeff m = if m < n then coeff m φ else 0 := by
+  simp [truncAux, Polynomial.coeff_monomial]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
-  toFun := trunc_aux n
+  toFun := truncAux n
   map_add' φ ψ := Polynomial.ext fun m => by
-    simp only [coeff_trunc_aux, Polynomial.coeff_add]
+    simp only [coeff_truncAux, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]
-  map_smul' t φ := by ext; simp [trunc_aux, Polynomial.coeff_monomial]
+  map_smul' t φ := by ext; simp [truncAux, Polynomial.coeff_monomial]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
     trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc, coeff_trunc_aux]
+  simp [trunc, coeff_truncAux]
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
@@ -185,7 +185,6 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
@@ -194,7 +193,6 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with

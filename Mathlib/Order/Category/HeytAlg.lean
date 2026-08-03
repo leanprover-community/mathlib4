@@ -41,7 +41,6 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `HeytAlg R`. -/
 @[ext]
 structure Hom (X Y : HeytAlg.{u}) where
@@ -154,7 +153,6 @@ instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
   forget₂.obj X := .of X
   forget₂.map f := BddDistLat.ofHom f.hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : HeytAlg.{u}} (e : α ≃o β) : α ≅ β where

@@ -44,7 +44,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -80,16 +80,22 @@ theorem injective_of_surjective_of_injective
     {N : Type w} [AddCommMonoid N] [Module R N]
     (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
   obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
-  haveI := small_of_surjective hg
-  letI := Equiv.addCommMonoid (equivShrink M).symm
-  letI := Equiv.module R (equivShrink M).symm
+  have := small_of_surjective hg
+  let := Equiv.addCommMonoid (equivShrink M).symm
+  let := Equiv.module R (equivShrink M).symm
   let j : Shrink.{u} M ≃ₗ[R] M := Equiv.linearEquiv R (equivShrink M).symm
-  haveI := Module.Finite.equiv j.symm
+  have := Module.Finite.equiv j.symm
   let i' := j.symm.toLinearMap ∘ₗ i
   replace hi : Injective i' := by simpa [i'] using hi
   let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
   replace hf : Surjective f' := by simpa [f'] using hf
   simpa [f'] using injective_of_surjective_of_submodule' f' hf
+
+theorem bijective_of_surjective_of_injective
+    {N : Type w} [AddCommMonoid N] [Module R N]
+    (i f : N →ₗ[R] M) (hi : Function.Injective i)
+    (hf : Function.Surjective f) : Function.Bijective f :=
+  ⟨OrzechProperty.injective_of_surjective_of_injective _ _ hi hf, hf⟩
 
 theorem injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=

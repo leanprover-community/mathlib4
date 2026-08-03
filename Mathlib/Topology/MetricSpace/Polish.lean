@@ -62,29 +62,26 @@ To endow a Polish space with a complete metric space structure, do
 class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
     extends SecondCountableTopology α, IsCompletelyMetrizableSpace α
 
-set_option backward.isDefEq.respectTransparency false in
 instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace α] :
     PolishSpace α := by
-  letI := upgradeIsCompletelyMetrizable α
-  haveI := UniformSpace.secondCountable_of_separable α
+  let := upgradeIsCompletelyMetrizable α
+  have := UniformSpace.secondCountable_of_separable α
   constructor
 
 namespace PolishSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
 theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
     [Nonempty α] : ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f :=
   letI := upgradeIsCompletelyMetrizable α
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
 theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β]
     [PolishSpace β] {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
-  letI := upgradeIsCompletelyMetrizable β
-  letI : MetricSpace α := hf.isEmbedding.comapMetricSpace f
-  haveI : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
+  let := upgradeIsCompletelyMetrizable β
+  let : MetricSpace α := hf.isEmbedding.comapMetricSpace f
+  have : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
   have : CompleteSpace α := by
     rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
@@ -125,7 +122,7 @@ protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace 
   have : @SecondCountableTopology α u.toTopologicalSpace :=
     htop.symm ▸ secondCountableTopology_iInf fun i ↦ letI := t i; (ht i).toSecondCountableTopology
   have : @T1Space α u.toTopologicalSpace :=
-    htop.symm ▸ t1Space_antitone (iInf_le _ i₀) (by letI := t i₀; haveI := ht i₀; infer_instance)
+    htop.symm ▸ t1Space_antitone (iInf_le _ i₀) (by let := t i₀; have := ht i₀; infer_instance)
   infer_instance
 
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
@@ -179,7 +176,6 @@ instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s)
   inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
@@ -245,11 +241,10 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
     ge_of_tendsto' this I
   exact absurd (Hmem.2 <| lt_of_lt_of_le (div_pos one_pos Cpos) I') xs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open subset of a Polish space is also Polish. -/
 theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : PolishSpace s := by
-  letI := upgradeIsCompletelyMetrizable α
+  let := upgradeIsCompletelyMetrizable α
   lift s to Opens α using hs
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
@@ -267,7 +262,6 @@ but this is nontrivial (see `isClopenable_iff_measurableSet`). -/
 def IsClopenable [t : TopologicalSpace α] (s : Set α) : Prop :=
   ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed set `s` in a Polish space, one can construct a finer Polish topology for
 which `s` is both open and closed. -/
 theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s : Set α}
@@ -276,9 +270,9 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
     Pulling back this topology by the canonical bijection with `α` gives the desired Polish
     topology in which `s` is both open and closed. -/
   classical
-  haveI : PolishSpace s := hs.polishSpace
+  have : PolishSpace s := hs.polishSpace
   let t : Set α := sᶜ
-  haveI : PolishSpace t := hs.isOpen_compl.polishSpace
+  have : PolishSpace t := hs.isOpen_compl.polishSpace
   let f : s ⊕ t ≃ α := Equiv.Set.sumCompl s
   have hle : TopologicalSpace.coinduced f instTopologicalSpaceSum ≤ ‹_› := by
     simp only [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, sup_le_iff,
@@ -288,13 +282,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp only [preimage_preimage, f]
-    have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
-    have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
-    simp_rw [t, inl, inr, Subtype.coe_preimage_self]
-    simp only [isOpen_univ, true_and]
-    rw [Subtype.preimage_coe_compl']
-    simp
+    simp [preimage_preimage, f, t]
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

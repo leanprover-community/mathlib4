@@ -5,10 +5,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.MeasureTheory.Group.LIntegral
 public import Mathlib.MeasureTheory.Integral.Marginal
 public import Mathlib.MeasureTheory.Measure.Stieltjes
@@ -55,7 +52,7 @@ variable {ι : Type*} [Fintype ι]
 /-- The volume on the real line (as a particular case of the volume on a finite-dimensional
 inner product space) coincides with the Stieltjes measure coming from the identity function. -/
 theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.measure := by
-  haveI : IsAddLeftInvariant StieltjesFunction.id.measure :=
+  have : IsAddLeftInvariant StieltjesFunction.id.measure :=
     ⟨fun a =>
       Eq.symm <|
         Real.measure_ext_Ioo_rat fun p q => by
@@ -82,7 +79,6 @@ theorem volume_Ico {a b : ℝ} : volume (Ico a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Ico {a b : ℝ} : volume.real (Ico a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ico_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ico a b) = b - a := by
   simp [hab]
 
@@ -93,7 +89,6 @@ theorem volume_Icc {a b : ℝ} : volume (Icc a b) = ofReal (b - a) := by simp [v
 theorem volume_real_Icc {a b : ℝ} : volume.real (Icc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b) = b - a := by
   simp [hab]
 
@@ -108,7 +103,6 @@ theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b) = b - a := by
   simp [hab]
 
@@ -123,7 +117,6 @@ theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
   simp [hab]
 
@@ -174,14 +167,16 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
 @[deprecated (since := "2026-01-24")]
 alias volume_emetric_closedBall := volume_closedEBall
 
-instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
+instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
+
+@[deprecated (since := "2026-06-09")]
+alias noAtoms_volume := nullSingletonClass_volume
 
 @[simp]
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
   rw [← Icc_min_max, volume_Icc, max_sub_min_eq_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_interval {a b : ℝ} : volume.real (uIcc a b) = |b - a| := by
   simp [measureReal_def]
@@ -232,7 +227,6 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ ediam s := by
     exact volume.mono hs.subset_Icc_sInf_sSup
   · rw [Metric.ediam_of_unbounded hs]; exact le_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
@@ -459,14 +453,14 @@ def regionBetween (f g : α → ℝ) (s : Set α) : Set (α × ℝ) :=
   { p : α × ℝ | p.1 ∈ s ∧ p.2 ∈ Ioo (f p.1) (g p.1) }
 
 theorem regionBetween_subset (f g : α → ℝ) (s : Set α) : regionBetween f g s ⊆ s ×ˢ univ := by
-  simpa only [prod_univ, regionBetween, Set.preimage, setOf_subset_setOf] using fun a => And.left
+  simpa only [prod_univ, regionBetween, Set.preimage, ofPred_subset_ofPred] using fun a => And.left
 
 variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 
 /-- The region between two measurable functions on a measurable set is measurable. -/
 theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
     MeasurableSet (regionBetween f g s) := by
-  dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ioo, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -478,7 +472,7 @@ a version for the region together with the graph of the upper function. -/
 theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ioc, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ioc, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
@@ -490,7 +484,7 @@ a version for the region together with the graph of the lower function. -/
 theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Ico, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Ico, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
@@ -502,7 +496,7 @@ a version for the region together with the graphs of both functions. -/
 theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
-  dsimp only [regionBetween, Icc, mem_setOf_eq, setOf_and]
+  dsimp only [regionBetween, Icc, mem_ofPred_eq, ofPred_and]
   refine
     MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
@@ -529,7 +523,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
           simp only [hx, Real.volume_Ioo]
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
           simp only [hx, measure_empty]
-      dsimp only [regionBetween, preimage_setOf_eq]
+      dsimp only [regionBetween, preimage_ofPred_eq]
       rw [h, lintegral_indicator] <;> simp only [hs, Pi.sub_apply]
     · exact measurableSet_regionBetween hf hg hs
 
@@ -553,7 +547,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
         (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
-  convert h₂ using 1
+  convert! h₂ using 1
   · rw [Measure.restrict_prod_eq_prod_univ]
     exact (Measure.restrict_eq_self _ (regionBetween_subset f g s)).symm
   · rw [Measure.restrict_prod_eq_prod_univ]
@@ -583,7 +577,7 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 /-- The region between two a.e.-measurable functions on a null-measurable set is null-measurable;
@@ -597,7 +591,7 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
   · exact nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)
 
@@ -612,12 +606,12 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
     rw [show {p : α × ℝ | f p.fst ≤ p.snd} = {p : α × ℝ | p.snd < f p.fst}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt measurable_snd.aemeasurable (by fun_prop)).compl
   · change NullMeasurableSet {p : α × ℝ | p.snd ≤ g p.fst} (μ.prod volume)
     rw [show {p : α × ℝ | p.snd ≤ g p.fst} = {p : α × ℝ | g p.fst < p.snd}ᶜ by
           ext p
-          simp only [mem_setOf_eq, mem_compl_iff, not_lt]]
+          simp]
     exact (nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable).compl
 
 end regionBetween
@@ -625,14 +619,14 @@ end regionBetween
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with `μ.restrict`.
 See also `ae_of_mem_of_ae_of_mem_inter_Ioo`. -/
-theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
+theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ.restrict (s ∩ Ioo a b), p x) :
     ∀ᵐ x ∂μ.restrict s, p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_sdiff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
@@ -659,14 +653,14 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
 /-- Consider a real set `s`. If a property is true almost everywhere in `s ∩ (a, b)` for
 all `a, b ∈ s`, then it is true almost everywhere in `s`. Formulated with bare membership.
 See also `ae_restrict_of_ae_restrict_inter_Ioo`. -/
-theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Set ℝ} {p : ℝ → Prop}
-    (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
+theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NullSingletonClass μ] {s : Set ℝ}
+    {p : ℝ → Prop} (h : ∀ a b, a ∈ s → b ∈ s → a < b → ∀ᵐ x ∂μ, x ∈ s ∩ Ioo a b → p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
   /- By second-countability, we cover `s` by countably many intervals `(a, b)` (except maybe for
     two endpoints, which don't matter since `μ` does not have any atom). -/
   let T : s × s → Set ℝ := fun p => Ioo p.1 p.2
   let u := ⋃ i : ↥s × ↥s, T i
-  have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
+  have hfinite : (s \ u).Finite := s.finite_sdiff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
     ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
