@@ -60,7 +60,7 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [CommRing S] [
     (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : Sˣ, f = α • g := by
   refine ⟨fun h ↦ ?_, fun ⟨y, h⟩ ↦ conjAlgEquiv_ext_iff.mpr ⟨(y : S), congr($h)⟩⟩
   by_cases! Subsingleton M
-  · exact ⟨1, by ext; simp [Subsingleton.eq_zero]⟩
+  · exact ⟨1, by ext; simp [Subsingleton.eq_zero (α := M)]⟩
   obtain ⟨α, hα⟩ := conjAlgEquiv_ext_iff.mp h
   obtain ⟨β, hβ⟩ := conjAlgEquiv_ext_iff.mp h.symm
   obtain ⟨x, hx⟩ := exists_ne (0 : M)

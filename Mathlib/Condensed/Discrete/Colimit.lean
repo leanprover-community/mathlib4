@@ -40,7 +40,7 @@ abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
 #adaptation_note
 /--
 In this declaration and `isColimitLocallyConstantPresheaf`, `coe_comp` interferes with rewriting via
-`Cone.w`, so we needed to manualy exclude it.
+`Cone.w`, so we needed to manually exclude it.
 -/
 set_option backward.defeqAttrib.useBackward true in
 /--
