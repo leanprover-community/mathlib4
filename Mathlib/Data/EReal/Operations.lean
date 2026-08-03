@@ -310,7 +310,7 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
   else
     haveI H₁ : 0 < -x := by simpa using hx
     haveI H₂ : x = -(-x).toENNReal := by rw [coe_toENNReal H₁.le, neg_neg]
-    H₂ ▸ neg_coe _ <| by positivity
+     H₂ ▸ (neg_coe _ <| by positivity)
 
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
