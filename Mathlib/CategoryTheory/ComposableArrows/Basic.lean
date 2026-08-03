@@ -44,8 +44,6 @@ set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
-set_option backward.privateInPublic true
-
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
@@ -304,11 +302,13 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
 @[simps]
@@ -439,21 +439,35 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 example : map' (mk₂ f g) 0 1 = f := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 1 2 = g := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : (mk₂ f g).hom = f ≫ g := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 0 0 = 𝟙 _ := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 1 1 = 𝟙 _ := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₂ f g) 2 2 = 𝟙 _ := by dsimp
 
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 1 = f := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 1 2 = g := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 2 3 = h := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 3 = f ≫ g ≫ h := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : (mk₃ f g h).hom = f ≫ g ≫ h := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 0 2 = f ≫ g := by dsimp
+set_option backward.isDefEq.respectTransparency.types false in
 example : map' (mk₃ f g h) 1 3 = g ≫ h := by dsimp
 
 end
@@ -548,9 +562,11 @@ def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
 variable (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
   (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1 := by cat_disch)
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_zero : (homMkSucc α β w).app 0 = α := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMkSucc_app_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) :
     (homMkSucc α β w).app ⟨i + 1, hi⟩ = app' β i := rfl
@@ -602,6 +618,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
       rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this
     (by rintro ⟨_ | _, hi⟩ <;> simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
     ∃ (F₀ : ComposableArrows C n) (X₀ : C) (f₀ : X₀ ⟶ F₀.left), F = F₀.precomp f₀ :=
   ⟨F.δ₀, _, F.map' 0 1, ext_succ rfl (by simp) (by simp)⟩
@@ -614,18 +631,23 @@ variable
     (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1 := by cat_disch)
     (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 2`. -/
 def homMk₂ : f ⟶ g := homMkSucc app₀ (homMk₁ app₁ app₂ w₁) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_zero : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_one : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_two : (homMk₂ app₀ app₁ app₂ w₀ w₁).app 2 = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₂_app_two' : (homMk₂ app₀ app₁ app₂ w₀ w₁).app ⟨2, by valid⟩ = app₂ := rfl
 
@@ -661,6 +683,7 @@ lemma ext₂ {f g : ComposableArrows C 2}
     (w₁ : f.map' 1 2 = eqToHom h₁ ≫ g.map' 1 2 ≫ eqToHom h₂.symm) : f = g :=
   ext_succ h₀ (ext₁ h₁ h₂ w₁) w₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₂_surjective (X : ComposableArrows C 2) :
     ∃ (X₀ X₁ X₂ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂), X = mk₂ f₀ f₁ :=
   ⟨_, _, _, X.map' 0 1, X.map' 1 2, ext₂ rfl rfl rfl (by simp) (by simp)⟩
@@ -687,19 +710,24 @@ variable
   (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2 := by cat_disch)
   (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 3`. -/
 def homMk₃ : f ⟶ g := homMkSucc app₀ (homMk₂ app₁ app₂ app₃ w₁ w₂) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_zero : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_one : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_two : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨2, by valid⟩ = app₂ :=
   rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₃_app_three : (homMk₃ app₀ app₁ app₂ app₃ w₀ w₁ w₂).app ⟨3, by valid⟩ = app₃ :=
   rfl
@@ -738,6 +766,7 @@ lemma ext₃ {f g : ComposableArrows C 3}
     (w₂ : f.map' 2 3 = eqToHom h₂ ≫ g.map' 2 3 ≫ eqToHom h₃.symm) : f = g :=
   ext_succ h₀ (ext₂ h₁ h₂ h₃ w₁ w₂) w₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₃_surjective (X : ComposableArrows C 3) :
     ∃ (X₀ X₁ X₂ X₃ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃), X = mk₃ f₀ f₁ f₂ :=
   ⟨_, _, _, _, X.map' 0 1, X.map' 1 2, X.map' 2 3,
@@ -754,23 +783,29 @@ variable
   (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3 := by cat_disch)
   (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 4`. -/
 def homMk₄ : f ⟶ g := homMkSucc app₀ (homMk₃ app₁ app₂ app₃ app₄ w₁ w₂ w₃) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_zero : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_one : (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_two :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_three :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₄_app_four :
     (homMk₄ app₀ app₁ app₂ app₃ app₄ w₀ w₁ w₂ w₃).app ⟨4, by valid⟩ = app₄ := rfl
@@ -817,6 +852,7 @@ lemma ext₄ {f g : ComposableArrows C 4}
     f = g :=
   ext_succ h₀ (ext₃ h₁ h₂ h₃ h₄ w₁ w₂ w₃) w₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₄_surjective (X : ComposableArrows C 4) :
     ∃ (X₀ X₁ X₂ X₃ X₄ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : X₃ ⟶ X₄),
       X = mk₄ f₀ f₁ f₂ f₃ :=
@@ -835,27 +871,34 @@ variable
   (w₃ : f.map' 3 4 ≫ app₄ = app₃ ≫ g.map' 3 4 := by cat_disch)
   (w₄ : f.map' 4 5 ≫ app₅ = app₄ ≫ g.map' 4 5 := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 5`. -/
 def homMk₅ : f ⟶ g := homMkSucc app₀ (homMk₄ app₁ app₂ app₃ app₄ app₅ w₁ w₂ w₃ w₄) w₀
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_zero : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 0 = app₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_one : (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 1 = app₁ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_two :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨2, by valid⟩ = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_three :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨3, by valid⟩ = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_four :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨4, by valid⟩ = app₄ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_five :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by valid⟩ = app₅ := rfl
@@ -899,6 +942,7 @@ lemma ext₅ {f g : ComposableArrows C 5}
     f = g :=
   ext_succ h₀ (ext₄ h₁ h₂ h₃ h₄ h₅ w₁ w₂ w₃ w₄) w₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₅_surjective (X : ComposableArrows C 5) :
     ∃ (X₀ X₁ X₂ X₃ X₄ X₅ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
       (f₃ : X₃ ⟶ X₄) (f₄ : X₄ ⟶ X₅), X = mk₅ f₀ f₁ f₂ f₃ f₄ :=
@@ -950,6 +994,9 @@ lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
 
 end mkOfObjOfMapSucc
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 suppress_compilation in
 variable (C n) in
 /-- The equivalence `(ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n` obtained
@@ -982,6 +1029,7 @@ def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
     (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
   isoMk₁ (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
 `.mk₂ (G.map f) (G.map g)`. -/
 @[simps!]

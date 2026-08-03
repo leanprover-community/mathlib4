@@ -130,7 +130,7 @@ to a unique map out of the direct limit. -/
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   __ := AddCon.lift _ (DirectSum.toModule R ι P g) <|
-    AddCon.addConGen_le fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
+    AddCon.addConGen_le.2 fun _ _ ⟨_, _⟩ ↦ by simpa using (Hg _ _ _ _).symm
   map_smul' r := by rintro ⟨x⟩; exact map_smul (DirectSum.toModule R ι P g) r x
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -408,6 +408,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
       DirectLimit G f →+ DirectLimit G'' f'') := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
@@ -424,12 +425,14 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :

@@ -191,6 +191,12 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
+@[simp] lemma recTopCoe_top {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) :
+    recTopCoe top coe ∞ = top := rfl
+
+@[simp] lemma recTopCoe_ofNNReal {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0) :
+    recTopCoe top coe x = coe x := rfl
+
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 
 @[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
@@ -741,7 +747,8 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -750,11 +757,12 @@ meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
     | _ => pure .none

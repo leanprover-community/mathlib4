@@ -286,7 +286,7 @@ def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : Inte
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
-    letI hS' := hS.toField
+    let hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.coe_ne_coe.1 hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
     exact hy.symm ▸ y.2
@@ -495,6 +495,7 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
     (E.map f).map g = E.map (g.comp f) :=
   SetLike.coe_injective <| Set.image_image _ _ _
 
+@[gcongr]
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
   SetLike.coe_mono (Set.image_mono h)
@@ -540,23 +541,25 @@ theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=
 theorem fieldRange_toSubfield : f.fieldRange.toSubfield = (f : L →+* L').fieldRange :=
   rfl
 
-variable {f}
-
+variable {f} in
 @[simp]
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-/-- An algebra homomorphism between fields restricts to an algebra equivalence onto its range. -/
+/-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
+@[simps! apply_coe]
 noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
-  AlgEquiv.ofBijective
-    (f.codRestrict f.range fun x ↦ mem_fieldRange.mpr ⟨x, rfl⟩)
-    ⟨fun _ _ h ↦ f.injective (congr_arg Subtype.val h),
-     fun ⟨_, hy⟩ ↦ (mem_fieldRange.mp hy).imp fun _ hx => Subtype.ext hx⟩
+  .ofBijective f.rangeRestrict ⟨f.rangeRestrict.injective, fun ⟨_, ⟨x, hx⟩⟩ ↦ ⟨x, Subtype.ext hx⟩⟩
 
-@[simp]
-theorem equivFieldRange_apply (x : L) : f.equivFieldRange x = f x := rfl
+@[deprecated (since := "2026-06-20")] alias equivFieldRange_apply := equivFieldRange_apply_coe
 
 end AlgHom
+
+variable (K L L') in
+@[simp]
+theorem IsScalarTower.toAlgHom_fieldRange [Algebra L L'] [IsScalarTower K L L'] :
+    (IsScalarTower.toAlgHom K L L').fieldRange = Set.range (algebraMap L L') := by
+  ext; simp
 
 namespace IntermediateField
 

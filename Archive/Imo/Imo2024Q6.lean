@@ -57,7 +57,7 @@ lemma Aquaesulian.injective : Function.Injective f := by
 
 lemma Aquaesulian.apply_zero : f 0 = 0 := by
   refine h.injective ?_
-  convert! h.apply_apply_add 0 using 1 <;> simp
+  convert h.apply_apply_add 0 <;> simp
 
 @[simp]
 lemma Aquaesulian.apply_neg_apply_add (x : G) : f (-(f x)) + x = 0 := by
@@ -80,7 +80,7 @@ lemma Aquaesulian.apply_neg_of_apply_eq {x₁ x₂ : G} (hx : f x₁ = x₂) : f
 
 lemma Aquaesulian.apply_neg_eq_neg_iff {x₁ x₂ : G} : f (-x₂) = -x₁ ↔ f x₁ = x₂ := by
   refine ⟨fun hn ↦ ?_, h.apply_neg_of_apply_eq⟩
-  convert! h.apply_neg_of_apply_eq hn <;> rw [neg_neg]
+  convert h.apply_neg_of_apply_eq hn <;> rw [neg_neg]
 
 lemma Aquaesulian.pair_lemma {x u v : G} (huv : u ≠ v) (hx : f x = u ∨ f u = x)
     (hy : f x = v ∨ f v = x) : f x = v ∨ f x = u := by

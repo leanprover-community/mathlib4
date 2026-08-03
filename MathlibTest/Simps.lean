@@ -977,6 +977,7 @@ instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
 structure NeedsPropClass (n : ℕ) [PropClass n] where
   (t : True)
 
+set_option linter.defProp false in
 @[simps] def test_PropClass : NeedsPropClass 1 :=
   { t := trivial }
 

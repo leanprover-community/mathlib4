@@ -353,17 +353,9 @@ theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : �
     Injective f := by
   grind [Injective]
 
-@[deprecated (since := "2025-12-23")]
-alias injective_of_lt_imp_ne := Function.Injective.of_lt_imp_ne
-
 theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
     (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
   fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
-
-@[deprecated Injective.of_eq_imp_le (since := "2025-12-23")]
-theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
-    (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  .of_eq_imp_le (h ·.le)
 
 /-! ### Monotonicity under composition -/
 

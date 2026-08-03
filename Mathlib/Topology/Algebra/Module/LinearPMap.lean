@@ -91,7 +91,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
-open Classical in
+open scoped Classical in
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/
 noncomputable def closure (f : E →ₗ.[R] F) : E →ₗ.[R] F :=
@@ -181,6 +181,7 @@ theorem inverse_closed_iff (hf : LinearMap.ker f.toFun = ⊥) : f.inverse.IsClos
 variable [ContinuousAdd E] [ContinuousAdd F]
 variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
 theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClosable)

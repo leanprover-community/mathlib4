@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
 
 /-!
@@ -262,6 +261,7 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp
 
@@ -300,6 +300,7 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
 instance [Nontrivial α] : Nontrivial (WithZero α)ˣ :=
   unitsWithZeroEquiv.toEquiv.surjective.nontrivial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
@@ -320,6 +321,7 @@ lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]
     WithZero.withZeroUnitsEquiv.symm (a : G) = a := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
 @[simps!]
 def _root_.MulEquiv.withZero [Group β] :
@@ -419,6 +421,10 @@ lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, n + 1 => by simp
   | (x : Multiplicative M), n => rfl
 
+lemma toAdd_unzero_eq_log {x : Mᵐ⁰} (hx : x ≠ 0) : (unzero hx).toAdd = log x := by
+  lift x to Multiplicative M using hx
+  simp [log]
+
 end AddMonoid
 
 section AddGroup
@@ -435,12 +441,7 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 @[simp] lemma coe_expEquiv_apply (a : G) : expEquiv a = exp a := rfl
 
-@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := by
-  obtain ⟨_ | a, _ | b, hab, hba⟩ := x
-  · cases hab
-  · cases hab
-  · cases hab
-  · rfl
+@[simp] lemma logEquiv_apply (x : (Gᵐ⁰)ˣ) : logEquiv x = log x := toAdd_unzero_eq_log x.ne_zero
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
