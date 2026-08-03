@@ -848,17 +848,42 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) 
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
+end MulAction
+
+section SMulFun
+
+variable {M G G₀ : Type*}
+
+/-- Multiplying by a scalar *function* admitting an a.e. strongly measurable pointwise left
+inverse preserves a.e. strong measurability. This is the varying-scalar analogue of
+`IsUnit.aestronglyMeasurable_const_smul_iff`. -/
+theorem _root_.aestronglyMeasurable_smul_iff_of_mul_eq_one [Monoid M] [TopologicalSpace M]
+    [MulAction M β] [ContinuousSMul M β] {c d : α → M} (hc : AEStronglyMeasurable c μ)
+    (hd : AEStronglyMeasurable d μ) (hdc : ∀ᵐ x ∂μ, d x * c x = 1) :
+    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
+  refine ⟨fun h => (hd.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
+  filter_upwards [hdc] with x hx
+  rw [smul_smul, hx, one_smul]
+
+/-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
+a.e. strong measurability. This is the varying-scalar analogue of
+`aestronglyMeasurable_const_smul_iff`. -/
+theorem _root_.aestronglyMeasurable_smul_iff [Group G] [TopologicalSpace G] [ContinuousInv G]
+    [MulAction G β] [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
+    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
+  aestronglyMeasurable_smul_iff_of_mul_eq_one hc hc.fun_inv <|
+    .of_forall fun x => inv_mul_cancel (c x)
+
 /-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
 measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
-theorem _root_.aestronglyMeasurable_smul_iff₀ {𝕜 : Type*} [GroupWithZero 𝕜] [TopologicalSpace 𝕜]
-    [ContinuousInv₀ 𝕜] [MetrizableSpace 𝕜] [MulAction 𝕜 β] [ContinuousSMul 𝕜 β] {c : α → 𝕜}
+theorem _root_.aestronglyMeasurable_smul_iff₀ [GroupWithZero G₀] [TopologicalSpace G₀]
+    [ContinuousInv₀ G₀] [MetrizableSpace G₀] [MulAction G₀ β] [ContinuousSMul G₀ β] {c : α → G₀}
     (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
-  refine ⟨fun h => (hc.inv₀.smul h).congr ?_, fun h => hc.smul h⟩
-  filter_upwards [hc0] with x hx
-  simp only [Pi.smul_apply', Pi.inv_apply, smul_smul, inv_mul_cancel₀ hx, one_smul]
+    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
+  aestronglyMeasurable_smul_iff_of_mul_eq_one hc hc.fun_inv₀ <|
+    hc0.mono fun _ hx => inv_mul_cancel₀ hx
 
-end MulAction
+end SMulFun
 
 end AEStronglyMeasurable
 end AEStronglyMeasurable
