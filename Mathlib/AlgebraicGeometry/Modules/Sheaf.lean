@@ -476,9 +476,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
 def restrictFunctorComp : restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
-  have : (f.opensFunctor ⋙ g.opensFunctor).IsContinuous
-      (Opens.grothendieckTopology X) (Opens.grothendieckTopology Z) :=
-    Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp)) ≪≫
     SheafOfModules.pushforwardCongr (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
     (SheafOfModules.pushforwardComp _ _).symm
