@@ -74,19 +74,19 @@ theorem ex15 (p q : Nat → Prop) :
 
 set_option backward.isDefEq.respectTransparency false in
 /- Generating type equalities is OK if it's possible they're the same type. -/
-example (s t : Set α) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
+example {α : Type*} (p q : α → Prop) : (ℕ × Subtype p) = (ℕ × Subtype q) := by
   congr! 1
-  guard_target = Subtype s = Subtype t
+  guard_target = Subtype p = Subtype q
   congr! 1
-  guard_target = s = t
+  guard_target = p = q
   exact test_sorry
 
 set_option backward.isDefEq.respectTransparency false in
-/- `Subtype s = Subtype t` is plausible -/
-example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
+/- `Subtype p = Subtype q` is plausible -/
+example (p q : α → Prop) (f : Subtype p → α) (g : Subtype q → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
-  · guard_target = s = t
+  · guard_target = p = q
     exact test_sorry
   · guard_target = f ≍ g
     exact test_sorry
@@ -108,9 +108,9 @@ example {ι κ : Type u} (f : ι → α) (g : κ → α) :
     exact test_sorry
 
 /- Generating type equalities is not OK if they're not likely to be the same type. -/
-example (s : Set α) (t : Set β) : (ℕ × Subtype s) = (ℕ × Subtype t) := by
+example {α β : Type u} (p : α → Prop) (q : β → Prop) : (ℕ × Subtype p) = (ℕ × Subtype q) := by
   congr!
-  guard_target = Subtype s = Subtype t
+  guard_target = Subtype p = Subtype q
   exact test_sorry
 
 /- Congruence here is OK since `Fin m = Fin n` is plausible to prove. -/

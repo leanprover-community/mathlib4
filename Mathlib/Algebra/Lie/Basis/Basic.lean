@@ -5,7 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Weights.Killing
+public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.Algebra.Lie.Weights.Cartan
 
 /-!
 # Bases of semisimple Lie algebras
