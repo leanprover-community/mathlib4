@@ -27,7 +27,7 @@ poles of `g` within the ball.
 
 public section
 
-open Filter MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology
+open Filter MeromorphicAt MeasureTheory MeromorphicOn Metric Real Set Topology InnerProductSpace
 open scoped ComplexConjugate
 
 
