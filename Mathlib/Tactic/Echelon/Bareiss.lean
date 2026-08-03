@@ -18,10 +18,8 @@ import Mathlib.Tactic.NormNum.Basic
 Given a matrix literal `M` over a commutative domain, the entry point
 `mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
 Bareiss.Decomposition M`, with the four certificate conditions checked by the kernel via
-`decide`.
-
-The production is data-only: no proofs are constructed, and the ring is consulted only to
-decide whether a value vanishes (`isZeroInR`).
+`decide`. The production is data-only but relies on zero-checks (`isZeroInR`) in the kernel
+to decide pivot positions.
 
 ## Main definitions
 
@@ -95,11 +93,9 @@ def rat? (fractions : Bool) (e : Expr) : Option Rat :=
 
 /-- Read a matrix entry's rational value: off its numeral syntax when possible, else off the
 `norm_num` normal form of the entry. The evaluation is data-only — the certificate is stated
-about the original entries, so no proof is kept. Fraction entries are read only in
-characteristic zero, where the reading is faithful; in positive characteristic the value of
-`a / b` depends on `b`'s invertibility, so such entries are refused. -/
+about the original entries, so no proof is kept. Fraction entries are refused outside
+characteristic zero (see `rat?`). -/
 def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
-  -- shortcut if the entry is already a value literal
   match rat? (isDivRing && charZero) e with
   | some v => return v
   | none =>
@@ -109,7 +105,6 @@ def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
         | _ => e
       if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
         throwError "division entries are supported only in characteristic zero{indentExpr e}"
-    -- fallback: try to evaluate the expression
     let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
     let r ← Meta.NormNum.deriveSimp ctx (useSimp := false) e
     let some v := rat? (isDivRing && charZero) r.expr
@@ -117,9 +112,8 @@ def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
     return v
 
 /-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
-`(v : R) = 0` in the kernel. The engine also checks the final certificate. -/
+`(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
 def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
-  -- shortcircuit
   if v == 0 then return true
   let _instCast ← synthInstanceQ q(IntCast $R)
   let _instZero ← synthInstanceQ q(Zero $R)
@@ -133,7 +127,7 @@ def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
 /-- Read the rational values of the matrix entries; throws when an entry does not
-evaluate to a readable numeral. -/
+evaluate to a rational numeral. -/
 def readEntryValues (isDivRing charZero : Bool) (entries : Array (Array Expr)) :
     MetaM (Array (Array Rat)) :=
   entries.mapM fun row => row.mapM fun e => entryRat isDivRing charZero e
@@ -233,16 +227,14 @@ def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
     return .error m!"expected the element type to be a commutative ring"
   if (← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])).isNone then
     return .error m!"expected the element type to be a domain"
-  -- verification runs in the kernel: probe one zero test so that element types without
-  -- kernel-decidable equality are rejected before committing (drop the probe once a
-  -- non-kernel verification route exists)
+  -- the certificate conditions are decided by kernel reduction: probe one zero test
   let u ← getDecLevel R
   have R : Q(Type u) := R
   try
     discard <| isZeroInR R 1
-    return .ok ()
   catch e =>
-    return .error m!"cannot verify the rank certificate: {e.toMessageData}"
+    return .error e.toMessageData
+  return .ok ()
 
 /-- `bareiss_certify msg` proves a certificate condition by `decide +kernel`, wrapping a
 failure into an exception naming the condition `msg`. -/
@@ -283,9 +275,9 @@ def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : A
   instantiateMVars e
 
 /-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
-matched dimensions, element type, and entries (from `matchMatrixLit?`): analyze the ring,
-read the entries' values, scale fractional rows integral, eliminate, and elaborate the
-certificate. Failures here are refusals of a committed attempt, and throw. -/
+matched dimensions, element type, and entries (from `matchMatrixLit?`): probe the ring's
+reading policy, read the entries' values, scale fractional rows integral, eliminate, and
+elaborate the certificate. Failures here are refusals of a committed attempt, and throw. -/
 def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM Expr := do
   let u ← getDecLevel R

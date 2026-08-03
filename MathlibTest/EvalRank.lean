@@ -179,8 +179,7 @@ example : Matrix.rank (R := ℕ) !![1, 2; 3, 4] = 2 := by eval_rank
 example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
 
 /--
-error: cannot verify the rank certificate: equality in the element type does not reduce in
-the kernel
+error: equality in the element type does not reduce in the kernel
   ℝ
 -/
 #guard_msgs in
@@ -188,8 +187,7 @@ example : Matrix.rank (R := ℝ) !![1, 2; 3, 4] = 2 := by eval_rank
 
 open Polynomial in
 /--
-error: cannot verify the rank certificate: equality in the element type does not reduce in
-the kernel
+error: equality in the element type does not reduce in the kernel
   ℚ[X]
 -/
 #guard_msgs in

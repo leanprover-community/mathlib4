@@ -15,10 +15,11 @@ public meta import Mathlib.LinearAlgebra.Matrix.Notation
 `eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain,
 for matrices whose entries are numerals or `norm_num`-evaluable expressions.
 
-`matchRankLit?` is the commitment gate: it matches `Matrix.rank` of a matrix literal and
-never throws. `normalizeRank` is the committed phase: it produces and elaborates a
-Bareiss decomposition of the matched matrix, applies `rank_eq`, and returns a
-`Simp.Result` rewriting the rank to a literal; its failures throw.
+The commitment gate is `matchRankLit?` (the goal shape) followed by
+`checkBareissCommittal` (the element type); a miss in either skips silently. Past the
+gate, `normalizeRank` produces and elaborates a Bareiss decomposition of the matched
+matrix, applies `rank_eq`, and returns a `Simp.Result` rewriting the rank to a literal;
+its failures throw.
 -/
 
 public meta section
@@ -50,7 +51,7 @@ def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
   | _ => none
 
 /-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
-entries. Commits into computation if this succeeds. -/
+entries. -/
 def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
   let some entries := parseMatrix? M | return none
   let_expr Matrix finM finN R := ← inferType M | return none
@@ -66,9 +67,8 @@ def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Arr
   unless entries.all (·.all fun e => !e.hasFVar && !e.hasExprMVar) do return none
   return some (m, n, R, entries)
 
-/-- Match `Matrix.rank` of a matrix literal: the commitment gate. Returns the matrix with
-its parsed dimensions, element type, and entries, or `none` when the term does not match —
-never throws. -/
+/-- Match `Matrix.rank` of a matrix literal: the shape half of the commitment gate
+(`checkBareissCommittal` is the applicability half); never throws. -/
 def matchRankLit? (e : Expr) :
     MetaM (Option (Expr × Nat × Nat × Expr × Array (Array Expr))) := do
   match_expr e with
@@ -107,9 +107,8 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 close the goal. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
-  -- `-failIfUnchanged` so that a gate-wide skip is detected by goal identity below, rather
-  -- than by matching `simp`'s no-progress error message; a committed refusal thrown by
-  -- `normalizeRank` propagates verbatim
+  -- `-failIfUnchanged`: a gate-wide skip is detected by goal identity below; a committed
+  -- refusal thrown by `normalizeRank` propagates verbatim
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank]))
   if (← Tactic.getUnsolvedGoals).any (· == goal) then
     -- diagnose the skip: a rank literal over an unsupported element type reports the
