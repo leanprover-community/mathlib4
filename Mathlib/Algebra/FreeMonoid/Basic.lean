@@ -236,16 +236,18 @@ end Mem
   /-- Recursor for `FreeAddMonoid` using `0` and
   `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
-def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
+def recOn {motive : FreeMonoid α → Sort*} (xs : FreeMonoid α) (one : motive 1)
+    (of_mul : ∀ x xs, motive xs → motive (of x * xs)) : motive xs := List.rec one of_mul xs
 
 @[to_additive (attr := simp)]
-theorem recOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C xs → C (of x * xs)) :
-    @recOn α C 1 h0 ih = h0 := rfl
+theorem recOn_one {motive : FreeMonoid α → Sort*} (one : motive 1)
+    (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
+    @recOn α motive 1 one of_mul = one := rfl
 
 @[to_additive (attr := simp)]
-theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
+theorem recOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (one : motive 1)
+    (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
+    @recOn α motive (of x * xs) one of_mul = of_mul x xs (recOn xs one of_mul) :=
   rfl
 
 /-! ### Induction -/
@@ -255,18 +257,19 @@ section induction_principles
 /-- An induction principle on free monoids, with cases for `1`, `FreeMonoid.of` and `*`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
 /-- An induction principle on free monoids, with cases for `0`, `FreeAddMonoid.of` and `+`. -/]
-protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
-    (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
-    C z :=
-  List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
+protected theorem inductionOn {motive : FreeMonoid α → Prop} (z : FreeMonoid α) (one : motive 1)
+    (of : ∀ (x : α), motive (FreeMonoid.of x))
+    (mul : ∀ (x y : FreeMonoid α), motive x → motive y → motive (x * y)) :
+    motive z :=
+  recOn z one fun x xs ih => mul (.of x) xs (of x) ih
 
 /-- An induction principle for free monoids which mirrors induction on lists, with cases analogous
 to the empty list and cons -/
 @[to_additive (attr := elab_as_elim) /-- An induction principle for free monoids which mirrors
 induction on lists, with cases analogous to the empty list and cons -/]
-protected theorem inductionOn' {p : FreeMonoid α → Prop} (a : FreeMonoid α)
-    (one : p (1 : FreeMonoid α)) (mul_of : ∀ b a, p a → p (of b * a)) : p a :=
-  List.rec one (fun _ _ tail_ih => mul_of _ _ tail_ih) a
+protected theorem inductionOn' {motive : FreeMonoid α → Prop} (a : FreeMonoid α)
+    (one : motive (1 : FreeMonoid α)) (of_mul : ∀ b a, motive a → motive (of b * a)) : motive a :=
+  recOn a one of_mul
 
 end induction_principles
 
@@ -275,16 +278,18 @@ end induction_principles
 @[to_additive (attr := elab_as_elim, cases_eliminator)
   /-- A version of `List.casesOn` for `FreeAddMonoid` using `0` and
   `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
-def casesOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C (of x * xs)) : C xs := List.casesOn xs h0 ih
+def casesOn {motive : FreeMonoid α → Sort*} (xs : FreeMonoid α) (one : motive 1)
+    (of_mul : ∀ x xs, motive (of x * xs)) : motive xs := List.casesOn xs one of_mul
 
 @[to_additive (attr := simp)]
-theorem casesOn_one {C : FreeMonoid α → Sort*} (h0 : C 1) (ih : ∀ x xs, C (of x * xs)) :
-    @casesOn α C 1 h0 ih = h0 := rfl
+theorem casesOn_one {motive : FreeMonoid α → Sort*} (one : motive 1)
+    (of_mul : ∀ x xs, motive (of x * xs)) :
+    @casesOn α motive 1 one of_mul = one := rfl
 
 @[to_additive (attr := simp)]
-theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (h0 : C 1)
-    (ih : ∀ x xs, C (of x * xs)) : @casesOn α C (of x * xs) h0 ih = ih x xs := rfl
+theorem casesOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (one : motive 1)
+    (of_mul : ∀ x xs, motive (of x * xs)) :
+    @casesOn α motive (of x * xs) one of_mul = of_mul x xs := rfl
 
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
@@ -431,7 +436,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     | one =>
       have H := congr_arg length hb
       simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
-    | mul_of head _ _ =>
+    | of_mul head _ _ =>
       simp only [map_mul, map_of] at hb
       use head
       have H := congr_arg length hb
@@ -441,7 +446,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
   intro fs d
   induction d using FreeMonoid.inductionOn' with
   | one => use 1; rfl
-  | mul_of head tail ih =>
+  | of_mul head tail ih =>
     specialize fs head
     rcases fs with ⟨a, rfl⟩
     rcases ih with ⟨b, rfl⟩

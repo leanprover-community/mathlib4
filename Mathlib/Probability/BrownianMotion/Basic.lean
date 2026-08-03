@@ -77,7 +77,7 @@ structure IsPreBrownianReal (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by v
   mk' ::
   hasLaw : ∀ I : Finset ℝ≥0, HasLaw (fun ω ↦ I.restrict (X · ω)) (projectiveFamily I) P
 
-/- A modification of a pre-Brownian is pre-Brownian. -/
+/-- A modification of a pre-Brownian process is pre-Brownian. -/
 lemma IsPreBrownianReal.congr {C : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B P)
     (h : ∀ t, B t =ᵐ[P] C t) :
     IsPreBrownianReal C P where
