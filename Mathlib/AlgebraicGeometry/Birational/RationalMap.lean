@@ -52,7 +52,6 @@ structure PartialMap (X Y : Scheme.{u}) where
   hom : ↑domain ⟶ Y
 
 /-- A partial map is an `S`-map if the underlying morphism commutes with the structure maps. -/
-@[mk_iff]
 class PartialMap.IsOver (f : X.PartialMap Y) (sX : X ⟶ S) (sY : Y ⟶ S) : Prop where
   over : f.hom ≫ sY = f.domain.ι ≫ sX
 
@@ -169,6 +168,11 @@ lemma _root_.AlgebraicGeometry.Scheme.Hom.isOver_toPartialMap
 /-- Every partial map is a map over the terminal scheme. -/
 instance (f : X.PartialMap Y) (sX : X ⟶ ⊤_ Scheme) (sY : Y ⟶ ⊤_ Scheme) : f.IsOver sX sY :=
   ⟨Limits.terminal.hom_ext _ _⟩
+
+set_option backward.defeqAttrib.useBackward true in
+lemma isOver_iff {f : X.PartialMap Y} {sX : X ⟶ S} {sY : Y ⟶ S} :
+    f.IsOver sX sY ↔ (f.compHom sY).hom = f.domain.ι ≫ sX :=
+  ⟨fun h ↦ h.over, fun h ↦ ⟨h⟩⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
