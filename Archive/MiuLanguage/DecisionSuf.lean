@@ -3,6 +3,8 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
+module
+
 public import Archive.MiuLanguage.DecisionNec
 public import Mathlib.Tactic.Linarith
 
@@ -44,6 +46,7 @@ introduce an additional `U` and ensure that the final number of `U`s will be eve
 miu, decision procedure, decidability, decidable_pred, decidable
 -/
 
+@[expose] public section
 
 namespace Miu
 

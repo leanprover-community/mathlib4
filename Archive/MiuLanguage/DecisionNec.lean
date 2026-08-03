@@ -3,6 +3,8 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
+module
+
 public import Archive.MiuLanguage.Basic
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.Nat.ModEq
@@ -20,6 +22,7 @@ Using this, we give a negative answer to the question: is `"MU"` derivable?
 miu, decision procedure
 -/
 
+@[expose] public section
 
 namespace Miu
 

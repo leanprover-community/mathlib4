@@ -3,6 +3,8 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Thomas Browning
 -/
+module
+
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.Tactic.Linarith
 
@@ -24,6 +26,7 @@ For a geometric interpretation of the piecewise involution (`Zagier.complexInvo`
 see [Moritz Firsching's MathOverflow answer](https://mathoverflow.net/a/299696).
 -/
 
+@[expose] public section
 
 namespace Zagier
 

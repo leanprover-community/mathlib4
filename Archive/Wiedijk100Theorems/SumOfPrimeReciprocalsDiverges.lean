@@ -3,6 +3,8 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+module
+
 public import Mathlib.Topology.Algebra.InfiniteSum.Real
 public import Mathlib.Data.Nat.Cast.Order.Field
 public import Mathlib.Data.Nat.Squarefree
@@ -38,6 +40,8 @@ The formalization follows Erdős's proof by upper and lower estimates.
 
 https://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_primes
 -/
+
+@[expose] public section
 
 open Filter Finset
 
