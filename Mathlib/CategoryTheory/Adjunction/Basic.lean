@@ -79,8 +79,6 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory
@@ -314,7 +312,6 @@ def corepresentableBy (X : C) :
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
@@ -538,7 +535,6 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -547,7 +543,6 @@ def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.
     G ⋙ yoneda ≅ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv Y.unop X).toIso.symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ coyoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -556,7 +551,7 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
-set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
 This states that `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -611,7 +606,7 @@ variable (e : ∀ X Y, (F_obj X ⟶ Y) ≃ (X ⟶ G.obj Y))
 a bijection `e` between `F_obj X ⟶ Y` and `X ⟶ G.obj Y` satisfying a naturality law
 `he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g`.
 Dual to `rightAdjointOfEquiv`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g) : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
@@ -624,7 +619,6 @@ def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.ma
 
 variable (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `leftAdjointOfEquiv` is indeed left adjoint to `G`. Dual
 to `adjunctionOfEquivRight`. -/
 @[simps!]
@@ -653,7 +647,7 @@ private theorem he'' (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y 
 a bijection `e` between `F.obj X ⟶ Y` and `X ⟶ G_obj Y` satisfying a naturality law
 `he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g`.
 Dual to `leftAdjointOfEquiv`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
@@ -664,7 +658,6 @@ def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X
       rw [← assoc, he'' e he, comp_id, Equiv.symm_apply_apply]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Show that the functor given by `rightAdjointOfEquiv` is indeed right adjoint to `F`. Dual
 to `adjunctionOfEquivLeft`. -/
 @[simps!]

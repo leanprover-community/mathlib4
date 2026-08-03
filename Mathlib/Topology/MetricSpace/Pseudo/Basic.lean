@@ -285,4 +285,4 @@ theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [Pseud
     [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
-  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.domRestrict
