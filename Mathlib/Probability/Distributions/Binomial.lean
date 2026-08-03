@@ -36,7 +36,7 @@ Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, 
 one to prove the second. Note that results concerning `Bin(R, n, p)` may require
 `[MeasurableSingletonClass R]` and/or `[CharZero R]`.
 
-When refering to `Bin(n, p)` in names, use `binomial`. When refering to `Bin(R, n, p)`,
+When referring to `Bin(n, p)` in names, use `binomial`. When referring to `Bin(R, n, p)`,
 use `map_cast_binomial`.
 
 ## Notation

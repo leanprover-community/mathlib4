@@ -290,7 +290,7 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
     rwa [← LightProfinite.epi_iff_surjective]
   · simp [π', pullback.condition]
   · exact ⟨ConcreteCategory.ofHom ⟨(sectionOfFibreIncl π' σ' hσ'),
-      (.subtype_mk (.subtype_mk (by fun_prop) _) _)⟩, rfl⟩
+      (.subtype_mk (by fun_prop) _)⟩, rfl⟩
   · rw [LightProfinite.epi_iff_surjective]
     exact coverToFun_surjective _ _ hσ hσ'
 
