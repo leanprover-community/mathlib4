@@ -36,7 +36,7 @@ variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree
 namespace UniqueFactorizationMonoid
 
 instance : IsMulTorsionFree M := by
-  refine .mk' fun x hx y hy n hn hxy ↦ ?_
+  refine .mk' fun x hx y hy n hn _ hxy ↦ ?_
   obtain ⟨u, hu⟩ : Associated x y := by
     have := (Associated.of_eq hxy).normalizedFactors_eq
     rwa [normalizedFactors_pow, normalizedFactors_pow, nsmul_right_inj hn,
