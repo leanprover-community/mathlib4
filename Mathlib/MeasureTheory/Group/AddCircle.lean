@@ -80,7 +80,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     exact fun g => quasiMeasurePreserving_add_left (G := AddCircle T) volume g
   · -- `volume univ ≤ ∑' (g : G), volume (g +ᵥ I)`
     replace hI := hI.trans closedBall_ae_eq_ball.symm
-    haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
+    have : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
     have hG_card : #(Finset.univ : Finset G) = n := by
       change _ = addOrderOf u
       rw [← Nat.card_zmultiples, Nat.card_eq_fintype_card]; rfl
@@ -96,7 +96,7 @@ theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
     (hI : I =ᵐ[volume] ball x (T / (2 * addOrderOf u))) :
     volume s = addOrderOf u • volume (s ∩ I) := by
   let G := AddSubgroup.zmultiples u
-  haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
+  have : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
   have hsG : ∀ g : G, (g +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s := by
     rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy :)
   rw [(isAddFundamentalDomain_of_ae_ball I u x hu hI).measure_eq_card_smul_of_vadd_ae_eq_self s hsG,

@@ -104,12 +104,19 @@ lemma Y_sub_polynomialY : Y - W'.polynomialY = W'.negPolynomial := by
 lemma Y_sub_negPolynomial : Y - W'.negPolynomial = W'.polynomialY := by
   rw [← Y_sub_polynomialY, sub_sub_cancel]
 
+#adaptation_note
+/--
+Without this `implicit_reducible` attribute, `simpNF` gives a linter error on `slope_of_Y_eq`
+because of a nonconfluence: `negY` can be unfolded on the LHS, which prevents discharging the
+side condition of `slope_of_Y_eq` -- except if `negY` is implicit-reducible.
+So this attribute improves the confluence of `simp`.
+-/
 variable (W') in
 /-- The `Y`-coordinate of `-(x, y)` for a nonsingular affine point `(x, y)` on a Weierstrass curve
 `W`.
 
 This depends on `W`, and has argument order: `x`, `y`. -/
-@[simp]
+@[simp, implicit_reducible]
 def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
@@ -259,8 +266,6 @@ section slope
 
 variable [DecidableEq F]
 
--- Non-terminal simps, used to be field_simp
-set_option linter.flexible false in
 lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.addPolynomial x₁ y₁ (W.slope x₁ x₂ y₁ y₂) =
       -((X - C x₁) * (X - C x₂) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
@@ -352,8 +357,6 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   (nonsingular_neg ..).mpr <| nonsingular_negAdd h₁ h₂ hxy
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 /-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
 where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
@@ -363,8 +366,6 @@ lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
   simp [field]
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 /-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
 assuming that `P₁ + P₂ + P₃ = O`. -/
 lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :

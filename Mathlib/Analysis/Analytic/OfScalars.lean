@@ -143,7 +143,7 @@ theorem ofScalarsSum_zero : ofScalarsSum c (0 : E) = c 0 • 1 := by
 
 @[simp]
 theorem ofScalarsSum_of_subsingleton [Subsingleton E] {x : E} : ofScalarsSum c x = 0 := by
-  simp [Subsingleton.eq_zero x, Subsingleton.eq_zero (1 : E)]
+  simp [Subsingleton.eq_zero (α := E)]
 
 @[simp]
 theorem ofScalarsSum_op [T2Space E] (x : E) :
@@ -214,9 +214,6 @@ theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     simp only [norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
     gcongr
     exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
-
-@[deprecated (since := "2025-11-21")]
-alias ofScalars_radius_ge_inv_of_tendsto := inv_le_ofScalars_radius_of_tendsto
 
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
