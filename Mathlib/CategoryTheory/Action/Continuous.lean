@@ -69,9 +69,13 @@ end Action
 
 open Action
 
+/-- When we have `HasForget₂ V TopCat`, this is the property of the objects
+in `Action V G` where the induced action is continuous. -/
+abbrev Action.isContinuous : ObjectProperty (Action V G) := IsContinuous
+
 /-- For `HasForget₂ V TopCat`, this is the full subcategory of `Action V G` where the induced
 action is continuous. -/
-abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (IsContinuous (V := V) (G := G))
+abbrev ContAction : Type _ := ObjectProperty.FullSubcategory (isContinuous V G)
 
 namespace ContAction
 
