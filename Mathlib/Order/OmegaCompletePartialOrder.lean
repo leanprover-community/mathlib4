@@ -294,7 +294,8 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
 alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
   ωScottContinuous_iff_monotone_map_ωSup
 
-/- A monotone function `f : α →o β` is ωScott continuous if and only if it distributes over ωSup. -/
+/--
+A monotone function `f : α →o β` is ωScott continuous if and only if it distributes over ωSup. -/
 lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
     ωScottContinuous f ↔ ∀ c : Chain α, f (ωSup c) = ωSup (c.map f) := by
   rw [ωScottContinuous_iff_monotone_map_ωSup]
