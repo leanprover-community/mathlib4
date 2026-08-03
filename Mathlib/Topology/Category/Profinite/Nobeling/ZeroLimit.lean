@@ -141,7 +141,9 @@ The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C 
 refers to the setting in which we will use this, when we are mapping in `GoodProducts` from a
 smaller set, i.e. when `o` is a smaller ordinal than the one `C` is "contained" in.
 -/
-def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (π C (ord I · < o)))
 
 /--
@@ -237,7 +239,9 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
 The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
 ordinals `o' < o`.
 -/
-def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
   Equiv.setCongr (union C ho hsC)
 
 theorem GoodProducts.range_equiv_factorization :
