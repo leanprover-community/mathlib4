@@ -97,7 +97,7 @@ theorem turanDensity_eq_csInf (H : SimpleGraph W) :
   have h := isGLB_turanDensity H
   (h.csInf_eq h.nonempty).symm
 
-theorem turanDensity_le_extremalNumber_div_choose_two (H : SimpleGraph W) {n : ℕ} (hn : n ≥ 2) :
+theorem turanDensity_le_extremalNumber_div_choose_two (H : SimpleGraph W) {n : ℕ} (hn : 2 ≤ n) :
     turanDensity H ≤ extremalNumber n H / n.choose 2 := by
   rw [turanDensity_eq_csInf H]
   exact csInf_le (isGLB_turanDensity H).bddBelow ⟨n, hn, rfl⟩
