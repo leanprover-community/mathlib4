@@ -849,10 +849,7 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) 
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
 /-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
-measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`.
-
-Note there is no `Integrable` analogue: an a.e. nonzero function may be unbounded and so does not
-preserve integrability. -/
+measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
 theorem _root_.aestronglyMeasurable_smul_iff₀ {𝕜 : Type*} [GroupWithZero 𝕜] [TopologicalSpace 𝕜]
     [ContinuousInv₀ 𝕜] [MetrizableSpace 𝕜] [MulAction 𝕜 β] [ContinuousSMul 𝕜 β] {c : α → 𝕜}
     (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
