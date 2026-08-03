@@ -13,17 +13,17 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 # The Mean Value Property of Vector-Valued Harmonic Functions
 
 This file establishes the mean value property for harmonic functions `f : ℂ → F`, where `F` is an
-arbitrary complete real normed vector space. This generalizes the mean value property for real-valued
-harmonic functions.
+arbitrary complete real normed vector space. This generalizes the mean value property for
+real-valued harmonic functions.
 
 Completeness of `F` cannot be dropped: `circleAverage` is defined in terms of the Bochner integral,
 which is junk (zero) whenever the target space is incomplete.
 
 The proof reduces to the real-valued case. Circle averages commute with continuous linear maps, and
-composition with continuous linear maps preserves harmonicity. Thus, `g (circleAverage f c R)` equals
-`circleAverage (g ∘ f) c R = g (f c)` for every continuous linear functional `g : F →L[ℝ] ℝ`. Since
-continuous linear functionals separate the points of a normed space (Hahn-Banach, in the form of
-`SeparatingDual.eq_iff_forall_dual_eq`), this suffices.
+composition with continuous linear maps preserves harmonicity. Thus, `g (circleAverage f c R)`
+equals `circleAverage (g ∘ f) c R = g (f c)` for every continuous linear functional `g : F →L[ℝ] ℝ`.
+Since continuous linear functionals separate the points of a normed space (Hahn-Banach, in the form
+of `SeparatingDual.eq_iff_forall_dual_eq`), this suffices.
 -/
 
 public section
