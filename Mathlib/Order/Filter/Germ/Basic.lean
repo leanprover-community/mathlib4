@@ -191,6 +191,20 @@ theorem subsingleton_iff : Subsingleton (l.Product ε) ↔
     rw [ofPartialFun_eq_iff]
     exact h.mono fun _ h _ _ => h.allEq _ _
 
+theorem nontrivial_iff : Nontrivial (l.Product ε) ↔
+    (∀ᶠ x in l, Nonempty (ε x)) ∧ (∃ᶠ x in l, Nontrivial (ε x)) := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff, not_or, isEmpty_iff]
+  simp [not_subsingleton_iff_nontrivial]
+
+theorem subsingleton (h : ∀ᶠ x in l, Subsingleton (ε x)) : Subsingleton (l.Product ε) :=
+  subsingleton_iff.2 (.inr h)
+
+instance [∀ x, Subsingleton (ε x)] : Subsingleton (l.Product ε) :=
+  subsingleton (.of_forall ‹_›)
+
+instance [l.NeBot] [∀ x, Nontrivial (ε x)] : Nontrivial (l.Product ε) :=
+  nontrivial_iff.2 ⟨.of_forall fun _ => inferInstance, .of_forall ‹_›⟩
+
 theorem ofFun_eq_iff {f g : (x : α) → ε x} :
     (ofFun f : Product l ε) = ofFun g ↔ ∀ᶠ x in l, f x = g x := by
   simp [ofFun, ofPartialFun_eq_iff]
@@ -219,6 +233,15 @@ theorem coe_eq : (f : Germ l β) = g ↔ f =ᶠ[l] g := by
   rw [Product.ofFun_eq_iff]
 
 alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
+
+theorem subsingleton_of_bot (h : l = ⊥) : Subsingleton (Germ l β) :=
+  Product.subsingleton (h.symm ▸ Filter.eventually_bot)
+
+instance [Subsingleton β] : Subsingleton (Germ l β) :=
+  Product.subsingleton (.of_forall fun _ => ‹_›)
+
+instance [l.NeBot] [Nontrivial β] : Nontrivial (Germ l β) :=
+  inferInstanceAs (Nontrivial (l.Product fun _ => β))
 
 /-- Germ of the constant function `fun x : α ↦ c` at a filter `l`. -/
 @[coe]
@@ -462,8 +485,7 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
   · induction g using inductionOn with | coe g
     rw [map_coe]
     rfl
-  · cases Filter.not_neBot.1 h
-    exact (Product.subsingleton_iff.2 (.inr Filter.eventually_bot)).allEq _ _
+  · exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 /-- Lift a predicate on `β` to `Germ l β`. -/
 def LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
@@ -487,6 +509,17 @@ theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (↑x 
 theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (↑x : Germ l β) ↔ p x :=
   liftPred_coe.trans eventually_const
 
+theorem liftPred_iff_map_eq_const_true {p : β → Prop} {f : Germ l β} :
+    LiftPred p f ↔ f.map p = True := by
+  by_cases h : l.NeBot
+  · induction f using inductionOn with | coe f
+    rw [liftPred_coe, map_coe, coe_eq, EventuallyEq]
+    simp
+  · apply iff_of_true
+    · unfold LiftPred
+      exact fun hl => (h hl).elim
+    · exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
+
 /-- Lift a relation `r : β → γ → Prop` to `Germ l β → Germ l γ → Prop`. -/
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
   LiftPred (Function.uncurry r) (map₂ Prod.mk f g)
@@ -506,6 +539,26 @@ theorem liftRel_const {r : β → γ → Prop} {x : β} {y : γ} (h : r x y) :
 theorem liftRel_const_iff [NeBot l] {r : β → γ → Prop} {x : β} {y : γ} :
     LiftRel r (↑x : Germ l β) ↑y ↔ r x y :=
   liftRel_coe.trans eventually_const
+
+theorem liftRel_iff_map₂_eq_const_true {r : β → γ → Prop} {f : Germ l β} {g : Germ l γ} :
+    LiftRel r f g ↔ map₂ r f g = True := by
+  by_cases h : l.NeBot
+  · induction f, g using inductionOn₂ with | coe f g
+    rw [liftRel_coe, map₂_coe, coe_eq, EventuallyEq]
+    simp
+  · apply iff_of_true
+    · unfold LiftRel LiftPred
+      exact fun hl => (h hl).elim
+    · exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
+
+theorem liftRel_eq_iff {f g : Germ l β} : LiftRel (@Eq β) f g ↔ f = g := by
+  by_cases h : l.NeBot
+  · induction f, g using inductionOn₂ with | coe f g
+    rw [liftRel_coe, coe_eq, EventuallyEq]
+  · apply iff_of_true
+    · unfold LiftRel LiftPred
+      exact fun hl => (h hl).elim
+    · exact (subsingleton_of_bot (Filter.not_neBot.1 h)).allEq _ _
 
 instance instInhabited [Inhabited β] : Inhabited (Germ l β) := ⟨↑(default : β)⟩
 
@@ -805,10 +858,6 @@ end Monoid
 section Ring
 
 variable {R : Type*}
-
-instance instNontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
-  let ⟨x, y, h⟩ := exists_pair_ne R
-  ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 
 instance instMulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) where
   zero_mul := by
