@@ -232,7 +232,7 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     rw [Subtype.ext_iff] at this
     exact this
   refine H.isSeparatedFor.ext fun Y f hf ↦ ?_
-  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_setOf]
+  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_ofPred]
   ext1
   dsimp
   rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
@@ -276,11 +276,11 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
   sieves X := { S | c X S = ⊤ }
   top_mem' X := top_unique ((c X).le_closure _)
   pullback_stable' X Y S f hS := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, hc, hS, Sieve.pullback_top]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, hc, hS, Sieve.pullback_top]
   transitive' X S hS R hR := by
-    rw [Set.mem_setOf_eq] at hS
-    rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
+    rw [Set.mem_ofPred_eq] at hS
+    rw [Set.mem_ofPred_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
     intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]

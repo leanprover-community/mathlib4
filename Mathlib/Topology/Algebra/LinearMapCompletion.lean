@@ -35,6 +35,7 @@ variable {α β : Type*} {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ
 
 section completion
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Lift a continuous semilinear map to a continuous semilinear map between the
 `UniformSpace.Completion`s of the spaces. This is `UniformSpace.Completion.map` bundled as a

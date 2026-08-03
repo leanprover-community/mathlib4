@@ -82,6 +82,7 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 
 namespace CondensedSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
@@ -90,6 +91,7 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
       rw [continuous_coinduced_dom]
       continuity }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
 @[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :
     -- We have to specify here to not infer the `TopologicalSpace` instance on `C(PUnit, X)`,
@@ -98,6 +100,7 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
         (TopCat.Hom.hom (topCatAdjunctionCounit X)) x =
       x PUnit.unit := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
@@ -110,6 +113,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
@@ -139,6 +143,7 @@ noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToConden
     change Y.obj.map (𝟙 _) _ = _
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]
   exact (topCatAdjunctionCounit_bijective _).2

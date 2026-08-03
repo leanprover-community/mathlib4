@@ -125,7 +125,7 @@ theorem IsUpperSet.null_frontier (hs : IsUpperSet s) : volume (frontier s) = 0 :
     (Besicovitch.ae_tendsto_measure_inter_div_of_measurableSet _
       (isClosed_closure (s := s)).measurableSet)
   by_cases h : x ∈ closure s <;>
-    simp only [mem_compl_iff, mem_setOf, h, not_false_eq_true, indicator_of_notMem,
+    simp only [mem_compl_iff, mem_ofPred, h, not_false_eq_true, indicator_of_notMem,
       indicator_of_mem, Pi.one_apply]
   · refine aux₁ fun _ ↦ hs.compl.exists_subset_ball <| frontier_subset_closure ?_
     rwa [frontier_compl]
@@ -136,7 +136,7 @@ theorem IsLowerSet.null_frontier (hs : IsLowerSet s) : volume (frontier s) = 0 :
     (Besicovitch.ae_tendsto_measure_inter_div_of_measurableSet _
       (isClosed_closure (s := s)).measurableSet)
   by_cases h : x ∈ closure s <;>
-    simp only [mem_compl_iff, mem_setOf, h, not_false_eq_true, indicator_of_notMem,
+    simp only [mem_compl_iff, mem_ofPred, h, not_false_eq_true, indicator_of_notMem,
       indicator_of_mem, Pi.one_apply]
   · refine aux₁ fun _ ↦ hs.compl.exists_subset_ball <| frontier_subset_closure ?_
     rwa [frontier_compl]

@@ -78,7 +78,7 @@ then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`
 theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
     [StandardBorelSpace Z] (hg : Measurable[mY.comap f] g) :
     ∃ h : Y → Z, Measurable h ∧ g = h ∘ f := by
-  letI := upgradeStandardBorel Z
+  let := upgradeStandardBorel Z
   obtain ⟨h, mh, hh⟩ := hg.stronglyMeasurable.exists_eq_measurable_comp
   exact ⟨h, mh.measurable, hh⟩
 

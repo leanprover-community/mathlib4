@@ -81,7 +81,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
     invFun := fun t =>
       (hζ.powerBasis K).equivOfMinpoly ((hμ t).powerBasis K)
         (by
-          haveI := IsCyclotomicExtension.neZero' n K L
+          have := IsCyclotomicExtension.neZero' n K L
           simp only [IsPrimitiveRoot.powerBasis_gen]
           have hr :=
             IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible

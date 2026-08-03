@@ -33,6 +33,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 * `spectrum.left_add_coset_eq`: elements of the scalar ring commute (addition) with the spectrum.
 * `spectrum.unit_mem_mul_comm` and `spectrum.preimage_units_mul_comm`: the
   units (of `R`) in `σ (a*b)` coincide with those in `σ (b*a)`.
+* `spectrum.resolvent_sub_resolvent`: the second resolvent identity.
 * `spectrum.scalar_eq`: in a nontrivial algebra over a field, the spectrum of a scalar is
   a singleton.
 
@@ -158,7 +159,7 @@ theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemi
 
 @[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
-  simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.setOf_true]
+  simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.ofPred_true]
 
 @[simp]
 theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
@@ -166,6 +167,17 @@ theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
 
 theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a r = ↑h.unit⁻¹ :=
   Ring.inverse_unit h.unit
+
+/-- The second resolvent identity: for `r` in the resolvent set of both
+`a` and `b`,
+`resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r`. -/
+theorem resolvent_sub_resolvent {a b : A} {r : R}
+    (ha : r ∈ resolventSet R a) (hb : r ∈ resolventSet R b) :
+    resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r := by
+  rw [resolvent_eq ha, resolvent_eq hb, Units.eq_mul_inv_iff_mul_eq, Units.eq_inv_mul_iff_mul_eq,
+    sub_mul, Units.inv_mul, mul_sub, ← mul_assoc, Units.mul_inv, one_mul, mul_one,
+    hb.unit_spec, ha.unit_spec]
+  abel
 
 theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
     r • resolvent a (s : R) = resolvent (r⁻¹ • a) (r⁻¹ • s : R) := by
@@ -252,10 +264,13 @@ theorem preimage_units_mul_comm (a b : A) :
     ((↑) : Rˣ → R) ⁻¹' σ (a * b) = (↑) ⁻¹' σ (b * a) :=
   Set.ext fun _ => unit_mem_mul_comm
 
-theorem setOf_isUnit_inter_mul_comm (a b : A) :
+theorem setOfPred_isUnit_inter_mul_comm (a b : A) :
     {r | IsUnit r} ∩ σ (a * b) = {r | IsUnit r} ∩ σ (b * a) := by
   ext r
   simpa using fun hr : IsUnit r ↦ unit_mem_mul_comm (r := hr.unit)
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isUnit_inter_mul_comm := setOfPred_isUnit_inter_mul_comm
 
 section Star
 
