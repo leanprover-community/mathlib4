@@ -30,7 +30,7 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
   apply le_antisymm
   · intro p hp
     have := IsAssociatedPrime.isPrime hp
-    apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix hp))
+    apply Ideal.mem_minimalPrimes_of_height_le _ (le_of_eq (unmix hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
   · nth_rw 1 [← Ideal.annihilator_quotient (I := I)]
