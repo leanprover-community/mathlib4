@@ -220,7 +220,7 @@ end Pi
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   pow_left_injective n hn a b h hab := by
     rw [Subtype.ext_iff] at *
-    exact IsMulTorsionFree.pow_left_injective hn (M := G) (a := a) (b := b) h hab
+    exact IsMulTorsionFree.pow_left_injective hn h hab
 
 end Subgroup
 

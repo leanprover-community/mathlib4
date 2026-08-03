@@ -123,7 +123,7 @@ lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
     ¬ IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one]
   rintro ⟨n, hn, han⟩
-  exact ha <| pow_left_injective hn.ne' <| by simpa using han
+  simp [ha, hn.ne'] at han
 
 @[to_additive]
 lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
