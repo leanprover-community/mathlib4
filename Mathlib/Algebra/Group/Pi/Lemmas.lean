@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Pairwise
 
@@ -43,11 +42,6 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
   Set.preimage_const 1 s
 
 namespace Pi
-
-@[to_additive]
-instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
-    IsMulTorsionFree (∀ i, M i) where
-  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
