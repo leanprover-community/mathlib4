@@ -15,13 +15,13 @@ public import Mathlib.Tactic.FunProp
 
 namespace Mathlib.Tactic
 
-open Lean Elab Tactic Syntax
+open Lean Elab Meta Tactic Syntax
 open Mathlib.Meta.FunProp (getFunPropDecl?)
 
 /-- `fun_prop_simp` is a wrapper around `fun_prop` that also tries calling `simp` on the function.
 It is intended to be used as an `autoParam` for proving properties of bundled morphisms. -/
 elab (name := funPropSimp) "fun_prop_simp" : tactic => do
-  let goalType ← instantiateMVars (← (← getMainGoal).getType)
+  let goalType ← whnfR (← (← getMainGoal).getType)
   let some funPropDecl ← getFunPropDecl? goalType | throwError "Not a `fun_prop` goal"
   evalTactic <| ← `(tactic|
     first
