@@ -37,6 +37,10 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {
 
 section coborder
 
+lemma mem_coborder_iff_imp {x : X} :
+    x ∈ coborder s ↔ x ∈ closure s → x ∈ s := by
+  simp [coborder]
+
 lemma subset_coborder :
     s ⊆ coborder s := by
   rw [coborder, subset_compl_iff_disjoint_right]
@@ -124,9 +128,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       ∃ U ∈ 𝓝 x, U ∩ closure s = U ∩ s,
       ∀ᶠ U in (𝓝 x).smallSets, U ∩ closure s = U ∩ s,
       closure s =ᶠ[𝓝 x] s,
-      closure s ≤ᶠ[𝓝 x] s] := by
-      -- x ∈ coborder s → coborder s ∈ 𝓝 x,
-      -- x ∈ s → coborder s ∈ 𝓝 x] := by
+      closure s ≤ᶠ[𝓝 x] s,
+      coborder s ∈ 𝓝 x] := by
   have mono (U V : Set X) (U_sub_V : U ⊆ V) (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
     h.preimage <| continuous_inclusion U_sub_V
   tfae_have 1 → 2 := by
@@ -153,6 +156,9 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
   tfae_have 6 ↔ 8 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
   tfae_have 8 → 9 := fun H ↦ H.le
   tfae_have 9 → 8 := fun H ↦ H.antisymm <| .of_forall subset_closure
+  tfae_have 9 ↔ 10 := by
+    simp_rw [← eventually_mem_set, mem_coborder_iff_imp]
+    rfl
   tfae_finish
 
 end IsLocallyClosedAt
@@ -171,7 +177,6 @@ lemma IsLocallyClosed.preimage {s : Set Y} (hs : IsLocallyClosed s)
   obtain ⟨U, Z, hU, hZ, rfl⟩ := hs
   exact ⟨_, _, hU.preimage hf, hZ.preimage hf, preimage_inter⟩
 
-nonrec
 lemma Topology.IsInducing.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsInducing f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ f ⁻¹' s' = s := by
