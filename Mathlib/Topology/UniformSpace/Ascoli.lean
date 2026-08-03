@@ -501,7 +501,7 @@ theorem ArzelaAscoli.isCompact_of_equicontinuous
   suffices h : IsInducing (Equiv.Set.image _ S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfIsInducing _ h).symm.compactSpace
-  rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi _ _ _]
+  rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi]
   · exact ContinuousMap.isUniformEmbedding_toUniformOnFunIsCompact.isInducing.comp .subtypeVal
   · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
   · exact fun _ ↦ id

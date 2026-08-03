@@ -200,7 +200,7 @@ theorem induction_on' {motive : M ∗ N → Prop} (m : M ∗ N)
   rcases mk_surjective m with ⟨x, rfl⟩
   induction x using FreeMonoid.inductionOn' with
   | one => exact one
-  | mul_of x xs ih =>
+  | of_mul x xs ih =>
     cases x with
     | inl m => simpa using inl_mul m _ ih
     | inr n => simpa using inr_mul n _ ih
@@ -582,7 +582,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
   rw [← mk_eq_mk, map_mul, map_one]
   induction x using FreeMonoid.inductionOn' with
   | one => simp
-  | mul_of x xs ihx =>
+  | of_mul x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
