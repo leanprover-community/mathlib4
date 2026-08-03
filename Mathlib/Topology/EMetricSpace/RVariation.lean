@@ -268,7 +268,7 @@ lemma sum_lp_mono_p (m : ℕ) (u : ℕ → ℝ≥0∞) {p q : ℝ} (hp : 0 < p) 
   exact ENNReal.rpow_le_rpow
     (ennreal_sum_rpow_le_rpow_sum _ _ ((one_le_div₀ hp).mpr pq)) (inv_nonneg.mpr hq.le)
 
-lemma ENNReal_sup_lt_top
+lemma ennreal_ex_sup_lt_of_sup_ne_top
     {α : Type*} [Inhabited α] {f : α → ℝ≥0∞}
     (h : ⨆ x : α, f x ≠ ∞) {ε : NNReal} (hε : 0 < ε) :
     ∃ b : α, ⨆ x : α, f x < f b + ε := by
@@ -291,7 +291,7 @@ theorem eVariationOn_lt_top {f : α → E} {s : Set α} (h : r ≠ 0) (h' : r �
   have : Inhabited (ℕ × { u // Monotone u ∧ ∀ (i : ℕ), u i ∈ s }) := by
     have := eVariationOn.nonempty_monotone_mem hI
     apply Classical.inhabited_of_nonempty instNonemptyProd
-  exact ENNReal_sup_lt_top (h := hv) (hε := hε)
+  exact ennreal_ex_sup_lt_of_sup_ne_top (h := hv) (hε := hε)
 
 /-- The `r`-variation of a function is antitone on the exponent.
 TODO : This also works for `r = ⊤`. -/
