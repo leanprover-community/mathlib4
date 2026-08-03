@@ -40,7 +40,6 @@ variable {F G} (adj₂ : F ⊣₂ G)
   (sq₁₂ : F.PushoutObjObj f₁ f₂) (sq₁₃ : G.PullbackObjObj f₁ f₃)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, and structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
 as many commutative squares with left map `sq₁₂.ι` and right map `f₃`
@@ -112,7 +111,6 @@ lemma inr_arrowHomEquiv_symm_apply_left (β : Arrow.mk f₂ ⟶ Arrow.mk sq₁�
   IsPushout.inr_desc _ _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
 there are as many liftings for the commutative square given by a

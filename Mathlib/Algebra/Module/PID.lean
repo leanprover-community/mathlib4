@@ -269,7 +269,6 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

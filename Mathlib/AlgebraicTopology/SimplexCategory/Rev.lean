@@ -75,7 +75,6 @@ lemma rev_map_rev_map {n m : SimplexCategory} (f : n ⟶ m) :
     rev.map (rev.map f) = f := by
   aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 as an equivalence of category. -/

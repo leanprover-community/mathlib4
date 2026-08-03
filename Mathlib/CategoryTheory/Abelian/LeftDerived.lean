@@ -76,7 +76,6 @@ noncomputable def ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj {X : 
     (F.mapHomotopyCategoryFactors _).app P.complex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.isoLeftDerivedToHomotopyCategoryObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)

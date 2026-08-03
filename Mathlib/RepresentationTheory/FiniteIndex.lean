@@ -253,7 +253,6 @@ lemma coindResAdjunction_counit_app (B : Rep.{max w u v} k G) :
       (indResAdjunction k S.subtype).counit.app B :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app (A : Rep.{max w u v} k S) :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫

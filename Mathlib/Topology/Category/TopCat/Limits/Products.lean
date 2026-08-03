@@ -152,14 +152,12 @@ equipped with the product topology.
 def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
   (limit.isLimit _).conePointUniqueUpToIso (prodBinaryFanIsLimit X Y)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
   simp [← Iso.eq_inv_comp, prodIsoProd]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by

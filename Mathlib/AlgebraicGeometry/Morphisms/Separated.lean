@@ -287,7 +287,6 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
   convert! (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
 Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.

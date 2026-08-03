@@ -139,7 +139,6 @@ theorem PreservesKernel.iso_inv_ι :
   IsLimit.conePointUniqueUpToIso_inv_comp (isLimitOfHasKernelOfPreservesLimit G f)
     (limit.isLimit _) (WalkingParallelPair.zero)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparison f G := by
   rw [← cancel_mono (kernel.ι _)]
@@ -269,7 +268,6 @@ theorem PreservesCokernel.π_iso_hom : G.map (cokernel.π f) ≫ (iso G f).hom =
   IsColimit.comp_coconePointUniqueUpToIso_hom (isColimitOfHasCokernelOfPreservesColimit G f)
     (colimit.isColimit _) (WalkingParallelPair.one)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelComparison f G := by
   rw [← cancel_epi (cokernel.π _)]

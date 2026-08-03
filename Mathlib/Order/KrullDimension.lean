@@ -137,7 +137,6 @@ lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
   rw [coheight_eq, iSup₂_le_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
   apply height_le_iff.mpr
@@ -193,7 +192,6 @@ lemma coheight_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.head = a �
     coheight a ≤ n :=
   coheight_le_iff'.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0

@@ -73,7 +73,6 @@ lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
     letI := Equiv.module R e
     (e.linearEquiv R).symm b = e.symm b := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R β]

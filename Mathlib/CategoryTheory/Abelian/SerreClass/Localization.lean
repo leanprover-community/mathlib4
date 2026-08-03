@@ -233,7 +233,6 @@ lemma preservesMonomorphisms : L.PreservesMonomorphisms where
 lemma preservesEpimorphisms : L.PreservesEpimorphisms where
   preserves f _ := by simpa only [epi_map_iff _ P] using P.epiModSerre_of_epi f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
@@ -257,7 +256,6 @@ lemma mono_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.monomorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Mono (L.map f')))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
       Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by

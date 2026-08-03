@@ -644,7 +644,6 @@ theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] 
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
     lift.tprod, add_apply, LinearMap.add_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
@@ -663,7 +662,6 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
   map_add' x y := piTensorHomMapFun₂_add x y
   map_smul' x y := piTensorHomMapFun₂_smul x y
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
     piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by

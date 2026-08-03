@@ -88,7 +88,6 @@ Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
   | ⟨f⟩ => ⟨.ofCoeff <| f.coeff.embDomain (revAt N)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reflect_support (N : ℕ) (f : R[X]) :
     (reflect N f).support = Finset.image (revAt N) f.support := by cases f; ext1; simp [reflect]
 
