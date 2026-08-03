@@ -149,8 +149,8 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) := by
   classical
   have ⟨I, b⟩ := Module.Free.exists_basis R M
-  letI : LinearOrder I := WellFounded.wellOrderExtension emptyWf.rel
-  Module.Free.of_basis (b.exteriorPower n)
+  let : LinearOrder I := linearOrderOfSTO WellOrderingRel
+  exact Module.Free.of_basis (b.exteriorPower n)
 
 variable [Nontrivial R]
 
@@ -158,8 +158,8 @@ variable [Nontrivial R]
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma finrank_eq [Module.Free R M] [Module.Finite R M] :
     Module.finrank R (⋀[R]^n M) = Nat.choose (Module.finrank R M) n := by
-  letI : LinearOrder (Module.Free.ChooseBasisIndex R M) :=
-    WellFounded.wellOrderExtension emptyWf.rel
+  classical
+  let : LinearOrder (Module.Free.ChooseBasisIndex R M) := linearOrderOfSTO WellOrderingRel
   let B := (Module.Free.chooseBasis R M).exteriorPower n
   rw [Module.finrank_eq_card_basis (Module.Free.chooseBasis R M), Module.finrank_eq_card_basis B,
     Fintype.card_eq_nat_card, powersetCard.card, Fintype.card_eq_nat_card]

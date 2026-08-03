@@ -296,7 +296,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
         apply dvd_add (dvd_mul_right _ _)
         have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := fun h₁ => hl _ h₁ (mod_lt x hm0)
         have : x % m = 0 := by
-          simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
+          simp only [not_and_or, Set.mem_ofPred, not_ne_iff] at this
           exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
         simp [*]
       · let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx

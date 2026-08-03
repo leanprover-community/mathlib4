@@ -172,7 +172,7 @@ instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellF
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
-  Lex.wellFounded' (fun _ a => (zero_le a).not_gt) hι
+  Lex.wellFounded' (fun _ _ ↦ not_lt_zero) hι
 
 set_option backward.isDefEq.respectTransparency false in
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
@@ -191,8 +191,8 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] [hs : ∀ i, We
     WellFounded (Pi.Lex r (fun {i} ↦ s i)) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert! emptyWf.wf
-  letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := IsTrans.swap r; haveI := Std.Irrefl.swap r; haveI := Fintype.ofFinite ι
+  let : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
+  have := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) ?_)
   exacts [(hs i).not_lt_min ⊤ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
@@ -230,14 +230,12 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
   let _ : ∀ i, Zero (β i) := fun i ↦ ⟨e i 0⟩
   have : WellFounded (DFinsupp.Lex (Function.swap <| @WellOrderingRel ι)
       (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop)) := by
-    have := Std.Trichotomous.swap (@WellOrderingRel ι)
     refine Lex.wellFounded' ?_ ?_
     · rintro i ⟨a⟩
       apply hbot
     · simp +unfoldPartialApp only [Function.swap]
       infer_instance
   refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange e fun _ ↦ rfl) this
-  have := IsStrictOrder.swap (@WellOrderingRel ι)
   obtain ⟨i, he, hl⟩ := lex_lt_of_lt_of_preorder (Function.swap WellOrderingRel) h
   exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩
 
@@ -250,8 +248,8 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
     WellFoundedLT (∀ i, α i) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
   · convert emptyWf.wf
-  letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).min ⊤ ⟨x i, trivial⟩⟩
-  haveI := Fintype.ofFinite ι
+  let : ∀ i, Zero (α i) := fun i => ⟨(hw i).min ⊤ ⟨x i, trivial⟩⟩
+  have := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_)
   exact (hw i).not_lt_min ⊤ trivial
 

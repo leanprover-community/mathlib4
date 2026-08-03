@@ -58,7 +58,7 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCance
     (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates <| by
     unfold WellFoundedLT WfDvdMonoid at *
-    convert h
+    convert! h
     ext
     exact Associates.dvdNotUnit_iff_lt
 

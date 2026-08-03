@@ -59,15 +59,6 @@ Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian modu
 
 open Set Filter Pointwise
 
-/-- `IsArtinian R M` is the proposition that `M` is an Artinian `R`-module,
-implemented as the well-foundedness of submodule inclusion. -/
-abbrev IsArtinian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop :=
-  WellFoundedLT (Submodule R M)
-
-theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArtinian R M ↔
-    WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
-  .rfl
-
 section Semiring
 
 variable {R M P N : Type*}
