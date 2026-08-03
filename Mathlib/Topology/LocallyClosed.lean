@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.Constructions
 public import Mathlib.Tactic.TFAE
 
@@ -29,7 +30,7 @@ public import Mathlib.Tactic.TFAE
 
 public section
 
-open Set Topology
+open Set Topology Filter
 open scoped Set.Notation
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X} {f : X → Y}
@@ -112,6 +113,47 @@ lemma IsLocallyClosed.isLocallyClosedAt (hs : IsLocallyClosed s) {x : X} (hx : x
     IsLocallyClosedAt s x := by
   obtain ⟨U, Z, U_open, Z_closed, s_eq⟩ := hs
   exact ⟨U, Z, U_open.mem_nhds (s_eq ▸ hx).1, Z_closed, by simp [s_eq]⟩
+
+lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
+    List.TFAE
+    [ IsLocallyClosedAt s x,
+      ∃ U ∈ 𝓝 x, IsClosed (U ↓∩ s),
+      ∀ᶠ U in (𝓝 x).smallSets, IsClosed (U ↓∩ s),
+      ∃ U ∈ 𝓝 x, U ∩ closure s ⊆ s,
+      ∀ᶠ U in (𝓝 x).smallSets, U ∩ closure s ⊆ s,
+      ∃ U ∈ 𝓝 x, U ∩ closure s = U ∩ s,
+      ∀ᶠ U in (𝓝 x).smallSets, U ∩ closure s = U ∩ s,
+      closure s =ᶠ[𝓝 x] s,
+      closure s ≤ᶠ[𝓝 x] s] := by
+      -- x ∈ coborder s → coborder s ∈ 𝓝 x,
+      -- x ∈ s → coborder s ∈ 𝓝 x] := by
+  have mono (U V : Set X) (U_sub_V : U ⊆ V) (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
+    h.preimage <| continuous_inclusion U_sub_V
+  tfae_have 1 → 2 := by
+    rintro ⟨U, Z, U_mem, Z_closed, eq⟩
+    use U, U_mem
+    exact IsInducing.subtypeVal.isClosed_iff.mpr
+      ⟨Z, Z_closed, by simp [Subtype.preimage_val_eq_preimage_val_iff, eq]⟩
+  tfae_have 2 ↔ 3 := by
+    rw [eventually_smallSets' mono]
+  tfae_have 3 → 4 := by
+    intro H
+    rw [nhds_basis_opens' x |>.eventually_smallSets mono] at H
+    obtain ⟨U, ⟨U_mem, U_open⟩, H⟩ := H
+    rw [← closure_subset_iff_isClosed,
+      ← U_open.isOpenMap_subtype_val.preimage_closure_eq_closure_preimage (by fun_prop),
+      Subtype.preimage_val_subset_preimage_val_iff] at H
+    exact ⟨U, U_mem, by simpa using H⟩
+  tfae_have 4 ↔ 5 := by grind [eventually_smallSets']
+  tfae_have 4 ↔ 6 := by grind [subset_closure]
+  tfae_have 6 → 1 := by
+    rintro ⟨U, U_mem, eq⟩
+    exact ⟨U, closure s, U_mem, isClosed_closure, eq.symm⟩
+  tfae_have 5 ↔ 7 := by grind [subset_closure]
+  tfae_have 6 ↔ 8 := by simp [eventuallyEq_set, eventually_iff_exists_mem, Set.ext_iff]
+  tfae_have 8 → 9 := fun H ↦ H.le
+  tfae_have 9 → 8 := fun H ↦ H.antisymm <| .of_forall subset_closure
+  tfae_finish
 
 end IsLocallyClosedAt
 
