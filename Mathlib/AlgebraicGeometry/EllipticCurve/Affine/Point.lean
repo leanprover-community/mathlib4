@@ -139,6 +139,17 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   fin_cases n
   exacts [basis_zero, basis_one]
 
+instance : Module.Free R[X] W'.CoordinateRing := .of_basis (CoordinateRing.basis W')
+
+instance : Module.Free R W'.CoordinateRing := .trans (S := R[X])
+
+instance [Nontrivial R] : Nontrivial W'.CoordinateRing :=
+  ⟨_, _, (CoordinateRing.basis W').ne_zero 0⟩
+
+instance : FaithfulSMul R[X] W'.CoordinateRing := by nontriviality R; infer_instance
+
+instance : FaithfulSMul R W'.CoordinateRing := .trans R R[X] _
+
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
 
