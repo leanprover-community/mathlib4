@@ -81,9 +81,6 @@ protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 
-instance : Std.Refl (ModEq n) :=
-  ⟨ModEq.refl⟩
-
 @[symm]
 protected theorem symm : a ≡ b [MOD n] → b ≡ a [MOD n] :=
   Eq.symm
@@ -92,8 +89,10 @@ protected theorem symm : a ≡ b [MOD n] → b ≡ a [MOD n] :=
 protected theorem trans : a ≡ b [MOD n] → b ≡ c [MOD n] → a ≡ c [MOD n] :=
   Eq.trans
 
-instance : Trans (ModEq n) (ModEq n) (ModEq n) where
-  trans := Nat.ModEq.trans
+instance : IsEquiv ℕ (ModEq n) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 protected theorem comm : a ≡ b [MOD n] ↔ b ≡ a [MOD n] :=
   ⟨ModEq.symm, ModEq.symm⟩
