@@ -118,10 +118,9 @@ theorem dovetailn_ev_1' {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     simp? says simp only [ne_eq, not_forall, Decidable.not_not]
     have hh := Part.not_none_iff_dom.mp h
     have := dovetailn_ev_0 hh
-    aesop? says
-      apply Exists.intro
-      · apply Exists.intro
-        exact this
+    apply Exists.intro
+    · apply Exists.intro
+      exact this
 
 theorem dovetailn_ev_1_aux {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     (∀ s y, evaln O s c ⟪x, y⟫ ≠ Option.some 0) ↔ ∀ y, eval O c ⟪x, y⟫ ≠ Part.some 0 := by

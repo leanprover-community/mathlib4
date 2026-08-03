@@ -3,10 +3,14 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Lean
-register_label_attr cp
+module
+
+public import Mathlib.Init
+public import Lean.LabelAttribute
 
 /-! # Tactics/macros for computability arguments -/
+
+register_label_attr cp
 
 open Lean
 
