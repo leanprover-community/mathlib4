@@ -117,18 +117,25 @@ noncomputable def totalFlipIso : K.flip.total c ≅ K.total c :=
       totalFlipIsoX_hom_D₂, Preadditive.add_comp]
     rw [add_comm])
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma totalFlipIso_hom_f_D₁ (j j' : J) :
     (K.totalFlipIso c).hom.f j ≫ K.D₁ c j j' =
       K.flip.D₂ c j j' ≫ (K.totalFlipIso c).hom.f j' := by
   apply totalFlipIsoX_hom_D₁
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma totalFlipIso_hom_f_D₂ (j j' : J) :
     (K.totalFlipIso c).hom.f j ≫ K.D₂ c j j' =
       K.flip.D₁ c j j' ≫ (K.totalFlipIso c).hom.f j' := by
   apply totalFlipIsoX_hom_D₂
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ιTotal_totalFlipIso_f_hom
     (i₁ : I₁) (i₂ : I₂) (j : J) (h : ComplexShape.π c₂ c₁ c (i₂, i₁) = j) :
@@ -137,6 +144,7 @@ lemma ιTotal_totalFlipIso_f_hom
         (by rw [← ComplexShape.π_symm c₁ c₂ c i₁ i₂, h]) := by
   simp [totalFlipIso, totalFlipIsoX]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ιTotal_totalFlipIso_f_inv
     (i₁ : I₁) (i₂ : I₂) (j : J) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
@@ -151,6 +159,7 @@ section
 
 variable [TotalComplexShapeSymmetry c₂ c₁ c] [TotalComplexShapeSymmetrySymmetry c₁ c₂ c]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma flip_totalFlipIso : K.flip.totalFlipIso c = (K.totalFlipIso c).symm := by
   ext j i₁ i₂ h
   rw [Iso.symm_hom, ιTotal_totalFlipIso_f_hom]

@@ -47,7 +47,6 @@ universe v u
 
 variable (R : Type u) [Ring R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-modules and their morphisms.
 
 Note that in the case of `R = ℤ`, we cannot
@@ -667,3 +666,10 @@ end Bilinear
 @[simp] theorem LinearMap.id_moduleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H : H ⟶ H).hom f = f := by simp
+
+instance {R S : Type*} [Ring R] [Ring S] (F : ModuleCat R ⥤ ModuleCat S) [F.Full] [F.Faithful]
+    (M : ModuleCat R) [h : Nontrivial M] : Nontrivial (F.obj M) := by
+  by_contra!
+  exact ((not_iff_not.2 ModuleCat.isZero_iff_subsingleton).2 <|
+    not_subsingleton_iff_nontrivial.2 h) <| IsZero.of_full_of_faithful_of_isZero F _ <|
+    ModuleCat.isZero_of_subsingleton <| F.obj M

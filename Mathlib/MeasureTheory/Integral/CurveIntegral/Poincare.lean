@@ -292,6 +292,7 @@ namespace Convex
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
   {a b c : E} {s : Set E} {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
@@ -395,7 +396,7 @@ variable [CompleteSpace E] {f : 𝕜 → E} {s : Set 𝕜}
 then it admits a primitive. -/
 theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 f s) :
     ∃ g : 𝕜 → E, ∀ a ∈ s, HasDerivWithinAt g (f a) s a := by
-  letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
+  let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
     exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt

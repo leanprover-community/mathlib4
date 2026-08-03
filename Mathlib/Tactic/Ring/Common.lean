@@ -272,7 +272,7 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 
-/-- Defines how comparisons and binary equality are computed in the base type. These are seperated
+/-- Defines how comparisons and binary equality are computed in the base type. These are separated
 from RingCompute because they can often be defined without using instance caches. -/
 structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type) where
   /-- Returns whether two coefficients are equal -/
@@ -286,12 +286,12 @@ structure RingCompare {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
 `algebra` will implement these using `ring` -/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) extends RingCompare BaseType where
-  /-- Evaluate the sum of two coefficents.
+  /-- Evaluate the sum of two coefficients.
 
   If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
   add {x y : Q($α)} : BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
-  /-- Evaluate the product of two coefficents. -/
+  /-- Evaluate the product of two coefficients. -/
   mul {x y : Q($α)} : BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
   /-- Given a commutative ring `β` with a scalar multiplication action on `α` and a `x : β`, cast
   `x` to `α` such that the scalar multiplication turns into normal multiplication. Typically one
@@ -900,8 +900,7 @@ theorem mul_pow_mul {ea₁ b c₁ : ℕ} {xa₁ c₃ d : R} (_ : ea₁ * b = c�
   subst_vars; simp [_root_.mul_pow, pow_mul, Nat.rawCast]
 
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
-private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
-    MonadLiftT (OptionT m) (OptionT m') where
+private local instance {m m'} [MonadLiftT m m'] : MonadLiftT (OptionT m) (OptionT m') where
   monadLift x := OptionT.mk x.run
 
 /-- There are several special cases when exponentiating monomials:
@@ -1082,7 +1081,7 @@ theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e)
 
 theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e)
     (hb : a' ^ e * (nat_lit 1).rawCast = b) :
-    a = b + 0 := by simp [← hone, ←hb, *]
+    a = b + 0 := by simp [← hone, ← hb, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.

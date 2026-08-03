@@ -36,6 +36,7 @@ variable [Module R M₁] [Module S M₁] [IsScalarTower R S M₁] [Module R M₂
 
 attribute [ext] TensorProduct.ext
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Tensor products distribute over a product on the right. -/
 def prodRight : M₁ ⊗[R] (M₂ × M₃) ≃ₗ[S] (M₁ ⊗[R] M₂) × (M₁ ⊗[R] M₃) :=
   LinearEquiv.ofLinear

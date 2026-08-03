@@ -29,7 +29,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 ## Main theorems
 
-- `sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
+- `Polynomial.sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
   coefficients up to `n` is `(n + 1) * X^n`.
 - `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.
@@ -179,6 +179,7 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_

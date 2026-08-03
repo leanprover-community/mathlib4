@@ -44,7 +44,6 @@ attribute [coe] DistLat.carrier
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `DistLat R`. -/
 @[ext]
 structure Hom (X Y : DistLat.{u}) where

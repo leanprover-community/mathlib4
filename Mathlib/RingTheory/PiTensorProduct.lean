@@ -76,6 +76,7 @@ nonrec theorem _root_.Commute.tprod {a₁ a₂ : Π i, A i} (ha : Commute a₁ a
     Commute (tprod R a₁) (tprod R a₂) :=
   ha.tprod
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
   simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
@@ -276,9 +277,9 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
         -- one of these is required, the other is a performance optimization
-        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
-        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext

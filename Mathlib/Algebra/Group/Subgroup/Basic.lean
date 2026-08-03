@@ -316,6 +316,71 @@ instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 
+@[to_additive]
+instance characteristic_sup [H.Characteristic] [K.Characteristic] :
+    (H ⊔ K).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_sup]
+
+@[to_additive]
+instance characteristic_iSup {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨆ i, H i).Characteristic := by
+  simp_all [characteristic_iff_map_eq, map_iSup]
+
+@[to_additive]
+theorem characteristic_biSup {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨆ i ∈ s, H i).Characteristic := by
+  simp [← iSup_subtype'', characteristic_iSup, h]
+
+@[to_additive]
+theorem characteristic_sSup {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sSup Hs).Characteristic := by
+  simp [sSup_eq_iSup', characteristic_iSup, h]
+
+@[to_additive]
+instance characteristic_inf [H.Characteristic] [K.Characteristic] :
+    (H ⊓ K).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_inf]
+
+@[to_additive]
+instance characteristic_iInf {ι : Sort*} {H : ι → Subgroup G} [∀ i, (H i).Characteristic] :
+    (⨅ i, H i).Characteristic := by
+  simp_all [characteristic_iff_comap_eq, comap_iInf]
+
+@[to_additive]
+theorem characteristic_biInf {ι : Type*} {s : Set ι} {H : ι → Subgroup G}
+    (h : ∀ i ∈ s, (H i).Characteristic) : (⨅ i ∈ s, H i).Characteristic := by
+  simp [← iInf_subtype'', characteristic_iInf, h]
+
+@[to_additive]
+theorem characteristic_sInf {Hs : Set (Subgroup G)} (h : ∀ H ∈ Hs, H.Characteristic) :
+    (sInf Hs).Characteristic := by
+  simp [sInf_eq_iInf', characteristic_iInf, h]
+
+/-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
+automorphism of `H`. -/
+@[to_additive (attr := simps!)
+  /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
+  automorphism of `H`. -/]
+def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
+  toFun φ :=
+    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+      left_inv h := Subtype.ext (φ.symm_apply_apply h)
+      right_inv h := Subtype.ext (φ.apply_symm_apply h)
+      map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+/-- If `H` is a characteristic subgroup of `G` and `K` is a characteristic subgroup of `H`, then
+`K` is a characteristic subgroup of `G`. -/
+@[to_additive
+  /-- If `H` is a characteristic additive subgroup of `G` and `K` is a characteristic additive
+  subgroup of `H`, then `K` is a characteristic additive subgroup of `G`. -/]
+instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
+    {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
+  refine characteristic_iff_map_eq.2 fun φ ↦ ?_
+  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  simpa [Subgroup.map_map, MulAut.characteristic]
 
 variable (H)
 
@@ -499,7 +564,7 @@ def conjugatesOfSet (s : Set G) : Set G :=
 @[to_additive]
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
   rw [conjugatesOfSet, Set.mem_iUnion₂]
-  simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
+  simp only [conjugatesOf, isConj_iff, Set.mem_ofPred_eq, exists_prop]
 
 @[to_additive]
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
@@ -805,6 +870,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G�
     rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
     simp only [hf _]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
     (hg : f.ker ≤ g.ker) (x : G₁) : (f.liftOfRightInverseAux f_inv hf g hg) (f x) = g x := by
@@ -912,6 +978,7 @@ instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem comap_normalClosure_image_ge (s : Set G) (f : G →* N) :
     (normalClosure s) ≤ (normalClosure (f '' s)).comap f := by
@@ -1052,6 +1119,7 @@ namespace IsConj
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
@@ -1059,20 +1127,20 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
   have h : ∀ x : N, (MulAut.conj c) x ∈ N := by
     rintro ⟨x, hx⟩
     exact hn.conj_mem _ hx c
-  have hs : Function.Surjective (((MulAut.conj c).toMonoidHom.restrict N).codRestrict _ h) := by
+  have hs : Function.Surjective (((MulAut.conj c).toMonoidHom.domRestrict N).codRestrict _ h) := by
     rintro ⟨x, hx⟩
     refine ⟨⟨c⁻¹ * x * c, ?_⟩, ?_⟩
     · have h := hn.conj_mem _ hx c⁻¹
       rwa [inv_inv] at h
     simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply,
-      MonoidHom.restrict_apply, Subtype.mk_eq_mk, ← mul_assoc, mul_inv_cancel, one_mul]
+      MonoidHom.domRestrict_apply, Subtype.mk_eq_mk, ← mul_assoc, mul_inv_cancel, one_mul]
     rw [mul_assoc, mul_inv_cancel, mul_one]
   rw [eq_top_iff, ← MonoidHom.range_eq_top.2 hs, MonoidHom.range_eq_map]
   grw [eq_top_iff.1 ht]
   refine map_le_iff_le_comap.2 (normalClosure_le_normal ?_)
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
   simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply,
-    MonoidHom.restrict_apply, mem_comap]
+    MonoidHom.domRestrict_apply, mem_comap]
   exact subset_normalClosure (Set.mem_singleton _)
 
 end IsConj

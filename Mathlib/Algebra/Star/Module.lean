@@ -216,6 +216,7 @@ theorem skewAdjointPart_comp_subtype_skewAdjoint :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
 @[simps!]

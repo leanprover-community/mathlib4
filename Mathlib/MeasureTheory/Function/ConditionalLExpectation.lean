@@ -60,7 +60,7 @@ namespace MeasureTheory
 
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
-open Classical in
+open scoped Classical in
 /-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.

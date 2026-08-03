@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakKernels
 
-
 /-!
 # Weak kernels in pretriangulated categories
 
@@ -29,8 +28,6 @@ open Limits Category Preadditive Pretriangulated
 
 variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
-
-variable {X Y : C} (f : X ⟶ Y)
 
 /-- If `T` is a distinguished triangle, then `T.mor₁` defines a kernel fork for `T.mor₂`. -/
 def kernelForkOfDistTriangle (T : Triangle C) (dT : T ∈ distTriang C) :

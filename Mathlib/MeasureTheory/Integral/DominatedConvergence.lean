@@ -150,7 +150,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    grw [(h_anti zero_le).subset]
+    grw [h_anti zero_le]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono
@@ -295,6 +295,7 @@ open scoped Interval
 variable {E X : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
   {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     (h_int : IntervalIntegrable f μ (min a b₁) (max a b₂)) :
     ContinuousWithinAt (fun b => ∫ x in a..b, f x ∂μ) (Icc b₁ b₂) b₀ := by

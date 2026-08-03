@@ -109,6 +109,7 @@ def LinearMap.tensorKerInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (ker f).subtype
       (ker f).injective_subtype) (by simp [Module.Flat.ker_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
     (x : ker (AlgebraTensorModule.lTensor S M f)) :
@@ -127,6 +128,7 @@ def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     (Module.Flat.lTensor_preserves_injective_linearMap (eqLocus f g).subtype
       (eqLocus f g).injective_subtype) (by simp [Module.Flat.eqLocus_lTensor_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
