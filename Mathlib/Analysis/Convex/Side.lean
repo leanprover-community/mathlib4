@@ -882,7 +882,7 @@ alias isPreconnected_setOf_wOppSide := isPreconnected_setOfPred_wOppSide
 theorem isConnected_setOfPred_sOppSide {s : AffineSubspace ℝ P} {x : P} (hx : x ∉ s)
     (h : (s : Set P).Nonempty) : IsConnected { y | s.SOppSide x y } := by
   obtain ⟨p, hp⟩ := h
-  haveI : Nonempty s := ⟨⟨p, hp⟩⟩
+  have : Nonempty s := ⟨⟨p, hp⟩⟩
   rw [setOfPred_sOppSide_eq_image2 hx hp, ← Set.image_prod]
   refine (isConnected_Iio.prod (isConnected_iff_connectedSpace.2 ?_)).image _
     ((continuous_fst.smul continuous_const).vadd continuous_snd).continuousOn
