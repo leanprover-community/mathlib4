@@ -51,7 +51,7 @@ namespace stdSimplex
 
 open Finset Opposite SimplexCategory
 
-/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful; -/
+/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful. -/
 abbrev fullyFaithful : stdSimplex.{u}.FullyFaithful :=
   ULiftYoneda.fullyFaithful SimplexCategory
 
