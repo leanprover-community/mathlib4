@@ -19,7 +19,7 @@ As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasu
 `p : unitInterval`.
 
 Imagine a certain experience which has success probability `p`. If you repeat this experience
-infintely many times and independently, the number of failures before the first success
+infinitely many times and independently, the number of failures before the first success
 follows a geometric distribution with parameter `p`.
 
 ## Main definition
