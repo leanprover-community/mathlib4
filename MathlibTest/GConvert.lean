@@ -1,4 +1,7 @@
+module
+
 import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.Order.Filter.Basic
 
 /-! ## General usage -/
 
@@ -9,15 +12,14 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
   exact h₂ _ this
 
 example (p q : Nat → Prop) (h₁ : ∀ {x}, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
-  gconvert h₁ using 1
+  gconvert @h₁ using 1
   rename_i y
   guard_target =ₐ q y
   exact h₂ _ this
 
 example (p q : Nat → Nat → Prop) (h₁ : ∀ {x y}, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
-  gconvert h₁ using 2
-  rename_i u v
+  gconvert @h₁ using 2 with u v
   guard_target =ₐ q u v
   exact h₂ _ _ h₁
 
@@ -29,8 +31,7 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
 
 example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
-  gconvert h₁
-  rename_i u v
+  gconvert h₁ with u v
   guard_target =ₐ q u v
   exact h₂ _ _ this
 
@@ -77,7 +78,7 @@ set_option linter.unusedTactic false in
 example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
   gconvert h using 5
-  fail_if_success gconvert 0 this
+  fail_if_success gconvert this using 0
   linarith
 
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
@@ -123,7 +124,6 @@ example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
   intro ε hε
   gconvert (h ε hε) using 3
-  rename_i _ n _
   guard_hyp this : x + ↑n = y + ε
   guard_target =ₐ x - ε = y - n
   linarith
@@ -141,6 +141,8 @@ example : (∃ k > 0, ∃ n ≥ k, n = k) ↔ ∃ k > 0, ∃ n ≥ k, k = n := b
   exact eq_comm
 
 /-! ## Eventually and frequently -/
+
+open Filter Topology
 
 example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ |y - x|) :
     ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ^ 2 ≤ |y - x| ^ 2 := by
@@ -193,7 +195,7 @@ example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Surject
 def toInf (f : ℕ → ℕ) : Prop := ∀ m, ∃ n, ∀ n' ≥ n, m ≤ f n'
 
 @[gcongr]
-def toInf_mono {f g : ℕ → ℕ} (h : f ≤ g) (hf : toInf f) : toInf g := by
+theorem toInf_mono {f g : ℕ → ℕ} (h : f ≤ g) (hf : toInf f) : toInf g := by
   unfold toInf at *
   gconvert hf
   exact h _
@@ -206,12 +208,12 @@ example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
 
 /-! ## Error messages -/
 
-/-- error: try rfl -/
 #guard_msgs in example (x y : ℝ) (h : x = y) : x = y := by
   gconvert h
 
 /--
 error: `gcongr` did not make progress
+
 h : ∃ y, ∀ (x : ℕ), x ≠ y
 ⊢ (∃ y, ∀ (x : ℕ), x ≠ y) → ∀ (x : ℕ), ∃ y, x ≠ y
 -/
@@ -220,19 +222,10 @@ example (h : ∃ y : ℕ, ∀ x, x ≠ y) : ∀ x : ℕ, ∃ y, x ≠ y := by
   gconvert h
 
 /--
-error: unsolved goals
-case a
-h this : ∀ (n : ℕ), 0 ≤ n
-⊢ ?p
+error: `gcongr` did not make progress
 
-case p
-h this : ∀ (n : ℕ), 0 ≤ n
-⊢ Prop
-
-case h
-h a✝ : ∀ (n : ℕ), 0 ≤ n
-this : ?p
-⊢ ∀ (n : ℤ), 0 ≤ n
+h : ∀ (n : ℕ), 0 ≤ n
+⊢ (∀ (n : ℕ), 0 ≤ n) → ∀ (n : ℤ), 0 ≤ n
 -/
 #guard_msgs in
 example (h : ∀ n : ℕ, 0 ≤ n) : ∀ n : ℤ, 0 ≤ n := by
@@ -240,6 +233,7 @@ example (h : ∀ n : ℕ, 0 ≤ n) : ∀ n : ℤ, 0 ≤ n := by
 
 /--
 error: `gcongr` did not make progress
+
 h : ∃ n, 0 ≤ n
 ⊢ (∃ n, 0 ≤ n) → ∃ n, 0 ≤ n
 -/
@@ -249,6 +243,7 @@ example (h : ∃ n : ℕ, 0 ≤ n) : ∃ n : ℤ, 0 ≤ n := by
 
 /--
 error: `gcongr` did not make progress
+
 h : ∃ᶠ (n : ℕ) in atTop, 0 ≤ n
 ⊢ (∃ᶠ (n : ℕ) in atTop, 0 ≤ n) → ∃ᶠ (n : ℕ) in atBot, 0 ≤ n
 -/
@@ -258,6 +253,7 @@ example (h : ∃ᶠ n : ℕ in atTop, 0 ≤ n) : ∃ᶠ n : ℕ in atBot, 0 ≤ 
 
 /--
 error: `gcongr` did not make progress
+
 h : ∀ᶠ (n : ℕ) in atTop, 0 ≤ n
 ⊢ (∀ᶠ (n : ℕ) in atTop, 0 ≤ n) → ∀ᶠ (n : ℕ) in atBot, 0 ≤ n
 -/
