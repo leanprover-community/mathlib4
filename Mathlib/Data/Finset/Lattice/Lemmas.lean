@@ -49,13 +49,9 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
 
 /-! #### union -/
 
-@[simp]
-theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
-  ext fun x => mem_union.trans <| by simp
+theorem union_empty (s : Finset α) : s ∪ ∅ = s := by simp
 
-@[simp]
-theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
-  ext fun x => mem_union.trans <| by simp
+theorem empty_union (s : Finset α) : ∅ ∪ s = s := by simp
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
@@ -110,13 +106,9 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
 
 /-! #### inter -/
 
-@[simp]
-theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ := by simp
 
-@[simp]
-theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ := by simp
 
 @[simp]
 theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
@@ -150,9 +142,8 @@ theorem insert_inter {s₁ s₂ : Finset α} {a : α} :
     s₁ ∩ insert a s₂ = if a ∈ s₁ then insert a (s₁ ∩ s₂) else s₁ ∩ s₂ := by
   split_ifs <;> simp [*]
 
-@[simp]
-theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ s = {a} :=
-  show insert a ∅ ∩ s = insert a ∅ by rw [insert_inter_of_mem H, empty_inter]
+theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ s = {a} := by
+  simp [H]
 
 @[simp]
 theorem singleton_inter_of_notMem {a : α} {s : Finset α} (H : a ∉ s) : {a} ∩ s = ∅ :=
@@ -164,9 +155,8 @@ lemma singleton_inter {a : α} {s : Finset α} :
     {a} ∩ s = if a ∈ s then {a} else ∅ := by
   split_ifs with h <;> simp [h]
 
-@[simp]
 theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a} = {a} := by
-  rw [inter_comm, singleton_inter_of_mem h]
+  simp [h]
 
 @[simp]
 theorem inter_singleton_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by

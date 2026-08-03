@@ -72,13 +72,11 @@ variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
 @[simp]
 theorem disjUnion_eq_union (s t h) : @disjUnion α s t h = s ∪ t := by grind
 
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_union, or_imp, forall_and]
+theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
+  disjoint_sup_left
 
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_union, or_imp, forall_and]
+theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
+  disjoint_sup_right
 
 /-! #### inter -/
 
