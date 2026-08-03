@@ -15,10 +15,11 @@ the restriction to a subset of coordinates `S : Set ι` is a closed set.
 The idea of the proof is to use `isClosedMap_snd_of_compactSpace`, which is the fact that if
 `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map.
 
-We remark that `s` is included in the set `Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s`, and we build
-a homeomorphism `Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s ≃ₜ Sᶜ.restrict '' s × Π i : S, α i`.
-`Sᶜ.restrict '' s` is a compact space since `s` is compact, and the lemma applies,
-with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
+We remark that `s` is included in the set `Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s`, and we build
+a homeomorphism
+`Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s ≃ₜ Sᶜ.domRestrict '' s × Π i : S, α i`.
+`Sᶜ.domRestrict '' s` is a compact space since `s` is compact, and the lemma applies,
+with `X = Sᶜ.domRestrict '' s` and `Y = Π i : S, α i`.
 
 -/
 
@@ -32,32 +33,32 @@ namespace Topology
 
 open scoped Classical in
 /-- Given a set in a product space `s : Set (Π j, α j)` and a set of coordinates `S : Set ι`,
-`Sᶜ.restrict '' s × (Π i : S, α i)` is the set of functions that coincide with an element of `s`
+`Sᶜ.domRestrict '' s × (Π i : S, α i)` is the set of functions that coincide with an element of `s`
 on `Sᶜ` and are arbitrary on `S`.
 `reorderRestrictProd` sends a term of that type to `Π j, α j` by looking for the value at `j`
 in one part of the product or the other depending on whether `j` is in `S` or not. -/
 noncomputable def reorderRestrictProd (S : Set ι) (s : Set (Π j, α j))
-    (p : Sᶜ.restrict '' s × (Π i : S, α i)) :
+    (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) :
     Π j, α j :=
   fun j ↦ if h : j ∈ S
     then (p.2 : Π j : ↑(S : Set ι), α j) ⟨j, h⟩
     else (p.1 : Π j : ↑(Sᶜ : Set ι), α j) ⟨j, h⟩
 
 @[simp]
-lemma reorderRestrictProd_of_mem (p : Sᶜ.restrict '' s × (Π i : S, α i)) (j : S) :
+lemma reorderRestrictProd_of_mem (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) (j : S) :
     reorderRestrictProd S s p j = (p.2 : Π j : ↑(S : Set ι), α j) j := by
   have hj : ↑j ∈ S := j.prop
   simp [reorderRestrictProd, hj]
 
 @[simp]
-lemma reorderRestrictProd_of_compl (p : Sᶜ.restrict '' s × (Π i : S, α i)) (j : (Sᶜ : Set ι)) :
+lemma reorderRestrictProd_of_compl (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) (j : (Sᶜ : Set ι)) :
     reorderRestrictProd S s p j = (p.1 : Π j : ↑(Sᶜ : Set ι), α j) j := by
   have hj : ↑j ∉ S := j.prop
   simp [reorderRestrictProd, hj]
 
 @[simp]
-lemma restrict_compl_reorderRestrictProd (p : Sᶜ.restrict '' s × (Π i : S, α i)) :
-    Sᶜ.restrict (reorderRestrictProd S s p) = p.1 := by ext; simp
+lemma restrict_compl_reorderRestrictProd (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) :
+    Sᶜ.domRestrict (reorderRestrictProd S s p) = p.1 := by ext; simp
 
 lemma continuous_reorderRestrictProd [∀ i, TopologicalSpace (α i)] :
     Continuous (reorderRestrictProd S s) := by
@@ -67,14 +68,15 @@ lemma continuous_reorderRestrictProd [∀ i, TopologicalSpace (α i)] :
   · fun_prop
   · exact ((continuous_apply _).comp continuous_subtype_val).comp continuous_fst
 
-lemma reorderRestrictProd_mem_preimage_image_restrict (p : Sᶜ.restrict '' s × (Π i : S, α i)) :
-    reorderRestrictProd S s p ∈ Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s := by
+lemma reorderRestrictProd_mem_preimage_image_restrict (p : Sᶜ.domRestrict '' s × (Π i : S, α i)) :
+    reorderRestrictProd S s p ∈ Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s := by
   obtain ⟨y, hy_mem_s, hy_eq⟩ := p.1.2
   exact ⟨y, hy_mem_s, hy_eq.trans (restrict_compl_reorderRestrictProd p).symm⟩
 
 @[simp]
-lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s) :
-    reorderRestrictProd S s ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ = (x : Π j, α j) := by
+lemma reorderRestrictProd_restrict_compl (x : Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s) :
+    reorderRestrictProd S s ⟨⟨Sᶜ.domRestrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ =
+      (x : Π j, α j) := by
   ext; simp [reorderRestrictProd]
 
 /-- Homeomorphism between the set of functions that coincide with a given set of functions away
@@ -82,8 +84,8 @@ from a given set `S`, and dependent functions away from `S` times any value on `
 noncomputable
 def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
     (S : Set ι) (s : Set (Π j, α j)) :
-    Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s ≃ₜ Sᶜ.restrict '' s × (Π i : S, α i) where
-  toFun x := ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩
+    Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s ≃ₜ Sᶜ.domRestrict '' s × (Π i : S, α i) where
+  toFun x := ⟨⟨Sᶜ.domRestrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩
   invFun p := ⟨reorderRestrictProd S s p, reorderRestrictProd_mem_preimage_image_restrict p⟩
   left_inv x := by ext; simp
   right_inv p := by ext <;> simp
@@ -95,15 +97,16 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
-`Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s` is a set of `Sᶜ.restrict '' s × (Π i : S, α i)`, and the
-image of that set by `Prod.snd` is `S.restrict '' s`.
+`Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s` is a set of
+`Sᶜ.domRestrict '' s × (Π i : S, α i)`, and the image of that set by `Prod.snd` is
+`S.domRestrict '' s`.
 
 Used in `IsCompact.isClosed_image_restrict` to prove that the restriction of a compact closed set
 in a product space to a set of coordinates is closed. -/
 lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
     Prod.snd '' (Homeomorph.preimageImageRestrict α S s ''
-        ((fun (x : Sᶜ.restrict ⁻¹' Sᶜ.restrict '' s) ↦ (x : Π j, α j)) ⁻¹' s))
-      = S.restrict '' s := by
+        ((fun (x : Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s) ↦ (x : Π j, α j)) ⁻¹' s))
+      = S.domRestrict '' s := by
   ext x
   simp only [Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
     mem_image, mem_preimage, Subtype.exists, exists_and_left, Prod.exists, Prod.mk.injEq,
@@ -112,7 +115,7 @@ lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
   · rintro ⟨y, _, z, hz_mem, _, hzx⟩
     exact ⟨z, hz_mem, hzx⟩
   · rintro ⟨z, hz_mem, hzx⟩
-    exact ⟨Sᶜ.restrict z, mem_image_of_mem Sᶜ.restrict hz_mem, z, hz_mem,
+    exact ⟨Sᶜ.domRestrict z, mem_image_of_mem Sᶜ.domRestrict hz_mem, z, hz_mem,
       ⟨⟨⟨z, hz_mem, rfl⟩, rfl⟩, hzx⟩⟩
 
 end Topology
@@ -124,26 +127,26 @@ variable [∀ i, TopologicalSpace (α i)]
 /-- The restriction of a compact closed set in a product space to a set of coordinates is closed. -/
 theorem IsCompact.isClosed_image_restrict (S : Set ι)
     (hs_compact : IsCompact s) (hs_closed : IsClosed s) :
-    IsClosed (S.restrict '' s) := by
+    IsClosed (S.domRestrict '' s) := by
   rw [← Topology.image_snd_preimageImageRestrict]
-  have : CompactSpace (Sᶜ.restrict '' s) :=
-    isCompact_iff_compactSpace.mp (hs_compact.image (Pi.continuous_restrict _))
+  have : CompactSpace (Sᶜ.domRestrict '' s) :=
+    isCompact_iff_compactSpace.mp (hs_compact.image (Pi.continuous_domRestrict _))
   refine isClosedMap_snd_of_compactSpace _ ?_
   rw [Homeomorph.isClosed_image]
   exact hs_closed.preimage continuous_subtype_val
 
 lemma isClosedMap_restrict_of_compactSpace [∀ i, CompactSpace (α i)] :
-    IsClosedMap (S.restrict : (Π i, α i) → _) := fun s hs ↦ by
+    IsClosedMap (S.domRestrict : (Π i, α i) → _) := fun s hs ↦ by
   classical
-  have : S.restrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd (· ∈ S) α) := rfl
+  have : S.domRestrict (π := α) = Prod.fst ∘ (Homeomorph.piEquivPiSubtypeProd (· ∈ S) α) := rfl
   rw [this, image_comp]
   exact isClosedMap_fst_of_compactSpace _ <| (Homeomorph.isClosed_image _).mpr hs
 
 lemma IsClosed.isClosed_image_eval (i : ι)
     (hs_compact : IsCompact s) (hs_closed : IsClosed s) :
     IsClosed ((fun x ↦ x i) '' s) := by
-  suffices IsClosed (Set.restrict {i} '' s) by
-    have : Homeomorph.piUnique _ ∘ Set.restrict {i} = fun (x : Π j, α j) ↦ x i := rfl
+  suffices IsClosed (Set.domRestrict {i} '' s) by
+    have : Homeomorph.piUnique _ ∘ Set.domRestrict {i} = fun (x : Π j, α j) ↦ x i := rfl
     rwa [← this, image_comp, Homeomorph.isClosed_image (Homeomorph.piUnique _)]
   exact hs_compact.isClosed_image_restrict {i} hs_closed
 

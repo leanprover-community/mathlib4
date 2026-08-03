@@ -330,7 +330,7 @@ lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
   surjective_of_epi (FintypeCat.incl.map (F.map f))
 
-/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+/-- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
 lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     [IsConnected A] (f : X ⟶ A) :
     Function.Surjective (F.map f) := by
