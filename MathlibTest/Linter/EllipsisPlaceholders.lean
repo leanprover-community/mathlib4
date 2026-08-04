@@ -178,7 +178,7 @@ set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 
 end TypedHoles
 
-section PipeProjection
+section NestedApplication
 
 /--
 warning: Replace 2 trailing `_` placeholders with `..`.
@@ -189,7 +189,7 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check id (pipeWrap _ _)
 
-end PipeProjection
+end NestedApplication
 
 section LetBindings
 
@@ -218,7 +218,7 @@ section Patterns
 #guard_msgs(drop info) in
 #check (fun n : Lean.Name => if let mod@(.str _ _) := n then mod else n)
 
--- Term positions of `if let` (scrutinee / then / else) still lint when reachable.
+-- A candidate nested in an `if let` expression is skipped conservatively.
 #guard_msgs(drop warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check (fun n : Lean.Name => if let .str _ _ := n then ellipsisTestFn 1 _ _ else 0)

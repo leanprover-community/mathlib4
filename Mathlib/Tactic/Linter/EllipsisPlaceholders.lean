@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adomas Baliuka
+Authors: Aditya Menon
 -/
 module
 
@@ -28,31 +28,6 @@ Only anonymous `_` holes count toward the trailing run. Synthetic holes `?_` are
 counting, and any application whose suffix (after the last concrete argument) contains `?_` is
 skipped entirely, since `..` does not reliably substitute for them in patterns such as
 `@f _ _ _ _ ?_ ?_` or `f _ _ _ ?_ _ _`.
-
-Before suggesting a replacement, the linter re-elaborates the proposed syntax in the original
-local context and requires definitional equality with the original expression. If that check fails
-or throws (for example due to loose bound variables in a simproc pattern), the site is skipped.
-
-Sites are also skipped when partial application must be preserved: the context `expectedType` is
-a function, the head-normal form is a lambda, or the function's codomain after all syntax
-arguments (including trailing holes) is still a `Π`-type. `@`-explicit applications are skipped
-as well. WHNF is not run on expressions with loose bound variables (info-tree replay), since
-that panics; those sites are skipped conservatively. The unsafe `manualReplacementIsSafe`
-fallback was removed.
-
-Re-elaboration is skipped inside declaration bodies when the expression still contains unresolved
-metavariables, since validating there can assign those metavariables and break the surrounding
-elaboration.
-
-It also rejects non-suffix runs of holes, since `..` fills every remaining argument greedily.
-For example, `apply f _ _ x` is not flagged.
-
-Typed holes `(_ : T)` are never rewritten: `..` cannot preserve the type annotation, which
-breaks typeclass inference and proof scripts. Pipe projection (`e |>.f`) is out of scope
-because it uses a distinct parser node, not `Parser.Term.app`.
-
-Syntax inside match patterns, `let`/`if let` binding patterns, and attribute templates is skipped.
-Simproc and other exotic sites are validated by re-elaboration; failures are skipped silently.
 
 Set `linter.style.ellipsisPlaceholders.trace` to log skipped sites during validation.
 -/
@@ -323,7 +298,6 @@ partial def explicitPositionalParamTypes (fn : Expr) (explicit : Bool) (args : A
     | _ => break
   return result
 
-/-- Fallback when re-elaboration fails: reject if trailing parameters have defaults. -/
 def manualReplacementIsSafe (fn : Expr) (explicit : Bool) (args : Array Syntax)
     (trailingHoles : Nat) : MetaM Bool := do
   let types ← explicitPositionalParamTypes fn explicit args
@@ -414,7 +388,6 @@ def rejectsPartialApplication (ti : TermInfo) (c : AppCandidate) : MetaM Bool :=
   catch _ =>
     return true
 
-/-- Re-elaborate the proposed replacement and require definitional equality with the original. -/
 def replacementIsSafe (ctx : ContextInfo) (lctx : LocalContext) (info : TermInfo)
     (replacement : Syntax) : CommandElabM Bool := do
   try
@@ -478,7 +451,6 @@ def rewriteApp (c : AppCandidate) : Syntax :=
   let newArgs := c.args.take (c.args.size - c.trailingHoles) |>.push (mkEllipsis info)
   mkNode ``Lean.Parser.Term.app #[c.fn, mkNullNode newArgs]
 
-/-- Replace `old` with `new` in a syntax tree, keyed by range when nodes differ. -/
 partial def replaceSyntax (root old new : Syntax) : Syntax :=
   if root == old || syntaxRangesMatch root old then
     new
