@@ -283,18 +283,14 @@ lemma HasStieltjesIntegral.symm_iff :
 lemma HasStieltjesIntegral.symm (h : HasStieltjesIntegral a b B f g L) :
     HasStieltjesIntegral b a B f g (-L) := by rwa [← symm_iff]
 
-theorem stieltjesIntegrable_ordered_iff_integrable (hab : a < b) :
-    StieltjesIntegrableOrdered a b B f g hab ↔
+theorem stieltjesIntegrable_iff_integrable_of_lt (hab : a < b) :
+    StieltjesIntegrable a b B f g ↔
     Integrable (interval hab) IntegrationParams.Riemann (f <| · 0) (.ofDiff (B.flip <| g ·)) :=
   ⟨fun ⟨_, hL⟩ ↦ HasIntegral.integrable hL, fun h ↦ ⟨_, h.hasIntegral⟩⟩
 
 @[simp]
 lemma StieltjesIntegrable.of_eq : StieltjesIntegrable a a B f g := by
   simp [StieltjesIntegrable, HasStieltjesIntegral]
-
-lemma StieltjesIntegrable.of_lt (hab : a < b) :
-    StieltjesIntegrable a b B f g ↔ StieltjesIntegrableOrdered a b B f g hab := by
-  simp [StieltjesIntegrable, StieltjesIntegrableOrdered, HasStieltjesIntegral.of_lt, hab]
 
 lemma StieltjesIntegrable.symm_iff :
     StieltjesIntegrable a b B f g ↔ StieltjesIntegrable b a B f g := by
