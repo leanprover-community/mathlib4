@@ -103,16 +103,14 @@ lemma preGNS_norm_sq (a : f.PreGNS) :
 
 lemma preGNS_norm_def' (f : A →ₚ[ℂ] ℂ) (a : f.PreGNS) :
     ‖a‖ = √‖f (star (f.ofPreGNS a) * f.ofPreGNS a)‖ := by
-  rw [← sq_eq_sq₀ (by positivity) (by positivity), ← Complex.ofReal_inj,
-    Complex.ofReal_pow, preGNS_norm_sq, Real.sq_sqrt (by positivity),
-    ← Complex.eq_coe_norm_of_nonneg]
-  exact map_nonneg f (star_mul_self_nonneg _)
+  rw [← sq_eq_sq₀ (by positivity) (by positivity), ← Complex.ofReal_inj]
+  simp [preGNS_norm_sq, ← Complex.eq_coe_norm_of_nonneg, map_nonneg]
 
 variable {F : Type*} [FunLike F A ℂ] [LinearMapClass F ℂ A ℂ] [OrderHomClass F A ℂ]
 
 /-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
 star-ordered `ℂ`-algebra. -/
-lemma cauchy_schwarz_star_mul (f : F) (x y : A) :
+lemma norm_map_star_mul_le (f : F) (x y : A) :
     ‖f (star x * y)‖ ≤ √‖f (star x * x)‖ * √‖f (star y * y)‖ := by
   simpa [preGNS_inner_def, preGNS_norm_def'] using!
     norm_inner_le_norm ((ofClass f).toPreGNS x) ((ofClass f).toPreGNS y)
