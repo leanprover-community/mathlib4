@@ -31,11 +31,12 @@ variable {n R S : Type*} [Fintype n] [DecidableEq n]
 
 namespace Matrix.GeneralLinearGroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem continuous_apply {α : Type*} [TopologicalSpace α]
     (f : α → GL n R) (hf : Continuous f) (i : n) :
     Continuous (fun x ↦ f x i) :=
-  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
+  (by fun_prop [Matrix] : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
 
 @[fun_prop]
 lemma _root_.Continuous.generalLinearGroup_map (hf : Continuous f) :
@@ -56,6 +57,7 @@ lemma _root_.Topology.IsClosedEmbedding.generalLinearGroup_map [T0Space R]
     (hf : IsClosedEmbedding f) : IsClosedEmbedding (map (n := n) f) :=
   hf.matrix_map.units_map
 
+set_option fun_prop.reducibleApply false in
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma continuous_det :
     Continuous (det : GL n R → Rˣ) := by
@@ -83,11 +85,12 @@ local notation "SL" => SpecialLinearGroup
 instance : TopologicalSpace (SL n R) :=
   inferInstanceAs <| TopologicalSpace (Subtype _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem continuous_apply {α : Type*} [TopologicalSpace α]
     (f : α → SL n R) (hf : Continuous f) (i) :
     Continuous (fun x ↦ f x i) :=
-  (by fun_prop : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
+  (by fun_prop [Matrix] : Continuous fun A : Matrix n n R ↦ A i).comp <| by fun_prop
 
 /-- The topology on `SL n R` is functorial in `R`. -/
 @[fun_prop]
@@ -132,6 +135,7 @@ instance topologicalGroup : IsTopologicalGroup (SL n R) where
 -/
 section toGL
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from `SL n A` to `GL n A` is continuous. -/
 @[fun_prop]
 lemma continuous_toGL : Continuous (toGL : SL n R → GL n R) := by

@@ -11,6 +11,8 @@ public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
+import Mathlib.Topology.UniformSpace.Real
+
 /-!
 # Proper spaces
 

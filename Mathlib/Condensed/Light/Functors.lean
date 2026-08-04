@@ -49,6 +49,7 @@ instance : lightProfiniteToLightCondSet.Faithful :=
   inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
 
 set_option backward.isDefEq.respectTransparency.types false in
+set_option fun_prop.reducibleApply false in
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 -/

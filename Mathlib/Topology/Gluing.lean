@@ -307,6 +307,7 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
 instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
   use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion' (h.V i k).inclusion' ⟶
@@ -355,6 +356,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
 
 variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We may construct a glue data from a family of open sets. -/
 @[simps! toGlueData_J toGlueData_U toGlueData_V toGlueData_t toGlueData_f]
 def ofOpenSubsets : TopCat.GlueData.{u} :=

@@ -42,6 +42,7 @@ variable (p : ℂ[X])
 
 local instance instTwoPiPos : Fact (0 < 2 * π) := Fact.mk Real.two_pi_pos
 
+set_option fun_prop.reducibleApply false in
 /-- Algebra map from `ℂ[X]` to `C(AddCircle (2 * π), ℂ)` that evaluates polynomials on the unit
 circle. For a polynomial `p`, this maps it to the function `fun θ ↦ p (exp (I * θ))`. -/
 noncomputable def toAddCircle : ℂ[X] →ₐ[ℂ] C(AddCircle (2 * π), ℂ) :=

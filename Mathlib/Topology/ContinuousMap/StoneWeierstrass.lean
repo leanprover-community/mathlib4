@@ -61,6 +61,7 @@ variable {X : Type*} [TopologicalSpace X] [CompactSpace X]
 
 open scoped Polynomial
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Turn a function `f : C(X, ℝ)` into a continuous map into `Set.Icc (-‖f‖) (‖f‖)`,
 thereby explicitly attaching bounds.
 -/

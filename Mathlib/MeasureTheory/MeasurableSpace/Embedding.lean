@@ -408,6 +408,7 @@ def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ �
   measurable_toFun := ab.measurable.sumMap cd.measurable
   measurable_invFun := ab.symm.measurable.sumMap cd.symm.measurable
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `s ×ˢ t ≃ (s × t)` as measurable spaces. -/
 def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ᵐ s × t where
   toEquiv := Equiv.Set.prod s t
