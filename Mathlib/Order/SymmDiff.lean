@@ -211,11 +211,14 @@ section CoheytingAlgebra
 
 variable [CoheytingAlgebra α] (a : α)
 
-@[to_dual (attr := simp) bihimp_bot]
-theorem symmDiff_top' : a ∆ ⊤ = ￢a := by simp [symmDiff]
+@[to_dual (attr := simp)]
+theorem symmDiff_top : a ∆ ⊤ = ￢a := by simp [symmDiff]
 
-@[to_dual (attr := simp) bot_bihimp]
-theorem top_symmDiff' : ⊤ ∆ a = ￢a := by simp [symmDiff]
+@[to_dual (attr := simp)]
+theorem top_symmDiff : ⊤ ∆ a = ￢a := by simp [symmDiff]
+
+@[deprecated (since := "2026-08-04")] alias symmDiff_top' := symmDiff_top
+@[deprecated (since := "2026-08-04")] alias top_symmDiff' := top_symmDiff
 
 @[to_dual (attr := simp)]
 theorem hnot_symmDiff_self : (￢a) ∆ a = ⊤ := by
@@ -499,12 +502,6 @@ theorem symmDiff_eq' : a ∆ b = (a ⊔ b) ⊓ (aᶜ ⊔ bᶜ) := by
 
 theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ :=
   @symmDiff_eq' αᵒᵈ _ _ _
-
-theorem symmDiff_top : a ∆ ⊤ = aᶜ :=
-  symmDiff_top' _
-
-theorem top_symmDiff : ⊤ ∆ a = aᶜ :=
-  top_symmDiff' _
 
 @[simp]
 theorem compl_symmDiff : (a ∆ b)ᶜ = a ⇔ b := by
