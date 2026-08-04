@@ -46,6 +46,13 @@ def objEquiv : FundamentalGroupoid X ≃ X _⦋0⦌ where
 /-- Constructor for objects of the fundamental groupoid of a Kan complex. -/
 abbrev objMk (x : X _⦋0⦌) : FundamentalGroupoid X := objEquiv.symm x
 
+/-- Induction principle for objects of `FundamentalGroupoid X`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def rec {motive : FundamentalGroupoid X → Sort*}
+    (objMk : ∀ (x : X _⦋0⦌), motive (objMk x)) (x : FundamentalGroupoid X) :
+    motive x :=
+  objMk x.pt
+
 /-- Constructor for morphisms of the fundamental groupoid of a Kan complex. -/
 @[no_expose]
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : objMk x ⟶ objMk y :=
@@ -59,13 +66,39 @@ lemma homMk_surjective {x y : X _⦋0⦌} :
     Function.Surjective (fun (e : Edge x y) ↦ homMk e) :=
   Truncated.HomotopyCategory₂.homMk_surjective
 
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+lemma hom_rec {x y : X _⦋0⦌} (motive : (objMk x ⟶ objMk y) → Prop)
+    (homMk : ∀ (e : Edge x y), motive (homMk e)) (f : objMk x ⟶ objMk y) :
+    motive f := by
+  obtain ⟨e, rfl⟩ := homMk_surjective f
+  exact homMk e
+
 @[reassoc]
 lemma homMk_fac_of_compStruct {x y z : X _⦋0⦌} {e₁ : Edge x y} {e₂ : Edge y z} {e₃ : Edge x z}
     (h : Edge.CompStruct e₁ e₂ e₃) :
     homMk e₁ ≫ homMk e₂ = homMk e₃ :=
   Truncated.Edge.CompStruct.nonempty_iff.1 ⟨h⟩
 
-instance : IsGroupoid (FundamentalGroupoid X) := sorry
+instance : IsGroupoid (FundamentalGroupoid X) := by
+  have h₂ {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
+      ∃ (e' : Edge x₁ x₀), Nonempty (Edge.CompStruct e e' (.id x₀)) := by
+    sorry
+  have h₀ {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
+      ∃ (e' : Edge x₁ x₀), Nonempty (Edge.CompStruct e' e (.id x₁)) := by
+    sorry
+  refine ⟨fun {x₀ x₁} f ↦ ?_⟩
+  induction x₀ with | objMk x₀
+  induction x₁ with | objMk x₁
+  induction f with | homMk e
+  obtain ⟨e', ⟨h⟩⟩ := h₂ e
+  obtain ⟨e'', ⟨h'⟩⟩ := h₀ e
+  replace h : homMk e ≫ homMk e' = 𝟙 _ := by simpa using homMk_fac_of_compStruct h
+  replace h' : homMk e'' ≫ homMk e = 𝟙 _ := by simpa using homMk_fac_of_compStruct h'
+  have h'' : homMk e' = homMk e'' := by
+    trans homMk e'' ≫ homMk e ≫ homMk e'
+    · simp [reassoc_of% h']
+    · simp [h]
+  exact ⟨homMk e', h, by rw [h'', h']⟩
 
 end FundamentalGroupoid
 
