@@ -122,17 +122,14 @@ example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by
 example :
     Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
   simp only [norm_rank]
-  rw [← Matrix.one_fin_two, Matrix.rank_one]
-  simp
+  simp [← Matrix.one_fin_two, Matrix.rank_one]
 
--- the same via `eval_rank`: partial progress is success — the no-progress diagnosis is
--- suppressed and the failure of the closing `omega` on the opaque ℝ rank is absorbed,
--- leaving the residual goal
+-- a similar example via `eval_rank`, plus testing that the tactic doesn't hard commit to
+-- the first occurrence of Matrix.rank
 example :
-    Matrix.rank (R := ℤ) !![1, 2; 2, 4] = Matrix.rank (R := ℝ) !![1, 0; 0, 1] - 1 := by
+    Matrix.rank (R := ℝ) !![1, 0; 0, 1] = Matrix.rank (R := ℤ) !![1, 2; 2, 4] + 1 := by
   eval_rank
-  rw [← Matrix.one_fin_two, Matrix.rank_one]
-  simp
+  simp [← Matrix.one_fin_two, Matrix.rank_one]
 
 -- a literal with symbolic entries is not closed: it is skipped, not an error
 example (a : ℚ) (h : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2) :

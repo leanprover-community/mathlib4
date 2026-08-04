@@ -102,15 +102,16 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 close the goal. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
-  -- `-failIfUnchanged`: a gate-wide skip is detected by goal identity below; a committed
-  -- refusal thrown by `normalizeRank` propagates verbatim
+  -- `-failIfUnchanged`: a gate-wide skip leaves the goal unassigned, detected below; a
+  -- committed refusal thrown by `normalizeRank` propagates verbatim
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank]))
-  if (← Tactic.getUnsolvedGoals).any (· == goal) then
-    -- diagnose the skip: a rank literal over an unsupported element type reports the
-    -- method's rejection reason; otherwise there was no rank literal to work on
-    if let some rankApp := (← goal.getType).find? (·.isAppOfArity ``Matrix.rank 6) then
-      if let some (_, _, _, R, _) ← matchRankLit? rankApp then
-        if let .error why ← checkBareissCommittal R then
-          throwError why
+  unless ← goal.isAssigned do
+    -- diagnose the skip: a closed rank literal over an unsupported element type reports the
+    -- method's rejection reason; otherwise there was no closed rank literal to work on
+    (← goal.getType).forEach fun e => do
+      if e.isAppOfArity ``Matrix.rank 6 then
+        if let some (_, _, _, R, _) ← matchRankLit? e then
+          if let .error why ← checkBareissCommittal R then
+            throwError why
     throwError "eval_rank: no closed `Matrix.rank` literal found in the goal"
   Tactic.evalTactic (← `(tactic| try omega))
