@@ -362,13 +362,12 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
 }
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
-  let h_lin := ContinuousLinearMap.fromCompletion (toH' H h).toContinuousLinearMap.uniformContinuous
+  let h_lin := ContinuousLinearMap.fromCompletion (toH' H h).toContinuousLinearMap
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
     h_lin with
     norm_map' x := by
-      have h1 := (toH' H h).isometry.completion_extension.dist_eq x 0
-      have h2 := h_lin.map_zero
-      simp_all [h_lin]
+      apply (toH' H h).isometry.completion_extension.norm_map_of_map_zero
+      exact h_lin.map_zero
   }
   have h_surj : Function.Surjective ofOfKernel := by
     apply Set.range_eq_univ.mp
@@ -379,8 +378,7 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
       convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H')
       simp only [LinearIsometry.coe_mk, toH']
       rw [← LinearMap.coe_range, Finsupp.range_linearCombination, SetLike.coe_set_eq]
-      congr 1
-      ext
+      congr 1 with _
       refine ⟨
         fun ⟨⟨x, v⟩, h⟩ ↦ ⟨x, v, h⟩,
         fun ⟨x, v, h⟩ ↦ ⟨⟨x, v⟩, h⟩
@@ -407,14 +405,10 @@ theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
   have h1 : (OfKernel.equivAux (rfl : kernel H = kernel H)).symm (kerFun H x v) =
       .coe' (α := H₀ (kernel H)) (.single (x, v) 1) := by
     apply (((OfKernel.equivAux (rfl : kernel H = kernel H))).symm).eq_symm_apply.mp
-    have h_uni' := (OfKernel.toH' H rfl).isometry.uniformContinuous
-    simp [OfKernel.toH'] at h_uni'
-    simp [OfKernel.equivAux, OfKernel.toH', UniformSpace.Completion.extension_coe h_uni']
+    simp [OfKernel.equivAux, OfKernel.toH']
   have h2 : OfKernel.equivAux h (.coe' (α := H₀ (kernel H)) (.single (x, v) 1)) =
       kerFun H' x v := by
-    have h_uni := (OfKernel.toH' H h).isometry.uniformContinuous
-    simp [OfKernel.toH'] at h_uni
-    simp [OfKernel.equivAux, OfKernel.toH', UniformSpace.Completion.extension_coe h_uni]
+    simp [OfKernel.equivAux, OfKernel.toH']
   simp only [equiv, LinearIsometryEquiv.trans_apply, h1, h2]
 
 /-- If the two RKHS have the same kernel, then the functions in the RKHSs agree as functions on
