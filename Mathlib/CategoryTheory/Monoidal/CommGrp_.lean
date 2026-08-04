@@ -70,9 +70,6 @@ theorem comp_hom {R S T : CommGrp C} (f : R ⟶ S) (g : S ⟶ T) :
 theorem hom_ext {A B : CommGrp C} (f g : A ⟶ B) (h : f.hom.hom.hom = g.hom.hom.hom) : f = g :=
   InducedCategory.hom_ext (Grp.hom_ext _ _ h)
 
-@[deprecated (since := "2025-12-18")] alias id' := id_hom
-@[deprecated (since := "2025-12-18")] alias comp' := comp_hom
-
 section
 
 variable (C)
@@ -173,9 +170,6 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic true in
 @[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
 
-@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
-@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom_hom
-
 end
 
 instance uniqueHomFromTrivial (A : CommGrp C) : Unique (trivial C ⟶ A) :=
@@ -215,6 +209,7 @@ protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful wher
   map_injective hfg :=
     (CommGrp.forget _ ⋙ F).map_injective ((CommGrp.forget _).congr_map hfg)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `CommGrpCat(F) : CommGrpCat C ⥤ CommGrpCat D` is fully faithful too. -/
 @[simps]
@@ -257,6 +252,7 @@ set_option backward.isDefEq.respectTransparency false in
 def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
   NatIso.ofComponents fun X ↦ CommGrp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
@@ -278,11 +274,12 @@ noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D w
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/

@@ -112,9 +112,11 @@ def toConvexCone (C : PointedCone R E) : ConvexCone R E where
 instance : Coe (PointedCone R E) (ConvexCone R E) where
   coe := toConvexCone
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCone R E) :=
   fun _ _ => by simp [toConvexCone]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
@@ -128,6 +130,11 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 @[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
+
+lemma smul_mem_iff {𝕜 M : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [AddCommMonoid M] [Module 𝕜 M] (C : PointedCone 𝕜 M)
+    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
@@ -340,6 +347,7 @@ def lineal (C : PointedCone R E) : Submodule R E where
 
 @[simp] theorem support_eq (C : PointedCone R E) : C.support = C.lineal.toAddSubgroup := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lineality space of a cone is the largest submodule contained in the cone. -/
 theorem gc_ofSubmodule_lineal :
     GaloisConnection (α := Submodule R E) ofSubmodule lineal :=

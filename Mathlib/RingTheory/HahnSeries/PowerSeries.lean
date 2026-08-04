@@ -12,6 +12,7 @@ public import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `R⟦Γ⟧`.  When `R` is a semiring and `Γ = ℕ`, then
@@ -141,7 +142,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
   simp
 
 set_option backward.isDefEq.respectTransparency false in
--- Lemmas about converting hahn_series over fintype to and from mv_power_series
+-- Lemmas converting Hahn series over a finite index type to and from `MvPowerSeries`
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.

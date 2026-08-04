@@ -55,7 +55,7 @@ variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [Or
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   refine le_antisymm ?_ (generateFrom_le ?_)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
-    letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
+    let : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine generateFrom_le ?_
     rintro _ ⟨a, rfl | rfl⟩
@@ -166,7 +166,7 @@ theorem measurableSet_le' : MeasurableSet { p : α × α | p.1 ≤ p.2 } :=
 
 @[fun_prop]
 theorem measurable_le : Measurable fun p : α × α => p.1 ≤ p.2 :=
-  measurableSet_setOf.mp measurableSet_le'
+  measurableSet_setOfPred.mp measurableSet_le'
 
 theorem measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet { a | f a ≤ g a } :=
@@ -239,7 +239,7 @@ theorem measurableSet_lt' [SecondCountableTopology α] [OrderClosedTopology α] 
 @[fun_prop]
 theorem measurable_lt [SecondCountableTopology α] [OrderClosedTopology α] :
     Measurable fun p : α × α => p.1 < p.2 :=
-  measurableSet_setOf.mp measurableSet_lt'
+  measurableSet_setOfPred.mp measurableSet_lt'
 
 theorem measurableSet_lt [SecondCountableTopology α] [OrderClosedTopology α]
     {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
@@ -296,7 +296,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom {S : Set α | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S} := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l ≤ u ∧ Icc l u = S }
   refine le_antisymm ?_ (generateFrom_Icc_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
+  let : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
@@ -357,7 +357,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     borel α = .generateFrom { S : Set α | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S } := by
   set S : Set (Set α) := { S | ∃ l ∈ s, ∃ u ∈ s, l < u ∧ Ico l u = S }
   refine le_antisymm ?_ (generateFrom_Ico_mem_le_borel _ _)
-  letI : MeasurableSpace α := generateFrom S
+  let : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
@@ -475,7 +475,7 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, _⟩
   have : (⋃ (l ∈ s) (u ∈ s) (_ : l < u), {Ico l u} : Set (Set α)).Countable :=
     hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
-  simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
+  simp only [← ofPred_eq_eq_singleton, ← ofPred_exists] at this
   refine
     Measure.ext_of_generateFrom_of_cover_subset
       (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) ?_ this
@@ -548,7 +548,7 @@ theorem ext_of_Icc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, hst⟩
   have : (⋃ (l ∈ s) (u ∈ s) (_ : l ≤ u), {Icc l u} : Set (Set α)).Countable :=
     hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
-  simp only [← setOf_eq_eq_singleton, ← setOf_exists] at this
+  simp only [← ofPred_eq_eq_singleton, ← ofPred_exists] at this
   refine
     Measure.ext_of_generateFrom_of_cover_subset
       (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Icc α)) (isPiSystem_Icc id id) ?_ this
@@ -704,7 +704,7 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   rw [‹BorelSpace α›.measurable_eq, borel_eq_generateFrom_Ioi α]
   apply measurable_generateFrom
   rintro _ ⟨a, rfl⟩
-  simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, setOf_exists]
+  simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, ofPred_exists]
   exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
 
 /-- If a function is the least upper bound of countably many measurable functions on a measurable
@@ -745,9 +745,9 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
     AEMeasurable g μ := by
   classical
   nontriviality α
-  haveI hα : Nonempty α := inferInstance
+  have hα : Nonempty α := inferInstance
   rcases isEmpty_or_nonempty ι with hι | hι
-  · simp only [IsEmpty.exists_iff, setOf_false, isLUB_empty_iff] at hg
+  · simp only [IsEmpty.exists_iff, ofPred_false, isLUB_empty_iff] at hg
     exact aemeasurable_const' (hg.mono fun a ha => hg.mono fun b hb => (ha _).antisymm (hb _))
   let p : δ → (ι → α) → Prop := fun x f' => IsLUB { a | ∃ i, f' i = a } (g x)
   let g_seq := (aeSeqSet hf p).piecewise g fun _ => hα.some
@@ -758,7 +758,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
     · have h_set_eq : { a : α | ∃ i : ι, (hf i).mk (f i) b = a } =
         { a : α | ∃ i : ι, f i b = a } := by
         ext x
-        simp_rw [Set.mem_setOf_eq, aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h]
+        simp_rw [Set.mem_ofPred_eq, aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h]
       rw [h_set_eq]
       exact aeSeq.fun_prop_of_mem_aeSeqSet hf h
     · exact IsGreatest.isLUB ⟨(@exists_const (hα.some = hα.some) ι _).2 rfl, fun x ⟨i, hi⟩ => hi.ge⟩
@@ -857,7 +857,7 @@ lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (h
     exact measurableSet_le (hf i) measurable_const
   have B : ∀ (c : α), MeasurableSet {x | ∀ i, f i x ≤ c} := by
     intro c
-    rw [setOf_forall]
+    rw [ofPred_forall]
     exact MeasurableSet.iInter (fun i ↦ A i c)
   obtain ⟨u, hu⟩ : ∃ (u : ℕ → α), Tendsto u atTop atTop := exists_seq_tendsto (atTop : Filter α)
   have : {b | BddAbove (range (fun i ↦ f i b))} = {x | ∃ n, ∀ i, f i x ≤ u n} := by
@@ -869,7 +869,7 @@ lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (h
       refine ⟨u n, ?_⟩
       rintro - ⟨i, rfl⟩
       exact hn i
-  rw [this, setOf_exists]
+  rw [this, ofPred_exists]
   exact MeasurableSet.iUnion (fun n ↦ B (u n))
 
 lemma measurableSet_bddBelow_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
@@ -959,7 +959,7 @@ protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs :
 
 theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
-  haveI : Encodable s := hs.toEncodable
+  have : Encodable s := hs.toEncodable
   by_cases H : ∀ i, i ∈ s
   · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
       fun b ↦ cbiSup_eq_of_forall (f := fun i ↦ f i b) H
@@ -1015,10 +1015,10 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   have m_meas : ∀ j, MeasurableSet (m j) :=
     fun j ↦ measurableSet_bddBelow_range (fun (i : s j) ↦ hf i)
   have mc_meas : MeasurableSet {x | ∀ (j : Subtype p), x ∉ m j} := by
-    rw [setOf_forall]
+    rw [ofPred_forall]
     exact MeasurableSet.iInter (fun j ↦ (m_meas j).compl)
   refine measurable_const.piecewise mc_meas <| .iSup fun j ↦ ?_
-  let reparam : δ → Subtype p → Subtype p := fun x ↦ liminf_reparam (fun i ↦ f i x) s p
+  let reparam : δ → Subtype p → Subtype p := fun x ↦ liminfReparam (fun i ↦ f i x) s p
   let F0 : Subtype p → δ → α := fun j x ↦ ⨅ (i : s j), f i x
   have F0_meas : ∀ j, Measurable (F0 j) := fun j ↦ .iInf (fun (i : s j) ↦ hf i)
   set F1 : δ → α := fun x ↦ F0 (reparam x j) x with hF1

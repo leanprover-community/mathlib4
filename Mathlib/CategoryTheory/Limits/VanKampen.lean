@@ -68,7 +68,7 @@ noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
   refine ((h c (𝟙 F) (𝟙 c.pt :) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
     (.of_isIso _)) fun j => ?_).some
-  haveI : IsIso (𝟙 c.pt) := inferInstance
+  have : IsIso (𝟙 c.pt) := inferInstance
   exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 /-- A van Kampen colimit is a colimit. -/
@@ -82,7 +82,7 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
   intro F' c' α f hf hα
   have : F' = Functor.empty C := by apply Functor.hext <;> rintro ⟨⟨⟩⟩
   subst this
-  haveI := h.isIso_to f
+  have := h.isIso_to f
   refine ⟨by rintro _ ⟨⟨⟩⟩,
     fun _ => ⟨IsColimit.ofIsoColimit h (Cocone.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
 
@@ -109,7 +109,7 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
-  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
+  have : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -279,7 +279,7 @@ theorem IsUniversalColimit.map_reflective
     intro X
     apply IsIso.eq_inv_of_inv_hom_id
     exact adj.left_triangle_components _
-  haveI : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
+  have : ∀ X, IsIso (Gl.map (adj.unit.app X)) := by
     simp_rw [hadj]
     infer_instance
   have hα'' : ∀ j, Gl.map (Gr.map <| α'.app j) = adj.counit.app _ ≫ α.app j := by
@@ -419,6 +419,7 @@ end reflective
 
 section Initial
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem hasStrictInitial_of_isUniversal [HasInitial C]
     (H : IsUniversalColimit (BinaryCofan.mk (𝟙 (⊥_ C)) (𝟙 (⊥_ C)))) : HasStrictInitialObjects C :=
@@ -503,13 +504,13 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     obtain ⟨hl, hr⟩ := h₁ αX αY (e.inv ≫ f) (by simp [e, hX]) (by simp [e, hY])
     constructor
     · rw [← Category.id_comp αX, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 X') := inferInstance
+      have : IsIso (𝟙 X') := inferInstance
       have : c'.inl ≫ e.hom = 𝟙 X' ≫ (cofans X' Y').inl := by
         dsimp [e]
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hl
     · rw [← Category.id_comp αY, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 Y') := inferInstance
+      have : IsIso (𝟙 Y') := inferInstance
       have : c'.inr ≫ e.hom = 𝟙 Y' ≫ (cofans X' Y').inr := by
         dsimp [e]
         simp
@@ -524,6 +525,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     exact (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
       ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : Mono c.inr := by
@@ -535,6 +537,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
       dsimp
       infer_instance)).some
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
@@ -660,7 +663,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       refine Hc.uniq (Cofan.mk T (Fin.cases f₁
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩
-      simp only [Discrete.functor_obj, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app]
+      simp only [Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
       induction j using Fin.inductionOn
       · simp only [Fin.cases_zero, m₁]
       · simp only [← m₂, colimit.ι_desc_assoc, Discrete.functor_obj,
@@ -681,6 +684,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       BinaryCofan.ι_app_right, BinaryCofan.mk_inr, colimit.ι_desc,
       Discrete.natTrans_app] using! t₁'.paste_horiz (t₂' ⟨WalkingPair.right⟩)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → C}
     {c : Cofan X} (hc : IsVanKampenColimit c) (i j : ι) [DecidableEq ι] :
@@ -748,6 +752,7 @@ variable {ι ι' : Type*} {S : C}
 variable {B : C} {X : ι → C} {a : Cofan X} (hau : IsUniversalColimit a) (f : ∀ i, X i ⟶ S)
   (u : a.pt ⟶ S) (v : B ⟶ S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
@@ -812,6 +817,7 @@ lemma IsUniversalColimit.isPullback_of_isColimit_left {d : Cofan P} (hd : IsColi
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hau in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism

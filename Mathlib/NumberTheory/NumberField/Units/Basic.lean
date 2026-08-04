@@ -159,8 +159,7 @@ theorem mem_torsion {x : (𝓞 K)ˣ} :
     NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
 /-- The torsion subgroup is finite. -/
-instance : Fintype (torsion K) := by
-  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
+instance : Finite (torsion K) := by
   refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
     (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
@@ -173,17 +172,18 @@ instance : Fintype (torsion K) := by
 instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Nat.card (torsion K)
+
+theorem torsionOrder_pos : 0 < torsionOrder K :=
+  Nat.card_pos
+
+theorem torsionOrder_ne_zero : torsionOrder K ≠ 0 :=
+  (torsionOrder_pos K).ne'
 
 instance : NeZero (torsionOrder K) :=
-  inferInstanceAs (NeZero (Fintype.card (torsion K)))
+  ⟨torsionOrder_ne_zero K⟩
 
-theorem torsionOrder_ne_zero :
-    torsionOrder K ≠ 0 := NeZero.ne (torsionOrder K)
-
-theorem torsionOrder_pos :
-    0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
-
+omit [NumberField K] in
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
 theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
@@ -196,7 +196,7 @@ theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
       rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
       exact ⟨k, k.prop, h⟩
     rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
-    exact orderOf_dvd_card
+    apply orderOf_dvd_natCard
 
 /-- The group of roots of unity of order dividing `torsionOrder` is equal to the torsion
 group. -/
@@ -207,7 +207,7 @@ theorem rootsOfUnity_eq_torsion :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one' (torsion K) _ ⟨ζ, h⟩)
 
 /--
 The image of `torsion K` by a complex embedding is the group of complex roots of unity of
@@ -220,14 +220,13 @@ theorem map_complexEmbedding_torsion (φ : K →+* ℂ) :
     exact map_rootsOfUnity _ (torsionOrder K)
   · let e := ((torsion K).equivMapOfInjective (Units.complexEmbedding φ)
       (Units.complexEmbedding_injective φ)).symm.toEquiv
-    rw [Nat.card_eq_fintype_card, Complex.card_rootsOfUnity, Nat.card_congr e, torsionOrder,
-      Nat.card_eq_fintype_card]
+    rw [Complex.card_rootsOfUnity, Nat.card_congr e, torsionOrder]
 
 theorem even_torsionOrder :
     Even (torsionOrder K) := by
   suffices orderOf (⟨-1, neg_one_mem_torsion⟩ : torsion K) = 2 by
     rw [even_iff_two_dvd, ← this]
-    exact orderOf_dvd_card
+    apply orderOf_dvd_natCard
   rw [← Subgroup.orderOf_coe, ← orderOf_units, Units.val_neg, val_one, orderOf_neg_one,
     ringChar.eq_zero, if_neg (by decide)]
 
@@ -251,6 +250,8 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank
 theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
     torsionOrder K = 2 := by
   classical
+  let := Fintype.ofFinite (torsion K)
+  rw [torsionOrder, Nat.card_eq_fintype_card]
   refine (Finset.card_eq_two.2 ⟨1, ⟨-1, neg_one_mem_torsion⟩,
     by simp [← Subtype.coe_ne_coe], Finset.ext fun x ↦ ⟨fun _ ↦ ?_, fun _ ↦ Finset.mem_univ _⟩⟩)
   rw [Finset.mem_insert, Finset.mem_singleton, ← Subtype.val_inj, ← Subtype.val_inj]

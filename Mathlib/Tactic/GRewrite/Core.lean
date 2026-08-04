@@ -16,10 +16,10 @@ This module defines the core of the `grw`/`grewrite` tactic.
 This file provides two implementations of the tactic:
 1. The simple implementation uses `kabstract` to determine where to rewrite,
    and then calls `MVarId.gcongr` to prove that the rewrite is valid.
-   This is used by `nth_grw` and `grw'`
+   This is used by `nth_grw` and `grw +useKAbstract`.
 2. The more sophisticated implementation has its own congruence loop, applying `gcongr` lemmas to
-   create the replacement expression, while at the same time proving that this is related to the
-   original expression.
+   create the replacement expression, and to prove that this is related to the original expression.
+   This supports the use of strict inequalities to change the strictness in the goal.
    This is used by `grw` and `apply_rw`.
 -/
 
@@ -176,11 +176,20 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
-  let mkRel := if let some rel := rel? then mkApp2 rel else (.forallE `_a · · .default)
-  -- Assume that the two arguments of `rel` have the same type.
-  let mvar ← mkFreshExprMVar (← inferType e)
-  let target := if forward then mkRel e mvar else mkRel mvar e
-  return (mvar, ← mkFreshExprMVar target)
+  if let some rel := rel? then
+    let .forallE _ d₁ (.forallE _ d₂ _ _) _ ← whnf (← inferType rel) | throwFunctionExpected rel
+    -- note that `@[gcongr]`'s checks should prevent this happening
+    if d₂.hasLooseBVars then throwError "grw: {rel} is a dependent relation"
+    if forward then
+      let mvar ← mkFreshExprMVar d₂
+      return (mvar, ← mkFreshExprMVar <| mkApp2 rel e mvar)
+    else
+      let mvar ← mkFreshExprMVar d₁
+      return (mvar, ← mkFreshExprMVar <| mkApp2 rel mvar e)
+  else
+    let mvar ← mkFreshTypeMVar
+    let target := if forward then .forallE `_a e mvar .default else .forallE `_a mvar e .default
+    return (mvar, ← mkFreshExprMVar (some target))
 
 /-- Version of `getRel` that also returns the expression of the relation. -/
 def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
@@ -205,6 +214,9 @@ partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config 
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
   if let some (result, proof) ← grewriteCore relName rel? target forward config then
     mvarApp.withApp fun mvar xs ↦ do
+      /- Note: the names of the free variables `xs` end up in the new goal as lambda binders.
+      `applyGCongrLemma` ensures that these are the binder names that appear in the original goal.
+      As a result, when rewriting inside of `{x | p x}`, the binder name `x` is preserved. -/
       mvar.mvarId!.assign (← mkLambdaFVars xs result)
       goal.assign proof
       return true
@@ -313,15 +325,17 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
       return (mvar, goal)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
-    let key := { relName, head, arity := args.size }
-    let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
+    let mut lemmas ← findGCongrLemmas?' relName head forward args.size
     if relName == `_Implies then
       lemmas := lemmas ++ relImpRelLemma args.size
     let mctx ← getMCtx
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then
         if ← processGCongrLemma goal.mvarId! gcongrLem forward config then
-          return (← instantiateMVars mvar, goal)
+          -- Preserve the binder name/info in a forall.
+          match e, ← instantiateMVars mvar with
+          | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
+          | _, result => return some (result, goal)
         setMCtx mctx
   -- Cache the fact that there was nothing to rewrite.
   modify fun s ↦ { s with cache := s.cache.insert cacheKey }
