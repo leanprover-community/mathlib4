@@ -66,8 +66,14 @@ instance : CoeFun (E →ₛₗ.[σ] F) fun f : E →ₛₗ.[σ] F => f.domain �
   ⟨toFun'⟩
 
 @[simp]
+theorem coe_toFun_eq_coe (f : E →ₛₗ.[σ] F) : (f.toFun : f.domain → F) = f :=
+  rfl
+
+@[simp]
 theorem toFun_eq_coe (f : E →ₛₗ.[σ] F) (x : f.domain) : f.toFun x = f x :=
   rfl
+
+--theorem toFun_coe_apply
 
 @[ext (iff := false)]
 theorem ext {f g : E →ₛₗ.[σ] F} (h : f.domain = g.domain)
@@ -134,15 +140,27 @@ def ker (f : E →ₛₗ.[σ] F) : Submodule R E := f.toFun.ker.map f.domain.sub
 
 variable {f : E →ₛₗ.[σ] F}
 
-theorem ker_eq_bot : f.ker = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
-  unfold ker
-  simp [← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot']
+theorem ker_eq_bot' : f.ker = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
+  simp [ker, ← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot']
+
+theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
+  simp [ker, ← LinearMap.le_ker_iff_map, LinearMap.ker_eq_bot]
+
+theorem mem_ker_iff {x : E} : x ∈ f.ker ↔ ∃ (y : f.domain) (_h : x = y), f y = 0 := by
+  simp [ker]
 
 theorem sub_mem_ker_iff {x y : f.domain} : ↑(x - y) ∈ f.ker ↔ f x = f y := by
-  unfold ker
-  simp_rw [Submodule.mem_map, LinearMap.mem_ker, Submodule.subtype_apply]
-  norm_cast
-  simp [LinearPMap.map_sub, sub_eq_zero]
+  rw [mem_ker_iff]
+  simp only [exists_prop, Subtype.exists, exists_and_left,
+    exists_eq_left', SetLike.coe_mem, exists_true_left]
+  calc
+    f (x - y) = 0 ↔ f x = f y := by simp [map_sub, sub_eq_zero]
+
+theorem ker_le_domain : f.ker ≤ f.domain := by
+  intro x h
+  rw [mem_ker_iff] at h
+  obtain ⟨y, rfl, h⟩ := h
+  simp
 
 end kernel
 
@@ -380,11 +398,26 @@ section Zero
 
 instance instZero : Zero (E →ₛₗ.[σ] F) := ⟨⊤, 0⟩
 
-@[simp]
+@[simp, grind .]
 theorem zero_domain : (0 : E →ₛₗ.[σ] F).domain = ⊤ := rfl
 
-@[simp]
+@[simp, grind .]
 theorem zero_apply (x : (⊤ : Submodule R E)) : (0 : E →ₛₗ.[σ] F) x = 0 := rfl
+
+@[simp, grind .]
+theorem ker_zero : (0 : E →ₛₗ.[σ] F).ker = ⊤ := by
+  ext x
+  simp [mem_ker_iff]
+
+@[simp]
+theorem ker_eq_top {f : E →ₛₗ.[σ] F} : f.ker = ⊤ ↔ f = 0 := by
+  refine ⟨?_, by grind⟩
+  intro h
+  ext x hf _
+  · suffices f.domain = ⊤ by simp [this]
+    grind [eq_top_iff, ker_le_domain]
+  have : x ∈ f.ker := by simp [h]
+  grind [mem_ker_iff]
 
 end Zero
 
@@ -430,6 +463,11 @@ theorem neg_domain (f : E →ₛₗ.[σ] F) : (-f).domain = f.domain := rfl
 @[simp]
 theorem neg_apply (f : E →ₛₗ.[σ] F) (x) : (-f) x = -f x :=
   rfl
+
+@[simp]
+theorem ker_neg (f : E →ₛₗ.[σ] F) : (-f).ker = f.ker := by
+  ext x
+  simp [mem_ker_iff]
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₛₗ.[σ] F) :=
   ⟨fun f => by
@@ -682,6 +720,11 @@ theorem toPMap_apply (f : E →ₛₗ[σ] F) (p : Submodule R E) (x : p) : f.toP
 @[simp]
 theorem toPMap_domain (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p).domain = p :=
   rfl
+
+@[simp]
+theorem toPMap_ker (f : E →ₛₗ[σ] F) (p : Submodule R E) : (f.toPMap p).ker = p ⊓ f.ker := by
+  ext x
+  simp [LinearPMap.mem_ker_iff]
 
 /-- Compose a linear map with a `LinearPMap` -/
 def compPMap {ρ : R →+* T} [RingHomCompTriple σ τ ρ] (g : F →ₛₗ[τ] G) (f : E →ₛₗ.[σ] F) :
@@ -1039,7 +1082,7 @@ private theorem mem_inverse_graph_snd_eq_zero (hf : f.ker = ⊥) (x : F × E)
   simp only [Submodule.map_equiv_eq_comap_symm, Submodule.mem_comap, LinearEquiv.symm_prodComm,
     LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, mem_graph_iff, Prod.swap] at hv
   rcases hv with ⟨z, rfl, hz⟩
-  rw [LinearPMap.ker_eq_bot] at hf
+  rw [LinearPMap.ker_eq_bot'] at hf
   simp [hf z hz]
 
 theorem inverse_graph (hf : f.ker = ⊥) :
