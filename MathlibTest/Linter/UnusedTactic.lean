@@ -61,7 +61,7 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 example : True := by
   conv =>
     skip -- `skip` in `conv` mode does not warn.
-    simp -- other tactics in `conv` do warn
+    simp -- other tactics in `conv` mode do warn
   show True -- `show` does not warn.
   trivial <;> show False -- But, if it doesn't run at all, `show` does warn.
 
