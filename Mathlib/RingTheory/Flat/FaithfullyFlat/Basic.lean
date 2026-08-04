@@ -633,7 +633,7 @@ def baseChangeOrderEmbedding : Submodule R M ↪o Submodule A (A ⊗[R] M) where
 
 theorem IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
     (h : IsNoetherian A (A ⊗[R] M)) : IsNoetherian R M := by
-  rw [isNoetherian_iff'] at h ⊢
+  rw [isNoetherian_iff] at h ⊢
   exact (baseChangeOrderEmbedding R M A).wellFoundedGT
 
 theorem IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
