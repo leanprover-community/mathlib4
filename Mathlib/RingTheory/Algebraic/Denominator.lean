@@ -47,7 +47,7 @@ variable (R : Type*) [CommRing R] [IsPrincipalIdealRing R] {S : Type*} [CommRing
 /-- The denominator of an element `x` of an `R`-algebra: a generator of the ideal of scalars
 `r : R` such that `r • x` is integral over `R`. It is nonzero as soon as `x` is algebraic over
 `R`; see `IsAlgebraic.denominator_ne_zero`. -/
-@[expose] noncomputable def denominator (x : S) : R :=
+noncomputable def denominator (x : S) : R :=
   Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x})
 
 theorem denominator_def (x : S) :
