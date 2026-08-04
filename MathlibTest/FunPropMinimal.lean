@@ -853,3 +853,33 @@ theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
 example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
 
 end DependentCompositionalForm
+
+section ProjTransparency
+
+def semireducibleFun (_ : Nat) := (1, 2)
+
+/--
+error: `fun_prop` was unable to prove `Con semireducibleFun`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con semireducibleFun := by fun_prop
+
+-- This used to work because `semireducibleFun` was incorrectly unfolded
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => (semireducibleFun x).fst`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+-- Test that the backward compatibility option restores the incorrect behavior
+set_option fun_prop.projDefaultTransparency true in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+end ProjTransparency
