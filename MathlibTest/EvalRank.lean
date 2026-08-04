@@ -157,13 +157,13 @@ example :
 
 -- only closed matrix literals are in scope: the commitment gate skips an abstract matrix,
 -- and `eval_rank` reports that nothing was found
-/-- error: eval_rank: no closed `Matrix.rank` literal found in the goal -/
+/-- error: eval_rank failed to evaluate the rank of any closed matrix literal in the goal -/
 #guard_msgs in
 example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
 
 -- a literal with symbolic entries is likewise not closed; substitute or unfold the
 -- variables before calling the tactic
-/-- error: eval_rank: no closed `Matrix.rank` literal found in the goal -/
+/-- error: eval_rank failed to evaluate the rank of any closed matrix literal in the goal -/
 #guard_msgs in
 example (a : ℚ) : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2 := by eval_rank
 
