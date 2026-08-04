@@ -71,12 +71,15 @@ def IsCompactElement [Preorder α] (k : α) :=
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] (a : α)
+
+theorem IsBot.IsCompactElement (h : IsBot a) : IsCompactElement a :=
+  fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
 
 theorem IsCompactElement.bot [OrderBot α] : IsCompactElement (⊥ : α) :=
-  fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, bot_le⟩
+  isBot_bot.IsCompactElement
 
-theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] (a : α) : IsCompactElement a := by
+theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement a := by
   intro s u hne hdir hsu hau
   grw [hau]
   have ⟨m, hm⟩ := ‹WellFoundedGT α›.exists_maximal s hne
