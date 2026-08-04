@@ -911,7 +911,43 @@ elab_rules : tactic
   replaceMainGoal s.newGoals.toList
 
 /--
-Interesting doc-string about `gconvert`
+`gconvert e`, where the term `e` is inferred to have type `t`, replaces the main goal `⊢ t'` with
+new goals for proving the implication `t → t'` using generalized congruence.
+The goals are created like `gcongr` would.
+Like `gcongr`, `gconvert` introduces variables while applying generalized congruence rules.
+Additionally, if a resulting goal is an implication, the hypothesis is introduced
+using `this` as the default name for the new hypothesis.
+These variables can be pattern-matched, like `rintro` would, using the `with` keyword.
+
+`gconvert` can be used to peel matching quantifiers off of a given term and the goal and
+introduce the relevant variables.
+
+`gconvert` is a generalized version of `convert`, in the same way that `gcongr` and `grw` are
+generalized versions of `congr`/`congr!` and `rw`.
+
+* `gconvert e with x y ... z` names the variables that are introduced.
+* `gconvert e using n` where `n` is a natural number literal, limits the depth of `gcongr`.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+* `gconvert e using t`, where `t` is a term with `?_` holes, makes `gcongr` perform congruence
+  up to the holes in `t`.
+  This is useful if `gcongr` is too aggressive in breaking down the goal.
+
+Example:
+```
+example (h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε) :
+             ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) ≤ ε := by
+  gconvert h with ε hε N n hn
+  /-
+  h : ∀ ε > 0, ∃ N, ∀ n ≥ N, 1 / (↑n + 1) < ε
+  ε : ℝ
+  hε : ε > 0
+  N n : ℕ
+  hn : n ≥ N
+  this : 1 / (↑n + 1) < ε
+  ⊢ 1 / (↑n + 1) ≤ ε
+  -/
+  exact this.le
+```
 -/
 syntax (name := gconvert) "gconvert" ppSpace term (" using " colGt term)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
@@ -923,16 +959,16 @@ elab_rules : tactic
   -- If the goal is `⊢ P` and the tactic is `gconvert Q`, then we construct the goal `⊢ Q → P`.
   let impGoal ← mkFreshExprSyntheticOpaqueMVar <|
     .forallE `_a (← inferType e) (← goal.getType) .default
-  goal.assign (.app impGoal e)
+  goal.assign (impGoal.app e)
   let ({ newGoals, patterns }) ← runGCongr impGoal.mvarId! template ps?
   -- For each of the unsolved goals that are implications,
-  -- we run `rintro n`, where `n` comes from the provided variable names
-  let mut names := patterns
+  -- we run `rintro`, using the provided variable names/patterns
+  let mut patterns := patterns
   let mut finalGoals := #[]
   for g in newGoals do
     if (← g.getType).isForall then
-      let name := names.head?.getD (mkIdent `this)
-      names := names.tail
+      let name := patterns.head?.getD (mkIdent `this)
+      patterns := patterns.tail
       finalGoals := finalGoals ++ (← RCases.rintro #[name] none g)
     else
       finalGoals := finalGoals.push g
