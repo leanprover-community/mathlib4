@@ -186,10 +186,9 @@ section AddCommGroup
 
 variable {M : Type*} [AddCommGroup M]
 
-instance : Neg (ι →ᵇᵃ[I₀] M) :=
-  ⟨fun f ↦
-    ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
-      simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩⟩
+instance : Neg (ι →ᵇᵃ[I₀] M) where
+  neg f := ⟨-(f : Box ι → M), fun I hI π hπ ↦ by
+    simp only [Pi.neg_apply, Finset.sum_neg_distrib, sum_partition_boxes _ hI hπ]⟩
 
 instance : Sub (ι →ᵇᵃ[I₀] M) :=
   ⟨fun f g ↦
