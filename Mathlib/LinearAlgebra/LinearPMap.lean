@@ -73,8 +73,6 @@ theorem coe_toFun_eq_coe (f : E →ₛₗ.[σ] F) : (f.toFun : f.domain → F) =
 theorem toFun_eq_coe (f : E →ₛₗ.[σ] F) (x : f.domain) : f.toFun x = f x :=
   rfl
 
---theorem toFun_coe_apply
-
 @[ext (iff := false)]
 theorem ext {f g : E →ₛₗ.[σ] F} (h : f.domain = g.domain)
     (h' : ∀ ⦃x : E⦄ ⦃hf : x ∈ f.domain⦄ ⦃hg : x ∈ g.domain⦄, f ⟨x, hf⟩ = g ⟨x, hg⟩) : f = g := by
