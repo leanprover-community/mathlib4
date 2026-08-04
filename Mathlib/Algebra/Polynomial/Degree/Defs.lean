@@ -559,11 +559,6 @@ theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
       (degree_neg (erase (natDegree q) q) ▸ degree_add_le _ _)
     _ < degree p := max_lt_iff.2 ⟨hd' ▸ degree_erase_lt hp0, hd.symm ▸ degree_erase_lt hq0⟩
 
-theorem degree_sub_lt_right (hd : degree p = degree q) (hq0 : q ≠ 0)
-    (hlc : p.leadingCoeff = q.leadingCoeff) : degree (p - q) < degree q := by
-  rw [← degree_neg, neg_sub]
-  exact degree_sub_lt hd.symm hq0 hlc.symm
-
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=
   (degree_sub_le _ _).trans (max_le degree_X_le (degree_C_le.trans zero_le_one))
 
