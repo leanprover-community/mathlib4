@@ -14,7 +14,7 @@ public import Mathlib.Condensed.Module
 This file adds some instances for limits in condensed sets and condensed modules.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

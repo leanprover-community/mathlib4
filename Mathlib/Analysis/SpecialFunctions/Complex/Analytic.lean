@@ -82,49 +82,41 @@ section ReOfReal
 
 variable {f : ℂ → ℂ} {s : Set ℝ} {x : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma AnalyticAt.re_ofReal (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
   (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma AnalyticAt.im_ofReal (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).im) x :=
   (Complex.imCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticWithinAt.re_ofReal (hf : AnalyticWithinAt ℂ f (ofReal '' s) x) :
     AnalyticWithinAt ℝ (fun x : ℝ ↦ (f x).re) s x :=
   ((Complex.reCLM.analyticWithinAt _ _).comp hf.restrictScalars (mapsTo_image f _)).comp
     (Complex.ofRealCLM.analyticWithinAt _ _) (mapsTo_image ofReal s)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticWithinAt.im_ofReal (hf : AnalyticWithinAt ℂ f (ofReal '' s) x) :
     AnalyticWithinAt ℝ (fun x : ℝ ↦ (f x).im) s x :=
   ((Complex.imCLM.analyticWithinAt _ _).comp hf.restrictScalars (mapsTo_image f _)).comp
     (Complex.ofRealCLM.analyticWithinAt _ _) (mapsTo_image ofReal s)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticOn.re_ofReal (hf : AnalyticOn ℂ f (ofReal '' s)) :
     AnalyticOn ℝ (fun x : ℝ ↦ (f x).re) s :=
   ((Complex.reCLM.analyticOn _).comp hf.restrictScalars (mapsTo_image f _)).comp
     (Complex.ofRealCLM.analyticOn _) (mapsTo_image ofReal s)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticOn.im_ofReal (hf : AnalyticOn ℂ f (ofReal '' s)) :
     AnalyticOn ℝ (fun x : ℝ ↦ (f x).im) s :=
   ((Complex.imCLM.analyticOn _).comp hf.restrictScalars (mapsTo_image f _)).comp
     (Complex.ofRealCLM.analyticOn _) (mapsTo_image ofReal s)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticOnNhd.re_ofReal (hf : AnalyticOnNhd ℂ f (ofReal '' s)) :
     AnalyticOnNhd ℝ (fun x : ℝ ↦ (f x).re) s :=
   ((Complex.reCLM.analyticOnNhd _).comp hf.restrictScalars (mapsTo_image f _)).comp
     (Complex.ofRealCLM.analyticOnNhd _) (mapsTo_image ofReal s)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AnalyticOnNhd.im_ofReal (hf : AnalyticOnNhd ℂ f (ofReal '' s)) :
     AnalyticOnNhd ℝ (fun x : ℝ ↦ (f x).im) s :=
   ((Complex.imCLM.analyticOnNhd _).comp hf.restrictScalars (mapsTo_image f _)).comp
@@ -163,5 +155,51 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
   fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+
+theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
+    iteratedDeriv (n + 1) log x = (-1 : ℂ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) := by
+  have h_eq : deriv log =ᶠ[𝓝 x] Inv.inv := by
+    filter_upwards [isOpen_slitPlane.mem_nhds hx] with y hy
+    simp [Complex.deriv_log hy]
+  rw [iteratedDeriv_succ', h_eq.iteratedDeriv_eq, iteratedDeriv_eq_iterate, iter_deriv_inv]
+  grind
+
+theorem hasFPowerSeriesAt_clog_one :
+    HasFPowerSeriesAt log (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 1 := by
+  suffices ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) =
+      FormalMultilinearSeries.ofScalars ℂ (fun n ↦ iteratedDeriv n log 1 / (n.factorial : ℂ))) by
+    convert! AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
+    exact analyticAt_clog (by simp)
+  ext n
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const_one,
+    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul]
+  obtain _ | n := n
+  · simp
+  simp [iteratedDeriv_succ_log one_mem_slitPlane, Nat.factorial_succ, pow_succ]
+  field_simp [show n.factorial ≠ 0 by positivity]
+
+theorem hasFPowerSeriesAt_clog_one_add :
+    HasFPowerSeriesAt (fun x ↦ log (1 + x)) (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_clog_one (-1) using 3 <;> ring
+
+theorem hasFPowerSeriesAt_log_one :
+    HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 1 := by
+  obtain ⟨r, hp⟩ := hasFPowerSeriesAt_clog_one
+  have : HasFPowerSeriesOnBall log
+      ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)).restrictScalars ℝ)
+      (ofRealCLM 1) r := by
+    simpa using hp.restrictScalars
+  convert ((reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr
+    (fun x _ ↦ log_ofReal_re x)).hasFPowerSeriesAt
+  ext n
+  simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+    FormalMultilinearSeries.compContinuousLinearMap_apply]
+  simp
+  norm_cast
+
+theorem hasFPowerSeriesAt_log_one_add :
+    HasFPowerSeriesAt (fun x ↦ Real.log (1 + x)) (.ofScalars ℝ (fun n ↦ -(-1 : ℝ) ^ n / n)) 0 := by
+  convert HasFPowerSeriesAt.comp_sub hasFPowerSeriesAt_log_one (-1) using 3 <;> ring
 
 end Real

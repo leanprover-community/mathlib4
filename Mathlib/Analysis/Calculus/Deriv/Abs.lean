@@ -75,37 +75,37 @@ theorem hasDerivAt_abs {x : ℝ} (hx : x ≠ 0) :
 
 theorem HasStrictFDerivAt.abs_of_neg (hf : HasStrictFDerivAt f f' x)
     (h₀ : f x < 0) : HasStrictFDerivAt (fun x ↦ |f x|) (-f') x := by
-  convert (hasStrictDerivAt_abs_neg h₀).hasStrictFDerivAt.comp x hf using 1
+  convert! (hasStrictDerivAt_abs_neg h₀).hasStrictFDerivAt.comp x hf using 1
   ext y
   simp
 
 theorem HasFDerivAt.abs_of_neg (hf : HasFDerivAt f f' x)
     (h₀ : f x < 0) : HasFDerivAt (fun x ↦ |f x|) (-f') x := by
-  convert (hasDerivAt_abs_neg h₀).hasFDerivAt.comp x hf using 1
+  convert! (hasDerivAt_abs_neg h₀).hasFDerivAt.comp x hf using 1
   ext y
   simp
 
 theorem HasStrictFDerivAt.abs_of_pos (hf : HasStrictFDerivAt f f' x)
     (h₀ : 0 < f x) : HasStrictFDerivAt (fun x ↦ |f x|) f' x := by
-  convert (hasStrictDerivAt_abs_pos h₀).hasStrictFDerivAt.comp x hf using 1
+  convert! (hasStrictDerivAt_abs_pos h₀).hasStrictFDerivAt.comp x hf using 1
   ext y
   simp
 
 theorem HasFDerivAt.abs_of_pos (hf : HasFDerivAt f f' x)
     (h₀ : 0 < f x) : HasFDerivAt (fun x ↦ |f x|) f' x := by
-  convert (hasDerivAt_abs_pos h₀).hasFDerivAt.comp x hf using 1
+  convert! (hasDerivAt_abs_pos h₀).hasFDerivAt.comp x hf using 1
   ext y
   simp
 
 theorem HasStrictFDerivAt.abs (hf : HasStrictFDerivAt f f' x)
     (h₀ : f x ≠ 0) : HasStrictFDerivAt (fun x ↦ |f x|) ((SignType.sign (f x) : ℝ) • f') x := by
-  convert (hasStrictDerivAt_abs h₀).hasStrictFDerivAt.comp x hf using 1
+  convert! (hasStrictDerivAt_abs h₀).hasStrictFDerivAt.comp x hf using 1
   ext y
   simp [mul_comm]
 
 theorem HasFDerivAt.abs (hf : HasFDerivAt f f' x)
     (h₀ : f x ≠ 0) : HasFDerivAt (fun x ↦ |f x|) ((SignType.sign (f x) : ℝ) • f') x := by
-  convert (hasDerivAt_abs h₀).hasFDerivAt.comp x hf using 1
+  convert! (hasDerivAt_abs h₀).hasFDerivAt.comp x hf using 1
   ext y
   simp [mul_comm]
 
@@ -120,12 +120,12 @@ theorem hasDerivWithinAt_abs (s : Set ℝ) {x : ℝ} (hx : x ≠ 0) :
 
 theorem HasFDerivWithinAt.abs_of_neg (hf : HasFDerivWithinAt f f' s x)
     (h₀ : f x < 0) : HasFDerivWithinAt (fun x ↦ |f x|) (-f') s x := by
-  convert (hasDerivAt_abs_neg h₀).comp_hasFDerivWithinAt x hf using 1
+  convert! (hasDerivAt_abs_neg h₀).comp_hasFDerivWithinAt x hf using 1
   simp
 
 theorem HasFDerivWithinAt.abs_of_pos (hf : HasFDerivWithinAt f f' s x)
     (h₀ : 0 < f x) : HasFDerivWithinAt (fun x ↦ |f x|) f' s x := by
-  convert (hasDerivAt_abs_pos h₀).comp_hasFDerivWithinAt x hf using 1
+  convert! (hasDerivAt_abs_pos h₀).comp_hasFDerivWithinAt x hf using 1
   simp
 
 theorem HasFDerivWithinAt.abs (hf : HasFDerivWithinAt f f' s x)

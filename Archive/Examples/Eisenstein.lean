@@ -25,7 +25,6 @@ namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
@@ -60,7 +59,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       CharP.ker_intAlgebraMap_eq_span 3, span_singleton_pow, mem_span_singleton]
       norm_num
     rw [hfq, ← modByMonicHom_apply, map_add]
-    convert zero_add _
+    convert! zero_add _
     · rw [← LinearMap.mem_ker, mem_ker_modByMonic hq_monic]
       rw [pow_two, ← sub_mul]
       apply dvd_mul_left

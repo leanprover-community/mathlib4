@@ -15,7 +15,7 @@ public import Mathlib.Order.Atoms
 # Facts about ordered structures and ordered instances on subgroups
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 
@@ -43,25 +43,21 @@ namespace Subgroup
 
 variable {G : Type*} [Group G] (H : Subgroup G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
   normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
     IsCoatom (Subgroup.comap (f : G →* H) K) ↔ IsCoatom K :=
   OrderIso.isCoatom_iff (f.comapSubgroup) K
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isCoatom_map (f : G ≃* H) {K : Subgroup G} :
     IsCoatom (Subgroup.map (f : G →* H) K) ↔ IsCoatom K :=
   OrderIso.isCoatom_iff (f.mapSubgroup) K
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCoatom_comap_of_surjective
     {H : Type*} [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
     {M : Subgroup H} (hM : IsCoatom M) : IsCoatom (M.comap φ) := by
@@ -81,7 +77,8 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
+@[to_additive
+/-- An additive subgroup of an additive ordered group is an additive ordered group. -/]
 instance toIsOrderedMonoid [CommGroup G] [Preorder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl

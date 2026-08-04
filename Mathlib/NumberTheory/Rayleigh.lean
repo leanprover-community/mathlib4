@@ -61,7 +61,6 @@ namespace Beatty
 
 variable {r s : ℝ} {j : ℤ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
 private theorem no_collision (hrs : r.HolderConjugate s) :
@@ -135,16 +134,15 @@ theorem compl_beattySeq' {r s : ℝ} (hrs : r.HolderConjugate s) :
 
 open scoped symmDiff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
 theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.HolderConjugate s) :
     {beattySeq r k | k > 0} ∆ {beattySeq' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · rintro j (⟨⟨k, hk, hjk⟩, -⟩ | ⟨⟨k, hk, hjk⟩, -⟩)
-    · rw [Set.mem_setOf_eq, ← hjk, beattySeq, Int.floor_pos]
+    · rw [Set.mem_ofPred_eq, ← hjk, beattySeq, Int.floor_pos]
       exact one_le_mul_of_one_le_of_one_le (by norm_cast) hrs.lt.le
-    · rw [Set.mem_setOf_eq, ← hjk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one]
+    · rw [Set.mem_ofPred_eq, ← hjk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one]
       exact one_lt_mul_of_le_of_lt (by norm_cast) hrs.symm.lt
   intro j (hj : 0 < j)
   have hb₁ : ∀ s ≥ 0, j ∈ {beattySeq s k | k > 0} ↔ j ∈ {beattySeq s k | k} := by

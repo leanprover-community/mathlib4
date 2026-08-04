@@ -360,7 +360,7 @@ lemma bddAbove_range_prod {F : ι → α × β} :
   simp only [bddAbove_prod, ← range_comp]
 
 @[to_dual]
-theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} {p : α × β} :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
     ⟨fun H =>
@@ -430,7 +430,13 @@ lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀
   exact (h x).trans (hC <| mem_range_self x)
 
 @[to_dual]
-lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+lemma BddAbove.range_comp_left {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
     (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
   change BddAbove (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddAbove hf
+
+@[deprecated BddAbove.range_comp_left (since := "2026-06-07")]
+alias BddAbove.range_comp := BddAbove.range_comp_left
+
+@[deprecated BddBelow.range_comp_left (since := "2026-06-07")]
+alias BddBelow.range_comp := BddBelow.range_comp_left

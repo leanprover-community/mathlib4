@@ -39,6 +39,7 @@ of a finite group is semisimple (i.e. a direct sum of irreducibles).
 noncomputable section
 
 open Module MonoidAlgebra
+open scoped Ring
 
 /-!
 We now do the key calculation in Maschke's theorem.
@@ -112,10 +113,10 @@ section
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
 def equivariantProjection : W →ₗ[k[G]] V :=
-  Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
+  (Fintype.card G : k)⁻¹ʳ • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
-    π.equivariantProjection G v = Ring.inverse (Nat.card G : k) • ∑ g : G, π.conjugate g v := by
+    π.equivariantProjection G v = (Nat.card G : k)⁻¹ʳ • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply,
     Fintype.card_eq_nat_card]
 
@@ -144,8 +145,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
   let A := k[G]
-  letI : Module k W := .compHom W (algebraMap k A)
-  letI : Module k V := .compHom V (algebraMap k A)
+  let : Module k W := .compHom W (algebraMap k A)
+  let : Module k V := .compHom V (algebraMap k A)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
   set φ := (f.restrictScalars k).leftInverse
@@ -179,6 +180,7 @@ variable {G k V : Type*} [Group G] [Field k] [Finite G] [NeZero (Nat.card G : k)
 
 open Representation
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsSemisimpleRepresentation ρ := by
   rw [isSemisimpleRepresentation_iff_isSemisimpleModule_asModule]
   infer_instance

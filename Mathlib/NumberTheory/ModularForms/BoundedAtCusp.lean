@@ -26,7 +26,6 @@ namespace UpperHalfPlane
 
 variable {g : GL (Fin 2) ℝ} {f : ℍ → ℂ} (k : ℤ)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsZeroAtImInfty.slash (hg : g 1 0 = 0) (hf : IsZeroAtImInfty f) :
     IsZeroAtImInfty (f ∣[k] g) := by
   rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_zero_iff_norm_tendsto_zero] at hf ⊢
@@ -58,19 +57,19 @@ variable {c f k} {g : GL (Fin 2) ℝ}
 
 lemma IsBoundedAt.smul_iff : IsBoundedAt (g • c) f k ↔ IsBoundedAt c (f ∣[k] g) k := by
   rw [IsBoundedAt, IsBoundedAt, (Equiv.mulLeft g⁻¹).forall_congr_left]
-  simp [SemigroupAction.mul_smul, ← SlashAction.slash_mul]
+  simp [mul_smul, ← SlashAction.slash_mul]
 
 lemma IsZeroAt.smul_iff : IsZeroAt (g • c) f k ↔ IsZeroAt c (f ∣[k] g) k := by
   rw [IsZeroAt, IsZeroAt, (Equiv.mulLeft g⁻¹).forall_congr_left]
-  simp [SemigroupAction.mul_smul, ← SlashAction.slash_mul]
+  simp [mul_smul, ← SlashAction.slash_mul]
 
 lemma IsBoundedAt.add {f' : ℍ → ℂ} (hf : IsBoundedAt c f k) (hf' : IsBoundedAt c f' k) :
     IsBoundedAt c (f + f') k :=
-  fun g hg ↦ by simpa using (hf g hg).add (hf' g hg)
+  fun g hg ↦ by simpa using! (hf g hg).add (hf' g hg)
 
 lemma IsZeroAt.add {f' : ℍ → ℂ} (hf : IsZeroAt c f k) (hf' : IsZeroAt c f' k) :
     IsZeroAt c (f + f') k :=
-  fun g hg ↦ by simpa using (hf g hg).add (hf' g hg)
+  fun g hg ↦ by simpa using! (hf g hg).add (hf' g hg)
 
 lemma isBoundedAt_infty_iff : IsBoundedAt ∞ f k ↔ IsBoundedAtImInfty f :=
   ⟨fun h ↦ by simpa using h 1 (by simp), fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)⟩
@@ -96,29 +95,29 @@ lemma isBoundedAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsBoundedAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsBoundedAtImInfty (f ∣[k] γ) := by
   constructor
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-    simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using fun hfc ↦ ⟨γ, rfl, hfc⟩
+    simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using! fun hfc ↦ ⟨γ, rfl, hfc⟩
   · rintro ⟨γ, rfl, b⟩
-    simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using b
+    simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using! b
 
 lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsZeroAtImInfty (f ∣[k] γ) := by
   constructor
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-    simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using fun hfc ↦ ⟨γ, rfl, hfc⟩
+    simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using! fun hfc ↦ ⟨γ, rfl, hfc⟩
   · rintro ⟨γ, rfl, b⟩
-    simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using b
+    simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using! b
 
 lemma isBoundedAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsBoundedAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsBoundedAtImInfty (f ∣[k] γ) := by
-  refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
+  refine ⟨fun hc _ hγ ↦ by simpa using! hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-  simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using h γ rfl
+  simpa [IsBoundedAt.smul_iff, isBoundedAt_infty_iff] using! h γ rfl
 
 lemma isZeroAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsZeroAtImInfty (f ∣[k] γ) := by
-  refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
+  refine ⟨fun hc _ hγ ↦ by simpa using! hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-  simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using h γ rfl
+  simpa [IsZeroAt.smul_iff, isZeroAt_infty_iff] using! h γ rfl
 
 end SL2Z
 

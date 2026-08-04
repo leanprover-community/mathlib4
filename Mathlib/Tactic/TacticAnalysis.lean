@@ -245,6 +245,7 @@ collecting tactic syntax and state to call the passes on.
 def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
+  profileitM Exception "tacticAnalysis" (← getOptions) do
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees

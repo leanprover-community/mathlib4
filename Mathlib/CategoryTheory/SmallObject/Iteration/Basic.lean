@@ -92,6 +92,7 @@ def restrictionLT : Set.Iio i ⥤ C :=
 lemma restrictionLT_obj (k : J) (hk : k < i) :
     (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrictionLT_map {k₁ k₂ : Set.Iio i} (φ : k₁ ⟶ k₂) :
     (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
@@ -173,6 +174,7 @@ lemma prop.fac {X Y : C} {f : X ⟶ Y} (hf : Φ.prop f) :
   cases hf
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `Φ : SuccStruct C` and `f` is a morphism in `C` which
 satisfies `Φ.prop f`, then this is the isomorphism of arrows
 between `f` and `Φ.toSuccArrow X`. -/
@@ -277,6 +279,7 @@ lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
   congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The iteration on a limit element identifies to the colimit of the
 value on smaller elements. -/
@@ -284,7 +287,7 @@ noncomputable def isColimit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     IsColimit (coconeOfLE iter.F hij) := by
   letI := hasColimitsOfShape_of_isSuccLimit C i hi
   refine IsColimit.ofIsoColimit (colimit.isColimit (restrictionLT iter.F hij))
-    (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
+    (Cocone.ext (eqToIso (iter.obj_limit i hi hij).symm) ?_)
   rintro ⟨k, hk⟩
   apply Arrow.mk_injective
   dsimp
@@ -359,6 +362,8 @@ lemma ext (h : ∀ (k₁ k₂ : K) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ x)
 
 end subsingleton
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open subsingleton in
 instance subsingleton : Subsingleton (Φ.Iteration j) where
   allEq iter₁ iter₂ := by
@@ -409,6 +414,7 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
           apply mapEq_refl
           simp only [obj_limit _ _ h₁, this]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
     iter₁.F.obj ⟨k, h₁⟩ = iter₂.F.obj ⟨k, h₂⟩ := by

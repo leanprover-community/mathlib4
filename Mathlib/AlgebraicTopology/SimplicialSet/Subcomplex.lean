@@ -15,13 +15,6 @@ Given a simplicial set `X`, this file defines the type `X.Subcomplex`
 of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
-## Implementation note
-
-`SSet.{u}` is defined as `Cᵒᵖ ⥤ Type u`, but it is not an abbreviation.
-This is the reason why `Subfunctor.ι` is redefined here as `Subcomplex.ι`
-so that this morphism appears as a morphism in `SSet` instead of a morphism
-in the category of presheaves.
-
 -/
 
 @[expose] public section
@@ -32,7 +25,6 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
@@ -91,9 +83,9 @@ lemma homOfLE_refl : homOfLE (by rfl : S₁ ≤ S₁) = 𝟙 _ := rfl
 
 @[simp]
 lemma homOfLE_app_val (Δ : SimplexCategoryᵒᵖ) (x : S₁.obj Δ) :
-    ((homOfLE h).app Δ x).val = x.val := rfl
+    dsimp% ((homOfLE h).app Δ x).val = x.val := rfl
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma homOfLE_ι : homOfLE h ≫ S₂.ι = S₁.ι := rfl
 
 instance mono_homOfLE : Mono (homOfLE h) := mono_of_mono_fac (homOfLE_ι h)
@@ -119,7 +111,7 @@ variable (X)
 
 /-- If `X : SSet`, this is the isomorphism of simplicial sets
 from `⊤ : X.Subcomplex` to `X`. -/
-@[simps! inv_app_coe]
+@[simps! inv_app_hom_apply]
 def topIso : ((⊤ : X.Subcomplex) : SSet) ≅ X :=
   NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (X.obj n)).toIso)
 
@@ -131,15 +123,13 @@ lemma topIso_inv_ι : (topIso X).inv ≫ Subfunctor.ι _ = 𝟙 _ := rfl
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
-  allEq _ _ := by ext _ ⟨_, h⟩; simp at h
+  allEq _ _ := by ext _ ⟨_, h⟩; tauto
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app := by rintro _ ⟨_, h⟩; simp at h
-      naturality _ _ _ := by ext ⟨_, h⟩; simp at h }
+    { app _ := ↾fun ⟨_, h⟩ ↦ by tauto
+      naturality _ _ _ := by ext ⟨_, h⟩; tauto }
   uniq := by subsingleton
 
 /-- If `X` is a simplicial set, then the empty subcomplex of `X` is an initial
@@ -169,6 +159,21 @@ lemma mem_ofSimplex_obj_iff {n : ℕ} (x : X _⦋n⦌) {m : SimplexCategoryᵒ�
   dsimp [ofSimplex, Subfunctor.ofSection]
   aesop
 
+lemma ofSimplex_map_le {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌)
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) ≤ ofSimplex x := by
+  simp only [Subfunctor.ofSection_le_iff]
+  exact ⟨f.op, by simp⟩
+
+@[simp]
+lemma ofSimplex_map_of_epi {X : SSet.{u}} {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f]
+    (x : X _⦋m⦌) :
+    ofSimplex (X.map f.op x) = ofSimplex x := by
+  refine le_antisymm (ofSimplex_map_le f x) ?_
+  simp only [Subfunctor.ofSection_le_iff]
+  have := isSplitEpi_of_epi f
+  exact ⟨(section_ f).op, by simp [← Functor.map_comp_apply, ← op_comp]⟩
+
 section
 
 variable (f : X ⟶ Y)
@@ -179,12 +184,12 @@ abbrev range : Y.Subcomplex := Subfunctor.range f
 /-- The morphism `X ⟶ Subcomplex.range f` induced by `f : X ⟶ Y`. -/
 abbrev toRange : X ⟶ Subcomplex.range f := Subfunctor.toRange f
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 
 @[simp]
 lemma toRange_app_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
-    ((toRange f).app Δ x).val = f.app Δ x := rfl
+    dsimp% ((toRange f).app Δ x).val = f.app Δ x := rfl
 
 instance : Epi (toRange f) :=
   inferInstanceAs (Epi (Subfunctor.toRange f))
@@ -195,7 +200,6 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
@@ -220,7 +224,7 @@ lemma lift_ι : lift f hf ≫ B.ι = f := rfl
 
 @[simp]
 lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
-    ((lift f hf).app _ x).1 = f.app _ x := rfl
+    dsimp% ((lift f hf).app _ x).1 = f.app _ x := rfl
 
 end
 
@@ -230,9 +234,7 @@ section
 @[simps]
 def preimage (A : X.Subcomplex) (p : Y ⟶ X) : Y.Subcomplex where
   obj n := p.app n ⁻¹' (A.obj n)
-  map f := (Set.preimage_mono (A.map f)).trans (by
-    simp only [Set.preimage_preimage, FunctorToTypes.naturality _ _ p f]
-    rfl)
+  map f := (Set.preimage_mono (A.map f)).trans (by simp [Set.preimage_preimage])
 
 @[simp]
 lemma preimage_max (A B : X.Subcomplex) (p : Y ⟶ X) :
@@ -250,6 +252,16 @@ lemma preimage_iSup {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
 lemma preimage_iInf {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
     (⨅ i, A i).preimage p = ⨅ i, (A i).preimage p := by aesop
 
+@[simp]
+lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
+
+lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
+
 end
 
 section
@@ -264,7 +276,6 @@ lemma image_le_iff (Z : Y.Subcomplex) :
     A.image f ≤ Z ↔ A ≤ Z.preimage f := by
   simp [Subfunctor.le_def]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_top : (⊤ : X.Subcomplex).image f = range f := by aesop
 
 @[simp]
@@ -276,6 +287,7 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :
@@ -301,7 +313,7 @@ lemma image_ofSimplex {n : ℕ} (x : X _⦋n⦌) (f : X ⟶ Y) :
 
 /-- Given a morphism of simplicial sets `f : X ⟶ Y` and a subcomplex `A` of `X`,
 this is the induced morphism from `A` to `A.image f`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def toImage : (A : SSet) ⟶ (A.image f : SSet) :=
   (A.image f).lift (A.ι ≫ f) (by rw [image_eq_range])
 
@@ -330,10 +342,27 @@ lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
 
+@[simp]
+lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
+    (B.preimage f).image f = B := by
+  apply le_antisymm (B.image_preimage_le f)
+  · intro n y hy
+    exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
+
+lemma preimage_inv {X Y : SSet.{u}} (A : Subcomplex X) (f : X ⟶ Y) [IsIso f] :
+    A.preimage (inv f) = A.image f := by
+  ext _ x
+  simp only [preimage_obj, NatIso.isIso_inv_app, Set.mem_preimage, image_obj, Set.mem_image]
+  exact ⟨fun hx ↦ ⟨(inv f).app _ x, by simpa⟩, by rintro ⟨x, hx, rfl⟩; simpa⟩
+
+lemma image_inv {X Y : SSet.{u}} (A : Subcomplex Y) (f : X ⟶ Y) [IsIso f] :
+    A.image (inv f) = A.preimage f := by
+  simp [← preimage_inv]
+
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism
 `(A.preimage p : SSet) ⟶ (A : SSet)`. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def fromPreimage (A : X.Subcomplex) (p : Y ⟶ X) :
     (A.preimage p : SSet) ⟶ (A : SSet) :=
   lift (Subcomplex.ι _ ≫ p) (by simp [range_comp])

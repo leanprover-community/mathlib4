@@ -28,7 +28,9 @@ group, topological abelianization
 
 -/
 
-@[expose] public section
+public section
+
+open scoped commutatorElement
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 

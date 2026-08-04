@@ -161,11 +161,13 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma filter_pairs_lt (k : ℕ) :
     (pairs σ k).filter (fun (s, _) ↦ #s < k) =
       (range k).disjiUnion (powersetCard · univ) ((pairwise_disjoint_powersetCard _).set_pairwise _)
         ×ˢ univ := by ext; aesop (add unsafe le_of_lt)
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ t ∈ pairs σ k with #t.1 < k, f t =
@@ -192,14 +194,12 @@ private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ pow
     ∑ j ∈ A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i ∈ A, X i : MvPolynomial σ R) := by
   simp [weight, mem_powersetCard_univ.mp h, mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem esymm_to_weight [DecidableEq σ] (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t ∈ pairs σ k with #t.1 = k, weight σ R k t := by
   rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha : a ∈ antidiagonal k) :
     ∑ A ∈ powersetCard a.fst univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
@@ -249,7 +249,7 @@ the elementary symmetric polynomials and would like to calculate the values of t
 theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
     psum σ R k = (-1) ^ (k + 1) * k * esymm σ R k -
     ∑ a ∈ antidiagonal k with a.1 ∈ Set.Ioo 0 k, (-1) ^ a.fst * esymm σ R a.1 * psum σ R a.2 := by
-  simp only [Set.Ioo, Set.mem_setOf_eq, and_comm]
+  simp only [Set.Ioo, Set.mem_ofPred_eq, and_comm]
   have hesymm := mul_esymm_eq_sum σ R k
   rw [← (sum_filter_add_sum_filter_not {a ∈ antidiagonal k | a.fst < k}
     (fun a ↦ 0 < a.fst) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm

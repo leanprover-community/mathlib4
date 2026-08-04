@@ -21,7 +21,7 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -32,13 +32,14 @@ namespace DerivedCategory
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category can be written
 as `f = inv (Q.map s) ≫ Q.map g` with `s : X' ⟶ X` a quasi-isomorphism and `g : X' ⟶ Y`. -/
 lemma right_fac {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y) :
@@ -52,6 +53,7 @@ lemma right_fac {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y) :
   rw [← isIso_Qh_map_iff] at hs
   exact ⟨X', s, hs, g, hφ⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Any morphism `f : Q.obj X ⟶ Q.obj Y` in the derived category can be written
 as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and `s : Y ⟶ Y'` a quasi-isomorphism. -/
 lemma left_fac {X Y : CochainComplex C ℤ} (f : Q.obj X ⟶ Q.obj Y) :

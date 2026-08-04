@@ -24,7 +24,7 @@ A morphism of schemes is separated if its diagonal morphism is a closed immersio
   A morphism is separated iff the preimage of affine opens are separated schemes.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -60,12 +60,14 @@ theorem isSeparated_eq_diagonal_isClosedImmersion :
 /-- Monomorphisms are separated. -/
 instance (priority := 900) isSeparated_of_mono [Mono f] : IsSeparated f where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.RespectsIso @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
 instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance stableUnderComposition : MorphismProperty.IsStableUnderComposition @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
@@ -76,18 +78,22 @@ instance [IsSeparated f] [IsSeparated g] : IsSeparated (f ≫ g) :=
 instance : MorphismProperty.IsMultiplicative @IsSeparated where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated g] :
     IsSeparated (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated f] :
     IsSeparated (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
@@ -101,13 +107,14 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.hom.toAlgebra
+  let := f.hom.toAlgebra
   change IsClosedImmersion
     (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_SpecMap, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[instance 100]
 lemma of_isAffineHom [h : IsAffineHom f] : IsSeparated f := by
   wlog hY : IsAffine Y
@@ -133,7 +140,7 @@ instance [IsSeparated g] :
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (pullback.fst f (𝟙 Y))]
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert (inferInstanceAs <| IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
+  convert (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g))
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated
@@ -144,6 +151,7 @@ open Scheme Pullback
 
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     (hf : Function.Injective f) :
@@ -171,6 +179,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
@@ -195,6 +204,7 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   congr 5
   apply pullback.hom_ext <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     [∀ i, IsAffine (𝒰.X i)] [∀ i j, IsAffine ((𝒱 i).X j)] :
     IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonalRange f 𝒰 𝒱) := by
@@ -274,7 +284,7 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (Over.prodLeftIsoPullback Y Y).hom]
-  convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
+  convert! (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -356,9 +366,10 @@ instance (f g : X ⟶ Y) [Y.IsSeparated] : IsClosedImmersion (Limits.equalizer.�
 
 end Scheme
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance IsSeparated.hasAffineProperty :
     HasAffineProperty @IsSeparated fun X _ _ _ ↦ X.IsSeparated := by
-  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
+  convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsSeparated with X Y f hY
   rw [Scheme.isSeparated_iff, ← terminal.comp_from f, IsSeparated.comp_iff]
   rfl
 

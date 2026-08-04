@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
@@ -34,24 +34,10 @@ For short,
 
 ## Typeclasses
 
-* `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
-* `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects
-  `<`.
-* `OrderedCommSemiring`: Commutative semiring with a partial order such that `+` and `*` respect
-  `≤`.
-* `StrictOrderedCommSemiring`: Nontrivial commutative semiring with a partial order such that `+`
-  and `*` respect `<`.
-* `OrderedRing`: Ring with a partial order such that `+` respects `≤` and `*` respects `<`.
-* `OrderedCommRing`: Commutative ring with a partial order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedSemiring`: Nontrivial semiring with a linear order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedCommSemiring`: Nontrivial commutative semiring with a linear order such that `+`
-  respects `≤` and `*` respects `<`.
-* `LinearOrderedRing`: Nontrivial ring with a linear order such that `+` respects `≤` and `*`
-  respects `<`.
-* `LinearOrderedCommRing`: Nontrivial commutative ring with a linear order such that `+` respects
-  `≤` and `*` respects `<`.
+* `IsOrderedRing`: Semiring with a partial order such that addition and multiplication by a
+  nonnegative number are both monotone.
+* `IsStrictOrderedRing`: Nontrivial semiring with a partial order such that addition and
+  multiplication by a positive number are both strictly monotone.
 
 ## Hierarchy
 
@@ -59,52 +45,16 @@ The hardest part of proving order lemmas might be to figure out the correct gene
 corresponding typeclass. Here's an attempt at demystifying it. For each typeclass, we list its
 immediate predecessors and what conditions are added to each of them.
 
-* `OrderedSemiring`
-  - `OrderedAddCommMonoid` & multiplication & `*` respects `≤`
-  - `Semiring` & partial order structure & `+` respects `≤` & `*` respects `≤`
-* `StrictOrderedSemiring`
-  - `OrderedCancelAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommSemiring`
-  - `OrderedSemiring` & commutativity of multiplication
-  - `CommSemiring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommSemiring`
-  - `StrictOrderedSemiring` & commutativity of multiplication
-  - `OrderedCommSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedRing`
-  - `OrderedSemiring` & additive inverses
-  - `OrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedRing`
-  - `StrictOrderedSemiring` & additive inverses
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommRing`
-  - `OrderedRing` & commutativity of multiplication
-  - `OrderedCommSemiring` & additive inverses
-  - `CommRing` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommRing`
-  - `StrictOrderedCommSemiring` & additive inverses
-  - `StrictOrderedRing` & commutativity of multiplication
-  - `OrderedCommRing` & `+` respects `<` & `*` respects `<` & nontriviality
-* `LinearOrderedSemiring`
-  - `StrictOrderedSemiring` & totality of the order
-  - `LinearOrderedAddCommMonoid` & multiplication & nontriviality & `*` respects `<`
-* `LinearOrderedCommSemiring`
-  - `StrictOrderedCommSemiring` & totality of the order
-  - `LinearOrderedSemiring` & commutativity of multiplication
-* `LinearOrderedRing`
-  - `StrictOrderedRing` & totality of the order
-  - `LinearOrderedSemiring` & additive inverses
-  - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & `IsDomain` & linear order structure
-* `LinearOrderedCommRing`
-  - `StrictOrderedCommRing` & totality of the order
-  - `LinearOrderedRing` & commutativity of multiplication
-  - `LinearOrderedCommSemiring` & additive inverses
-  - `CommRing` & `IsDomain` & linear order structure
+* `PartialOrder` + `Semiring` + `IsOrderedRing`
+  - `IsOrderedAddMonoid` & multiplication & `*` respects `≤`
+* `PartialOrder` + `Semiring` + `IsStrictOrderedRing`
+  - `IsOrderedCancelAddMonoid` & multiplication & `*` respects `<` & nontriviality
+* `LinearOrder` + `Ring` + `IsOrderedRing`
+  - `IsStrictOrderedRing` & totality of the order
+  - `IsDomain` & linear order structure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidHom
 
@@ -236,6 +186,10 @@ lemma one_sub_le_one_sub_mul_one_add (h : b + b * c ≤ a + c) : 1 - a ≤ (1 - 
 lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + b) * (1 - c) := by
   rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
   gcongr
+
+/-- A nontrivial ordered ring is of characteristic zero.
+This is not made a global instance for performance reasons. -/
+theorem IsOrderedRing.toCharZero [Nontrivial R] : CharZero R := AddMonoidWithOne.toCharZero
 
 instance [Nontrivial R] : NoMaxOrder R := ⟨fun a ↦ ⟨a + 1, by simp⟩⟩
 
