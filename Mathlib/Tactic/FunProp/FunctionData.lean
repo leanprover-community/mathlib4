@@ -122,13 +122,13 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) :
+    (unfoldPred : Meta.Config → ConstantInfo → CoreM Bool) :
     MetaM MaybeFunctionData := do
   withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
   let unfold := fun e : Expr => do
     if let some n := e.getAppFn'.constName? then
-      pure ((unfoldPred n) || (← isReducible n))
+      unfoldPred (← withReducible getConfig) (← getConstInfo n)
     else
       pure false
 
