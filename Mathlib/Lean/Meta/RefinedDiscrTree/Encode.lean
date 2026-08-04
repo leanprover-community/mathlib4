@@ -8,6 +8,7 @@ module
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Lean.Meta.DiscrTree
 public import Lean.Meta.LazyDiscrTree
+
 import all Lean.Meta.DiscrTree
 
 /-!

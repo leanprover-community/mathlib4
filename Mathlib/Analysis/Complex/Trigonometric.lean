@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Analysis.Complex.Exponential
+
 import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!

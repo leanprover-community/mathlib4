@@ -10,6 +10,7 @@ public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Tactic.CrossRefAttribute
+
 import Mathlib.Topology.WithTopology
 
 /-!

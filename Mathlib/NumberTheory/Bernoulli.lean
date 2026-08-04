@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
 public import Mathlib.NumberTheory.Padics.PadicNumbers
+
 import Mathlib.Tactic.NormNum.GCD
 
 /-!

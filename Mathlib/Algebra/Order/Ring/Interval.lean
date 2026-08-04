@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Int.Interval
+
 import Mathlib.Algebra.Order.Ring.Cast
 
 /-! # Intervals of integers in strict ordered rings
