@@ -96,22 +96,6 @@ instance [LinearOrder G] [MulRightMono G] :
 instance [LinearOrder G] [MulLeftMono G] [MulRightMono G] :
     IsBiOrderable G := ⟨⟨‹_›, ‹_›, ‹_›⟩⟩
 
-/-- A linear order with strict monotone left-multiplication is left-orderable. -/
-@[to_additive /-- A linear order with strict monotone left-addition is left-orderable. -/]
-instance [LinearOrder G] [MulLeftStrictMono G] :
-    IsLeftOrderable G := ⟨⟨‹_›, mulLeftMono_of_mulLeftStrictMono G⟩⟩
-
-/-- A linear order with strict monotone right-multiplication is right-orderable. -/
-@[to_additive /-- A linear order with strict monotone right-addition is right-orderable. -/]
-instance [LinearOrder G] [MulRightStrictMono G] :
-    IsRightOrderable G := ⟨⟨‹_›, mulRightMono_of_mulRightStrictMono G⟩⟩
-
-/-- A linear order with strict monotone left- and right-multiplication is bi-orderable. -/
-@[to_additive /-- A linear order with strict monotone left- and right-addition is bi-orderable. -/]
-instance [LinearOrder G] [MulLeftStrictMono G]
-    [MulRightStrictMono G] : IsBiOrderable G :=
-  ⟨⟨‹_›, mulLeftMono_of_mulLeftStrictMono G, mulRightMono_of_mulRightStrictMono G⟩⟩
-
 /-- A bi-orderable monoid is left-orderable. -/
 @[to_additive /-- A bi-orderable additive monoid is left-orderable. -/]
 instance [IsBiOrderable G] : IsLeftOrderable G := by
