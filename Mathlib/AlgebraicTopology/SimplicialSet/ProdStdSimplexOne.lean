@@ -428,6 +428,50 @@ lemma exists_desc
   exact ⟨(Subcomplex.topIso _).inv ≫ (Subcomplex.eqToIso (filtration_last p)).inv ≫ ψ,
     fun i ↦ by rw [← hψ i (Fin.le_last i)]; rfl⟩
 
+
+@[reassoc]
+lemma δ_ι_last :
+    stdSimplex.{u}.δ (Fin.last (p + 1)) ≫ ι (Fin.last p) = ι₀ := by
+  sorry
+
+@[reassoc]
+lemma δ_ι_zero :
+    stdSimplex.{u}.δ 0 ≫ ι (0 : Fin (p + 1)) = ι₁ := by
+  sorry
+
+@[reassoc]
+lemma ι_δ_whiskerRight_of_le (i : Fin (p + 2)) (j : Fin (p + 1))
+    (hij : i ≤ j.castSucc := by grind) :
+    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] =
+      stdSimplex.δ i.castSucc ≫ ι j.succ := by
+  sorry
+
+@[reassoc]
+lemma δ_ι_of_lt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : i < j.castSucc := by grind) :
+    stdSimplex.{u}.δ i ≫ ι j =
+      ι (j.pred (by grind)) ≫
+        stdSimplex.δ (i.castPred (by grind)) ▷ Δ[1] := by
+  sorry
+
+@[reassoc]
+lemma ι_δ_whiskerRight_of_gt (i : Fin (p + 2)) (j : Fin (p + 1))
+    (hij : j.castSucc < i := by grind) :
+    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] =
+      stdSimplex.δ i.succ ≫ ι j.castSucc := by
+  sorry
+
+@[reassoc]
+lemma δ_ι_of_gt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : j.succ < i := by grind) :
+    stdSimplex.{u}.δ i ≫ ι j = ι (j.castPred (by grind)) ≫
+      stdSimplex.δ (i.pred (by grind)) ▷ Δ[1] := by
+  sorry
+
+@[reassoc]
+lemma δ_succ_castSucc_ι_succ (i : Fin p) :
+    stdSimplex.{u}.δ i.castSucc.succ ≫ prodStdSimplex₁.ι i.succ =
+    stdSimplex.δ i.castSucc.succ ≫ prodStdSimplex₁.ι i.castSucc := by
+  sorry
+
 end prodStdSimplex₁
 
 @[deprecated (since := "2026-07-12")]

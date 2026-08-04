@@ -1607,7 +1607,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.FundamentalGroupoid
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.PtSimplexEquiv
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve

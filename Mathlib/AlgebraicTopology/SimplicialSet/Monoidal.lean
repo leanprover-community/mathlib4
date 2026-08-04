@@ -336,6 +336,100 @@ end Subcomplex
 
 end
 
+namespace stdSimplex
+
+variable (X Y : SSet.{u})
+
+/-- The isomorphism `Δ[0] ⊗ X ≅ X`. -/
+def leftUnitor : Δ[0] ⊗ X ≅ X where
+  hom := snd _ _
+  inv := lift (isTerminalObj₀.from _) (𝟙 X)
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_snd : (leftUnitor X).inv ≫ snd _ _ = 𝟙 _ := rfl
+
+@[reassoc (attr := simp)]
+lemma snd_leftUnitor_inv : snd _ _ ≫ (leftUnitor X).inv = 𝟙 _ := by
+  rw [← cancel_epi (leftUnitor X).inv,
+    leftUnitor_inv_snd_assoc, Category.comp_id]
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_naturality (f : X ⟶ Y) :
+    (leftUnitor X).inv ≫ _ ◁ f = f ≫ (leftUnitor Y).inv := rfl
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma leftUnitor_hom_naturality (f : X ⟶ Y) :
+    _ ◁ f  ≫ (leftUnitor Y).hom = (leftUnitor X).hom ≫ f := rfl
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_map_δ_zero :
+    (stdSimplex.leftUnitor X).inv ≫ stdSimplex.δ 0 ▷ X =
+      ι₁ ≫ (β_ _ _).hom := rfl
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_inv_map_δ_one :
+    (stdSimplex.leftUnitor X).inv ≫ stdSimplex.δ 1 ▷ X =
+      ι₀ ≫ (β_ _ _).hom := rfl
+
+@[reassoc]
+lemma _root_.SSet.ι₀_stdSimplex_zero :
+    ι₀ = stdSimplex.δ 1 ≫ (stdSimplex.leftUnitor Δ[1]).inv := by
+  ext : 1
+  all_goals exact yonedaEquiv.injective (by ext i; fin_cases i; rfl)
+
+@[reassoc]
+lemma _root_.SSet.ι₁_stdSimplex_zero :
+    ι₁ = stdSimplex.δ 0 ≫ (stdSimplex.leftUnitor Δ[1]).inv := by
+  ext : 1
+  all_goals exact yonedaEquiv.injective (by ext i; fin_cases i; rfl)
+
+/-- The isomorphism `X ⊗ Δ[0] ≅ X`. -/
+def rightUnitor : X ⊗ Δ[0] ≅ X where
+  hom := fst _ _
+  inv := lift (𝟙 X) (isTerminalObj₀.from _)
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_fst : (rightUnitor X).inv ≫ fst _ _ = 𝟙 _ := rfl
+
+@[reassoc (attr := simp)]
+lemma fst_rightUnitor_inv : fst _ _ ≫ (rightUnitor X).inv = 𝟙 _ := by
+  rw [← cancel_epi (rightUnitor X).inv,
+    rightUnitor_inv_fst_assoc, Category.comp_id]
+
+variable {X} in
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_naturality (f : X ⟶ Y) :
+    (rightUnitor X).inv ≫ f ▷ _ = f ≫ (rightUnitor Y).inv := rfl
+
+variable {X} in
+@[reassoc (attr := simp)]
+lemma rightUnitor_hom_naturality (f : X ⟶ Y) :
+    f ▷ _ ≫  (rightUnitor Y).hom = (rightUnitor X).hom ≫ f := rfl
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_map_δ_zero :
+    (stdSimplex.rightUnitor X).inv ≫ X ◁ stdSimplex.δ 0 =
+      ι₁ := rfl
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_inv_map_δ_one :
+    (stdSimplex.rightUnitor X).inv ≫ X ◁ stdSimplex.δ 1 =
+      ι₀ := rfl
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_hom_ι₀ :
+    (stdSimplex.rightUnitor X).hom ≫ ι₀ = X ◁ stdSimplex.δ 1 := by
+  rw [← rightUnitor_inv_map_δ_one, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_hom_ι₁ :
+    (stdSimplex.rightUnitor X).hom ≫ ι₁ = X ◁ stdSimplex.δ 0 := by
+  rw [← rightUnitor_inv_map_δ_zero, Iso.hom_inv_id_assoc]
+
+end stdSimplex
+
 namespace Truncated
 
 variable (n : ℕ)

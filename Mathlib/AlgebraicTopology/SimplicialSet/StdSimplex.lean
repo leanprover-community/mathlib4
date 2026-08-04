@@ -187,7 +187,6 @@ lemma _root_.SSet.yonedaEquiv_const {X : SSet.{u}} (x : X _⦋0⦌) :
     yonedaEquiv (const x : Δ[0] ⟶ X) = x := by
   simp [yonedaEquiv, uliftYonedaEquiv]
 
-@[simp]
 lemma _root_.SSet.yonedaEquiv_symm_zero {X : SSet.{u}} (x : X _⦋0⦌) :
     yonedaEquiv.symm x = const x := by
   apply yonedaEquiv.injective
@@ -345,11 +344,13 @@ lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
   rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
     yonedaEquiv.apply_symm_apply]
 
+@[reassoc]
 lemma stdSimplex.δ_comp_yonedaEquiv_symm
     {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
     stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
   yonedaEquiv_symm_naturality_left ..
 
+@[reassoc]
 lemma stdSimplex.σ_comp_yonedaEquiv_symm
     {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
     stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
