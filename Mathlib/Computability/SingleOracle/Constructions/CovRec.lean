@@ -3,8 +3,10 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.List
-import Mathlib.Data.List.GetD -- for getI_eq_getElem
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.List
+public import Mathlib.Data.List.GetD -- for getI_eq_getElem
 
 /-!
 # CovRec.lean
@@ -34,6 +36,8 @@ parsing codes.
 - `c_replace_oracle`: Code that parses codes.
 
 -/
+
+@[expose] public section
 
 open Oracle.Single.Code
 open List Nat
@@ -676,6 +680,7 @@ theorem nMod4_eq_3 {n} (hno : n.bodd = true) (hn2o : n.div2.bodd = true) : n%4=3
     (@PFun.lift ℕ ℕ fun x ↦ (eval O o x).get (ho x)) = eval O o := by
   ext a b : 1
   simp_all only [PFun.coe_val, Part.some_get]
+
 set_option backward.isDefEq.respectTransparency false in
 theorem eval_replace_oracle_prop {O o c} (ho : code_total O o) :
     eval O (replace_oracle o c) = eval (fun x ↦ (eval O o x).get (ho x)) c := by

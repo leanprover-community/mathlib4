@@ -3,7 +3,10 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Basic
+module
+
+public import Mathlib.Computability.SingleOracle.Basic
+public import Mathlib.Data.Nat.Dist
 
 /-!
 # Construction of basic primitive recursive functions
@@ -38,6 +41,8 @@ Suppose we want to construct a primitive recursive function `f : ℕ → ℕ`.
     immediately from `c_f_evp`.
 
 -/
+
+@[expose] public section
 
 open Oracle.Single
 open Oracle.Single.Code

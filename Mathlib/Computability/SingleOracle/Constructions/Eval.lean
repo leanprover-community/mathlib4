@@ -3,8 +3,10 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.CovRec
-import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
+public import Mathlib.Computability.SingleOracle.Constructions.CovRec
 
 /-!
 # Eval.lean
@@ -28,6 +30,8 @@ form theorem.
 
  - Where `x`, `y` are naturals, `⟪x, y⟫ = Nat.pair x y`.
 -/
+
+@[expose] public section
 
 open List Nat
 
@@ -53,14 +57,14 @@ directly ask
 2. Calculate $[c_g]_s(x)$. A lookup for code $c_g$ and step $s$ in the previous computations
    will return the list
 \begin{align}
-  \Bigl\llbracket [c_g]_{s}(0),[c_g]_{s}(1),\cdots,[c_g]_{s}(s) \Bigr\rrbracket.
+	\Bigl\llbracket [c_g]_{s}(0),[c_g]_{s}(1),\cdots,[c_g]_{s}(s) \Bigr\rrbracket.
 \end{align}
 Looking up $x$ in this list gives our result.
 
 3. Calculate $[c_f]_s([c_g]_s(x))$. A lookup for code $c_f$ and step $s$ in the previous
    computations will return the list
 \begin{align}
-  \Bigl\llbracket [c_f]_{s}(0),[c_f]_{s}(1),\cdots,[c_f]_{s}(s) \Bigr\rrbracket.
+	\Bigl\llbracket [c_f]_{s}(0),[c_f]_{s}(1),\cdots,[c_f]_{s}(s) \Bigr\rrbracket.
 \end{align}
 Now, we try looking up the $[c_g]_s(x)\th$ entry in this list. If one is found, then we simply
 return the found value.
@@ -180,6 +184,7 @@ def c_evaln_aux :=
 /-- api: `Nat.pair x (Nat.pair code s)` -/
 def c_evaln :=
   c_list_getI.comp₂ (c_list_getLastI.comp <| c_evaln_aux.comp (pair (c_const 17) right)) left
+set_option backward.isDefEq.respectTransparency false in
 theorem c_evaln_evp_aux_x_0_0 {O x} :
     evalp O (c_evaln) (Nat.pair x (Nat.pair 0 0)) =
     o2n (evaln O 0 0 x) := by

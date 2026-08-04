@@ -6,10 +6,12 @@ Authors: Mario Carneiro
 Modifications:
 Copyright (c) 2026 Edwin Park.
 -/
+module
+
+public import Mathlib.Computability.RecursiveIn
 import Mathlib.Data.Nat.Pairing
 import Mathlib.Data.PFun
 import Mathlib.Data.Nat.Find
-import Mathlib.Computability.RecursiveIn
 
 /-!
 # Oracle.lean
@@ -20,6 +22,8 @@ and relativises them.
 The two main predicates defined are `PrimrecIn` and `RecursiveIn`, from which we define the Turing
 degrees in Order.lean.
 -/
+
+@[expose] public section
 
 open Nat
 

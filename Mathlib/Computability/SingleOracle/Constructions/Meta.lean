@@ -3,10 +3,12 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Primitive
-import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
-import Mathlib.Computability.SingleOracle.Constructions.Dovetail
-import Mathlib.Computability.SingleOracle.Constructions.Basic
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
+public import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
+public import Mathlib.Computability.SingleOracle.Constructions.Dovetail
+public import Mathlib.Computability.SingleOracle.Constructions.Basic
 
 /-!
 # Meta.lean
@@ -29,6 +31,8 @@ Then the meta-code, named `c_c`, will be: `c_c = c_comp.comp₂ c_succ c_left`.
  - The meta-code for a code has `c_` attached as a prefix.
 
 -/
+
+@[expose] public section
 
 open Oracle.Single.Code
 

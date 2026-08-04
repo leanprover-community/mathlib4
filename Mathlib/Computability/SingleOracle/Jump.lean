@@ -3,10 +3,12 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Basic
-import Mathlib.Computability.SingleOracle.Constructions.Primitive
-import Mathlib.Computability.SingleOracle.Constructions.Meta
-import Mathlib.Computability.SingleOracle.Order
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Basic
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
+public import Mathlib.Computability.SingleOracle.Constructions.Meta
+public import Mathlib.Computability.SingleOracle.Order
 
 /-!
 # Jump.lean
@@ -22,6 +24,8 @@ involving the jump.
 - `K0_eq_K` : asserts that K and K0 are of the same degree
 - `not_jump_le` : asserts that the jump of an oracle is strictly above the oracle
 -/
+
+@[expose] public section
 
 open Computability
 open Oracle.Single

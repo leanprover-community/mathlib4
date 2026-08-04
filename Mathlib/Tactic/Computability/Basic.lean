@@ -6,9 +6,11 @@ Authors: Edwin Park
 module
 
 public import Mathlib.Init
-public import Lean.LabelAttribute
+public meta import Lean.LabelAttribute
 
 /-! # Tactics/macros for computability arguments -/
+
+public meta section
 
 register_label_attr cp
 

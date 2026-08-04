@@ -6,8 +6,10 @@ Authors: Mario Carneiro
 Modifications:
 Copyright (c) 2026 Edwin Park.
 -/
-import Mathlib.Tactic.Computability.Basic
-import Mathlib.Computability.SingleOracle.Oracle
+module
+
+public import Mathlib.Computability.SingleOracle.Oracle
+public import Mathlib.Tactic.Computability.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Algebra.Order.Ring.Nat
@@ -25,6 +27,8 @@ include:
 - `Oracle.Single.eval` : A relativisation of `Nat.Partrec.Code.eval`
 
 -/
+
+@[expose] public section
 
 open Nat Encodable Denumerable
 
@@ -487,7 +491,7 @@ theorem evaln_complete {O : ℕ → ℕ} {c n x} : x ∈ eval O c n ↔ ∃ k, x
   | _ => exact ⟨⟨_, le_rfl⟩, h.symm⟩
 
 section
-open RecursiveIn
+open Oracle.Single.RecursiveIn
 theorem eval_eq_rfindOpt {O : ℕ → ℕ} (c n) : eval O c n = Nat.rfindOpt fun k => evaln O k c n :=
   Part.ext fun x => by
     refine evaln_complete.trans (Nat.rfindOpt_mono ?_).symm

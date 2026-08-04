@@ -3,7 +3,9 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Eval
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Eval
 
 /-!
 # Dovetail.lean
@@ -36,6 +38,8 @@ Note then that this guarantees: `∃ y,[c](x,y)=0 ↔ [dovetail c](x)↓`
 
 -/
 
+@[expose] public section
+
 open Nat Part
 
 namespace Oracle.Single.Code
@@ -49,8 +53,8 @@ def dovetailn (c : Code) : Code :=
   (c_evaln.comp₃ (pair left (left.comp right)) (c_const c) (right.comp right))
   (c_const 1)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in -- why does hdvt give a warning?
+set_option backward.isDefEq.respectTransparency false in
 theorem dovetailn_ev_0 {O : ℕ → ℕ} {c : Code} {x : ℕ} (h : (eval O (dovetailn c) x).Dom) :
 let (eq := hdvt) dvt := (eval O (dovetailn c) x).get h
 evaln O dvt.right c ⟪x, dvt.left⟫=Option.some 0 := by
@@ -82,9 +86,10 @@ eval O c ⟪x, dvt.left⟫=Part.some 0 := by
   extract_lets at this
   exact Part.eq_some_iff.mpr (evaln_sound this)
 
-lemma Part.eq_none_iff_forall_ne_some {α} {o : Part α} : o = Part.none ↔ ∀ a, o ≠ Part.some a := by
+private lemma Part.eq_none_iff_forall_ne_some {α} {o : Part α} :
+    o = Part.none ↔ ∀ a, o ≠ Part.some a := by
   simpa using (@Part.ne_none_iff _ o).not
-lemma Part.not_none_iff_dom {α} {o : Part α} : (o ≠ Part.none) ↔ (o.Dom) := by
+private lemma Part.not_none_iff_dom {α} {o : Part α} : (o ≠ Part.none) ↔ (o.Dom) := by
   apply Iff.intro
   · intro a
     simp only [eq_none_iff_forall_ne_some, ne_eq, not_forall, not_not] at a
@@ -118,9 +123,10 @@ theorem dovetailn_ev_1' {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     simp? says simp only [ne_eq, not_forall, Decidable.not_not]
     have hh := Part.not_none_iff_dom.mp h
     have := dovetailn_ev_0 hh
-    apply Exists.intro
-    · apply Exists.intro
-      exact this
+    aesop? says
+      apply Exists.intro
+      · apply Exists.intro
+        exact this
 
 theorem dovetailn_ev_1_aux {O : ℕ → ℕ} {c : Code} {x : ℕ} :
     (∀ s y, evaln O s c ⟪x, y⟫ ≠ Option.some 0) ↔ ∀ y, eval O c ⟪x, y⟫ ≠ Part.some 0 := by

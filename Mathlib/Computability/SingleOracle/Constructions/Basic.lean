@@ -3,8 +3,10 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Primitive
-import Mathlib.Computability.SingleOracle.Constructions.Eval
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
+public import Mathlib.Computability.SingleOracle.Constructions.Eval
 
 /-!
 # Construction of codes of basic non-primrec functions
@@ -18,6 +20,8 @@ This file defines codes for basic functions which are not primitive recursive.
   does not necessarily diverge even if one the branches does.
 
 -/
+
+@[expose] public section
 
 namespace Oracle.Single.Code
 

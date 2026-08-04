@@ -3,7 +3,9 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Option
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Option
 
 /-!
 # Construction of basic primitive recursive functions on lists
@@ -19,6 +21,8 @@ The major constructions in this file are `c_list_foldl` and `c_list_zipWith`.
 requires a nontrivial proof.
 
 -/
+
+@[expose] public section
 
 open Nat Denumerable Encodable List
 

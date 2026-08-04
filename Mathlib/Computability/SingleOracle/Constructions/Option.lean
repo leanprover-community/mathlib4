@@ -3,8 +3,9 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Primitive
--- import Mathlib.Computability.SingleOracle.Helper.Partial
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Primitive
 
 /-!
 # Construction of basic primitive recursive functions on option types
@@ -12,6 +13,8 @@ import Mathlib.Computability.SingleOracle.Constructions.Primitive
 This file defines basic primitive recursive codes for basic functions on option types.
 
 -/
+
+@[expose] public section
 
 open Nat Denumerable Encodable List
 section isSome
@@ -77,7 +80,7 @@ def c_opt_none := c_const 0
 end Oracle.Single.Code
 end opt_none
 
-lemma isSome_of_n2o {i} (h : i ≠ 0) : (n2o i).isSome := by
+private lemma isSome_of_n2o {i} (h : i ≠ 0) : (n2o i).isSome := by
   rewrite [(succ_pred_eq_of_ne_zero h).symm]; rfl
 section opt_bind
 namespace Oracle.Single.Code

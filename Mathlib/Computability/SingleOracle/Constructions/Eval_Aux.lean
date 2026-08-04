@@ -3,7 +3,9 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Constructions.Option
+module
+
+public import Mathlib.Computability.SingleOracle.Constructions.Option
 import Mathlib.Data.Nat.PSub
 
 /-!
@@ -13,10 +15,9 @@ Auxiliary constructs for use in `Oracle.Single.Constructions.Eval`.
 
 -/
 
-open Nat
-open Denumerable
-open Encodable
-open List
+@[expose] public section
+
+open Nat Denumerable Encodable List
 
 section rfindOpt
 open Oracle.Single

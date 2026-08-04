@@ -3,7 +3,9 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Jump
+module
+
+public import Mathlib.Computability.SingleOracle.Jump
 
 /-!
 # Reducibility theorems
@@ -11,6 +13,8 @@ import Mathlib.Computability.SingleOracle.Jump
 This file formalises basic reducibility results.
 
 -/
+
+@[expose] public section
 
 namespace Oracle.Single.RecursiveIn.Rin
 open Oracle.Single
@@ -54,6 +58,7 @@ theorem of_primrecIn {O : ℕ → ℕ} {f : ℕ → ℕ} (hf : PrimrecIn O f) : 
     | succ m IH =>
       simp only [mem_bind_iff, mem_some_iff]
       exact ⟨_, IH, rfl⟩
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma partCompTotal {O : ℕ → ℕ} {f : ℕ →. ℕ} {g : ℕ → ℕ}
     (h1 : RecursiveIn O f) (h2 : RecursiveIn O g) :

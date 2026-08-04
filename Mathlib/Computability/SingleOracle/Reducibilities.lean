@@ -3,9 +3,11 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
-import Mathlib.Computability.SingleOracle.Oracle
-import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
-import Mathlib.Computability.RecursiveIn
+module
+
+public import Mathlib.Computability.SingleOracle.Oracle
+public import Mathlib.Computability.SingleOracle.Constructions.Eval_Aux
+public import Mathlib.Computability.RecursiveIn
 
 /-!
 # Reducibilities
@@ -15,6 +17,8 @@ In this file we relate Turing reducibility to other notions of reducibilities de
 ## Main declarations
 - `SingleReducibleIff` : relates Turing reducibility to `Nat.RecursiveIn`.
 -/
+
+@[expose] public section
 
 open Nat Part Encodable
 section vars

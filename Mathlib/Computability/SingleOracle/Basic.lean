@@ -3,10 +3,11 @@ Copyright (c) 2026 Edwin Park. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Park
 -/
+module
+
+public import Mathlib.Computability.SingleOracle.Encoding
 import Mathlib.Tactic.Computability.Basic
-import Mathlib.Computability.SingleOracle.Encoding
 import Mathlib.Data.PFun
-import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.BitIndices
 
 /-!
@@ -14,6 +15,8 @@ import Mathlib.Data.Nat.BitIndices
 
 In this file we define helper functions which will be used in later computability arguments.
 -/
+
+@[expose] public section
 
 open Nat Oracle.Single.Code
 
@@ -123,7 +126,7 @@ theorem prim_total {O : ℕ → ℕ} {c} (h : code_prim c) : code_total O c := b
   | oracle                 => simp [eval];
   | pair ha hb ha_ih hb_ih => simpa [eval, Seq.seq] using fun x ↦ ⟨ha_ih x, hb_ih x⟩
   | comp ha hb ha_ih hb_ih =>
-    simp only [eval, Part.bind_eq_bind, Part.bind_dom]
+    simp only [eval]
     intro x
     use hb_ih x
     (expose_names; exact ha_ih ((eval O b x).get (hb_ih x)))
@@ -262,7 +265,7 @@ theorem total_pair_iff {O cf cg} :
 theorem total_comp_of {O cf cg} (hcf : code_total O cf) (hcg : code_total O cg) :
     (code_total O (comp cf cg)) := by
   intro x
-  simp only [eval, Part.bind_eq_bind, Part.bind_dom]
+  simp only [eval]
   use hcg x
   exact hcf ((eval O cg x).get (hcg x))
 @[simp] theorem total_of_pair_left {O cf cg} (h : code_total O (pair cf cg)) : code_total O cf :=
@@ -286,7 +289,7 @@ theorem eval_total_comp {O cf cg x} (h : code_total O (comp cf cg)) :
     eval O (comp cf cg) x =
     Part.some
     ((eval O cf ((eval O cg x).get (Part.Dom.of_bind (h x)))).get (total_of_comp_right h x)) := by
-  simp only [eval, Part.bind_eq_bind, Part.some_get]
+  simp only [eval, Part.some_get]
   exact Part.Dom.bind (Part.Dom.of_bind (h x)) (eval O cf)
 end Oracle.Single.Code
 end total
