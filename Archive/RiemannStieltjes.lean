@@ -325,7 +325,6 @@ theorem HasStieltjesIntegral.unique
 theorem HasStieltjesIntegral.stieltjesIntegrable
     (h : HasStieltjesIntegral a b B f g L) : StieltjesIntegrable a b B f g := ⟨L, h⟩
 
-/-- A chosen witness extracted from `StieltjesIntegrable`. -/
 theorem StieltjesIntegrable.hasStieltjesIntegral (h : StieltjesIntegrable a b B f g) :
     HasStieltjesIntegral a b B f g ∫ˢ x in a..b, f x ∂[B; g] := by
   simp [stieltjesIntegral, h, h.choose_spec]
