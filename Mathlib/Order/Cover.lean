@@ -86,9 +86,11 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
+@[to_dual none]
 instance : @Std.Refl α (· ⩿ ·) where
   refl := WCovBy.refl
 
+@[to_dual none]
 instance {α : Type*} [PartialOrder α] : @Std.Antisymm α (· ⩿ ·) where
   antisymm _ _ := (antisymm ·.le ·.le)
 
@@ -308,6 +310,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
     covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h => h.wcovBy_iff_le.not.symm⟩
 
+@[to_dual none]
 instance : @Std.Asymm α (· ⋖ ·) where
   asymm _ _ := (asymm ·.lt ·.lt)
 
