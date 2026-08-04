@@ -301,14 +301,12 @@ instance (priority := 100) EuclideanDomain.isPrincipalIdealRing : IsPrincipalIde
       rw [span_zero_singleton, Submodule.eq_bot_iff]
       exact fun a haS ↦ by_contra (h ⟨a, ⟨haS, ·⟩⟩)
 
-@[deprecated (since := "2026-08-01")]
-alias EuclideanDomain.to_principal_ideal_domain := EuclideanDomain.isPrincipalIdealRing
-
 end
 
 theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
-  @EuclideanDomain.isPrincipalIdealRing R (@Field.toEuclideanDomain R h.toField)
+  let := h.toField
+  inferInstance
 
 namespace PrincipalIdealRing
 
