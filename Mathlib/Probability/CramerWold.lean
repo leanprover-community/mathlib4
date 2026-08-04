@@ -35,7 +35,7 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
   {Ω' : Type*} [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'}
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
-lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
+private lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
   (μ : Measure α) {Y : α → E} (hY : Measurable Y) (t : E) :
   charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
   rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
