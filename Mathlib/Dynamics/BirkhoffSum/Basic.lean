@@ -78,6 +78,11 @@ theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = �
   intro k
   exact congrFun (iterate_invariant h k) x
 
+@[simp]
+theorem birkhoffSum_const (f : α → α) (a : M) {n : ℕ} :
+    birkhoffSum f (fun _ ↦ a) n = n • fun _ ↦ a :=
+  birkhoffSum_of_comp_eq rfl n
+
 end AddCommMonoid
 
 section AddCommGroup

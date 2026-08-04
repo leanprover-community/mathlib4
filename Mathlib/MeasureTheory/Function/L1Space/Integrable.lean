@@ -384,6 +384,7 @@ theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε} {f :
   rw [← hf.map_eq] at hg ⊢
   exact (integrable_map_measure hg hf.measurable.aemeasurable).symm
 
+@[fun_prop]
 theorem MeasurePreserving.integrable_comp_of_integrable {ν : Measure δ} {g : δ → ε} {f : α → δ}
     (hf : MeasurePreserving f μ ν) (hg : Integrable g ν) :
     Integrable (g ∘ f) μ :=

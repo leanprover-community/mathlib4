@@ -8,8 +8,11 @@ module
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
-/-!
-# Results related to the measurability and integrability of Birkhoff sums.
+/-! # Measurability and integrability of Birkhoff sums
+
+In this file we prove that Birkhoff sums and Birkhoff averages are (almost everywhere) measurable
+or integrable, depending on the properties of the underlying observable and on whether the dynamics
+is measure-preserving.
 -/
 
 public section
