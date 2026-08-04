@@ -193,7 +193,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
-    Linter.logLint linter.unusedTactic stx m!"`{stx}` tactic does nothing"
+    Linter.logLint linter.unusedTactic stx m!"Unused tactic linter: `{stx}` does nothing"
     last := r
 
 initialize addLinter unusedTacticLinter
