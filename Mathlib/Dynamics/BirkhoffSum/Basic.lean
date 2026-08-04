@@ -64,16 +64,14 @@ theorem birkhoffSum_apply_add (f : α → α) (g g' : α → M) (n : ℕ) (x : �
     birkhoffSum f (g + g') n x = birkhoffSum f g n x + birkhoffSum f g' n x := by
   simpa [birkhoffSum] using sum_add_distrib
 
-@[simp]
-theorem birkhoffSum_add (f : α → α) (g g' : α → M) (n : ℕ) :
-    birkhoffSum f (g + g') n = birkhoffSum f g n + birkhoffSum f g' n :=
-  funext <| birkhoffSum_apply_add f g g' n
+theorem birkhoffSum_add (f : α → α) (g g' : α → M) :
+    birkhoffSum f (g + g') = birkhoffSum f g + birkhoffSum f g' :=
+  funext₂ <| birkhoffSum_apply_add f g g'
 
 theorem birkhoffSum_apply_add' (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
     birkhoffSum f g (m + n) x = birkhoffSum f g m x + birkhoffSum f g n (f^[m] x) := by
   simp_rw [birkhoffSum, sum_range_add, add_comm m, iterate_add_apply]
 
-@[simp]
 theorem birkhoffSum_add' (f : α → α) (g : α → M) (m n : ℕ) :
     birkhoffSum f g (m + n) = birkhoffSum f g m + birkhoffSum f g n ∘ f^[m] :=
   funext <| birkhoffSum_apply_add' f g m n
@@ -116,19 +114,17 @@ theorem birkhoffSum_apply_neg (f : α → α) (g : α → G) (n : ℕ) (x : α) 
     birkhoffSum f (-g) n x = -birkhoffSum f g n x := by
   simp [birkhoffSum]
 
-@[simp]
-theorem birkhoffSum_neg (f : α → α) (g : α → G) (n : ℕ) :
-    birkhoffSum f (-g) n = -birkhoffSum f g n :=
-  funext <| birkhoffSum_apply_neg f g n
+theorem birkhoffSum_neg (f : α → α) (g : α → G) :
+    birkhoffSum f (-g) = -birkhoffSum f g :=
+  funext₂ <| birkhoffSum_apply_neg f g
 
 theorem birkhoffSum_apply_sub (f : α → α) (g g' : α → G) (n : ℕ) (x : α) :
     birkhoffSum f (g - g') n x = birkhoffSum f g n x - birkhoffSum f g' n x := by
   simp [birkhoffSum]
 
-@[simp]
-theorem birkhoffSum_sub (f : α → α) (g g' : α → G) (n : ℕ) :
-    birkhoffSum f (g - g') n = birkhoffSum f g n - birkhoffSum f g' n :=
-  funext <| birkhoffSum_apply_sub f g g' n
+theorem birkhoffSum_sub (f : α → α) (g g' : α → G) :
+    birkhoffSum f (g - g') = birkhoffSum f g - birkhoffSum f g' :=
+  funext₂ <| birkhoffSum_apply_sub f g g'
 
 /-- Birkhoff sum is "almost invariant" under `f`:
 the difference between `birkhoffSum f g n (f x)` and `birkhoffSum f g n x`

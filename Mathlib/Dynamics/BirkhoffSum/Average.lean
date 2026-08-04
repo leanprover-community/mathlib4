@@ -53,7 +53,8 @@ theorem birkhoffAverage_zero (f : α → α) (g : α → M) : birkhoffAverage R 
   funext <| birkhoffAverage_apply_zero _ _ _
 
 theorem birkhoffAverage_apply_one (f : α → α) (g : α → M) (x : α) :
-    birkhoffAverage R f g 1 x = g x := by simp [birkhoffAverage]
+    birkhoffAverage R f g 1 x = g x := by
+  simp [birkhoffAverage]
 
 @[simp]
 theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
@@ -89,9 +90,8 @@ lemma birkhoffAverage_apply_add {f : α → α} {g g' : α → M} (n : ℕ) (x :
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
-    birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
-  funext n x
-  exact birkhoffAverage_apply_add R n x
+    birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' :=
+  funext₂ <| birkhoffAverage_apply_add R
 
 /-- If a function `g` is invariant under a function `f` (i.e., `g ∘ f = g`), then the Birkhoff
 average of `g` over `f` for `n` iterations is equal to `g x` at every point `x`.
@@ -117,21 +117,17 @@ lemma birkhoffAverage_apply_neg {f : α → α} {g : α → M} (n : ℕ) (x : α
     birkhoffAverage R f (-g) n x = -birkhoffAverage R f g n x := by
   simp [birkhoffAverage, birkhoffSum]
 
-@[simp]
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
-    birkhoffAverage R f (-g) = -birkhoffAverage R f g := by
-  funext n x
-  exact birkhoffAverage_apply_neg n x
+    birkhoffAverage R f (-g) = -birkhoffAverage R f g :=
+  funext₂ <| birkhoffAverage_apply_neg
 
 lemma birkhoffAverage_apply_sub {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
-@[simp]
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
-    birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' := by
-  funext n x
-  exact birkhoffAverage_apply_sub n x
+    birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
+  funext₂ <| birkhoffAverage_apply_sub
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
