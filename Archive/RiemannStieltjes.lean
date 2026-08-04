@@ -33,22 +33,22 @@ is denoted `∫ʳ x in a..b, f x`.
 ## Key definitions
 
 * `interval hab`: the one-dimensional interval `(a, b]` as a `Box (Fin 1)`, given a proof of
-`hab : a < b`.
+  `hab : a < b`.
 * `BoxAdditiveMap.ofDiff g`: the box-additive map on `Box (Fin 1)` defined by
-`J ↦ g J.upper₁ - g J.lower₁`, where `g : ℝ → M` is a function to an additive commutative
-group `M`.
+  `J ↦ g J.upper₁ - g J.lower₁`, where `g : ℝ → M` is a function to an additive commutative
+  group `M`.
 * `BoxIntegral.StieltjesIntegrable a b B f g`: the predicate that the integral
-`∫ˢ x in a..b, f x ∂[B; g]` exists.
+  `∫ˢ x in a..b, f x ∂[B; g]` exists.
 * `BoxIntegral.HasStieltjesIntegral a b B f g L`: the predicate that the integral
-`∫ˢ x in a..b, f x ∂[B; g]` exists and equals `L`.
+  `∫ˢ x in a..b, f x ∂[B; g]` exists and equals `L`.
 * `BoxIntegral.stieltjesIntegral a b B f g`: the value of `∫ˢ x in a..b, f x ∂[B; g]` if it
-exists, or the junk value of `0` otherwise.
+  exists, or the junk value of `0` otherwise.
 * `BoxIntegral.RiemannIntegrable a b f`: the predicate that the Riemann integral
-`∫ʳ x in a..b, f x` exists.
+  `∫ʳ x in a..b, f x` exists.
 * `BoxIntegral.HasRiemannIntegral a b f L`: the predicate that the Riemann integral
-`∫ʳ x in a..b, f x` exists and equals `L`.
+  `∫ʳ x in a..b, f x` exists and equals `L`.
 * `BoxIntegral.riemannIntegral a b f`: the value of `∫ʳ x in a..b, f x` if it exists, or the
-junk value of `0` otherwise.
+  junk value of `0` otherwise.
 
 These notions are named in analogy with `BoxIntegral.Integrable`, `BoxIntegral.HasIntegral`, and
 `BoxIntegral.integral`.
