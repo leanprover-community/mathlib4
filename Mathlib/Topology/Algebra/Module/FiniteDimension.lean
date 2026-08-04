@@ -66,6 +66,12 @@ variable {𝕜 E F : Type*}
   [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
+-- Note: ideally this would be in `Mathlib.Topology.Algebra.Module.Basic`, but `CoFG` imports
+-- too much at the moment for this to be allowed.
+instance Submodule.CoFG.topologicalClosure [Ring 𝕜] [Module 𝕜 E] [ContinuousAdd E]
+    [ContinuousConstSMul 𝕜 E] (s : Submodule 𝕜 E) [s.CoFG] : s.topologicalClosure.CoFG :=
+  ‹s.CoFG›.of_le s.le_topologicalClosure
+
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
     [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
@@ -330,16 +336,6 @@ theorem coe_toContinuousLinearMap_symm :
 @[simp]
 theorem det_toContinuousLinearMap (f : E →ₗ[𝕜] E) :
     (LinearMap.toContinuousLinearMap f).det = LinearMap.det f :=
-  rfl
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem ker_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).ker = ker f := by
-  simp
-
-@[deprecated coe_toContinuousLinearMap (since := "2025-12-23")]
-theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
-    (LinearMap.toContinuousLinearMap f).range = range f :=
   rfl
 
 /-- A surjective linear map `f` with finite-dimensional codomain is an open map. -/

@@ -139,7 +139,7 @@ theorem HasSubst.smul_X (a : σ → R) :
 
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
-  { carrier := setOf HasSubst
+  { carrier := Set.ofPred HasSubst
     add_mem' := HasSubst.add
     zero_mem' := HasSubst.zero
     smul_mem' := HasSubst.mul_left }
@@ -504,6 +504,7 @@ theorem le_weightedOrder_subst_of_forall_ne_zero
   refine fun i hi ↦ (weightedOrder_le _ hi).trans ?_
   simp [Finsupp.weight_apply, Finsupp.sum, (ne_zero_iff_weightedOrder_finite _).mp (ha0 _)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     (⨅ i, (a i).order) * f.order ≤ (f.subst a).order := by
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ ha _)
@@ -542,6 +543,7 @@ theorem truncTotal_subst_eq_truncTotal_subst_truncTotal_of_le (ha : HasSubst a)
     · exact ha.truncTotal
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem truncTotal_subst_eq_truncTotal_subst_sum (ha : HasSubst a)
     (ha₁ : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) =
@@ -627,6 +629,7 @@ variable {R : Type*} [CommSemiring R]
 -- To match the `PowerSeries.rescale` API which holds for `CommSemiring`,
 -- we redo it by hand.
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism taking a multivariate power series `f(X)` to `f(aX)`. -/
 noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun f := fun n ↦ (n.prod fun s m ↦ a s ^ m) * f.coeff n
@@ -666,11 +669,13 @@ noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSerie
       simp [pow_add]
     all_goals {simp}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem coeff_rescale (f : MvPowerSeries σ R) (a : σ → R) (n : σ →₀ ℕ) :
     coeff n (rescale a f) = (n.prod fun s m ↦ a s ^ m) * f.coeff n := by
   simp [rescale, coeff_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem rescale_zero :
     (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp constantCoeff := by
@@ -705,6 +710,7 @@ theorem rescale_mul (a b : σ → R) : rescale (a * b) = (rescale b).comp (resca
   ext
   simp [← rescale_rescale]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Rescaling a homogeneous power series -/
 lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
     (hf : ∀ d ∈ f.support, d.degree = n) :

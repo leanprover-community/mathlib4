@@ -29,6 +29,7 @@ variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
   [Localization.AtPrime.IsLiesOverAlgebra I J]
 
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`. -/
 noncomputable
 def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
@@ -95,6 +96,7 @@ lemma residueFieldMapCAlgEquiv_symm_X (hJ : J = I.map C) :
     (residueFieldMapCAlgEquiv I J hJ).symm .X = algebraMap R[X] _ .X :=
   (residueFieldMapCAlgEquiv I J hJ).injective (by simp)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I` -/
 noncomputable
 def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : Ideal R) [p.IsPrime] :
@@ -118,6 +120,7 @@ def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : 
     simpa using aeval_algHom_apply
       ((Algebra.TensorProduct.includeRight : S →ₐ[_] p.Fiber S).comp f) X x
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma fiberEquivQuotient_tmul
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : Ideal R) [p.IsPrime] (a b) :
     fiberEquivQuotient f hf p (a ⊗ₜ f b) = Ideal.Quotient.mk _ (C a * b.map (algebraMap _ _)) := by

@@ -136,6 +136,7 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   have := hs.toFinset.multipliable f
   rwa [hs.coe_toFinset] at this
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
@@ -163,8 +164,8 @@ lemma hasProd_unique [Unique β] (f : β → α) (L := unconditional β) [L.LeAt
   hasProd_single default (fun _ hb ↦ False.elim <| hb <| Unique.uniq ..) L
 
 @[to_additive (attr := simp)]
-lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restrict f) (f m) :=
-  hasProd_unique (Set.restrict {m} f)
+lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).domRestrict f) (f m) :=
+  hasProd_unique (Set.domRestrict {m} f)
 
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :

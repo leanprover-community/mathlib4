@@ -286,7 +286,7 @@ alias ChartedSpace.locPathConnectedSpace := ChartedSpace.locallyPathConnectedSpa
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
     (M : Type*) [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] :
     ChartedSpace H M where
@@ -328,7 +328,7 @@ end
 section Constructions
 
 /-- An empty type is a charted space over any topological space. -/
-@[implicit_reducible]
+@[instance_reducible]
 def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
     (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
   atlas := ∅
@@ -359,7 +359,7 @@ We keep this as a definition (not an instance) to avoid instance search trying t
 `DiscreteTopology` or `Unique` instances.
 -/
 @[instance_reducible]
-def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
+def ChartedSpace.ofDiscreteTopology [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ OpenPartialHomeomorph.const
@@ -369,11 +369,14 @@ def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
   mem_chart_source x := by simp
   chart_mem_atlas x := by simp
 
+@[deprecated (since := "2026-07-26")]
+alias ChartedSpace.of_discreteTopology := ChartedSpace.ofDiscreteTopology
+
 /-- A chart on the discrete space is the constant chart. -/
 @[simp, mfld_simps]
 lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] {x : M} :
-    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H)
+    haveI := ChartedSpace.ofDiscreteTopology (M := M) (H := H)
     chartAt H x = OpenPartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
   rfl
 
@@ -397,11 +400,13 @@ solves this problem. -/
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
@@ -459,7 +464,6 @@ theorem prodChartedSpace_chartAt :
     chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
   · simp [atlas, ChartedSpace.atlas]
@@ -495,8 +499,8 @@ variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
 
 /-- The disjoint union of two charted spaces modelled on a non-empty space `H`
 is a charted space over `H`. -/
-@[implicit_reducible]
-def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
+@[instance_reducible]
+def ChartedSpace.sumOfNonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
   -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
@@ -523,9 +527,12 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       right
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
+@[deprecated (since := "2026-07-26")]
+alias ChartedSpace.sum_of_nonempty := ChartedSpace.sumOfNonempty
+
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
   by_cases! h : Nonempty H
-  · exact ChartedSpace.sum_of_nonempty
+  · exact ChartedSpace.sumOfNonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -575,7 +582,7 @@ variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [Charte
 
 /-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
 structure by pushing forward the `ChartedSpace` structure from `M`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsLocalHomeomorph.chartedSpaceOfRightInverse
     {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
     ChartedSpace H M' where
@@ -588,7 +595,7 @@ def IsLocalHomeomorph.chartedSpaceOfRightInverse
 
 /-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
 by pushing forward the `ChartedSpace` structure from `M`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
     ChartedSpace H M' :=
@@ -628,7 +635,7 @@ namespace ChartedSpaceCore
 variable [TopologicalSpace H] (c : ChartedSpaceCore H M) {e : PartialEquiv M H}
 
 /-- Topology generated by a set of charts on a Type. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def toTopologicalSpace : TopologicalSpace M :=
   TopologicalSpace.generateFrom <|
     ⋃ (e : PartialEquiv M H) (_ : e ∈ c.atlas) (s : Set H) (_ : IsOpen s),
@@ -683,7 +690,7 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
   { __ := c.toTopologicalSpace
     atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.openPartialHomeomorph e he}

@@ -84,6 +84,7 @@ theorem _root_.AddMonoid.exponent_additive :
 theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
     exponent (Multiplicative G) = AddMonoid.exponent G := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open MulOpposite in
 @[to_additive (attr := simp)]
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
@@ -99,6 +100,7 @@ theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrde
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
   h.isOfFinOrder.orderOf_pos
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
@@ -506,6 +508,7 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by

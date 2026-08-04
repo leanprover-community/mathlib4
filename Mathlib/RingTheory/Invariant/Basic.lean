@@ -52,6 +52,7 @@ section Quotient
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
@@ -70,10 +71,12 @@ instance (H : Subgroup G) [H.Normal] :
     MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] :
     SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
     Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
   isInvariant x hx := by

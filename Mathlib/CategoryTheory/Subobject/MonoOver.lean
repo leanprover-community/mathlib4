@@ -74,8 +74,6 @@ def mk {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
   obj := Over.mk f
   property := hf
 
-@[deprecated (since := "2025-12-18")] alias mk' := mk
-
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
 abbrev forget (X : C) : MonoOver X ⥤ Over X :=
   ObjectProperty.ι _
@@ -90,16 +88,12 @@ theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
 theorem mk_coe {X A : C} (f : A ⟶ X) [Mono f] : (mk f : C) = A :=
   rfl
 
-@[deprecated (since := "2025-12-18")] alias mk'_coe' := mk_coe
-
 /-- Convenience notation for the underlying arrow of a monomorphism over X. -/
 abbrev arrow (f : MonoOver X) : (f : C) ⟶ X := f.obj.hom
 
 @[simp]
 theorem mk_arrow {X A : C} (f : A ⟶ X) [Mono f] : (mk f).arrow = f :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias mk'_arrow := mk_arrow
 
 theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow := rfl
 
@@ -143,16 +137,12 @@ package it as an isomorphism. -/
 def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
   isoMk (Iso.refl _)
 
-@[deprecated (since := "2025-12-18")] alias mk'ArrowIso := mkArrowIso
-
 instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.hom.left :=
   inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
 
 lemma isIso_iff_isIso_hom_left {A B : MonoOver X} (f : A ⟶ B) :
     IsIso f ↔ IsIso f.hom.left :=
   (isIso_iff_of_reflects_iso _ (MonoOver.forget X ⋙ Over.forget _)).symm
-
-@[deprecated (since := "2025-12-18")] alias isIso_iff_isIso_left := isIso_iff_isIso_hom_left
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.
@@ -361,6 +351,7 @@ theorem map_obj_left (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g : 
 theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).arrow = g.arrow ≫ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   map_surjective {g h} e := by
     refine ⟨homMk e.hom.left ?_, rfl⟩
@@ -382,6 +373,7 @@ section
 
 variable (X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/

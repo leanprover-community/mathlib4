@@ -302,7 +302,7 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   rw [leftLim_eq_sSup hf]
   refine le_csSup ⟨f y, ?_⟩ (mem_image_of_mem _ h)
   simp only [upperBounds, mem_image, mem_Iio, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, mem_setOf_eq]
+    forall_apply_eq_imp_iff₂, mem_ofPred_eq]
   intro z hz
   exact hf hz.le
 

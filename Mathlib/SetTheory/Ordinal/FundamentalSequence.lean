@@ -77,6 +77,7 @@ protected theorem zero (f : Iio 0 → Iio 0) : IsFundamentalSeq f where
   le_ord_cof := by simp
   isCofinal_range := .of_isEmpty
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length one sequence `(o)` is a fundamental sequence for `o + 1`. -/
 protected theorem add_one (o : Ordinal) :
     @IsFundamentalSeq 1 (o + 1) fun _ ↦ ⟨o, lt_add_one o⟩ where
@@ -236,8 +237,5 @@ theorem IsFundamentalSequence.of_isNormal {f : Ordinal.{u} → Ordinal.{u}} (hf 
   · rw [@blsub_comp.{u, u, u} a _ (fun b _ => f b) (@fun i j _ _ h => hf.strictMono.monotone h) g
         hg.2.2]
     exact IsNormal.blsub_eq.{u, u} hf ha
-
-@[deprecated (since := "2025-12-25")]
-alias IsNormal.isFundamentalSequence := IsFundamentalSequence.of_isNormal
 
 end Ordinal

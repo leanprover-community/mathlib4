@@ -254,7 +254,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
       (fun b hb ↦ (L.eventually_mem_or_not_mem b).resolve_left hb)
   filter_upwards [h1, h2] with s hs hs'
   congr 1
-  simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_compl_iff] at hs hs'
+  simp only [Set.mem_iInter, Set.mem_ofPred_eq, Set.mem_compl_iff] at hs hs'
   grind
 
 @[to_additive]
@@ -269,6 +269,7 @@ theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := uncondition
       (∏ b ∈ (L.support.toFinset.map <| Embedding.subtype _), f b) L := by
   simpa [prod_attach] using hasProd_fintype_support (f ∘ Subtype.val) L
 
+set_option backward.isDefEq.respectTransparency false in
 -- note this is not deduced from `Finset.hasProd_support` to avoid needing `[DecidableEq β]`
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α)

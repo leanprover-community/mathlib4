@@ -87,6 +87,7 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
   obtain ⟨f, hf, hxf⟩ := hU.exists_basicOpen_le ⟨x, hxV⟩ hx
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f x) := by
   obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
@@ -97,6 +98,7 @@ instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
     (f.appIso U).inv _).mp ?_
   simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {f} in
 lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f x) ↔ X.IsGermInjectiveAt x := by
@@ -164,6 +166,7 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
   exact @IsLocalization.injective _ _ _ _ _ (show _ from _) this
     (Ideal.primeCompl_le_nonZeroDivisors _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
@@ -187,6 +190,7 @@ instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   rw [Submodule.mem_annihilator_span_singleton, smul_eq_mul]
   exact hf i _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Let `x : X` and `f g : X ⟶ Y` be two morphisms such that `f x = g x`.
 If `f` and `g` agree on the stalk of `x`, then they agree on an open neighborhood of `x`,
@@ -223,6 +227,7 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.Hom.germ_stalkMap, H]
   simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 A variant of `spread_out_unique_of_isGermInjective`
 whose condition is an equality of scheme morphisms instead of ring homomorphisms.
@@ -302,6 +307,7 @@ lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens}
     rw [TopCat.Presheaf.germ_res_apply, ‹φRA ≫ φ = _›]
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `S`-schemes `X Y` and points `x : X` `y : Y` over `s : S`.
 Suppose we have the following diagram of `S`-schemes
@@ -356,6 +362,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.SpecMap_appLE_fromSpec sX hU hW i,
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `S`-schemes `X Y`, a point `x : X`, and an `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
 we may spread it out to an `S`-morphism `f : U ⟶ Y`

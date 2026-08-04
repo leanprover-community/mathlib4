@@ -468,7 +468,7 @@ alias finite_diff_of_mem_codiscreteWithin := finite_sdiff_of_mem_codiscreteWithi
 theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
     cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
   intro s hs
-  simpa [mem_inf_principal, compl_setOf] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
+  simpa [mem_inf_principal, compl_ofPred] using! hK.finite_sdiff_of_mem_codiscreteWithin hs
 
 theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
     codiscreteWithin K = cofinite ⊓ 𝓟 K := by
@@ -538,8 +538,5 @@ theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set 
     DiscreteTopology (⋃ i, s i) := by
   simp only [← isDiscrete_iff_discreteTopology] at *
   exact .iUnion hs hs'
-
-@[deprecated (since := "2025-11-28")]
-alias discreteTopology_iUnion_fintype := discreteTopology_iUnion_finite
 
 end discrete_union

@@ -340,6 +340,7 @@ theorem sum_mult_eq [NumberField K] :
   exact Finset.sum_congr rfl
     (fun _ _ => by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
@@ -370,7 +371,7 @@ theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
   convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
-  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+  · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
@@ -451,6 +452,7 @@ theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
       (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
@@ -571,16 +573,19 @@ namespace NumberField.InfinitePlace
 
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
   rcases v with ⟨_, _⟩

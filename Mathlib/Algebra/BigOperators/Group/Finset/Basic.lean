@@ -153,6 +153,7 @@ lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [Decidab
     (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive]
 theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] :
     (∏ x ∈ s with (Xor (p x) (q x)), f x) =
@@ -895,11 +896,17 @@ additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- A reversed telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function
+reduces to the ratio of the first and last factors. -/
+@[to_additive /-- A reversed telescoping sum along `{0, ..., n - 1}` of a function valued in a
+commutative additive group reduces to the difference of the first and last terms. -/]
 lemma prod_range_div' (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f i / f (i + 1)) = f 0 / f n := by
   apply prod_range_induction <;> simp
 
-@[to_additive]
+/-- Express `f n` as `f 0` multiplied by the telescoping product of consecutive ratios from
+`0` to `n - 1`. -/
+@[to_additive /-- Express `f n` as `f 0` plus the telescoping sum of consecutive differences from
+`0` to `n - 1`. -/]
 lemma eq_prod_range_div (f : ℕ → G) (n : ℕ) : f n = f 0 * ∏ i ∈ range n, f (i + 1) / f i := by
   rw [prod_range_div, mul_div_cancel]
 

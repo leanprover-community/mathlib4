@@ -60,6 +60,7 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     simp [← CommRingCat.hom_comp],
    hP.1 f.hom (asIso g).commRingCatIsoToRingEquiv⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
     (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
@@ -278,7 +279,7 @@ lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q
 end Descent
 
 /-- A property of ring homomorphisms `P` is said to have equalizers, if the equalizer of algebra
-maps between algebras satisfiying `P` also satisfies `P`. -/
+maps between algebras satisfying `P` also satisfies `P`. -/
 def HasEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
   ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
     (f g : S →ₐ[R] T), P (algebraMap R S) → P (algebraMap R T) →
@@ -289,7 +290,7 @@ lemma HasEqualizers.and (hP : HasEqualizers P) (hQ : HasEqualizers Q) :
   fun f g hf hg ↦ ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
 
 /-- A property of ring homomorphisms `P` is said to have finite products, if a finite product of
-algebras satisfiying `Q` also satisfies `P`. -/
+algebras satisfying `Q` also satisfies `P`. -/
 def HasFiniteProducts (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
   ∀ {R : Type u} [CommRing R] {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
     [∀ i, Algebra R (S i)],

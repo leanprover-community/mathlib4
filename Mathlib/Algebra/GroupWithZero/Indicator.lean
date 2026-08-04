@@ -68,6 +68,7 @@ variable [MulZeroOneClass M₀] {s t : Set ι} {i : ι}
 lemma inter_indicator_one : (s ∩ t).indicator (1 : ι → M₀) = s.indicator 1 * t.indicator 1 :=
   funext fun _ ↦ by simp only [← inter_indicator_mul, Pi.mul_apply, Pi.one_apply, one_mul]; congr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma indicator_prod_one {t : Set κ} {j : κ} :
     (s ×ˢ t).indicator (1 : ι × κ → M₀) (i, j) = s.indicator 1 i * t.indicator 1 j := by
   simp_rw [indicator, mem_prod_eq]

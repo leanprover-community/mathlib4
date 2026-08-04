@@ -22,7 +22,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Limits
 
