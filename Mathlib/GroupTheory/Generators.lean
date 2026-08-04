@@ -11,17 +11,15 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 /-!
 # Group generators as data
 
-A generating family is usually carried as a set together with a hypothesis
-`Subgroup.closure S = ⊤`. This file bundles the two, so that a choice of generators can be passed
-as an argument and pushed along surjections without re-supplying the hypothesis.
-
 ## Main definitions
 
-* `Group.Generators G α`: a family `val : α → G`, indexed by `α`, whose range generates `G`.
-* `Group.Generators.map`: the transport of a generating family along a surjective homomorphism.
+* `Group.Generators G α`: The generators of a group are given by a generating family indexed by `α`
+and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) = ⊤`.
 
 ## Main results
 
+* `Group.Generators.hom_ext`: if two homomorphisms coincide on the elements of a generating family,
+  then they are equal.
 * `Group.fg_iff_nonempty_finite_generators`: a group is finitely generated if and only if it
   admits a finite generating family.
 
@@ -38,8 +36,7 @@ as an argument and pushed along surjections without re-supplying the hypothesis.
 * Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`. A
   section earns its keep when elements have a standard form, as `a / rⁿ` does in
   `Algebra.Generators.localizationAway`. Groups have no such form in general, since the word
-  problem is undecidable. That leaves `Classical.choice`, and nothing can be proved about the
-  words it picks. Nothing here needs a section.
+  problem is undecidable.
 
 ## References
 
@@ -54,9 +51,8 @@ group generators, generating set, finitely generated
 
 variable {G H α β : Type*} [Group G] [Group H]
 
-/-- The generators of a group are given by a generating family indexed by `α` whose range generates
-`G`, or equivalently such that the induced homomorphism `FreeGroup.lift val : FreeGroup α →* G` is
-surjective. -/
+/-- The generators of a group are given by a generating family indexed by `α` and an assignment
+`val : α → G` such that `Subgroup.closure (Set.range val) = ⊤`. -/
 structure Group.Generators (G : Type*) [Group G] (α : Type*) where
   /-- The generating family itself: `val a` is the element of `G` indexed by `a : α`. -/
   val : α → G
@@ -67,11 +63,11 @@ namespace Group.Generators
 
 variable (P : Group.Generators G α)
 
-lemma lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
+theorem lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
   FreeGroup.closure_range_eq_top_iff_surjective_lift.mp P.closure_eq_top
 
-/-- If two homomorphisms coincide on the elements of a generating set, then they coincide. -/
-theorem ext_hom {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) = g (P.val a)) :
+/-- If two homomorphisms coincide on the elements of a generating family, then they are equal. -/
+theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) = g (P.val a)) :
     f = g := MonoidHom.eq_of_eqOn_dense P.closure_eq_top (Set.forall_mem_range.mpr h)
 
 /-- The generating family obtained using a generating set `S : Set G`. -/
