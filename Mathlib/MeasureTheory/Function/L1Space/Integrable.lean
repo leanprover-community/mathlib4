@@ -1170,6 +1170,7 @@ section restrict
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] {f : α → ε}
 
 /-- One should usually use `MeasureTheory.Integrable.integrableOn` instead. -/
+@[fun_prop]
 lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 
