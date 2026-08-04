@@ -180,13 +180,11 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
 open ENNReal
 
 instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
-  by_contra
+  by_contra hκ
   obtain ⟨a, ha⟩ : ∃ a, 0 < (κ a) univ := by
-    suffices ∀ C < ∞, ∃ a, C < (κ a) univ from this 0 (by simp)
     by_contra! h
-    have : IsFiniteKernel κ := ⟨h⟩
-    have : IsSFiniteKernel κ := inferInstance
-    contradiction
+    let : IsFiniteKernel κ := ⟨⟨0, by simp, h⟩⟩
+    exact hκ inferInstance
   have h := DFunLike.congr_fun κ.parallelComp_self_comp_copy a
   simp_all only [not_false_eq_true, parallelComp_of_not_isSFiniteKernel_left, zero_comp, zero_apply]
   replace h := DFunLike.congr_fun h Set.univ
