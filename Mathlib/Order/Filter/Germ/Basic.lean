@@ -76,12 +76,17 @@ def productSetoid : Setoid ((s : l.sets) × ((x : s.1) → ε x)) where
   iseqv.trans {_ g _} h₁ h₂ := h₂.mp (h₁.mp (Filter.eventually_of_mem g.1.2
     fun _ hg hfg hgh hf hh => (hfg hf hg).trans (hgh hg hh)))
 
+/-- The filter product of `(x : α) → ε x` at `l`, which consists of partial functions
+`(x : s) → ε x` for `s ∈ l`, where two partial functions are identified if they agree on `l`.
+This is a dependent version of `Filter.Germ`. -/
 public def Product.{u, v} {α : Type u} (l : Filter α) (ε : α → Type v) : Type (max u v) :=
   Quotient (productSetoid l ε)
 
 public section Product
 namespace Product
 
+/-- Construct an element of the filter product by giving a set `s ∈ l` and
+a partial function `f` defined on `s`. -/
 def ofPartialFun (s : Set α) (hs : s ∈ l) (f : (x : α) → x ∈ s → ε x) : Product l ε :=
   Quotient.mk (productSetoid l ε) ⟨⟨s, hs⟩, fun x => f x.1 x.2⟩
 
@@ -97,6 +102,10 @@ theorem ofPartialFun_eq_of_subset {s t : Set α} (hs : s ∈ l) (hst : s ⊆ t)
       ofPartialFun t (Filter.mem_of_superset hs hst) f :=
   ofPartialFun_eq_iff.2 (.of_forall fun _ _ _ => rfl)
 
+/-- Construct a function out of the filter product by
+specifying what value it should take for each `ofPartialFun s hs f`.
+The specified outputs must be equal whenever `ofPartialFun s hs g` and `ofPartialFun t ht g'`
+define the same element of `Filter.Product l ε`. -/
 def liftOfPartialFun {β : Sort*} (f : (s : Set α) → s ∈ l → ((x : α) → x ∈ s → ε x) → β)
     (hf : ∀ s t hs ht g g', (∀ᶠ x in l, ∀ hxs hxt, g x hxs = g' x hxt) → f s hs g = f t ht g')
     (x : Product l ε) : β :=
@@ -114,6 +123,8 @@ theorem inductionOnPartialFun {motive : Product l ε → Prop} (t : Product l ε
     (ofPartialFun : ∀ s hs f, motive (ofPartialFun s hs f)) : motive t :=
   Quotient.inductionOn t fun x => ofPartialFun x.1.1 x.1.2 fun c hc => x.2 ⟨c, hc⟩
 
+/-- Construct an element of the filter product from a global function `f : (x : α) → ε x`
+defined on all of `α`. -/
 @[expose]
 def ofFun (f : (x : α) → ε x) : Product l ε :=
   ofPartialFun .univ l.univ_mem fun x _ => f x
@@ -125,6 +136,10 @@ theorem ofFun_eq_ofPartialFun (s : Set α) (hs : s ∈ l) (f : (x : α) → ε x
     ofFun f = ofPartialFun s hs fun x _ => f x := by
   simp [ofFun_def, ofPartialFun_eq_iff]
 
+/-- Construct a function out of the filter product by
+specifying what value it should take for each `ofFun f`.
+The specified outputs must be equal whenever `ofFun g` and `ofFun g'`
+define the same element of `Filter.Product l ε`. -/
 noncomputable def liftOn [Nonempty ((x : α) → ε x)] {β : Sort*} (t : Product l ε)
     (f : ((x : α) → ε x) → β) (h : ∀ g g', (∀ᶠ x in l, g x = g' x) → f g = f g') : β :=
   open scoped Classical in
