@@ -23,12 +23,6 @@ f * g = f g
          |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
-
-## Main statements
-
-* `HopfAlgebra.eq_antipode_of_convMul_id_eq_one`, `HopfAlgebra.eq_antipode_of_id_convMul_eq_one` :
-  the antipode is the unique one-sided convolution inverse of the identity. In particular, a
-  bialgebra admits at most one Hopf algebra structure.
 -/
 
 public section
