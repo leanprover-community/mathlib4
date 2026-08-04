@@ -17,7 +17,7 @@ import Mathlib.Tactic.NormNum.Basic
 
 Given a matrix literal `M` over a commutative domain, the entry point
 `mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
-Bareiss.Decomposition M`, with the four certificate conditions checked by the kernel via
+Bareiss.Decomposition M`, with the certificate conditions checked by the kernel via
 `decide`. The production is data-only but relies on zero-checks (`isZeroInR`) in the kernel
 to decide pivot positions.
 
@@ -245,8 +245,7 @@ scoped elab "bareiss_certify " s:str : tactic => do
     throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
 
 /-- Elaborate the `Bareiss.Decomposition` certificate of `M` from the raw decomposition
-data, folding the row scales into `L`, with the kernel checking the four certificate
-conditions. -/
+data, folding the row scales into `L`, with the kernel checking the certificate. -/
 def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : Array Nat)
     (d : BareissData) : TermElabM Expr := do
   -- `L * (D·M).submatrix σ id = E` gives `(L·D_σ) * (M.submatrix σ id) = E`: scale column
@@ -257,12 +256,10 @@ def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : A
   let L := mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
   let σ ← mkPerm m d.swaps
   let pivotE ← mkPivotLit m n d.pivot
-  let rankE := mkNatLit d.pivot.size
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
-                $(← Term.exprToSyntax pivotE), $(← Term.exprToSyntax rankE),
+                $(← Term.exprToSyntax pivotE),
                 -- switch to an efficient decision of matrix mult once implemented
                 by bareiss_certify "the echelon-pivot condition",
-                by bareiss_certify "the pivot count",
                 by bareiss_certify "lower triangularity of the transform",
                 by bareiss_certify "the nonzero diagonal of the transform"⟩ :
               Bareiss.Decomposition $(← Term.exprToSyntax M)))

@@ -40,8 +40,9 @@ def normalizeRank (e M : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
     MetaM Simp.Result := do
   let decomp ← (mkBareissDecomposition M m n R entries).run'
   let pf ← mkAppM ``Bareiss.Decomposition.rank_eq #[decomp]
-  let rankE ← mkAppM ``Bareiss.Decomposition.rank #[decomp]
-  let some len := ((Kernel.whnf (← getEnv) (← getLCtx) rankE).toOption).bind (·.rawNatLit?)
+  -- the statement's right-hand side: the pivoted-row count of the certificate
+  let cnt := (← inferType pf).appArg!
+  let some len := ((Kernel.whnf (← getEnv) (← getLCtx) cnt).toOption).bind (·.rawNatLit?)
     | throwError "the pivot count does not reduce to a literal"
   let k := mkNatLit len
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
