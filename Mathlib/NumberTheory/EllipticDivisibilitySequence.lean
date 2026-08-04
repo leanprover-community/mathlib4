@@ -10,12 +10,12 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Data.Nat.DvdSequence
 public import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Tactic.FinCases
+public import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
-public import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.Tactic.FinCases
 
 /-!
 # Elliptic divisibility sequences
@@ -122,18 +122,18 @@ lemma atom_same (a : ℤ) : atom W a a = W a * W 0 := by
   rw [atom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
 
 variable {W} in
-lemma neg_atom (neg : W.Odd) (a b : ℤ) : -atom W a b = atom W b a := by
-  rw [atom, atom, add_comm, ← neg_sub a, Int.neg_tdiv, neg, mul_neg]
+lemma neg_atom (odd : W.Odd) (a b : ℤ) : -atom W a b = atom W b a := by
+  rw [atom, atom, add_comm, ← neg_sub a, Int.neg_tdiv, odd, mul_neg]
 
 variable {W} in
-lemma atom_mul_atom (neg : W.Odd) (a b c d : ℤ) :
+lemma atom_mul_atom (odd : W.Odd) (a b c d : ℤ) :
     atom W a b * atom W c d = atom W b a * atom W d c := by
-  rw [← neg_atom neg a b, ← neg_atom neg c d, neg_mul_neg]
+  rw [← neg_atom odd a b, ← neg_atom odd c d, neg_mul_neg]
 
 variable {W} in
 @[simp]
-lemma atom_neg_left (neg : W.Odd) (a b : ℤ) : atom W (-a) b = atom W a b := by
-  rw [atom, atom, neg_add_eq_sub, ← neg_sub a, ← neg_add', Int.neg_tdiv, neg, Int.neg_tdiv, neg,
+lemma atom_neg_left (odd : W.Odd) (a b : ℤ) : atom W (-a) b = atom W a b := by
+  rw [atom, atom, neg_add_eq_sub, ← neg_sub a, ← neg_add', Int.neg_tdiv, odd, Int.neg_tdiv, odd,
     neg_mul_neg, mul_comm]
 
 @[simp]
@@ -142,8 +142,8 @@ lemma atom_neg_right (a b : ℤ) : atom W a (-b) = atom W a b := by
 
 variable {W} in
 @[simp]
-lemma atom_abs_left (neg : W.Odd) (a b : ℤ) : atom W |a| b = atom W a b := by
-  rcases abs_choice a with h | h <;> simp only [h, atom_neg_left neg]
+lemma atom_abs_left (odd : W.Odd) (a b : ℤ) : atom W |a| b = atom W a b := by
+  rcases abs_choice a with h | h <;> simp only [h, atom_neg_left odd]
 
 @[simp]
 lemma atom_abs_right (a b : ℤ) : atom W a |b| = atom W a b := by
@@ -171,12 +171,12 @@ lemma atomRel_same₁₂ (a b c : ℤ) : atomRel W a a b c = W a * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₃ (neg : W.Odd) (a b c : ℤ) : atomRel W a b a c = W a * W 0 * atom W c b := by
+lemma atomRel_same₁₃ (odd : W.Odd) (a b c : ℤ) : atomRel W a b a c = W a * W 0 * atom W c b := by
   grind only [atomRel, atom_same, neg_atom]
 
 variable {W} in
 @[simp]
-lemma atomRel_same₁₄ (neg : W.Odd) (a b c : ℤ) : atomRel W a b c a = W a * W 0 * atom W b c := by
+lemma atomRel_same₁₄ (odd : W.Odd) (a b c : ℤ) : atomRel W a b c a = W a * W 0 * atom W b c := by
   grind only [atomRel, atom_same, neg_atom]
 
 @[simp]
@@ -185,7 +185,7 @@ lemma atomRel_same₂₃ (a b c : ℤ) : atomRel W a b b c = W b * W 0 * atom W 
 
 variable {W} in
 @[simp]
-lemma atomRel_same₂₄ (neg : W.Odd) (a b c : ℤ) : atomRel W a b c b = W b * W 0 * atom W c a := by
+lemma atomRel_same₂₄ (odd : W.Odd) (a b c : ℤ) : atomRel W a b c b = W b * W 0 * atom W c a := by
   grind only [atomRel, atom_same, neg_atom]
 
 @[simp]
@@ -193,63 +193,63 @@ lemma atomRel_same₃₄ (a b c : ℤ) : atomRel W a b c c = W c * W 0 * atom W 
   grind only [atomRel, atom_same]
 
 variable {W} in
-lemma neg_atomRel₁₂ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W b a c d := by
+lemma neg_atomRel₁₂ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W b a c d := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
-lemma neg_atomRel₂₃ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a c b d := by
+lemma neg_atomRel₂₃ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a c b d := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
-lemma neg_atomRel₃₄ (neg : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a b d c := by
+lemma neg_atomRel₃₄ (odd : W.Odd) (a b c d : ℤ) : -atomRel W a b c d = atomRel W a b d c := by
   grind only [atomRel, neg_atom]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₁ (neg : W.Odd) (a b c d : ℤ) : atomRel W (-a) b c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left neg]
+lemma atomRel_neg₁ (odd : W.Odd) (a b c d : ℤ) : atomRel W (-a) b c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left odd]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₂ (neg : W.Odd) (a b c d : ℤ) : atomRel W a (-b) c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left neg, atom_neg_right]
+lemma atomRel_neg₂ (odd : W.Odd) (a b c d : ℤ) : atomRel W a (-b) c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_neg₃ (neg : W.Odd) (a b c d : ℤ) : atomRel W a b (-c) d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_neg_left neg, atom_neg_right]
+lemma atomRel_neg₃ (odd : W.Odd) (a b c d : ℤ) : atomRel W a b (-c) d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_neg_left odd, atom_neg_right]
 
 @[simp]
 lemma atomRel_neg₄ (a b c d : ℤ) : atomRel W a b c (-d) = atomRel W a b c d := by
   simp_rw [atomRel, atom_neg_right]
 
 variable {W} in
-lemma atomRel_neg (neg : W.Odd) (a b c d : ℤ) :
+lemma atomRel_neg (odd : W.Odd) (a b c d : ℤ) :
     atomRel W (-a) (-b) (-c) (-d) = atomRel W a b c d := by
-  rw [atomRel_neg₁ neg, atomRel_neg₂ neg, atomRel_neg₃ neg, atomRel_neg₄]
+  rw [atomRel_neg₁ odd, atomRel_neg₂ odd, atomRel_neg₃ odd, atomRel_neg₄]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₁ (neg : W.Odd) (a b c d : ℤ) : atomRel W |a| b c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left neg]
+lemma atomRel_abs₁ (odd : W.Odd) (a b c d : ℤ) : atomRel W |a| b c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left odd]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₂ (neg : W.Odd) (a b c d : ℤ) : atomRel W a |b| c d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left neg, atom_abs_right]
+lemma atomRel_abs₂ (odd : W.Odd) (a b c d : ℤ) : atomRel W a |b| c d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
 
 variable {W} in
 @[simp]
-lemma atomRel_abs₃ (neg : W.Odd) (a b c d : ℤ) : atomRel W a b |c| d = atomRel W a b c d := by
-  simp_rw [atomRel, atom_abs_left neg, atom_abs_right]
+lemma atomRel_abs₃ (odd : W.Odd) (a b c d : ℤ) : atomRel W a b |c| d = atomRel W a b c d := by
+  simp_rw [atomRel, atom_abs_left odd, atom_abs_right]
 
 @[simp]
 lemma atomRel_abs₄ (a b c d : ℤ) : atomRel W a b c |d| = atomRel W a b c d := by
   simp_rw [atomRel, atom_abs_right]
 
 variable {W} in
-lemma atomRel_abs (neg : W.Odd) (a b c d : ℤ) : atomRel W |a| |b| |c| |d| = atomRel W a b c d := by
-  rw [atomRel_abs₁ neg, atomRel_abs₂ neg, atomRel_abs₃ neg, atomRel_abs₄]
+lemma atomRel_abs (odd : W.Odd) (a b c d : ℤ) : atomRel W |a| |b| |c| |d| = atomRel W a b c d := by
+  rw [atomRel_abs₁ odd, atomRel_abs₂ odd, atomRel_abs₃ odd, atomRel_abs₄]
 
 lemma atomRel_avg_sub {a b c d : ℤ} (parity : [a, b, c, d].Pairwise (· % 2 = · % 2)) :
     atomRel W ((a + b + c + d) / 2 - d) ((a + b + c + d) / 2 - c) ((a + b + c + d) / 2 - b)
@@ -289,7 +289,7 @@ lemma atom_mul_atomRel_snd (m n r c d : ℤ) : atom W c d * atomRel W m n r d =
   ring1
 
 variable {W} in
-lemma atomRel_perm (neg : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) : σ.sign •
+lemma atomRel_perm (odd : W.Odd) (σ : Equiv.Perm <| Fin 4) (t : Fin 4 → ℤ) : σ.sign •
     atomRel W (t <| σ 0) (t <| σ 1) (t <| σ 2) (t <| σ 3) = atomRel W (t 0) (t 1) (t 2) (t 3) := by
   induction Equiv.Perm.mclosure_swap_castSucc_succ 3 ▸ Submonoid.mem_top σ using
     Submonoid.closure_induction generalizing t with
@@ -355,8 +355,8 @@ lemma atomRel_eq {a b c d : ℤ} (parity : [a, b, c, d].Pairwise (· % 2 = · % 
 
 variable {W} in
 @[simp]
-lemma rel_neg (neg : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
-  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg neg]
+lemma rel_neg (odd : W.Odd) (p q r s : ℤ) : rel W (-p) (-q) (-r) (-s) = rel W p q r s := by
+  simp_rw [rel_eq, mul_neg, ← neg_add, atomRel_neg odd]
 
 /-- The even elliptic relator `ER(m + 1, m - 1, 1, 0)` for all `m ∈ ℤ`. -/
 lemma rel_even (m : ℤ) : rel W (m + 1) (m - 1) 1 0 = W (2 * m) * W 2 * W 1 ^ 2 -
@@ -745,7 +745,7 @@ def complEDS' : ℕ → R
   | 1 => 1
   | (n + 2) => let m := n / 2 + 1
     if hn : Even n then complEDS' m * complEDS₂ b c d (m * k) else
-      have : m + 1 < n + 2 := by obtain ⟨k, rfl⟩ := Nat.not_even_iff_odd.mp hn; omega
+      have : m + 1 < n + 2 := by rcases Nat.not_even_iff_odd.mp hn with ⟨k, rfl⟩; omega
       complEDS' m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
         complEDS' (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1)
 
@@ -850,6 +850,10 @@ noncomputable def complEDSRec {P : ℕ → Sort*} (zero : P 0) (one : P 1)
   complEDSRec' zero one (fun _ ih ↦ even _ <| ih _ <| by linarith only)
     (fun _ ih ↦ odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
 
+end ComplEDS
+
+section Map
+
 @[simp]
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
   induction n using normEDSRec' with
@@ -887,6 +891,8 @@ lemma map_complEDS' (k : ℤ) (n : ℕ) :
 lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (f d) k n := by
   simp [complEDS]
 
+end Map
+
 open Polynomial in
 /-- The canonical normalised EDS is an elliptic sequence. -/
 theorem isEllipticSequence_normEDS : IsEllipticSequence <| normEDS b c d := by
@@ -894,5 +900,3 @@ theorem isEllipticSequence_normEDS : IsEllipticSequence <| normEDS b c d := by
     (by simpa using isRegular_X.mem_nonZeroDivisors) (normEDS_rel_even _ _ _)
     (normEDS_rel_odd _ _ _) |>.map <| evalRingHom b
   ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
-
-end ComplEDS
