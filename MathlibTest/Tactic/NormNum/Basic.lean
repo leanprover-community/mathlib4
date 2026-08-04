@@ -754,3 +754,7 @@ theorem large1 {α} [Ring α] : 2^(2^2000) + (2*2) - 2^(2^2000) = (4 : α) := by
   set_option exponentiation.threshold 20 in
     norm_num1 -- TODO: this should warn, but the warning is discarded
   simp only [add_sub_cancel_left]
+
+-- Regression test for https://github.com/leanprover-community/mathlib4/issues/28703.
+example (h : 0 = 1) (_h2 : 0 = 2) : False := by
+  norm_num at h _h2

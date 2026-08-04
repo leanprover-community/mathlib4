@@ -35,8 +35,10 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
     (atTarget : TacticM Unit) (failed : MVarId → TacticM Unit) : TacticM Unit := do
   match loc with
   | Location.targets hyps target => do
-    (← getFVarIds hyps).forM atLocal
-    if target then atTarget
+    for fvarId in ← getFVarIds hyps do
+      if (← getGoals).isEmpty then break
+      atLocal fvarId
+    if target && !(← getGoals).isEmpty then atTarget
   | Location.wildcard => do
     let mut worked := false
     for hyp in ← (← getMainGoal).getNondepPropHyps do
