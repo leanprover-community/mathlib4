@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Adomas Baliuka. All rights reserved.
+Copyright (c) 2026 Aditya Menon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aditya Menon
 -/
@@ -7,10 +7,10 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.Term
+public meta import Lean.Meta.Tactic.TryThis
 public meta import Mathlib.Lean.ContextInfo
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Mathlib.Lean.Linter
-public meta import Lean.Meta.Tactic.TryThis
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
@@ -20,7 +20,8 @@ public import Lean.Parser.Term
 # Linter for trailing `_` placeholders in function applications
 
 When a function application ends with at least `linter.style.ellipsisPlaceholders.minTrailingHoles`
-consecutive `_` placeholders (default: `4`, i.e. `≥ 4`), the linter suggests replacing them with `..`.
+consecutive `_` placeholders (default: `4`, i.e. `≥ 4`), the linter suggests replacing them with
+`..`.
 
 For example, `foo 1 _ _ _ _` becomes `foo 1 ..`.
 
@@ -51,7 +52,7 @@ public register_option linter.style.ellipsisPlaceholders.minTrailingHoles : Nat 
 }
 
 /-- Log when a candidate is skipped after validation fails or throws. -/
-register_option linter.style.ellipsisPlaceholders.trace : Bool := {
+public register_option linter.style.ellipsisPlaceholders.trace : Bool := {
   defValue := false
   descr := "trace ellipsisPlaceholders validation skips"
 }
@@ -234,21 +235,12 @@ def syntaxRangesMatch (a b : Syntax) : Bool :=
   | some ra, some rb => ra == rb
   | _, _ => false
 
-def termInfoMatchesCandidate (ti : TermInfo) (c : AppCandidate) (minTrailingHoles : Nat) : Bool :=
-  let target := c.stx
-  ti.stx == target ||
-    (match analyzeApp? ti.stx minTrailingHoles with
-      | some analyzed => syntaxRangesMatch target analyzed.stx
-      | none => false) ||
-    syntaxRangesMatch target ti.stx
+def termInfoMatchesCandidate (ti : TermInfo) (c : AppCandidate) : Bool :=
+  ti.stx == c.stx || syntaxRangesMatch c.stx ti.stx
 
 /-!
 ### Validation
 -/
-
-def domainHasDefault (domain : Expr) : Bool :=
-  domain.isOptParam || domain.isAutoParam || domain.getOptParamDefault?.isSome ||
-    domain.getAutoParamTactic?.isSome
 
 partial def skipImplicitBinders (ty : Expr) (explicit : Bool) : MetaM Expr := do
   if explicit then
@@ -269,45 +261,6 @@ partial def isExplicitApp (stx : Syntax) : Bool :=
   | _ =>
     stx[0].isOfKind ``Lean.Parser.Term.explicitUniv ||
       (stx[0].isOfKind ``Lean.Parser.Term.app && isExplicitApp stx[0])
-
-/-- Walk the function type, collecting domain types of positional arguments. -/
-partial def explicitPositionalParamTypes (fn : Expr) (explicit : Bool) (args : Array Syntax) :
-    MetaM (Array Expr) := do
-  let mut ty ← inferType fn
-  let mut result := #[]
-  for arg in args do
-    if isNamedArg arg then
-      let name := arg[1].getId.eraseMacroScopes
-      let mut found := false
-      while !found do
-        ty ← skipImplicitBinders ty explicit
-        match ty with
-        | .forallE binderName _ body _ =>
-          if binderName == name then
-            ty := body
-            found := true
-          else
-            ty := body
-        | _ => break
-      continue
-    ty ← skipImplicitBinders ty explicit
-    match ty with
-    | .forallE _ dom body _ =>
-      result := result.push dom
-      ty := body
-    | _ => break
-  return result
-
-def manualReplacementIsSafe (fn : Expr) (explicit : Bool) (args : Array Syntax)
-    (trailingHoles : Nat) : MetaM Bool := do
-  let types ← explicitPositionalParamTypes fn explicit args
-  if types.size < trailingHoles then
-    return false
-  let start := types.size - trailingHoles
-  for i in [start:types.size] do
-    if domainHasDefault types[i]! then
-      return false
-  return true
 
 /-- WHNF only on well-scoped expressions; ill-scoped info-tree replay must not panic. -/
 def whnfIfScoped (e : Expr) : MetaM Expr := do
@@ -363,7 +316,8 @@ partial def codomainAfterAppArgs (fn : Expr) (explicit : Bool) (args : Array Syn
   return ty
 
 /-- True when consuming all syntax arguments still leaves a function codomain on the head. -/
-def appArgsLeaveFunctionCodomain (fn : Expr) (explicit : Bool) (args : Array Syntax) : MetaM Bool := do
+def appArgsLeaveFunctionCodomain (fn : Expr) (explicit : Bool) (args : Array Syntax) :
+    MetaM Bool := do
   isFunctionType (← codomainAfterAppArgs fn explicit args)
 
 def traceSkip (msg : MessageData) : CommandElabM Unit := do
@@ -435,13 +389,18 @@ def shouldSkipValidation (ctx : ContextInfo) (lctx : LocalContext) (ti : TermInf
 def replacementAllowed (ctx : ContextInfo) (lctx : LocalContext) (ti : TermInfo)
     (c : AppCandidate) (suggested : Syntax) : CommandElabM Bool := do
   if ← shouldSkipValidation ctx lctx ti then
+    traceSkip
+      "ellipsisPlaceholders: skipped application (unresolved metavariables in declaration body)"
     return false
   let rejectPartial ← ctx.runMetaMWithMessages ti.lctx do
     rejectsPartialApplication ti c
   if rejectPartial then
     traceSkip "ellipsisPlaceholders: skipped application (partial application / function type)"
     return false
-  replacementIsSafe ctx lctx ti suggested
+  if ← replacementIsSafe ctx lctx ti suggested then
+    return true
+  traceSkip "ellipsisPlaceholders: skipped application (validation failed)"
+  return false
 
 def mkEllipsis (info : SourceInfo) : Syntax :=
   mkNode ``Lean.Parser.Term.ellipsis #[Syntax.atom info ".."]
@@ -467,7 +426,8 @@ def applyAllRewrites (stx : Syntax) (rewrites : Array (Syntax × Syntax)) : Synt
   let rewrites := rewrites.qsort fun a b => rewriteStopPos a.1 > rewriteStopPos b.1
   rewrites.foldl (fun acc (old, new) => replaceSyntax acc old new) stx
 
-def foldInfoM {α m} [Monad m] (f : ContextInfo → Info → α → m α) (init : α) (t : InfoTree) : m α :=
+def foldInfoM {α m} [Monad m] (f : ContextInfo → Info → α → m α) (init : α) (t : InfoTree) :
+    m α :=
   InfoTree.foldInfo (fun ctx i ma => do f ctx i (← ma)) (pure init) t
 
 /-- Collect `(old, new)` rewrites that pass validation for a command. Requires info trees. -/
@@ -484,7 +444,7 @@ def collectValidatedRewrites (cmdStx : Syntax) (minTrailingHoles : Nat) :
       let mut rewrites := rewrites
       let mut seen := seen
       for c in candidates do
-        unless termInfoMatchesCandidate ti c minTrailingHoles do
+        unless termInfoMatchesCandidate ti c do
           continue
         match candidateRangeKey c.stx with
         | none => continue
@@ -520,12 +480,8 @@ def validateCommandWithAllRewrites (cmdStx : Syntax) (minTrailingHoles : Nat) :
 def tryLintCandidate (ctx : ContextInfo) (lctx : LocalContext) (ti : TermInfo)
     (c : AppCandidate) : CommandElabM Bool := do
   try
-    if ← shouldSkipValidation ctx lctx ti then
-      traceSkip "ellipsisPlaceholders: skipped application (unresolved metavariables in declaration body)"
-      return false
     let suggested := rewriteApp c
     unless ← replacementAllowed ctx lctx ti c suggested do
-      traceSkip "ellipsisPlaceholders: skipped application (validation failed)"
       return false
     Linter.logLint linter.style.ellipsisPlaceholders c.stx <|
       m!"Replace {c.trailingHoles} trailing `_` placeholders with `..`."
@@ -537,12 +493,12 @@ def tryLintCandidate (ctx : ContextInfo) (lctx : LocalContext) (ti : TermInfo)
     return false
 
 def lintCandidatesFromTree (tree : InfoTree) (candidates : Array AppCandidate)
-    (minTrailingHoles : Nat) (seen : Std.HashSet (Nat × Nat)) : CommandElabM (Std.HashSet (Nat × Nat)) :=
+    (seen : Std.HashSet (Nat × Nat)) : CommandElabM (Std.HashSet (Nat × Nat)) :=
   foldInfoM (fun ctx info seen => do
     let .ofTermInfo ti := info | return seen
     let mut seen := seen
     for c in candidates do
-      unless termInfoMatchesCandidate ti c minTrailingHoles do
+      unless termInfoMatchesCandidate ti c do
         continue
       match candidateRangeKey c.stx with
       | none => continue
@@ -567,7 +523,7 @@ def ellipsisPlaceholdersLinter : Linter where
       return
     let mut seen : Std.HashSet (Nat × Nat) := {}
     for tree in ← getInfoTrees do
-      seen ← lintCandidatesFromTree tree candidates minTrailingHoles seen
+      seen ← lintCandidatesFromTree tree candidates seen
 
 initialize addLinter ellipsisPlaceholdersLinter
 

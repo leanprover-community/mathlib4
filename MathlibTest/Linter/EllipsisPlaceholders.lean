@@ -28,13 +28,13 @@ section DefaultThreshold
 
 -- Default `minTrailingHoles` is `4` (no override).
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check ellipsisTestFnFour 1 _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check ellipsisTestFnFour 1 _ _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check ellipsisTestFnFour 1 2 3 _
 
 /--
@@ -46,10 +46,10 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 #check ellipsisTestFnFour _ _ _ _
 
 -- Should NOT lint: `?_` anywhere in the hole suffix
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check sixArg 1 _ _ _ ?_ ?_
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check mixedTail _ _ _ ?_ _ _
 
 section Min2
@@ -63,7 +63,7 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFn 1 _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFn 1 _
 
@@ -71,7 +71,7 @@ end Min2
 
 section Min3
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 3 in
 #check ellipsisTestFn 1 _ _
 
@@ -108,42 +108,43 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnFour 1 _ _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnFour 1 2 3 _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnFour 1 ..
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnFour 1 _ 3 _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnOpt 1 _
 
-#guard_msgs(drop warning, drop info) in
+-- Optional-argument holes: `f 1 _ _` and `f 1 ..` elaborate identically, so this lints.
+/--
+warning: Replace 2 trailing `_` placeholders with `..`.
+
+Note: This linter can be disabled with `set_option linter.style.ellipsisPlaceholders false`
+-/
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnOpt 1 _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnAuto 1 _
 
 set_option linter.style.ellipsisPlaceholders false in
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check ellipsisTestFn 1 _ _
 
 example : Nat := by
   set_option linter.style.ellipsisPlaceholders true in
   exact ellipsisTestFn 1 2 3
-
--- Typed holes are never rewritten.
-#guard_msgs(drop warning, drop info) in
-set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
-#check ellipsisTestFn 1 (_ : Nat) (_ : Nat)
 
 end Basic
 
@@ -156,23 +157,24 @@ variable {α : Type u} {β : Type v}
 def instFn [Inhabited α] [Inhabited β] (x : α) (y : β) : Nat := 0
 
 -- `@`-explicit applications are never rewritten (`..` does not preserve binder slots).
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check @instFn _ _ _ _
 
 end ExplicitApps
 
 section TypedHoles
 
-#guard_msgs(drop warning, drop info) in
+-- Typed holes are never rewritten.
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFn 1 (_ : Nat) (_ : Nat)
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFnFour 1 (_ : Nat) 3 _
 
 -- Any typed hole in the trailing suffix disqualifies the whole application.
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check ellipsisTestFn 1 _ (_ : Nat)
 
@@ -203,23 +205,23 @@ set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check (let x := ellipsisTestFn 1 _ _; x)
 
 -- The tuple pattern in a let-pat binding must not be flagged (it's not an application).
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check (let (a, b) := (1, 2); a + b)
 
 end LetBindings
 
 section Patterns
 
--- Patterns themselves must not lint; empty expected messages (after dropping `#check` info)
--- fails if a warning appears.
-#guard_msgs(drop info) in
+-- Patterns themselves must not lint; `(warning, drop info)` checks warnings against the
+-- empty expected output, so the test fails if any warning appears.
+#guard_msgs(warning, drop info) in
 #check (fun n : Lean.Name => match n with | .str _ _ => true | _ => false)
 
-#guard_msgs(drop info) in
+#guard_msgs(warning, drop info) in
 #check (fun n : Lean.Name => if let mod@(.str _ _) := n then mod else n)
 
 -- A candidate nested in an `if let` expression is skipped conservatively.
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check (fun n : Lean.Name => if let .str _ _ := n then ellipsisTestFn 1 _ _ else 0)
 
@@ -255,7 +257,7 @@ universe u
 
 def univFn {α : Type u} (x : α) (y : α) : α := x
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check @univFn.{u} _ _ _
 
 end ExplicitUniv
@@ -263,10 +265,10 @@ end ExplicitUniv
 section SyntheticHoles
 
 -- `?_` in the hole suffix stops linting even when plain `_` follow
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check sixArg 1 _ _ _ ?_ ?_
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 #check mixedTail _ _ _ ?_ _ _
 
 -- six plain trailing `_` still lint at the default threshold
@@ -299,7 +301,7 @@ section PartialApplication
 variable {α : Type*} [Preorder α] {a b c : α}
 
 -- Trailing `_` on a partial application must not become `..` (would fully apply implicits).
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check Preorder.le_trans _ _ _
 
@@ -326,11 +328,11 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check mathlibStyleThree _ _ _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check mathlibStyleWithMid _ 0 _
 
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #check mathlibStyleThree 0 _ 0
 
@@ -349,7 +351,7 @@ end Dogfood
 section BatchValidation
 
 -- Batch validation: apply every linter rewrite in this command and re-elaborate.
-#guard_msgs(drop warning, drop info) in
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #guard_ellipsis_rewrites
 #check batchFn 1 _ _
@@ -357,11 +359,16 @@ set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 def instBatch {α : Type u} {β : Type v} [Add α] [Add β] (f : α → β) : Nat := 0
 
 -- `@`-explicit: no rewrites collected.
-#guard_msgs(drop info) in
+#guard_msgs(warning, drop info) in
 #guard_ellipsis_rewrites
 #check @instBatch _ _ _ _
 
-#guard_msgs(drop warning, drop info) in
+/--
+warning: Replace 6 trailing `_` placeholders with `..`.
+
+Note: This linter can be disabled with `set_option linter.style.ellipsisPlaceholders false`
+-/
+#guard_msgs(warning, drop info) in
 set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 #guard_ellipsis_rewrites
 #check sixArg _ _ _ _ _ _

@@ -96,6 +96,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
+  linter.style.ellipsisPlaceholders
   linter.style.emptyLine
   linter.style.header
   linter.style.lambdaSyntax
