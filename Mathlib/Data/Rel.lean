@@ -543,7 +543,7 @@ abbrev WellFounded : Prop := _root_.WellFounded (· ~[R] ·)
 
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
 -/
-@[deprecated (since := "2026-02-21")] alias IsWellFounded := WellFounded
+@[deprecated (since := "2026-08-01")] alias IsWellFounded := WellFounded
 
 variable (R S) in
 /-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function

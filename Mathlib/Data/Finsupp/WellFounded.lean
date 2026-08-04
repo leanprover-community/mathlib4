@@ -40,7 +40,7 @@ theorem Lex.acc (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s) (x : α →�
     Acc (Finsupp.Lex r s) x := by
   rw [lex_eq_invImage_dfinsupp_lex]
   classical
-    refine InvImage.accessible toDFinsupp (DFinsupp.Lex.acc (fun _ => hbot) _ ?_)
+    refine InvImage.accessible toDFinsupp (DFinsupp.Lex.acc (fun _ ↦ hbot) _ ?_)
     simpa only [toDFinsupp_support] using h
 
 theorem Lex.wellFounded (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
@@ -50,7 +50,7 @@ theorem Lex.wellFounded (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
 theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
     [Std.Trichotomous r] (hr : WellFounded (Function.swap r)) : WellFounded (Finsupp.Lex r s) :=
   (lex_eq_invImage_dfinsupp_lex r s).symm ▸
-    InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ => hbot) hr)
+    InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ ↦ hbot) hr)
 
 instance Lex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedGT α]
     [AddMonoid N] [PartialOrder N] [IsBotZeroClass N]
