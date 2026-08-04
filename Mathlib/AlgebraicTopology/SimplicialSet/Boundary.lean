@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
 /-!
 # The boundary of the standard simplex
@@ -27,7 +28,7 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe u
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory MonoidalCategory Simplicial Opposite
 
 namespace SSet
 
@@ -206,6 +207,36 @@ lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
 lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by
   ext _ ⟨x, hx⟩
   simp at hx
+
+open MonoidalClosed in
+@[ext]
+lemma hom_ext_tensorLeft {n : ℕ} {X Y : SSet.{u}}
+    {f g : Y ⊗ ∂Δ[n + 1] ⟶ X}
+    (h : ∀ (i : Fin (n + 2)), Y ◁ ι i ≫ f = Y ◁ ι i ≫ g) :
+    f = g :=
+  curry_injective (hom_ext fun i ↦ by simp only [← curry_natural_left, h])
+
+@[ext]
+lemma hom_ext_tensorRight {n : ℕ} {X Y : SSet.{u}}
+    {f g : (∂Δ[n + 1] : SSet) ⊗ Y ⟶ X}
+    (h : ∀ (i : Fin (n + 2)), ι i ▷ Y ≫ f = ι i ▷ Y ≫ g) :
+    f = g := by
+  rw [← cancel_epi (β_ _ _).hom]
+  exact hom_ext_tensorLeft (fun i ↦ by simp [h])
+
+@[ext]
+lemma hom_ext₀_tensorLeft {X Y : SSet.{u}}
+    {f g : Y ⊗ ∂Δ[0] ⟶ X} :
+    f = g := by
+  ext _ ⟨_, ⟨_, h⟩⟩
+  simp at h
+
+@[ext]
+lemma hom_ext₀_tensorRight {X Y : SSet.{u}}
+    {f g : (∂Δ[0] : SSet) ⊗ Y ⟶ X} :
+    f = g := by
+  ext _ ⟨⟨_, h⟩, _⟩
+  simp at h
 
 end boundary
 

@@ -141,7 +141,7 @@ def equiv₀ {p q : X.PtSimplex 0 x} :
     { h := (stdSimplex.leftUnitor _).hom ≫ yonedaEquiv.symm e.edge
       h₀ := by simp [ι₀_stdSimplex_zero_assoc, stdSimplex.δ_comp_yonedaEquiv_symm]
       h₁ := by simp [ι₁_stdSimplex_zero_assoc, stdSimplex.δ_comp_yonedaEquiv_symm]
-      rel := by ext _ ⟨⟨_, h⟩, _⟩; simp at h }
+      rel := by ext }
   left_inv _ := by cat_disch
   right_inv _ := by cat_disch
 
@@ -302,8 +302,18 @@ noncomputable def RelStruct₀.homotopy [KanComplex X]
         simpa [dsimp% h.symm.δ_castSucc_map,
           prodStdSimplex₁.δ_ι_zero_assoc] using stdSimplex.δ 0 ≫= hs 0
       rel := by
-        simp
-        sorry
+        obtain _ | n := n
+        · ext
+        · ext i j : 2
+          simp only [← comp_whiskerRight_assoc, boundary.ι_ι, Subcomplex.ofSimplex_ι,
+            comp_const]
+          by_cases! hij : i ≤ j.castSucc
+          · simp [prodStdSimplex₁.ι_δ_whiskerRight_of_le_assoc _ _ hij, hs,
+              stdSimplex.δ_comp_σ_of_le_assoc hij]
+          · simp only [prodStdSimplex₁.ι_δ_whiskerRight_of_gt_assoc _ _ hij, hs]
+            obtain rfl | ⟨j, rfl⟩ := j.eq_zero_or_eq_succ
+            · simp [h.symm.δ_map_of_gt i.succ (by grind)]
+            · simp [dsimp% stdSimplex.δ_comp_σ_of_gt_assoc hij]
     }⟩)
 
 end SSet.PtSimplex
