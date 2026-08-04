@@ -215,8 +215,11 @@ lemma prod_comp_prod_of_inter_nonempty (ht : (t₁ ∩ t₂).Nonempty) (s : Set 
     s ×ˢ t₁ ○ t₂ ×ˢ u = s ×ˢ u := by
   obtain ⟨b, hb₁, hb₂⟩ := ht
   ext ⟨a, c⟩
-  simp only [mem_comp, Set.mem_prod]
-  grind
+  constructor
+  · rintro ⟨b', ⟨ha, -⟩, -, hc⟩
+    exact ⟨ha, hc⟩
+  · rintro ⟨ha, hc⟩
+    exact ⟨b, ⟨ha, hb₁⟩, hb₂, hc⟩
 
 lemma prod_comp_prod_of_disjoint (ht : Disjoint t₁ t₂) (s : Set α) (u : Set γ) :
     s ×ˢ t₁ ○ t₂ ×ˢ u = ∅ :=
@@ -282,7 +285,7 @@ lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩
 variable (R s₁ s₂) in
 lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by
   ext b
-  simp only [mem_image, Set.mem_union, or_and_right, exists_or]
+  simp [or_and_right, exists_or]
 
 variable (R) in
 lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by
@@ -376,11 +379,11 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 
 lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by
   ext b
-  simp only [mem_image, Set.mem_iUnion, Set.mem_ofPred_eq, exists_prop]
+  simp
 
 lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by
   ext a
-  simp only [mem_preimage, Set.mem_iUnion, Set.mem_ofPred_eq, exists_prop]
+  simp
 
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
@@ -397,7 +400,7 @@ lemma core_mono : Monotone R.core := fun _ _ ↦ core_subset_core
 variable (R t₁ t₂) in
 lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by
   ext a
-  simp only [mem_core, Set.mem_inter_iff, imp_and, forall_and]
+  simp [imp_and, forall_and]
 
 lemma core_union_subset : R.core t₁ ∪ R.core t₂ ⊆ R.core (t₁ ∪ t₂) := core_mono.le_map_sup ..
 
@@ -407,7 +410,7 @@ lemma core_union_subset : R.core t₁ ∪ R.core t₂ ⊆ R.core (t₁ ∪ t₂)
 variable (t) in
 @[simp] lemma core_id : core .id t = t := by
   ext a
-  simp only [mem_core, mem_id, forall_eq']
+  simp
 
 variable (R S u) in
 lemma core_comp : core (R ○ S) u = core R (core S u) := by
@@ -663,7 +666,7 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by
   ext ⟨a, c⟩
-  simp only [mem_graph, SetRel.mem_comp, comp_apply, exists_eq_left']
+  simp
 
 /-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
 def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
