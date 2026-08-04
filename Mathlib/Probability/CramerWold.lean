@@ -36,21 +36,11 @@ variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
 lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
-  (μ : ProbabilityMeasure α) {Y : α → E} (hY : Measurable Y) (t : E) :
-  charFun (μ.map hY.aemeasurable) t =
-    ∫ ω, innerProbChar (1 : ℝ) ω ∂((μ.map (hY.inner_const (c := t)).aemeasurable).toMeasure) := by
-  simp_rw [charFun_eq_integral_innerProbChar, toMeasure_map]
-  rw [MeasureTheory.integral_map (hY.inner_const (c := t)).aemeasurable
-    (innerProbChar (1 : ℝ)).continuous.stronglyMeasurable.aestronglyMeasurable]
-  rw [MeasureTheory.integral_map hY.aemeasurable
-    (innerProbChar t).continuous.stronglyMeasurable.aestronglyMeasurable]
-  apply integral_congr_ae
-  apply Filter.Eventually.of_forall
-  intro ω
-  simp only [innerProbChar_apply, real_inner_comm]
-  have H : ⟪t, Y ω⟫ • (1 : ℝ) = ⟪t, Y ω⟫ := by simp
-  conv_rhs => rw [← H]
-  simp
+  (μ : Measure α) {Y : α → E} (hY : Measurable Y) (t : E) :
+  charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
+  rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
+  · simp
+  all_goals fun_prop
 
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
   (hconv : ∀ t : E, Tendsto (fun n : ℕ => P.map ((hXn n).inner_const (c := t)).aemeasurable)
