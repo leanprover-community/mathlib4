@@ -234,7 +234,7 @@ theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) : WellFound
   rw [wellFoundedGT_iff_monotone_chain_condition']
   intro a
   obtain ⟨n, hn⟩ : sSup (range a) ∈ range a := by
-    apply h _ (range_nonempty _)
+    apply h _ (range_nonempty a)
     rintro x ⟨m, rfl⟩ y ⟨n, rfl⟩
     exact ⟨_, map_sup a m n⟩
   refine ⟨n, fun m hm ↦ ?_⟩
