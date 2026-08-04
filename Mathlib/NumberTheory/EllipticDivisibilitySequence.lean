@@ -474,7 +474,7 @@ def preNormEDS' : ℕ → R
       preNormEDS' (m + 4) * preNormEDS' (m + 2) ^ 3 * (if Even m then b else 1) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) ^ 3 * (if Even m then 1 else b)
     else
-      have : m + 5 < n + 5 := by rcases Nat.not_even_iff_odd.mp hn with ⟨k, rfl⟩; omega
+      have : m + 5 < n + 5 := by grind
       preNormEDS' (m + 2) ^ 2 * preNormEDS' (m + 3) * preNormEDS' (m + 5) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) * preNormEDS' (m + 4) ^ 2
 
@@ -749,7 +749,7 @@ def complEDS' : ℕ → R
   | 1 => 1
   | (n + 2) => let m := n / 2 + 1
     if hn : Even n then complEDS' m * complEDS₂ b c d (m * k) else
-      have : m + 1 < n + 2 := by rcases Nat.not_even_iff_odd.mp hn with ⟨k, rfl⟩; omega
+      have : m + 1 < n + 2 := by grind
       complEDS' m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
         complEDS' (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1)
 
@@ -873,6 +873,7 @@ lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f
 @[simp]
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
   simp [preNormEDS]
+
 @[simp]
 lemma map_complEDS₂ (n : ℤ) : f (complEDS₂ b c d n) = complEDS₂ (f b) (f c) (f d) n := by
   simp [complEDS₂, apply_ite f]
