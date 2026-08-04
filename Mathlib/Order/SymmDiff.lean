@@ -100,7 +100,7 @@ variable [GeneralizedCoheytingAlgebra α] (a b c : α)
 theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
   rfl
 
-@[to_dual (attr := simp) ofDual_symmDiff]
+@[to_dual (attr := simp)]
 theorem ofDual_bihimp (a b : αᵒᵈ) : ofDual (a ⇔ b) = ofDual a ∆ ofDual b :=
   rfl
 
