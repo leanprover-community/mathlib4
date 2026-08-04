@@ -557,6 +557,11 @@ theorem degree_sub_lt_left (hd : degree p = degree q) (hp0 : p ≠ 0)
 
 @[deprecated (since := "2026-06-30")] alias degree_sub_lt := degree_sub_lt_left
 
+theorem degree_sub_lt_right (hd : degree p = degree q) (hq0 : q ≠ 0)Expand commentComment on line R562Resolved
+    (hlc : p.leadingCoeff = q.leadingCoeff) : degree (p - q) < degree q := by
+  rw [← degree_neg, neg_sub]
+  exact degree_sub_lt hd.symm hq0 hlc.symm
+
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=
   (degree_sub_le _ _).trans (max_le degree_X_le (degree_C_le.trans zero_le_one))
 
