@@ -175,6 +175,7 @@ attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_succ_castSucc_map
 
 /-- The `MulStruct` for `X.op` that is deduced from a `MulStruct` for the simplicial
 set `X`. -/
+@[simps]
 def op {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct f g fg i) {j : Fin n}
     (hij : i.rev = j := by grind) :
     MulStruct g.op f.op fg.op j where
@@ -199,6 +200,7 @@ def op {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct f g fg i) {j : Fin 
       opObjEquiv_symm_yonedaEquiv_const, h.δ_map_of_lt k.rev (by grind)]
 
 /-- The `Mulstruct` for a simplicial set `X` that is deduced from a `Mulstruct` for `X.op`. -/
+@[simps]
 def unop {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct g.op f.op fg.op i) {j : Fin n}
     (hij : i.rev = j := by grind) :
     MulStruct f g fg j where
