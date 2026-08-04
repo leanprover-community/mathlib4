@@ -96,7 +96,6 @@ variable [Semiring C] [HopfAlgebra R C]
 end LinearMap
 
 namespace HopfAlgebra
-section Semiring
 variable [Semiring A] [HopfAlgebra R A] {f : A →ₗ[R] A}
 
 /-- The antipode is the unique left convolution inverse of the identity: any `R`-linear map `f`
@@ -111,7 +110,6 @@ theorem eq_antipode_of_id_convMul_eq_one (h : toConv LinearMap.id * toConv f = 1
     f = antipode R :=
   toConv_injective (left_inv_eq_right_inv LinearMap.antipode_mul_id h).symm
 
-end Semiring
 end HopfAlgebra
 
 namespace LinearMap
