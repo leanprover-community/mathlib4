@@ -350,6 +350,11 @@ def step [Inhabited Γ] (M : Λ → Stmt Γ Λ σ) : Cfg Γ Λ σ → Option (Cf
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, T⟩ => some (stepAux (M l) v T)
 
+@[simp]
+theorem step_none_iff [Inhabited Γ] (M : Λ → Stmt Γ Λ σ) (c : Cfg Γ Λ σ) :
+    step M c = none ↔ c.l = none := by
+  rcases c with ⟨_ | l, v, T⟩ <;> simp [step]
+
 /-- A set `S` of labels supports the statement `q` if all the `goto`
   statements in `q` refer only to other functions in `S`. -/
 def SupportsStmt (S : Finset Λ) : Stmt Γ Λ σ → Prop
