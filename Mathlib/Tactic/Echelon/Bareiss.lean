@@ -74,6 +74,8 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   else
     return n
 
+/- TODO: this is an ugly part of the parsing -- 1/2 somehow parses to HDiv. Check if we can
+reuse Expr.rat? -/
 /-- Read the rational value of a numeral. `a / b` is read as a fraction only when `fractions`
 is set: field division in characteristic zero, where the fraction reading is faithful. -/
 def rat? (fractions : Bool) (e : Expr) : Option Rat :=

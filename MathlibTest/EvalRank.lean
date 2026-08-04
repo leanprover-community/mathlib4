@@ -17,6 +17,10 @@ example : Matrix.rank (R := ℤ)
   eval_rank
 
 example : Matrix.rank (R := ℤ)
+    !![1 - 1, 2, 3] = 1 := by
+  eval_rank
+
+example : Matrix.rank (R := ℤ)
     !![1;
        2;
        3] = 1 := by
