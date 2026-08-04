@@ -407,7 +407,7 @@ lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ :
 /-- If two oriented angles are equal, and the four endpoint pairs are nondegenerate, then the
 corresponding unoriented angles are equal. -/
 theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
-  (h1 : p₂ ≠ p₁) (h2 : p₂ ≠ p₃) (h3 : p₅ ≠ p₄) (h4 : p₅ ≠ p₆) :
+    (h1 : p₂ ≠ p₁) (h2 : p₂ ≠ p₃) (h3 : p₅ ≠ p₄) (h4 : p₅ ≠ p₆) :
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
   rw[angle_eq_abs_oangle_toReal h1.symm h2.symm, angle_eq_abs_oangle_toReal h3.symm h4.symm, h]
 
