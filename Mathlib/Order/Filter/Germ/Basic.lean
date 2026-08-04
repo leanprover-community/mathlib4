@@ -236,6 +236,9 @@ theorem ofFun_eq_iff {f g : (x : α) → ε x} :
 end Product
 end Product
 
+/-- The filter product of `α → β` at `l`, which consists of partial functions
+`s → β` for `s ∈ l`, where two partial functions are identified if they agree on `l`.
+This is a nondependent version of `Filter.Product`. -/
 @[expose]
 public def Germ.{u, v} {α : Type u} (l : Filter α) (β : Type v) : Type (max u v) :=
   Product l fun _ => β
