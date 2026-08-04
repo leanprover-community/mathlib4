@@ -80,7 +80,9 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
   Lean.Parser.Tactic.tacticTry_
   -- the following `SyntaxNodeKind`s play a role in silencing `test`s
   Lean.Parser.Tactic.guardHyp
+  Lean.Parser.Tactic.guardHypConv
   Lean.Parser.Tactic.guardTarget
+  Lean.Parser.Tactic.guardTargetConv
   Lean.Parser.Tactic.failIfSuccess
 
 /--

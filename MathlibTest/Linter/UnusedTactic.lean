@@ -11,7 +11,7 @@ example : 0 + 1 = 1 := by
   rfl
 
 /--
-warning: 'change 1 = 1' tactic does nothing
+warning: `change 1 = 1` tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -33,11 +33,11 @@ example : True ∧ True := by
 
 set_option linter.unusedTactic true
 /--
-warning: 'congr' tactic does nothing
+warning: `congr` tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: 'done' tactic does nothing
+warning: `done` tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -49,11 +49,11 @@ example : True := by
   done
 
 /--
-warning: 'simp' tactic does nothing
+warning: `simp` tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: 'show False' tactic does nothing
+warning: `show False` tactic does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
