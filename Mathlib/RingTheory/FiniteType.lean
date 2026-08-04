@@ -577,12 +577,12 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
 
 /-- If a monoid `M` is finitely generated then `R[M]` is of finite type. -/
 instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R R[M] :=
-  (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R M).symm
+  (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R R M).symm
 
 /-- A monoid `M` is finitely generated if and only if `R[M]` is of finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] : FiniteType R R[M] ↔ Monoid.FG M where
   mp h := Monoid.fg_iff_add_fg.2 <|
-    AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R M
+    AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R R M
   mpr _ := inferInstance
 
 /-- If `R[M]` is of finite type then `M` is finitely generated. -/
