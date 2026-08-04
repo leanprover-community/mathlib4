@@ -32,6 +32,9 @@ generalized inverse.
 * `ProbabilityTheory.lowerQuantile_cdf_le_iff`: the Galois connection for
   the cdf of a probability measure, with no side condition beyond `0 < p`
   and `p < 1`.
+* `ProbabilityTheory.continuousWithinAt_lowerQuantile_Iic`: left continuity
+  in the level.
+* `ProbabilityTheory.lowerQuantile_cdf_map`: equivariance.
 * `ProbabilityTheory.not_forall_le_apply_lowerQuantile` and its companions:
   the right-continuity hypotheses are refuted as `¬ ∀ ...`, not merely
   motivated.
@@ -430,5 +433,172 @@ theorem not_galoisConnection_lowerQuantile_cdf (μ : Measure ℝ) :
   have h2 := (h 2 (lowerQuantile (cdf μ) 2)).mp (le_refl _)
   have h1 := cdf_le_one μ (lowerQuantile (cdf μ) 2)
   linarith
+
+/-- Left continuity, as a limit statement: the quantile function tends to its value at `p`
+along levels approaching `p` from below.
+
+The hypotheses are those of `p` alone. Nonemptiness and boundedness at the nearby lower
+levels are derived inside the proof rather than assumed, which is what makes the statement
+usable: a caller who can check `p` need not also check a neighbourhood. -/
+theorem tendsto_lowerQuantile_nhdsLT (F : ℝ → ℝ) (p : ℝ)
+    (hF : Monotone F)
+    (hne : Set.Nonempty (quantileSet F p))
+    (hbd : BddBelow (quantileSet F p)) :
+    Filter.Tendsto (fun q : ℝ => lowerQuantile F q) (nhdsWithin p (Set.Iio p))
+      (nhds (lowerQuantile F p)) := by
+  cases exists_apply_lt_of_bddBelow F p hbd with
+  | intro a ha =>
+    have hneq : ∀ q : ℝ, q ≤ p → Set.Nonempty (quantileSet F q) := by
+      intro q hq
+      cases hne with
+      | intro x hx => exact Exists.intro x (le_trans hq hx)
+    refine tendsto_order.mpr (And.intro ?_ ?_)
+    · -- levels just below `p` keep the quantile above any `c` strictly below the quantile
+      intro c hc
+      have hc2 : c < (c + lowerQuantile F p) / 2 := by linarith
+      have hc3 : (c + lowerQuantile F p) / 2 < lowerQuantile F p := by linarith
+      have hFc : F ((c + lowerQuantile F p) / 2) < p :=
+        apply_lt_of_lt_lowerQuantile F p _ hbd hc3
+      have h1 : Filter.Eventually
+          (fun q : ℝ => F ((c + lowerQuantile F p) / 2) < q)
+          (nhdsWithin p (Set.Iio p)) :=
+        Filter.eventually_of_mem (nhdsWithin_le_nhds (Ioi_mem_nhds hFc)) (fun _ hq => hq)
+      have h2 : Filter.Eventually (fun q : ℝ => q < p) (nhdsWithin p (Set.Iio p)) :=
+        Filter.eventually_of_mem self_mem_nhdsWithin (fun _ hq => hq)
+      refine Filter.Eventually.mono (h1.and h2) ?_
+      intro q hq
+      refine lt_of_lt_of_le hc2 ?_
+      refine le_lowerQuantile F q _ (hneq q (le_of_lt hq.2)) ?_
+      intro y hy
+      rcases le_or_gt ((c + lowerQuantile F p) / 2) y with h | h
+      · exact h
+      · exact absurd hy (not_le.mpr (lt_of_le_of_lt (hF (le_of_lt h)) hq.1))
+    · -- levels below `p` keep the quantile below any `c` strictly above the quantile
+      intro c hc
+      have h1 : Filter.Eventually (fun q : ℝ => F a < q) (nhdsWithin p (Set.Iio p)) :=
+        Filter.eventually_of_mem (nhdsWithin_le_nhds (Ioi_mem_nhds ha)) (fun _ hq => hq)
+      have h2 : Filter.Eventually (fun q : ℝ => q < p) (nhdsWithin p (Set.Iio p)) :=
+        Filter.eventually_of_mem self_mem_nhdsWithin (fun _ hq => hq)
+      refine Filter.Eventually.mono (h1.and h2) ?_
+      intro q hq
+      refine lt_of_le_of_lt ?_ hc
+      exact lowerQuantile_mono F q p (le_of_lt hq.2)
+        (bddBelow_quantileSet_of_lt F q a hF hq.1) hne
+
+/-- Left continuity, as a continuity statement on the closed left ray. -/
+theorem continuousWithinAt_lowerQuantile_Iic (F : ℝ → ℝ) (p : ℝ)
+    (hF : Monotone F)
+    (hne : Set.Nonempty (quantileSet F p))
+    (hbd : BddBelow (quantileSet F p)) :
+    ContinuousWithinAt (fun q : ℝ => lowerQuantile F q) (Set.Iic p) p := by
+  rw [← Set.Iio_union_right (a := p)]
+  refine continuousWithinAt_union.mpr (And.intro ?_ ?_)
+  · exact tendsto_lowerQuantile_nhdsLT F p hF hne hbd
+  · exact continuousWithinAt_singleton
+
+/-- Left continuity of the quantile of a probability measure, side conditions discharged.
+The unconsumed instance is kept for the reason given at `lowerQuantile_cdf_le_iff`. -/
+@[nolint unusedArguments]
+theorem continuousWithinAt_lowerQuantile_cdf_Iic (μ : Measure ℝ)
+    [IsProbabilityMeasure μ] (p : ℝ) (h0 : 0 < p) (h1 : p < 1) :
+    ContinuousWithinAt (fun q : ℝ => lowerQuantile (cdf μ) q) (Set.Iic p) p :=
+  continuousWithinAt_lowerQuantile_Iic (cdf μ) p (monotone_cdf μ)
+    (nonempty_quantileSet_cdf μ p h1) (bddBelow_quantileSet_cdf μ p h0)
+
+/-- If `F` is strictly monotone and takes the value `p` at `x`, then the quantile at level
+`p` is exactly `x`. Continuity is not needed: continuity is what produces a solution, not
+what makes the solution unique. -/
+theorem lowerQuantile_eq_of_strictMono (F : ℝ → ℝ) (p x : ℝ)
+    (hF : StrictMono F) (hx : F x = p) :
+    lowerQuantile F p = x := by
+  refine lowerQuantile_eq F p x (le_of_eq hx.symm) ?_
+  intro y hy
+  exact hF.le_iff_le.mp (le_trans (le_of_eq hx) hy)
+
+/-- Existence and uniqueness on an interval. Under continuity and strict monotonicity on
+`Set.Icc a b`, with `F` strictly below `p` at the left end and at or above `p` at the
+right end, there is exactly one solution of `F x = p` in the interval, and the lower
+quantile is it.
+
+The global monotonicity hypothesis is doing real work: without it `F` could return above
+`p` somewhere to the left of `a`, and the infimum would sit there instead. The strictness
+of `F a < p` is likewise load bearing: at `F a = p` the quantile can escape to the left of
+`a`.
+
+`hab` is derivable from `hMono`, `hpa` and `hpb`, and is kept anyway because every
+interval lemma in mathlib carries it and a reader matching this against
+`intermediate_value_Icc` should not have to notice it is absent. -/
+theorem exists_lowerQuantile_eq_of_monotone_of_continuousOn_of_strictMonoOn (F : ℝ → ℝ) (a b p : ℝ)
+    (hab : a ≤ b)
+    (hMono : Monotone F)
+    (hCont : ContinuousOn F (Set.Icc a b))
+    (hStrict : StrictMonoOn F (Set.Icc a b))
+    (hpa : F a < p) (hpb : p ≤ F b) :
+    ∃ x : ℝ, a ≤ x ∧ x ≤ b ∧ F x = p ∧ lowerQuantile F p = x ∧
+      ∀ y : ℝ, a ≤ y → y ≤ b → F y = p → y = x := by
+  have hmem := And.intro (le_of_lt hpa) hpb
+  have hsub := intermediate_value_Icc hab hCont hmem
+  cases hsub with
+  | intro x hx =>
+    cases hx with
+    | intro hxmem hxval =>
+      refine Exists.intro x (And.intro hxmem.1 (And.intro hxmem.2 (And.intro hxval ?_)))
+      have hlb : ∀ y : ℝ, p ≤ F y → x ≤ y := by
+        intro y hy
+        rcases le_or_gt x y with h | h
+        · exact h
+        · rcases le_or_gt y a with hya | hya
+          · exact absurd hy (not_le.mpr (lt_of_le_of_lt (hMono hya) hpa))
+          · have hymem :=
+              And.intro (le_of_lt hya) (le_trans (le_of_lt h) hxmem.2)
+            exact absurd hy
+              (not_le.mpr (lt_of_lt_of_eq (hStrict hymem hxmem h) hxval))
+      refine And.intro (lowerQuantile_eq F p x (le_of_eq hxval.symm) hlb) ?_
+      intro y hya hyb hyval
+      exact hStrict.injOn (And.intro hya hyb) hxmem (hyval.trans hxval.symm)
+
+/-- The quantile set transports as an image. -/
+theorem quantileSet_comp_symm (F : ℝ → ℝ) (e : OrderIso ℝ ℝ) (p : ℝ) :
+    quantileSet (fun y : ℝ => F (e.symm y)) p
+      = Set.image (fun x : ℝ => e x) (quantileSet F p) := by
+  rw [Set.image_eq_preimage_of_inverse e.symm_apply_apply e.apply_symm_apply]
+  rfl
+
+/-- Equivariance, functional form: the quantile of the transformed function is the
+transform of the quantile. -/
+theorem lowerQuantile_comp_symm (F : ℝ → ℝ) (e : OrderIso ℝ ℝ) (p : ℝ)
+    (hne : Set.Nonempty (quantileSet F p))
+    (hbd : BddBelow (quantileSet F p)) :
+    lowerQuantile (fun y : ℝ => F (e.symm y)) p = e (lowerQuantile F p) := by
+  rw [lowerQuantile_def, lowerQuantile_def, quantileSet_comp_symm F e p]
+  exact (OrderIso.map_csInf' e hne hbd).symm
+
+/-- The cdf of a pushforward along an order isomorphism, evaluated. -/
+theorem cdf_map_orderIso (μ : Measure ℝ) [IsProbabilityMeasure μ]
+    (e : OrderIso ℝ ℝ) (y : ℝ) :
+    cdf (Measure.map (fun x : ℝ => e x) μ) y = cdf μ (e.symm y) := by
+  have hmeas : Measurable (fun x : ℝ => e x) := (OrderIso.continuous e).measurable
+  have : IsProbabilityMeasure (Measure.map (fun x : ℝ => e x) μ) :=
+    Measure.isProbabilityMeasure_map hmeas.aemeasurable
+  have hpre : Set.preimage (fun x : ℝ => e x) (Set.Iic y) = Set.Iic (e.symm y) := by
+    ext z
+    exact Iff.symm e.le_symm_apply
+  rw [cdf_eq_real, cdf_eq_real, map_measureReal_apply hmeas measurableSet_Iic, hpre]
+
+/-- Equivariance, measure-theoretic form: the quantile of the pushforward law is the
+transform of the quantile of the original law. This is what the phrase "the quantile of a
+monotone transform is the monotone transform of the quantile" actually means. -/
+theorem lowerQuantile_cdf_map (μ : Measure ℝ) [IsProbabilityMeasure μ]
+    (e : OrderIso ℝ ℝ) (p : ℝ) (h0 : 0 < p) (h1 : p < 1) :
+    lowerQuantile (cdf (Measure.map (fun x : ℝ => e x) μ)) p
+      = e (lowerQuantile (cdf μ) p) := by
+  have hfun : (fun y : ℝ => cdf (Measure.map (fun x : ℝ => e x) μ) y)
+      = (fun y : ℝ => cdf μ (e.symm y)) :=
+    funext (fun y => cdf_map_orderIso μ e y)
+  have hstep : lowerQuantile (fun y : ℝ => cdf (Measure.map (fun x : ℝ => e x) μ) y) p
+      = lowerQuantile (fun y : ℝ => cdf μ (e.symm y)) p := by rw [hfun]
+  refine hstep.trans ?_
+  exact lowerQuantile_comp_symm (cdf μ) e p
+    (nonempty_quantileSet_cdf μ p h1) (bddBelow_quantileSet_cdf μ p h0)
 
 end ProbabilityTheory
