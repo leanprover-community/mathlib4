@@ -2112,6 +2112,7 @@ public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.LDL
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Analysis.Matrix.PolarDecomposition
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.Analysis.MeanInequalities
