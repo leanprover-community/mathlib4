@@ -29,9 +29,9 @@ it does not exist).
 
 * `NumberField.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is bounded
   above by the number of elements of `S`.
-* `NumberField.dirichletDensity_eq_zero_of_not_hasDirichletDensity` — the density is `0` when no
-  Dirichlet density exists.
 * `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
+* `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
+* `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
 
 -/
 
@@ -117,11 +117,30 @@ theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
 
 variable (S) in
 /-- The Dirichlet density of `S` is nonnegative. -/
-@[simp]
 theorem dirichletDensity_nonneg : 0 ≤ dirichletDensity S := by
   rw [dirichletDensity]
   split_ifs with h
   · exact h.choose_spec.nonneg
   · exact le_rfl
+
+/-- The Dirichlet density is at most `1`. -/
+theorem HasDirichletDensity.le_one {δ : ℝ} (h : HasDirichletDensity S δ) :
+    δ ≤ 1 := by
+  refine le_of_tendsto h (Eventually.of_forall fun s ↦ ?_)
+  rw [primeIdealZetaSum_def, primeIdealZetaSum_def,
+    tsum_univ fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (𝔭.asIdeal.absNorm : ℝ) ^ (-s)]
+  by_cases hs : Summable fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (𝔭.asIdeal.absNorm : ℝ) ^ (-s)
+  · exact div_le_one_of_le₀ (hs.tsum_subtype_le _ S (fun _ ↦ by positivity))
+      (tsum_nonneg fun _ ↦ by positivity)
+  · rw [tsum_eq_zero_of_not_summable hs, div_zero]
+    exact zero_le_one
+
+variable (S) in
+/-- The Dirichlet density of `S` is at most `1`. -/
+theorem dirichletDensity_le_one : dirichletDensity S ≤ 1 := by
+  rw [dirichletDensity]
+  split_ifs with h
+  · exact h.choose_spec.le_one
+  · exact zero_le_one
 
 end NumberField
