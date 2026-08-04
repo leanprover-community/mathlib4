@@ -122,6 +122,7 @@ lemma atom_same (a : ℤ) : atom W a a = W a * W 0 := by
   rw [atom, ← two_mul, Int.mul_tdiv_cancel_left _ two_ne_zero, sub_self, Int.zero_tdiv]
 
 variable {W} in
+@[simp]
 lemma neg_atom (odd : W.Odd) (a b : ℤ) : -atom W a b = atom W b a := by
   rw [atom, atom, add_comm, ← neg_sub a, Int.neg_tdiv, odd, mul_neg]
 
