@@ -6,8 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
-public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-public import Mathlib.CategoryTheory.Monoidal.Arrow
 
 /-!
 # Quasicategories
