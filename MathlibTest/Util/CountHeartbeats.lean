@@ -26,6 +26,12 @@ example (a : Nat) : a = a := rfl
 section using_count_heartbeats
 
 -- sets the `countHeartbeats` both linter option and the `approximate` option to `true`
+/--
+warning: syntax 'Mathlib.Linter.CountHeartbeats.countHeartbeats' has been deprecated: use `#count_heartbeats in` or `set_option trace.profiler true` with `set_option trace.profiler.useHeartbeats true`
+
+Note: This linter can be disabled with `set_option linter.deprecated.syntax false`
+-/
+#guard_msgs in
 #count_heartbeats approximately
 
 mutual -- mutual declarations get ignored
