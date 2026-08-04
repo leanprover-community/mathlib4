@@ -59,11 +59,9 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
   mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₂ (w j) • σ₁ (v i) • f i j)
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
     (fun c v w => by
-      simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c),
-        SemigroupAction.mul_smul])
+      simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c), mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
-    (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, map_mul, SemigroupAction.mul_smul, smul_sum])
+    (fun _ v w => by simp only [Pi.smul_apply, smul_eq_mul, map_mul, mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
@@ -171,6 +169,7 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂ M = Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁) (y : m → R₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • σ₂ (y j) • M i j := by
@@ -254,6 +253,7 @@ variable [DecidableEq n] [DecidableEq m]
 variable [Fintype n'] [Fintype m']
 variable [DecidableEq n'] [DecidableEq m']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.toMatrix₂'_compl₁₂ (B : (n → R) →ₗ[R] (m → R) →ₗ[R] R) (l : (n' → R) →ₗ[R] n → R)
     (r : (m' → R) →ₗ[R] m → R) :
@@ -610,7 +610,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    convert this using 2
+    convert! this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
     · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]
@@ -834,23 +834,11 @@ theorem nondegenerate_toLinearMap₂'_iff_det_ne_zero :
 
 theorem separatingLeft_toLinearMap₂'_iff_det_ne_zero :
     (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) ↔ M.det ≠ 0 := by
-  constructor
-  · intro h hne
-    obtain ⟨w, hwne, hw⟩ := exists_vecMul_eq_zero_iff.mpr hne
-    refine hwne (h w fun y ↦ ?_)
-    simp [toLinearMap₂'_apply', dotProduct_mulVec, hw]
-  · rw [← nondegenerate_toLinearMap₂'_iff_det_ne_zero]
-    exact fun h ↦ h.1
+  simpa using separatingLeft_iff_det_ne_zero
 
 theorem separatingRight_toLinearMap₂'_iff_det_ne_zero :
     (Matrix.toLinearMap₂' R M).SeparatingRight (R := R) ↔ M.det ≠ 0 := by
-  constructor
-  · intro h hne
-    obtain ⟨w, hwne, hw⟩ := exists_mulVec_eq_zero_iff.mpr hne
-    refine hwne (h w fun y ↦ ?_)
-    simp [toLinearMap₂'_apply', hw]
-  · rw [← nondegenerate_toLinearMap₂'_iff_det_ne_zero]
-    exact fun h ↦ h.2
+  simpa using separatingRight_iff_det_ne_zero
 
 theorem separatingLeft_toLinearMap₂'_of_det_ne_zero' (h : M.det ≠ 0) :
     (Matrix.toLinearMap₂' R M).SeparatingLeft (R := R) :=

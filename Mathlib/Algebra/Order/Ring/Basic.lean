@@ -55,7 +55,7 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
       _ ≤ (x + y) ^ (n + 1) := by
         rw [pow_succ' _ n]
-        exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
+        gcongr; exact ih (Nat.succ_ne_zero k)
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
@@ -96,11 +96,10 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
 
-The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+The slightly unusual typeclass assumptions `[IsStrictOrderedRing R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
-  `ℚ≥0` or `ℝ≥0`
+* linearly ordered rings, e.g. `ℤ`, `ℚ` or `ℝ`
+* canonically ordered semirings, e.g. `ℕ`, `ℚ≥0` or `ℝ≥0`
 -/
 
 variable [ExistsAddOfLE R]
@@ -131,8 +130,8 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
         gcongr _ * (_ + _ + ?_)
         · exact pow_nonneg zero_le_two _
         obtain hab | hba := le_total a b
-        · exact mul_add_mul_le_mul_add_mul (by gcongr; exact ha) hab
-        · exact mul_add_mul_le_mul_add_mul' (by gcongr; exact hb) hba
+        · exact mul_add_mul_le_mul_add_mul (by gcongr) hab
+        · exact mul_add_mul_le_mul_add_mul' (by gcongr) hba
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
 
 protected lemma Even.add_pow_le (hn : Even n) :
@@ -168,7 +167,7 @@ lemma Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 
 lemma Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
-  rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  rintro rfl; simp at hn
 
 lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
 
@@ -176,7 +175,7 @@ alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
 alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
 
 lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd] at hn
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀

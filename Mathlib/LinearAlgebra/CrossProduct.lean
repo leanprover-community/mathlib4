@@ -100,6 +100,7 @@ theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w =
   dsimp only [Matrix.cons_val]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
 with those vectors as its rows. -/
 theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w = Matrix.det ![u, v, w] := by
@@ -126,6 +127,7 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) = u ⨯₃ v
 /-- The three-dimensional vectors together with the operations + and ⨯₃ form a Lie ring.
 Note we do not make this an instance as a conflicting one already exists
 via `LieRing.ofAssociativeRing`. -/
+@[instance_reducible]
 def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v

@@ -93,13 +93,13 @@ lemma isLocalization_rightAdjoint
 lemma functorCategory_inverseImage_isomorphisms_unit (adj : G ⊣ F) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.unit := by
   intro
-  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  simp only [Functor.id_obj, inverseImage_iff, isomorphisms.iff]
   infer_instance
 
 lemma functorCategory_inverseImage_isomorphisms_counit (adj : F ⊣ G) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.counit := by
   intro
-  simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
+  simp only [Functor.id_obj, inverseImage_iff, isomorphisms.iff]
   infer_instance
 
 lemma isLocalization_leftAdjoint' (adj : G ⊣ F) :

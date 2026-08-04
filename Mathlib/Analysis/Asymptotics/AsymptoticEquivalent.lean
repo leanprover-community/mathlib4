@@ -5,21 +5,21 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Asymptotic equivalence
 
-In this file, we define the relation `IsEquivalent l u v`, which means that `u-v` is little o of
-`v` along the filter `l`.
+In this file, we prove properties of the relation `IsEquivalent l u v`,
+which means that `u-v` is little o of `v` along the filter `l`.
 
 Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the same codomain `β`.
-While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
-require it to be a `NormedField`.
 
 ## Notation
 
-We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
+We use the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.
 
 ## Main results
@@ -55,7 +55,7 @@ This is to enable `calc` support, as `calc` requires that the last two explicit 
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Asymptotics
@@ -68,14 +68,6 @@ section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
 
-/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
-  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
-  when `u x - v x = o(v x)` as `x` converges along `l`. -/
-def IsEquivalent (l : Filter α) (u v : α → β) :=
-  (u - v) =o[l] v
-
-@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
-
 variable {u v w : α → β} {l : Filter α}
 
 theorem IsEquivalent.isLittleO (h : u ~[l] v) : (u - v) =o[l] v := h
@@ -84,7 +76,7 @@ nonrec theorem IsEquivalent.isBigO (h : u ~[l] v) : u =O[l] v :=
   (IsBigO.congr_of_sub h.isBigO.symm).mp (isBigO_refl _ _)
 
 theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
-  convert h.isLittleO.right_isBigO_add
+  convert! h.isLittleO.right_isBigO_add
   simp
 
 theorem IsEquivalent.isTheta (h : u ~[l] v) : u =Θ[l] v :=
@@ -153,10 +145,10 @@ theorem IsEquivalent.tendsto_nhds_iff {c : β} (huv : u ~[l] v) :
   ⟨huv.tendsto_nhds, huv.symm.tendsto_nhds⟩
 
 theorem IsEquivalent.add_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u + w ~[l] v := by
-  simpa only [IsEquivalent, add_sub_right_comm] using huv.add hwv
+  simpa only [IsEquivalent, add_sub_right_comm] using! huv.add hwv
 
 theorem IsEquivalent.sub_isLittleO (huv : u ~[l] v) (hwv : w =o[l] v) : u - w ~[l] v := by
-  simpa only [sub_eq_add_neg] using huv.add_isLittleO hwv.neg_left
+  simpa only [sub_eq_add_neg] using! huv.add_isLittleO hwv.neg_left
 
 theorem IsLittleO.add_isEquivalent (hu : u =o[l] w) (hv : v ~[l] w) : u + v ~[l] w :=
   add_comm v u ▸ hv.add_isLittleO hu
@@ -175,7 +167,7 @@ theorem IsLittleO.isEquivalent (huv : (u - v) =o[l] v) : u ~[l] v := huv
 
 theorem IsEquivalent.neg (huv : u ~[l] v) : (fun x ↦ -u x) ~[l] fun x ↦ -v x := by
   rw [IsEquivalent]
-  convert huv.isLittleO.neg_left.neg_right
+  convert! huv.isLittleO.neg_left.neg_right
   simp [neg_add_eq_sub]
 
 end NormedAddCommGroup
@@ -192,10 +184,10 @@ theorem isEquivalent_iff_exists_eq_mul :
   constructor <;> rintro ⟨φ, hφ, h⟩ <;> [refine ⟨φ + 1, ?_, ?_⟩; refine ⟨φ - 1, ?_, ?_⟩]
   · conv in 𝓝 _ => rw [← zero_add (1 : β)]
     exact hφ.add tendsto_const_nhds
-  · convert h.fun_add (EventuallyEq.refl l v) <;> simp [add_mul]
+  · convert! h.fun_add (EventuallyEq.refl l v) <;> simp [add_mul]
   · conv in 𝓝 _ => rw [← sub_self (1 : β)]
     exact hφ.sub tendsto_const_nhds
-  · convert h.fun_sub (EventuallyEq.refl l v); simp [sub_mul]
+  · convert! h.fun_sub (EventuallyEq.refl l v); simp [sub_mul]
 
 theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
     ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
@@ -221,7 +213,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     simp only [Pi.sub_apply, sub_div] at this
     have key : Tendsto (fun x ↦ v x / v x) l (𝓝 1) :=
       (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
-    convert this.add key
+    convert! this.add key
     · simp
     · simp
   · exact isEquivalent_of_tendsto_one
@@ -235,8 +227,9 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
-      (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
+    convert!
+      (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
+        (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
   refine (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)
@@ -294,7 +287,7 @@ protected theorem IsEquivalent.inv (huv : u ~[l] v) : u⁻¹ ~[l] v⁻¹ := by
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
   refine ⟨fun x ↦ (φ x)⁻¹, Tendsto.inv₀ hφ (by simp), ?_⟩
-  convert h.fun_inv
+  convert! h.fun_inv
   simp [mul_comm]
 
 protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
@@ -329,13 +322,45 @@ theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
 
 theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atBot) :
     Tendsto v l atBot := by
-  convert tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
+  convert! tendsto_neg_atTop_atBot.comp (huv.neg.tendsto_atTop <| tendsto_neg_atBot_atTop.comp hu)
   ext
   simp
 
 theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atBot ↔ Tendsto v l atBot :=
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
+
+section ClosedIicTopology
+
+variable [ClosedIicTopology β]
+
+lemma IsEquivalent.exists_pos_eq_mul (h : u ~[l] v) :
+    ∃ φ, (∀ᶠ x in l, 0 < φ x) ∧ (u =ᶠ[l] φ * v) := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_eq_mul
+  exact ⟨φ, hφ.eventually_const_lt (zero_lt_one' β), h_eq⟩
+
+theorem IsEquivalent.eventually_nonneg (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 ≤ v t) :
+    ∀ᶠ x in l, 0 ≤ u x := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_nonneg hφ.le hv)
+
+theorem IsEquivalent.eventually_pos (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 < v t) :
+    ∀ᶠ x in l, 0 < u x := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_pos hφ hv)
+
+theorem IsEquivalent.eventually_nonpos (h : u ~[l] v) (hv : ∀ᶠ t in l, v t ≤ 0) :
+    ∀ᶠ x in l, u x ≤ 0 := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦
+    h_eq ▸ mul_nonpos_of_nonneg_of_nonpos hφ.le hv)
+
+theorem IsEquivalent.eventually_neg (h : u ~[l] v) (hv : ∀ᶠ t in l, v t < 0) :
+    ∀ᶠ x in l, u x < 0 := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_neg_of_pos_of_neg hφ hv)
+
+end ClosedIicTopology
 
 end NormedLinearOrderedField
 

@@ -52,7 +52,7 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
       previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
       This is because dsimp does not simplify numerals;
       this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
-      convert (id_zero (C := V)).symm
+      convert! (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
     ext
@@ -97,6 +97,7 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
 
 variable (V)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `single V c j ⋙ eval V c j ≅ 𝟭 V`. -/
 @[simps!]
 noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
@@ -153,6 +154,7 @@ noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (�
       simp only [XIsoOfEq_rfl, Iso.refl_hom, id_comp, reassoc_of% hφ i hik, zero_comp]
     · apply (isZero_single_obj_X c j A k hk).eq_of_tgt
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mkHomToSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
     (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
@@ -177,6 +179,7 @@ noncomputable def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} 
       simp only [XIsoOfEq_rfl, Iso.refl_inv, comp_id, assoc, hφ k hik, comp_zero]
     · apply (isZero_single_obj_X c j A i hi).eq_of_src
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.X j)
     (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
@@ -201,6 +204,8 @@ variable {V}
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
@@ -213,6 +218,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.down ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
@@ -227,12 +233,14 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   left_inv φ := by cat_disch
   right_inv f := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}
     (f : C.X 0 ⟶ X) (hf : C.d 1 0 ≫ f = 0) :
     ((toSingle₀Equiv C X).symm ⟨f, hf⟩).f 0 = f := by
   simp [toSingle₀Equiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms from a single object chain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X 0`.
 -/
@@ -244,10 +252,11 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
-    ((fromSingle₀Equiv C X).symm f).f 0 = f := by
+    dsimp% ((fromSingle₀Equiv C X).symm f).f 0 = f := by
   simp [fromSingle₀Equiv]
 
 @[simp]
@@ -269,6 +278,8 @@ variable {V}
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
     ((single₀ V).map f).f 0 = f := by
@@ -280,6 +291,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
@@ -293,12 +305,14 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   left_inv φ := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
     (f : X ⟶ C.X 0) (hf : f ≫ C.d 0 1 = 0) :
     ((fromSingle₀Equiv C X).symm ⟨f, hf⟩).f 0 = f := by
   simp [fromSingle₀Equiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Morphisms to a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C` are the same as morphisms `f : C.X 0 ⟶ X`.
 -/
@@ -310,6 +324,7 @@ noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   left_inv := by cat_disch
   right_inv := by cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero
     {C : CochainComplex V ℕ} {X : V} (f : C.X 0 ⟶ X) :

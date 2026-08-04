@@ -6,6 +6,7 @@ Authors: Jean Lo, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Analysis.Seminorm
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -18,6 +19,9 @@ is at least `r * ‖x‖` for any `r < 1`. This is `riesz_lemma`.
 
 In a nontrivially normed field (with an element `c` of norm `> 1`) and any `R > ‖c‖`, one can
 guarantee `‖x‖ ≤ R` and `‖x - y‖ ≥ 1` for any `y` in `F`. This is `riesz_lemma_of_norm_lt`.
+
+For a normed space over an `RCLike` field, one can find an element of norm exactly `1` with the same
+property. This is `riesz_lemma_one`.
 
 A further lemma, `Metric.closedBall_infDist_compl_subset_closure`, finds a *closed* ball within
 the closure of a set `s` of optimal distance from a point in `x` to the frontier of `s`.
@@ -39,43 +43,46 @@ vector with norm 1 whose distance to a closed proper subspace is
 arbitrarily close to 1. The statement here is in terms of multiples of
 norms, since in general the existence of an element of norm exactly 1
 is not guaranteed. For a variant giving an element with norm in `[1, R]`, see
-`riesz_lemma_of_norm_lt`. -/
+`riesz_lemma_of_norm_lt`, and for a variant giving an element with norm
+exactly one assuming stronger assumptions on the underlying field, see
+`riesz_lemma_of_lt_one`. -/
 theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ x : E, x ∉ F) {r : ℝ}
     (hr : r < 1) : ∃ x₀ : E, x₀ ∉ F ∧ ∀ y ∈ F, r * ‖x₀‖ ≤ ‖x₀ - y‖ := by
-  classical
-    obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
-    let d := Metric.infDist x F
-    have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩
-    have hdp : 0 < d :=
-      lt_of_le_of_ne Metric.infDist_nonneg fun heq =>
-        hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
-    let r' := max r 2⁻¹
-    have hr' : r' < 1 := by
-      simp only [r', max_lt_iff, hr, true_and]
-      norm_num
-    have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
-    have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
-    obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
-    have x_ne_y₀ : x - y₀ ∉ F := by
-      by_contra h
-      have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
-      simp only [neg_add_cancel_right, sub_eq_add_neg] at this
-      exact hx this
-    refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
-    have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
-    calc
-      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
-      _ < d := by
-        rw [← dist_eq_norm]
-        exact (lt_div_iff₀' hlt).1 hxy₀
-      _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
-      _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
+  obtain ⟨x, hx⟩ : ∃ x : E, x ∉ F := hF
+  let d := Metric.infDist x F
+  have hFn : (F : Set E).Nonempty := ⟨_, F.zero_mem⟩
+  have hdp : 0 < d :=
+    lt_of_le_of_ne Metric.infDist_nonneg fun heq =>
+      hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
+  let r' := max r 2⁻¹
+  have hr' : r' < 1 := by
+    simp only [r', max_lt_iff, hr, true_and]
+    norm_num
+  have hlt : 0 < r' := lt_of_lt_of_le (by simp) (le_max_right r 2⁻¹)
+  have hdlt : d < d / r' := (lt_div_iff₀ hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')
+  obtain ⟨y₀, hy₀F, hxy₀⟩ : ∃ y ∈ F, dist x y < d / r' := (Metric.infDist_lt_iff hFn).mp hdlt
+  have x_ne_y₀ : x - y₀ ∉ F := by
+    by_contra h
+    have : x - y₀ + y₀ ∈ F := F.add_mem h hy₀F
+    simp only [neg_add_cancel_right, sub_eq_add_neg] at this
+    exact hx this
+  refine ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt ?_⟩
+  have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
+  calc
+    r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
+    _ < d := by
+      rw [← dist_eq_norm]
+      exact (lt_div_iff₀' hlt).1 hxy₀
+    _ ≤ dist x (y₀ + y) := Metric.infDist_le_dist_of_mem hy₀y
+    _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`
 which is at distance at least `1` of every element of `F`. Here, `R` is any given constant
 strictly larger than the norm of an element of norm `> 1`. For a version without an `R`, see
-`riesz_lemma`.
+`riesz_lemma`, and for a variant giving an element with norm
+exactly one assuming stronger assumptions on the underlying field, see
+`riesz_lemma_of_lt_one`.
 
 Since we are considering a general nontrivially normed field, there may be a gap in possible norms
 (for instance no element of norm in `(1,2)`). Hence, we cannot allow `R` arbitrarily close to `1`,
@@ -112,3 +119,25 @@ theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx :
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]
     exact closure_mono ball_infDist_compl_subset
+
+/--
+A version of Riesz lemma: given a proper closed subspace `F`, one may find an element of norm `1`
+which is at distance at least `r` of every element of `F`, for any `r < 1`.
+For a version with weaker assumptions on the underlying field, see `riesz_lemma` or
+`riesz_lemma_of_norm_lt`.
+-/
+theorem riesz_lemma_of_lt_one {𝕜 : Type*} [RCLike 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ (x : E), x ∉ F) {r : ℝ} (hr : r < 1) :
+    ∃ x₀ ∉ F, ‖x₀‖ = 1 ∧ ∀ y ∈ F, r ≤ ‖x₀ - y‖ := by
+  obtain ⟨x₀, hx₀, h⟩ := riesz_lemma hFc hF hr
+  have hx₀' : x₀ ≠ 0 := by rintro rfl; simp at hx₀
+  refine ⟨(‖x₀‖⁻¹ : 𝕜) • x₀, ?_, norm_smul_inv_norm hx₀', ?_⟩
+  · rwa [Submodule.smul_mem_iff]
+    simpa
+  intro y hy
+  have h₂ : ‖(‖x₀‖ : 𝕜)⁻¹ • (x₀ - (‖x₀‖ : 𝕜) • y)‖ = ‖x₀‖⁻¹ * ‖x₀ - (‖x₀‖ : 𝕜) • y‖ := by
+    rw [norm_smul, norm_inv, norm_algebraMap', norm_norm]
+  have h₁ := h ((‖x₀‖ : 𝕜) • y) (F.smul_mem _ hy)
+  rwa [← le_inv_mul_iff₀' (by simpa), ← h₂, smul_sub, inv_smul_smul₀] at h₁
+  simpa using hx₀'

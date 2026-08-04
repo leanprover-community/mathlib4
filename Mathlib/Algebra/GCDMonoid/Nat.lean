@@ -16,10 +16,10 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 ## Main statements
 
 * ℕ is a `GCDMonoid`
-* ℕ is a `NormalizedGCDMonoid`
-* ℤ is a `NormalizationMonoid`
+* ℕ is a `StrongNormalizedGCDMonoid`
+* ℤ is a `StrongNormalizationMonoid`
 * ℤ is a `GCDMonoid`
-* ℤ is a `NormalizedGCDMonoid`
+* ℤ is a `StrongNormalizedGCDMonoid`
 
 ## Tags
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
@@ -29,7 +29,7 @@ natural numbers, integers, normalization monoid, gcd monoid, greatest common div
 
 assert_not_exists IsOrderedMonoid
 
-/-- `ℕ` is a gcd_monoid. -/
+/-- `ℕ` is a `GCDMonoid`. -/
 instance : GCDMonoid ℕ where
   gcd := Nat.gcd
   lcm := Nat.lcm
@@ -46,9 +46,9 @@ theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
 theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
   rfl
 
-instance : NormalizedGCDMonoid ℕ :=
+instance : StrongNormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
-    (inferInstance : NormalizationMonoid ℕ) with
+    (inferInstance : StrongNormalizationMonoid ℕ) with
     normalize_gcd := fun _ _ => normalize_eq _
     normalize_lcm := fun _ _ => normalize_eq _ }
 
@@ -56,7 +56,7 @@ namespace Int
 
 section NormalizationMonoid
 
-instance normalizationMonoid : NormalizationMonoid ℤ where
+instance strongNormalizationMonoid : StrongNormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
@@ -65,6 +65,9 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
+
+@[deprecated (since := "2026-07-08")]
+alias normalizationMonoid := strongNormalizationMonoid
 
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
@@ -113,8 +116,8 @@ instance : GCDMonoid ℤ where
   lcm_zero_left _ := natCast_eq_zero.2 <| Nat.lcm_zero_left _
   lcm_zero_right _ := natCast_eq_zero.2 <| Nat.lcm_zero_right _
 
-instance : NormalizedGCDMonoid ℤ :=
-  { Int.normalizationMonoid,
+instance : StrongNormalizedGCDMonoid ℤ :=
+  { Int.strongNormalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
     normalize_gcd := fun _ _ => normalize_coe_nat _
     normalize_lcm := fun _ _ => normalize_coe_nat _ }
@@ -130,6 +133,9 @@ theorem natAbs_gcd (i j : ℤ) : natAbs (GCDMonoid.gcd i j) = Int.gcd i j :=
 
 theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
   rfl
+
+lemma gcd_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.gcd i j := by simp [← coe_gcd]
+lemma lcm_nonneg (i j : ℤ) : 0 ≤ GCDMonoid.lcm i j := by simp [← coe_lcm]
 
 end GCDMonoid
 

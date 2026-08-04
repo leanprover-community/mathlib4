@@ -40,6 +40,7 @@ class Quiver (V : Type u) where
   Hom : V → V → Type v
 
 attribute [to_dual self (reorder := 3 4)] Quiver.Hom
+attribute [to_dual self (reorder := Hom (1 2))] Quiver.mk
 
 /--
 Notation for the type of edges/arrows/morphisms between a given source and target
@@ -54,11 +55,11 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 
 /-- The opposite of an arrow in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
-@[to_dual self]
+@[implicit_reducible, to_dual self]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
 /-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
@@ -76,9 +77,9 @@ instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty
 theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[to_dual IsThin' /-- `isThin'` is equivalent to `IsThin`.
-It is used by `@[to_dual]` to be able to translate `IsThin`. -/]
 abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+
+to_dual_insert_cast_fun IsThin := fun inst a b ↦ inst b a, fun inst a b ↦ inst b a
 
 
 section

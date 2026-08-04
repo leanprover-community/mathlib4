@@ -54,7 +54,9 @@ attribute [coe] toSubsemiring
 
 instance : SetLike (RingPreordering R) R where
   coe P := P.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance : PartialOrder (RingPreordering R) := .ofSetLike (RingPreordering R) R
 
 initialize_simps_projections RingPreordering (carrier → coe, as_prefix coe)
 

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.SimpleRing.Basic
 # Facts about algebras when the coefficient ring is a simple ring
 -/
 
-@[expose] public section
+public section
 
 variable (R A : Type*) [CommRing R] [Semiring A] [Algebra R A] [IsSimpleRing R] [Nontrivial A]
 

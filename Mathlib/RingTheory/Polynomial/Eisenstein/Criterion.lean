@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 
-`Polynomial.generalizedEisenstein` :
+- `Polynomial.generalizedEisenstein` :
   Let `R` be an integral domain
   and let `K` an `R`-algebra which is a field
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
   * the image of `f` in `K[X]` is a power of `q`.
   * the leading coefficient of `f` is not zero in `K`
   * the polynomial `f` is primitive.
+
   Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.
@@ -201,7 +202,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
         · simp [Nat.lt_iff_le_and_ne, ← Nat.not_lt, hn', Ne.symm hn]
   · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
       ← coeff_zero_eq_eval_zero]
-    convert h0
+    convert! h0
     · rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
       rw [ker_comp_of_injective]
       · ext a; simp

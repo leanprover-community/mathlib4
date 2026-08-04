@@ -10,7 +10,7 @@ public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
-meta import Aesop.BuiltinRules
+import Aesop.BuiltinRules
 
 /-!
 # `Encodable` deriving handler
@@ -126,7 +126,7 @@ private def S_equiv : S ≃ ℕ where
       · rwa [Nat.one_le_iff_ne_zero]
       · exact nat_unpair_lt_2 h
       · obtain _ | n' := n
-        · exact False.elim (h rfl)
+        · exact False.elim (h (by simp))
         · have := Nat.unpair_lt (by lia : 1 ≤ n' + 1)
           lia
 

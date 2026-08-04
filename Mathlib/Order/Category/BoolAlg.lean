@@ -42,7 +42,6 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]
 structure Hom (X Y : BoolAlg.{u}) where
@@ -91,7 +90,7 @@ lemma coe_comp {X Y Z : BoolAlg} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : BoolAlg} (f : X ⟶ Y) :
-    (forget BoolAlg).map f = f := rfl
+    (forget BoolAlg).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BoolAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

@@ -57,6 +57,7 @@ noncomputable def localizedModuleMkLinearMap [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : M →ₗ[R] (M.localizedModule S) :=
   (Shrink.linearEquiv.{v} R _).symm.toLinearMap.comp (LocalizedModule.mkLinearMap S M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : IsLocalizedModule S (M.localizedModuleMkLinearMap S) := by
   dsimp only [localizedModuleMkLinearMap]
@@ -73,7 +74,7 @@ noncomputable def localizedModuleMap [Small.{v} R] {M N : ModuleCat.{v} R}
 `M` to `M.localizedModule S` and `f : M1 ⟶ M2` to
 `IsLocalizedModule.mapExtendScalars S _ _ (Localization S) f.hom`. -/
 @[simps]
-noncomputable def localizedModule_functor [Small.{v} R] (S : Submonoid R) :
+noncomputable def localizedModuleFunctor [Small.{v} R] (S : Submonoid R) :
     ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S) where
   obj M := M.localizedModule S
   map := ModuleCat.localizedModuleMap S
@@ -81,23 +82,31 @@ noncomputable def localizedModule_functor [Small.{v} R] (S : Submonoid R) :
     ext
     simp [IsLocalizedModule.map_comp' S _ (Y.localizedModuleMkLinearMap S)]
 
-instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S).Additive where
+instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModuleFunctor S).Additive where
 
-lemma localizedModule_functor_map_exact [Small.{v} R] (S : Submonoid R)
+lemma localizedModuleFunctor_map_exact [Small.{v} R] (S : Submonoid R)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
-    (T.map (ModuleCat.localizedModule_functor S)).Exact := by
+    (T.map (ModuleCat.localizedModuleFunctor S)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
   exact IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
     (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S) _ _ h
 
 instance [Small.{v} R] (S : Submonoid R) :
-    Limits.PreservesFiniteLimits (ModuleCat.localizedModule_functor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModule_functor_map_exact S)
+    Limits.PreservesFiniteLimits (ModuleCat.localizedModuleFunctor.{v} S) := by
+  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.1
 
 instance [Small.{v} R] (S : Submonoid R) :
-    Limits.PreservesFiniteColimits (ModuleCat.localizedModule_functor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModule_functor_map_exact S)
+    Limits.PreservesFiniteColimits (ModuleCat.localizedModuleFunctor.{v} S) := by
+  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.2
+
+lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
+    {f₂ : M₂ ⟶ M₃} (h₁ : IsLocalizedModule S f₁.hom) (h₂ : IsLocalizedModule S (f₁ ≫ f₂).hom) :
+    IsIso f₂ := by
+  have : Function.Bijective f₂.hom := by
+    rw [← IsLocalizedModule.linearEquiv_of_isLocalizedModule_comp S f₁.hom f₂.hom]
+    exact (IsLocalizedModule.linearEquiv ..).bijective
+  simpa [ConcreteCategory.isIso_iff_bijective]
 
 end ModuleCat

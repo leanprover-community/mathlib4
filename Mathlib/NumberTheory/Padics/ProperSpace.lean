@@ -30,7 +30,7 @@ Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists FiniteDimensional
 
@@ -40,6 +40,7 @@ variable (p : ℕ) [Fact (Nat.Prime p)]
 
 namespace PadicInt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of p-adic integers `ℤ_[p]` is totally bounded. -/
 theorem totallyBounded_univ : TotallyBounded (Set.univ : Set ℤ_[p]) := by
   refine Metric.totallyBounded_iff.mpr (fun ε hε ↦ ?_)
@@ -65,6 +66,6 @@ instance : ProperSpace ℚ_[p] := by
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
-  simpa only [isCompact_iff_compactSpace] using PadicInt.compactSpace p
+  simpa only [isCompact_iff_compactSpace] using! PadicInt.compactSpace p
 
 end Padic

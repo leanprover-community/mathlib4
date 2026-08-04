@@ -44,7 +44,6 @@ attribute [coe] DistLat.carrier
 /-- Construct a bundled `DistLat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [DistribLattice X] : DistLat := ⟨X⟩
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `DistLat R`. -/
 @[ext]
 structure Hom (X Y : DistLat.{u}) where
@@ -93,7 +92,7 @@ lemma coe_comp {X Y Z : DistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : DistLat} (f : X ⟶ Y) :
-    (forget DistLat).map f = f := rfl
+    (forget DistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : DistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

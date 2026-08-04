@@ -58,7 +58,7 @@ lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     BddAbove (range fun i ↦ f i * g i) :=
-  .range_comp (f := fun i ↦ (f i, g i)) (bddAbove_range_prod.2 ⟨hf, hg⟩)
+  .range_comp_left (f := fun i ↦ (f i, g i)) (bddAbove_range_prod.2 ⟨hf, hg⟩)
     (monotone_fst.mul' monotone_snd)
 
 @[to_additive]
@@ -67,9 +67,9 @@ lemma BddBelow.range_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
 
 end Mul
 
-section InvNeg
+section Group
 variable [Group G] [Preorder G] [MulLeftMono G]
-  [MulRightMono G] {s : Set G} {a : G}
+  [MulRightMono G] {s t : Set G} {a b : G}
 
 @[to_additive (attr := simp)]
 theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=
@@ -114,11 +114,33 @@ theorem IsLUB.inv (h : IsLUB s a) : IsGLB s⁻¹ a⁻¹ :=
 @[to_additive]
 lemma BddBelow.range_inv {α : Type*} {f : α → G} (hf : BddBelow (range f)) :
     BddAbove (range (fun x => (f x)⁻¹)) :=
-  hf.range_comp (OrderIso.inv G).monotone
+  hf.range_comp_left (OrderIso.inv G).monotone
 
 @[to_additive]
 lemma BddAbove.range_inv {α : Type*} {f : α → G} (hf : BddAbove (range f)) :
     BddBelow (range (fun x => (f x)⁻¹)) :=
   BddBelow.range_inv (G := Gᵒᵈ) hf
 
-end InvNeg
+@[to_additive]
+lemma IsLUB.mul (hs : IsLUB s a) (ht : IsLUB t b) :
+    IsLUB (s * t) (a * b) :=
+  isLUB_image2_of_isLUB_isLUB (fun _ => (OrderIso.mulRight _).to_galoisConnection)
+    (fun _ => (OrderIso.mulLeft _).to_galoisConnection) hs ht
+
+@[to_additive]
+lemma IsGLB.mul (hs : IsGLB s a) (ht : IsGLB t b) :
+    IsGLB (s * t) (a * b) :=
+  IsLUB.mul (G := Gᵒᵈ) hs ht
+
+@[to_additive]
+lemma IsLUB.div (hs : IsLUB s a) (ht : IsGLB t b) :
+    IsLUB (s / t) (a / b) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv]
+  exact hs.mul ht.inv
+
+@[to_additive]
+lemma IsGLB.div (hs : IsGLB s a) (ht : IsLUB t b) :
+    IsGLB (s / t) (a / b) :=
+  IsLUB.div (G := Gᵒᵈ) hs ht
+
+end Group

@@ -108,7 +108,8 @@ lemma irreducible_of_disjoint_support [IsDomain R]
   apply irreducible_mul_X_add
   · grind only [monomial_eq_zero]
   · simp [φ, hfd, d₀, hdi]
-  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by simpa [mem_vars, hdψ] using this
+  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by
+      simpa [mem_vars_iff_mem_support, hdψ] using this
     exact fun x hxd hx hix ↦
       Finset.disjoint_iff_ne.mp (disjoint hd hx hxd) i (by simp [hdi]) _ hix rfl
   · rintro p hpφ ⟨q, hq⟩
@@ -150,6 +151,11 @@ theorem irreducible_of_totalDegree_eq_one
 
 variable (c : n →₀ R)
 
+#adaptation_note /-- Needed after leanprover/lean4#12564.
+Named to avoid collision with `MvPolynomial.instModule` from `Mathlib.RingTheory.MvPolynomial`. -/
+noncomputable instance instModuleSelf : Module R (MvPolynomial n R) :=
+  inferInstanceAs <| Module R (AddMonoidAlgebra R (n →₀ ℕ))
+
 /-- The linear polynomial $$\sum_i c_i X_i$$. -/
 noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
@@ -162,8 +168,8 @@ theorem coeff_sumSMulX (i : n) :
   rw [Finset.sum_eq_single i _ (by simp)]
   · simp
   intro j hj hji
-  rw [coeff_smul, coeff_X', if_neg]
-  · aesop
+  rw [coeff_smul, coeff_X, if_neg]
+  · simp
   · rwa [Finsupp.single_left_inj Nat.one_ne_zero]
 
 theorem irreducible_sumSMulX [IsDomain R]
@@ -196,6 +202,7 @@ noncomputable def sumSMulXSMulY :
 
 variable (c : n →₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_sumSMulXSMulY [IsDomain R]
     (hc : c.support.Nontrivial)
     (h_dvd : ∀ r, (∀ i, r ∣ c i) → IsUnit r) :
@@ -204,8 +211,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
      fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
-  -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sumSMulXSMulY c = c.embDomain ι := by
+  have aux : sumSMulXSMulY c = .ofCoeff (c.embDomain ι) := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
     simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
       Finsupp.linearCombination_apply, smul_monomial, ι]
@@ -213,15 +219,15 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   have hcoeff (i : n) : coeff (ι i) (sumSMulXSMulY c) = c i := by
     simp [aux, coeff, Finsupp.embDomain_apply]
   have hsupp : (sumSMulXSMulY c).support = c.support.map ι := by
-    rw [aux, support, Finsupp.support_embDomain]
+    simp [aux, support, Finsupp.support_embDomain]
   obtain ⟨a, ha⟩ := hc.nonempty
   apply irreducible_of_disjoint_support (d := ι a) (i := .inl a)
   · rwa [hsupp, Finset.map_nontrivial]
   · rwa [MvPolynomial.mem_support_iff, hcoeff, ← Finsupp.mem_support_iff]
   · simp [ι]
   · rw [hsupp, Finset.coe_map, ι.injective.injOn.pairwiseDisjoint_image]
-    suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inr x, Sum.inl x} by
-      simpa [ι, Function.comp_def, Finsupp.support_add_eq, Finsupp.support_single_ne_zero]
+    suffices (c.support : Set n).PairwiseDisjoint fun x ↦ {Sum.inl x, Sum.inr x} by
+      simpa [ι, Function.comp_def, Finsupp.support_add_eq, Finsupp.support_single]
     simp [Set.PairwiseDisjoint, Set.Pairwise, ne_comm]
   · intro r hr
     apply h_dvd

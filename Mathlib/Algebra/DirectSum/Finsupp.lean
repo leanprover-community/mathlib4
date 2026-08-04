@@ -12,7 +12,7 @@ public import Mathlib.Data.Finsupp.ToDFinsupp
 # Results on direct sums and finitely supported functions.
 
 1. The linear equivalence between finitely supported functions `ι →₀ M` and
-the direct sum of copies of `M` indexed by `ι`.
+   the direct sum of copies of `M` indexed by `ι`.
 -/
 
 @[expose] public section

@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Data.Multiset.Find
 
 /-!
 # Type of functions with finite support
@@ -119,13 +119,15 @@ initialize_simps_projections Finsupp (toFun → apply)
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
+instance instSubsingleton [IsEmpty α] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact isEmptyElim x
+
+instance instSubsingleton' [Subsingleton M] : Subsingleton (α →₀ M) where
+  allEq f g := by ext x; exact Subsingleton.elim ..
+
 variable (α) in
-theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
-    Nontrivial M := by
-  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
-  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
-  obtain ⟨a, h⟩ := h
-  exact nontrivial_of_ne _ _ h
+theorem nontrivial_of_nontrivial [h : Nontrivial (α →₀ M)] : Nontrivial M := by
+  contrapose! h; infer_instance
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
@@ -187,8 +189,12 @@ theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 
-theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
-  f.fun_support_eq.symm ▸ f.support.finite_toSet
+@[fun_prop]
+theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
+  rw [HasFiniteSupport]
+  exact f.fun_support_eq.symm ▸ f.support.finite_toSet
+
+@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
@@ -208,13 +214,6 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 @[simp]
 lemma coe_equivFunOnFinite_symm {α} [Finite α] (f : α → M) : ⇑(equivFunOnFinite.symm f) = f := rfl
 
-/--
-If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
--/
-@[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
-  Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
-
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
@@ -229,7 +228,7 @@ section OnFinset
 variable [Zero M]
 
 /-- The (not exposed) support of `Finsupp.onFinset`. -/
-@[no_expose] def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
+@[no_expose] def onFinsetSupport (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
@@ -237,9 +236,9 @@ variable [Zero M]
 The function must be `0` outside of `s`. Use this when the set needs to be filtered anyways,
 otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
-  support := onFinset_support s f
+  support := onFinsetSupport s f
   toFun := f
-  mem_support_toFun := by simpa [onFinset_support]
+  mem_support_toFun := by simpa [onFinsetSupport]
 
 @[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
@@ -250,7 +249,9 @@ theorem onFinset_apply {s : Finset α} {f : α → M} {hf a} : (onFinset s f hf 
 theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
     (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
     (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
-  dsimp [onFinset]; rw [onFinset_support]; congr
+  dsimp [onFinset]; rw [onFinsetSupport]; congr
+
+@[simp] lemma onFinset_support (f : α →₀ M) : onFinset f.support f (by simp) = f := by ext; simp
 
 @[simp]
 theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
@@ -348,7 +349,7 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
   ext g
-  simp only [Set.mem_range, Set.mem_setOf]
+  simp only [Set.mem_range, Set.mem_ofPred]
   constructor
   · grind
   · intro h
@@ -370,6 +371,10 @@ lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
   rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
+lemma mapRange_bijective (e : M → N) (he₀ : e 0 = 0) (he : Bijective e) :
+    Bijective (Finsupp.mapRange (α := α) e he₀) :=
+  ⟨mapRange_injective e he₀ he.1, mapRange_surjective e he₀ he.2⟩
+
 end MapRange
 
 section Equiv
@@ -383,6 +388,7 @@ def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N
   left_inv x := by ext; simp
   right_inv x := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mapRange.equiv_refl : mapRange.equiv (.refl M) rfl = .refl (ι →₀ M) := by ext; simp
 
 lemma mapRange.equiv_trans (e : M ≃ N) (hf) (f₂ : N ≃ O) (hf₂) :
@@ -407,22 +413,12 @@ is the finitely supported function whose value at `f a : β` is `v a`.
 For a `b : β` outside the range of `f`, it is zero. -/
 def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
-  toFun a₂ :=
+  toFun b :=
     haveI := Classical.decEq β
-    if h : a₂ ∈ v.support.map f then
-      v
-        (v.support.choose (fun a₁ => f a₁ = a₂)
-          (by
-            rcases Finset.mem_map.1 h with ⟨a, ha, rfl⟩
-            exact ExistsUnique.intro a ⟨ha, rfl⟩ fun b ⟨_, hb⟩ => f.injective hb))
-    else 0
-  mem_support_toFun a₂ := by
-    dsimp
-    split_ifs with h
-    · simp only [h, true_iff]
-      rw [← notMem_support_iff, not_not]
-      classical apply Finset.choose_mem
-    · simp only [h, not_true_eq_false]
+    match v.support.1.find? (fun a => f a = b) (by intro x; grind) with
+    | some a => v a
+    | none => 0
+  mem_support_toFun a₂ := by grind
 
 @[simp]
 theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).support = v.support.map f :=
@@ -432,26 +428,24 @@ theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).su
 theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
   rfl
 
-open Classical in
+open scoped Classical in
 @[grind =]
 theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
     embDomain f v b = if h : ∃ a, f a = b then v h.choose else 0 := by
-  simp only [embDomain, mem_map, mem_support_iff, coe_mk]
+  simp only [embDomain, coe_mk]
   -- TODO: investigate why `grind` needs `split_ifs` first; this should never happen.
   split_ifs <;> grind
 
 @[simp, grind =]
 theorem embDomain_apply_self (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
-  classical
-    simp_rw [embDomain, coe_mk, mem_map']
-    split_ifs with h
-    · refine congr_arg (v : α → M) (f.inj' ?_)
-      exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
-    · exact (notMem_support_iff.1 h).symm
+  simp_rw [embDomain, coe_mk]
+  grind
 
 @[grind =>]
-theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
+theorem embDomain_of_notMem_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by grind [embDomain]
+
+@[deprecated (since := "2026-07-15")] alias embDomain_notin_range := embDomain_of_notMem_range
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
   fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply_self] using DFunLike.ext_iff.1 h (f a)
@@ -466,6 +460,10 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
     embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
+
+@[simp]
+lemma embDomain_refl : embDomain (M := M) (Function.Embedding.refl α) = id := by
+  ext; simp [embDomain_apply]
 
 end EmbDomain
 
@@ -494,7 +492,7 @@ theorem zipWith_apply {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
 
 theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
-  convert support_onFinset_subset
+  convert! support_onFinset_subset
 
 end ZipWith
 

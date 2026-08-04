@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Data.ENNReal.Operations
 
 /-!
@@ -26,12 +27,18 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 -- TODO: generalize some of these to `WithTop α`
 section Actions
 
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : SMul ℝ≥0 M :=
+  ⟨fun c m ↦ (c : ℝ≥0∞) • m⟩
+
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M ofNNRealHom.toMonoidHom
+  fast_instance% MulAction.compHom M ofNNRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
+
+@[simp]
+theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
 
 instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
@@ -45,12 +52,13 @@ instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
     DistribMulAction ℝ≥0 M :=
-  DistribMulAction.compHom M ofNNRealHom.toMonoidHom
+  fast_instance% DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
-  Module.compHom M ofNNRealHom
+  fast_instance% Module.compHom M ofNNRealHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
@@ -97,6 +105,16 @@ instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
   smul_le_smul_of_nonneg_right _r _ _a _b hab := _root_.mul_le_mul_left (coe_le_coe.2 hab) _
+
+instance : IsOrderedModule ℝ≥0 ℝ≥0∞ where
+
+example : CovariantClass ℝ≥0∞ ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
+
+instance : IsOrderedSMul ℝ≥0 ℝ≥0∞ where
+  smul_le_smul_left a b hab c := by gcongr
+  smul_le_smul_right a b hab c := by gcongr
+
+example : CovariantClass ℝ≥0 ℝ≥0∞ (· • ·) (· ≤ ·) := inferInstance
 
 end Actions
 

@@ -42,7 +42,6 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]
 structure Hom (X Y : BddOrd.{u}) where
@@ -91,7 +90,7 @@ lemma coe_comp {X Y Z : BddOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : BddOrd} (f : X ⟶ Y) :
-    (forget BddOrd).map f = f := rfl
+    (forget BddOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -64,6 +63,7 @@ and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ)).measure
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
@@ -97,7 +97,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
-  simp_rw [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  simp_rw [Set.mem_ofPred_eq, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
@@ -138,8 +138,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     apply Disjoint.preimage
     simp_rw [mem_preimage, mem_Ioc, disjoint_left]
     intro x hx
-    rw [mem_setOf_eq, and_assoc] at hx
-    simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
+    rw [mem_ofPred_eq, and_assoc] at hx
+    simp_rw [mem_ofPred_eq, not_and_or, not_lt, not_le, or_assoc]
     rcases (by lia : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
@@ -183,6 +183,7 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
   obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
 private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure Λ) := by
@@ -242,8 +243,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
     _ = ∑ n, (y n + ε') * Λ (g n) := by simp
     -- That `y n + ε'` can be negative is bad in the inequalities so we artificially include `|a|`.
-    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
-      by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
+    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) := by
+      simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
     _ = ∑ n, (y n - ε') * μ.real (E n) +
@@ -480,7 +481,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     by infer_instance, ?_, fun g ↦ ?_⟩
   · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
     simp
-  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]
