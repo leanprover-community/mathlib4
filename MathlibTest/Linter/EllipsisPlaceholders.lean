@@ -357,6 +357,7 @@ set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
 def instBatch {α : Type u} {β : Type v} [Add α] [Add β] (f : α → β) : Nat := 0
 
 -- `@`-explicit: no rewrites collected.
+#guard_msgs(drop info) in
 #guard_ellipsis_rewrites
 #check @instBatch _ _ _ _
 
