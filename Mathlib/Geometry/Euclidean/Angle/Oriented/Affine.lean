@@ -414,7 +414,7 @@ theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ 
 /-- If two oriented angles are equal, and the first triple is not collinear, then the
 corresponding unoriented angles are equal. -/
 theorem angle_eq_of_oangle_eq_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
-    (h_not_col1 : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P)) (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) :
+    (h_not_col1 : ¬ Collinear ℝ {p₁, p₂, p₃}) (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆) :
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
   have h_ne1: p₂ ≠ p₁ := (ne₁₂_of_not_collinear h_not_col1).symm
   have h_ne2: p₂ ≠ p₃ := (ne₂₃_of_not_collinear h_not_col1)
