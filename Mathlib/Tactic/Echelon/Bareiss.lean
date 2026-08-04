@@ -271,25 +271,23 @@ def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : A
     pure e
   instantiateMVars e
 
-/-- Produce and elaborate a `Bareiss.Decomposition` of the matrix literal `M`, given its
-matched dimensions, element type, and entries (from `matchMatrixLit?`): probe the ring's
-reading policy, read the entries' values, scale fractional rows integral, eliminate, and
-elaborate the certificate. Failures here are refusals of a committed attempt, and throw. -/
+/-- Produce and elaborate the `Bareiss.Decomposition` certificate of the matrix literal
+`M`. -/
 def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM Expr := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
+  -- tests if the ring has division and charzero to pass to the entry reading function
   let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
-  -- in a `CharZero` ring the integer values decide their own zero tests, and fraction
-  -- entries read faithfully as rationals.
-  -- `CharZero` has an `[AddMonoidWithOne R]` prerequisite that only runtime synthesis
-  -- against the concrete `R` can provide, so the probe synthesizes it first.
+  -- `CharZero`'s `[AddMonoidWithOne R]` argument must be synthesized first: `mkAppM`
+  -- would leave it an unassigned metavariable and the probe would always fail
   let charZero ← do
     match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
     | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
     | none => pure false
   let ratRows ← readEntryValues isDivRing charZero entries
   let (values, scales) := scaleRowsIntegral ratRows
+  -- in characteristic zero `ℤ` embeds in `R`, so the integer zero test is faithful
   let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
   mkCertificate R M m n scales d
 

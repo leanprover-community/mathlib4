@@ -22,8 +22,7 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Match `Matrix.rank` of a matrix literal: the shape half of the commitment gate
-(`checkBareissCommittal` is the applicability half); never throws. -/
+/-- Match `Matrix.rank` of a matrix literal. -/
 def matchRankLit? (e : Expr) :
     MetaM (Option (Expr × Nat × Nat × Expr × Array (Array Expr))) := do
   match_expr e with
@@ -34,8 +33,7 @@ def matchRankLit? (e : Expr) :
   | _ => return none
 
 /-- Rewrite `Matrix.rank M` to the pivot count of the Bareiss decomposition of the matrix
-literal `M`, as matched by `matchRankLit?`. Everything here is past the commitment gate:
-failures are refusals of a committed attempt, and throw. -/
+literal `M`. -/
 def normalizeRank (e M : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
   let decomp ← (mkBareissDecomposition M m n R entries).run'
