@@ -58,7 +58,7 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe.
 
-See `Algebra.IsAlgebraic.rank_mul_rank` for a version for non-free modules when `S/R` is
+See `Algebra.IsAlgebraic.rank_mul_rank` for a version for modules over domains when `S/R` is
 algebraic. -/
 @[stacks 09G9]
 theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
@@ -69,9 +69,9 @@ theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
-For non-free modules, there are the following variants:
+For non-free modules over domains, there are the following variants:
 - `Algebra.IsAlgebraic.finrank_mul_finrank` for when `S/R` is algebraic.
-- `Module.finrank_mul_finrank'` over a tower of domains, given faithfulness of the top module.
+- `Module.finrank_mul_finrank'` for when the top module is torsion-free.
 -/
 theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
