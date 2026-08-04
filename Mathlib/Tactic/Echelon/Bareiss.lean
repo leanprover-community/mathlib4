@@ -177,10 +177,10 @@ A separate `isZero` function handles testing for zero in the original ring `R`.
 A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
 invariant is `L * (M.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
 update both simultaneously, and a row interchange conjugates `L` by the swap.
-The divisions are exact by Sylvester's identity. -/
+The divisions are exact by Sylvester's identity, although the data-only computation does
+not prove that. -/
 def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
     MetaM BareissData := do
-  /- TODO: more comments -- implemented from wikipedia and other sources -/
   let m := M.size
   let n := (M.getD 0 #[]).size
   -- the main row elimination function
@@ -194,6 +194,8 @@ def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
   let mut pivots : Array Nat := #[]
   let mut r : Nat := 0
   let mut prev : Int := 1
+  /- TODO: more comments for how the loops actually work again -- implemented from wikipedia and
+  other sources -/
   for c in [0:n] do
     if r == m then break
     let mut p : Nat := m
