@@ -122,8 +122,8 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 
 /-- The core of the `norm_num` extension which normalizes expressions of the form `minFac n`.
 This is public for use in the `Nat.primeFactorsList_ofNat` simproc. -/
-partial def evalMinFac.core (n : Q(ℕ)) (nn : Q(ℕ)) (pn : Q(IsNat «$n» «$nn»))
-  (n' : ℕ) : MetaM (Result q(«$n».minFac)) := do
+partial def evalMinFac.core (n : Q(ℕ)) (nn : Q(ℕ)) (pn : Q(IsNat $n $nn))
+  (n' : ℕ) : MetaM (Result q(Nat.minFac $n)) := do
     let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
     let rec aux (ek : Q(ℕ)) (prf : Q(MinFacHelper $nn $ek)) :
       (c : Q(ℕ)) × Q(IsNat (Nat.minFac $n) $c) :=
