@@ -523,7 +523,7 @@ open Function.PullbackSelf Function.Pullback
 theorem preimage_map_fst_pullbackDiagonal {f : X → Y} {g : Z → Y} :
     @map_fst X Y Z f g ⁻¹' pullbackDiagonal f = pullbackDiagonal (@snd X Y Z f g) := by
   ext ⟨⟨p₁, p₂⟩, he⟩
-  simp_rw [pullbackDiagonal, mem_setOf, Subtype.ext_iff, Prod.ext_iff]
+  simp_rw [pullbackDiagonal, mem_ofPred, Subtype.ext_iff, Prod.ext_iff]
   exact (and_iff_left he).symm
 
 theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X} (inj : g.Injective) :
@@ -723,7 +723,7 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
     by_cases p i <;> simp_all
 
 theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
-  simp [pi, or_imp, forall_and, setOf_and]
+  simp [pi, or_imp, forall_and, ofPred_and]
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :

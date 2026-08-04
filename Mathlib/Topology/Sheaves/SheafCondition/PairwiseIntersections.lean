@@ -294,7 +294,7 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
     F.IsSheaf ↔ F.IsSheafPreservesLimitPairwiseIntersections := by
   refine ⟨fun h U ↦ h.isSheafPreservesLimitPairwiseIntersections,
     fun h ↦ F.isSheaf_iff_isSheafPairwiseIntersections.mpr fun ι U ↦ ?_⟩
-  haveI := h U
+  have := h U
   exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf

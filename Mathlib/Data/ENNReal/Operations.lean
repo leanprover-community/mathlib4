@@ -277,7 +277,7 @@ end Cancel
 section Sub
 
 theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
-  le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_setOf.2 le_tsub_add
+  le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_ofPred.2 le_tsub_add
 
 /-- This is a special case of `WithTop.coe_sub` in the `ENNReal` namespace -/
 @[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
@@ -518,6 +518,7 @@ theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by
   simp only [ENNReal.toReal, toNNReal_iInf hf, NNReal.coe_iInf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toReal = sInf (ENNReal.toReal '' s) := by
   simp only [ENNReal.toReal, toNNReal_sInf s hf, NNReal.coe_sInf, Set.image_image]
@@ -617,6 +618,7 @@ theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
 theorem toReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toReal = ⨆ i, (f i).toReal := by
   simp only [ENNReal.toReal, toNNReal_iSup hf, NNReal.coe_iSup]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toReal = sSup (ENNReal.toReal '' s) := by
   simp only [ENNReal.toReal, toNNReal_sSup s hf, NNReal.coe_sSup, Set.image_image]
@@ -644,7 +646,7 @@ lemma iSup_add [Nonempty ι] (f : ι → ℝ≥0∞) : (⨆ i, f i) + a = ⨆ i,
 
 lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
     a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
-  haveI : Nonempty {i // p i} := nonempty_subtype.2 h
+  have : Nonempty {i // p i} := nonempty_subtype.2 h
   simp only [iSup_subtype', add_iSup]
 
 lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℝ≥0∞) :
