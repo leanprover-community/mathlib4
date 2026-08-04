@@ -687,12 +687,14 @@ open Classical in
 The composition is well-defined if the range of the `LinearMap` is
 contained in the domain of the `LinearPMap`.
 Otherwise it takes the junk value `0`. -/
-noncomputable def compLinearMap (f : F →ₗ.[R] G) (g : E →ₗ[R] F) : E →ₗ[R] G :=
+noncomputable def compLinearMap [Module R F] [Module R G] (f : F →ₗ.[R] G) (g : E →ₗ[R] F) :
+    E →ₗ[R] G :=
   if hgf : LinearMap.range g ≤ f.domain then f.toFun.comp (g.codRestrict f.domain
     (fun x ↦ hgf (LinearMap.mem_range_self g x))) else 0
 
-theorem compLinearMap_apply {f : F →ₗ.[R] G} {g : E →ₗ[R] F} (hgf : LinearMap.range g ≤ f.domain)
-    (x : E) : (f.compLinearMap g) x = f ⟨g x, hgf (LinearMap.mem_range_self g x)⟩ := by
+theorem compLinearMap_apply [Module R F] [Module R G] {f : F →ₗ.[R] G} {g : E →ₗ[R] F}
+    (hgf : LinearMap.range g ≤ f.domain) (x : E) :
+    (f.compLinearMap g) x = f ⟨g x, hgf (LinearMap.mem_range_self g x)⟩ := by
   simp [compLinearMap, hgf]
   congr
 
@@ -1202,8 +1204,8 @@ theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z₁ z₂ : R} (hz�
   · simp [sub_apply, vadd_apply, vadd_apply, ← sub_smul]
   · simp [inverse_asLinearMap_range hz₂, sub_domain]
 
-theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z₁ z₂ : R}
-    (hz₁ : z₁ ∈ f.resolventSet) (hz₂ : z₂ ∈ f.resolventSet) :
+theorem resolventLM_commute [IsCancelMulZero R] [Module.IsTorsionFree R E] {f : E →ₗ.[R] E}
+    {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet) (hz₂ : z₂ ∈ f.resolventSet) :
     f.resolventLM z₁ ∘ₗ f.resolventLM z₂ = f.resolventLM z₂ ∘ₗ f.resolventLM z₁ := by
   by_cases hz : z₁ = z₂
   · rw [hz]
@@ -1216,14 +1218,10 @@ theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z₁ 
     simp
   have := eq_neg_of_add_eq_zero_right this
   rw [← neg_smul, neg_sub] at this
-  apply smul_cancel_of_non_zero_divisor (z₁ - z₂)
-  · intro f hf
-    have := LinearMap.instNoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hf
-    obtain h1|h2 := this
-    · exfalso
-      exact hz (sub_eq_zero.mp h1)
-    exact h2
-  exact this.symm
+  apply smul_cancel_of_non_zero_divisor (z₁ - z₂) ?_ this.symm
+  intro f hf
+  have : z₁ - z₂ ≠ 0 := by grind
+  rwa [← smul_eq_zero_iff_right this]
 
 end resolvent
 
