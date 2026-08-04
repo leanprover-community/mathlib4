@@ -112,7 +112,7 @@ lemma interval_lower (hab : a < b) : (interval hab).lower₁ = a := rfl
 lemma interval_upper (hab : a < b) : (interval hab).upper₁ = b := rfl
 
 @[simp]
-lemma interval_Icc (hab : a < b) : Box.Icc (interval hab) = {x | x 0 ∈ Set.Icc a b} := by
+lemma Icc_interval (hab : a < b) : Box.Icc (interval hab) = {x | x 0 ∈ Set.Icc a b} := by
   ext; simp [Box.Icc_def, interval, Pi.le_def]
 
 end Interval
