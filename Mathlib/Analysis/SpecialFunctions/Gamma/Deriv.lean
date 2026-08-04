@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
+import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
@@ -65,10 +66,8 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
 
 theorem hasDerivAt_Gamma {s : ℂ} (hs : 0 < s.re) :
     HasDerivAt Gamma (∫ t : ℝ in Ioi 0, t ^ (s - 1) * (Real.log t * Real.exp (-t))) s := by
-  -- `{s | 0 < s.re}` is an open half-plane; use `Complex.isOpen_re_gt 0` once #42325 lands.
-  have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
   apply (hasDerivAt_GammaIntegral hs).congr_of_eventuallyEq
-  filter_upwards [this.mem_nhds hs] with a using Gamma_eq_integral
+  filter_upwards [(isOpen_re_gt 0).mem_nhds hs] with a using Gamma_eq_integral
 
 @[fun_prop]
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
@@ -173,9 +172,9 @@ theorem integrableOn_log_log_mul_rpow {s : ℝ} (hs : 1 < s) :
   · simp only [add_mul, mul_assoc]
     refine (Integrable.const_mul ?_ _).add ?_
     · simpa [IntegrableOn] using integrableOn_rpow_mul_exp_neg_mul_rpow
-        (by norm_num : -1 < (-1 : ℝ) / 2) (le_refl 1) (by linarith : 0 < s - 1)
+        (by norm_num : -1 < (-1 : ℝ) / 2) one_pos (by linarith : 0 < s - 1)
     · simpa [IntegrableOn] using integrableOn_rpow_mul_exp_neg_mul_rpow
-        (by norm_num : -1 < (1 : ℝ)) (le_refl 1) (by linarith : 0 < s - 1)
+        (by norm_num : -1 < (1 : ℝ)) one_pos (by linarith : 0 < s - 1)
   · exact Measurable.aestronglyMeasurable (by fun_prop)
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
   simp only [mem_Ioi] at hx
