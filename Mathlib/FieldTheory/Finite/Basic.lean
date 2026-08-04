@@ -6,7 +6,6 @@ Authors: Chris Hughes, Joey van Langen, Casper Putz
 module
 
 public import Mathlib.Algebra.CharP.Algebra
-public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
@@ -14,8 +13,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
-public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # Finite fields
@@ -254,8 +251,8 @@ variable (K) [Field K] [Fintype K]
 /-- The cardinality `q` is a power of the characteristic of `K`. -/
 @[stacks 09HY "first part"]
 theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
-  haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
-  letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
+  have hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
+  let : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
   obtain ⟨n, h⟩ := VectorSpace.card_fintype (ZMod p) K
   rw [ZMod.card] at h
   refine ⟨⟨n, ?_⟩, hp.1, h⟩
@@ -278,16 +275,15 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
 
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
-  classical
-    obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
-      orderOf_dvd_iff_pow_eq_one]
-    constructor
-    · intro h; apply h
-    · intro h y
-      simp_rw [← mem_powers_iff_mem_zpowers] at hx
-      rcases hx y with ⟨j, rfl⟩
-      rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
+  obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
+  rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    orderOf_dvd_iff_pow_eq_one]
+  constructor
+  · intro h; apply h
+  · intro h y
+    simp_rw [← mem_powers_iff_mem_zpowers] at hx
+    rcases hx y with ⟨j, rfl⟩
+    rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
@@ -487,7 +483,7 @@ open Polynomial
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
-  haveI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   dsimp at hn
   rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
     frobenius_pow hn, RingHom.one_def, map_id]
@@ -540,7 +536,7 @@ namespace CharP
 
 theorem sq_add_sq (R : Type*) [Ring R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
-  haveI := char_is_prime_of_pos R p
+  have := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
   refine ⟨a.val, b.val, ?_⟩
   simpa using congr_arg (ZMod.castHom dvd_rfl R) hab
@@ -638,7 +634,7 @@ end ZMod
 `a ^ (p - 1) ≡ 1 [ZMOD p]`. -/
 theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
     n ^ (p - 1) ≡ 1 [ZMOD p] := by
-  haveI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
     · exact hpn.symm
@@ -649,7 +645,7 @@ theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : 
   (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
 
 theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^ p ≡ n [ZMOD p] := by
-  haveI : Fact p.Prime := ⟨hp⟩
+  have : Fact p.Prime := ⟨hp⟩
   simp [← ZMod.intCast_eq_intCast_iff]
 
 theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
@@ -728,7 +724,7 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
 /-- The prime subfield is finite. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Subfield.fintypeBot : Fintype (⊥ : Subfield F) :=
   Fintype.subtype (univ.map ⟨_, (ZMod.castHom (m := p) dvd_rfl F).injective⟩)
     fun _ ↦ by simp_rw [Finset.mem_map, mem_univ, true_and, ← fieldRange_castHom_eq_bot p]; rfl
@@ -804,27 +800,26 @@ theorem pow_dichotomy (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
 if and only if `a ^ (#F / 2) = 1`. -/
 theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     IsSquare a ↔ a ^ (Fintype.card F / 2) = 1 := by
-  classical
-    obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Fˣ)
-    obtain ⟨n, hn⟩ : a ∈ Submonoid.powers g := by rw [mem_powers_iff_mem_zpowers]; apply hg
-    have hodd := Nat.two_mul_odd_div_two (FiniteField.odd_card_of_char_ne_two hF)
-    constructor
-    · rintro ⟨y, rfl⟩
-      rw [← pow_two, ← pow_mul, hodd]
-      apply_fun Units.val using Units.val_injective
-      push_cast
-      exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
-    · subst a; intro h
-      rw [← Nat.card_eq_fintype_card] at hodd h
-      have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
-        rw [← pow_mul] at h
-        rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
-        apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by simp)
-      obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
-      refine ⟨g ^ m, ?_⟩
-      dsimp
-      rw [mul_comm, pow_mul, pow_two]
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := Fˣ)
+  obtain ⟨n, hn⟩ : a ∈ Submonoid.powers g := by rw [mem_powers_iff_mem_zpowers]; apply hg
+  have hodd := Nat.two_mul_odd_div_two (FiniteField.odd_card_of_char_ne_two hF)
+  constructor
+  · rintro ⟨y, rfl⟩
+    rw [← pow_two, ← pow_mul, hodd]
+    apply_fun Units.val using Units.val_injective
+    push_cast
+    exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
+  · subst a; intro h
+    rw [← Nat.card_eq_fintype_card] at hodd h
+    have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
+      rw [← pow_mul] at h
+      rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
+      apply orderOf_dvd_of_pow_eq_one h
+    have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by simp)
+    obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
+    refine ⟨g ^ m, ?_⟩
+    dsimp
+    rw [mul_comm, pow_mul, pow_two]
 
 /-- A non-zero `a : F` is a square if and only if `a ^ (#F / 2) = 1`. -/
 theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :

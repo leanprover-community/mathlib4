@@ -201,7 +201,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
   cont := by
     apply PointwiseConvergenceCLM.continuous_of_continuous_eval
     intro g
-    haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+    have : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
     exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
@@ -602,15 +602,9 @@ def delta (x : E) : 𝓢'(E, ℂ) :=
   toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
-@[deprecated (since := "2025-12-23")]
-noncomputable alias _root_.SchwartzMap.delta := delta
-
 @[simp]
 theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
   rfl
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.delta_apply := delta_apply
 
 open MeasureTheory MeasureTheory.Measure
 
@@ -620,9 +614,6 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 @[simp]
 theorem toTemperedDistribution_dirac_eq_delta (x : E) :
   (dirac x).toTemperedDistribution = delta x := by aesop
-
-@[deprecated (since := "2025-12-23")]
-alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
 
 end definition
 

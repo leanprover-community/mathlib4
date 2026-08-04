@@ -45,6 +45,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Atlas
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 theorem ModelWithCorners.contMDiff : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
@@ -52,6 +53,7 @@ theorem ModelWithCorners.contMDiff : ContMDiff I 𝓘(𝕜, E) n I := by
   simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp)
 @[deprecated (since := "2026-06-16")] alias contMDiff_model := ModelWithCorners.contMDiff
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 theorem ModelWithCorners.contMDiffOn_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   intro x hx
