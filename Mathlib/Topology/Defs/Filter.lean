@@ -246,7 +246,7 @@ A set `s` is locally closed at a point `x` if there is a neighborhood `U` of `x`
 Also see `isLocallyClosedAt_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
 -/
 def IsLocallyClosedAt (s : Set X) (x : X) : Prop :=
-  ∃ (U Z : Set X), U ∈ 𝓝 x ∧ IsClosed Z ∧ U ∩ s = U ∩ Z
+  ∃ U ∈ 𝓝 x, ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z
 
 section Lim
 
