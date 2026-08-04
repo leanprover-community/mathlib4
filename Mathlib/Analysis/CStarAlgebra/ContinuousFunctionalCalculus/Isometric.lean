@@ -166,6 +166,18 @@ lemma nnnorm_spectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a) (ha : p a
     ‖x‖₊ ≤ ‖a‖₊ := by
   simpa only [cfc_id 𝕜 a] using! nnnorm_apply_le_nnnorm_cfc (id : 𝕜 → 𝕜) a hx
 
+include 𝕜 in
+variable (𝕜) in
+protected lemma _root_.CFC.norm_pow (a : A) (n : ℕ) (hn : n ≠ 0) (ha : p a := by cfc_tac) :
+    ‖a ^ n‖ = ‖a‖ ^ n := by
+  obtain (h | h) := subsingleton_or_nontrivial A
+  · simp [h.elim a 0, hn]
+  apply le_antisymm (by simpa using norm_pow_le' _ (Nat.zero_lt_of_ne_zero hn))
+  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_spectrum (𝕜 := 𝕜) a ha
+  simp only at hx'
+  rw [← hx', ← norm_pow, ← cfc_id' 𝕜 a, ← cfc_pow ..]
+  exact norm_apply_le_norm_cfc (· ^ n) a hx
+
 end IsometricContinuousFunctionalCalculus
 
 end NormedRing
@@ -353,6 +365,30 @@ lemma isGreatest_nnnorm_quasispectrum (a : A) (ha : p a := by cfc_tac) :
 lemma nnnorm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (ha : p a := by cfc_tac) :
     ‖x‖₊ ≤ ‖a‖₊ := by
   simpa only [cfcₙ_id 𝕜 a] using! nnnorm_apply_le_nnnorm_cfcₙ (id : 𝕜 → 𝕜) a hx
+
+/- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
+for general semigroups. -/
+include 𝕜 in
+variable (𝕜) in
+lemma _root_.CFC.norm_mul_self (a : A) (ha : p a := by cfc_tac) :
+    ‖a * a‖ = ‖a‖ ^ 2 := by
+  apply le_antisymm (by simpa [sq] using norm_mul_le ..)
+  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
+  rw [← hx', ← norm_pow, sq, ← cfcₙ_id' 𝕜 a, ← cfcₙ_mul ..]
+  exact norm_apply_le_norm_cfcₙ (fun x ↦ x * x) a hx
+
+/- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
+for general semigroups.
+
+Currently, this lemma is used in the proof of `CStarAlgebra.norm_posPart_mono`. -/
+include 𝕜 in
+variable (𝕜) in
+lemma _root_.CFC.norm_mul_mul_self (a : A) (ha : p a := by cfc_tac) :
+    ‖a * a * a‖ = ‖a‖ ^ 3 := by
+  apply le_antisymm (by simpa [pow_succ] using norm_mul₃_le ..)
+  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
+  rw [← hx', ← norm_pow, ← cfcₙ_id' 𝕜 a, ← cfcₙ_mul .., ← cfcₙ_mul ..]
+  simpa only [pow_succ, pow_zero, one_mul] using norm_apply_le_norm_cfcₙ (fun x ↦ x * x * x) a hx
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 
