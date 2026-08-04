@@ -91,6 +91,12 @@ theorem ofPartialFun_eq_iff {s t : Set α} {hs : s ∈ l} {ht : t ∈ l}
   unfold ofPartialFun Product productSetoid
   simp [Quotient.eq]
 
+theorem ofPartialFun_eq_of_subset {s t : Set α} (hs : s ∈ l) (hst : s ⊆ t)
+    (f : (x : α) → x ∈ t → ε x) :
+    ofPartialFun t (Filter.mem_of_superset hs hst) f =
+      ofPartialFun s hs fun x hx => f x (hst hx) :=
+  ofPartialFun_eq_iff.2 (.of_forall fun _ _ _ => rfl)
+
 def liftOfPartialFun {β : Sort*} (f : (s : Set α) → s ∈ l → ((x : α) → x ∈ s → ε x) → β)
     (hf : ∀ s t hs ht g g', (∀ᶠ x in l, ∀ hxs hxt, g x hxs = g' x hxt) → f s hs g = f t ht g')
     (x : Product l ε) : β :=
@@ -150,6 +156,9 @@ instance coeTC : CoeTC ((x : α) → ε x) (l.Product ε) where
 
 instance instInhabited [(x : α) → Inhabited (ε x)] : Inhabited (l.Product ε) where
   default := ofFun default
+
+instance [(x : α) → Nonempty (ε x)] : Nonempty (l.Product ε) :=
+  ⟨ofFun Classical.ofNonempty⟩
 
 theorem nonempty_iff : Nonempty (l.Product ε) ↔ ∀ᶠ x in l, Nonempty (ε x) := by
   constructor
