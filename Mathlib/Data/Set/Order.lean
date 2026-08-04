@@ -108,11 +108,15 @@ theorem AntitoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : 
 
 namespace Set
 
-theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a => p a b) :
+theorem monotone_ofPred [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a => p a b) :
     Monotone fun a => { b | p a b } := fun _ _ h b => hp b h
 
-theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a => p a b) :
+@[deprecated (since := "2026-07-09")] alias monotone_setOf := monotone_ofPred
+
+theorem antitone_ofPred [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a => p a b) :
     Antitone fun a => { b | p a b } := fun _ _ h b => hp b h
+
+@[deprecated (since := "2026-07-09")] alias antitone_setOf := antitone_ofPred
 
 /-- Quantifying over a set is antitone in the set -/
 theorem antitone_bforall {P : α → Prop} : Antitone fun s : Set α => ∀ x ∈ s, P x :=

@@ -11,7 +11,8 @@ public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Tactic.Order
 
 /-!
@@ -161,6 +162,12 @@ theorem weightedHomogeneousSubmodule_eq_finsupp_supported (w : σ → M) (m : M)
   simp [IsWeightedHomogeneous]
   simp [AddMonoidAlgebra.mem_supported, Set.subset_def, MvPolynomial, coeff]
 
+lemma weightedHomogeneousSubmodule_fg [Finite σ] (w : σ → ℕ) (hw : ∀ (x : σ), w x ≠ 0) (n : ℕ) :
+    (weightedHomogeneousSubmodule R w n).FG := by
+  rw [weightedHomogeneousSubmodule_eq_finsupp_supported, ← Module.Finite.iff_fg]
+  have := (Finsupp.finite_of_nat_weight_eq w hw n).to_subtype
+  exact Module.Finite.of_basis (basisRestrictSupport R {d | Finsupp.weight w d = n})
+
 variable {R}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -217,6 +224,11 @@ theorem isWeightedHomogeneous_zero (w : σ → M) (m : M) :
 theorem isWeightedHomogeneous_one (w : σ → M) : IsWeightedHomogeneous w (1 : MvPolynomial σ R) 0 :=
   isWeightedHomogeneous_C _ _
 
+lemma isWeightedHomogeneous_of_isEmpty [IsEmpty σ] (w : σ → M) (f : MvPolynomial σ R) :
+    IsWeightedHomogeneous w f 0 := by
+  rw [eq_C_of_isEmpty f]
+  exact isWeightedHomogeneous_C _ _
+
 /-- An indeterminate `i : σ` is weighted homogeneous of degree `w i`. -/
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
@@ -245,6 +257,36 @@ theorem inj_right {w : σ → M} (hφ : φ ≠ 0) (hm : IsWeightedHomogeneous w 
 theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
+
+section CommRing
+
+-- In this section we shadow the semiring `R` with a ring `R`.
+variable {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+
+/-- The negation of a weighted homogeneous polynomial of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem neg (hφ : IsWeightedHomogeneous w φ n) : IsWeightedHomogeneous w (-φ) n :=
+  (weightedHomogeneousSubmodule R w n).neg_mem hφ
+
+/-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem sub (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+    IsWeightedHomogeneous w (φ - ψ) n :=
+  (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+end CommRing
+
+/-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
+theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 :=
+  support_eq_empty.mp <| Finset.eq_empty_of_forall_notMem
+    fun _ hd ↦ hno _ (hφ (mem_support_iff.mp hd))
+
+/-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
+fixed `d₀` is a single monomial. -/
+theorem eq_monomial_of_unique_weight {w : σ → M} {d₀ : σ →₀ ℕ} (hφ : IsWeightedHomogeneous w φ n)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) :=
+  eq_monomial_of_support_subset_singleton fun d hd ↦ huniq d (hφ (mem_support_iff.mp hd))
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
@@ -323,7 +365,7 @@ lemma induction_on {w : σ → M} {m : M}
   rw [Set.image_subset_iff]
   intro d hd
   simp only [MvPolynomial, Submodule.coe_set_mk, AddSubmonoid.coe_set_mk,
-    AddSubsemigroup.coe_set_mk, preimage_setOf_eq, mem_setOf_eq, A]
+    AddSubsemigroup.coe_set_mk, preimage_ofPred_eq, mem_ofPred_eq, A]
   refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
   simpa only [single_eq_monomial, ← MvPolynomial.C_mul_monomial] using monomial _ (a * 1) hd
 
@@ -411,6 +453,7 @@ theorem weightedHomogeneousComponent_finsupp :
 
 variable (w)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Every polynomial is the sum of its weighted homogeneous components. -/
 theorem sum_weightedHomogeneousComponent :
     (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
@@ -476,6 +519,10 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
+lemma weightedHomogeneousComponent_eq_self {n : M} {p : MvPolynomial σ R}
+    (hp : p.IsWeightedHomogeneous w n) : weightedHomogeneousComponent w n p = p := by
+  classical simp [weightedHomogeneousComponent_of_mem hp]
+
 lemma support_weightedHomogeneousComponent [DecidableEq M] (n : M) (p : MvPolynomial σ R) :
     (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
   ext c
@@ -497,6 +544,7 @@ theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R
       DFinsupp.sum x (fun _ x => ↑x) :=
   DirectSum.coeLinearMap_eq_dfinsuppSum R w x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
@@ -505,6 +553,7 @@ theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
   apply DirectSum.support_subset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_directSum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) (m : M) :
     (weightedHomogeneousComponent w m)
@@ -630,9 +679,10 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
   · rw [DirectSum.mk_apply_of_notMem hm, Submodule.coe_zero,
       weightedHomogeneousComponent_eq_zero_of_notMem w φ m hm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
@@ -649,7 +699,6 @@ def weightedDecomposition [DecidableEq M] :
     conv_lhs => rw [← Subtype.coe_inj]
     rw [decompose'_apply, Submodule.coe_zero]
   right_inv x := by
-    classical
     apply DFinsupp.ext
     intro m
     rw [← Subtype.coe_inj, decompose'_apply]
@@ -658,23 +707,38 @@ def weightedDecomposition [DecidableEq M] :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
-@[implicit_reducible]
+@[instance_reducible]
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
   toGradedMonoid  := WeightedHomogeneousSubmodule.gradedMonoid
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem weightedDecomposition.decompose'_eq [DecidableEq M] :
     (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
         (Finset.image (weight w) φ.support) fun m =>
           ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem weightedDecomposition.decompose'_apply [DecidableEq M]
     (φ : MvPolynomial σ R) (m : M) :
     ((weightedDecomposition R w).decompose' φ m : MvPolynomial σ R) =
       weightedHomogeneousComponent w m φ :=
   MvPolynomial.decompose'_apply R w φ m
+
+attribute [local instance] MvPolynomial.weightedGradedAlgebra
+
+lemma mem_iff_weightedHomogeneousComponent_mem [DecidableEq M] {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (weightedHomogeneousSubmodule R w)) (p : MvPolynomial σ R) :
+    p ∈ I ↔ ∀ m : M, (weightedHomogeneousComponent w m p) ∈ I := by
+  simp_rw [← weightedDecomposition.decompose'_apply]
+  exact h.mem_iff
+
+lemma weightedHomogeneousComponent_mem_of_mem [DecidableEq M] {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (weightedHomogeneousSubmodule R w)) {p : MvPolynomial σ R} (hp : p ∈ I)
+    (m : M) : (weightedHomogeneousComponent w m p) ∈ I :=
+  (mem_iff_weightedHomogeneousComponent_mem R w h p).mp hp m
 
 end GradedAlgebra
 

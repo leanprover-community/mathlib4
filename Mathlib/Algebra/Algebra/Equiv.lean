@@ -777,6 +777,68 @@ end Semiring
 
 end AlgEquiv
 
+namespace RingEquiv
+
+variable {R S : Type*}
+
+/-- Reinterpret a `RingEquiv` as an `ℕ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
+def toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) : R ≃ₐ[ℕ] S where
+  toEquiv := f
+  __ := f.toRingHom.toNatAlgHom
+
+@[simp]
+lemma coe_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    ⇑f.toNatAlgEquiv = ⇑f := rfl
+
+lemma toAlgHom_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    f.toNatAlgEquiv.toAlgHom = (f : R →+* S).toNatAlgHom := rfl
+
+@[simp]
+lemma symm_toNatAlgEquiv [Semiring R] [Semiring S] (f : R ≃+* S) :
+    f.toNatAlgEquiv.symm = f.symm.toNatAlgEquiv := rfl
+
+variable (R) (S) in
+/-- The equivalence between `RingEquiv` and `ℕ`-algebra isomorphisms. -/
+@[simps apply symm_apply]
+def equivNatAlgEquiv [Semiring R] [Semiring S] : (R ≃+* S) ≃ (R ≃ₐ[ℕ] S) where
+  toFun := toNatAlgEquiv
+  invFun := AlgEquiv.toRingEquiv
+
+lemma toNatAlgEquiv_injective [Semiring R] [Semiring S] :
+    Function.Injective (RingEquiv.toNatAlgEquiv : (R ≃+* S) → _) :=
+  (equivNatAlgEquiv R S).injective
+
+/-- Reinterpret a `RingEquiv` as a `ℤ`-algebra isomorphism. -/
+@[simps! -isSimp apply]
+def toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) : R ≃ₐ[ℤ] S where
+  toEquiv := f
+  __ := f.toRingHom.toIntAlgHom
+
+@[simp]
+lemma coe_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    ⇑f.toIntAlgEquiv = ⇑f := rfl
+
+lemma toAlgHom_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    f.toIntAlgEquiv.toAlgHom = (f : R →+* S).toIntAlgHom := rfl
+
+@[simp]
+lemma symm_toIntAlgEquiv [Ring R] [Ring S] (f : R ≃+* S) :
+    f.toIntAlgEquiv.symm = f.symm.toIntAlgEquiv := rfl
+
+variable (R) (S) in
+/-- The equivalence between `RingEquiv` and `ℤ`-algebra isomorphisms. -/
+@[simps apply symm_apply]
+def equivIntAlgEquiv [Ring R] [Ring S] : (R ≃+* S) ≃ (R ≃ₐ[ℤ] S) where
+  toFun := toIntAlgEquiv
+  invFun := AlgEquiv.toRingEquiv
+
+lemma toIntAlgEquiv_injective [Ring R] [Ring S] :
+    Function.Injective (RingEquiv.toIntAlgEquiv : (R ≃+* S) → _) :=
+  (equivIntAlgEquiv R S).injective
+
+end RingEquiv
+
 namespace MulSemiringAction
 
 variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
@@ -895,14 +957,13 @@ variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R
   [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
   [IsScalarTower R S M₂]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
 @[simps!] def conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
   commutes' _ := by ext; change e.restrictScalars R _ = _; simp
-
-@[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
 
 theorem conjAlgEquiv_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
     e.conjAlgEquiv R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl

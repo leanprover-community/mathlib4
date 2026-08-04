@@ -196,15 +196,12 @@ def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp only [this, htarget, dite_else_true]
     intro h
-    letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     exact convex_univ
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, htarget]
-
-@[deprecated (since := "2025-12-19")]
-alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
@@ -311,8 +308,8 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
     letI := h.rclike
     letI := NormedSpace.restrictScalars ℝ 𝕜 E
     Convex ℝ s := by
-  letI := h.rclike
-  letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  let := h.rclike
+  let := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
   convert! hs hu hv ha hb hab using 2
@@ -335,12 +332,9 @@ def ofConvexRange
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
 
-@[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
-  ModelWithCorners.ofConvexRange
-
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI : RCLike 𝕜 := h.rclike
+  · let : RCLike 𝕜 := h.rclike
     have W := I.convex_range'
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
@@ -354,16 +348,16 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
 
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  · let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     apply uniqueDiffOn_convex_of_isRCLikeNormedField _ I.nonempty_interior
     simpa [h] using I.convex_range
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, uniqueDiffOn_univ]
 
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   by_cases h : IsRCLikeNormedField 𝕜
-  · letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  · let := h.rclike 𝕜
+    let := NormedSpace.restrictScalars ℝ 𝕜 E
     rw [Convex.closure_interior_eq_closure_of_nonempty_interior (𝕜 := ℝ)]
     · apply subset_closure
     · apply I.convex_range
@@ -508,13 +502,13 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
-    source_eq := by simp only [setOf_true, mfld_simps]
+    source_eq := by simp only [ofPred_true, mfld_simps]
     convex_range' := by
       have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
       rw [this, Set.range_prodMap]
       split_ifs with h
-      · letI := h.rclike
-        letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      · let := h.rclike
+        let := NormedSpace.restrictScalars ℝ 𝕜 E; let := NormedSpace.restrictScalars ℝ 𝕜 E'
         exact I.convex_range.prod I'.convex_range
       · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
     nonempty_interior' := by
@@ -523,7 +517,6 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
@@ -536,8 +529,8 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   convex_range' := by
     rw [PartialEquiv.pi_apply, Set.range_piMap]
     split_ifs with h
-    · letI := h.rclike
-      letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
+    · let := h.rclike
+      let := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
       exact convex_pi fun i _hi ↦ (I i).convex_range
     · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
   nonempty_interior' := by
@@ -622,8 +615,8 @@ instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormed
     [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
     [I'.Boundaryless] : (I.prod I').Boundaryless := by
   constructor
-  dsimp [ModelWithCorners.prod, ModelProd]
-  rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
+  dsimp
+  rw [Set.range_prodMap, ModelWithCorners.Boundaryless.range_eq_univ,
     ModelWithCorners.Boundaryless.range_eq_univ, univ_prod_univ]
 
 end Boundaryless
@@ -745,6 +738,7 @@ theorem symm_trans_mem_contDiffGroupoid (e : OpenPartialHomeomorph M H) :
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` open partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
     {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}
@@ -805,7 +799,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       ContDiffOn 𝕜 n (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     IsManifold I n M where
   compatible := by
-    haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
+    have : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
@@ -916,17 +910,16 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
 
-attribute [local instance] ChartedSpace.of_discreteTopology in
+attribute [local instance] ChartedSpace.ofDiscreteTopology in
 variable (n) in
 /-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
 theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
     IsManifold (modelWithCornersSelf 𝕜 E) n M := by
   apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
 
-attribute [local instance] ChartedSpace.of_discreteTopology in
+attribute [local instance] ChartedSpace.ofDiscreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -948,7 +941,6 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : ℕ∞ω}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
     {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
     {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
