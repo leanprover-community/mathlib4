@@ -1142,6 +1142,13 @@ theorem comap_center_le_center {B F} [NonUnitalNonAssocSemiring B] [Module R B]
     {f : F} (hf : Function.Injective f) : comap f (center R B) ≤ center R A :=
   NonUnitalSubsemiring.comap_center_le_center hf
 
+@[simp]
+theorem map_center_eq {B F} [NonUnitalNonAssocSemiring B] [Module R B] [IsScalarTower R B B]
+    [SMulCommClass R B B] [EquivLike F A B] [NonUnitalAlgHomClass F R A B] (f : F) :
+    map f (center R A) = center R B :=
+  let : MulEquivClass F A B := { map_mul := MulHomClass.map_mul }
+  SetLike.coe_injective <| Set.image_center_eq f
+
 end Center
 
 section Centralizer
