@@ -28,7 +28,7 @@ private theorem lookmap.go_append (l : List α) (acc : Array α) :
     | none =>
       simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.toList_push]
       rfl
-    | some a => simp only [Array.toListAppend_eq, nil_append]
+    | some a => simp
 
 @[simp, grind =]
 theorem lookmap_nil : [].lookmap f = [] :=
