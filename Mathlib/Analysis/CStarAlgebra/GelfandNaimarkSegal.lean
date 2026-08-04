@@ -115,11 +115,15 @@ lemma norm_map_star_mul_le (f : F) (x y : A) :
   simpa [preGNS_inner_def, preGNS_norm_def'] using!
     norm_inner_le_norm ((ofClass f).toPreGNS x) ((ofClass f).toPreGNS y)
 
+alias cauchy_schwarz_star_mul := norm_map_star_mul_le
+
 /-- The **Cauchy--Schwarz** lemma for positive linear functionals on a non-unital
 star-ordered `ℂ`-algebra. -/
-lemma cauchy_schwarz_mul_star (f : F) (x y : A) :
+lemma norm_map_mul_star_le (f : F) (x y : A) :
     ‖f (x * star y)‖ ≤ √‖f (x * star x)‖ * √‖f (y * star y)‖ := by
   simpa using cauchy_schwarz_star_mul f (star x) (star y)
+
+alias cauchy_schwarz_mul_star := norm_map_mul_star_le
 
 end PreGNS
 
