@@ -93,13 +93,13 @@ theorem ext_iff {f g : E →ₛₗ.[σ] F} :
     f = g ↔
       f.domain = g.domain ∧
         ∀ ⦃x : E⦄ ⦃hf : x ∈ f.domain⦄ ⦃hg : x ∈ g.domain⦄, f ⟨x, hf⟩ = g ⟨x, hg⟩ := by
-  grind [dExt]
+  grind only [dExt]
 
 theorem dExt_iff {f g : E →ₛₗ.[σ] F} :
     f = g ↔
       ∃ _domain_eq : f.domain = g.domain,
         ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y := by
-  grind [dExt]
+  grind only [dExt]
 
 theorem ext' {s : Submodule R E} {f g : s →ₛₗ[σ] F} (h : f = g) : mk s f = mk s g :=
   h ▸ rfl
@@ -136,10 +136,10 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
     { toFun z := σ (mem_span_singleton.1 z.prop).choose • y
       map_add' y' z' := by
         rw [← add_smul, ← RingHom.map_add]
-        grind [add_smul, coe_add]
+        grind only [usr Exists.choose_spec, add_smul, coe_add]
       map_smul' c z := by
         rw [smul_smul, ← RingHom.map_mul]
-        grind [mul_smul, coe_smul] }
+        grind only [usr Exists.choose_spec, mul_smul, coe_smul] }
 
 @[simp]
 theorem domain_mkSpanSingleton (x : E) (y : F) (H : ∀ c : R, c • x = 0 → σ c • y = 0) :
@@ -158,8 +158,8 @@ theorem mkSpanSingleton'_apply_self (x : E) (y : F) (H : ∀ c : R, c • x = 0 
     mkSpanSingleton' x y H ⟨x, h⟩ = y := by
   conv_rhs => rw [← one_smul S y]
   rw [← RingHom.map_one, ← mkSpanSingleton'_apply x y H 1 ?_]
-  · grind [one_smul]
-  · grind [one_smul]
+  · grind only [one_smul]
+  · grind only [one_smul]
 
 /-- The unique `LinearPMap` on `span R {x}` that sends a non-zero vector `x` to `y`.
 This version works for modules over division rings. -/
@@ -219,12 +219,12 @@ def eqLocus (f g : E →ₛₗ.[σ] F) : Submodule R E where
   zero_mem' := ⟨zero_mem _, zero_mem _, f.map_zero.trans g.map_zero.symm⟩
   add_mem' {x y} := fun ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ ↦
     ⟨add_mem hfx hfy, add_mem hgx hgy, by
-      grind [AddMemClass.mk_add_mk, map_add]⟩
+      grind only [AddMemClass.mk_add_mk, map_add]⟩
   smul_mem' c x := fun ⟨hfx, hgx, hx⟩ ↦
     ⟨smul_mem _ c hfx, smul_mem _ c hgx, by
       have {f : E →ₛₗ.[σ] F} (hfx) : (⟨c • x, smul_mem _ c hfx⟩ : f.domain) = c • ⟨x, hfx⟩ := by
         simp
-      grind [map_smulₛₗ]⟩
+      grind only [map_smulₛₗ]⟩
 
 instance bot : Bot (E →ₛₗ.[σ] F) :=
   ⟨⟨⊥, 0⟩⟩
@@ -279,16 +279,15 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
     dsimp [fg]
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
-    simp
-    grind
+    grind only [AddSubgroupClass.coe_sub]
   use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
     rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
-    grind [coe_add]
+    grind only [coe_add]
   · intro c z
     rw [smul_add, ← map_smulₛₗ, ← map_smulₛₗ]
     apply fg_eq
-    grind [coe_smul, smul_add]
+    grind only [coe_smul, smul_add]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -726,7 +725,7 @@ theorem mem_graph_iff' [Module R F] (f : E →ₗ.[R] F) {x : E × F} :
 @[simp, grind =]
 theorem mem_graph_iff [Module R F] (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y : E) = x.1 ∧ f y = x.2 := by
-  grind [mem_graph_iff']
+  grind only [mem_graph_iff']
 
 /-- The tuple `(x, f x)` is contained in the graph of `f`. -/
 theorem mem_graph [Module R F] (f : E →ₗ.[R] F) (x : domain f) : ((x : E), f x) ∈ f.graph := by simp
@@ -737,10 +736,10 @@ theorem graph_map_fst_eq_domain [Module R F] (f : E →ₗ.[R] F) :
   simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
   constructor
-  · grind
+  · grind only
   · intro h
     use f ⟨x, h⟩
-    grind
+    grind only
 
 theorem graph_map_snd_eq_range [Module R F] (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp
@@ -763,7 +762,7 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, rfl, rfl⟩
-  grind [smul_domain, smul_apply]
+  grind only [smul_domain, smul_apply]
 
 /-- The graph of `-f` as a pushforward. -/
 theorem neg_graph (f : E →ₗ.[R] F) :
@@ -779,15 +778,15 @@ theorem neg_graph (f : E →ₗ.[R] F) :
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply, Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, rfl, rfl⟩
-  grind [neg_domain, neg_apply]
+  grind only [neg_domain, neg_apply]
 
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
-  grind
+  grind only [= mem_graph_iff]
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
     (hxy : x.1 = y.1) : x.2 = y.2 := by
-  grind
+  grind only [= mem_graph_iff]
 
 /-- The property that `f 0 = 0` in terms of the graph. -/
 theorem graph_fst_eq_zero_snd (f : E →ₗ.[R] F) {x : E} {x' : F} (h : (x, x') ∈ f.graph)
@@ -797,8 +796,8 @@ theorem graph_fst_eq_zero_snd (f : E →ₗ.[R] F) {x : E} {x' : F} (h : (x, x')
 theorem mem_domain_iff {f : E →ₗ.[R] F} {x : E} : x ∈ f.domain ↔ ∃ y : F, (x, y) ∈ f.graph := by
   constructor <;> intro h
   · use f ⟨x, h⟩
-    grind
-  grind
+    grind only [= mem_graph_iff]
+  grind only [= mem_graph_iff]
 
 theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y) ∈ f.graph) :
     x ∈ f.domain := by grind
@@ -812,8 +811,8 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
   · rw [Set.mem_range] at h
     rcases h with ⟨⟨x, hx⟩, rfl⟩
     use x
-    grind
-  grind
+    grind only [= mem_graph_iff]
+  grind only [= Set.mem_range, = mem_graph_iff]
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
@@ -870,7 +869,7 @@ theorem existsUnique_from_graph {g : Submodule R (E × F)}
     convert g.sub_mem hy₁ hy₂
     · simp
     · simp
-  grind
+  grind only
 
 /-- Auxiliary definition to unfold the existential quantifier. -/
 noncomputable def valFromGraph {g : Submodule R (E × F)}
@@ -1001,7 +1000,7 @@ theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph 
 
 theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
     (inverse f) y = x := by
-  grind [mem_inverse_graph hf x]
+  grind only [= mem_graph_iff, mem_inverse_graph hf x]
 
 end inverse
 
