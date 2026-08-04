@@ -293,7 +293,7 @@ lemma bicartSq : BicartSq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) 
   inf_eq := by
     ext n ⟨x, y⟩
     change _ ∧ _ ↔ _
-    simp [prod, Set.prod, Membership.mem, Set.Mem, setOf]
+    simp [prod, Set.prod, Membership.mem, Set.Mem, Set.ofPred]
     tauto
 
 lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)

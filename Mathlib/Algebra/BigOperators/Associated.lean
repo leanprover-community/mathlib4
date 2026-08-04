@@ -95,9 +95,9 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
-    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_ofPred] at hm
     simp only [Multiset.prod_cons] at hprod
-    simp only [Set.mem_setOf_eq] at hind
+    simp only [Set.mem_ofPred_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y * k) ?_ hs ?_

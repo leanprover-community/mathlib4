@@ -252,10 +252,10 @@ def infIccOrderIsoIccSup' (a b : α) : Icc (a ⊓ b) b ≃o Icc a (a ⊔ b) :=
     OrderIso.setCongr _ _ (by rw [sup_comm])
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).symm.strictMono
 
 theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (Icc (a ⊓ b) a) :=
-  StrictMono.of_restrict (infIccOrderIsoIccSup a b).strictMono
+  StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).strictMono
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The diamond isomorphism between the open intervals `(a ⊓ b, a)` and `(b, a ⊔ b)`. -/

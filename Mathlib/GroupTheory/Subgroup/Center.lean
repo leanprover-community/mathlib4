@@ -142,7 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem mk_bijOn (G : Type*) [Group G] :
     Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
   refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
-  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
+  · simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff]
     intro x hx y hy
     simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
     rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
@@ -150,7 +150,7 @@ theorem mk_bijOn (G : Type*) [Group G] :
     exact H.eq_of_left_mem_center hx
   · rintro ⟨g⟩ hg
     refine ⟨g, ?_, rfl⟩
-    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
+    simp only [mem_noncenter, Set.compl_def, Set.mem_ofPred, Set.not_nontrivial_iff] at hg
     rw [SetLike.mem_coe, Subgroup.mem_center_iff]
     intro h
     rw [← mul_inv_eq_iff_eq_mul]

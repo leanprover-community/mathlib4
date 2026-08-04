@@ -86,7 +86,7 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   use projectiveSeminorm
-  simp only [mem_upperBounds, Set.mem_setOf_eq, forall_exists_index]
+  simp only [mem_upperBounds, Set.mem_ofPred_eq, forall_exists_index]
   intro p G _ _ hp x
   simpa [hp] using! toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
@@ -98,7 +98,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
-  simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
+  simpa only [injectiveSeminorm, Set.coe_ofPred, Set.mem_ofPred_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
 set_option backward.isDefEq.respectTransparency false in
@@ -151,7 +151,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
       (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E)) ≤ injectiveSeminorm := by
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
-    rw [Set.mem_setOf]
+    rw [Set.mem_ofPred]
     existsi G, inferInstance, inferInstance
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
@@ -167,14 +167,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   rw [injectiveSeminorm]
   refine csSup_le ?_ ?_
   · existsi 0
-    simp only [Set.mem_setOf_eq]
+    simp only [Set.mem_ofPred_eq]
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
-    simp only [Set.mem_setOf_eq] at hp
+    simp only [Set.mem_ofPred_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _

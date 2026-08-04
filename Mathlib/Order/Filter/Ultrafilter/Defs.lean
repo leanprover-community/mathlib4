@@ -263,7 +263,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
-    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_setOf, compl_compl]
+    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_ofPred, compl_compl]
 
 instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
@@ -340,7 +340,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
   refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
-  have : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf])
+  have : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_ofPred])
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
 
 theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : Ultrafilter α, ↑g ≤ f₁ → ↑g ≤ f₂ :=

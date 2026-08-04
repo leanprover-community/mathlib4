@@ -308,7 +308,7 @@ theorem FiniteMultiplicity.not_of_unit_left (a : α) (u : αˣ) : ¬ FiniteMulti
 theorem emultiplicity_eq_zero :
     emultiplicity a b = 0 ↔ ¬a ∣ b := by
   by_cases hf : FiniteMultiplicity a b
-  · rw [← ENat.coe_zero, emultiplicity_eq_coe]
+  · rw [← ENat.natCast_zero, emultiplicity_eq_coe]
     simp
   · simpa [emultiplicity_eq_top.2 hf] using FiniteMultiplicity.not_iff_forall.1 hf 1
 
@@ -356,13 +356,13 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       next h_2 => simp_all only [not_exists, Decidable.not_not, le_top]
     next h_1 =>
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff,
-        dite_eq_right_iff, ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
+        dite_eq_right_iff, ENat.natCast_ne_top, imp_false, not_false_eq_true, implies_true]
 
 theorem FiniteMultiplicity.multiplicity_le_multiplicity_iff {c d : β} (hab : FiniteMultiplicity a b)
     (hcd : FiniteMultiplicity c d) :
     multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
-  rw [← ENat.coe_le_coe, ← hab.emultiplicity_eq_multiplicity, ← hcd.emultiplicity_eq_multiplicity]
-  apply emultiplicity_le_emultiplicity_iff
+  rw [← ENat.natCast_le_natCast, ← hab.emultiplicity_eq_multiplicity,
+    ← hcd.emultiplicity_eq_multiplicity, emultiplicity_le_emultiplicity_iff]
 
 theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     emultiplicity a b = emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b ↔ c ^ n ∣ d :=

@@ -110,7 +110,7 @@ noncomputable def riemannianMetricVectorSpace :
     have : Metric.ball (0 : F) 1 = {v : F | ⟪v, v⟫ < 1} := by
       ext v
       simp only [Metric.mem_ball, dist_zero_right, norm_eq_sqrt_re_inner (𝕜 := ℝ),
-        RCLike.re_to_real, Set.mem_setOf_eq]
+        RCLike.re_to_real, Set.mem_ofPred_eq]
       conv_lhs => rw [show (1 : ℝ) = √1 by simp]
       rw [Real.sqrt_lt_sqrt_iff]
       exact real_inner_self_nonneg
@@ -194,7 +194,7 @@ Moreover, we show that in this case the resulting emetric space satisfies the pr
 
 Showing that the distance topology coincides with the pre-existing topology is not trivial. The
 two inclusions are proved respectively in `eventually_riemannianEDist_lt` and
-`setOf_riemannianEDist_lt_subset_nhds`.
+`setOfPred_riemannianEDist_lt_subset_nhds`.
 
 For the first one, we have to show that points which are close for the topology are at small
 distance. For this, we use the path between the two points which is the pullback of the segment
@@ -284,7 +284,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp only [preimage_setOf_eq, mem_setOf_eq] at hy
+  simp only [preimage_ofPred_eq, mem_ofPred_eq] at hy
   convert! hy
 
 set_option backward.isDefEq.respectTransparency false in
@@ -387,7 +387,7 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
 set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
-lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
     ∃ c > (0 : ℝ≥0), {y | riemannianEDist I x y < c} ⊆ s := by
   /- Consider a closed neighborhood `u` of `x` on which the derivative of the extended chart is
   bounded by some `C`, contained in `s`, then an open neighborhood `v` of `x` inside `u`,
@@ -497,12 +497,19 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_riemannianEDist_lt_subset_nhds := setOfPred_riemannianEDist_lt_subset_nhds
+
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0∞` version. -/
-lemma setOf_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
+lemma setOfPred_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M}
+    (hs : s ∈ 𝓝 x) :
     ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
-  rcases setOf_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
+  rcases setOfPred_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
   exact ⟨c, mod_cast c_pos, hc⟩
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_riemannianEDist_lt_subset_nhds' := setOfPred_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
@@ -517,7 +524,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
     (fun _ _ ↦ riemannianEDist_comm)
     (fun _ _ _ ↦ riemannianEDist_triangle)
     (fun x ↦ (basis_sets (𝓝 x)).to_hasBasis'
-      (fun _ hs ↦ setOf_riemannianEDist_lt_subset_nhds' I hs)
+      (fun _ hs ↦ setOfPred_riemannianEDist_lt_subset_nhds' I hs)
       (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
 @[deprecated (since := "2026-01-08")]

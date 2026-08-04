@@ -176,7 +176,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
-    simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
       subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
@@ -550,7 +550,8 @@ theorem Filter.TotallyBounded.mono {f g : Filter α} (h : f ≤ g) (hg : g.Total
     f.TotallyBounded :=
   fun U hU => (hg U hU).imp fun _ => And.imp_right (@h _)
 
-theorem Filter.TotallyBounded.totallyBounded_setOf_clusterPt {f : Filter α} (h : f.TotallyBounded) :
+theorem Filter.TotallyBounded.totallyBounded_setOfPred_clusterPt {f : Filter α}
+    (h : f.TotallyBounded) :
     TotallyBounded {x | ClusterPt x f} := by
   refine uniformity_hasBasis_closed.totallyBounded_iff.2 fun V hV => ?_
   obtain ⟨t, htf, hst⟩ := h V hV.1
@@ -558,10 +559,14 @@ theorem Filter.TotallyBounded.totallyBounded_setOf_clusterPt {f : Filter α} (h 
   rw [← SetRel.preimage_eq_biUnion, id, ← (hV.2.relPreimage_of_finite htf).closure_eq]
   exact hx.mem_closure_of_mem _ hst
 
+@[deprecated (since := "2026-07-09")]
+alias Filter.TotallyBounded.totallyBounded_setOf_clusterPt :=
+  Filter.TotallyBounded.totallyBounded_setOfPred_clusterPt
+
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) := by
   rw [closure_eq_cluster_pts]
-  exact (Filter.totallyBounded_principal_iff.mpr h).totallyBounded_setOf_clusterPt
+  exact (Filter.totallyBounded_principal_iff.mpr h).totallyBounded_setOfPred_clusterPt
 
 @[simp]
 lemma totallyBounded_closure {s : Set α} : TotallyBounded (closure s) ↔ TotallyBounded s :=
@@ -749,9 +754,13 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
     (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
 
-theorem Filter.TotallyBounded.isCompact_setOf_clusterPt
+theorem Filter.TotallyBounded.isCompact_setOfPred_clusterPt
     [CompleteSpace α] {f : Filter α} (hf : f.TotallyBounded) : IsCompact {x | ClusterPt x f} :=
-  hf.totallyBounded_setOf_clusterPt.isCompact_of_isClosed isClosed_setOf_clusterPt
+  hf.totallyBounded_setOfPred_clusterPt.isCompact_of_isClosed isClosed_setOfPred_clusterPt
+
+@[deprecated (since := "2026-07-09")]
+alias Filter.TotallyBounded.isCompact_setOf_clusterPt :=
+  Filter.TotallyBounded.isCompact_setOfPred_clusterPt
 
 theorem Filter.TotallyBounded.exists_clusterPt
     [CompleteSpace α] {f : Filter α} [f.NeBot] (hf : f.TotallyBounded) : ∃ x, ClusterPt x f := by

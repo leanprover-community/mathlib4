@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
+public import Batteries.Tactic.Alias
 public import Batteries.Util.ExtendedBinder
 public import Mathlib.Tactic.SetNotationForOrder
 
@@ -43,8 +44,8 @@ variable {α : Type u}
 /-- A set is a collection of elements of some type `α`.
 
 Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
-relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
-and predicates.
+relied on. Instead, `Set.ofPred` (also written `{x | p x}`) and membership of a set (`∈`) should be
+used to convert between sets and predicates.
 -/
 @[use_set_notation_for_order]
 def Set (α : Type u) := α → Prop
@@ -63,8 +64,10 @@ attribute [to_dual_dont_translate] Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 @[implicit_reducible]
-def setOf {α : Type u} (p : α → Prop) : Set α :=
+def Set.ofPred {α : Type u} (p : α → Prop) : Set α :=
   p
+
+@[deprecated (since := "2026-07-09")] alias setOf := Set.ofPred
 
 namespace Set
 
@@ -114,8 +117,8 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
 
 /-- Elaborate set builder notation for `Set`.
 
-* `{x | p x}` is elaborated as `Set.setOf fun x ↦ p x`
-* `{x : α | p x}` is elaborated as `Set.setOf fun x : α ↦ p x`
+* `{x | p x}` is elaborated as `Set.ofPred fun x ↦ p x`
+* `{x : α | p x}` is elaborated as `Set.ofPred fun x : α ↦ p x`
 * `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
   `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
   `{x | x ∈ s ∧ p x}`. The possible binders are
@@ -137,16 +140,16 @@ See also
 @[term_elab setBuilder]
 meta def elabSetBuilder : TermElab
   | `({ $x:ident | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident ↦ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident ↦ $p)) expectedType?
   | `({ $x:ident : $t | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident : $t ↦ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident : $t ↦ $p)) expectedType?
   | `({ $x:ident $b:binderPred | $p }), expectedType? => do
-    elabTerm (← `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
+    elabTerm (← `(Set.ofPred fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
 /-- Unexpander for set builder notation. -/
-@[app_unexpander setOf]
-meta def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Set.ofPred]
+meta def ofPred.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
@@ -186,8 +189,8 @@ macro (priority := low - 1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/
-@[app_unexpander setOf]
-meta def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Set.ofPred]
+meta def ofPredPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term | $p:term })
