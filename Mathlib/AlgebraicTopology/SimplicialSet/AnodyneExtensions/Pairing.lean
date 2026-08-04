@@ -104,9 +104,7 @@ lemma AncestralRel.dim_le [P.IsProper] {x y : P.II} (hxy : P.AncestralRel x y) :
 /-- A proper pairing is regular when the ancestrality relation
 is well founded. -/
 class IsRegular extends P.IsProper where
-  wf : WellFounded P.AncestralRel
-
-attribute [instance] IsRegular.wf
+  [wf : WellFounded P.AncestralRel]
 
 section
 
