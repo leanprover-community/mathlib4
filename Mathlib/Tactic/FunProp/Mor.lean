@@ -66,39 +66,36 @@ def isMorApp? (e : Expr) : MetaM (Option App) := do
   else
     return none
 
-/--
-Weak normal head form of an expression involving morphism applications. Additionally, `pred`
-can specify which when to unfold definitions.
+/-- Previously, `fun_prop` incorrectly switched to default transparency when reducing an
+expression if a projection was applied to it. Setting this option to true restores this
+behavior.
 
-For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
--/
-partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
-    MetaM Expr := do
-  whnfEasyCases e fun e => do
-    let e ← whnfCore e
-
-    if let some ⟨coe,f,x⟩ ← isMorApp? e then
-      let f ← whnfPred f pred
-      if (← getConfig).zeta then
-        return (coe.app f).app x
-      else
-        return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
-
-    if (← pred e) then
-        match (← unfoldDefinition? e) with
-        | some e => whnfPred e pred
-        | none   => return e
-    else
-      return e
+Note that this option is only for backward compatibility and will be removed in the future. -/
+register_option fun_prop.projDefaultTransparency : Bool := {
+  descr := "Previously, `fun_prop` incorrectly switched to default transparency when reducing an \
+    expression if a projection was applied to it. Setting this option to true restores this \
+    behavior.\n\n\
+    Note that this option is only for backward compatibility and will be removed in the future."
+  defValue := false
+}
 
 /--
 Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
 -/
-def whnf (e : Expr) : MetaM Expr :=
-  whnfPred e (fun _ => return false)
-
+protected partial def whnf (e : Expr) : MetaM Expr := do
+  let e ← whnfR e
+  if ← fun_prop.projDefaultTransparency.getM then
+    let e' ← whnfCore e
+    if e != e' then
+      return ← Mor.whnf e'
+  let some ⟨coe,f,x⟩ ← isMorApp? e | return e
+  let f ← Mor.whnf f
+  if (← getConfig).zeta then
+    return (coe.app f).app x
+  else
+    return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
 
 /-- Argument of morphism application that stores corresponding coercion if necessary -/
 structure Arg where
