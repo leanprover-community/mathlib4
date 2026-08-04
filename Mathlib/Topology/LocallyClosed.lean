@@ -113,10 +113,14 @@ end coborder
 
 section IsLocallyClosedAt
 
-lemma IsLocallyClosed.isLocallyClosedAt (hs : IsLocallyClosed s) {x : X} (hx : x ∈ s) :
-    IsLocallyClosedAt s x := by
-  obtain ⟨U, Z, U_open, Z_closed, s_eq⟩ := hs
-  exact ⟨U, Z, U_open.mem_nhds (s_eq ▸ hx).1, Z_closed, by simp [s_eq]⟩
+lemma IsLocallyClosedAt.of_mem_nhds {x : X} (hx : s ∈ 𝓝 x) :
+    IsLocallyClosedAt s x :=
+  ⟨s, univ, hx, isClosed_univ, by simp⟩
+
+lemma IsLocallyClosedAt.of_notMem_closure {x : X} (hx : x ∉ closure s) :
+    IsLocallyClosedAt s x :=
+  ⟨(closure s)ᶜ, closure s, isClosed_closure.isOpen_compl.mem_nhds hx, isClosed_closure, by
+    simp [← disjoint_iff_inter_eq_empty, disjoint_compl_left_iff, subset_closure]⟩
 
 lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
     List.TFAE
@@ -165,6 +169,11 @@ end IsLocallyClosedAt
 
 section IsLocallyClosed
 
+lemma IsLocallyClosed.isLocallyClosedAt (hs : IsLocallyClosed s) {x : X} (hx : x ∈ s) :
+    IsLocallyClosedAt s x := by
+  obtain ⟨U, Z, U_open, Z_closed, s_eq⟩ := hs
+  exact ⟨U, Z, U_open.mem_nhds (s_eq ▸ hx).1, Z_closed, by simp [s_eq]⟩
+
 lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
     IsLocallyClosed (s ∩ t) := by
   obtain ⟨U₁, Z₁, hU₁, hZ₁, rfl⟩ := hs
@@ -202,59 +211,41 @@ lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
 
 /--
 A set `s` is locally closed if one of the equivalent conditions below hold
-1. It is the intersection of some open set and some closed set.
-2. The coborder `(closure s \ s)ᶜ` is open.
-3. `s` is closed in some neighborhood of `x` for all `x ∈ s`.
-4. Every `x ∈ s` has some open neighborhood `U` such that `U ∩ closure s ⊆ s`.
-5. `s` is open in the closure of `s`.
+1. It is the intersection of some open set and some closed set (this is the definition).
+2. It is locally closed at each of its points.
+3. It is locally closed at each point of its coborder
+4. The coborder `(closure s \ s)ᶜ` is open.
+5. `s` is the intersection of an open set and `closure s`.
+6. `s` is open in the closure of `s`.
 -/
 lemma isLocallyClosed_tfae (s : Set X) :
     List.TFAE
     [ IsLocallyClosed s,
+      ∀ x ∈ s, IsLocallyClosedAt s x,
+      ∀ x ∈ coborder s, IsLocallyClosedAt s x,
       IsOpen (coborder s),
-      ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsClosed (U ↓∩ s),
-      ∀ x ∈ s, ∃ U, x ∈ U ∧ IsOpen U ∧ U ∩ closure s ⊆ s,
+      ∃ U, IsOpen U ∧ s = U ∩ closure s,
       IsOpen (closure s ↓∩ s)] := by
-  tfae_have 1 → 2 := by
-    rintro ⟨U, Z, hU, hZ, rfl⟩
-    have : Z ∪ (frontier (U ∩ Z))ᶜ = univ := by
-      nth_rw 1 [← hZ.closure_eq]
-      rw [← compl_subset_iff_union, compl_subset_compl]
-      refine frontier_subset_closure.trans (closure_mono inter_subset_right)
-    rw [coborder_eq_union_frontier_compl, inter_union_distrib_right, this,
-      inter_univ]
-    exact hU.union isClosed_frontier.isOpen_compl
-  tfae_have 2 → 3
-  | h, x => (⟨coborder s, h.mem_nhds <| subset_coborder ·, isClosed_preimage_val_coborder⟩)
-  tfae_have 3 → 4
-  | h, x, hx => by
-    obtain ⟨t, ht, ht'⟩ := h x hx
-    obtain ⟨U, hUt, hU, hxU⟩ := mem_nhds_iff.mp ht
-    rw [isClosed_preimage_val] at ht'
-    exact ⟨U, hxU, hU, (subset_inter (inter_subset_left.trans hUt) (hU.inter_closure.trans
-      (closure_mono <| inter_subset_inter hUt subset_rfl))).trans ht'⟩
-  tfae_have 4 → 5
-  | H => by
-    choose U hxU hU e using H
-    refine ⟨⋃ x ∈ s, U x ‹_›, isOpen_iUnion (isOpen_iUnion <| hU ·), ext fun x ↦ ⟨?_, ?_⟩⟩
-    · rintro ⟨_, ⟨⟨y, rfl⟩, ⟨_, ⟨hy, rfl⟩, hxU⟩⟩⟩
-      exact e y hy ⟨hxU, x.2⟩
-    · exact (subset_iUnion₂ _ _ <| hxU x ·)
-  tfae_have 5 → 1
-  | H => by
-    convert!
-      H.isLocallyClosed.image IsInducing.subtypeVal
-        (by simpa using isClosed_closure.isLocallyClosed)
-    simpa using subset_closure
+  tfae_have 1 → 2 := fun H x ↦ H.isLocallyClosedAt
+  tfae_have 2 → 3 := fun H x hx ↦ by
+    rw [coborder, compl_sdiff, mem_union] at hx
+    exact hx.elim (H x) (fun hx ↦ .of_notMem_closure hx)
+  tfae_have 3 ↔ 4 := by
+    simp [isOpen_iff_mem_nhds, (isLocallyClosedAt_tfae s _) |>.out 0 9]
+  tfae_have 4 → 5 := fun H ↦ ⟨coborder s, H, by rw [coborder_inter_closure]⟩
+  tfae_have 5 → 1 := fun ⟨U, U_open, eq⟩ ↦ ⟨U, closure s, U_open, isClosed_closure, eq⟩
+  tfae_have 5 ↔ 6 := by
+    simp [IsInducing.subtypeVal.isOpen_iff, Subtype.preimage_val_eq_preimage_val_iff,
+      inter_eq_right.mpr subset_closure, inter_comm, eq_comm]
   tfae_finish
 
 lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (coborder s) :=
-  (isLocallyClosed_tfae s).out 0 1
+  (isLocallyClosed_tfae s).out 0 3
 
 alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_coborder
 
 lemma IsLocallyClosed.isOpen_preimage_val_closure (hs : IsLocallyClosed s) :
     IsOpen (closure s ↓∩ s) :=
-  ((isLocallyClosed_tfae s).out 0 4).mp hs
+  ((isLocallyClosed_tfae s).out 0 5).mp hs
 
 end IsLocallyClosed
