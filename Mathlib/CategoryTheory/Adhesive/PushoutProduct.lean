@@ -53,8 +53,8 @@ instance [CartesianMonoidalCategory C] [Adhesive C] {X Y : Arrow C} [Mono X.hom]
     Mono (X □ Y).hom := by
   let : Mono (((curriedTensor C).obj X.right).map Y.hom) := (tensorLeft X.right).map_mono Y.hom
   let : Mono (((curriedTensor C).map X.hom).app Y.right) := (tensorRight Y.right).map_mono X.hom
-  refine mono_ι_of_isPullback (ofHasPushout (curriedTensor C) X.hom Y.hom) ?_
-  refine IsPullback.mk' (whisker_exchange _ _).symm ?_ ?_
+  refine mono_ι_of_isPullback (ofHasPushout (curriedTensor C) X.hom Y.hom)
+    (IsPullback.mk' (whisker_exchange _ _).symm ?_ ?_)
   · intro _ _ _ h₁ h₂
     apply CartesianMonoidalCategory.hom_ext
     · simpa using h₂ =≫ fst _ _
