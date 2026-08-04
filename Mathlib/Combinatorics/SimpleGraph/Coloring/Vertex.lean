@@ -307,29 +307,22 @@ theorem Colorable.of_induce_compl_singleton {v : V} [Fintype (G.neighborSet v)]
   obtain ⟨C⟩ := h
   have : NeZero n := ⟨by lia⟩
   -- Extend `C` to all of `V`; the color it assigns to `v` itself is irrelevant.
-  obtain ⟨f, hf⟩ : ∃ f : V → Fin n, ∀ (u : V) (hu : u ≠ v),
-      f u = C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩ :=
-    ⟨fun u => if hu : u = v then 0 else C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩,
-      fun _ hu => dif_neg hu⟩
+  let f (u) := if hu : u = v then ⟨0, by lia⟩ else C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩
+  have hf (u) (hu : u ≠ v) : f u = C ⟨u, Set.mem_compl_singleton_iff.2 hu⟩ := dif_neg hu
   -- As `v` has fewer than `n` neighbors, some color `a` is unused on them.
-  obtain ⟨a, ha⟩ : ∃ a, a ∉ (G.neighborFinset v).image f := by
+  obtain ⟨a, ha⟩ : (((G.neighborFinset v).image f)ᶜ).Nonempty := by
     have hlt : ((G.neighborFinset v).image f).card < n := by
-      refine lt_of_le_of_lt Finset.card_image_le ?_
+      apply Finset.card_image_le.trans_lt
       rwa [card_neighborFinset_eq_degree]
-    obtain ⟨a, ha⟩ : (((G.neighborFinset v).image f)ᶜ).Nonempty := by
-      rw [← Finset.card_pos, Finset.card_compl, Fintype.card_fin]
-      lia
-    exact ⟨a, Finset.mem_compl.1 ha⟩
-  have key : ∀ {q : V}, G.Adj v q → Function.update f v a v ≠ Function.update f v a q := by
-    intro q hq
+    rw [← Finset.card_pos, Finset.card_compl, Fintype.card_fin]
+    lia
+  rw [Finset.mem_compl] at ha
+  have key {q} (hq : G.Adj v q) : Function.update f v a v ≠ Function.update f v a q := by
     rw [Function.update_self, Function.update_of_ne (G.ne_of_adj hq).symm]
-    intro hc
-    apply ha
+    refine fun hc ↦ ha ?_
     rw [hc]
     exact Finset.mem_image_of_mem f ((G.mem_neighborFinset v q).2 hq)
-  have hvalid : ∀ {x y : V}, G.Adj x y →
-      Function.update f v a x ≠ Function.update f v a y := by
-    intro x y hxy
+  have hvalid {x y} (hxy : G.Adj x y) : Function.update f v a x ≠ Function.update f v a y := by
     rcases eq_or_ne x v with hx | hx
     · rw [hx] at hxy ⊢
       exact key hxy
