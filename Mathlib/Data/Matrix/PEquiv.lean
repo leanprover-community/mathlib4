@@ -156,6 +156,7 @@ theorem toMatrix_injective [DecidableEq n] [MulZeroOneClass α] [Nontrivial α] 
   · use fi
     simp [hf.symm, Ne.symm hi]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toMatrix_swap [DecidableEq n] [AddGroupWithOne α] (i j : n) :
     (Equiv.swap i j).toPEquiv.toMatrix =
       (1 : Matrix n n α) - (single i i).toMatrix - (single j j).toMatrix + (single i j).toMatrix +
