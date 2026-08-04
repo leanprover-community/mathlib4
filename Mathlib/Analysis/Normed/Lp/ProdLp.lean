@@ -1150,8 +1150,8 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
   isometry_toFun x y : edist x.fst y.fst = edist x y := by
     rcases p.trichotomy with rfl | rfl | hp
     · absurd hp.elim; simp
-    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero]
-    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default (α := β), edist_self, max_zero]
+    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default (α := β), edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 
 theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
