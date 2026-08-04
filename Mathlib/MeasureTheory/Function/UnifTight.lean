@@ -41,7 +41,7 @@ uniformly integrable, uniformly tight, Vitali convergence theorem
 
 namespace MeasureTheory
 
-open Set Filter Topology MeasureTheory NNReal ENNReal
+open Set Filter Topology ENNReal
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
 
@@ -58,7 +58,7 @@ exists some measurable set `s` with finite measure such that the Lp-norm of
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ε > 0, ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε
 
-@[deprecated "This is a duplicate of the new definition of UnifTight" (since := "2026-07-24")]
+@[deprecated "This is a duplicate of the new definition of UnifTight." (since := "2026-07-24")]
 theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
@@ -206,7 +206,7 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
     (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := by
   intro ε hε
   rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
-  obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ENNReal.coe_pos])
+  obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, coe_pos])
   let F : Fin N → α → β := fun n => f n
   have hF : ∀ n, MemLp (F n) p μ := fun n => hf n
   obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF ε hε
@@ -301,7 +301,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
         apply eLpNorm_add_le (by assumption) (by assumption) hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
-    _ = ε := by simp only [ENNReal.add_thirds]
+    _ = ε := by simp only [add_thirds]
 
 /-- Lemma used in `tendsto_Lp_of_tendsto_ae`. -/
 private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
@@ -354,8 +354,8 @@ A sequence of functions `f` converges to `g` in Lp
 if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
 theorem tendstoInMeasure_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, MemLp (f n) p μ) (hg : MemLp g p μ) :
-    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ
-      ↔ Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
+    TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ∧ UnifTight f p μ ↔
+      Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) where
   mp h := tendsto_Lp_of_tendstoInMeasure hp hp' (fun n => (hf n).1) hg h.2.1 h.2.2 h.1
   mpr h := ⟨tendstoInMeasure_of_tendsto_eLpNorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,

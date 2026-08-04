@@ -27,11 +27,9 @@ convergence in measure.
 
 noncomputable section
 
-open MeasureTheory NNReal ENNReal Topology
+open ENNReal Filter Set Topology
 
 namespace MeasureTheory
-
-open Set Filter TopologicalSpace
 
 variable {α β ι : Type*} {m : MeasurableSpace α} [PseudoEMetricSpace β] {μ : Measure α}
 
@@ -95,9 +93,8 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε)
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ε * 2⁻¹ ^ n := by
-  have ⟨N, hN⟩ := (ENNReal.tendsto_atTop ENNReal.zero_ne_top).1
-    (measure_notConvergentSeq_tendsto_zero hf hsm hs hfg n) (ε * 2⁻¹ ^ n)
-      (ENNReal.mul_pos hε.ne' (by simp))
+  have ⟨N, hN⟩ := (ENNReal.tendsto_atTop zero_ne_top).1
+    (measure_notConvergentSeq_tendsto_zero hf hsm hs hfg n) (ε * 2⁻¹ ^ n) (mul_pos hε.ne' (by simp))
   rw [zero_add] at hN
   exact ⟨N, (hN N le_rfl).2⟩
 
@@ -160,11 +157,10 @@ theorem tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq (hε : 0 < ε)
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hsm hs hfg) := by
   rw [EMetric.tendstoUniformlyOn_iff]
   intro δ hδ
-  obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
+  obtain ⟨N, hN⟩ := exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
-  refine ⟨Egorov.notConvergentSeqLTIndex (ε.half_pos hε.ne') hf hsm hs hfg N, ?_⟩
-  intro n hn x hx
-  refine lt_of_le_of_lt ?_ hN
+  refine ⟨Egorov.notConvergentSeqLTIndex (ε.half_pos hε.ne') hf hsm hs hfg N, fun n hn x hx ↦ ?_⟩
+  apply hN.trans_le'
   have : edist (f n x) (g x) ≤ (N : ℝ≥0∞)⁻¹ :=
     not_lt.mp fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩
   simpa [edist_comm]

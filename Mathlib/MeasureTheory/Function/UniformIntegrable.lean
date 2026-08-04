@@ -48,11 +48,11 @@ uniformly integrable, uniformly absolutely continuous integral, Vitali convergen
 
 noncomputable section
 
-open scoped MeasureTheory NNReal Topology
+open scoped NNReal Topology
 
 namespace MeasureTheory
 
-open ENNReal Set Filter TopologicalSpace
+open ENNReal Filter Set
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
   {f g : ι → α → β} {p : ℝ≥0∞}
@@ -73,8 +73,8 @@ def UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ�
   (∀ i, AEStronglyMeasurable (f i) μ) ∧ UnifIntegrable f p μ ∧ ∃ C : ℝ≥0, ∀ i, eLpNorm (f i) p μ ≤ C
 
 theorem unifIntegrable_iff :
-  UnifIntegrable f p μ
-    ↔ ∀ ε > 0, ∃ δ > 0, ∀ i s, μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
+  UnifIntegrable f p μ ↔
+    ∀ ε > 0, ∃ δ > 0, ∀ i s, μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
   rw [UnifIntegrable, ENNReal.tendsto_nhds_zero]
   apply forall₂_congr fun ε hε ↦ ?_
   rw [nhds_zero_basis_Iic.eventually_iff]
@@ -122,8 +122,8 @@ protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
     UnifIntegrable (f + g) p μ := by
   rw [UnifIntegrable.mk_iff]
   refine ENNReal.tendsto_nhds_zero.2 fun ε hε ↦ ?_
-  filter_upwards [ENNReal.tendsto_nhds_zero.1 hf (ε / 2) (ε.half_pos hε.ne.symm),
-    ENNReal.tendsto_nhds_zero.1 hg (ε / 2) (ε.half_pos hε.ne.symm)] with δ hδf hδg
+  filter_upwards [ENNReal.tendsto_nhds_zero.1 hf (ε / 2) (ε.half_pos hε.ne'),
+    ENNReal.tendsto_nhds_zero.1 hg (ε / 2) (ε.half_pos hε.ne')] with δ hδf hδg
   simp only [iSup_le_iff, Pi.add_apply] at hδf hδg ⊢
   intro i s hs hsμ
   grw [eLpNorm_add_le (hf_meas i).restrict (hg_meas i).restrict hp, hδf i s hsμ, hδg i s hsμ,
@@ -143,7 +143,8 @@ protected theorem sub (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) 
 protected theorem ae_mono (hg : UnifIntegrable g p μ) (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
     UnifIntegrable f p μ := by
   refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun ε ↦ ?_)
-  apply iSup_mono fun i ↦ iSup_mono fun s ↦ iSup_mono fun _ ↦ ?_
+  simp only
+  gcongr
   exact eLpNorm_mono_enorm_ae ((hfg i).filter_mono ae_restrict_le)
 
 protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
@@ -163,9 +164,7 @@ protected theorem restrict (hf : UnifIntegrable f p μ) (s : Set α) :
   refine ⟨∞, zero_lt_top, fun ε hε ↦ iSup_mono fun i ↦ ?_⟩
   simp only [iSup_le_iff]
   intro t ht hμt
-  rw [μ.restrict_restrict ht]
-  apply (le_iSup _ (t ∩ s)).trans_eq'
-  exact iSup_pos (μ.restrict_apply ht ▸ hμt)
+  grw [μ.restrict_restrict ht, ← le_iSup₂ (t ∩ s) (μ.restrict_apply ht ▸ hμt)]
 
 protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifIntegrable f p μ) :
     UnifIntegrable (f ∘ g) p μ := by
@@ -731,7 +730,7 @@ theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ 
     set C := (Finset.univ.image fun i : ι => eLpNorm (f i) p μ).max'
       ⟨eLpNorm (f hι.some) p μ, Finset.mem_image.2 ⟨hι.some, Finset.mem_univ _, rfl⟩⟩
     refine ⟨C.toNNReal, fun i => ?_⟩
-    rw [ENNReal.coe_toNNReal]
+    rw [coe_toNNReal]
     · exact Finset.le_max' (α := ℝ≥0∞) _ _ (Finset.mem_image.2 ⟨i, Finset.mem_univ _, rfl⟩)
     · refine ne_of_lt ((Finset.max'_lt_iff _ _).2 fun y hy => ?_)
       rw [Finset.mem_image] at hy
@@ -746,9 +745,9 @@ theorem uniformIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_
 
 /-- A constant sequence of functions is uniformly integrable in the probability sense. -/
 theorem uniformIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ) :
-    UniformIntegrable (fun _ : ι => g) p μ :=
-  ⟨fun _ => hg.1, unifIntegrable_const hp hp_ne_top hg,
-    ⟨(eLpNorm g p μ).toNNReal, fun _ => le_of_eq (ENNReal.coe_toNNReal hg.2.ne).symm⟩⟩
+    UniformIntegrable (fun _ : ι ↦ g) p μ :=
+  ⟨fun _ ↦ hg.1, unifIntegrable_const hp hp_ne_top hg,
+    ⟨(eLpNorm g p μ).toNNReal, fun _ ↦ (coe_toNNReal hg.2.ne).symm.le⟩⟩
 
 /-- This lemma is superseded by `uniformIntegrable_of` which only requires
 `AEStronglyMeasurable`. -/
