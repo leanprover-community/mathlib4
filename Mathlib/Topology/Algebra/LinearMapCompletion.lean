@@ -28,10 +28,10 @@ namespace ContinuousLinearMap
 
 open UniformSpace Completion
 
-variable {α β : Type*} {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂] {σ : R₁ →+* R₂} [UniformSpace α]
-  [AddCommGroup α] [IsUniformAddGroup α] [Module R₁ α] [UniformContinuousConstSMul R₁ α]
+variable {α β : Type*} {R₁ R₂ : Type*} [Semiring R₁] [UniformSpace α] [AddCommGroup α]
+  [IsUniformAddGroup α] [Module R₁ α] [UniformContinuousConstSMul R₁ α] [Semiring R₂]
   [UniformSpace β] [AddCommGroup β] [Module R₂ β] [UniformContinuousConstSMul R₂ β]
-  [IsUniformAddGroup β]
+  [IsUniformAddGroup β] {σ : R₁ →+* R₂}
 
 section completion
 
