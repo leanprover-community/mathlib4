@@ -35,15 +35,14 @@ variable {S : Type*} [Semigroup S] [Pow S ℕ+] [PNatPowAssoc S]
 /-- Idempotent elements are stable under positive powers. -/
 lemma ppow_succ_eq {x : S} (n : ℕ+) (h_idem : IsIdempotentElem x) : x ^ n = x := by
   induction n with
-  | one => rw [ppow_one]
+  | one => simp
   | succ n' ih => rw [ppow_succ, ih, h_idem]
 
 /-- In a finite semigroup, powers of any element eventually repeat. -/
 lemma exists_repeating_ppow [Finite S] (x : S) : ∃ (m n : ℕ+), x ^ m * x ^ n = x ^ m := by
-  obtain ⟨o, p, hop, heq⟩ : ∃ o p : ℕ+, o ≠ p ∧ x ^ o = x ^ p := by
-    apply Finite.exists_ne_map_eq_of_infinite
+  obtain ⟨o, p, hop, heq⟩ := Finite.exists_ne_map_eq_of_infinite (fun (a : ℕ+) ↦ x ^ a)
   simp_all only [ne_eq, ← ppow_add]
-  rcases (lt_or_gt_of_ne hop) with (o_lt_p | p_lt_o)
+  simp only [← ppow_add]
   · use o, p - o
     rw [heq]
     congr

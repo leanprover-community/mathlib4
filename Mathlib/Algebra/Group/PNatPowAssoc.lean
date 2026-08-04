@@ -79,12 +79,10 @@ theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
   exact ppow_mul x n m
 
 theorem ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x := by
-  nth_rw 3 [← ppow_one x]
-  rw [ppow_add]
+  simp [ppow_add]
 
 theorem ppow_succ' (x : M) (n : ℕ+) : x ^ (n + 1) = x * x ^ n := by
-  nth_rw 2 [← ppow_one x]
-  rw [← ppow_add, add_comm]
+  rw [add_comm, ppow_add, ppow_one]
 
 end Mul
 
