@@ -93,8 +93,8 @@ theorem ofPartialFun_eq_iff {s t : Set α} {hs : s ∈ l} {ht : t ∈ l}
 
 theorem ofPartialFun_eq_of_subset {s t : Set α} (hs : s ∈ l) (hst : s ⊆ t)
     (f : (x : α) → x ∈ t → ε x) :
-    ofPartialFun t (Filter.mem_of_superset hs hst) f =
-      ofPartialFun s hs fun x hx => f x (hst hx) :=
+    ofPartialFun s hs (fun x hx => f x (hst hx)) =
+      ofPartialFun t (Filter.mem_of_superset hs hst) f :=
   ofPartialFun_eq_iff.2 (.of_forall fun _ _ _ => rfl)
 
 def liftOfPartialFun {β : Sort*} (f : (s : Set α) → s ∈ l → ((x : α) → x ∈ s → ε x) → β)
