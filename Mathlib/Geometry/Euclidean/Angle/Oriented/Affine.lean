@@ -409,7 +409,7 @@ corresponding unoriented angles are equal. -/
 theorem angle_eq_of_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h : ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆)
     (h1 : p₂ ≠ p₁) (h2 : p₂ ≠ p₃) (h3 : p₅ ≠ p₄) (h4 : p₅ ≠ p₆) :
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
-  rw[angle_eq_abs_oangle_toReal h1.symm h2.symm, angle_eq_abs_oangle_toReal h3.symm h4.symm, h]
+  rw [angle_eq_abs_oangle_toReal h1.symm h2.symm, angle_eq_abs_oangle_toReal h3.symm h4.symm, h]
 
 /-- If two oriented angles are equal, and the first triple is not collinear, then the
 corresponding unoriented angles are equal. -/
