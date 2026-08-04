@@ -103,7 +103,6 @@ private lemma kaehlerDifferentialMap_congr {R S A B : Type*} [CommRing R] [CommR
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :

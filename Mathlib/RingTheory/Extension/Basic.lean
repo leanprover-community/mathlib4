@@ -176,11 +176,10 @@ not an instance.
 noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
   fast_instance% TensorProduct.rightAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] algebraBaseChange in
 instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
   .of_algebraMap_eq fun x ↦ by
-    simp only [baseChange, Algebra.TensorProduct.right_algebraMap_apply]
+    simp only [baseChange]
     exact Algebra.TensorProduct.algebraMap_apply' x
 
 end Construction
