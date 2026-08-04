@@ -63,7 +63,7 @@ namespace Group.Generators
 variable (P : Group.Generators G α)
 
 theorem lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
-  FreeGroup.closure_range_eq_top_iff_surjective_lift.mp P.closure_eq_top
+  FreeGroup.closure_range_eq_top_surjective_lift.mp P.closure_eq_top
 
 /-- If two homomorphisms coincide on the elements of a generating family, then they are equal. -/
 theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) = g (P.val a)) :
