@@ -165,7 +165,7 @@ lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
   ext n
   dsimp [mappingConeHomOfDegreewiseSplitXIso]
   simp only [Int.reduceNeg, id_comp, sub_comp, assoc, mappingCone.inl_v_triangle_mor₃_f,
-    shiftFunctor_obj_X, shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id,
+    shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id,
     mappingCone.inr_f_triangle_mor₃_f, comp_zero, sub_zero]
 
 set_option backward.defeqAttrib.useBackward true in
