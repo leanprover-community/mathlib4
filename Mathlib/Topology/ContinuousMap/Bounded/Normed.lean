@@ -261,9 +261,12 @@ instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
-variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
-variable (α)
 
+section compLeftContinuousBounded
+
+variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
+
+variable (α) in
 -- TODO does this work in the `IsBoundedSMul` setting, too?
 /-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
 is a continuous linear map.
@@ -282,6 +285,28 @@ protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[
 @[simp]
 theorem _root_.ContinuousLinearMap.compLeftContinuousBounded_apply (g : β →L[𝕜] γ) (f : α →ᵇ β)
     (x : α) : (g.compLeftContinuousBounded α f) x = g (f x) := rfl
+
+end compLeftContinuousBounded
+
+section compContinuousCLM
+
+variable {𝕜 : Type*} [TopologicalSpace γ] [NormedField 𝕜] [NormedSpace 𝕜 β]
+
+variable (β 𝕜) in
+/-- Precomposition with a continuous map is a continuous linear map from bounded continuous
+functions to bounded continuous functions. -/
+def compContinuousCLM (g : C(γ, α)) : (α →ᵇ β) →L[𝕜] γ →ᵇ β :=
+  LinearMap.mkContinuous
+    { toFun f := f.compContinuous g,
+      map_add' := by intros; ext; simp,
+      map_smul' := by intros; ext; simp }
+    1 (by simpa using norm_compContinuous_le · g)
+
+@[simp]
+theorem compContinuousCLM_apply (f : α →ᵇ β) (g : C(γ, α)) :
+  f.compContinuousCLM β 𝕜 g = f.compContinuous g := rfl
+
+end compContinuousCLM
 
 end NormedSpace
 
