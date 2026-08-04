@@ -5,6 +5,7 @@ Authors: Ivo Malinowski
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Measure.LevyConvergence
 
@@ -31,8 +32,8 @@ public section
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
-variable {Ω : Type*} [MeasurableSpace Ω] {P : ProbabilityMeasure Ω}
-  {Ω' : Type*} [MeasurableSpace Ω'] {Q : ProbabilityMeasure Ω'}
+variable {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω} [IsProbabilityMeasure P]
+  {Ω' : Type*} [MeasurableSpace Ω'] {Q : Measure Ω'} [IsProbabilityMeasure Q]
   {X : Ω' → E} {Xn : ℕ → Ω → E}
 
 private lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
