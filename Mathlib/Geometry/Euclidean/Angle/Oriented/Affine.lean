@@ -418,7 +418,7 @@ theorem angle_eq_of_oangle_eq_not_collinear {p₁ p₂ p₃ p₄ p₅ p₆ : P}
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ := by
   have h_ne1: p₂ ≠ p₁ := (ne₁₂_of_not_collinear h_not_col1).symm
   have h_ne2: p₂ ≠ p₃ := (ne₂₃_of_not_collinear h_not_col1)
-  have h_not_col2: ¬ Collinear ℝ ({p₄, p₅, p₆} : Set P) := by
+  have h_not_col2: ¬ Collinear ℝ {p₄, p₅, p₆} := by
     have angle_eq : 2 • ∡ p₁ p₂ p₃ = 2 • ∡ p₄ p₅ p₆ := by simp_rw [h]
     rw [← collinear_iff_of_two_zsmul_oangle_eq angle_eq]
     exact h_not_col1
