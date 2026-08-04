@@ -50,8 +50,8 @@ variable [Group α]
 theorem continuous_mul' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous fun p : α × α => p.1 * p.2 := by
-  letI := g.toTopologicalSpace
-  haveI := g.toIsTopologicalGroup
+  let := g.toTopologicalSpace
+  have := g.toIsTopologicalGroup
   exact continuous_mul
 
 /-- A version of the global `continuous_inv` suitable for dot notation. -/
@@ -59,8 +59,8 @@ theorem continuous_mul' (g : GroupTopology α) :
 theorem continuous_inv' (g : GroupTopology α) :
     haveI := g.toTopologicalSpace
     Continuous (Inv.inv : α → α) := by
-  letI := g.toTopologicalSpace
-  haveI := g.toIsTopologicalGroup
+  let := g.toTopologicalSpace
+  have := g.toIsTopologicalGroup
   exact continuous_inv
 
 @[to_additive]
@@ -102,7 +102,7 @@ theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = �
 instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
-        haveI := discreteTopology_bot α
+        have := discreteTopology_bot α
         fun_prop
       continuous_inv := continuous_bot }⟩
 
@@ -110,7 +110,6 @@ instance : Bot (GroupTopology α) :=
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
@@ -165,19 +164,14 @@ topologies contained in the intersection of `s` and `t`. -/
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`. -/]
 instance : CompleteSemilatticeInf (GroupTopology α) :=
-  { inferInstanceAs (InfSet (GroupTopology α)),
-    inferInstanceAs (PartialOrder (GroupTopology α)) with
-    sInf_le := fun _ a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
-    le_sInf := by
-      intro S a hab
-      apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_sInf
-      rintro _ ⟨b, hbS, rfl⟩
-      exact hab b hbS }
+  { (inferInstance : InfSet (GroupTopology α)),
+    (inferInstance : PartialOrder (GroupTopology α)) with
+    isGLB_sInf _ := .of_image toTopologicalSpace_le (isGLB_sInf _) }
 
 @[to_additive]
 instance : CompleteLattice (GroupTopology α) :=
-  { inferInstanceAs (BoundedOrder (GroupTopology α)),
-    inferInstanceAs (SemilatticeInf (GroupTopology α)),
+  { (inferInstance : BoundedOrder (GroupTopology α)),
+    (inferInstance : SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
     inf := (· ⊓ ·) }
 

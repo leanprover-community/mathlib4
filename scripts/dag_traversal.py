@@ -465,7 +465,7 @@ class TraversalResult:
 
 
 def _parse_all_imports(
-    filepaths: list[Path], project_root: Path, batch_size: int = 500,
+    filepaths: list[Path], project_root: Path,
 ) -> dict[Path, list[str]]:
     """Parse imports for all files using ``lean --deps-json``.
 
@@ -477,40 +477,38 @@ def _parse_all_imports(
     The output entries are matched to input files by position (``lean`` emits
     one entry per input file in the same order).
     """
-    result: dict[Path, list[str]] = {}
-
-    for i in range(0, len(filepaths), batch_size):
-        batch = filepaths[i : i + batch_size]
-        cmd = ["lake", "env", "lean", "--deps-json"] + [str(f) for f in batch]
-        proc = subprocess.run(
-            cmd, capture_output=True, text=True, cwd=project_root,
+    cmd = ["lake", "env", "lean", "--deps-json", "--stdin"]
+    stdin_data = "\n".join(str(f) for f in filepaths)
+    proc = subprocess.run(
+        cmd, input=stdin_data, capture_output=True, text=True, cwd=project_root,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"lean --deps-json failed (exit {proc.returncode}):\n{proc.stderr}"
         )
-        if proc.returncode != 0:
-            raise RuntimeError(
-                f"lean --deps-json failed (exit {proc.returncode}):\n{proc.stderr}"
+
+    data = json.loads(proc.stdout)
+    entries = data["imports"]
+
+    if len(entries) != len(filepaths):
+        raise RuntimeError(
+            f"lean --deps-json returned {len(entries)} entries "
+            f"for {len(filepaths)} files"
+        )
+
+    result: dict[Path, list[str]] = {}
+    for filepath, entry in zip(filepaths, entries):
+        if entry.get("errors"):
+            errors = "; ".join(entry["errors"])
+            print(
+                f"warning: lean --deps-json: {filepath}: {errors}",
+                file=sys.stderr,
             )
-
-        data = json.loads(proc.stdout)
-        entries = data["imports"]
-
-        if len(entries) != len(batch):
-            raise RuntimeError(
-                f"lean --deps-json returned {len(entries)} entries "
-                f"for {len(batch)} files"
-            )
-
-        for filepath, entry in zip(batch, entries):
-            if entry.get("errors"):
-                errors = "; ".join(entry["errors"])
-                print(
-                    f"warning: lean --deps-json: {filepath}: {errors}",
-                    file=sys.stderr,
-                )
-            imports: list[str] = []
-            if entry.get("result"):
-                for imp in entry["result"]["imports"]:
-                    imports.append(imp["module"])
-            result[filepath] = imports
+        imports: list[str] = []
+        if entry.get("result"):
+            for imp in entry["result"]["imports"]:
+                imports.append(imp["module"])
+        result[filepath] = imports
 
     return result
 
@@ -541,20 +539,33 @@ class DAG:
         Uses ``lean --deps-json`` to parse imports correctly.
         """
         if directories is None:
-            directories = ["Mathlib", "MathlibTest", "Archive", "Counterexamples"]
+            directories = ["."]
 
         # Collect all .lean file paths (relative to project_root).
+        # Skip the Lake build directory (`.lake/`); it contains vendored
+        # dependencies that we don't want to modify or build directly.
         rel_paths: list[Path] = []
         for directory in directories:
             dir_path = project_root / directory
             if not dir_path.exists():
                 continue
-            for root, _, files in os.walk(dir_path):
+            for root, dirs, files in os.walk(dir_path):
+                dirs[:] = [d for d in dirs if d != ".lake"]
                 for fname in files:
                     if not fname.endswith(".lean"):
                         continue
                     full_path = Path(root) / fname
                     rel_paths.append(full_path.relative_to(project_root))
+
+        if not rel_paths:
+            import sys as _sys
+            _sys.stderr.write(
+                f"warning: no .lean files found under {project_root} "
+                f"(directories={list(directories)}).\n"
+                "  hint: pass --directories <your-source-dir> if your files\n"
+                "  aren't directly under the project root.\n"
+            )
+            return DAG({}, project_root.resolve())
 
         # Batch-parse imports using lean --deps-json.
         all_imports = _parse_all_imports(rel_paths, project_root)
@@ -860,7 +871,7 @@ def _cli_main():
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan (default: Mathlib MathlibTest Archive Counterexamples)",
+        help="Directories to scan (default: '.', relative to project root specified by --dir)",
     )
 
     args = parser.parse_args()

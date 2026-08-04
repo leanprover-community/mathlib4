@@ -21,7 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 /-
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
@@ -33,12 +33,6 @@ open Function
 universe u
 
 variable {α : Type u}
-
-@[deprecated (since := "2025-10-31")]
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-31")]
-alias OrderedAddCommGroup.add_lt_add_left' := add_lt_add_right
 
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 
@@ -55,6 +49,20 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
   le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
   le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
+/-- Assuming `α` equipped with `LinearOrder` is `CancelCommMonoid` and `IsOrderedMonoid`, it is
+also `IsOrderedCancelMonoid`.
+
+TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
+https://github.com/leanprover-community/mathlib4/pull/32828. -/
+@[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid'
+  /-- Assuming `α` equipped with `LinearOrder` is `AddCancelCommMonoid` and `IsAddOrderedMonoid`, it
+  is also `IsAddOrderedCancelMonoid`.
+
+  TODO: make it an `instance`. To avoid slowdown, it was not an instance when it was submitted. See
+  https://github.com/leanprover-community/mathlib4/pull/32828. -/]
+theorem IsOrderedMonoid.toIsOrderedCancelMonoid'
+    [CancelCommMonoid α] [LinearOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+  le_of_mul_le_mul_left _ _ _ h := le_of_mul_le_mul_left' h
 
 /-!
 ### Linearly ordered commutative groups
@@ -69,12 +77,6 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=

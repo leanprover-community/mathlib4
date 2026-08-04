@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
@@ -14,7 +14,7 @@ This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 
 public meta section
 
-namespace Tactic.NormNum
+namespace Mathlib.Meta.NormNum
 
 open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum NNReal
 
@@ -24,7 +24,6 @@ lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx
 lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNNRat_nnrealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by
@@ -125,4 +124,4 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
     | .isNegNNRat sℝ eq en ed pf => failure
   | _ => failure
 
-end Tactic.NormNum
+end Mathlib.Meta.NormNum

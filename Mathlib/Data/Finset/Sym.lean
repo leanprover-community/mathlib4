@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Sym
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Symmetric powers of a finset
@@ -50,7 +51,6 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp
 
@@ -64,7 +64,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     simp_all
-  · simpa [map_eq_image] using sym2_cons a s ha
+  · simpa [map_eq_image] using! sym2_cons a s ha
 
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
   val_injective <| s.val.sym2_map _
@@ -194,7 +194,26 @@ theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := b
       ⟨a, h _ <| Sym.mem_cons_self _ _,
         mem_image_of_mem _ <| ih.2 fun b hb ↦ h _ <| Sym.mem_cons_of_mem hb⟩
 
--- @[simp] /- adaption note for https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+lemma sym_map [DecidableEq β] {n : ℕ} (g : α ↪ β) (s : Finset α) :
+    (s.map g).sym n = (s.sym n).map ⟨Sym.map g, Sym.map_injective g.injective _⟩ := by
+  ext d
+  simp only [mem_sym_iff, mem_map, Function.Embedding.coeFn_mk]
+  refine ⟨fun hd ↦ ?_, fun ⟨b, hb, hd'⟩ d' hd ↦ ?_⟩
+  · let g' : {x // x ∈ d} → α := fun ⟨x, hx⟩ ↦ (hd x hx).choose
+    refine ⟨(fun p ↦ Sym.map g' p) d.attach, ?_, ?_⟩
+    · simp only [Sym.mem_map, Sym.mem_attach, true_and, Subtype.exists, forall_exists_index, g']
+      intro i e he hi
+      rw [← hi]
+      exact (hd e he).choose_spec.1
+    · simp only [Sym.map_map, Function.comp_apply, g']
+      convert! Sym.attach_map_coe d with ⟨x, hx⟩ hx'
+      exact (hd x hx).choose_spec.2
+  · rw [← hd', Sym.mem_map] at hd
+    obtain ⟨a, ha, rfl⟩ := hd
+    exact ⟨a, hb a ha, rfl⟩
+
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/8419: the simpNF complained -/
+-- @[simp]
 theorem sym_empty (n : ℕ) : (∅ : Finset α).sym (n + 1) = ∅ := rfl
 
 theorem replicate_mem_sym (ha : a ∈ s) (n : ℕ) : Sym.replicate n a ∈ s.sym n :=
@@ -257,7 +276,7 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   for `0 ≤ i ≤ n`. -/
 @[simps]
 def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
-  toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
+  toFun m := ⟨_, (m.1.filterNe a).2, by convert! sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
@@ -268,6 +287,17 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.
     · exact Subtype.coe_injective
     refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
     exacts [rfl, h ∘ mem_sym_iff.1 hm a]
+
+@[to_additive]
+theorem val_prod_eq_prod_count_pow [CommMonoid α] {n : ℕ} {k : Sym α n}
+    {s : Finset α} (hk : k ∈ s.sym n) :
+    k.val.prod = ∏ d ∈ s, d ^ Multiset.count d k := by
+  rw [Finset.prod_multiset_count_of_subset _ s]
+  · apply Finset.prod_congr rfl (by simp)
+  intro x hx
+  simp only [Sym.val_eq_coe, Multiset.mem_toFinset, Sym.mem_coe] at hx
+  simp only [Finset.mem_sym_iff] at hk
+  exact hk x hx
 
 end Sym
 

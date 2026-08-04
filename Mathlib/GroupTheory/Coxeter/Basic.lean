@@ -109,8 +109,7 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
 protected def Group : Type _ := PresentedGroup M.relationsSet
-
-instance : Group M.Group := QuotientGroup.Quotient.group _
+deriving Group
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
@@ -200,6 +199,7 @@ theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
 
 local prefix:100 "s" => cs.simple
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
@@ -223,6 +223,7 @@ theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := b
 theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
   (eq_inv_of_mul_eq_one_right (cs.simple_mul_simple_self i)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
@@ -315,6 +316,7 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
@@ -350,6 +352,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
 theorem simple_determines_coxeterSystem :
@@ -425,7 +428,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
   revert k
   induction p with
-  | zero => grind [not_lt_zero']
+  | zero => grind
   | succ n h => grind [CoxeterSystem.alternatingWord_succ']
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
@@ -508,10 +511,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
-    norm_num
-    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
-      ← inv_zpow]
-    simp [← mul_assoc]
+    simp [zpow_add, simple_mul_simple_pow', ← inv_zpow, ← mul_assoc]
 
 /-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
 This is known as the "braid relation" or "Artin-Tits relation". -/

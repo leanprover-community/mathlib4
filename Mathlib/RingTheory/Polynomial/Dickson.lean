@@ -119,7 +119,6 @@ There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial pol
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
     ∀ n, (dickson 1 (1 : R) n).eval (x + y) = x ^ n + y ^ n
   | 0 => by
@@ -139,7 +138,6 @@ private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 
 private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
   | 0 => by
     simp only [dickson_zero]
@@ -160,7 +158,6 @@ theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
     Chebyshev.T R n = C (⅟2) * (dickson 1 1 n).comp (2 * X) :=
   dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
   | 0 => by
     simp only [dickson_zero]
@@ -214,7 +211,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     have : CharP K p := by
       rw [← f.charP_iff_charP]
       infer_instance
-    haveI : Infinite K :=
+    have : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
     refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance
@@ -224,7 +221,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
-    simp only [eval_X, eval_pow, Set.mem_setOf_eq, ZMod.cast_one', add_pow_char,
+    simp only [eval_X, eval_pow, Set.mem_ofPred_eq, ZMod.cast_one', add_pow_char,
       dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
@@ -248,9 +245,9 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         simpa [φ, eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
           mul_zero, sq, zero_add, one_ne_zero]
       classical
-        convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
+        convert! (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
-        simp only [φ, Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
+        simp only [φ, Multiset.mem_toFinset, Set.mem_ofPred_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
           Multiset.mem_singleton]
         by_cases hy : y = 0
@@ -262,7 +259,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
     apply (Set.eq_univ_of_forall _).symm
     intro x
-    simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_setOf_eq]
+    simp only [exists_prop, Set.mem_iUnion, Ne, Set.mem_ofPred_eq]
     by_cases hx : x = 0
     · simp only [hx, and_true, inv_zero, or_true]
       exact ⟨_, 1, rfl, one_ne_zero⟩

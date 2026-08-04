@@ -97,7 +97,6 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
-set_option backward.isDefEq.respectTransparency false in
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
@@ -150,13 +149,12 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     ∃ z : ℤ, z * t = 1 := by
-  classical
   obtain ⟨j, hj⟩ := ht
   obtain ⟨f, hf⟩ : ∃ f : b.support → ℤ, P.coroot i = ∑ i, (t * f i) • P.coroot i := by
     have : P.coroot j ∈ span ℤ (P.coroot '' b.support) := b.coroot_mem_span_int j
@@ -198,7 +196,6 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     0 < f ∨ f < 0 := by
@@ -209,7 +206,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     have hf' : f ≠ 0 := by rintro rfl; exact P.ne_zero k <| by simp [hk]
     rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
     · left; exact this f hk' hf₀ hf'
-    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg]) (by simpa)
+    · right; simpa using this (-f) (by convert! hk'; simp) (by simpa only [support_neg]) (by simpa)
   intro f hf hf₀ hf'
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by
@@ -225,7 +222,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     by_cases hi : i ∈ b.support
     · change 0 ≤ f' ⟨i, hi⟩
       simp [← hc]
-    · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
+    · replace hi : i ∉ f.support := by contrapose hi; exact hf₀ hi
       simp_all
   refine Pi.lt_def.mpr ⟨aux, ?_⟩
   by_contra! contra
@@ -243,7 +240,6 @@ lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
       exact h (le_of_lt h')
   · contrapose! h; exact h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma not_nonneg_iff_neg_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     (¬ 0 ≤ f) ↔ f < 0 := by
@@ -261,8 +257,8 @@ lemma sub_notMem_range_root
   let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
   have hf : ∑ k ∈ b.support, f k • P.root k = P.root i - P.root j := by
     have : {i, j} ⊆ b.support := by aesop (add simp Finset.insert_subset_iff)
-    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by aesop) (by aesop),
-      Finset.sum_insert (by aesop), Finset.sum_singleton]
+    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by lia) (by aesop),
+      Finset.sum_insert (by grind), Finset.sum_singleton]
     simp [f, hij, sub_eq_add_neg]
   intro contra
   rcases b.pos_or_neg_of_sum_smul_root_mem f (by rwa [hf]) (by aesop) with pos | neg
@@ -334,7 +330,28 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma spanIntRootSupport :
+    span ℤ (P.rootSpanMem ℤ '' b.support) = ⊤ := by
+  refine Submodule.eq_top_iff'.mpr fun ⟨x, hx⟩ ↦ ?_
+  rw [← SetLike.mem_coe, ← (injective_subtype (P.rootSpan ℤ)).mem_set_image, ← Submodule.map_coe]
+  simpa [Submodule.map_span, ← image_comp]
+
+lemma linearIndependentInt [CharZero R] :
+    LinearIndependent ℤ (fun i : b.support ↦ P.rootSpanMem ℤ i) :=
+  ((P.rootSpan ℤ).subtype.linearIndependent_iff (by simp)).mp <|
+    b.linearIndepOn_root.restrict_scalars' ℤ
+
+/-- A base for a root system gives a `ℤ`-basis for the `ℤ`-span of the roots. -/
+def toWeightBasisInt [CharZero R] :
+    Basis b.support ℤ (P.rootSpan ℤ) :=
+  Basis.mk b.linearIndependentInt <| by
+    have : (fun i : b.support ↦ P.rootSpanMem ℤ i) = P.rootSpanMem ℤ ∘ ((↑) : b.support → ι) := rfl
+    simp [this, range_comp]
+
+@[simp] lemma coe_toWeightBasisInt_apply [CharZero R] (i : b.support) :
+    (b.toWeightBasisInt i : M) = P.root i := by
+  simp [toWeightBasisInt]
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧
@@ -392,7 +409,7 @@ lemma height_eq_sum {i : ι} {f : ι → ℤ} (heq : P.root i = ∑ j ∈ b.supp
   have aux (j : b.support) := Fintype.linearIndependent_iffₛ.mp
       (b.linearIndepOn_root.restrict_scalars' ℤ) ((b.exists_root_eq_sum_int i).choose ∘ (↑))
       (f ∘ (↑)) (by simpa) j
-  simpa using aux ⟨j, hj⟩
+  simpa using! aux ⟨j, hj⟩
 
 lemma height_ne_zero (i : ι) :
     b.height i ≠ 0 := by
@@ -417,7 +434,7 @@ lemma height_ne_zero (i : ι) :
 lemma height_reflectionPerm_self (i : ι) :
     letI := P.indexNeg
     b.height (-i) = -b.height i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   obtain ⟨f, hf₀, hf₁, hf₂⟩ := b.exists_root_eq_sum_int i
   have hf₃ : P.root (-i) = ∑ j ∈ b.support, (-f) j • P.root j := by simpa
   simp only [height_eq_sum hf₂, height_eq_sum hf₃, Pi.neg_apply, Finset.sum_neg_distrib]
@@ -441,7 +458,7 @@ lemma height_add {i j k : ι} (hk : P.root k = P.root i + P.root j) :
 
 lemma height_sub {i j k : ι} (hk : P.root k = P.root i - P.root j) :
     b.height k = b.height i - b.height j := by
-  letI := P.indexNeg
+  let := P.indexNeg
   replace hk : P.root k = P.root i + P.root (-j) := by simpa [← sub_eq_add_neg]
   rw [sub_eq_add_neg, ← b.height_reflectionPerm_self, b.height_add hk]
 
@@ -536,7 +553,7 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
     b.IsPos k := by
   replace hij : LinearIndependent R ![P.root j, P.root i] := by
     refine IsReduced.linearIndependent P hij.symm fun contra ↦ ?_
-    letI := P.indexNeg
+    let := P.indexNeg
     replace contra : i = -j := by rw [eq_comm, neg_eq_iff_eq_neg]; simpa using contra
     rw [contra, isPos_iff, height_reflectionPerm_self, height_one_of_mem_support hj] at hi
     lia
@@ -564,7 +581,6 @@ lemma IsPos.reflectionPerm {i j : ι} (hi : b.IsPos i) (hj : j ∈ b.support) (h
     rw [root_reflectionPerm, neg_smul, reflection_apply_root' ℤ, sub_eq_add_neg]
   exact hi.add_zsmul hij hj this
 
-set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -614,13 +630,12 @@ lemma induction_add (i : ι) {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j k, P.root k = P.root i + P.root j → p i → j ∈ b.support → p k) :
     p i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   rcases IsPos.or_neg b i with hi | hi
   · exact hi.induction_on_add h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}
@@ -652,7 +667,7 @@ lemma induction_reflect (i : ι) {p : ι → Prop}
     (h₁ : ∀ i ∈ b.support, p i)
     (h₂ : ∀ i j, p i → j ∈ b.support → p (P.reflectionPerm j i)) :
     p i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   rcases IsPos.or_neg b i with hi | hi
   · exact hi.induction_on_reflect h₁ h₂
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
@@ -662,7 +677,7 @@ lemma forall_mem_support_invtSubmodule_iff (q : Submodule R M) :
     (∀ i ∈ b.support, q ∈ invtSubmodule (P.reflection i)) ↔
       (∀ i, q ∈ invtSubmodule (P.reflection i)) := by
   refine ⟨fun hq i ↦ ?_, fun hq i _ ↦ hq i⟩
-  letI := P.indexNeg
+  let := P.indexNeg
   have (j : ι) : P.reflection (-j) = P.reflection j := by ext x; simp [reflection_apply, two_smul]
   refine b.induction_reflect i (by simp_all) hq ?_
   clear i

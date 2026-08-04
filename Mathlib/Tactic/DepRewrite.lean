@@ -9,7 +9,7 @@ public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Init
-public import Lean.Elab.Tactic.Config
+public import Lean.Elab.ConfigEval
 
 /-! ## Dependent rewrite tactic -/
 
@@ -23,9 +23,12 @@ theorem dcongrArg.{u, v} {α : Sort u} {a a' : α} {β : (a' : α) → a = a' �
     f a rfl = Eq.rec (motive := fun x h' ↦ β x (h.trans h')) (f a' h) h.symm := by
   cases h; rfl
 
-theorem nddcongrArg.{u, v} {α : Sort u} {a a' : α} {β : Sort v}
-    (h : a = a') (f : (a' : α) → (h : a = a') → β) :
-    f a rfl = f a' h := by
+theorem hdcongrArg.{u, v} {α : Sort u} {a a' : α} {β : (a' : α) → a = a' → Sort v}
+    (h : a = a') (f : (a' : α) → (h : a = a') → β a' h) :
+    f a rfl ≍ f a' h := by
+  cases h; rfl
+
+theorem eq_of_heq.{u} {α : Sort u} {a a' : α} (h : a ≍ a') : a = a' := by
   cases h; rfl
 
 theorem heqL.{u} {α β : Sort u} {a : α} {b : β} (h : HEq a b) :
@@ -146,6 +149,7 @@ The `Nat` state tracks which occurrence of the pattern we are about to see, 1-in
 The cache stores results of `visit` together with
 - the `Nat` state before the cached call; and
 - the difference in the state resulting from the call.
+
 We store these because even if the cache hits,
 we must update the state as if the call had been made.
 Storing the difference suffices because the state increases monotonically.
@@ -292,7 +296,7 @@ The expected types of certain subterms are computed from `et?`. -/
 partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   withTraceNode traceClsVisit (fun
     | .ok e' => pure m!"{e} => {e'} (et: {et?})"
-    | .error _ => pure m!"{e} => 💥️") <| Meta.withIncRecDepth do
+    | .error _ => pure m!"{e} => ??") <| Meta.withIncRecDepth do
   let ctx ← read
   if let some (eup, cacheOcc, dCacheOcc) ← MonadCache.findCached? { val := e : ExprStructEq } then
     if canUseCache cacheOcc dCacheOcc (← get) ctx.cfg.occs then
@@ -401,7 +405,7 @@ def dabstract (e : Expr) (p : Expr) (cfg : DepRewrite.Config) : MetaM Expr := do
   withTraceNode traceCls (fun
     -- Message shows unified pattern (without mvars) b/c it is constructed after the body runs
     | .ok motive => pure m!"{e} =[x/{p}]=> {motive}"
-    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> 💥️{indentD err.toMessageData}") do
+    | .error (err : Lean.Exception) => pure m!"{e} =[x/{p}]=> {indentD err.toMessageData}") do
   withLocalDeclD `x tp fun x => do
   withLocalDeclD `h (← mkEq p x) fun h => do
     let e' ← visit e none |>.run { cfg, p, x, h, Δ := ∅, δ := ∅ } |>.run.run' 1
@@ -466,20 +470,21 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
           -- `eqPrf : eAbst lhs rfl = eNew`
           -- `eAbst lhs rfl ≡ e`
           let (eNew, eqPrf) ← do
-            if isDep then
-              lambdaBoundedTelescope eAbst 2 fun xs eBody => do
-                let #[x, h] := xs | throwError
-                  "internal error: expected 2 arguments in{indentExpr eAbst}"
-                let eBodyTp ← inferType eBody
-                checkCastAllowed eBody eBodyTp config.castMode
-                let some eBody ← castBack? eBody eBodyTp x h ∅ ∅ | throwError
+            lambdaBoundedTelescope eAbst 2 fun xs eBody => do
+              let #[x, h] := xs | throwError
+                "internal error: expected 2 arguments in{indentExpr eAbst}"
+              let eBodyTyp ← inferType eBody
+              let motive ← mkLambdaFVars xs eBodyTyp
+              if isDep then
+                checkCastAllowed eBody eBodyTyp config.castMode
+                let some eBody ← castBack? eBody eBodyTyp x h ∅ ∅ | throwError
                   "internal error: body{indentExpr eBody}\nshould mention '{x}' or '{h}'"
-                let motive ← mkLambdaFVars xs eBodyTp
                 pure (
                   eBody.replaceFVars #[x, h] #[rhs, heq],
                   mkApp6 (.const ``dcongrArg [u1, u2]) α lhs rhs motive heq eAbst)
-            else
-              pure (eNew, mkApp6 (.const ``nddcongrArg [u1, u2]) α lhs rhs eType heq eAbst)
+              else
+                let heqPrf := mkApp6 (.const ``hdcongrArg [u1, u2]) α lhs rhs motive heq eAbst
+                pure (eNew, mkApp4 (.const ``eq_of_heq [u2]) eType e eNew heqPrf)
           postprocessAppMVars `depRewrite mvarId newMVars binderInfos
             (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
           let newMVarIds ← newMVars.map Expr.mvarId! |>.filterM fun mvarId =>
@@ -509,14 +514,14 @@ The result is expected to be defeq to the original expression. -/
 def cleanupCasts (e : Expr) : MetaM Expr :=
   transform (input := e) (skipConstInApp := true) (pre := fun e =>
     -- since the `pre` method returns a result instead of calling itself recursively,
-    -- the tracing creates many parallel nodes insetad of nesting them
+    -- the tracing creates many parallel nodes instead of nesting them
     -- unfortunately, there does not seem to be a way to nest the trace nodes
     -- within the bounds of the `Lean.Meta.transform` API
     withTraceNode traceClsClean (fun
       | .ok (.visit e') => pure m!"{e} => visit {e'}"
       | .ok (.continue e'?) => pure m!"{e} => continue {e'?.getD e}"
       | .ok (.done e') => pure m!"{e} => done {e'}"
-      | .error _ => pure m!"{e} => 💥️") <| do
+      | .error _ => pure m!"{e} => ??") <| do
     let .mdata mdata e := e | return .continue
     if mdata != castMData then return .continue
     trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"
@@ -634,10 +639,10 @@ namespace Conv
 open Conv
 
 @[inherit_doc depRewriteSeq]
-syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq : conv
 
 @[inherit_doc depRwSeq]
-syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRw) "rw!" optConfig rwRuleSeq : conv
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -655,28 +660,18 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
     let r ←  (← getMainGoal).depRewrite (← getLhs) e symm (config := config)
     updateLhs r.eNew r.eqProof
     changeLhs (← withTransparency config.castTransparency
-      (withMainContext <| cleanupCasts (← getMainTarget)))
+      (withMainContext <| cleanupCasts (← getLhs)))
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
 @[tactic depRewrite, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (DepRewrite.depRewriteLocalDecl term symm · cfg)
-      (depRewriteTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRewriteTarget term symm cfg
 
 @[tactic depRw, inherit_doc depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
-  let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (depRwLocalDecl term symm · cfg)
-      (depRwTarget term symm cfg)
-      (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
+  withRWRulesSeq stx[0] stx[2] fun symm term => depRwTarget term symm cfg
 
 end Conv
 end Mathlib.Tactic.DepRewrite

@@ -23,16 +23,16 @@ This file proves the Bourbaki-Witt Theorem.
 ## Main statements
 
 - `nonempty_fixedPoints_of_inflationary` : The Bourbaki-Witt Theorem : If $X$ is a chain complete
-partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
+  partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
 
 ## References
 
 The proof used can be found in [serge_lang_algebra]
 -/
 
-@[expose] public section
+public section
 
-variable {α : Type*}
+variable {α β : Type*} {ι : Sort*}
 
 /-- The type of nonempty chains of an order -/
 @[ext]
@@ -44,7 +44,7 @@ structure NonemptyChain (α : Type*) [LE α] where
 
 instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
-  coe_injective' _ _ := NonemptyChain.ext
+  coe_injective _ _ := NonemptyChain.ext
 
 instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
 
@@ -153,7 +153,7 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
           right
           apply le_trans h' (le_cSup _ _ hz)
 
-lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
+lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
     IsAdmissible x f {y | IsExtremePt x f y} := by
   apply IsAdmissible.mk
   · constructor
@@ -193,14 +193,20 @@ lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
       intro hc'
       exact lt_irrefl y (lt_of_lt_of_le hy' hc')
 
-lemma setOf_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x f y} = bot x f := by
+@[deprecated (since := "2026-07-09")]
+alias setOf_isExtremePt_isAdmissible := setOfPred_isExtremePt_isAdmissible
+
+lemma setOfPred_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x f y} = bot x f := by
   rw [← subset_bot_iff]
   · exact fun _ h ↦ h.mem_bot
-  · exact setOf_isExtremePt_isAdmissible le_map
+  · exact setOfPred_isExtremePt_isAdmissible le_map
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isExtremePt_eq_bot := setOfPred_isExtremePt_eq_bot
 
 lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
     y ∈ bot x f ↔ IsExtremePt x f y := by
-  rw [← setOf_isExtremePt_eq_bot le_map, mem_setOf]
+  rw [← setOfPred_isExtremePt_eq_bot le_map, mem_ofPred]
 
 lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) := by
   intro y hy z hz _
@@ -214,7 +220,7 @@ end IsExtremePt
 
 open Function IsExtremePt
 
-/- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
+/-- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
 inflationary, then `f` has a fixed point -/
 theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x ≤ f x) :
     (fixedPoints f).Nonempty := by
@@ -228,3 +234,65 @@ theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x �
   exact ⟨(bot_isAdmissible le_map).cSup_mem _ (subset_refl _), rfl⟩
 
 end ChainCompletePartialOrder
+
+open OmegaCompletePartialOrder
+
+namespace CompleteLattice
+
+variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
+
+lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
+    ωScottContinuous (⨆ i, f i) := by
+  refine ωScottContinuous.of_monotone_map_ωSup
+    ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_comm ι]
+
+lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
+    ωScottContinuous (sSup s) := by
+  rw [sSup_eq_iSup]; apply ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
+
+lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
+    ωScottContinuous (f ⊔ g) := by
+  rw [← sSup_pair]
+  apply ωScottContinuous.sSup
+  rintro f (rfl | rfl | _) <;> assumption
+
+#adaptation_note
+/--
+Why `respectTransparency.types false` here?
+The proof of this lemma involves a very subtle form of abuse of definitional equality.
+`monotone_const` is only applicable if `Top.top` (`⊤`) can be unfolded to see that it's constant.
+However, `Top.top` is semireducible.
+This mismatch is problematic because `simp` works at implicit transparency.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
+lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
+  ωScottContinuous.of_monotone_map_ωSup
+    ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩
+
+lemma ωScottContinuous.bot : ωScottContinuous (⊥ : α → β) := by
+  rw [← sSup_empty]; exact ωScottContinuous.sSup (by simp)
+
+end CompleteLattice
+
+namespace CompleteLattice
+
+variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
+
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- Also consider if it holds in greater generality (e.g. finite sets)
+-- N.B. The Scott Topology coincides with the Upper Topology on a Complete Linear Order
+-- `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
+-- We have that the product topology coincides with the upper topology
+-- https://github.com/leanprover-community/mathlib4/pull/12133
+lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
+    ωScottContinuous (f ⊓ g) := by
+  refine ωScottContinuous.of_monotone_map_ωSup
+    ⟨hf.monotone.inf hg.monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
+  simp only [Pi.inf_apply, hf.map_ωSup c, hg.map_ωSup c, inf_le_iff, ωSup_le_iff, Chain.coe_map,
+    Function.comp, OrderHom.coe_mk, ← forall_or_left, ← forall_or_right]
+  exact ⟨fun h _ ↦ h _ _, fun h i j ↦
+    (h (max j i)).imp (le_trans <| hf.monotone <| c.mono <| le_max_left _ _)
+      (le_trans <| hg.monotone <| c.mono <| le_max_right _ _)⟩
+
+end CompleteLattice

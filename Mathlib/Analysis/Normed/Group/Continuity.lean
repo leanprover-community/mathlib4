@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
 
@@ -18,7 +19,7 @@ public import Mathlib.Topology.Sequences
 normed group
 -/
 
-@[expose] public section
+public section
 
 variable {α ι κ E F G : Type*}
 
@@ -67,6 +68,16 @@ theorem tendsto_iff_norm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b 
 theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖) a (𝓝 0) :=
   tendsto_iff_norm_inv_mul_tendsto_zero.trans <| by simp
+
+@[to_additive]
+theorem tendsto_iff_enorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖ₑ) a (𝓝 0) := by
+  simp only [← edist_eq_enorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
+
+@[to_additive]
+theorem tendsto_one_iff_enorm_tendsto_zero {f : α → E} {a : Filter α} :
+    Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖ₑ) a (𝓝 0) :=
+  tendsto_iff_enorm_inv_mul_tendsto_zero.trans <| by simp
 
 @[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
@@ -160,9 +171,6 @@ theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousE
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
 
-@[deprecated (since := "2025-12-23")]
-alias Inseparable.enorm_eq_enorm' := Inseparable.enorm_eq_enorm
-
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
   rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).ge_iff_eq']
@@ -207,8 +215,6 @@ variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : �
 
 lemma Filter.Tendsto.enorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   .comp continuous_enorm.continuousAt h
-
-@[deprecated (since := "2025-12-23")] alias Filter.Tendsto.enorm' := Filter.Tendsto.enorm
 
 end ContinuousENorm
 
@@ -301,6 +307,11 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
   simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
+
+@[to_additive]
+theorem tendsto_iff_enorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
+  simp only [← edist_eq_enorm_div, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive]
 theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :

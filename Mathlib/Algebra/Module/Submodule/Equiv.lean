@@ -115,6 +115,10 @@ theorem ofTop_symm_apply {h} (x : M) : (ofTop p h).symm x = ⟨x, h.symm ▸ tri
   rfl
 
 @[simp]
+theorem toLinearMap_ofTop {h} : (ofTop p h).toLinearMap = p.subtype :=
+  rfl
+
+@[simp]
 protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 

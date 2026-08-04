@@ -90,7 +90,6 @@ def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
   fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
     IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right
 
@@ -121,7 +120,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
     refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
-    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_setOf_eq, and_imp,
+    simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_ofPred_eq, and_imp,
       mem_shatterer]
     exact fun s _ ↦ aux (fun t ht ↦ (mem_filter.1 ht).2)
   rw [← card_memberSubfamily_add_card_nonMemberSubfamily a]

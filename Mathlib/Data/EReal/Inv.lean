@@ -49,7 +49,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 @[simp]
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
   induction x
-  · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
+  · simp
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
 
@@ -87,6 +87,7 @@ theorem sign_top : sign (⊤ : EReal) = 1 := rfl
 
 theorem sign_bot : sign (⊥ : EReal) = -1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
   simp only [sign, OrderHom.coe_mk, EReal.coe_pos, EReal.coe_neg']
@@ -94,13 +95,11 @@ theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
 @[simp, norm_cast]
 theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem sign_neg : ∀ x : EReal, sign (-x) = -sign x
   | ⊤ => rfl
   | ⊥ => rfl
   | (x : ℝ) => by rw [← coe_neg, sign_coe, sign_coe, Left.sign_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
@@ -112,7 +111,6 @@ theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
   | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] protected theorem sign_mul_abs : ∀ x : EReal, (sign x * x.abs : EReal) = x
   | ⊥ => by simp
   | ⊤ => by simp
@@ -147,7 +145,7 @@ theorem le_iff_sign {x y : EReal} :
     all_goals rw [← x.sign_mul_abs, ← y.sign_mul_abs]; simp [h]
 
 instance : CommMonoidWithZero EReal :=
-  { inferInstanceAs (MulZeroOneClass EReal) with
+  { (inferInstance : MulZeroOneClass EReal) with
     mul_assoc := fun x y z => by
       rw [← sign_eq_and_abs_eq_iff_eq]
       simp only [mul_assoc, abs_mul, sign_mul, and_self_iff]
@@ -247,7 +245,6 @@ lemma mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 /-! #### Inversion and Absolute Value -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
   induction a with
   | bot | top => simp
@@ -255,7 +252,7 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
-    · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
+    · simp
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
       simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
       congr
@@ -412,8 +409,8 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'
-  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
-    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' h.ne', hyp,
+    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' h.ne']
 
 @[gcongr]
 lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
@@ -443,22 +440,22 @@ lemma div_lt_div_right_of_neg (h₁ : c < 0) (h₂ : c ≠ ⊥) (h₃ : a < b) :
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
 lemma le_div_iff_mul_le (h : b > 0) (h' : b ≠ ⊤) : a ≤ c / b ↔ a * b ≤ c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' h.ne']
   rw [mul_div b a b, mul_comm a b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma div_le_iff_le_mul (h : 0 < b) (h' : b ≠ ⊤) : a / b ≤ c ↔ a ≤ b * c := by
-  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' h.ne']
   rw [mul_div b c b, mul_comm b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' h.ne']
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
 lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) : b / c < a ↔ b < a * c := by
-  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' h.ne']
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
@@ -497,7 +494,6 @@ private lemma exists_lt_mul_right_of_nonneg (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c
   simp_rw [mul_comm a] at h ⊢
   exact exists_lt_mul_left_of_nonneg hb.le hc h
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma exists_mul_left_lt (h₁ : a ≠ 0 ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ 0 < b) (hc : a * b < c) :
     ∃ a' ∈ Ioo a ⊤, a' * b < c := by
   rcases eq_top_or_lt_top a with rfl | a_top
@@ -556,7 +552,8 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     assertInstancesCommute
@@ -567,7 +564,8 @@ meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-meta def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα? e :=
+  match pα? with | none => pure .none | some pα => do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
     assertInstancesCommute

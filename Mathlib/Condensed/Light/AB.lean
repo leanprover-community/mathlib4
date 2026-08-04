@@ -8,15 +8,15 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.Condensed.Light.Epi
-/-!
 
+/-!
 # Grothendieck's AB axioms for light condensed modules
 
 The category of light condensed `R`-modules over a ring satisfies the countable version of
-Grothendieck's AB4* axiom
+Grothendieck's AB4\* axiom
 -/
 
-@[expose] public section
+public section
 
 universe u
 

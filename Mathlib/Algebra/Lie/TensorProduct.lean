@@ -47,7 +47,6 @@ expression of the fact that `L` acts by linear endomorphisms. It simplifies the 
 def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
   (toEnd R L M x).rTensor N + (toEnd R L N x).lTensor M
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie ring module. -/
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
@@ -67,6 +66,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
       map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie module. -/
 instance lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
@@ -117,7 +117,6 @@ theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
 
 variable {R L M N P Q}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pair of Lie module morphisms `f : M → P` and `g : N → Q`, induce a Lie module morphism:
 `M ⊗ N → P ⊗ Q`. -/
 nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N →ₗ⁅R,L⁆ P ⊗[R] Q :=
@@ -188,7 +187,6 @@ variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
 
 Given a Lie ideal `I ⊆ L` and a Lie submodule `N ⊆ M`, by tensoring the inclusion maps and then

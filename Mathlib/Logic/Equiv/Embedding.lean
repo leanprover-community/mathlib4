@@ -21,7 +21,6 @@ open Function.Embedding
 
 namespace Equiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Embeddings from a sum type are equivalent to two separate embeddings with disjoint ranges. -/
 def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     (α ⊕ β ↪ γ) ≃ { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } where
@@ -82,6 +81,7 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Embeddings from a single-member type are equivalent to members of the target type. -/
 def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
     (α ↪ β) ≃ β where

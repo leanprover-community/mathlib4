@@ -147,7 +147,7 @@ we have to decompose the remaining interval `[0, i)` into `k + 1` intervals, hen
 lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]
-  convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
+  convert! (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
 /-- Summing `i * (n.choose i)` for `i ∈ [0, n]` gives `n * 2 ^ (n - 1)`. -/

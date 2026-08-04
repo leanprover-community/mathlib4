@@ -66,7 +66,7 @@ Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` wh
 generated condition is replaced by having the discrete topology. -/
 class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
     {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
-    [Algebra R A] [IsScalarTower R A V] (M : Submodule R V) : Prop where
+    [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   span_eq_top : Submodule.span A (M : Set V) = ⊤
 
@@ -134,7 +134,6 @@ lemma _root_.Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} 
 
 variable (K) {V : Type*} [AddCommGroup V] [Module K V] [Module R V] [IsScalarTower R K V]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any basis of an `R`-lattice in `V` defines a `K`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) :
@@ -149,6 +148,7 @@ noncomputable def _root_.Module.Basis.extendOfIsLattice [IsFractionRing R K] {κ
     simp [b.span_eq, Submodule.map_top, span_eq_top]
   Basis.mk hli hsp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Type*}
     {M : Submodule R V} [IsLattice K M] (b : Basis κ R M) (k : κ) :
@@ -157,7 +157,6 @@ lemma _root_.Module.Basis.extendOfIsLattice_apply [IsFractionRing R K] {κ : Typ
 
 variable [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finitely-generated `R`-submodule of `V` of rank at least the `K`-rank of `V`
 is a lattice. -/
 lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
@@ -168,7 +167,6 @@ lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
 
 variable [IsPrincipalIdealRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any lattice over a PID is a free `R`-module.
 Note that under our conditions, `Module.IsTorsionFree R K` simply says that `algebraMap R K` is
 injective. -/
@@ -194,7 +192,6 @@ lemma finrank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodul
     [IsLattice K M] : Module.finrank R M = Fintype.card ι :=
   Module.finrank_eq_of_rank_eq (IsLattice.rank_of_pi K M)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The intersection of two lattices is a lattice. -/
 instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
     [IsLattice K M] [IsLattice K N] : IsLattice K (M ⊓ N) where

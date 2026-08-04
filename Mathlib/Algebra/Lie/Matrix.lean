@@ -39,6 +39,8 @@ open scoped Matrix
 variable {R : Type u} [CommRing R]
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the Lie algebra structures. -/
 def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
@@ -79,6 +81,7 @@ theorem lieConj_symm_apply (P A : Matrix n n R) (h : Invertible P) :
 
 variable {m : Type w₁} [DecidableEq m] [Fintype m] (e : n ≃ m)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For square matrices, the natural map that reindexes a matrix's rows and columns with equivalent
 types, `Matrix.reindex`, is an equivalence of Lie algebras. -/
 def reindexLieEquiv : Matrix n n R ≃ₗ⁅R⁆ Matrix m m R :=

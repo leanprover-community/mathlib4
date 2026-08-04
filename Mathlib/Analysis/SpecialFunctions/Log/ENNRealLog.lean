@@ -78,7 +78,6 @@ end Definition
 /-! ### Monotonicity -/
 section Monotonicity
 
-set_option backward.isDefEq.respectTransparency false in
 theorem log_strictMono : StrictMono log := by
   intro x y h
   unfold log

@@ -220,7 +220,6 @@ instance [HasReverse V] : HasReverse (Quiver.Push σ) where
   reverse' := fun
               | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
 
-set_option backward.whnf.reducibleClassField false in
 instance [h : HasInvolutiveReverse V] :
     HasInvolutiveReverse (Push σ) where
   reverse' := fun

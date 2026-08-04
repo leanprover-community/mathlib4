@@ -30,14 +30,14 @@ noncomputable
 def isLimitOfIsPullbackOfIsConnected
     {I C : Type*} [Category* I] [IsConnected I] [Category* C] {F G : I ⥤ C}
     (α : F ⟶ G) (cF : Cone F) (cG : Cone G)
-    (f : (Cones.postcompose α).obj cF ⟶ cG)
+    (f : (Cone.postcompose α).obj cF ⟶ cG)
     (hf : ∀ i, IsPullback (cF.π.app i) f.hom (α.app i) (cG.π.app i))
     (hcG : IsLimit cG) : IsLimit cF where
   lift s := (hf (Classical.arbitrary _)).lift
-    (s.π.app (Classical.arbitrary _)) (hcG.lift ((Cones.postcompose α).obj s)) (by simp)
+    (s.π.app (Classical.arbitrary _)) (hcG.lift ((Cone.postcompose α).obj s)) (by simp)
   fac s j := by
     let f (i : _) : s.pt ⟶ cF.pt :=
-      (hf i).lift (s.π.app i) (hcG.lift ((Cones.postcompose α).obj s)) (by simp)
+      (hf i).lift (s.π.app i) (hcG.lift ((Cone.postcompose α).obj s)) (by simp)
     have (i j : _) : f i = f j := by
       refine constant_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
       refine (hf j₂).hom_ext ?_ (by simp [f])
@@ -58,14 +58,14 @@ noncomputable
 def isColimitOfIsPushoutOfIsConnected
     {I C : Type*} [Category* I] [IsConnected I] [Category* C] {F G : I ⥤ C}
     (α : F ⟶ G) (cF : Cocone F) (cG : Cocone G)
-    (f : cF ⟶ (Cocones.precompose α).obj cG)
+    (f : cF ⟶ (Cocone.precompose α).obj cG)
     (hf : ∀ i, IsPushout (cF.ι.app i) (α.app i) f.hom (cG.ι.app i))
     (hcF : IsColimit cF) : IsColimit cG where
   desc s := (hf (Classical.arbitrary _)).desc
-    (hcF.desc ((Cocones.precompose α).obj s)) (s.ι.app (Classical.arbitrary _)) (by simp)
+    (hcF.desc ((Cocone.precompose α).obj s)) (s.ι.app (Classical.arbitrary _)) (by simp)
   fac s j := by
     let f (i : _) : cG.pt ⟶ s.pt :=
-      (hf i).desc (hcF.desc ((Cocones.precompose α).obj s)) (s.ι.app i) (by simp)
+      (hf i).desc (hcF.desc ((Cocone.precompose α).obj s)) (s.ι.app i) (by simp)
     have (i j : _) : f i = f j := by
       refine constant_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
       refine (hf j₁).hom_ext (by simp [f]) ?_

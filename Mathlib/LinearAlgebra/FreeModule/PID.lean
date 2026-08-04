@@ -279,7 +279,7 @@ See also the stronger version `Submodule.smithNormalForm`.
 -/
 theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   cases nonempty_fintype ι
   induction N using inductionOnRank b with | ih N ih =>
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
@@ -308,7 +308,6 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
   exact Sigma.eq rfl (Basis.eq_of_apply_eq <| finZeroElim)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
 
@@ -349,12 +348,12 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       · use 1, zero_ne_one.symm
         rw [one_smul]
         exact subset_span (mem_range_self (⟨i, hi⟩ : I))
-      · simpa [image_eq_range s I] using hI i hi
+      · simpa [image_eq_range s I] using! hI i hi
     choose a ha ha' using exists_a
     let A := ∏ i, a i
     have hA : A ≠ 0 := by
       rw [Finset.prod_ne_zero_iff]
-      simpa using ha
+      simpa using! ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
     have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
@@ -390,7 +389,6 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [IsTorsion
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 
-set_option backward.isDefEq.respectTransparency false in
 instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
     [hI₂ : IsTorsionFree R I] : Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
@@ -424,6 +422,7 @@ namespace Module.Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     snf.bM.repr m i = 0 := by
   obtain ⟨m, hm⟩ := m
@@ -435,6 +434,7 @@ lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
   fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
   obtain ⟨m, hm⟩ := m
@@ -450,11 +450,13 @@ lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     Finsupp.mem_support_iff, ite_not, mul_comm, ite_eq_right_iff]
   exact fun a ↦ (mul_eq_zero_of_right _ a).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma repr_comp_embedding_eq_smul :
     snf.bM.repr m ∘ snf.f = snf.a • (snf.bN.repr m : Fin n → R) := by
   ext i
   simp [Pi.smul_apply (snf.a i)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
   ext m
@@ -505,7 +507,6 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   obtain ⟨as, has⟩ := h'' as' has'
   exact ⟨_, _, hmn, bM, bN, as, has⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
@@ -525,7 +526,6 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, Fin.castLEEmb_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.

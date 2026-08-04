@@ -32,14 +32,12 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
 
-* `AlgebraicGeometry.Scheme.isArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian
-  if and only if Spec R is Artinian.
-
-TODO(Brian-Nugent): Show that all Artinian schemes are affine.
+* `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
+  Spec R is Artinian.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -133,6 +131,7 @@ theorem isLocallyArtinian_iff_openCover (𝒰 : X.OpenCover) :
     obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
     simpa using (𝒰.f i).isOpenEmbedding.isOpenMap _ (isOpen_discrete {x})
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
     (hU : TopologicalSpace.IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
     IsLocallyArtinian X ↔ ∀ i, IsArtinianRing Γ(X, U i) := by
@@ -143,7 +142,7 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
 
 instance (priority := low) {X : Scheme} [IsEmpty X] : IsLocallyArtinian X where
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 instance (priority := low) {X : Scheme} [DiscreteTopology X] [IsReduced X] :
     IsLocallyArtinian X := by
   wlog hX : Subsingleton X generalizing X
@@ -190,6 +189,6 @@ instance (priority := low) {X : Scheme} [Subsingleton X] [IsReduced X] :
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem Scheme.isArtinianScheme_Spec {R : CommRingCat} :
     IsArtinianScheme (Spec R) ↔ IsArtinianRing R := by
-  simp [isArtinianScheme_iff, inferInstanceAs (CompactSpace (Spec R))]
+  simp [isArtinianScheme_iff, (inferInstance : CompactSpace (Spec R))]
 
 end AlgebraicGeometry

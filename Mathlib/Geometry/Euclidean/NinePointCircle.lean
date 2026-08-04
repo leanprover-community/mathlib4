@@ -83,7 +83,6 @@ theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [Inner
   · simp [ninePointCircle_center, centroid_map]
   · simp [ninePointCircle_radius]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -140,7 +139,6 @@ theorem eulerPoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).eulerPoint i = s.eulerPoint i := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp [eulerPoint]
 
 theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
@@ -148,15 +146,11 @@ theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1))
   rw [eulerPoint, vsub_vadd_eq_vsub_sub]
   by_cases hn : n = 0
   · obtain rfl := hn
-    have : Subsingleton (Fin (0 + 1)) := inferInstanceAs (Subsingleton (Fin 1))
-    have hi : i = 0 := Subsingleton.eq_zero i
-    have hrange : Set.range s.points = {s.points i} := by simp [hi]
+    have hrange : Set.range s.points = {s.points i} := by simp [Subsingleton.eq_zero (α := Fin 1) i]
     obtain hmonge := s.mongePoint_mem_affineSpan
     rw [hrange, mem_affineSpan_singleton] at hmonge
     simp [hmonge]
-  have : ((n - 1) / n : ℝ) = 1 - (n : ℝ)⁻¹ := by
-    rw [sub_div, div_self (by simpa using hn), one_div]
-  rw [this, sub_smul, one_smul]
+  rw [sub_div, div_self (by simpa using hn), one_div, sub_smul, one_smul]
 
 theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
@@ -217,7 +211,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1

@@ -27,7 +27,7 @@ we show that the nerve of a category is a quasicategory.
 
 -/
 
-@[expose] public section
+public section
 
 namespace SSet
 
@@ -46,21 +46,16 @@ class Quasicategory (S : SSet) : Prop where
 lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n + 1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)
     (σ₀ : (Λ[n, i] : SSet) ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = Λ[n, i].ι ≫ σ := by
-  cases n using Nat.casesAuxOn with
-  | zero => simp [Fin.lt_def] at hn
-  | succ n =>
-  cases n using Nat.casesAuxOn with
-  | zero =>
-    simp only [Fin.lt_def, Fin.val_zero, Fin.val_last, zero_add, Nat.lt_one_iff] at h0 hn
-    simp [hn] at h0
-  | succ n => exact Quasicategory.hornFilling' σ₀ h0 hn
+  match n with
+  | 0
+  | 1 => lia
+  | n + 2 => exact Quasicategory.hornFilling' σ₀ h0 hn
 
 /-- Every Kan complex is a quasicategory. -/
 @[kerodon 003C]
 instance (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasicategory_of_filler (S : SSet)
     (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
       (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),
@@ -74,86 +69,23 @@ lemma quasicategory_of_filler (S : SSet)
     rw [← h j hj, NatTrans.comp_app]
     rfl
 
-open MonoidalCategory
+lemma quasicategory_of_hasLiftingProperty (S : SSet) {X : SSet} (t : Limits.IsTerminal X)
+    (h : ∀ {n : ℕ} {i : Fin (n + 1)} (_ : 0 < i) (_ : i < Fin.last n),
+      HasLiftingProperty Λ[n, i].ι (t.from S)) :
+    Quasicategory S where
+  hornFilling' n i σ₀ h0 hn :=
+    let := h h0 hn
+    ⟨(CommSq.mk (t.hom_ext (σ₀ ≫ t.from S) (Λ[n + 2, i].ι ≫ t.from Δ[n + 2]))).lift, by simp⟩
 
-variable {X Y : SSet} (S : X.Subcomplex) (T : Y.Subcomplex)
+lemma Quasicategory.hasLiftingProperty (S : SSet) [Quasicategory S] {X : SSet}
+    (t : Limits.IsTerminal X) {n : ℕ} {i : Fin (n + 1)} (h0 : 0 < i) (hn : i < Fin.last n) :
+    HasLiftingProperty Λ[n, i].ι (t.from S) where
+  sq_hasLift _ :=
+    ⟨(hornFilling h0 hn _).choose, (hornFilling h0 hn _).choose_spec.symm, t.hom_ext _ _⟩
 
-def Subcomplex.unionProd {X Y : SSet} (S : X.Subcomplex) (T : Y.Subcomplex) :
-    (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
-
-noncomputable def Subcomplex.prodIso (S : X.Subcomplex) (T : Y.Subcomplex) :
-    (S.prod T : SSet) ≅ (S : SSet) ⊗ (T : SSet) where
-  hom := CartesianMonoidalCategory.lift
-    (lift ((S.prod T).ι ≫ CartesianMonoidalCategory.fst _ _) (by
-      intro _ _ ⟨⟨_, ⟨_, _⟩⟩, _⟩
-      cat_disch))
-    (lift ((S.prod T).ι ≫ CartesianMonoidalCategory.snd _ _) (by
-      intro _ _ ⟨⟨_, ⟨_, _⟩⟩, _⟩
-      cat_disch))
-  inv := lift (S.ι ⊗ₘ T.ι) (by
-    intro n ⟨x, y⟩ ⟨⟨x', y'⟩, h⟩
-    refine ⟨sorry, sorry⟩)
-
-noncomputable def Subcomplex.unionProd.ι₁ : X ⊗ T ⟶ unionProd S T :=
-  lift (X ◁ T.ι) (by
-    intro n ⟨x₁, x₂⟩ h
-    simp [unionProd, Set.prod]
-    apply Or.inl
-    have := h.2
-    rw [← this]
-    simp at h
-    sorry
-    )
-
-noncomputable def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
-  lift (S.ι ▷ Y) (by
-    ext m ⟨x₁, x₂⟩
-    simp [unionProd, Set.prod]
-    exact Or.inr x₁.2)
-
-@[reassoc (attr := simp)]
-lemma ι₁_ι : ι₁ S T ≫ (unionProd S T).ι = X ◁ T.ι := rfl
-
-@[reassoc (attr := simp)]
-lemma ι₂_ι : ι₂ S T ≫ (unionProd S T).ι = S.ι ▷ Y := rfl
-
-lemma sq : Sq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) (unionProd S T) where
-  max_eq := rfl
-  min_eq := by
-    ext n ⟨x, y⟩
-    change _ ∧ _ ↔ _
-    simp [prod, Set.prod, Membership.mem, Set.Mem, setOf]
-    tauto
-
-lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
-    (unionProd.ι₁ S T) (unionProd.ι₂ S T) :=
-  (sq S T).isPushout.of_iso
-    (Subcomplex.prodIso _ _)
-    (Subcomplex.prodIso _ _ ≪≫ MonoidalCategory.whiskerRightIso (topIso X) _)
-    (Subcomplex.prodIso _ _ ≪≫ MonoidalCategory.whiskerLeftIso _ (topIso Y))
-    (Iso.refl _) rfl rfl rfl rfl
-
-noncomputable
-def Subcomplex.unionProdtoSSetIso : (S.unionProd T).toSSet ≅
-    (Functor.PushoutObjObj.ofHasPushout (curriedTensor SSet) S.ι T.ι).pt where
-  hom := by
-
-    sorry
-  inv := by
-    refine Limits.pushout.desc ?_ ?_ ?_
-    . simp [unionProd]
-      sorry
-    . simp
-      sorry
-    . sorry
-  hom_inv_id := sorry
-  inv_hom_id := sorry
-
-noncomputable
-def Subcomplex.unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ (S.ι □ T.ι) := by
-  refine Arrow.isoMk' _ _ (unionProdtoSSetIso S T) (Iso.refl _) ?_
-  · simp
-    sorry
-
+lemma quasicategory_iff_hasLiftingProperty (S : SSet) {X : SSet} (t : Limits.IsTerminal X) :
+    Quasicategory S ↔ ∀ {n : ℕ} {i : Fin (n + 1)} (_ : 0 < i) (_ : i < Fin.last n),
+      HasLiftingProperty Λ[n, i].ι (t.from S) :=
+  ⟨fun _ ↦ Quasicategory.hasLiftingProperty S t, quasicategory_of_hasLiftingProperty S t⟩
 
 end SSet

@@ -6,7 +6,7 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Subspace
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
@@ -113,7 +113,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
-  convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
+  convert! isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
@@ -221,9 +221,6 @@ theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace �
     (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
 
-@[deprecated (since := "2025-12-26")]
-alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
-
 /-!
 ### Orthogonality of submodules
 
@@ -252,8 +249,8 @@ theorem IsOrtho.symm {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ⟂ U :=
 theorem isOrtho_comm {U V : Submodule 𝕜 E} : U ⟂ V ↔ V ⟂ U :=
   ⟨IsOrtho.symm, IsOrtho.symm⟩
 
-theorem symmetric_isOrtho : Symmetric (IsOrtho : Submodule 𝕜 E → Submodule 𝕜 E → Prop) := fun _ _ =>
-  IsOrtho.symm
+instance symmetric_isOrtho : Std.Symm <| IsOrtho (𝕜 := 𝕜) (E := E) where
+  symm _ _ := IsOrtho.symm
 
 theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : u ∈ U) (hv : v ∈ V) :
     ⟪u, v⟫ = 0 :=
@@ -262,7 +259,7 @@ theorem IsOrtho.inner_eq {U V : Submodule 𝕜 E} (h : U ⟂ V) {u v : E} (hu : 
 theorem isOrtho_iff_inner_eq {U V : Submodule 𝕜 E} : U ⟂ V ↔ ∀ u ∈ U, ∀ v ∈ V, ⟪u, v⟫ = 0 :=
   forall₄_congr fun _u _hu _v _hv => inner_eq_zero_symm
 
-/- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
+/-- TODO: generalize `Submodule.map₂` to semilinear maps, so that we can state
 `U ⟂ V ↔ Submodule.map₂ (innerₛₗ 𝕜) U V ≤ ⊥`. -/
 @[simp]
 theorem isOrtho_bot_left {V : Submodule 𝕜 E} : ⊥ ⟂ V :=
@@ -372,7 +369,7 @@ theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
     U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
-  convert IsOrtho.map_iff f.symm using 2 <;>
+  convert IsOrtho.map_iff f.symm <;>
     exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule

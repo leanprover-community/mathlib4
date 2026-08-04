@@ -88,7 +88,7 @@ include hf' hg
 
 lemma isScalarTower_of_section_of_ker_sqZero :
     letI := g.toRingHom.toAlgebra; IsScalarTower P S (RingHom.ker (algebraMap P S)) := by
-  letI := g.toRingHom.toAlgebra
+  let := g.toRingHom.toAlgebra
   constructor
   intro p s m
   ext
@@ -99,7 +99,6 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   refine Ideal.mul_mem_mul ?_ m.2
   simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg (algebraMap P S p)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective algebra hom `f : P →ₐ[R] S` with square-zero kernel `I`,
 and a section `g : S →ₐ[R] P` (as algebra homs),
@@ -113,13 +112,13 @@ def retractionOfSectionOfKerSqZero : S ⊗[P] Ω[P⁄R] →ₗ[P] RingHom.ker (a
     (IsScalarTower.toAlgHom R P S) hf' g hg).liftKaehlerDifferential
   (f.liftBaseChange S).restrictScalars P
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
     retractionOfSectionOfKerSqZero g hf' hg (s ⊗ₜ .D _ _ t) =
       g s * t - g s * g (algebraMap _ _ t) := by
-  letI := g.toRingHom.toAlgebra
-  haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
+  let := g.toRingHom.toAlgebra
+  have := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
   -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
@@ -142,7 +141,6 @@ include hl
 -- suppose we have a (set-theoretic) section
 variable (σ : S → P) (hσ : ∀ x, algebraMap P S (σ x) = x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algebraMap P S y) :
     x - l (1 ⊗ₜ .D _ _ x) = y - l (1 ⊗ₜ .D _ _ y) := by
   rw [sub_eq_iff_eq_add, sub_add_comm, ← sub_eq_iff_eq_add, ← Submodule.coe_sub,
@@ -217,7 +215,6 @@ end ofRetraction
 variable [Algebra R S] [IsScalarTower R P S]
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥) (hf : Surjective (algebraMap P S))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
 there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
@@ -374,13 +371,13 @@ def retractionKerCotangentToTensorEquivSection :
 
 namespace Algebra.Extension
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
   suffices CotangentSpace.map P.toInfinitesimal =
       (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
     rw [this]; exact (tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
-  letI : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
+  let : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
   have : IsScalarTower P.Ring P.infinitesimal.Ring S := .of_algebraMap_eq' rfl
   apply LinearMap.restrictScalars_injective P.Ring
   ext x a

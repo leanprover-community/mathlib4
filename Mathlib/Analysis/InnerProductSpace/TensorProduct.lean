@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
+import Mathlib.Analysis.InnerProductSpace.Positive
 
 /-!
 
@@ -32,13 +34,13 @@ inner product spaces.
 * `TensorProduct.commIsometry`: the linear isometry version of `TensorProduct.comm`.
 * `TensorProduct.lidIsometry`: the linear isometry version of `TensorProduct.lid`.
 * `TensorProduct.assocIsometry`: the linear isometry version of `TensorProduct.assoc`.
+* `TensorProduct.mapL`: the continuous version of `TensorProduct.map f g` when
+  `f` and `g` are continuous linear maps.
 * `OrthonormalBasis.tensorProduct`: the orthonormal basis of the tensor product of two orthonormal
   bases.
 
 ## TODO:
 
-* Define the continuous linear map version of `TensorProduct.map`.
-* Complete space of tensor products.
 * Define the normed space without needing inner products, this should be analogous to
   `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
 
@@ -56,17 +58,12 @@ open scoped TensorProduct
 
 namespace TensorProduct
 
-set_option backward.privateInPublic true in
-/-- Bilinear map for the inner product on tensor products.
-On pure tensors: `inner_ (a ⊗ₜ b) (c ⊗ₜ d) = ⟪a, c⟫ * ⟪b, d⟫`. -/
-private abbrev inner_ : E ⊗[𝕜] F →ₗ⋆[𝕜] E ⊗[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (LinearMap.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)
+instance instInner : Inner 𝕜 (E ⊗[𝕜] F) where inner x y :=
+  ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂ (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y => inner_ x y⟩
-
-private lemma inner_def (x y : E ⊗[𝕜] F) : inner 𝕜 x y = inner_ x y := rfl
+lemma inner_def (x y : E ⊗[𝕜] F) :
+    inner 𝕜 x y = ((lift <| mapBilinear (.id 𝕜) E F 𝕜 𝕜).compr₂
+      (.mul' 𝕜 𝕜) ∘ₛₗ map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x y := rfl
 
 variable (𝕜) in
 @[simp] theorem inner_tmul (x x' : E) (y y' : F) :
@@ -77,7 +74,6 @@ variable (𝕜) in
   x.induction_on (by simp [inner_def]) (y.induction_on (by simp [inner_def]) (by simp)
     (by simp_all [inner_def])) (by simp_all [inner_def])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y : E' ⊗[𝕜] F') :
     inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) = inner 𝕜 x y :=
   inner_map_map E'.subtypeₗᵢ F'.subtypeₗᵢ x y
@@ -85,7 +81,7 @@ lemma inner_mapIncl_mapIncl (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) (x y
 open scoped ComplexOrder
 open Module
 
-/- This holds in any inner product space, but we need this to set up the instance.
+/-- This holds in any inner product space, but we need this to set up the instance.
 This is a helper lemma for showing that this inner product is positive definite. -/
 private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E ⊗[𝕜] F)
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :
@@ -98,7 +94,6 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
   simp only [inner_def, map_sum, LinearMap.sum_apply]
   simp [OrthonormalBasis.inner_eq_ite, ← Finset.sum_product', RCLike.mul_conj]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   /-
@@ -118,7 +113,6 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have : y = 0 := by simp [(e.toBasis.tensorProduct f.toBasis).ext_elem_iff, this]
   rw [this, map_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
@@ -149,7 +143,6 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] 
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCore _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem norm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ = ‖x‖ * ‖y‖ := by
   simpa using congr(√(RCLike.re $(inner_tmul 𝕜 x x y y)))
@@ -183,14 +176,12 @@ protected theorem ext_iff_inner_right {x y : E ⊗[𝕜] F} :
     x = y ↔ ∀ a b, inner 𝕜 x (a ⊗ₜ[𝕜] b) = inner 𝕜 y (a ⊗ₜ[𝕜] b) :=
   ⟨fun h _ _ ↦ h ▸ rfl, fun h ↦ innerSL_inj.mp <| ContinuousLinearMap.coe_inj.mp <| ext' h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x, y : E ⊗ F`, `x = y` iff `⟪a ⊗ₜ b, x⟫ = ⟪a ⊗ₜ b, y⟫` for all `a, b`. -/
 protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
     x = y ↔ ∀ a b, inner 𝕜 (a ⊗ₜ b) x = inner 𝕜 (a ⊗ₜ b) y := by
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
     TensorProduct.ext_iff_inner_right (x := x) (y := y)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
 
 See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
@@ -198,7 +189,6 @@ theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) :=
   ⟨fun h _ _ _ ↦ h ▸ rfl, fun h ↦ innerSL_inj.mp (ContinuousLinearMap.coe_inj.mp (ext_threefold h))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
 
 See also `ext_iff_inner_left_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
@@ -206,6 +196,19 @@ theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 (a ⊗ₜ b ⊗ₜ c) x = inner 𝕜 (a ⊗ₜ b ⊗ₜ c) y := by
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
     ext_iff_inner_right_threefold (x := x) (y := y)
+
+variable (𝕜 E F) in
+/-- The canonical continuous bilinear map `E → F → E ⊗ F`. This is the continuous version of
+`mk`. -/
+noncomputable def mkL : E →L[𝕜] F →L[𝕜] E ⊗[𝕜] F := (mk 𝕜 E F).mkContinuous₂ 1 fun _ _ ↦ by simp
+
+@[simp] lemma coe_mkL_apply (x : E) : ⇑(mkL 𝕜 E F x) = mk 𝕜 E F x := rfl
+@[simp] lemma toLinearMap₁₂_mkL : (mkL 𝕜 E F).toLinearMap₁₂ = mk 𝕜 E F := rfl
+@[simp] lemma toLinearMap_mkL_apply (x : E) : (mkL 𝕜 E F x).toLinearMap = mk 𝕜 E F x := rfl
+lemma mkL_apply_apply (x : E) (y : F) : mkL 𝕜 E F x y = x ⊗ₜ y := rfl
+
+@[fun_prop] lemma continuous_tmul : Continuous fun x : E × F ↦ x.1 ⊗ₜ[𝕜] x.2 :=
+  (mkL 𝕜 E F).continuous₂
 
 section isometry
 
@@ -320,7 +323,6 @@ lemma _root_.LinearIsometryEquiv.symm_rTensor (f : E ≃ₗᵢ[𝕜] F) :
 @[simp] lemma _root_.LinearIsometryEquiv.rTensor_apply (f : E ≃ₗᵢ[𝕜] F) (x : E ⊗[𝕜] G) :
     f.rTensor G x = f.toLinearEquiv.rTensor G x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
 noncomputable def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
     E' ⊗[𝕜] F' →ₗᵢ[𝕜] E ⊗[𝕜] F :=
@@ -329,11 +331,9 @@ noncomputable def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F
 @[simp] lemma mapInclIsometry_apply (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F)
     (x : E' ⊗[𝕜] F') : mapInclIsometry E' F' x = mapIncl E' F' x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toLinearMap_mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
     (mapInclIsometry E' F').toLinearMap = mapIncl E' F' := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
     inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
   x.induction_on (by simp) (fun _ _ =>
@@ -361,7 +361,6 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
 @[simp] lemma enorm_comm (x : E ⊗[𝕜] F) :
     ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.enorm_map x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
   x.induction_on (by simp) (fun _ _ =>
@@ -374,22 +373,53 @@ variable (𝕜 E) in
 noncomputable def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
   TensorProduct.lid 𝕜 E |>.isometryOfInner inner_lid_lid
 
-@[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) :
-    lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
-@[simp] lemma lidIsometry_symm_apply (x : E) :
-    (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
-
 @[simp] lemma toLinearEquiv_lidIsometry :
     (lidIsometry 𝕜 E).toLinearEquiv = TensorProduct.lid 𝕜 E := rfl
 
-@[simp] lemma norm_lid (x : 𝕜 ⊗[𝕜] E) :
-    ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := lidIsometry 𝕜 E |>.norm_map x
-@[simp] lemma nnnorm_lid (x : 𝕜 ⊗[𝕜] E) :
-    ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
+lemma toContinuousLinearMap_symm_lidIsometry :
+    (lidIsometry 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap = mkL 𝕜 𝕜 E 1 := rfl
+
+@[simp] lemma lidIsometry_apply (x : 𝕜 ⊗[𝕜] E) : lidIsometry 𝕜 E x = TensorProduct.lid 𝕜 E x := rfl
+@[simp] lemma lidIsometry_symm_apply (x : E) : (lidIsometry 𝕜 E).symm x = 1 ⊗ₜ x := rfl
+
+@[simp] lemma norm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖ = ‖x‖ := (lidIsometry 𝕜 E).norm_map x
+@[simp] lemma nnnorm_lid (x) : ‖TensorProduct.lid 𝕜 E x‖₊ = ‖x‖₊ := lidIsometry 𝕜 E |>.nnnorm_map x
+
 @[simp] lemma enorm_lid (x : 𝕜 ⊗[𝕜] E) :
     ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem inner_rid_rid (x y : E ⊗[𝕜] 𝕜) :
+    inner 𝕜 (TensorProduct.rid 𝕜 E x) (TensorProduct.rid 𝕜 E y) = inner 𝕜 x y := by
+  simp [← lid_comm]
+
+variable (𝕜 E) in
+/-- The linear isometry equivalence version of `TensorProduct.rid`. -/
+noncomputable def ridIsometry : E ⊗[𝕜] 𝕜 ≃ₗᵢ[𝕜] E :=
+  TensorProduct.rid 𝕜 E |>.isometryOfInner inner_rid_rid
+
+@[simp] lemma toLinearEquiv_ridIsometry :
+    (ridIsometry 𝕜 E).toLinearEquiv = TensorProduct.rid 𝕜 E := rfl
+
+lemma toContinuousLinearMap_symm_ridIsometry :
+    (ridIsometry 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap = (mkL 𝕜 E 𝕜).flip 1 := rfl
+
+@[simp] lemma ridIsometry_apply (x) : ridIsometry 𝕜 E x = TensorProduct.rid 𝕜 E x := rfl
+@[simp] lemma symm_ridIsometry_apply (x) : (ridIsometry 𝕜 E).symm x = x ⊗ₜ 1 := rfl
+
+lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜 := by ext; simp [lid_eq_rid]
+
+@[simp] lemma norm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ = ‖x‖ := (ridIsometry 𝕜 E).norm_map x
+@[simp] lemma nnnorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖₊ = ‖x‖₊ := by simp [← NNReal.coe_inj]
+
+@[simp] lemma enorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ₑ = ‖x‖ₑ :=
+  ridIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
+
+@[simp] lemma commIsometry_trans_lidIsometry :
+    (commIsometry 𝕜 E 𝕜).trans (lidIsometry 𝕜 E) = ridIsometry 𝕜 E := by ext; simp
+
+@[simp] lemma commIsometry_trans_ridIsometry :
+    (commIsometry 𝕜 𝕜 E).trans (ridIsometry 𝕜 E) = lidIsometry 𝕜 E := by ext; simp
+
 @[simp] theorem inner_assoc_assoc (x y : E ⊗[𝕜] F ⊗[𝕜] G) :
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
   x.induction_on (by simp) (fun a _ =>
@@ -401,7 +431,6 @@ set_option backward.isDefEq.respectTransparency false in
     fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
   fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.assoc`. -/
 noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E ⊗[𝕜] (F ⊗[𝕜] G) :=
@@ -410,48 +439,281 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
 @[simp] lemma assocIsometry_apply (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     assocIsometry 𝕜 E F G x = TensorProduct.assoc 𝕜 E F G x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma assocIsometry_symm_apply (x : E ⊗[𝕜] (F ⊗[𝕜] G)) :
     (assocIsometry 𝕜 E F G).symm x = (TensorProduct.assoc 𝕜 E F G).symm x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toLinearEquiv_assocIsometry :
     (assocIsometry 𝕜 E F G).toLinearEquiv = TensorProduct.assoc 𝕜 E F G := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma norm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖ = ‖x‖ := assocIsometry 𝕜 E F G |>.norm_map x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖₊ = ‖x‖₊ := assocIsometry 𝕜 E F G |>.nnnorm_map x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma enorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.enorm_map x
 
 end isometry
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: upgrade `map` to a `ContinuousLinearMap`
-@[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
-    [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
-    LinearMap.adjoint (map f g) = map (LinearMap.adjoint f) (LinearMap.adjoint g) :=
-  ext' fun _ _ => by simp [TensorProduct.ext_iff_inner_right, LinearMap.adjoint_inner_left]
+end TensorProduct
+
+namespace ContinuousLinearMap
+
+open TensorProduct
+
+variable (G)
+
+/-- `LinearMap.rTensor` as a continuous linear map, i.e. the continuous linear map `f` extended to
+the map `x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] y`. -/
+noncomputable def rTensor (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
+  (f.toLinearMap.rTensor G).mkContinuous ‖f‖ fun x ↦ by
+    /-
+    Any tensor `x` can be written as a linear combination of pure tensors, `x = ∑ e n ⊗ₜ g n`. This
+    induces three Gram matrices, one based on `e`, one on `f ∘ e` and one on `g`. Up to a constant,
+    the `e`-based Gram matrix is larger than the `f ∘ e`-based one. This implies the existence of
+    a matrix, whose form is used to show that `‖f‖ ^ 2 * ‖x‖ ^ 2 - ‖f x‖ ^ 2` is a sum of
+    nonnegative terms.
+    -/
+    obtain ⟨n, e, g, hx⟩ := exists_sum_tmul_eq x
+    obtain ⟨c, hc_supp, hc⟩ := Submodule.mem_span_set.mp
+      ((span_tmul_eq_top 𝕜 E G) ▸ Submodule.mem_top (x := x))
+    obtain ⟨m, A, hA⟩ := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
+      (Matrix.posSemidef_opNorm_smul_gram_sub_gram e f)
+    apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
+    simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
+      Matrix.smul_apply, Matrix.gram_apply, Function.comp_apply] at hA
+    simp_rw [mul_pow, hx, map_sum, LinearMap.rTensor_tmul, coe_coe,
+      ← inner_self_eq_norm_sq (𝕜 := 𝕜), inner_sum, sum_inner, inner_tmul, ← hA, sub_mul,
+      Finset.sum_sub_distrib, map_sub, ← RCLike.smul_re, Finset.smul_sum, smul_mul_assoc,
+      sub_le_self_iff, Matrix.sum_apply, mul_comm, Finset.mul_sum]
+    simp_rw +singlePass [Finset.sum_comm_cycle, Matrix.vecMulVec, Matrix.of_apply, Pi.star_apply,
+      ← mul_left_comm, ← mul_assoc, ← starRingEnd_self_apply (A _ _), ← inner_smul_left]
+    simp [mul_comm, ← inner_smul_right, ← sum_inner, ← inner_sum, Finset.sum_nonneg]
+
+variable {G} in
+@[simp] lemma rTensor_apply (f : E →L[𝕜] F) (x : E ⊗ G) :
+    f.rTensor G x = f.toLinearMap.rTensor G x := rfl
+
+variable {G} in
+lemma rTensor_tmul (f : E →L[𝕜] F) (m : E) (n : G) : f.rTensor G (m ⊗ₜ n) = f m ⊗ₜ n := rfl
+
+@[simp] lemma toLinearMap_rTensor (f : E →L[𝕜] F) :
+    (f.rTensor G).toLinearMap = f.toLinearMap.rTensor G := rfl
+
+@[simp] lemma _root_.LinearIsometry.toContinuousLinearMap_rTensor (f : E →ₗᵢ[𝕜] F) :
+    (f.rTensor G).toContinuousLinearMap = f.toContinuousLinearMap.rTensor G := rfl
+
+theorem norm_rTensor_le (f : E →L[𝕜] F) : ‖f.rTensor G‖ ≤ ‖f‖ :=
+  LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+@[simp] lemma rTensor_add (f₁ f₂ : E →L[𝕜] F) :
+    (f₁ + f₂).rTensor G = f₁.rTensor G + f₂.rTensor G := by ext; simp
+
+@[simp] lemma rTensor_smul (r : 𝕜) (f : E →L[𝕜] F) :
+    (r • f).rTensor G = r • f.rTensor G := by ext; simp
+
+@[simp] lemma rTensor_id : (.id 𝕜 E : E →L[𝕜] E).rTensor G = .id 𝕜 _ := by ext; simp
+@[simp] lemma rTensor_one : (1 : E →L[𝕜] E).rTensor G = 1 := rTensor_id _
+@[simp] lemma rTensor_zero : (0 : E →L[𝕜] F).rTensor G = 0 := by ext; simp
+@[simp] lemma rTensor_neg (f : E →L[𝕜] F) : (-f).rTensor G = -f.rTensor G := by ext; simp
+
+@[simp] lemma rTensor_sub (f₁ f₂ : E →L[𝕜] F) :
+    (f₁ - f₂).rTensor G = f₁.rTensor G - f₂.rTensor G := by ext; simp
+
+lemma rTensor_comp (f₁ : E →L[𝕜] F) (f₂ : H →L[𝕜] E) :
+    (f₁ ∘L f₂).rTensor G = f₁.rTensor G ∘L f₂.rTensor G := by ext; simp [LinearMap.rTensor_comp]
+
+lemma rTensor_mul (f₁ f₂ : E →L[𝕜] E) : (f₁ * f₂).rTensor G = f₁.rTensor G * f₂.rTensor G :=
+  rTensor_comp _ _ _
+
+@[simp] lemma rTensor_pow (f : E →L[𝕜] E) (n : ℕ) : (f ^ n).rTensor G = (f.rTensor G) ^ n := by
+  simp [← coe_inj]
+
+/-- `LinearMap.lTensor` as a continuous linear map, i.e. the continuous linear map `g` extended to
+the map `x ⊗ₜ[𝕜] y ↦ x ⊗ₜ[𝕜] g(y)`. -/
+noncomputable def lTensor (g : E →L[𝕜] F) : (G ⊗[𝕜] E) →L[𝕜] (G ⊗[𝕜] F) :=
+  commIsometry 𝕜 F G ∘L g.rTensor G ∘L commIsometry 𝕜 G E
+
+variable {G} in
+@[simp] lemma lTensor_apply (g : G →L[𝕜] H) (x : E ⊗ G) :
+    g.lTensor E x = g.toLinearMap.lTensor E x := by
+  simp [lTensor, ← LinearMap.comm_comp_rTensor_comp_comm_eq]
+
+lemma lTensor_tmul (g : E →L[𝕜] F) (m : G) (n : E) : g.lTensor G (m ⊗ₜ n) = m ⊗ₜ g n := rfl
+
+theorem commIsometry_comp_lTensor_comp_commIsometry_eq (g : E →L[𝕜] F) :
+    commIsometry 𝕜 F G ∘L g.rTensor G ∘L commIsometry 𝕜 G E = g.lTensor G :=
+  rfl
+
+theorem commIsometry_comp_rTensor_comp_commIsometry_eq (f : E →L[𝕜] F) :
+    commIsometry 𝕜 G F ∘L f.lTensor G ∘L commIsometry 𝕜 E G = f.rTensor G := by
+  ext; simp [lTensor]
+
+theorem lTensor_comp_commIsometry (f : E →L[𝕜] F) :
+    f.lTensor G ∘L commIsometry 𝕜 E G = commIsometry 𝕜 F G ∘L f.rTensor G := by
+  ext; simp [lTensor]
+
+theorem rTensor_comp_commIsometry (g : E →L[𝕜] F) :
+    g.rTensor G ∘L commIsometry 𝕜 G E = commIsometry 𝕜 G F ∘L g.lTensor G := by
+  ext; simp [lTensor]
+
+@[simp] lemma toLinearMap_lTensor (g : E →L[𝕜] F) :
+    (g.lTensor G).toLinearMap = g.toLinearMap.lTensor G := by ext; simp
+
+@[simp] lemma _root_.LinearIsometry.toContinuousLinearMap_lTensor (g : E →ₗᵢ[𝕜] F) :
+    (g.lTensor G).toContinuousLinearMap = g.toContinuousLinearMap.lTensor G := by ext; simp
+
+theorem norm_lTensor_le (g : E →L[𝕜] F) : ‖g.lTensor G‖ ≤ ‖g‖ := by
+  simp_rw [lTensor, ← LinearIsometryEquiv.toContinuousLinearMap_toLinearIsometry]
+  grw [opNorm_comp_le, opNorm_comp_le, LinearIsometry.norm_toContinuousLinearMap_le,
+    LinearIsometry.norm_toContinuousLinearMap_le, mul_one, one_mul, norm_rTensor_le]
+
+@[simp] lemma lTensor_add (f₁ f₂ : E →L[𝕜] F) :
+    (f₁ + f₂).lTensor G = f₁.lTensor G + f₂.lTensor G := by ext; simp
+
+@[simp] lemma lTensor_smul (r : 𝕜) (f : E →L[𝕜] F) : (r • f).lTensor G = r • f.lTensor G := by
+  ext; simp
+
+@[simp] lemma lTensor_id : (.id 𝕜 E : E →L[𝕜] E).lTensor G = .id 𝕜 _ := by ext; simp
+@[simp] lemma lTensor_one : (1 : E →L[𝕜] E).lTensor G = 1 := lTensor_id _
+@[simp] lemma lTensor_zero : (0 : E →L[𝕜] F).lTensor G = 0 := by ext; simp
+@[simp] lemma lTensor_neg (f : E →L[𝕜] F) : (-f).lTensor G = -f.lTensor G := by ext; simp
+
+@[simp] lemma lTensor_sub (f₁ f₂ : E →L[𝕜] F) :
+    (f₁ - f₂).lTensor G = f₁.lTensor G - f₂.lTensor G := by ext; simp
+
+lemma lTensor_comp (f₁ : E →L[𝕜] F) (f₂ : H →L[𝕜] E) :
+    (f₁ ∘L f₂).lTensor G = f₁.lTensor G ∘L f₂.lTensor G := by ext; simp [LinearMap.lTensor_comp]
+
+lemma lTensor_mul (f₁ f₂ : E →L[𝕜] E) : (f₁ * f₂).lTensor G = f₁.lTensor G * f₂.lTensor G :=
+  lTensor_comp _ _ _
+
+@[simp] lemma lTensor_pow (f : E →L[𝕜] E) (n : ℕ) : (f ^ n).lTensor G = (f.lTensor G) ^ n := by
+  simp [← coe_inj]
+
+end ContinuousLinearMap
+
+namespace TensorProduct
+
+/-- `TensorProduct.map` as a continuous linear map, i.e. the continuous linear map
+`x ⊗ₜ[𝕜] y ↦ f(x) ⊗ₜ[𝕜] g(y)` formed from the continuous linear maps `f` and `g`. -/
+noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] H) :=
+  f.rTensor H ∘L g.lTensor E
+
+theorem norm_mapL_le (f : E →L[𝕜] F) (g : G →L[𝕜] H) : ‖mapL f g‖ ≤ ‖f‖ * ‖g‖ := by
+  grw [mapL, ContinuousLinearMap.opNorm_comp_le, ContinuousLinearMap.norm_rTensor_le,
+    ContinuousLinearMap.norm_lTensor_le]
+
+@[simp] lemma mapL_apply (f : E →L[𝕜] F) (g : G →L[𝕜] H) (x) :
+    mapL f g x = map f.toLinearMap g.toLinearMap x := by
+  simp [mapL, ← LinearMap.rTensor_comp_lTensor]
+
+lemma mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
+    mapL f g (m ⊗ₜ n) = f m ⊗ₜ g n := rfl
+
+@[simp] lemma mapL_zero_left (f : E →L[𝕜] F) : mapL (0 : G →L[𝕜] H) f = 0 := by simp [mapL]
+@[simp] lemma mapL_zero_right (f : E →L[𝕜] F) : mapL f (0 : G →L[𝕜] H) = 0 := by simp [mapL]
+@[simp] lemma mapL_id_id : mapL (.id 𝕜 E) (.id 𝕜 G) = .id 𝕜 _ := by simp [mapL]
+
+lemma mapL_comp_commIsometry (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    mapL f g ∘L commIsometry 𝕜 G E = commIsometry 𝕜 H F ∘L mapL g f := by ext; simp [map_comm]
+
+lemma mapL_add_left (f₁ f₂ : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    mapL (f₁ + f₂) g = mapL f₁ g + mapL f₂ g := by ext; simp [map_add_left]
+
+lemma mapL_add_right (f : E →L[𝕜] F) (g₁ g₂ : G →L[𝕜] H) :
+    mapL f (g₁ + g₂) = mapL f g₁ + mapL f g₂ := by ext; simp [map_add_right]
+
+lemma mapL_smul_left (r : 𝕜) (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    mapL (r • f) g = r • mapL f g := by ext; simp [map_smul_left]
+
+lemma mapL_smul_right (r : 𝕜) (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    mapL f (r • g) = r • mapL f g := by ext; simp [map_smul_right]
+
+@[simp] lemma toLinearMap_mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    (mapL f g).toLinearMap = map f g := by ext; simp
+
+@[simp] lemma toContinuousLinearMap_mapIsometry (f : E →ₗᵢ[𝕜] F) (g : G →ₗᵢ[𝕜] H) :
+    (mapIsometry f g).toContinuousLinearMap =
+      mapL f.toContinuousLinearMap g.toContinuousLinearMap := by
+  ext; simp
+
+section comp
+
+variable {A B : Type*} [NormedAddCommGroup A] [InnerProductSpace 𝕜 A] [NormedAddCommGroup B]
+  [InnerProductSpace 𝕜 B]
+
+lemma mapL_comp (f₁ : E →L[𝕜] F) (f₂ : A →L[𝕜] E) (g₁ : G →L[𝕜] H) (g₂ : B →L[𝕜] G) :
+    mapL (f₁ ∘L f₂) (g₁ ∘L g₂) = mapL f₁ g₁ ∘L mapL f₂ g₂ := by ext; simp [map_map]
+
+lemma mapL_mul (f₁ f₂ : E →L[𝕜] E) (g₁ g₂ : F →L[𝕜] F) :
+    mapL (f₁ * f₂) (g₁ * g₂) = mapL f₁ g₁ * mapL f₂ g₂ := mapL_comp _ _ _ _
+
+@[simp] lemma mapL_pow (f : E →L[𝕜] E) (g : F →L[𝕜] F) (n : ℕ) :
+    (mapL f g) ^ n = mapL (f ^ n) (g ^ n) := by simp [← ContinuousLinearMap.coe_inj]
+
+@[simp] lemma _root_.ContinuousLinearMap.mapL_comp_rTensor (f₁ : E →L[𝕜] F) (f₂ : A →L[𝕜] E)
+    (g : G →L[𝕜] H) : mapL f₁ g ∘L f₂.rTensor G = mapL (f₁ ∘L f₂) g := by ext; simp
+
+@[simp] lemma _root_.ContinuousLinearMap.mapL_comp_lTensor (f : E →L[𝕜] F) (g₁ : G →L[𝕜] H)
+    (g₂ : A →L[𝕜] G) : mapL f g₁ ∘L g₂.lTensor E = mapL f (g₁ ∘L g₂) := by ext; simp
+
+@[simp] lemma _root_.ContinuousLinearMap.rTensor_comp_mapL (f₁ : E →L[𝕜] F) (f₂ : A →L[𝕜] E)
+    (g : G →L[𝕜] H) : f₁.rTensor H ∘L mapL f₂ g = mapL (f₁ ∘L f₂) g := by ext; simp
+
+@[simp] lemma _root_.ContinuousLinearMap.lTensor_comp_mapL (f : E →L[𝕜] F) (g₁ : G →L[𝕜] H)
+    (g₂ : A →L[𝕜] G) : g₁.lTensor F ∘L mapL f g₂ = mapL f (g₁ ∘L g₂) := by ext; simp
+
+end comp
+
+variable (G) in
+theorem _root_.ContinuousLinearMap.rTensor_eq_mapL (f : E →L[𝕜] F) :
+    f.rTensor G = mapL f (.id 𝕜 G) := by simp [mapL]
+
+variable (E) in
+theorem _root_.ContinuousLinearMap.lTensor_eq_mapL (g : G →L[𝕜] H) :
+    g.lTensor E = mapL (.id 𝕜 E) g := by simp [mapL]
+
+@[simp] lemma _root_.ContinuousLinearMap.lTensor_comp_rTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    f.lTensor H ∘L g.rTensor E = mapL g f := by ext; simp [← LinearMap.lTensor_comp_rTensor]
+
+@[simp] lemma _root_.ContinuousLinearMap.rTensor_comp_lTensor (f : E →L[𝕜] F) (g : G →L[𝕜] H) :
+    f.rTensor H ∘L g.lTensor E = mapL f g := rfl
+
+@[simp] theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
+    [CompleteSpace F] [CompleteSpace H] [CompleteSpace (F ⊗[𝕜] H)]
+    (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).adjoint = mapL f.adjoint g.adjoint := by
+  apply ContinuousLinearMap.coe_inj.mp <| ext' ?_
+  simp [TensorProduct.ext_iff_inner_right, ContinuousLinearMap.adjoint_inner_left]
+
+set_option backward.isDefEq.respectTransparency.types false in
+variable (G) in
+@[simp] theorem _root_.ContinuousLinearMap.adjoint_rTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace (F ⊗[𝕜] G)] [CompleteSpace F] (f : E →L[𝕜] F) :
+    (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [ContinuousLinearMap.rTensor_eq_mapL]
+
+set_option backward.isDefEq.respectTransparency.types false in
+variable (E) in
+@[simp] theorem _root_.ContinuousLinearMap.adjoint_lTensor [CompleteSpace E] [CompleteSpace G]
+    [CompleteSpace (E ⊗[𝕜] H)] [CompleteSpace (E ⊗[𝕜] G)] [CompleteSpace H] (g : G →L[𝕜] H) :
+    (g.lTensor E).adjoint = g.adjoint.lTensor E := by simp [ContinuousLinearMap.lTensor_eq_mapL]
 
 open LinearMap
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
+    [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
+    (map f g).adjoint = map f.adjoint g.adjoint :=
+  ext' fun _ _ => by simp [TensorProduct.ext_iff_inner_right, adjoint_inner_left]
+
 @[simp] theorem _root_.LinearMap.adjoint_rTensor [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
-    adjoint (rTensor G f) = rTensor G f.adjoint := by simp [rTensor]
+    (f.rTensor G).adjoint = f.adjoint.rTensor G := by simp [rTensor]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem _root_.LinearMap.adjoint_lTensor [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
     [FiniteDimensional 𝕜 G] (f : E →ₗ[𝕜] F) :
-    adjoint (lTensor G f) = lTensor G f.adjoint := by simp [lTensor]
+    (f.lTensor G).adjoint = f.adjoint.lTensor G := by simp [lTensor]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
 
@@ -462,7 +724,6 @@ theorem ext_iff_inner_right_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
     ext_iff_inner_right_threefold, LinearIsometryEquiv.inner_map_eq_flip]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪a ⊗ₜ (b ⊗ₜ c), x⟫ = ⟪a ⊗ₜ (b ⊗ₜ c), y⟫` for all
 `a, b, c`.
 
@@ -479,7 +740,6 @@ variable {ι₁ ι₂ : Type*}
 
 open Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two orthonormal vectors is orthonormal. -/
 theorem Orthonormal.tmul
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
@@ -493,7 +753,7 @@ theorem Orthonormal.tmul
 theorem Orthonormal.basisTensorProduct
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
     Orthonormal 𝕜 (b₁.tensorProduct b₂) := by
-  convert hb₁.tmul hb₂
+  convert! hb₁.tmul hb₂
   exact b₁.tensorProduct_apply' b₂ _
 
 namespace OrthonormalBasis
@@ -506,7 +766,6 @@ protected noncomputable def tensorProduct
   (b₁.toBasis.tensorProduct b₂.toBasis).toOrthonormalBasis
     (b₁.orthonormal.basisTensorProduct b₂.orthonormal)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorProduct_apply
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) (i : ι₁) (j : ι₂) :
@@ -516,7 +775,6 @@ lemma tensorProduct_apply'
     (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F) (i : ι₁ × ι₂) :
     b₁.tensorProduct b₂ i = b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 := tensorProduct_apply _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorProduct_repr_tmul_apply (b₁ : OrthonormalBasis ι₁ 𝕜 E) (b₂ : OrthonormalBasis ι₂ 𝕜 F)
     (x : E) (y : F) (i : ι₁) (j : ι₂) :

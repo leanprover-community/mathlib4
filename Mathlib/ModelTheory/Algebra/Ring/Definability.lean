@@ -26,15 +26,14 @@ namespace Ring
 
 open MvPolynomial Language BoundedFormula
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
     [CompatibleRing K] (S : Finset (MvPolynomial ι K)) :
     Set.Definable (⋃ p ∈ S, p.coeff '' p.support : Set K) Language.ring
       (zeroLocus K (Ideal.span (S : Set (MvPolynomial ι K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
   let p' := genericPolyMap (fun p : S => p.1.support)
-  letI := Classical.decEq ι
-  letI := Classical.decEq K
+  let := Classical.decEq ι
+  let := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
   refine ⟨BoundedFormula.iInf
       (fun i : S => Term.equal

@@ -6,6 +6,7 @@ Authors: Eric Wieser, Heather Macbeth
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
@@ -13,7 +14,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 # Uniform space structure on matrices
 -/
 
-@[expose] public section
+public section
 
 
 open Uniformity Topology
@@ -23,7 +24,7 @@ variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 namespace Matrix
 
 instance instUniformSpace : UniformSpace (Matrix m n 𝕜) :=
-  (by infer_instance : UniformSpace (m → n → 𝕜))
+  inferInstanceAs <| UniformSpace (m → n → 𝕜)
 
 instance instIsUniformAddGroup [AddGroup 𝕜] [IsUniformAddGroup 𝕜] :
     IsUniformAddGroup (Matrix m n 𝕜) :=
@@ -41,9 +42,6 @@ theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 
   apply Iff.intro <;> intro a <;> apply a
 
 instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
-  (by infer_instance : CompleteSpace (m → n → 𝕜))
-
-instance [T0Space 𝕜] : T0Space (Matrix m n 𝕜) :=
-  inferInstanceAs (T0Space (m → n → 𝕜))
+  inferInstanceAs <| CompleteSpace (m → n → 𝕜)
 
 end Matrix

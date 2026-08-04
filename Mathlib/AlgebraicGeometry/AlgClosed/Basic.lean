@@ -28,7 +28,6 @@ universe u
 variable {X Y : Scheme.{u}} {K : Type u} [Field K] [IsAlgClosed K]
     (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] (x : X) (hx : IsClosed {x})
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a locally of finite type `k`-scheme and `k` is algebraically closed, then
 the residue field of any closed point of `x` is isomorphic to `k`. -/
 def residueFieldIsoBase : X.residueField x ≅ .of K :=
@@ -61,6 +60,8 @@ lemma pointOfClosedPoint_comp : pointOfClosedPoint f x hx ≫ f = 𝟙 _ := by
 lemma pointOfClosedPoint_apply (a : _) : pointOfClosedPoint f x hx a = x := by
   simp [pointOfClosedPoint]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `k` is algebraically closed,
 then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]
@@ -85,6 +86,7 @@ def pointEquivClosedPoint :
     rw [reassoc_of% Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField, p.2]
   right_inv x := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ext_of_apply_closedPoint_eq
     {f g : Spec (.of K) ⟶ X} (h : X ⟶ Spec (.of K))
     [LocallyOfFiniteType h]
@@ -92,6 +94,7 @@ lemma ext_of_apply_closedPoint_eq
     (H : f (IsLocalRing.closedPoint K) = g (IsLocalRing.closedPoint K)) : f = g :=
   congr($((pointEquivClosedPoint h).injective (a₁ := ⟨f, hf⟩) (a₂ := ⟨g, hg⟩) (Subtype.ext H)).1)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `X` and `Y` be locally of finite type `K`-schemes with `K` algebraically closed and `Y`
 separated over `K`. Suppose `X` is reduced, then two `K`-morphisms `f g : X ⟶ Y` are equal if
 they are equal on the closed points of a dense locally closed subset of `X`. -/

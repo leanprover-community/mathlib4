@@ -5,10 +5,9 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
+public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
+public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.
@@ -22,184 +21,21 @@ If `C` also has pullbacks, then `Arrow C` has a monoidal closed structure given 
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 
 attribute [local simp] PushoutObjObj.ι ofHasPushout_pt ofHasPushout_inl ofHasPushout_inr
 
-namespace MonoidalCategory
-
-namespace Arrow
-
-/-- The Leibniz functor associated to the tensor product on a monoidal category. This is the
-bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from the
-pushout of `f ◁ X` and `A ▷ g` to `B ⊗ Y`, induced by the following diagram:
-```
-  A ⊗ X --> B ⊗ X
-     |          |
-     v          v
-  A ⊗ Y --> B ⊗ Y
-```
--/
-noncomputable
-abbrev pushoutProduct [HasPushouts C] [MonoidalCategory C] := (curriedTensor C).leibnizPushout
-
-/-- Notation for the pushout-product of morphisms. -/
-notation3 f " □ " g:10 => (pushoutProduct.obj f).obj g
-
-/-- The Leibniz functor associated to the internal hom on a monoidal closed category. This is the
-bifunctor of arrow categories that sends `f : A ⟶ B` and `g : X ⟶ Y` to the canonical map from
-`B ⟹ X` to the pullback of `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and
-`(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the following diagram:
-```
-  B ⟹ X --> A ⟹ X
-     |          |
-     v          v
-  B ⟹ Y --> A ⟹ Y
-```
--/
-noncomputable
-abbrev pullbackHom [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C] :
-    (Arrow C)ᵒᵖ ⥤ Arrow C ⥤ Arrow C := MonoidalClosed.internalHom.leibnizPullback
-
-/-- Notation for the pullback-hom of morphisms. -/
-notation3 f " ⋔ " g:10 => (pullbackHom.obj f).obj g
-
-namespace PushoutProduct
-
-section
-
-variable [HasPushouts C]
-
-section Monoidal
-
-variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
-
-/-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
-  pushout-product of `W ◁ X₁` and `X₂`. -/
-@[simps!]
-noncomputable
-def whiskerLeft_iso
-    [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorLeft W)] :
-    Arrow.mk (W ◁ (X₁ □ X₂).hom) ≅ (W ◁ X₁.hom) □ X₂ :=
-  Arrow.isoMk (((tensorLeft W).map_isPushout
-    (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).isoPushout ≪≫
-    HasColimit.isoOfNatIso (spanExt (α_ W _ _).symm (α_ W _ _).symm (α_ W _ _).symm
-    (associator_inv_naturality_middle W _ _).symm (associator_inv_naturality_right W _ _).symm))
-  (α_ W _ _).symm
-  (((tensorLeft W).map_isPushout
-    (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by simp) (by simp))
-
-/-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
-  pushout-product of `X₁` and `X₂ ▷ W`. -/
-@[simps!]
-noncomputable
-def whiskerRight_iso
-    [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorRight W)] :
-    Arrow.mk ((X₁ □ X₂).hom ▷ W) ≅ X₁ □ (X₂.hom ▷ W) :=
-  Arrow.isoMk
-    (((tensorRight W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).isoPushout ≪≫
-      HasColimit.isoOfNatIso (spanExt (α_ _ _ W) (α_ _ _ W) (α_ _ _ W)
-      (associator_naturality_left _ _ W).symm (associator_naturality_middle _ _ W).symm))
-    (α_ _ _ W)
-    (((tensorRight W).map_isPushout
-      (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by simp) (by simp))
-
-/-- The pushout-product is associative: `(X₁ □ X₂) □ X₃ ≅ X₁ □ X₂ □ X₃`. -/
-@[simps!]
-noncomputable
-def associator
-    [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorRight X₃.left)]
-    [PreservesColimit (span (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom)) (tensorRight X₃.right)]
-    [PreservesColimit (span (X₂.hom ▷ X₃.left) (X₂.left ◁ X₃.hom)) (tensorLeft X₁.left)]
-    [PreservesColimit (span (X₂.hom ▷ X₃.left) (X₂.left ◁ X₃.hom)) (tensorLeft X₁.right)] :
-    ((X₁ □ X₂) □ X₃) ≅ X₁ □ X₂ □ X₃ := by
-  dsimp
-  refine Arrow.isoMk ?_ (α_ _ _ _) ?_
-  · refine Iso.mk ?_ ?_ ?_ ?_
-    · exact pushout.desc ((α_ _ _ _).hom ≫ _ ◁ pushout.inl _ _ ≫ pushout.inl _ _)
-        ((whiskerRight_iso _ _).hom.left ≫
-          pushout.desc (_ ◁ pushout.inr _ _ ≫ pushout.inl _ _) (pushout.inr _ _)
-          (by simp [Limits.pushout.associator_naturality_left_condition]))
-        (((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc])
-          (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition]))
-    · exact pushout.desc ((whiskerLeft_iso _ _).hom.left ≫
-          pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ _) ≫ pushout.inr _ _)
-          (by simp [Limits.pushout.associator_inv_naturality_right_condition]))
-        ((α_ _ _ _).inv ≫ (pushout.inr _ _) ▷ _ ≫ pushout.inr _ _)
-        (((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-          (by simp [whisker_exchange_assoc,
-            Limits.pushout.associator_inv_naturality_right_condition])
-          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc]))
-    · apply pushout.hom_ext (by simp)
-      apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
-    · refine pushout.hom_ext ?_ (by simp)
-      apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
-  · apply pushout.hom_ext (by simp [← MonoidalCategory.whiskerLeft_comp])
-    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-      · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
-      · simp [← MonoidalCategory.comp_whiskerRight_assoc]
-
-/-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/
-@[simps!]
-noncomputable
-def braiding [BraidedCategory C] (X₁ X₂ : Arrow C) : (X₁ □ X₂) ≅ X₂ □ X₁ :=
-  Arrow.isoMk (pushoutSymmetry _ _ ≪≫
-    (HasColimit.isoOfNatIso (spanExt (β_ _ _) (β_ _ _) (β_ _ _)
-    (BraidedCategory.braiding_naturality_right _ _).symm
-    (BraidedCategory.braiding_naturality_left _ _).symm))) (β_ _ _) (by cat_disch)
-
-end Monoidal
-
-section CartesianMonoidalClosed
-
-variable [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
-
-/-- If `C` is a CCC with pushouts and an initial object, then `X □ (⊥_ C ⟶ 𝟙_ C) ≅ X`. -/
-@[simp]
-noncomputable
-def rightUnitor (X : Arrow C) :
-    (X □ initial.to (𝟙_ C)) ≅ X := by
-  refine Arrow.isoMk ?_ (ρ_ X.right) ?_
-  · refine Iso.mk ?_ ((ρ_ X.left).inv ≫ pushout.inr _ _) ?_ ?_
-    · refine pushout.desc ?_ (ρ_ X.left).hom ?_
-      · exact (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).to _
-      · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
-    · refine pushout.hom_ext ?_ (by simp)
-      apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
-    · simp
-  · refine pushout.hom_ext ?_ (by simp)
-    apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
-
-/-- If `C` is a braided CCC with pushouts and an initial object, then `(⊥_ C ⟶ 𝟙_ C) □ X ≅ X`. -/
-@[simp]
-noncomputable
-def leftUnitor [BraidedCategory C]
-    (X : Arrow C) : (initial.to (𝟙_ C) □ X) ≅ X :=
-  braiding _ _ ≪≫ rightUnitor _
-
-end CartesianMonoidalClosed
-
-end
+namespace MonoidalCategory.Arrow.PushoutProduct
 
 noncomputable section
-
-local instance [MonoidalCategory C] [MonoidalClosed C] :
-    ∀ S : C, PreservesColimitsOfSize (tensorLeft S) := fun S ↦
-  (ihom.adjunction S).leftAdjoint_preservesColimits
-
-local instance [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
-    ∀ S : C, PreservesColimitsOfSize (tensorRight S) := fun S ↦
-  preservesColimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight S)
 
 /-- The monoidal category instance induced by the pushout-product. -/
 @[simps]
@@ -216,12 +52,16 @@ scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [Mo
 variable [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
   [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   refine Arrow.hom_ext _ _ ?_ (by simp [whisker_exchange_assoc])
   apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) := by
@@ -241,16 +81,22 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
       simp [← whisker_exchange_assoc, reassoc_of% this]
     cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
   apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext ?_ (by simp)) (by simp)
   apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (W X Y Z : Arrow C) :
     (α_ W X Y).hom ▷ Z ≫ (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom =
       (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
@@ -259,6 +105,8 @@ lemma pentagon (W X Y Z : Arrow C) :
   apply ((tensorRight _ ⋙ tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;>
   simp [associator_naturality_left_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma triangle (X Y : Arrow C) :
     (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
@@ -267,6 +115,7 @@ lemma triangle (X Y : Arrow C) :
     exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
   · simp [← comp_whiskerRight_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monoidal category instance induced by the pushout-product. -/
 scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom
@@ -276,18 +125,24 @@ scoped instance : MonoidalCategory (Arrow C) where
   pentagon := pentagon
   triangle := triangle
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma hexagon_forward (X Y Z : Arrow C) :
     (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
       ((braiding X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ (Y ◁ (braiding X Z).hom) := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
   apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma hexagon_reverse (X Y Z : Arrow C) :
     (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
       (X ◁ (braiding Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((braiding X Z).hom ▷ Y) := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext ?_ (by simp)) (by simp)
   apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The braided category instance induced by the pushout-product. -/
 @[simps -isSimp]
 scoped instance braidedCategory : BraidedCategory (Arrow C) where
@@ -295,6 +150,8 @@ scoped instance braidedCategory : BraidedCategory (Arrow C) where
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] braidedCategory_braiding in
 /-- The symmetric category instance induced by the pushout-product. -/
 @[simps! -isSimp]
@@ -308,8 +165,6 @@ scoped instance [HasPullbacks C] : MonoidalClosed (Arrow C) where
 
 end
 
-end PushoutProduct
-
-end MonoidalCategory.Arrow
+end MonoidalCategory.Arrow.PushoutProduct
 
 end CategoryTheory

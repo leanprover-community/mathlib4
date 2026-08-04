@@ -39,6 +39,7 @@ We have three ways to construct terms of `ℙ K V`:
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
+@[instance_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -144,7 +145,6 @@ theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
   rw [submodule_eq]
   exact finrank_span_singleton v.rep_nonzero
 
-set_option backward.isDefEq.respectTransparency false in
 instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   rw [← v.mk_rep]
   change FiniteDimensional K (K ∙ v.rep)
@@ -159,7 +159,6 @@ theorem submodule_injective :
 
 variable (K V)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the projectivization and the
 collection of subspaces of dimension 1. -/
 noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K H = 1 } :=
@@ -228,5 +227,26 @@ theorem map_comp {F U : Type*} [DivisionRing F] [AddCommGroup U] [Module F U] {�
   rfl
 
 end Map
+
+section linearIndependent
+
+theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
+  LinearIndependent K ![D.rep, D'.rep] ↔ D ≠ D' := by
+    rw [LinearIndependent.pair_iff' (rep_nonzero _)]
+    refine ⟨fun h hD ↦ h 1 (by simp [hD]), fun h a hD ↦ h ?_⟩
+    rw [eq_comm, ← mk_rep D, ← mk_rep D', mk_eq_mk_iff]
+    suffices a ≠ 0 by refine ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
+    exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
+
+theorem linearIndepOn_pair (D D' : ℙ K V) :
+    LinearIndepOn K id {D.rep, D'.rep} := by
+  by_cases h : D = D'
+  · simpa [h] using D'.rep_nonzero
+  rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
+    ← linearIndepOn_id_range_iff] at h
+  · simpa using h
+  · simpa [injective_pair_iff_ne, injective_pair_iff_ne, ne_eq] using h.injective
+
+end linearIndependent
 
 end Projectivization

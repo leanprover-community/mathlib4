@@ -22,7 +22,7 @@ namespace Mathlib.Meta.NormNum
 
 variable {u : Level}
 
-/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     (_ : Q(Semiring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
@@ -33,7 +33,7 @@ def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     return ⟨semiring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered semiring"
 
-/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM <|
     (_ : Q(Ring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
@@ -89,7 +89,7 @@ theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp only [Nat.mul_eq, Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
-theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
+theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℕ} → {da db : ℕ} →
     IsNNRat a na da → IsNNRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
@@ -101,7 +101,7 @@ theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     simp? at h says simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
-theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℕ} {da db : ℕ}
     (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_gt (isNNRat_lt_true hb ha h)
@@ -125,7 +125,7 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
-theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
+theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
@@ -137,7 +137,7 @@ theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontr
     simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
-theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_gt (isRat_lt_true hb ha h)
@@ -240,7 +240,7 @@ where
     else if let .some _i ← trySynthInstanceQ q(CharZero $α) then
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_le_false $pa $pb $r)
-    else -- Nats can appear in an `OrderedRing` without `CharZero`.
+    else -- Nats can appear in an ordered ring without `CharZero`.
       intArm
 
 attribute [local instance] monadLiftOptionMetaM in
@@ -277,11 +277,6 @@ where
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_lt_false $pa $pb $r)
   let rec nnratArm : MetaM (Result e) := do
-    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
-    /-
-       NOTE: after the ordered algebra refactor, this is not true anymore,
-       so there may be a better typeclass
-    -/
     let ⟨_, _, _⟩ ← inferLinearOrderedSemifield α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
@@ -294,11 +289,6 @@ where
       let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNNRat_lt_false $pa $pb $r)
   let rec ratArm : MetaM (Result e) := do
-    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
-    /-
-       NOTE: after the ordered algebra refactor, this is not true anymore,
-       so there may be a better typeclass
-    -/
     let ⟨_, _, _i⟩ ← inferLinearOrderedField α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
@@ -327,7 +317,7 @@ where
       if let .some _i ← trySynthInstanceQ q(CharZero $α) then
         let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
         return .isTrue q(isNat_lt_true $pa $pb $r)
-      else -- Nats can appear in an `OrderedRing` without `CharZero`.
+      else -- Nats can appear in an ordered ring without `CharZero`.
         intArm
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)

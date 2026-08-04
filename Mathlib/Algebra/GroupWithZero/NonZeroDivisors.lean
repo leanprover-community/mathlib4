@@ -55,7 +55,7 @@ lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x 
 
 lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+  simpa [mem_nonZeroDivisorsLeft_iff] using! Set.nonempty_def.symm
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -69,7 +69,7 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
+  simpa [mem_nonZeroDivisorsRight_iff] using! Set.nonempty_def.symm
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -78,7 +78,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
 @[simp] lemma coe_nonZeroDivisorsLeft_eq [NoZeroDivisors M₀] [Nontrivial M₀] :
     nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
   ext x
-  simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, Set.mem_setOf_eq]
+  simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, Set.mem_ofPred_eq]
   refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by simp_all⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
@@ -87,7 +87,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsRight M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsRight_iff, mul_eq_zero, forall_eq_or_imp, true_and,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
   refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by contradiction⟩
   contrapose! h
   exact ⟨1, h, one_ne_zero⟩
@@ -408,7 +408,6 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
   · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
-set_option backward.whnf.reducibleClassField false in
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
