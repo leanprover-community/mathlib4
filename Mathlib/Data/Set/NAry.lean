@@ -78,6 +78,7 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 
 @[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
@@ -139,15 +140,19 @@ theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ im
 theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
 
-theorem subset_image2_diff_left :
+theorem subset_image2_sdiff_left :
     image2 f s t \ image2 f s' t ⊆ image2 f (s \ s') t := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ⟨ha, fun ha' ↦ h ⟨_, ha', _, hb, rfl⟩⟩, _, hb, rfl⟩
 
-theorem subset_image2_diff_right :
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_left := subset_image2_sdiff_left
+
+theorem subset_image2_sdiff_right :
     image2 f s t \ image2 f s t' ⊆ image2 f s (t \ t') := by
   rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
   exact ⟨_, ha, _, ⟨hb, fun hb' ↦ h ⟨_, ha, _, hb', rfl⟩⟩, rfl⟩
+
+@[deprecated (since := "2026-06-03")] alias subset_image2_diff_right := subset_image2_sdiff_right
 
 @[simp]
 theorem image2_singleton_left : image2 f {a} t = f a '' t :=

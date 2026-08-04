@@ -25,7 +25,7 @@ namespace MonoidAlgebra
 
 @[to_additive (attr := simp)]
 lemma cardinalMk_eq_lift_of_fintype [Fintype M'] : #R[M'] = lift.{v} #R ^ card M' := by
-  simp [MonoidAlgebra]
+  simp [coeffEquiv.cardinal_eq]
 
 @[deprecated (since := "2026-03-26")]
 alias cardinalMk_lift_of_fintype := cardinalMk_eq_lift_of_fintype
@@ -35,7 +35,7 @@ lemma cardinalMk_of_fintype [Fintype M] : #R[M] = #R ^ card M := by simp
 
 @[to_additive (attr := simp)]
 lemma cardinalMk_eq_max_lift_of_infinite [Infinite M'] [Nontrivial R] :
-    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [MonoidAlgebra, max_comm]
+    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [coeffEquiv.cardinal_eq, max_comm]
 
 @[deprecated (since := "2026-03-26")]
 alias cardinalMk_lift_of_infinite := cardinalMk_eq_max_lift_of_infinite
@@ -45,7 +45,7 @@ lemma cardinalMk_of_infinite [Infinite M] [Nontrivial R] : #R[M] = max #R #M := 
 
 @[to_additive (attr := simp)]
 lemma cardinalMk_eq_max_lift_of_infinite' [Nonempty M'] [Infinite R] :
-    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [MonoidAlgebra, max_comm]
+    #R[M'] = max (lift.{v} #R) (lift.{u} #M') := by simp [coeffEquiv.cardinal_eq, max_comm]
 
 @[deprecated (since := "2026-03-26")]
 alias cardinalMk_lift_of_infinite' := cardinalMk_eq_max_lift_of_infinite'

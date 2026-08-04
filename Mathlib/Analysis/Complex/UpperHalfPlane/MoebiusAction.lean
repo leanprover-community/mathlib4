@@ -47,7 +47,7 @@ theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h
     -- we will need this twice
     apply_fun Complex.im at h
     simpa only [Complex.add_im, Complex.mul_im, Complex.ofReal_im, zero_mul, add_zero,
-      Complex.zero_im, mul_eq_zero, hz, or_false] using h
+      Complex.zero_im, mul_eq_zero, hz, or_false] using! h
   simp only [this, zero_mul, Complex.ofReal_zero, zero_add, Complex.ofReal_eq_zero] at h
   ext i
   fin_cases i <;> assumption
@@ -107,6 +107,7 @@ lemma σ_num (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (num h z) = num h (σ g z) 
 lemma σ_denom (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (denom h z) = denom h (σ g z) := by
   simp [denom]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma σ_neg (g : GL (Fin 2) ℝ) : σ (-g) = σ g := by
   simp [σ, det_neg]
@@ -146,7 +147,7 @@ lemma smulAux'_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   split_ifs with h <;>
   [rw [abs_of_pos h]; rw [abs_of_nonpos (not_lt.mp h)]] <;>
   simpa only [Complex.conjCAE_apply, Complex.star_def, Complex.conj_im,
-    neg_mul, neg_div, neg_inj] using moebius_im g z
+    neg_mul, neg_div, neg_inj] using! moebius_im g z
 
 /-- Fractional linear transformation, also known as the Moebius transformation -/
 def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
@@ -156,20 +157,14 @@ def smulAux (g : GL (Fin 2) ℝ) (z : ℍ) : ℍ :=
 
 lemma denom_cocycle' (g h : GL (Fin 2) ℝ) (z : ℍ) :
     denom (g * h) z = σ h (denom g (smulAux h z)) * denom h z := by
-  simp only [smulAux, smulAux', coe_mk, map_div₀, σ_num, σ_denom, σ_sq]
-  change _ = (_ * (_ / _) + _) * _
-  field_simp [denom_ne_zero h z]
-  simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
-    Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
-    Complex.ofReal_mul, num]
-  ring
+  simpa [smulAux, smulAux', denom, σ_sq] using denom_cocycle g h z.im_ne_zero
 
 theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
     smulAux (g * h) z = smulAux g (smulAux h z) := by
   ext : 1
   simp only [smulAux, coe_mk, smulAux', map_div₀, σ_num, σ_denom, σ_mul]
   generalize hu : σ g (σ h z) = u
-  have hu : u.im ≠ 0 := by simpa only [← hu, σ_im_ne_zero] using z.im_ne_zero
+  have hu : u.im ≠ 0 := by simpa only [← hu, σ_im_ne_zero] using! z.im_ne_zero
   have hu' : (num h u / denom h u).im ≠ 0 := by
     rw [moebius_im]
     exact div_ne_zero (mul_ne_zero h.det_ne_zero hu) (normSq_denom_ne_zero _ hu)
@@ -211,6 +206,7 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 section GLAction
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem re_smul : (g • z).re = (num g z / denom g z).re := by
   change (smulAux' g z).re = _
   simp +contextual [smulAux', σ, DFunLike.ite_apply, apply_ite, Complex.div_re]
@@ -303,8 +299,9 @@ theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : S
       (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
   ext; simp [coe_specialLinearGroup_apply]
 
-/- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
+/-! these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;
 instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
+
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]
@@ -319,6 +316,7 @@ theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
@@ -327,19 +325,20 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 
   suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom (z : ℍ) := denom_ne_zero g z
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
-  replace hc : c ≠ 0 := by simpa using hc
+  replace hc : c ≠ 0 := by simpa using! hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     simpa [modular_S_smul, coe_specialLinearGroup_apply]
   replace hc : (c : ℂ) ≠ 0 := by norm_cast
-  replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
+  replace h_denom : ↑c * z + d ≠ 0 := by simpa using! h_denom ⟨z, hz⟩
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   grind
 
@@ -413,7 +412,6 @@ section ModularScalarTowers
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
@@ -424,22 +422,18 @@ lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]
@@ -456,7 +450,6 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 
-set_option linter.deprecated false in
 @[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc s g z := by
@@ -483,6 +476,7 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
 
 end SLModularAction

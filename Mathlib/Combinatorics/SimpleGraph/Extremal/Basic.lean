@@ -43,10 +43,10 @@ def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → P
 
 lemma IsExtremal.prop {p : SimpleGraph V → Prop} (h : G.IsExtremal p) : p G := h.1
 
-open Classical in
 /-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
 theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
     (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G, p G := by
+  classical
   refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
   obtain ⟨G', hp', h⟩ := by
     apply exists_max_image { G | p G } (#·.edgeFinset)
@@ -59,7 +59,7 @@ theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
 
-open Classical in
+open scoped Classical in
 theorem IsExtremal.le_iff_eq
     {p : SimpleGraph V → Prop} (hG : G.IsExtremal p) {H : SimpleGraph V} (hH : p H) :
     G ≤ H ↔ G = H :=
@@ -70,7 +70,7 @@ end IsExtremal
 
 section ExtremalNumber
 
-open Classical in
+open scoped Classical in
 /-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
@@ -80,7 +80,7 @@ noncomputable def extremalNumber (n : ℕ) {W : Type*} (H : SimpleGraph W) : ℕ
 
 variable {n : ℕ} {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
 
-open Classical in
+open scoped Classical in
 theorem extremalNumber_of_fintypeCard_eq [Fintype V] (hc : card V = n) :
     extremalNumber n H = sup { G : SimpleGraph V | H.Free G } (#·.edgeFinset) := by
   let e := Fintype.equivFinOfCardEq hc
@@ -91,12 +91,11 @@ theorem extremalNumber_of_fintypeCard_eq [Fintype V] (hc : card V = n) :
   all_goals
   rw [Finset.sup_le_iff]
   intro G h
-  let G' := G.map e.toEmbedding
-  replace h' : G' ∈ univ.filter (H.Free ·) := by
+  have h' : G.map e ∈ univ.filter (H.Free ·) := by
     rw [mem_filter, ← free_congr .refl (.map e G)]
     simpa using h
   rw [Iso.card_edgeFinset_eq (.map e G)]
-  convert! @le_sup _ _ _ _ {G | H.Free G} (#·.edgeFinset) G' h'
+  convert! @le_sup _ _ _ _ {G | H.Free G} (#·.edgeFinset) _ h'
 
 variable [Fintype V] [DecidableRel G.Adj]
 

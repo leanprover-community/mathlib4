@@ -76,7 +76,7 @@ section Prod
 
 /-- The product of two open partial homeomorphisms, as an open partial homeomorphism on the product
 space. -/
-@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialHomeomorph apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     OpenPartialHomeomorph (X × Y) (X' × Y') where
@@ -86,6 +86,11 @@ def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
   continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
+@[deprecated "deprecated in favour of `OpenPartialHomeomorph.prod_toPartialHomeomorph`"
+  (since := "2026-06-24")]
+lemma prod_toPartialEquiv (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
+    (eX.prod eY).toPartialHomeomorph.toPartialEquiv = eX.toPartialEquiv.prod eY.toPartialEquiv :=
+  rfl
 @[simp, mfld_simps]
 theorem prod_symm (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     (eX.prod eY).symm = eX.symm.prod eY.symm :=
@@ -106,10 +111,10 @@ theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
     eX.prod eY = eX'.prod eY' ↔ eX = eX' ∧ eY = eY' := by
   obtain ⟨⟨x, y⟩, -⟩ := id h
-  haveI : Nonempty X := ⟨x⟩
-  haveI : Nonempty X' := ⟨eX x⟩
-  haveI : Nonempty Y := ⟨y⟩
-  haveI : Nonempty Y' := ⟨eY y⟩
+  have : Nonempty X := ⟨x⟩
+  have : Nonempty X' := ⟨eX x⟩
+  have : Nonempty Y := ⟨y⟩
+  have : Nonempty Y' := ⟨eY y⟩
   simp_rw [OpenPartialHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
     Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
@@ -137,7 +142,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, OpenPartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `OpenPartialHomeomorph`s. -/
-@[simps! toPartialEquiv apply symm_apply source target]
+@[simps! toPartialHomeomorph apply symm_apply]
 def pi : OpenPartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
@@ -164,7 +169,7 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! -fullyApplied toPartialEquiv apply]
+@[simps! -fullyApplied toPartialHomeomorph apply]
 def piecewise (e e' : OpenPartialHomeomorph X Y) (s : Set X) (t : Set Y) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -201,7 +206,7 @@ def disjointUnion (e e' : OpenPartialHomeomorph X Y) [∀ x, Decidable (x ∈ e.
         (by rw [e.open_source.inter_frontier_eq, (Hs.symm.frontier_right e'.open_source).inter_eq])
         (by
           rw [e.open_source.inter_frontier_eq]
-          exact eqOn_empty _ _)).replaceEquiv
+          exact eqOn_empty _ _)).replacePartialEquiv
     (e.toPartialEquiv.disjointUnion e'.toPartialEquiv Hs Ht)
     (PartialEquiv.disjointUnion_eq_piecewise _ _ _ _).symm
 
@@ -264,7 +269,7 @@ theorem subtypeRestr_def : e.subtypeRestr hs = (s.openPartialHomeomorphSubtypeCo
 
 @[simp, mfld_simps]
 theorem subtypeRestr_coe :
-    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.restrict ↑s (e : X → Y) :=
+    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.domRestrict ↑s (e : X → Y) :=
   rfl
 
 @[simp, mfld_simps]
@@ -307,7 +312,7 @@ theorem subtypeRestr_symm_apply {U : Opens X} (hU : Nonempty U)
     {y : Y} (hy : y ∈ (e.subtypeRestr hU).target) :
     (Subtype.val ∘ (e.subtypeRestr hU).symm) y = e.symm y := by
   rw [e.eq_symm_apply _ hy.1]
-  · change restrict _ e _ = _
+  · change domRestrict _ e _ = _
     rw [← e.subtypeRestr_coe hU, (e.subtypeRestr hU).right_inv hy]
   · have := OpenPartialHomeomorph.map_target _ hy
     rwa [e.subtypeRestr_source] at this
@@ -360,7 +365,7 @@ noncomputable def lift_openEmbedding (e : OpenPartialHomeomorph X Z) (hf : IsOpe
     rw [← hxx₀, hf.injective.extend_apply e, comp_apply]
     congr
     exact e.left_inv' hx₀
-  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using e.right_inv' hz
+  right_inv' z hz := by simpa only [comp_apply, hf.injective.extend_apply e] using! e.right_inv' hz
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by

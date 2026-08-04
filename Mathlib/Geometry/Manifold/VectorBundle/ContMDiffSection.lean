@@ -160,7 +160,7 @@ lemma ContMDiffWithinAt.sum_section {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simpa only [Finset.sum_empty] using contMDiffWithinAt_zeroSection ..
+    simpa only [Finset.sum_empty] using! contMDiffWithinAt_zeroSection ..
   | insert i s hi h =>
     simp only [Finset.sum_insert hi]
     apply (hs _ (s.mem_insert_self i)).add_section
@@ -215,7 +215,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     by_contra! h
     have : i ∈ s.toFinset := by
       refine Set.mem_toFinset.mpr ?_
-      simp only [s, ne_eq, Set.mem_setOf_eq]
+      simp only [s, ne_eq, Set.mem_ofPred_eq]
       use x₀
       simpa using ⟨h, mem_of_mem_nhds hu'⟩
     exact hi this
@@ -224,7 +224,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_setOf_eq]
+    simp only [s, ne_eq, Set.mem_ofPred_eq]
     use y
     simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
   exact hi this
@@ -260,7 +260,7 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
-    rw [Set.mem_setOf] at hx ⊢
+    rw [Set.mem_ofPred] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
   exact Set.Finite.subset hfin this
@@ -301,7 +301,7 @@ variable {I} {n} {F} {V}
 
 instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 

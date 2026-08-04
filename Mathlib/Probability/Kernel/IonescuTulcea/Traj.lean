@@ -581,7 +581,7 @@ theorem traj_comp_partialTraj {a b : ℕ} (hab : a ≤ b) :
 a deterministic kernel with another kernel. This is an intermediate result to compute integrals
 with respect to this kernel. -/
 theorem traj_eq_prod (a : ℕ) :
-    traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).restrict).map (IicProdIoi a) := by
+    traj κ a = (Kernel.id ×ₖ (traj κ a).map (Set.Ioi a).domRestrict).map (IicProdIoi a) := by
   refine (eq_traj' _ (a + 1) _ fun b hb ↦ ?_).symm
   rw [← map_comp_right]
   conv_lhs => enter [2]; change (IicProdIoc a b) ∘
@@ -594,10 +594,11 @@ theorem traj_eq_prod (a : ℕ) :
     all_goals fun_prop
   all_goals fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem traj_map_updateFinset {n : ℕ} (x : Π i : Iic n, X i) :
     (traj κ n x).map (updateFinset · (Iic n) x) = traj κ n x := by
   nth_rw 2 [traj_eq_prod]
-  have : (updateFinset · _ x) = IicProdIoi n ∘ (Prod.mk x) ∘ (Set.Ioi n).restrict := by
+  have : (updateFinset · _ x) = IicProdIoi n ∘ (Prod.mk x) ∘ (Set.Ioi n).domRestrict := by
     ext; simp [IicProdIoi, updateFinset]
   rw [this, ← Function.comp_assoc, ← Measure.map_map, ← Measure.map_map, map_apply, prod_apply,
     map_apply, id_apply, Measure.dirac_prod]
@@ -780,7 +781,7 @@ lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
     traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
   congr with x₀ : 1
   rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_eq_map_traj zero_le']
+    partialTraj_compProd_eq_map_traj zero_le]
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/

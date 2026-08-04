@@ -168,6 +168,7 @@ noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
 
+set_option linter.style.longLine false in
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
@@ -178,14 +179,14 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   isLUB_sSup _ :=
-    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using fun _ ↦ isLUB_sSup _)
+    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
   isGLB_sInf _ := by
     dsimp +instances [instInfSet]
     split_ifs with hn
     · refine .of_image (f := seq) .rfl ?_
-      simpa only [isGLB_pi, Set.image_image] using fun _ ↦ isGLB_sInf _
+      simpa only [isGLB_pi, Set.image_image] using! fun _ ↦ isGLB_sInf _
     · rw [Set.not_nonempty_iff_eq_empty] at hn
-      simpa [hn] using Filtration.le
+      simpa [hn] using! Filtration.le
   le_top f i := f.le' i
   bot_le _ _ := bot_le
 
@@ -299,19 +300,19 @@ lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [Ord
 /-- If the index type is a `SuccOrder`, then `𝓕₊ = 𝓕`. -/
 @[simp] lemma rightCont_eq_self [LinearOrder ι] [SuccOrder ι] (𝓕 : Filtration ι m) :
     𝓕₊ = 𝓕 := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   ext _
   rw [rightCont_eq_of_nhdsGT_eq_bot _ SuccOrder.nhdsGT]
 
 lemma rightCont_eq_of_isMax [PartialOrder ι] (𝓕 : Filtration ι m) {i : ι} (hi : IsMax i) :
     𝓕₊ i = 𝓕 i := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   exact rightCont_eq_of_nhdsGT_eq_bot _ (hi.Ioi_eq ▸ nhdsWithin_empty i)
 
 lemma rightCont_eq_of_exists_gt [LinearOrder ι] (𝓕 : Filtration ι m) {i : ι}
     (hi : ∃ j > i, Set.Ioo i j = ∅) :
     𝓕₊ i = 𝓕 i := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   obtain ⟨j, hij, hIoo⟩ := hi
   have hcov : i ⋖ j := covBy_iff_Ioo_eq.mpr ⟨hij, hIoo⟩
   exact rightCont_eq_of_nhdsGT_eq_bot _ <| CovBy.nhdsGT hcov
@@ -327,7 +328,7 @@ lemma rightCont_eq_of_neBot_nhdsGT [PartialOrder ι] [TopologicalSpace ι] [Orde
 lemma rightCont_eq_of_not_isMax [LinearOrder ι] [DenselyOrdered ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : ¬IsMax i) :
     𝓕₊ i = ⨅ j > i, 𝓕 j := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   have : (𝓝[>] i).NeBot := nhdsGT_neBot_of_exists_gt (not_isMax_iff.mp hi)
   exact rightCont_eq_of_neBot_nhdsGT _ _
 
@@ -341,7 +342,7 @@ lemma rightCont_eq [LinearOrder ι] [DenselyOrdered ι] [NoMaxOrder ι]
 variable [PartialOrder ι]
 
 lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   intro i
   by_cases hne : (𝓝[>] i).NeBot
   · rw [rightCont_eq_of_neBot_nhdsGT]
@@ -349,7 +350,7 @@ lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
   · rw [rightCont_apply, if_neg hne]
 
 @[simp] lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   apply le_antisymm _ 𝓕₊.le_rightCont
   intro i
   by_cases hne : (𝓝[>] i).NeBot
@@ -399,10 +400,16 @@ def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 
+lemma natural_eq_comap (u : (i : ι) → Ω → β i) (hum : ∀ (i : ι), StronglyMeasurable (u i)) (i : ι) :
+    natural u hum i = .comap (fun ω (j : Set.Iic i) ↦ u j ω) inferInstance := by
+  simp_rw [natural, MeasurableSpace.comap_process_pi, iSup_subtype']
+  rfl
+
 section
 
 open MeasurableSpace
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
     {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
@@ -492,6 +499,7 @@ def piLE : @Filtration (Π i, X i) ι _ pi where
 
 variable [LocallyFiniteOrderBot ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
   apply le_antisymm
   · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
@@ -519,7 +527,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap (s : Set ι).restrict := rfl
+    piFinset (X := X) s = pi.comap (s : Set ι).domRestrict := rfl
 
 end piFinset
 

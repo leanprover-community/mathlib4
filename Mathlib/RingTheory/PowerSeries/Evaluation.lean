@@ -115,6 +115,7 @@ def hasEvalIdeal : Ideal S where
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hasEvalIdeal_iff {a : S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
@@ -179,7 +180,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R
   have := MvPowerSeries.hasSum_eval₂ hφ (hasEval ha) f
   simp only [PowerSeries.eval₂]
   rw [← (Finsupp.single_injective ()).hasSum_iff] at this
-  · convert! this; simp; congr
+  · convert this; simp
   · intro d hd
     exact False.elim (hd ⟨d (), by ext; simp⟩)
 

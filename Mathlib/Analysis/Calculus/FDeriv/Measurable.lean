@@ -657,7 +657,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
-            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
+            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using! h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
@@ -793,7 +793,7 @@ open Uniformity
 lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[𝕜] F) :
     IsOpen {p : α × E | p.2 ∈ A (f p.1) L r s} := by
   have : ProperSpace E := .of_locallyCompactSpace 𝕜
-  simp only [A, mem_Ioc, mem_ball, map_sub, mem_setOf_eq]
+  simp only [A, mem_Ioc, mem_ball, map_sub, mem_ofPred_eq]
   apply isOpen_iff_mem_nhds.2
   rintro ⟨a, x⟩ ⟨r', ⟨Irr', Ir'r⟩, hr⟩
   rcases exists_between Irr' with ⟨t, hrt, htr'⟩
@@ -876,7 +876,7 @@ theorem measurableSet_of_differentiableAt_of_isComplete_with_param
           = {p : α × E | p.2 ∈ D (f p.1) K} := by simp [← differentiable_set_eq_D K hK]
   rw [this]
   simp only [D, mem_iInter, mem_iUnion]
-  simp only [setOf_forall, setOf_exists]
+  simp only [ofPred_forall, ofPred_exists]
   refine MeasurableSet.iInter (fun _ ↦ ?_)
   refine MeasurableSet.iUnion (fun _ ↦ ?_)
   refine MeasurableSet.iInter (fun _ ↦ ?_)

@@ -74,6 +74,7 @@ class FormallySmooth : Prop where
 attribute [instance] FormallySmooth.projective_kaehlerDifferential
   FormallySmooth.subsingleton_h1Cotangent
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -87,7 +88,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     ⟨P.toExtension.subsingleton_h1Cotangent.mp FormallySmooth.subsingleton_h1Cotangent,
       Module.projective_lifting_property _ _ P.toExtension.toKaehler_surjective⟩).2
   obtain ⟨g, hg⟩ := retractionKerCotangentToTensorEquivSection (R := R) P.algebraMap_surjective
-    ⟨⟨⟨Cotangent.val, by simp⟩, by simpa using Cotangent.val_smul' (P := P.toExtension)⟩ ∘ₗ
+    ⟨⟨⟨Cotangent.val, by simp⟩, by simpa using! Cotangent.val_smul' (P := P.toExtension)⟩ ∘ₗ
       l.restrictScalars P.toExtension.Ring, LinearMap.ext fun x ↦ congr($hl x)⟩
   let σ := Function.surjInv (f := algebraMap B (B ⧸ I)) Ideal.Quotient.mk_surjective
   have H (x : P.Ring) : ↑(aeval (σ ∘ f) x) = f (algebraMap _ A x) := by
@@ -104,19 +105,19 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
       (Ideal.Quotient.mkₐ R _).comp l := by
     refine Ideal.Quotient.algHom_ext _ (MvPolynomial.algHom_ext fun i ↦ ?_)
     change f (algebraMap P.Ring A (.X i)) = algebraMap _ _ (MvPolynomial.aeval (σ ∘ f) (.X i))
-    simpa using (Function.surjInv_eq _ _).symm
+    simpa using! (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
-set_option backward.isDefEq.respectTransparency false in
-instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
-  let P : Generators R (MvPolynomial σ R) σ :=
-    .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
+set_option backward.defeqAttrib.useBackward true in
+instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
+  let P := Generators.mvPolynomial R σ
   have : Subsingleton ↥P.toExtension.ker :=
-    Submodule.subsingleton_iff_eq_bot.mpr <| by
-      simp [SetLike.ext_iff, P, Generators.ofSurjective, aeval_X_left]
+    Submodule.subsingleton_iff_eq_bot.mpr Generators.ker_mvPolynomial
   have : Subsingleton P.toExtension.Cotangent := Cotangent.mk_surjective.subsingleton
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩
+
+@[deprecated (since := "2026-05-22")] alias mvPolynomial := instFormallySmoothMvPolynomial
 
 end
 
@@ -131,7 +132,7 @@ theorem exists_lift
   apply Ideal.IsNilpotent.induction_on (S := B) I hI
   · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
   · intro B _ I J hIJ h₁ h₂ _ g
-    let this : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
+    let : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
       { (DoubleQuot.quotQuotEquivQuotSup I J).trans
           (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
         commutes' := fun x => rfl }
@@ -173,7 +174,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
-  conv_rhs => rw [← AlgEquiv.coe_algHom, ← AlgHom.comp_apply,
+  conv_rhs => rw [← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply,
     ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
@@ -301,6 +302,7 @@ theorem iff_split_injection
     simp [LinearMap.ext_iff]
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
@@ -328,7 +330,7 @@ Geometric intuition: we require that a first-order thickening of `Spec A` inside
 a retraction. -/
 theorem iff_split_surjection (f : P →ₐ[R] A) (hf : Function.Surjective f) :
     FormallySmooth R A ↔ ∃ g, f.kerSquareLift.comp g = AlgHom.id R A := by
-  letI := f.toAlgebra
+  let := f.toAlgebra
   rw [iff_split_injection hf, ← nonempty_subtype, ← nonempty_subtype,
     (retractionKerCotangentToTensorEquivSection hf).nonempty_congr]
   rfl
@@ -357,7 +359,7 @@ theorem of_comp_surjective
   refine ⟨g, AlgHom.ext fun x ↦ congr(f.kerSquareLift.kerLift ($hg x)).trans ?_⟩
   obtain ⟨x, rfl⟩ := (Ideal.quotientKerAlgEquivOfSurjective surj).surjective x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_algHom, AlgEquiv.symm_apply_apply,
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.coe_toAlgHom, AlgEquiv.symm_apply_apply,
     AlgHom.coe_id, id_eq]
   simp only [Ideal.quotientKerAlgEquivOfSurjective_apply]
 
@@ -406,7 +408,7 @@ variable (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A
 theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
   obtain ⟨f', e⟩ := FormallySmooth.comp_surjective _ _ I hI (f.comp (IsScalarTower.toAlgHom R A B))
-  letI := f'.toRingHom.toAlgebra
+  let := f'.toRingHom.toAlgebra
   obtain ⟨f'', e'⟩ := comp_surjective _ _ I hI { f with commutes' := AlgHom.congr_fun e.symm }
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
@@ -448,16 +450,16 @@ end surjective
 
 section BaseChange
 
-open scoped TensorProduct
 
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [CommRing A] [Algebra R A]
 variable (B : Type*) [CommRing B] [Algebra R B]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   refine .of_comp_surjective fun C _ _ I hI f ↦ ?_
-  letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
-  haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
+  let := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
+  have : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) ?_, ?_⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
@@ -484,7 +486,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
     convert! (IsLocalization.map_units Rₘ x).map f
     simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
-  let this : Rₘ →ₐ[R] Q :=
+  let : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
   apply AlgHom.coe_ringHom_injective
@@ -496,10 +498,11 @@ instance [FormallySmooth R A] (M : Submonoid A) : FormallySmooth R (Localization
   have : FormallySmooth A (Localization M) := of_isLocalization M
   .comp _ A _
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
-  letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
-  letI : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
+  let := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
+  let : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
     refine { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := ?_ }
     intro r
@@ -517,8 +520,8 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
   simp [f]
 
 theorem localization_map [FormallySmooth R A] : FormallySmooth Rₘ Sₘ := by
-  haveI : FormallySmooth A Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R A))
-  haveI : FormallySmooth R Sₘ := FormallySmooth.comp R A Sₘ
+  have : FormallySmooth A Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R A))
+  have : FormallySmooth R Sₘ := FormallySmooth.comp R A Sₘ
   exact FormallySmooth.localization_base M
 
 end Localization

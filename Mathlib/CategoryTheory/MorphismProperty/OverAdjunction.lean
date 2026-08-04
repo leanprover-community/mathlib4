@@ -42,6 +42,8 @@ this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
 def Over.map {f : X ⟶ Y} (hPf : P f) : P.Over Q X ⥤ P.Over Q Y :=
   Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma Over.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hf ⋙ map Q hg := by
   fapply Functor.ext
@@ -50,12 +52,16 @@ lemma Over.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Promote an equality to an isomorphism of `Over.map` functors. -/
 @[simps!]
 def Over.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : P f) :
     Over.map Q hf ≅ Over.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+set_option linter.overlappingInstances false in
 /-- `Over.map` preserves identities. -/
 @[simps!]
 def Over.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
@@ -63,6 +69,8 @@ def Over.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙
     Over.map (f := f) (P := P) Q (by subst hf; exact P.id_mem X) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Over.map` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
 def Over.mapComp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) [Q.RespectsIso]
@@ -86,6 +94,7 @@ instance {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z)
   (IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback A.hom g) A.prop)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `P` and `Q` are stable under base change and pullbacks along `f` exist for morphisms in `P`,
 this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. -/
 @[simps! obj_left obj_hom map_left]
@@ -101,6 +110,7 @@ noncomputable def Over.pullback (f : X ⟶ Y) [P.HasPullbacksAlong f]
 variable {P} {Q}
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Over.pullback` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
 noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -115,6 +125,7 @@ noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
     haveI : HasPullback X.hom fg := HasPullbacksAlong.hasPullback _ X.prop
     Over.isoMk (pullback.congrHom rfl hfg ≪≫ (pullbackLeftPullbackSndIso X.hom g f).symm) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
     [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong f] [P.HasPullbacksAlong g]
     [Q.RespectsIso] [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
@@ -123,6 +134,7 @@ lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnde
   simp
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f = g`, then base change along `f` is naturally isomorphic to base change along `g`. -/
 noncomputable def Over.pullbackCongr {f : X ⟶ Y} [P.HasPullbacksAlong f]
     [P.IsStableUnderBaseChangeAlong f] [Q.IsStableUnderBaseChange] {g : X ⟶ Y} (h : f = g) :
@@ -134,6 +146,8 @@ noncomputable def Over.pullbackCongr {f : X ⟶ Y} [P.HasPullbacksAlong f]
     haveI : HasPullback X.hom g := HasPullbacksAlong.hasPullback _ X.prop
     Over.isoMk (pullback.congrHom rfl h)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma Over.pullbackCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPullbacksAlong f] {g : X ⟶ Y}
     [P.IsStableUnderBaseChangeAlong f] [Q.IsStableUnderBaseChange] (h : f = g) (A : P.Over Q Y) :
@@ -143,6 +157,7 @@ lemma Over.pullbackCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPullbacksAlong f] 
   simp [pullbackCongr]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural map between pullback functors induced by `pullback.map`. -/
 @[simps]
 noncomputable def Over.pullbackMapHomPullback [P.IsStableUnderComposition]
@@ -173,6 +188,7 @@ section Adjunction
 variable [P.IsStableUnderComposition] [Q.IsStableUnderBaseChange]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `P.Over.map` is left adjoint to `P.Over.pullback` if pullbacks of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]
@@ -211,6 +227,8 @@ this is the functor `P.Under Q Y ⥤ P.Under Q X` given by composing with `f`. -
 def Under.map {f : X ⟶ Y} (hPf : P f) : P.Under Q Y ⥤ P.Under Q X :=
   Comma.mapLeft _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ hPf X.prop
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma Under.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hg ⋙ map Q hf := by
   fapply Functor.ext
@@ -219,12 +237,16 @@ lemma Under.map_comp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Promote an equality to an isomorphism of `Under.map` functors. -/
 @[simps!]
 def Under.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : P f) :
     Under.map Q hf ≅ Under.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+set_option linter.overlappingInstances false in
 /-- `Under.map` preserves identities. -/
 @[simps!]
 def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
@@ -232,6 +254,8 @@ def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := �
     Under.map (f := f) (P := P) Q (by subst hf; exact P.id_mem X) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Under.map` commutes with composition. -/
 @[simps! hom_app_left]
 def Under.mapComp {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) [Q.RespectsIso]
@@ -271,6 +295,7 @@ noncomputable def Under.pushout (f : X ⟶ Y) [P.HasPushoutsAlong f]
 variable {P} {Q}
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- `Under.pushout` commutes with composition. -/
 @[simps! hom_app_right inv_app_right]
 noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -286,6 +311,7 @@ noncomputable def Under.pushoutComp (f : X ⟶ Y) (g : Y ⟶ Z)
     Under.isoMk (pushout.congrHom rfl hfg ≪≫ (pushoutLeftPushoutInrIso X.hom f g).symm) (by simp)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f = g`, then cobase change along `f` is naturally isomorphic to cobase change along `g`. -/
 noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     [P.IsStableUnderCobaseChangeAlong f] [Q.IsStableUnderCobaseChange] {g : X ⟶ Y} (h : f = g) :
@@ -297,6 +323,8 @@ noncomputable def Under.pushoutCongr {f : X ⟶ Y} [P.HasPushoutsAlong f]
     haveI : HasPushout X.hom g := HasPushoutsAlong.hasPushout _ X.prop
     Under.isoMk (pushout.congrHom rfl h)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma Under.pushoutCongr_hom_app_left_fst {f : X ⟶ Y} [P.HasPushoutsAlong f] {g : X ⟶ Y}
     [P.IsStableUnderCobaseChangeAlong f] [Q.IsStableUnderCobaseChange] (h : f = g)
@@ -321,8 +349,9 @@ section Adjunction
 
 variable [P.IsStableUnderComposition] [Q.IsStableUnderCobaseChange]
 
-attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in
 /-- `P.Under.pushout` is left adjoint to `P.Under.map` if pushouts of morphisms satisfying `P`
 exist along `f` and are also in `P`, and `f` is in both `P` and `Q`. -/
 @[simps! unit_app counit_app]

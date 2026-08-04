@@ -260,14 +260,14 @@ open scoped Pointwise in
 /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g • U` intersects `V` is compact.
 
-See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+See `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/
 @[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g +ᵥ U` intersects `V` is compact.
 
-See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+See `AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
 under additional conditions on `G` and `X`. -/]
-lemma ProperSMul.isCompact_setOf_inter_nonempty
+lemma ProperSMul.isCompact_setOfPred_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
     IsCompact {g : G | (g • U ∩ V).Nonempty} := by
@@ -278,6 +278,12 @@ lemma ProperSMul.isCompact_setOf_inter_nonempty
   suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
   rw [← (MulAction.toPerm g).exists_congr_right]
   simp [and_comm]
+
+@[deprecated (since := "2026-07-09")]
+alias ProperSMul.isCompact_setOf_inter_nonempty := ProperSMul.isCompact_setOfPred_inter_nonempty
+
+@[deprecated (since := "2026-07-09")]
+alias ProperVAdd.isCompact_setOf_inter_nonempty := ProperVAdd.isCompact_setOfPred_inter_nonempty
 
 /-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
 action is proper. -/
@@ -290,6 +296,6 @@ lemma MulAction.properSMul_of_proper_orbitMap
   have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
   refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
   simpa [Function.comp_def, Prod.map_apply, mul_smul]
-    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+    using! (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
 
 end

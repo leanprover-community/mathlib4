@@ -42,8 +42,7 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
-  symm x y := by simp [and_comm, eq_comm, adj_comm]
-  loopless := ⟨fun x ↦ by simp⟩
+  symm.symm x y := by simp [eq_comm, adj_comm]
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
@@ -209,18 +208,18 @@ protected theorem Preconnected.ofBoxProdRight [Nonempty α] (h : (G □ H).Preco
   exact ⟨w.ofBoxProdRight⟩
 
 protected theorem Connected.boxProd (hG : G.Connected) (hH : H.Connected) : (G □ H).Connected := by
-  haveI := hG.nonempty
-  haveI := hH.nonempty
+  have := hG.nonempty
+  have := hH.nonempty
   exact ⟨hG.preconnected.boxProd hH.preconnected⟩
 
 protected theorem Connected.ofBoxProdLeft (h : (G □ H).Connected) : G.Connected := by
-  haveI := (nonempty_prod.1 h.nonempty).1
-  haveI := (nonempty_prod.1 h.nonempty).2
+  have := (nonempty_prod.1 h.nonempty).1
+  have := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdLeft⟩
 
 protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connected := by
-  haveI := (nonempty_prod.1 h.nonempty).1
-  haveI := (nonempty_prod.1 h.nonempty).2
+  have := (nonempty_prod.1 h.nonempty).1
+  have := (nonempty_prod.1 h.nonempty).2
   exact ⟨h.preconnected.ofBoxProdRight⟩
 
 @[simp]
@@ -244,7 +243,7 @@ theorem neighborFinset_boxProd (x : α × β)
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
-  letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
+  let : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
