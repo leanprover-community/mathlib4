@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Eric Wieser
 -/
 module
 
-import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
 
