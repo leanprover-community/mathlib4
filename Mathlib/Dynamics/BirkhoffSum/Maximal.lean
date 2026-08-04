@@ -6,12 +6,12 @@ Authors: Lua Viana Reis
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.Dynamics.BirkhoffSum.Integrable
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Dynamics.BirkhoffSum.Average
-public import Mathlib.Dynamics.BirkhoffSum.Integrable
 
 /-!
 # Maximal ergodic theorem.
@@ -66,7 +66,7 @@ variable [SemilatticeSup M] [IsOrderedAddMonoid M] in
 lemma birkhoffMax_succ :
     birkhoffMax f g (n + 1) x = 0 ⊔ (g x + birkhoffMax f g n (f x)) := by
   have : birkhoffSum f g ∘ (· + 1) = (g + birkhoffSum f g · ∘ f) :=
-    funext₂ <| fun k x ↦ birkhoffSum_succ' ..
+    funext <| fun k ↦ birkhoffSum_succ' ..
   rw [birkhoffMax, partialSups_add_one', this, partialSups_const_add]
   simp [Pi.partialSups_apply]
 
@@ -98,6 +98,8 @@ public lemma measurable_birkhoffMax [MeasurableSpace α] (hf : Measurable f) (hg
   induction n <;> measurability
 
 section MeasurePreserving
+
+attribute [local fun_prop] MeasurePreserving.integrable_comp_of_integrable
 
 variable [MeasurableSpace α] (μ : Measure α := by volume_tac)
 
