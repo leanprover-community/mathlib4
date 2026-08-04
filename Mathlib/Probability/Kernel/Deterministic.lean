@@ -177,8 +177,6 @@ lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel
     _ = 0 := by
       rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
 
-open ENNReal
-
 instance (κ : Kernel α β) [IsDeterministic κ] : IsSFiniteKernel κ := by
   by_contra hκ
   obtain ⟨a, ha⟩ : ∃ a, 0 < (κ a) univ := by
