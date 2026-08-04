@@ -27,7 +27,7 @@ and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) =
 
 * The index type `α` is a parameter, not a field. An index stored inside a term is invisible to
   `rw`, `simp`, and instance search. `Algebra.Generators` unbundled its `vars` field for
-  these reasons (#25085), a move mathlib has made repeatedly and never reversed.
+  these reasons (#25085), a move mathlib has made repeatedly.
 * The generating condition is the closure equation. Terms of this structure are built from
   mathlib's generation results, and those end in `closure … = ⊤`; making surjectivity of
   `FreeGroup.lift val` the field would put a rewrite at every construction site. Consumers who
