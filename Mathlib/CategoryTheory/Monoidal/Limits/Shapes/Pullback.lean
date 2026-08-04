@@ -5,8 +5,8 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Pullbacks and pushouts in a monoidal category
@@ -15,6 +15,9 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 `Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. This file and
 `Mathlib.CategoryTheory.Monoidal.Limits.HasLimits` are needed to define a monoidal category
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
+
+We also show that the naturality square for the tensor product in a cartesian monoidal category
+is a pullback.
 
 ## TODO
 An attribute should be developed to automatically generate lemmas of this form.
@@ -163,3 +166,29 @@ lemma Limits.inr_comp_pushoutSymmetry_hom_whiskerRight (f : X ⟶ Y) (g : X ⟶ 
 end Pushout
 
 end CategoryTheory.MonoidalCategory
+
+namespace CategoryTheory.CartesianMonoidalCategory
+
+open Limits MonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
+
+/-- In a cartesian monoidal category, the naturality square for the tensor product is a
+pullback. -/
+lemma isPullback_whisker_exchange {A B X Y : C} (f : A ⟶ B) (g : X ⟶ Y) :
+    IsPullback (f ▷ X) (A ◁ g) (B ◁ g) (f ▷ Y) := by
+  refine IsPullback.mk' (whisker_exchange f g).symm ?_ ?_
+  · intro _ _ _ h₁ h₂
+    ext
+    · simpa using h₂ =≫ fst _ _
+    · simpa using h₁ =≫ snd _ _
+  · intro _ a b h
+    refine ⟨lift (b ≫ fst _ _) (a ≫ snd _ _), ?_, ?_⟩
+    · ext
+      · simpa using (h =≫ fst _ _).symm
+      · simp
+    · ext
+      · simp
+      · simpa using h =≫ snd _ _
+
+end CategoryTheory.CartesianMonoidalCategory

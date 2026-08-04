@@ -25,6 +25,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
   pushouts along monomorphisms are pullbacks.
 - `CategoryTheory.Adhesive.mono_of_isPushout_of_mono_left`: In adhesive categories,
   monomorphisms are stable under pushouts.
+- `CategoryTheory.Adhesive.desc_mono_of_mono`: If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms
+  in an adhesive category, then the map `pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced
+  by their pullback is a monomorphism.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
 - `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
@@ -324,7 +327,7 @@ attribute [local instance] Limits.hasPullback_symmetry in
 open IsPullback IsPushout pullback pushout in
 /-- If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms in an adhesive category, then the map
 `pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced by their pullback is a monomorphism.
-See Theorem 5.1 in Lack and Sobociński. -/
+See Theorem 5.1 in Lack and Sobociński. See also `IsPushout.desc_mono_of_isPullback`. -/
 instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where
@@ -421,41 +424,23 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
           ← sq_f_v.w_assoc, w, ← pullback.condition_assoc, Category.assoc,
           ← sq_g_v.w_assoc]
 
-def Adhesive.isPullback_of_mono_desc_mono [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    [Mono a] [h : Mono (pushout.desc c d w)] : IsPullback a b c d := {
-  w := w
-  isLimit' := ⟨by
-    refine PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_
-    · intro s
-      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).lift
-        (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)
-      · apply h.right_cancellation
-        simp [s.condition]
-    · simp
-    · simp
-    · intro _ _ h₁ h₂
-      apply (isPullback_of_isPushout_of_mono_left (.of_hasPushout a b)).hom_ext
-      · simp [← h₁]
-      · simp [← h₂]⟩}
-
-attribute [local instance] hasPushout_symmetry in
-def Adhesive.isPullback_of_mono_desc_mono' [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    [Mono b] (h : Mono (pushout.desc c d w)) : IsPullback a b c d :=
-  let : Mono (pushout.desc d c w.symm) := by
-    convert show Mono ((pushoutSymmetry a b).inv ≫ (pushout.desc c d w)) by infer_instance
-    ext <;> simp
-  IsPullback.flip (isPullback_of_mono_desc_mono w.symm)
-
--- `HasPushout a b` follows from `Mono a` follows from `h` and `Mono c`
-instance Adhesive.desc_mono_of_isPullback_mono [Adhesive C] {X₁ X₂ X₃ X₄ : C}
-    {a : X₁ ⟶ X₂} {b : X₁ ⟶ X₃} {c : X₂ ⟶ X₄} {d : X₃ ⟶ X₄} (w : a ≫ c = b ≫ d)
-    (h : IsPullback a b c d) [HasPushout a b] [Mono c] [Mono d] : Mono (pushout.desc c d w) := by
-  let : pushout (pullback.fst c d) (pullback.snd c d) ≅ pushout a b := HasColimit.isoOfNatIso <|
-    spanExt h.isoPullback.symm (Iso.refl _) (Iso.refl _) (by simp) (by simp)
-  convert show Mono (this.inv ≫ (pushout.desc c d pullback.condition)) from mono_comp ..
-  ext <;> simp [this]
+/-- In an adhesive category, if `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms, and we have
+`IsPullback p₁ p₂ a b` and `IsPushout p₁ p₂ q₁ q₂`, then the induced map from the pushout into `Z`
+is a monomorphism. See also `Adhesive.desc_mono_of_mono`. -/
+instance IsPushout.desc_mono_of_isPullback [Adhesive C] {A B Z P₁ P₂ : C}
+    {a : A ⟶ Z} {b : B ⟶ Z} {p₁ : P₁ ⟶ A} {p₂ : P₁ ⟶ B}
+    {q₁ : A ⟶ P₂} {q₂ : B ⟶ P₂} (h₂ : IsPushout p₁ p₂ q₁ q₂) (h₁ : IsPullback p₁ p₂ a b)
+    [Mono a] [Mono b] : Mono (h₂.desc a b h₁.w) := by
+  let h₂' : IsPushout (pullback.fst a b) (pullback.snd a b) q₁ q₂ :=
+    h₂.of_iso h₁.isoPullback (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by simp) (by simp) (by simp) (by simp)
+  have : h₂.desc a b h₁.w = ((of_hasPushout _ _).isoIsPushout _ _ h₂').inv ≫
+      pushout.desc a b pullback.condition := by
+    apply h₂.hom_ext
+    · rw [← Category.assoc, IsPushout.inl_isoIsPushout_inv, pushout.inl_desc, h₂.inl_desc]
+    · rw [← Category.assoc, IsPushout.inr_isoIsPushout_inv, pushout.inr_desc, h₂.inr_desc]
+  rw [this]
+  infer_instance
 
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
