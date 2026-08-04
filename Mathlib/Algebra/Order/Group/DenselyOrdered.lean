@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 # Lemmas about densely linearly ordered groups.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

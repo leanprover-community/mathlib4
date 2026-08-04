@@ -6,8 +6,8 @@ Authors: Arthur Paulino, Patrick Massot
 module
 
 public meta import Lean.Elab.Tactic.Location
-public meta import Mathlib.Util.Tactic
 public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Util.Tactic
 
 /-!
 # The `rename_bvar` tactic

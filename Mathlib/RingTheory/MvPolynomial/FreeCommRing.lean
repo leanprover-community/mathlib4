@@ -40,7 +40,7 @@ open MvPolynomial FreeCommRing
 `genericPolyMap monoms` is an indexed collection of elements of the `FreeCommRing`,
 that can be evaluated to any collection `p : ι → MvPolynomial κ R` of
 polynomials such that `∀ i, (p i).support ⊆ monoms i`. -/
-def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
+noncomputable def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ κ) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
@@ -55,7 +55,7 @@ noncomputable def mvPolynomialSupportLEEquiv
     { p : ι → MvPolynomial κ R // ∀ i, (p i).support ⊆ monoms i } ≃
       ((Σ i, monoms i) → R) :=
   { toFun := fun p i => (p.1 i.1).coeff i.2,
-    invFun := fun p => ⟨fun i =>
+    invFun p := ⟨fun i => .ofCoeff
       { toFun := fun m => if hm : m ∈ monoms i then p ⟨i, ⟨m, hm⟩⟩ else 0
         support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
         mem_support_toFun := by simp },
@@ -75,6 +75,7 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
   (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
     ⟨p, fun _ => Finset.Subset.refl _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
     [DecidableEq R] (monoms : ι → Finset (κ →₀ ℕ))

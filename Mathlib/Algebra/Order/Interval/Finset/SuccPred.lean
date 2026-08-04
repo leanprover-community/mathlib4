@@ -26,7 +26,7 @@ Please keep in sync with:
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Function Order OrderDual
 

@@ -16,7 +16,7 @@ Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

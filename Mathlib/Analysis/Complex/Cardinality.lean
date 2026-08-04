@@ -14,7 +14,7 @@ public import Mathlib.Data.Complex.Basic
 This file shows that the complex numbers have cardinality continuum, i.e. `#ℂ = 𝔠`.
 -/
 
-@[expose] public section
+public section
 
 open Cardinal Set
 

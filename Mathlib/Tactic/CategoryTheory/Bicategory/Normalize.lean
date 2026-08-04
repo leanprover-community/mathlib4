@@ -5,8 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 
 /-!
 # Normalization of 2-morphisms in bicategories

@@ -18,7 +18,7 @@ In this file we define `derangements α`, the set of derangements on a type `α`
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
@@ -49,6 +49,7 @@ def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements �
 
 namespace derangements
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Derangements on a subtype are equivalent to permutations on the original type where points are
 fixed iff they are not in the subtype. -/
 protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
@@ -115,6 +116,7 @@ variable [DecidableEq α]
 def RemoveNone.fiber (a : Option α) : Set (Perm α) :=
   { f : Perm α | (a, f) ∈ Equiv.Perm.decomposeOption '' derangements (Option α) }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
     f ∈ RemoveNone.fiber a ↔
       ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f := by

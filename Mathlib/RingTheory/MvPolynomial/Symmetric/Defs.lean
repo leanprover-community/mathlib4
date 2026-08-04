@@ -106,7 +106,7 @@ def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
 
 /-- The subalgebra of symmetric `MvPolynomial`s. -/
 def symmetricSubalgebra (σ R : Type*) [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
-  carrier := setOf IsSymmetric
+  carrier := Set.ofPred IsSymmetric
   algebraMap_mem' r e := rename_C e r
   mul_mem' ha hb e := by rw [map_mul, ha, hb]
   add_mem' ha hb e := by rw [map_add, ha, hb]
@@ -173,8 +173,9 @@ end CommRing
 
 end IsSymmetric
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
-@[simps!]
+@[simps! apply_coe symm_apply_coe]
 def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
@@ -253,30 +254,23 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
         (Finsupp.single (∑ i ∈ t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
-  intro s t hst
-  rw [disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
-  rw [Finsupp.support_single_ne_zero _ one_ne_zero]
+  simp only [support, MvPolynomial, AddMonoidAlgebra.coeff_sum, AddMonoidAlgebra.coeff_single]
+  refine Finsupp.support_sum_eq_biUnion _ fun s t hst ↦ ?_
+  rw [disjoint_left, Finsupp.support_single _ one_ne_zero]
+  rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]
   rintro a h rfl
   have := congr_arg Finsupp.support h
-  rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
-  · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
-      intro _ x _
-      rw [Finsupp.support_single_ne_zero x one_ne_zero]
-    have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
-    have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
-    rw [hs, ht] at this
-    · simp only [biUnion_singleton_eq_self] at this
-      exact absurd this hst.symm
-  all_goals intro x y; simp [Finsupp.support_single_disjoint]
+  rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
+    at this
+  simp_all
 
 theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
-  exact Finsupp.support_single_ne_zero _ one_ne_zero
+  exact Finsupp.support_single _ one_ne_zero
 
 theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by
@@ -293,10 +287,10 @@ theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine comp_sup_eq_sup_comp _ ?_ ?_ <;> simp
+      refine apply_sup_eq_sup_comp _ ?_ ?_ <;> simp
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using! powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
 
 end ElementarySymmetric
 

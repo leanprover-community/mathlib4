@@ -6,7 +6,7 @@ Authors: Yourong Zang
 module
 
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-public import Mathlib.Geometry.Manifold.ChartedSpace
+public import Mathlib.Geometry.Manifold.StructureGroupoid
 
 /-!
 # Conformal Groupoid

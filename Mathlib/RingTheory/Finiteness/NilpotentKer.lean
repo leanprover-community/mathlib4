@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-! # Descend finiteness along quotients by nilpotent ideals -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 
@@ -47,7 +47,7 @@ lemma Module.finite_of_surjective_of_ker_le_nilradical
     · simpa [LinearMap.range_eq_top_of_surjective (φ.toLinearMap.restrictScalars R) hφ] using
         Module.Finite.fg_top
     · have : Module.Finite R ((S ⧸ I) ⊗[S] ↑(I ^ n)) := by
-        have : Module.Finite S ↑(I ^ n) := Module.Finite.iff_fg.mpr (.pow hf₃ _)
+        have : Module.Finite S ↑(I ^ n) := .of_fg (.pow hf₃ _)
         exact .trans (S ⧸ I) _
       let ψ : (S ⧸ I) ⊗[S] ↑(I ^ n) →ₗ[S] (S ⧸ I ^ (n + 1)) := by
         refine ?_ ∘ₗ (TensorProduct.quotTensorEquivQuotSMul _ I).toLinearMap
@@ -55,7 +55,7 @@ lemma Module.finite_of_surjective_of_ker_le_nilradical
         rw [LinearMap.ker_comp, ← Submodule.map_le_map_iff_of_injective (I ^ n).subtype_injective,
           Submodule.map_smul'', Submodule.map_comap_eq]
         simpa [pow_succ'] using Ideal.mul_le_left (I := I) (J := I ^ n)
-      convert Module.Finite.fg_top.map (ψ.restrictScalars R) using 1
+      convert! Module.Finite.fg_top.map (ψ.restrictScalars R) using 1
       suffices LinearMap.ker φ.toLinearMap = Submodule.map (I ^ (n + 1)).mkQ (I ^ n) by
         simpa [LinearMap.range_restrictScalars, ψ, LinearMap.range_comp, Submodule.range_liftQ]
       apply Submodule.comap_injective_of_surjective (I ^ (n + 1)).mkQ_surjective

@@ -6,7 +6,8 @@ Authors: Kyle Miller, Andreas Gittis
 module
 
 public meta import Mathlib.Data.Nat.Log
-public meta import Mathlib.Tactic.NormNum
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
@@ -19,20 +20,20 @@ namespace Mathlib.Meta.NormNum
 
 open Qq Lean Elab.Tactic
 
-private lemma nat_log_zero (n : Nat) : Nat.log 0 n = 0 := Nat.log_zero_left n
-private lemma nat_log_one (n : Nat) : Nat.log 1 n = 0 := Nat.log_one_left n
+lemma nat_log_zero (n : Nat) : Nat.log 0 n = 0 := Nat.log_zero_left n
+lemma nat_log_one (n : Nat) : Nat.log 1 n = 0 := Nat.log_one_left n
 
-private lemma nat_log_helper0 (b n : Nat) (hl : Nat.blt n b = true) :
+lemma nat_log_helper0 (b n : Nat) (hl : Nat.blt n b = true) :
     Nat.log b n = 0 := by
   rw [Nat.blt_eq] at hl
   simp [hl]
 
-private lemma nat_log_helper (b n k : Nat)
+lemma nat_log_helper (b n k : Nat)
     (hl : Nat.ble (b ^ k) n = true) (hh : Nat.blt n (b ^ (k + 1)) = true) :
     Nat.log b n = k :=
   Nat.log_eq_of_pow_le_of_lt_pow (Nat.le_of_ble_eq_true hl) (Nat.le_of_ble_eq_true hh)
 
-private theorem isNat_log : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
+theorem isNat_log : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.log nb nn = k → IsNat (Nat.log b n) k
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
@@ -62,16 +63,16 @@ Evaluates the `Nat.log` function.
 @[norm_num Nat.log _ _]
 def evalNatLog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatLog eb en
   let pf' : Q(IsNat (Nat.log $b $n) $ek) := q(isNat_log $pb $pn $pf)
   return .isNat sℕ ek pf'
 
-private lemma nat_clog_zero_left (b n : Nat) (hb : Nat.ble b 1 = true) :
+lemma nat_clog_zero_left (b n : Nat) (hb : Nat.ble b 1 = true) :
     Nat.clog b n = 0 := Nat.clog_of_left_le_one (Nat.le_of_ble_eq_true hb) n
-private lemma nat_clog_zero_right (b n : Nat) (hn : Nat.ble n 1 = true) :
+lemma nat_clog_zero_right (b n : Nat) (hn : Nat.ble n 1 = true) :
     Nat.clog b n = 0 := Nat.clog_of_right_le_one (Nat.le_of_ble_eq_true hn) b
 
 theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
@@ -82,7 +83,7 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
   rw [Nat.ble_eq, ← Nat.clog_le_iff_le_pow hb] at h₂
   lia
 
-private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
+theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.clog nb nn = k → IsNat (Nat.clog b n) k
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨rfl⟩
 
@@ -119,7 +120,7 @@ Evaluates the `Nat.clog` function.
 @[norm_num Nat.clog _ _]
 def evalNatClog : NormNumExt where eval {u α} e := do
   let mkApp2 _ (b : Q(ℕ)) (n : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨eb, pb⟩ ← deriveNat b sℕ
   let ⟨en, pn⟩ ← deriveNat n sℕ
   let ⟨ek, pf⟩ := proveNatClog eb en

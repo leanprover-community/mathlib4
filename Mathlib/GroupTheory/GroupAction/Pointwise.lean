@@ -31,7 +31,7 @@ public import Mathlib.Algebra.Group.Units.Hom
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Pointwise
 

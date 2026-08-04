@@ -14,7 +14,7 @@ If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prim
 then there are no non-trivial `F`-subalgebras.
 -/
 
-@[expose] public section
+public section
 
 open Module Submodule
 
@@ -24,8 +24,8 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
       ⟨⟨⊥, ⊤, fun he =>
           Nat.not_prime_one ((Subalgebra.bot_eq_top_iff_finrank_eq_one.1 he).subst hp)⟩⟩
     eq_bot_or_eq_top := fun K => by
-      haveI : FiniteDimensional _ _ := .of_finrank_pos hp.pos
-      letI := divisionRingOfFiniteDimensional F K
+      have : FiniteDimensional _ _ := .of_finrank_pos hp.pos
+      let := divisionRingOfFiniteDimensional F K
       refine (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp ?_ fun h => ?_
       · exact fun h' => Subalgebra.eq_bot_of_finrank_one h'
       · exact

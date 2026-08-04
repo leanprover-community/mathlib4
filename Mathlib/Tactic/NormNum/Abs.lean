@@ -5,8 +5,8 @@ Authors: David Renshaw
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.NormNum.Basic
 
 
 /-!

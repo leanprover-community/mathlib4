@@ -16,7 +16,7 @@ This file contains lemmas about the exponential function on the upper half plane
 q-expansions of modular forms.
 -/
 
-@[expose] public section
+public section
 
 open Real Complex UpperHalfPlane Function
 

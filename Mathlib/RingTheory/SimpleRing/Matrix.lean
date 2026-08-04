@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.SimpleRing.Basic
 The matrix ring over a simple ring is simple
 -/
 
-@[expose] public section
+public section
 
 namespace IsSimpleRing
 

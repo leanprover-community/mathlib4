@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 # Formally smooth local algebras
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct IsLocalRing KaehlerDifferential
 
@@ -39,7 +39,7 @@ theorem FormallySmooth.iff_injective_lTensor_residueField.{u}
     Algebra.FormallySmooth R S ↔
       Function.Injective (P.cotangentComplex.lTensor (ResidueField S)) := by
   have : Module.Finite P.Ring P.Cotangent :=
-    have : Module.Finite P.Ring P.ker := ⟨(Submodule.fg_top _).mpr h'⟩
+    have : Module.Finite P.Ring P.ker := .of_fg h'
     .of_surjective _ Extension.Cotangent.mk_surjective
   have : Module.Finite S P.Cotangent := Module.Finite.of_restrictScalars_finite P.Ring _ _
   rw [← IsLocalRing.split_injective_iff_lTensor_residueField_injective,
@@ -85,7 +85,14 @@ theorem FormallySmooth.iff_injective_cotangentComplexBaseChange
       (cotangentComplexBaseChange R S P (ResidueField S)).baseChange K ∘ₗ
       (AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.toLinearMap =
       (cotangentComplexBaseChange R S P K) := by
-    ext; simp [cotangentComplexBaseChange_tmul]
+    ext
+    #adaptation_note /-- Prior to nightly-2026-04-06, this was just `simp`. -/
+    simp_rw [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp, curry_apply,
+      LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
+      AlgebraTensorModule.cancelBaseChange_symm_tmul, LinearMap.baseChange_tmul,
+      cotangentComplexBaseChange_tmul, kerToTensor_apply, one_smul,
+      AlgebraTensorModule.cancelBaseChange_tmul]
+    simp
   rw [← this]
   refine .trans ?_ ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).comp_injective _).symm
   exact ((AlgebraTensorModule.cancelBaseChange _ _ _ _ _).symm.injective_comp _).symm

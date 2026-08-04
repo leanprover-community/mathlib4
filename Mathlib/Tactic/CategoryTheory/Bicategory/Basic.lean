@@ -5,9 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.Basic
-public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-public meta import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 
 /-!
 # `bicategory` tactic

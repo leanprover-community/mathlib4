@@ -12,7 +12,7 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 # Algebra-related equicontinuity criteria
 -/
 
-@[expose] public section
+public section
 
 
 open Function

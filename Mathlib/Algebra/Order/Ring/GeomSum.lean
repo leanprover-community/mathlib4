@@ -17,7 +17,7 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some boun
 "geometric" sum of `a/b^i` where `a b : ℕ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -84,7 +84,7 @@ lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
   split_ifs at ihn ⊢ with hn'
   · rw [lt_add_iff_pos_left]
     exact mul_pos_of_neg_of_neg hx0 ihn
-  · grw [← hx]
+  · grw [← hx.le]
     gcongr
     simpa only [mul_one] using mul_lt_mul_of_neg_left ihn hx0
 
@@ -100,7 +100,7 @@ lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   obtain hx' | hx' := lt_or_ge x 0
   · exact (geom_sum_pos_and_lt_one hx' hx n.one_lt_succ_succ).1
-  · exact geom_sum_pos hx' (by simp only [Nat.succ_ne_zero, Ne, not_false_iff])
+  · exact geom_sum_pos hx' (by simp)
 
 lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rcases n with (_ | _ | k)

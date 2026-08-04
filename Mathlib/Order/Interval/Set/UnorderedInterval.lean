@@ -368,14 +368,14 @@ lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of
 lemma uIoo_subset_uIcc_self : uIoo a b ⊆ uIcc a b := by
   simp [uIoo, uIcc, Ioo_subset_Icc_self]
 
-@[deprecated uIoo_subset_uIcc_self (since := "2025-11-09")]
-lemma uIoo_subset_uIcc (a b : α) : uIoo a b ⊆ uIcc a b := uIoo_subset_uIcc_self
-
 lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) : uIoo a₁ b₁ ⊆ Ioo a₂ b₂ :=
   Ioo_subset_Ioo (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
 
 @[simp] lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
   simp [uIoo, eq_comm]
+
+@[simp] lemma nonempty_uIoc : (uIoc a b).Nonempty ↔ a ≠ b := by
+  simp [uIoc, eq_comm]
 
 lemma uIoo_eq_union : uIoo a b = Ioo a b ∪ Ioo b a := by
   rcases lt_or_ge a b with h | h

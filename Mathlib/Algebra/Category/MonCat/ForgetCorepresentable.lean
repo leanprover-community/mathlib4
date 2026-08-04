@@ -45,14 +45,6 @@ of `Multiplicative.ofAdd 1`. -/
 def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
   (powersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
-namespace MonoidHom
-
-end MonoidHom
-
-namespace AddMonoidHom
-
-end AddMonoidHom
-
 /-- The forgetful functor `MonCat.{u} ⥤ Type u` is corepresentable. -/
 def MonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget MonCat.{u} :=

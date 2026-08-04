@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Adjoin.FG
 
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

@@ -144,7 +144,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M] {p : M}
+variable [CommMonoidWithZero M] [IsCancelMulZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
   ⟨hp.not_unit, fun a b ↦ by

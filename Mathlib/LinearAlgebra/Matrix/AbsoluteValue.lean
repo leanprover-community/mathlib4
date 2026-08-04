@@ -25,7 +25,7 @@ This file proves some bounds on matrices involving absolute values.
   then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix
@@ -64,7 +64,7 @@ theorem det_sum_smul_le {ι : Type*} (s : Finset ι) {c : ι → R} {A : ι → 
     (hy : ∀ k, abv (c k) ≤ y) :
     abv (det (∑ k ∈ s, c k • A k)) ≤
       Nat.factorial (Fintype.card n) • (#s • y * x) ^ Fintype.card n := by
-  simpa only [smul_mul_assoc] using
+  simpa only [smul_mul_assoc] using!
     det_sum_le s fun k i j =>
       calc
         abv (c k * A k i j) = abv (c k) * abv (A k i j) := abv.map_mul _ _

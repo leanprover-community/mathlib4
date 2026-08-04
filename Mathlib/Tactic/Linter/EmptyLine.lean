@@ -5,7 +5,11 @@ Authors: Damiano Testa
 -/
 
 module
-public meta import Mathlib.Tactic.Linter.Header
+
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
 
 /-!
 # The "emptyLine" linter
@@ -13,6 +17,7 @@ public meta import Mathlib.Tactic.Linter.Header
 The "emptyLine" linter emits a warning on empty lines inside a command, but outside of a
 doc-string/module-doc.
 -/
+
 public meta section
 
 open Lean Elab Linter
@@ -25,7 +30,7 @@ def Substring.Raw.getRange : Substring.Raw → Syntax.Range
 
 namespace Syntax
 /-!
-# `Syntax` filters
+### `Syntax` filters
 -/
 
 /--

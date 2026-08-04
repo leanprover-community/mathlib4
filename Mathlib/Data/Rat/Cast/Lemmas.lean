@@ -19,7 +19,7 @@ In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
 
-@[expose] public section
+public section
 
 namespace Rat
 
@@ -78,6 +78,7 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
     (NNRat.cast ⟨q, h⟩ : K) = (q : K) := by

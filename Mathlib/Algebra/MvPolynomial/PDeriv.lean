@@ -6,7 +6,7 @@ Authors: Shing Tak Lam, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.MvPolynomial.Derivation
-public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Partial derivatives of polynomials
@@ -30,7 +30,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `a : R`
 
@@ -118,6 +118,21 @@ theorem pderiv_pow {i : σ} {f : MvPolynomial σ R} {n : ℕ} :
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
 
+theorem coeff_pderiv {i : σ} (p : MvPolynomial σ R) (m : σ →₀ ℕ) :
+    coeff m (pderiv i p) = coeff (m + single i 1) p * (m i + 1) := by
+  classical
+  induction p using MvPolynomial.induction_on' with
+  | add p q hp hq => simp [hp, hq, add_mul]
+  | monomial n a =>
+    rw [pderiv_monomial, coeff_monomial, coeff_monomial]
+    by_cases h : n = m + single i 1
+    · simp [h]
+    simp only [h, ↓reduceIte, zero_mul]
+    by_cases hn : n i = 0
+    · simp [hn]
+    apply if_neg
+    rwa [tsub_eq_iff_eq_add_of_le (fun _ ↦ by grind)]
+
 theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
     pderiv i (map φ f) = map φ (pderiv i f) := by
   apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
@@ -148,6 +163,23 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   | mul_X p q h =>
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+@[simp]
+lemma pderiv_sumRingEquiv {σ ι} (p i) :
+    (sumRingEquiv R σ ι p).pderiv i = sumRingEquiv R σ ι (p.pderiv (.inl i)) := by
+  classical
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q _ _ => simp_all
+  | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
+
+@[deprecated (since := "2026-06-18")] alias pderiv_sumToIter := pderiv_sumRingEquiv
+
+@[simp]
+lemma pderiv_sumAlgEquiv {R S₁ S₂ : Type*} [CommSemiring R]
+    (b : S₁) (p : MvPolynomial (S₁ ⊕ S₂) R) :
+    pderiv b (sumAlgEquiv R S₁ S₂ p) = sumAlgEquiv R S₁ S₂ (pderiv (Sum.inl b) p) :=
+  pderiv_sumRingEquiv ..
 
 end PDeriv
 

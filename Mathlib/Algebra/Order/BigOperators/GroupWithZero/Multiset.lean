@@ -15,7 +15,7 @@ This file contains the results concerning the interaction of multiset big operat
 groups with zeros.
 -/
 
-@[expose] public section
+public section
 
 namespace Multiset
 
@@ -43,6 +43,20 @@ theorem prod_map_le_pow_card {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : 
     (map f t).prod ≤ r ^ card t := by
   induction t using Quotient.inductionOn
   simp_all [List.prod_map_le_pow_length₀]
+
+variable {α : Type*}
+
+lemma prod_map_nonneg {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 0 ≤ f a) :
+    0 ≤ (s.map f).prod := by
+  refine prod_nonneg fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
+
+lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f a) :
+    1 ≤ (s.map f).prod := by
+  refine one_le_prod fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]

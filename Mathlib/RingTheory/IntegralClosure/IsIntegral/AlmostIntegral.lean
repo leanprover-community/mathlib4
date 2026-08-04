@@ -107,14 +107,14 @@ lemma IsAlmostIntegral.isIntegral_of_nonZeroDivisors_le_comap
       exact Submonoid.powers_le.mpr (H' hr)
     exact fun x y e ↦ Subtype.ext (this congr($e))
   have : (Algebra.adjoin R {s}).toSubmodule.FG := by
-    rw [← Submodule.fg_top, ← Module.finite_def]
+    rw [← Module.Finite.iff_fg]
     exact .of_injective f this
   exact .of_mem_of_fg _ this _ (Algebra.self_mem_adjoin_singleton R s)
 
 @[stacks 00GX "Part 3"]
 lemma IsAlmostIntegral.isIntegral [IsNoetherianRing R] [IsDomain S] [FaithfulSMul R S]
     {s : S} (H : IsAlmostIntegral R s) : IsIntegral R s := by
-  have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   exact H.isIntegral_of_nonZeroDivisors_le_comap fun _ ↦ by simp
 
 lemma isAlmostIntegral_iff_isIntegral [IsNoetherianRing R] [IsDomain R] [IsFractionRing R S]

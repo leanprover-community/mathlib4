@@ -20,7 +20,7 @@ a simple recursive definition of the convergents that is also defined in that fi
 This file provides `Real.exists_convs_eq_rat`, using `GenContFract.convs` of `GenContFract.of ξ`.
 -/
 
-@[expose] public section
+public section
 
 section Convergent
 

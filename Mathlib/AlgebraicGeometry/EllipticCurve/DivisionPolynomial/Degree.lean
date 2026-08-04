@@ -50,7 +50,7 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 elliptic curve, division polynomial, torsion point
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 
@@ -236,7 +236,7 @@ lemma natDegree_preΨ'_le (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Eve
 @[simp]
 lemma coeff_preΨ' (n : ℕ) : (W.preΨ' n).coeff ((n ^ 2 - if Even n then 4 else 1) / 2) =
     if Even n then n / 2 else n := by
-  convert (W.natDegree_coeff_preΨ' n).right using 1
+  convert! (W.natDegree_coeff_preΨ' n).right using 1
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 
 lemma coeff_preΨ'_ne_zero {n : ℕ} (h : (n : R) ≠ 0) :
@@ -290,9 +290,9 @@ lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
     (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) ≠ 0 := by
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
-      using W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
+      using! W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
   | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
-        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
+        using! ih n <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -302,9 +302,9 @@ lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
 lemma natDegree_preΨ_pos {n : ℤ} (hn : 2 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.preΨ n).natDegree := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat] using W.natDegree_preΨ'_pos hn <| by exact_mod_cast h
+  | nat n => simpa only [preΨ_ofNat] using! W.natDegree_preΨ'_pos hn <| by exact_mod_cast h
   | neg ih n => simpa only [preΨ_neg, natDegree_neg]
-        using ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
+        using! ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :

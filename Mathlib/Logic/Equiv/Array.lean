@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Vector.Basic
 public import Mathlib.Logic.Equiv.List
 
 /-!

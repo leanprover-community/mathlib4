@@ -22,7 +22,7 @@ open MonObj ComonObj
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /--
-The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally has a
+The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally have a
 (set-theoretic) monoid structure. -/
 def Conv (M N : C) : Type v₁ := M ⟶ N
 
@@ -40,6 +40,7 @@ instance : Mul (Conv M N) where
 
 theorem mul_eq (f g : Conv M N) : f * g = Δ[M] ≫ f ▷ M ≫ N ◁ g ≫ μ[N] := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Monoid (Conv M N) where
   one_mul f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
   mul_one f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]

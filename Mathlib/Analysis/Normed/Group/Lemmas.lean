@@ -19,7 +19,7 @@ This file contains further lemmas about normed groups, requiring heavier imports
 
 -/
 
-@[expose] public section
+public section
 
 variable {E : Type*} [SeminormedAddCommGroup E]
 open NNReal Topology

@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.WittVector.TeichmullerSeries
 
 /-!
 # Fontaine's θ map
+
 In this file, we define Fontaine's `θ` map, which is a ring
 homomorphism from the Witt vector `𝕎 R♭` of the tilt of a perfectoid ring `R`
 to `R` itself. Our definition of `θ` does not require that `R` is perfectoid in the first place.
@@ -36,7 +37,7 @@ Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 ## Reference
 
 * [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
-Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
+  Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
 * [Fontaine, *Le corps des périodes p-adiques*][fontaine1994corps]
 
 -/

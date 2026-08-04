@@ -14,11 +14,13 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-@[expose] public section
+public section
 
 variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 
 namespace Finset
+
+open HasAntidiagonal
 
 namespace Nat
 

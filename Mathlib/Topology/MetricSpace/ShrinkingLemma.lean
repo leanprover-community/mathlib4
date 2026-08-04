@@ -21,7 +21,7 @@ In this file we prove a few versions of the shrinking lemma for coverings by bal
 shrinking lemma, metric space
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

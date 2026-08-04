@@ -24,7 +24,7 @@ finitely many maximal ideals).
   integral domain `A` is a PID if its localization at every maximal ideal is a PID.
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 

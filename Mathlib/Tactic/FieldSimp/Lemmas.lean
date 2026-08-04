@@ -6,13 +6,12 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Field.Power
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-public import Mathlib.Util.Qq
-meta import Mathlib.Algebra.Group.Nat.Even
-meta import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
+public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
+public meta import Mathlib.Util.Qq
 
-/-! # Lemmas for the field_simp tactic
+/-! # Lemmas for the `field_simp` tactic
 
 -/
 
@@ -30,7 +29,7 @@ variable {α : Type*}
 section
 variable [GroupWithZero α]
 
-open Classical in
+open scoped Classical in
 /-- This is a variant of integer exponentiation, defined for internal use in the `field_simp` tactic
 implementation. It differs from the usual integer exponentiation in that `0 ^ 0` is `0`, not `1`.
 With this choice, the function `n ↦ a ^ n` is always a homomorphism (`a ^ (n + m) = a ^ n * a ^ m`),
@@ -152,13 +151,13 @@ theorem eq_mul_of_eq_eq_eq_mul {M : Type*} [Mul M] {a b c D e f : M}
     a = D * f := by
   rw [h₁, h₂, h₃, h₄]
 
-theorem eq_eq_cancel_eq {M : Type*} [CancelMonoidWithZero M] {e₁ e₂ f₁ f₂ L : M}
+theorem eq_eq_cancel_eq {M : Type*} [MonoidWithZero M] [IsLeftCancelMulZero M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : L ≠ 0) :
     (e₁ = e₂) = (f₁ = f₂) := by
   subst H₁ H₂
   rw [mul_right_inj' HL]
 
-theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulMono M]
+theorem le_eq_cancel_le {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulMono M]
     [PosMulReflectLE M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ ≤ e₂) = (f₁ ≤ f₂) := by
@@ -166,7 +165,7 @@ theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [P
   apply Iff.eq
   exact mul_le_mul_iff_right₀ HL
 
-theorem lt_eq_cancel_lt {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+theorem lt_eq_cancel_lt {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
     [PosMulReflectLT M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ < e₂) = (f₁ < f₂) := by
@@ -202,6 +201,7 @@ the corresponding `ℤ` term, then multiply them all together. -/
 noncomputable def eval [GroupWithZero M] (l : NF M) : M :=
   (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ zpow' x r)).prod
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem eval_cons [CommGroupWithZero M] (p : ℤ × M) (l : NF M) :
     (p ::ᵣ l).eval = l.eval * zpow' p.2 p.1 := by
   unfold eval cons
@@ -315,8 +315,9 @@ theorem cons_zero_eq_div_of_eq_div [CommGroupWithZero M] (e : M) {t t_n t_d : NF
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
-  simp only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
+  simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2
   ext p
   simp [zpow'_neg]
@@ -333,6 +334,7 @@ instance : Pow (NF M) ℤ where
 
 @[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
   unfold NF.eval at ⊢
@@ -399,7 +401,7 @@ def Sign.expr : Sign M → Q($M) → Q($M)
 the product with `c` of (± `y`) (here taking the specified sign) is ± `c * y`. -/
 def Sign.mulRight (iM : Q(CommGroupWithZero $M)) (c y : Q($M)) (g : Sign M) :
     MetaM Q($(g.expr q($c * $y)) = $c * $(g.expr y)) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure q(rfl)
   | .minus _ =>
     assumeInstancesCommute
@@ -410,7 +412,7 @@ the product of (± `y₁`) and (± `y₂`) (here taking the specified signs) is 
 proof and the computed sign. -/
 def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) * $(g₂.expr y₂) = $(G.expr q($y₁ * $y₂)))) := do
-  match g₁, g₂ with
+  match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
   | .plus, .minus i =>
     assumeInstancesCommute
@@ -426,7 +428,7 @@ def Sign.mul (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sig
 the inverse of (± `y`) (here taking the specified sign) is ± `y⁻¹`. -/
 def Sign.inv (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) :
     MetaM (Q($(g.expr y)⁻¹ = $(g.expr q($y⁻¹)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure q(rfl)
   | .minus _ =>
     assumeInstancesCommute
@@ -437,7 +439,7 @@ the quotient of (± `y₁`) and (± `y₂`) (here taking the specified signs) is
 proof and the computed sign. -/
 def Sign.div (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sign M) :
     MetaM (Σ (G : Sign M), Q($(g₁.expr y₁) / $(g₂.expr y₂) = $(G.expr q($y₁ / $y₂)))) := do
-  match g₁, g₂ with
+  match (dependent := true) g₁, g₂ with
   | .plus, .plus => pure ⟨.plus, q(rfl)⟩
   | .plus, .minus i =>
     assumeInstancesCommute
@@ -453,7 +455,7 @@ def Sign.div (iM : Q(CommGroupWithZero $M)) (y₁ y₂ : Q($M)) (g₁ g₂ : Sig
 the negation of (± `y`) (here taking the specified sign) is ∓ `y`. -/
 def Sign.neg (iM : Q(Field $M)) (y : Q($M)) (g : Sign M) :
     MetaM (Σ (G : Sign M), Q(-$(g.expr y) = $(G.expr y))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.minus iM, q(rfl)⟩
   | .minus _ =>
     assumeInstancesCommute
@@ -464,11 +466,11 @@ the exponentiation to power `s : ℕ` of (± `y`) (here taking the specified sig
 return this proof and the computed sign. -/
 def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_pow $pf_s $y)⟩
     else
@@ -480,11 +482,11 @@ the exponentiation to power `s : ℤ` of (± `y`) (here taking the specified sig
 return this proof and the computed sign. -/
 def Sign.zpow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℤ) :
     MetaM (Σ (G : Sign M), Q($(g.expr y) ^ $s = $(G.expr q($y ^ $s)))) := do
-  match g with
+  match (dependent := true) g with
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_zpow $pf_s $y)⟩
     else

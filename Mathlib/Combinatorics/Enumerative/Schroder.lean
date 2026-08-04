@@ -11,9 +11,12 @@ public import Mathlib.Order.Interval.Finset.Nat
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Schröder numbers
@@ -104,7 +107,10 @@ theorem smallSchroder_succ (hn : 1 < n) :
           ∑ i ∈ Ioo 0 (n + 1), (2 * (i + 1).smallSchroder) * (2 * (n + 2 - i).smallSchroder) := by
       congr! 2 with i hi
       simp at hi
-      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;> lia
+      rw [← two_mul_smallSchroder_succ, ← two_mul_smallSchroder_succ] <;>
+      · #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+        we need to re-enable model-based theory combination in `lia` for this to go through. -/
+        lia +mbtc
     _ = 6 * (n + 2).smallSchroder +
           4 * ∑ i ∈ Ioo 0 (n + 1), (i + 1).smallSchroder * (n + 2 - i).smallSchroder := by
       rw [← two_mul_smallSchroder_succ (by lia)]

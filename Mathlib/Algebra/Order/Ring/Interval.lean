@@ -17,7 +17,7 @@ functions), but for now these are the ones that have found utility in practice (
 about `Real.Angle`).
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
 

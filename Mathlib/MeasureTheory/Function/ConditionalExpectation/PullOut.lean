@@ -51,7 +51,7 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 /-- Auxiliary lemma for `condExp_bilin_of_stronglyMeasurable_left`. -/
 theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
     (hm : m ≤ mΩ) (f : @SimpleFunc Ω m F) {g : Ω → E} (hg : Integrable g μ) :
-    μ[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
+    μ[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := by
   have : ∀ (s c) (f : Ω → E),
       (fun ω ↦ B (Set.indicator s (Function.const Ω c) ω) (f ω)) =
         s.indicator (fun ω ↦ B c (f ω)) := by
@@ -69,8 +69,8 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
     simp only [Set.indicator, hω, Function.comp_def]
   · have h_add := @SimpleFunc.coe_add _ _ m _ g₁ g₂
     calc
-      μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω)|m] =ᵐ[μ]
-          μ[fun ω ↦ B (g₁ ω) (g ω)|m] + μ[fun ω ↦ B (g₂ ω) (g ω)|m] := by
+      μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω) | m] =ᵐ[μ]
+          μ[fun ω ↦ B (g₁ ω) (g ω) | m] + μ[fun ω ↦ B (g₂ ω) (g ω) | m] := by
         simp_rw [B.map_add]
         obtain ⟨C₁, hC₁⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₁
         obtain ⟨C₂, hC₂⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₂
@@ -79,13 +79,13 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
             (ae_of_all _ hC₁) hg)
           (B.integrable_of_bilin_of_bdd_left C₂ (g₂.stronglyMeasurable.mono hm).aestronglyMeasurable
             (ae_of_all _ hC₂) hg) m
-      _ =ᵐ[μ] fun ω ↦ B (g₁ ω) (μ[g|m] ω) + B (g₂ ω) (μ[g|m] ω) := EventuallyEq.add h_eq₁ h_eq₂
-      _ =ᵐ[μ] fun ω ↦ B ((g₁ + g₂) ω) (μ[g|m] ω) := by simp
+      _ =ᵐ[μ] fun ω ↦ B (g₁ ω) (μ[g | m] ω) + B (g₂ ω) (μ[g | m] ω) := EventuallyEq.add h_eq₁ h_eq₂
+      _ =ᵐ[μ] fun ω ↦ B ((g₁ + g₂) ω) (μ[g | m] ω) := by simp
 
 theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
     (hm : m ≤ mΩ) [IsFiniteMeasure μ] {f : Ω → F} {g : Ω → E} (hf : StronglyMeasurable[m] f)
     (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c) :
-    μ[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
+    μ[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := by
   let fs := hf.approxBounded c
   have hfs_tendsto : ∀ᵐ ω ∂μ, Tendsto (fs · ω) atTop (𝓝 (f ω)) :=
     hf.tendsto_approxBounded_ae hf_bound
@@ -96,7 +96,7 @@ theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
     rcases hf_bound.exists with ⟨_, h⟩
     exact (norm_nonneg _).trans h
   have hfs_bound : ∀ n ω, ‖fs n ω‖ ≤ c := hf.norm_approxBounded_le hc
-  have : μ[fun ω ↦ B (f ω) (μ[g|m] ω)|m] = fun ω ↦ B (f ω) (μ[g|m] ω) := by
+  have : μ[fun ω ↦ B (f ω) (μ[g | m] ω) | m] = fun ω ↦ B (f ω) (μ[g | m] ω) := by
     refine condExp_of_stronglyMeasurable hm ?_ ?_
     · exact Continuous.comp_stronglyMeasurable (g := (fun z : F × E ↦ B z.1 z.2)) (by fun_prop)
         (hf.prodMk stronglyMeasurable_condExp)
@@ -104,8 +104,8 @@ theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
         integrable_condExp
   rw [← this]
   refine tendsto_condExp_unique (fun n ω ↦ B (fs n ω) (g ω))
-    (fun n ω ↦ B (fs n ω) (μ[g|m] ω)) (fun ω ↦ B (f ω) (g ω))
-    (fun ω ↦ B (f ω) (μ[g|m] ω)) ?_ ?_ ?_ ?_ (‖B‖ * c * ‖g ·‖) ?_ (‖B‖ * c * ‖(μ[g|m]) ·‖)
+    (fun n ω ↦ B (fs n ω) (μ[g | m] ω)) (fun ω ↦ B (f ω) (g ω))
+    (fun ω ↦ B (f ω) (μ[g | m] ω)) ?_ ?_ ?_ ?_ (‖B‖ * c * ‖g ·‖) ?_ (‖B‖ * c * ‖(μ[g | m]) ·‖)
     ?_ ?_ ?_ ?_
   · exact fun n ↦ B.integrable_of_bilin_of_bdd_left c
       ((fs n).stronglyMeasurable.mono hm).aestronglyMeasurable (ae_of_all _ <| hfs_bound n) hg
@@ -115,7 +115,7 @@ theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
   · filter_upwards [hfs_tendsto] with ω hω
     exact ((by fun_prop : Continuous (fun x ↦ B x (g ω))).tendsto (f ω)).comp hω
   · filter_upwards [hfs_tendsto] with ω hω
-    exact ((by fun_prop : Continuous (fun x ↦ B x (μ[g|m] ω))).tendsto (f ω)).comp hω
+    exact ((by fun_prop : Continuous (fun x ↦ B x (μ[g | m] ω))).tendsto (f ω)).comp hω
   · exact hg.norm.const_mul _
   · fun_prop
   · refine fun n ↦ Eventually.of_forall fun _ ↦ ?_
@@ -134,31 +134,31 @@ theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
 theorem condExp_aestronglyMeasurable_bilin_of_bound [CompleteSpace E]
     (hm : m ≤ mΩ) [IsFiniteMeasure μ] {f : Ω → F} {g : Ω → E} (hf : AEStronglyMeasurable[m] f μ)
     (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c) :
-    μ[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := calc
-  μ[fun ω ↦ B (f ω) (g ω)|m]
-  _ =ᵐ[μ] μ[fun ω ↦ B (hf.mk f ω) (g ω)|m] := by
+    μ[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := calc
+  μ[fun ω ↦ B (f ω) (g ω) | m]
+  _ =ᵐ[μ] μ[fun ω ↦ B (hf.mk f ω) (g ω) | m] := by
     apply condExp_congr_ae
     filter_upwards [hf.ae_eq_mk] with a ha using by rw [ha]
-  _ =ᵐ[μ] fun ω ↦ B (hf.mk f ω) (μ[g|m] ω) := by
+  _ =ᵐ[μ] fun ω ↦ B (hf.mk f ω) (μ[g | m] ω) := by
     refine condExp_stronglyMeasurable_bilin_of_bound B hm hf.stronglyMeasurable_mk
       hg c ?_
     filter_upwards [hf_bound, hf.ae_eq_mk] with ω hω1 hω2
     rwa [← hω2]
-  _ =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
+  _ =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := by
     filter_upwards [hf.ae_eq_mk] with ω hω using by rw [hω]
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : Ω → F} {g : Ω → E}
     (hf : StronglyMeasurable[m] f) (hfg : Integrable (fun ω ↦ B (f ω) (g ω)) μ)
     (hg : Integrable g μ) :
-    μ[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
+    μ[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := by
   by_cases hm : m ≤ mΩ; swap; · exact ae_of_all _ <| by simp [condExp_of_not_le hm]
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · exact ae_of_all _ <| by simp [condExp_of_not_sigmaFinite hm hμm]
   obtain ⟨sets, sets_prop, h_univ⟩ := hf.exists_spanning_measurableSet_norm_le hm μ
   simp_rw [forall_and] at sets_prop
   obtain ⟨h_meas, h_finite, h_norm⟩ := sets_prop
-  suffices ∀ n, ∀ᵐ ω ∂μ, ω ∈ sets n → (μ[fun ω ↦ B (f ω) (g ω)|m]) ω = B (f ω) (μ[g|m] ω) by
+  suffices ∀ n, ∀ᵐ ω ∂μ, ω ∈ sets n → (μ[fun ω ↦ B (f ω) (g ω) | m]) ω = B (f ω) (μ[g | m] ω) by
     rw [← ae_all_iff] at this
     filter_upwards [this] with ω hω
     obtain ⟨i, hi⟩ : ∃ i, ω ∈ sets i := by
@@ -166,13 +166,13 @@ theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : Ω → F
       simpa using h_mem
     exact hω i hi
   refine fun n ↦ ae_imp_of_ae_restrict ?_
-  suffices (μ.restrict (sets n))[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ.restrict (sets n)]
-      fun ω ↦ B (f ω) ((μ.restrict (sets n))[g|m] ω) by
+  suffices (μ.restrict (sets n))[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ.restrict (sets n)]
+      fun ω ↦ B (f ω) ((μ.restrict (sets n))[g | m] ω) by
     refine (condExp_restrict_ae_eq_restrict hm (h_meas n) hfg).symm.trans ?_
     filter_upwards [this, (condExp_restrict_ae_eq_restrict hm (h_meas n) hg)] with ω hω1 hω2
     rw [hω1, hω2]
-  suffices (μ.restrict (sets n))[fun ω ↦ B ((sets n).indicator f ω) (g ω)|m] =ᵐ[μ.restrict (sets n)]
-      fun ω ↦ B ((sets n).indicator f ω) ((μ.restrict (sets n))[g|m] ω) by
+  suffices (μ.restrict (sets n))[fun ω ↦ B ((sets n).indicator f ω) (g ω) | m]
+      =ᵐ[μ.restrict (sets n)] fun ω ↦ B ((sets n).indicator f ω) ((μ.restrict (sets n))[g | m] ω) by
     refine EventuallyEq.trans (condExp_congr_ae ?_) (this.trans ?_)
     · filter_upwards [indicator_ae_eq_restrict (f := f) <| hm _ <| h_meas n] with ω hω
       rw [hω]
@@ -199,16 +199,16 @@ theorem condExp_bilin_of_stronglyMeasurable_right [CompleteSpace F] {f : Ω → 
 theorem condExp_bilin_of_aestronglyMeasurable_left [CompleteSpace E]
     {f : Ω → F} {g : Ω → E} (hf : AEStronglyMeasurable[m] f μ)
     (hfg : Integrable (fun ω ↦ B (f ω) (g ω)) μ) (hg : Integrable g μ) :
-    μ[fun ω ↦ B (f ω) (g ω)|m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := calc
-  μ[fun ω ↦ B (f ω) (g ω)|m]
-  _ =ᵐ[μ] μ[fun ω ↦ B (hf.mk f ω) (g ω)|m] := by
+    μ[fun ω ↦ B (f ω) (g ω) | m] =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := calc
+  μ[fun ω ↦ B (f ω) (g ω) | m]
+  _ =ᵐ[μ] μ[fun ω ↦ B (hf.mk f ω) (g ω) | m] := by
     apply condExp_congr_ae
     filter_upwards [hf.ae_eq_mk] with a ha using by rw [ha]
-  _ =ᵐ[μ] fun ω ↦ B (hf.mk f ω) (μ[g|m] ω) := by
+  _ =ᵐ[μ] fun ω ↦ B (hf.mk f ω) (μ[g | m] ω) := by
     refine condExp_bilin_of_stronglyMeasurable_left B hf.stronglyMeasurable_mk
       ((integrable_congr ?_).mp hfg) hg
     filter_upwards [hf.ae_eq_mk] with ω hω using by rw [hω]
-  _ =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
+  _ =ᵐ[μ] fun ω ↦ B (f ω) (μ[g | m] ω) := by
     filter_upwards [hf.ae_eq_mk] with a ha using by rw [ha]
 
 /-- Pull-out property of the conditional expectation. -/
@@ -222,18 +222,18 @@ theorem condExp_bilin_of_aestronglyMeasurable_right [CompleteSpace F] {f : Ω �
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_smul_of_aestronglyMeasurable_left [CompleteSpace E] {f : Ω → ℝ} {g : Ω → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfg : Integrable (f • g) μ) (hg : Integrable g μ) :
-    μ[f • g|m] =ᵐ[μ] f • μ[g|m] :=
+    μ[f • g | m] =ᵐ[μ] f • μ[g | m] :=
   condExp_bilin_of_aestronglyMeasurable_left (.lsmul ℝ ℝ) hf hfg hg
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_smul_of_aestronglyMeasurable_right [CompleteSpace E] {f : Ω → ℝ} {g : Ω → E}
     (hf : Integrable f μ) (hfg : Integrable (f • g) μ) (hg : AEStronglyMeasurable[m] g μ) :
-    μ[f • g|m] =ᵐ[μ] μ[f|m] • g :=
+    μ[f • g | m] =ᵐ[μ] μ[f | m] • g :=
   condExp_bilin_of_aestronglyMeasurable_left (ContinuousLinearMap.lsmul ℝ ℝ).flip hg hfg hf
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_mul_of_aestronglyMeasurable_left {f g : Ω → ℝ} (hf : AEStronglyMeasurable[m] f μ)
-    (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
+    (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g | m] =ᵐ[μ] f * μ[g | m] :=
   condExp_bilin_of_aestronglyMeasurable_left (.mul ℝ ℝ) hf hfg hg
 
 /-- Pull-out property of the conditional expectation. -/
@@ -243,7 +243,7 @@ theorem condExp_mul_of_aestronglyMeasurable_right {f g : Ω → ℝ} (hg : AEStr
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_mul_of_stronglyMeasurable_left {f g : Ω → ℝ} (hf : StronglyMeasurable[m] f)
-    (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
+    (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g | m] =ᵐ[μ] f * μ[g | m] :=
   condExp_bilin_of_aestronglyMeasurable_left (.mul ℝ ℝ)
     hf.aestronglyMeasurable hfg hg
 
@@ -254,17 +254,17 @@ lemma condExp_mul_of_stronglyMeasurable_right {f g : Ω → ℝ} (hg : StronglyM
     hg.aestronglyMeasurable hfg hf
 
 theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ mΩ) (f : @SimpleFunc Ω m ℝ) {g : Ω → ℝ}
-    (hg : Integrable g μ) : μ[(f * g : Ω → ℝ)|m] =ᵐ[μ] f * μ[g|m] :=
+    (hg : Integrable g μ) : μ[(f * g : Ω → ℝ) | m] =ᵐ[μ] f * μ[g | m] :=
   condExp_stronglyMeasurable_simpleFunc_bilin (.mul ℝ ℝ) hm f hg
 
 theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ mΩ) [IsFiniteMeasure μ] {f g : Ω → ℝ}
     (hf : StronglyMeasurable[m] f) (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c) :
-    μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
+    μ[f * g | m] =ᵐ[μ] f * μ[g | m] :=
   condExp_stronglyMeasurable_bilin_of_bound (.mul ℝ ℝ) hm hf hg c hf_bound
 
 theorem condExp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ mΩ) [IsFiniteMeasure μ] {f g : Ω → ℝ}
     (hf : AEStronglyMeasurable[m] f μ) (hg : Integrable g μ) (c : ℝ)
-    (hf_bound : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
+    (hf_bound : ∀ᵐ ω ∂μ, ‖f ω‖ ≤ c) : μ[f * g | m] =ᵐ[μ] f * μ[g | m] :=
   condExp_aestronglyMeasurable_bilin_of_bound (.mul ℝ ℝ) hm hf hg c hf_bound
 
 end MeasureTheory

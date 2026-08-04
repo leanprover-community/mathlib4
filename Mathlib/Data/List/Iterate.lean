@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.List.Defs
-public import Mathlib.Data.Set.Function
 
 /-!
 # iterate
@@ -15,7 +14,7 @@ public import Mathlib.Data.Set.Function
 Proves various lemmas about `List.iterate`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

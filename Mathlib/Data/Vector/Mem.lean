@@ -17,7 +17,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -43,6 +43,7 @@ theorem notMem_zero (v : Vector α 0) : a ∉ v.toList :=
 theorem mem_cons_iff (v : Vector α n) : a' ∈ (a ::ᵥ v).toList ↔ a' = a ∨ a' ∈ v.toList := by
   rw [Vector.toList_cons, List.mem_cons]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_succ_iff (v : Vector α (n + 1)) : a ∈ v.toList ↔ a = v.head ∨ a ∈ v.tail.toList := by
   obtain ⟨a', v', h⟩ := exists_eq_cons v
   simp_rw [h, Vector.mem_cons_iff, Vector.head_cons, Vector.tail_cons]

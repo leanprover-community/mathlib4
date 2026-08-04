@@ -19,7 +19,7 @@ when `a ≠ b` and has the value `n.totient` otherwise. This requires `R` to hav
 enough roots of unity (e.g., `R` could be an algebraically closed field of characteristic zero).
 -/
 
-@[expose] public section
+public section
 
 namespace DirichletCharacter
 

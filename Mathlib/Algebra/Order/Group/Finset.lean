@@ -16,7 +16,7 @@ public import Mathlib.Data.Finset.Lattice.Prod
 # `Finset.sup` in a group
 -/
 
-@[expose] public section
+public section
 
 open scoped Finset
 

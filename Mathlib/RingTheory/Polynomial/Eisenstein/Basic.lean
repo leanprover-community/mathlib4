@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Eisenstein polynomials
+
 Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]` is
 *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. In this file we gather miscellaneous results about Eisenstein polynomials.
@@ -29,7 +30,7 @@ useful since it is sometimes better behaved (for example it is stable under `Pol
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w z
@@ -186,8 +187,8 @@ theorem dvd_pow_natDegree_of_eval₂_eq_zero {f : R →+* A} (hf : Function.Inje
   have : eval₂ f _ (p.scaleRoots x) = 0 := scaleRoots_eval₂_eq_zero f h
   rwa [hz, Polynomial.eval₂_at_apply, hf] at this
 
-theorem dvd_pow_natDegree_of_aeval_eq_zero [Algebra R A] [Nontrivial A] [NoZeroSMulDivisors R A]
-    {p : R[X]} (hp : p.Monic) (x y : R) (z : A) (h : Polynomial.aeval z p = 0)
+theorem dvd_pow_natDegree_of_aeval_eq_zero [IsDomain R] [Algebra R A] [Nontrivial A]
+    [Module.IsTorsionFree R A] {p : R[X]} (hp : p.Monic) (x y : R) (z : A) (h : p.aeval z = 0)
     (hz : z * algebraMap R A x = algebraMap R A y) : x ∣ y ^ p.natDegree :=
   dvd_pow_natDegree_of_eval₂_eq_zero (FaithfulSMul.algebraMap_injective R A) hp x y z h
     ((mul_comm _ _).trans hz)

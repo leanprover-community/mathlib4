@@ -14,7 +14,7 @@ We prove that `f : X → Π i, E i` is in `Lᵖ` if and only if for all `i`, `f 
 We do the same for `f : X → (E × F)`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -33,7 +33,7 @@ lemma memLp_pi_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ where
     classical
     have : f = ∑ i, (Pi.single i) ∘ (f · i) := by ext; simp
     rw [this]
-    refine memLp_finset_sum' _ fun i _ ↦ ?_
+    refine memLp_finsetSum' _ fun i _ ↦ ?_
     exact (Isometry.single i).lipschitz.comp_memLp (by simp) (hf i)
 
 alias ⟨MemLp.eval, MemLp.of_eval⟩ := memLp_pi_iff

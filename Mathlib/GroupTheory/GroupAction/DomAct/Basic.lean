@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Type tags for right action on the domain of a function
@@ -182,7 +183,7 @@ instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐ�
   eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul fun a : α ↦ by
     rcases exists_pair_ne β with ⟨x, y, hne⟩
     contrapose! hne
-    haveI := Classical.decEq α
+    have := Classical.decEq α
     replace h := congr_fun (h (update (const α x) (mk.symm c₂ • a) y)) a
     simpa [smul_apply, hne] using h
 

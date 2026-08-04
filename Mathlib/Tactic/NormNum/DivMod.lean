@@ -5,8 +5,7 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # `norm_num` extension for integer div/mod and divides
@@ -154,7 +153,7 @@ theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
 
 theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
     IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using! e)
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,

@@ -9,8 +9,6 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Algebra.Order.Group.Multiset
-public import Mathlib.Data.Vector.Basic
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.ULift
 public import Mathlib.Data.Set.NAry
 
@@ -18,7 +16,7 @@ public import Mathlib.Data.Set.NAry
 # Finiteness of products
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -27,8 +25,8 @@ variable {α β : Type*}
 namespace Finite
 
 instance [Finite α] [Finite β] : Finite (α × β) := by
-  haveI := Fintype.ofFinite α
-  haveI := Fintype.ofFinite β
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
   infer_instance
 
 instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
@@ -49,8 +47,8 @@ lemma Prod.finite_iff [Nonempty α] [Nonempty β] : Finite (α × β) ↔ Finite
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   classical
-  haveI := Fintype.ofFinite (PLift α)
-  haveI := fun a => Fintype.ofFinite (PLift (β a))
+  have := Fintype.ofFinite (PLift α)
+  have := fun a => Fintype.ofFinite (PLift (β a))
   exact
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
@@ -59,12 +57,12 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
   rcases isEmpty_or_nonempty (α ↪ β) with _ | h
   · infer_instance
   · refine h.elim fun f => ?_
-    haveI : Finite α := Finite.of_injective _ f.injective
+    have : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 
 instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
-    convert DFunLike.congr_fun h using 0
+    convert! DFunLike.congr_fun h using 0
 
 instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
@@ -94,7 +92,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
+instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiag :=
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
@@ -199,7 +197,7 @@ theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.F
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 
-theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
+theorem Finite.toFinset_offDiag {s : Set α} (hs : s.Finite) :
     hs.offDiag.toFinset = hs.toFinset.offDiag :=
   Finset.ext <| by simp
 

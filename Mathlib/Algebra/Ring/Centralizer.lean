@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Defs
 # Centralizers of rings
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

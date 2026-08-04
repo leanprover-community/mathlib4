@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Norm.Defs
+
 /-!
 # Irreducibility of X ^ p - a
 
@@ -17,7 +18,7 @@ public import Mathlib.RingTheory.Norm.Defs
 
 -/
 
-@[expose] public section
+public section
 universe u
 
 variable {K : Type u} [Field K]

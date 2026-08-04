@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 # Lemmas about bilinear maps with a basis over each argument
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -40,6 +40,14 @@ theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : �
     B = B' :=
   b₁.ext fun i => b₂.ext fun j => h i j
 
+lemma ext_iff_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} :
+    B = B' ↔ ∀ (i : ι₁) (j : ι₂), B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j) :=
+  ⟨fun h _ _ ↦ h ▸ rfl, ext_basis b₁ b₂⟩
+
+lemma BilinForm.ext_iff_basis {B B' : LinearMap.BilinForm Rₗ Mₗ} :
+    B = B' ↔ ∀ (i j : ι₁), B (b₁' i) (b₁' j) = B' (b₁' i) (b₁' j) :=
+  LinearMap.ext_iff_basis b₁' b₁'
+
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
 Version for semi-bilinear maps, see `sum_repr_mul_repr_mul` for the bilinear version. -/
@@ -49,6 +57,7 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
   conv_rhs => rw [← b₁.linearCombination_repr x, ← b₂.linearCombination_repr y]
   simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, map_smulₛₗ₂, map_smulₛₗ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
 Version for bilinear maps, see `sum_repr_mul_repr_mulₛₗ` for the semi-bilinear version. -/

@@ -17,7 +17,7 @@ and `m : Set.Ici j` is successor limit, then
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -20,7 +20,7 @@ the category `SimplexCategory.Truncated d`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

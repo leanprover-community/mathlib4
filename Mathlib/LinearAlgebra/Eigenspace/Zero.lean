@@ -32,7 +32,7 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 
 -/
 
-@[expose] public section
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]
@@ -132,7 +132,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
       ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
-  push_neg at this
+  push Not at this
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
   have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
@@ -172,7 +172,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
       LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, coprod_apply, Submodule.coe_subtype, map_add, Sum.forall, Sum.elim_inl,
       map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
-      Submodule.coe_prodEquivOfIsCompl', restrict_coe_apply, implies_true, Sum.elim_inr, zero_add,
+      Submodule.coe_prodEquivOfIsCompl', coe_restrict_apply, implies_true, Sum.elim_inr, zero_add,
       e, V, W, ψ, F, G, b]
   rw [← e.symm.charpoly_conj φ, ← hψ, charpoly_prodMap,
     natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
@@ -198,9 +198,6 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   generalize_proofs h'
   clear hx
   induction n <;> simp [pow_succ', *]
-
-@[deprecated (since := "2025-09-07")] alias finrank_maxGenEigenspace :=
-  finrank_maxGenEigenspace_zero_eq
 
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
     finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by

@@ -22,7 +22,7 @@ These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order t
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

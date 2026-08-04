@@ -16,7 +16,7 @@ is `< κ`, then the cardinality of `Subobject X` is also `< κ`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

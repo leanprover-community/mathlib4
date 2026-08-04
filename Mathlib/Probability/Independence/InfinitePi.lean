@@ -5,6 +5,7 @@ Authors: Etienne Marion
 -/
 module
 
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.ProductMeasure
 
@@ -21,39 +22,50 @@ There are several possible measurability assumptions:
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is almost everywhere measurable.
+
 Although the first two options are equivalent, the last two are not if the index set is not
 countable.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {ι Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
+variable {ι Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
     {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} {X : Π i, Ω → 𝓧 i}
+
+/-- If random variables are independent then their joint distribution is the product measure. This
+is a version where the random variable `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
+See `iIndepFun.map_fun_eq_infinitePi_map₀'` for a version which only assumes that
+each `Xᵢ` is almost everywhere measurable and that `ι` is countable. -/
+lemma iIndepFun.map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i ↦ X i ω) P)
+    (h : iIndepFun X P) :
+    P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) := by
+  have := h.isProbabilityMeasure
+  have _ i := isProbabilityMeasure_map (mX.eval i)
+  refine eq_infinitePi _ fun s t ht ↦ ?_
+  rw [iIndepFun_iff_finset] at h
+  have : (s : Set ι).pi t = s.restrict ⁻¹' (Set.univ.pi fun i ↦ t i) := by ext; simp
+  rw [this, ← map_apply, AEMeasurable.map_map_of_aemeasurable]
+  · have : s.restrict ∘ (fun ω i ↦ X i ω) = fun ω i ↦ s.restrict X i ω := by ext; simp
+    rw [this, (h s).map_fun_eq_pi_map, pi_pi]
+    · simp only [Finset.restrict]
+      rw [s.prod_coe_sort fun i ↦ P.map (X i) (t i)]
+    exact fun i ↦ mX.eval i
+  any_goals fun_prop
+  · exact mX
+  · exact .univ_pi fun i ↦ ht i
 
 /-- Random variables are independent iff their joint distribution is the product measure. This
 is a version where the random variable `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 See `iIndepFun_iff_map_fun_eq_infinitePi_map₀'` for a version which only assumes that
 each `Xᵢ` is almost everywhere measurable and that `ι` is countable. -/
-lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i ↦ X i ω) P) :
+lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ [IsProbabilityMeasure P]
+    (mX : AEMeasurable (fun ω i ↦ X i ω) P) :
     iIndepFun X P ↔ P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) where
-  mp h := by
-    have _ i := isProbabilityMeasure_map (mX.eval i)
-    refine eq_infinitePi _ fun s t ht ↦ ?_
-    rw [iIndepFun_iff_finset] at h
-    have : (s : Set ι).pi t = s.restrict ⁻¹' (Set.univ.pi fun i ↦ t i) := by ext; simp
-    rw [this, ← map_apply, AEMeasurable.map_map_of_aemeasurable]
-    · have : s.restrict ∘ (fun ω i ↦ X i ω) = fun ω i ↦ s.restrict X i ω := by ext; simp
-      rw [this, (iIndepFun_iff_map_fun_eq_pi_map ?_).1 (h s), pi_pi]
-      · simp only [Finset.restrict]
-        rw [s.prod_coe_sort fun i ↦ P.map (X i) (t i)]
-      exact fun i ↦ mX.eval i
-    any_goals fun_prop
-    · exact mX
-    · exact .univ_pi fun i ↦ ht i
+  mp h := h.map_fun_eq_infinitePi_map₀ mX
   mpr h := by
     have _ i := isProbabilityMeasure_map (mX.eval i)
     rw [iIndepFun_iff_finset]
@@ -66,17 +78,49 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i �
       exact mX
     exact fun i ↦ mX.eval i
 
+/-- If random variables are independent then their joint distribution is the product measure. This
+is an `AEMeasurable` version of `iIndepFun.map_fun_eq_infinitePi_map`, which is why it requires
+`ι` to be countable. -/
+lemma iIndepFun.map_fun_eq_infinitePi_map₀' [Countable ι] (mX : ∀ i, AEMeasurable (X i) P)
+    (h : iIndepFun X P) :
+    P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
+  h.map_fun_eq_infinitePi_map₀ <| aemeasurable_pi_iff.2 mX
+
 /-- Random variables are independent iff their joint distribution is the product measure. This is
 an `AEMeasurable` version of `iIndepFun_iff_map_fun_eq_infinitePi_map`, which is why it requires
 `ι` to be countable. -/
-lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀' [Countable ι] (mX : ∀ i, AEMeasurable (X i) P) :
+lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀' [IsProbabilityMeasure P] [Countable ι]
+    (mX : ∀ i, AEMeasurable (X i) P) :
     iIndepFun X P ↔ P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
   iIndepFun_iff_map_fun_eq_infinitePi_map₀ <| aemeasurable_pi_iff.2 mX
 
+/-- If random variables are independent then their joint distribution is the product measure. -/
+lemma iIndepFun.map_fun_eq_infinitePi_map (mX : ∀ i, Measurable (X i)) (h : iIndepFun X P) :
+    P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
+  h.map_fun_eq_infinitePi_map₀ <| measurable_pi_iff.2 mX |>.aemeasurable
+
 /-- Random variables are independent iff their joint distribution is the product measure. -/
-lemma iIndepFun_iff_map_fun_eq_infinitePi_map (mX : ∀ i, Measurable (X i)) :
+lemma iIndepFun_iff_map_fun_eq_infinitePi_map [IsProbabilityMeasure P]
+    (mX : ∀ i, Measurable (X i)) :
     iIndepFun X P ↔ P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
   iIndepFun_iff_map_fun_eq_infinitePi_map₀ <| measurable_pi_iff.2 mX |>.aemeasurable
+
+lemma iIndepFun.hasLaw_infinitePi {μ : (i : ι) → Measure (𝓧 i)} (hX : ∀ i, HasLaw (X i) (μ i) P)
+    (h1 : iIndepFun X P) (h2 : AEMeasurable (fun ω i ↦ X i ω) P) :
+    HasLaw (fun ω i ↦ X i ω) (infinitePi μ) P where
+  aemeasurable := h2
+  map_eq := by
+    have := h1.isProbabilityMeasure
+    rw [(iIndepFun_iff_map_fun_eq_infinitePi_map₀ h2).1 h1]
+    simp_rw [fun i ↦ (hX i).map_eq]
+
+lemma iIndepFun_iff_hasLaw_Pi_infinitePi [IsProbabilityMeasure P] {μ : (i : ι) → Measure (𝓧 i)}
+    (hX : ∀ i, HasLaw (X i) (μ i) P) (hm : AEMeasurable (fun ω i ↦ X i ω) P) :
+    iIndepFun X P ↔ HasLaw (fun ω i ↦ X i ω) (infinitePi μ) P where
+  mp h := h.hasLaw_infinitePi hX hm
+  mpr h := by
+    rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀ hm, h.map_eq]
+    simp_rw [fun i ↦ (hX i).map_eq]
 
 /-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
 variables defined on the product space `Π i, Ω i`. -/
@@ -88,9 +132,24 @@ lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω
   congrm infinitePi fun i ↦ ?_
   rw [← infinitePi_map_eval P i, map_map (mX i) (by fun_prop), Function.comp_def]
 
-section curry
+lemma _root_.MeasureTheory.Measure.infinitePi_map_eval_prod {Ω : ι → Type*}
+    {mΩ : ∀ i, MeasurableSpace (Ω i)} {P : ∀ i, Measure (Ω i)}
+    [∀ i, IsProbabilityMeasure (P i)] {i j : ι} (hij : i ≠ j) :
+    (infinitePi P).map (fun ω ↦ (ω i, ω j)) = (P i).prod (P j) := by
+  rw [IndepFun.map_prod_eq_prod_map_map]; rotate_right
+  · exact iIndepFun_infinitePi (X := fun x ω ↦ ω) (by fun_prop) |>.indepFun hij
+  · simp [infinitePi_map_eval]
+  all_goals exact Measurable.aemeasurable (by fun_prop)
 
-omit [IsProbabilityMeasure P]
+lemma _root_.MeasureTheory.Measure.map_infinitePi_infinitePi_of_inj {α : Type*} {Ω : ι → Type*}
+    {mΩ : ∀ i, MeasurableSpace (Ω i)} {P : ∀ i, Measure (Ω i)}
+    [∀ i, IsProbabilityMeasure (P i)] {f : α → ι} (hf : Function.Injective f) :
+    (infinitePi P).map (fun ω i ↦ ω (f i)) = infinitePi (fun i ↦ P (f i)) := by
+  rw [(iIndepFun_iff_map_fun_eq_infinitePi_map <| by fun_prop).mp ?_]
+  · simp [infinitePi_map_eval]
+  exact .precomp hf <| iIndepFun_infinitePi (X := fun x ω ↦ ω) <| by fun_prop
+
+section curry
 
 section dependent
 

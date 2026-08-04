@@ -43,7 +43,7 @@ If `f` is a bump function covering indexed by a linearly ordered type, then
 `BumpCovering.toPartitionOfUnity`. Note that only finitely many terms `1 - f j x` are not equal
 to one, so this product is well-defined.
 
-Note that `g i x = ∏ᶠ j ≤ i, (1 - f j x) - ∏ᶠ j < i, (1 - f j x)`, so most terms in the sum
+Note that `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so most terms in the sum
 `∑ᶠ i, g i x` cancel, and we get `∑ᶠ i, g i x = 1 - ∏ᶠ i, (1 - f i x)`, and the latter product
 equals zero because one of `f i x` is equal to one.
 
@@ -144,7 +144,7 @@ variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E]
 
 instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -179,13 +179,13 @@ section finsupport
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
-  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_ofPred_eq]
 
 @[simp]
 theorem coe_finsupport (x₀ : X) :
@@ -316,7 +316,7 @@ variable {s : Set X} (f : BumpCovering ι X s)
 
 instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[simp] lemma toFun_eq_coe : f.toFun = f := rfl
 
@@ -335,7 +335,7 @@ theorem nonneg (i : ι) (x : X) : 0 ≤ f i x :=
 theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   f.le_one' i x
 
-open Classical in
+open scoped Classical in
 /-- A `BumpCovering` that consists of a single function, uniformly equal to one, defined as an
 example for `Inhabited` instance. -/
 protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
@@ -350,7 +350,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
   eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := by
   rfl
@@ -474,7 +474,7 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
         (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
 
-/-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
+/-- Index of a bump function such that `f i =ᶠ[𝓝 x] 1`. -/
 def ind (x : X) (hx : x ∈ s) : ι :=
   (f.eventuallyEq_one' x hx).choose
 
@@ -503,7 +503,7 @@ theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
   fun _ => mt <| f.toPOUFun_zero_of_zero
 
-open Classical in
+open scoped Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) := by
@@ -522,14 +522,14 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
     rw [hs, mulSupport_one_sub]
     exact fun i => id
   classical
-  letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
+  let : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
   refine Finset.sum_congr rfl fun i _ => ?_
-  convert f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
+  convert! f.toPOUFun_eq_mul_prod _ _ _ fun j _ hj => _
   rwa [Finite.mem_toFinset]
 
-open Classical in
+open scoped Classical in
 theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
     f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) := by
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
@@ -562,7 +562,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
-    · rw [mulSupport_one_sub]
+    · rw [HasFiniteMulSupport, mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_le_self_iff]
@@ -571,13 +571,13 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
 theorem toPartitionOfUnity_apply (i : ι) (x : X) :
     f.toPartitionOfUnity i x = f i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - f j x) := rfl
 
-open Classical in
+open scoped Classical in
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPartitionOfUnity i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) :=
   f.toPOUFun_eq_mul_prod i x t ht
 
-open Classical in
+open scoped Classical in
 theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
     f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) :=
   f.exists_finset_toPOUFun_eventuallyEq i x

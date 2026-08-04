@@ -14,14 +14,15 @@ public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Tactic.Module
 
 /-!
 # Reflections in linear algebra
 
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
- 1. the kernel of `f` is fixed,
- 2. the point `x` maps to `-x`.
+1. the kernel of `f` is fixed,
+2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -53,7 +54,7 @@ should connect (or unify) these definitions with `Module.reflection` defined her
 @[expose] public section
 
 open Function Set
-open Module hiding Finite
+open Module
 open Submodule (span)
 
 noncomputable section
@@ -84,6 +85,7 @@ lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
   fun y ↦ by simp [map_sub, h, two_smul, preReflection_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
     (preReflection x f) ∘ₗ (preReflection y g) ∘ₗ (preReflection x f) := by
@@ -137,8 +139,8 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
   intro y hy
   simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
-lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
-    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [IsDomain R] [NeZero (2 : R)]
+    [IsTorsionFree R M] (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
     p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
   refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
   · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
@@ -178,6 +180,7 @@ open Int Polynomial.Chebyshev
 
 variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m z$, where $m$ is a natural number and $z \in M$. -/
 lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
@@ -271,6 +274,7 @@ lemma reflection_mul_reflection_zpow (m : ℤ)
   ext z
   simpa using reflection_mul_reflection_zpow_apply hf hg m z t ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $(r_1 r_2)^m x$, where $m$ is an integer. This is the special case of
 `Module.reflection_mul_reflection_zpow_apply` with $z = x$. -/
 lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
@@ -312,6 +316,7 @@ lemma reflection_mul_reflection_pow_apply_self (m : ℕ)
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R (m - 1)).eval t * -g x) • y :=
   mod_cast reflection_mul_reflection_zpow_apply_self hf hg m t ht
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is an integer. -/
 lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
@@ -334,13 +339,14 @@ end
 
 /-! ### Lemmas used to prove uniqueness results for root data -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See also `Module.Dual.eq_of_preReflection_mapsTo'` for a variant of this lemma which
 applies when `Φ` does not span.
 
 This rather technical-looking lemma exists because it is exactly what is needed to establish various
 uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
 linear algebra and combinatorics since the finiteness assumption is the key. -/
-lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -374,7 +380,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
-lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -387,12 +393,12 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     rw [range_inclusion]
     simp
   let x' : span R Φ := ⟨x, hx⟩
-  have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
+  have : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
     simp only [Φ'] at hy' ⊢
     rw [range_inclusion] at hy'
-    simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    simp only [SetLike.coe_sort_coe, mem_ofPred_eq] at hy' ⊢
     rw [range_inclusion]
     exact hF hy'
   exact eq_of_preReflection_mapsTo hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
@@ -400,6 +406,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
 variable {y}
 variable {g : Dual R M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composite of reflections in "parallel" hyperplanes is a shear (special case). -/
 lemma reflection_reflection_iterate
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) (n : ℕ) :

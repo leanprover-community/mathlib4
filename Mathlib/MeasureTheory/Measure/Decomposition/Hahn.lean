@@ -30,7 +30,7 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 Hahn decomposition
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
@@ -54,7 +54,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
   have to_nnreal_ν : ∀ s, ((ν s).toNNReal : ℝ≥0∞) = ν s := fun s => ENNReal.coe_toNNReal <| hν _
   have d_split s t (ht : MeasurableSet t) : d s = d (s \ t) + d (s ∩ t) := by
     dsimp only [d]
-    rw [← measure_inter_add_diff s ht, ← measure_inter_add_diff s ht,
+    rw [← measure_inter_add_sdiff s ht, ← measure_inter_add_sdiff s ht,
       ENNReal.toNNReal_add (hμ _) (hμ _), ENNReal.toNNReal_add (hν _) (hν _), NNReal.coe_add,
       NNReal.coe_add]
     simp only [sub_eq_add_neg, neg_add]
@@ -117,7 +117,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
           rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
         _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
-          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
+          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_sdiff_left, union_inter_cancel_left]
           · abel
           · exact he₁ _
         _ ≤ γ + d (f m (n + 1)) := by grw [d_le_γ _ <| (he₁ _).union (hf _ _)]
@@ -163,7 +163,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         calc
           γ + d t ≤ d s + d t := by gcongr
           _ = d (s ∪ t) := by
-            rw [d_split (s ∪ t) _ ht, union_diff_right, union_inter_cancel_right,
+            rw [d_split (s ∪ t) _ ht, union_sdiff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]

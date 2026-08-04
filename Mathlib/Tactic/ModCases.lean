@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Data.Int.ModEq
-public meta import Mathlib.Tactic.HaveI
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Tactic.HaveI
 
 /-! # `mod_cases` tactic
 
@@ -14,7 +14,7 @@ The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e :
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Tactic.ModCases
 open Lean Meta Elab Tactic Term Qq
@@ -65,7 +65,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
 -/
-partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+meta partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     haveI' : $b =Q $n := ⟨⟩
@@ -81,7 +81,7 @@ partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (
 /--
 Int case of `mod_cases h : e % n`.
 -/
-def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
+meta def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
@@ -141,7 +141,7 @@ and the `a ≡ b (mod n) → p` case becomes a subgoal.
 Proves an expression of the form `OnModCases n a b p` where `n` and `b` are raw nat literals
 and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 -/
-partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
+meta partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
     have : $b =Q $n := ⟨⟩
@@ -156,7 +156,7 @@ partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (
 /--
 Nat case of `mod_cases h : e % n`.
 -/
-def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Unit := do
+meta def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
@@ -173,14 +173,12 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
 end NatMod
 
 /--
-* The tactic `mod_cases h : e % 3` will perform a case disjunction on `e`.
-  If `e : ℤ`, then it will yield subgoals containing the assumptions
-  `h : e ≡ 0 [ZMOD 3]`, `h : e ≡ 1 [ZMOD 3]`, `h : e ≡ 2 [ZMOD 3]`
-  respectively. If `e : ℕ` instead, then it works similarly, except with
-  `[MOD 3]` instead of `[ZMOD 3]`.
-* In general, `mod_cases h : e % n` works
-  when `n` is a positive numeral and `e` is an expression of type `ℕ` or `ℤ`.
-* If `h` is omitted as in `mod_cases e % n`, it will be default-named `H`.
+`mod_cases h : e % n`, where `n` is a positive numeral and `e` is an expression of type `ℕ` or `ℤ`,
+performs a case disjunction on the value of `e` modulo `n`. If `e : ℤ`, the goal is split into
+`n` subgoals containing the new hypotheses `h : e ≡ 0 [ZMOD n]`, ..., `h : e ≡ n-1 [ZMOD n]`
+respectively. If `e : ℕ` instead, then the hypotheses contain `[MOD n]` instead of `[ZMOD n]`.
+
+* `mod_cases e % n`, with `h` omitted, gives the default name `H` to the new hypotheses.
 -/
 syntax "mod_cases " (atomic(binderIdent ":"))? term:71 " % " num : tactic
 

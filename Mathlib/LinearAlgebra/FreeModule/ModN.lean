@@ -29,6 +29,7 @@ namespace ModN
 
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
 are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
@@ -58,6 +59,7 @@ def mkQ : G →+ ModN G n := (LinearMap.range (LinearMap.lsmul ℤ G n)).mkQ
 
 variable [NeZero n]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a free module `G` over `ℤ`, construct the corresponding basis
 of `G / ⟨n⟩` over `ℤ / nℤ`. -/
 noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (ModN G n) := by
@@ -79,18 +81,19 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
     simp only [Submodule.mkQ_apply, g] at hx
     rw [Submodule.liftQ_apply] at hx
     replace hx : ∀ b, ↑n ∣ f x b := by
-      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using hx
+      simpa [mod, DFunLike.ext_iff, ZMod.intCast_zmod_eq_zero_iff_dvd] using! hx
     simp only [Submodule.mkQ_apply]
     rw [Submodule.Quotient.mk_eq_zero]
     choose c hc using hx
     refine ⟨b.repr.symm ⟨(f x).support, c, by simp [hc, NeZero.ne]⟩, b.repr.injective ?_⟩
-    simpa [DFunLike.ext_iff, eq_comm] using hc
+    simpa [DFunLike.ext_iff, eq_comm] using! hc
   · suffices mod ∘ b.repr = g ∘ nG.mkQ by
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         b.repr.surjective).of_comp
     ext x b
     simp [mod, g, f, H]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
   rw [Basis.apply_eq_iff]; simp [basis, mkQ]
 

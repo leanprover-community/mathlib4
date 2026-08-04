@@ -26,7 +26,7 @@ In particular, we give results about the polynomial given by
 matrix determinant, polynomial
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix Polynomial
@@ -56,31 +56,31 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
         (X • A.map C + B.map C : Matrix n n α[X]) (g i) i)
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
     _ ≤ Fintype.card n := by simp [mul_one, Finset.card_univ]
-  dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+  dsimp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul]
   compute_degree
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B := by
-  rw [det_apply, finset_sum_coeff, det_apply]
+  rw [det_apply, finsetSum_coeff, det_apply]
   refine Finset.sum_congr rfl ?_
   rintro g -
-  convert coeff_smul (R := α) (sign g) _ 0
+  convert! coeff_smul (R := α) (sign g) _ 0
   rw [coeff_zero_prod]
   refine Finset.prod_congr rfl ?_
   simp
 
 theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
-  rw [det_apply, det_apply, finset_sum_coeff]
+  rw [det_apply, det_apply, finsetSum_coeff]
   refine Finset.sum_congr rfl ?_
   simp only [Finset.mem_univ, forall_true_left]
   intro g
-  convert coeff_smul (R := α) (sign g) _ _
+  convert! coeff_smul (R := α) (sign g) _ _
   rw [← mul_one (Fintype.card n)]
-  convert (coeff_prod_of_natDegree_le (R := α) _ _ _ _).symm
+  convert! (coeff_prod_of_natDegree_le (R := α) _ _ _ _).symm
   · simp [coeff_C]
   · rintro p -
-    dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+    dsimp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul]
     compute_degree
 
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :

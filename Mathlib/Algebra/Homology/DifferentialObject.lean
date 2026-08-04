@@ -47,6 +47,7 @@ theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
 
 -- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
 -- Having both causes an infinite loop in the simpNF linter.
+set_option backward.isDefEq.respectTransparency false in -- Needed in dgoToHomologicalComplex
 @[reassoc]
 theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
@@ -73,7 +74,9 @@ variable (V : Type*) [Category* V] [HasZeroMorphisms V]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
-open Classical in
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+open scoped Classical in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]
@@ -84,9 +87,9 @@ def dgoToHomologicalComplex :
     { X := fun i => X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
-      shape := fun i j w => by dsimp at w; convert dif_neg w
+      shape := fun i j w => by dsimp at w; convert! dif_neg w
       d_comp_d' := fun i j k hij hjk => by
-        dsimp at hij hjk; substs hij hjk
+        dsimp at hij hjk; subst hij hjk
         simp [objEqToHom_d_assoc] }
   map {X Y} f :=
     { f := f.f
@@ -96,6 +99,7 @@ def dgoToHomologicalComplex :
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from homological complexes to differential graded objects.
 -/
 @[simps]
@@ -107,6 +111,8 @@ def homologicalComplexToDGO :
       d := fun i => X.d i _ }
   map {X Y} f := { f := f.f }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
 -/
 @[simps!]
@@ -117,6 +123,8 @@ def dgoEquivHomologicalComplexUnitIso :
     { hom := { f := fun i => 𝟙 (X.obj i) }
       inv := { f := fun i => 𝟙 (X.obj i) } })
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism for `dgoEquivHomologicalComplex`.
 -/
 @[simps!]
@@ -127,6 +135,8 @@ def dgoEquivHomologicalComplexCounitIso :
     { hom := { f := fun i => 𝟙 (X.X i) }
       inv := { f := fun i => 𝟙 (X.X i) } })
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of differential graded objects in `V` is equivalent
 to the category of homological complexes in `V`.
 -/

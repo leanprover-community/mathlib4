@@ -91,23 +91,32 @@ def elabCasesM (pats : Array Term) (recursive allowSplit : Bool) : TacticM Unit 
   liftMetaTactic (casesMatching (matchPatterns pats) recursive allowSplit)
 
 /--
-* `casesm p` applies the `cases` tactic to a hypothesis `h : type`
-  if `type` matches the pattern `p`.
-* `casesm p_1, ..., p_n` applies the `cases` tactic to a hypothesis `h : type`
-  if `type` matches one of the given patterns.
-* `casesm* p` is a more efficient and compact version of `· repeat casesm p`.
-  It is more efficient because the pattern is compiled once.
-* `casesm! p` only applies `cases` if the number of resulting subgoals is <= 1.
+`casesm p` searches for the first hypothesis `h : type` where `type` matches the term `p`,
+and splits the main goal by cases on `h`. Use holes in `p` to indicate arbitrary subexpressions,
+for example `casesm _ ∧ _` will match any conjunction. `casesm p` fails if no hypothesis type
+matches `p`.
 
-Example: The following tactic destructs all conjunctions and disjunctions in the current context.
+* `casesm p_1, ..., p_n` searches for a hypothesis `h : type` where `type` matches one or more of
+  the given patterns `p_1`, ... `p_n`, and splits the main goal by cases on `h`.
+* `casesm* p` repeatedly performs case splits until no more hypothesis type matches `p`.
+  This is a more efficient and compact version of `· repeat casesm p`.
+  It is more efficient because the pattern is compiled once.
+* `casesm! p` and `casesm!* p` skip a hypothesis if the main goal would be replaced with two or more
+  subgoals.
+
+Example:
 ```
-casesm* _ ∨ _, _ ∧ _
+example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
+  -- The following tactic destructs all conjunctions and disjunctions in the current context.
+  casesm* _∨_, _∧_
+  · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
+  · clear ‹c› ‹d› ‹e› ‹f›; trivial
 ```
 -/
 elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
   elabCasesM pats recursive.isSome true
 
-@[inherit_doc casesM]
+@[tactic_alt casesM]
 elab (name := casesm!) "casesm!" recursive:"*"? ppSpace pats:term,+ : tactic => do
   elabCasesM pats recursive.isSome false
 
@@ -118,21 +127,30 @@ def elabCasesType (heads : Array Ident)
   liftMetaTactic (casesType heads recursive allowSplit)
 
 /--
-* `cases_type I` applies the `cases` tactic to a hypothesis `h : (I ...)`
-* `cases_type I_1 ... I_n` applies the `cases` tactic to a hypothesis
-  `h : (I_1 ...)` or ... or `h : (I_n ...)`
-* `cases_type* I` is shorthand for `· repeat cases_type I`
-* `cases_type! I` only applies `cases` if the number of resulting subgoals is <= 1.
+`cases_type I` searches for a hypothesis `h : type` where `I` has the form `(I ...)`, and splits the
+main goal by cases on `h`. `cases_type p` fails if no hypothesis type has the identifier `I` as its
+head symbol.
 
-Example: The following tactic destructs all conjunctions and disjunctions in the current goal.
+* `cases_type I_1 ... I_n` searches for a hypothesis `h : type` where `type` has one or more of
+  `I_1`, ..., `I_n` as its head symbol, and splits the main goal by cases on `h`.
+* `cases_type* I` repeatedly performs case splits until no more hypothesis type has `I` as its head
+  symbol. This shorthand for `· repeat cases_type I`.
+* `cases_type! p` and `cases_type!* p` skip a hypothesis if the main goal would be replaced with two
+  or more subgoals.
+
+Example:
 ```
-cases_type* Or And
+example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
+  -- The following tactic destructs all conjunctions and disjunctions in the current context.
+  cases_type* Or And
+  · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
+  · clear ‹c› ‹d› ‹e› ‹f›; trivial
 ```
 -/
 elab (name := casesType) "cases_type" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome true
 
-@[inherit_doc casesType]
+@[tactic_alt casesType]
 elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt ident)+ : tactic =>
   elabCasesType heads recursive.isSome false
 
@@ -167,15 +185,18 @@ where
       return (acc.push g)
 
 /--
-* `constructorm p_1, ..., p_n` applies the `constructor` tactic to the main goal
-  if `type` matches one of the given patterns.
-* `constructorm* p` is a more efficient and compact version of `· repeat constructorm p`.
-  It is more efficient because the pattern is compiled once.
+`constructorm p_1, ..., p_n`, where the main goal has type `type`, applies the first matching
+constructor for `type`, if `type` matches one of the given patterns. If `type` does not match any
+of the patterns, `constructorm` fails.
 
-Example: The following tactic proves any theorem like `True ∧ (True ∨ True)` consisting of
-and/or/true:
+* `constructorm* p_1, ..., p_n` repeatedly applies a constructor until the goal no longer matches
+  `p_1`, ..., `p_n`. This is a more efficient and compact version of
+  `· repeat constructorm p_1, ..., p_n`. It is more efficient because the pattern is compiled once.
+
+Examples:
 ```
-constructorm* _ ∨ _, _ ∧ _, True
+example : True ∧ (True ∨ True) := by
+  constructorm* _ ∨ _, _ ∧ _, True
 ```
 -/
 elab (name := constructorM) "constructorm" recursive:"*"? ppSpace pats:term,+ : tactic => do

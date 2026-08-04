@@ -27,7 +27,7 @@ Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`
 Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function
@@ -135,7 +135,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x => x j) ∘ surjInv e,
+  ⟨i, ⟨fun j => ⟨s.domRestrict (fun x => x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo

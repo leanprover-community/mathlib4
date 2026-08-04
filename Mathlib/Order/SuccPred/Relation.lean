@@ -14,7 +14,7 @@ This file contains properties about relations on types with a `SuccOrder`
 and their closure operations (like the transitive closure).
 -/
 
-@[expose] public section
+public section
 
 open Function Order Relation Set
 
@@ -76,10 +76,13 @@ theorem transGen_of_succ_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i �
 
 /-- `(n, m)` is in the transitive closure of a reflexive relation `~` if `i ~ succ i` and
   `succ i ~ i` for all `i` between `n` and `m`. -/
-theorem transGen_of_succ_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
+theorem transGen_of_succ_of_refl (r : α → α → Prop) {n m : α} [Std.Refl r]
     (h1 : ∀ i ∈ Ico n m, r i (succ i)) (h2 : ∀ i ∈ Ico m n, r (succ i) i) : TransGen r n m := by
-  rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (hr m)
+  rcases eq_or_ne m n with (rfl | hmn); · exact TransGen.single (refl m)
   exact transGen_of_succ_of_ne r h1 h2 hmn.symm
+
+@[deprecated (since := "2026-03-27")]
+alias transGen_of_succ_of_reflexive := transGen_of_succ_of_refl
 
 end LinearSucc
 
@@ -133,9 +136,12 @@ theorem transGen_of_pred_of_ne (r : α → α → Prop) {n m : α} (h1 : ∀ i �
 
 /-- `(n, m)` is in the transitive closure of a reflexive relation `~` if `i ~ pred i` and
   `pred i ~ i` for all `i` between `n` and `m`. -/
-theorem transGen_of_pred_of_reflexive (r : α → α → Prop) {n m : α} (hr : Reflexive r)
+theorem transGen_of_pred_of_refl (r : α → α → Prop) {n m : α} [Std.Refl r]
     (h1 : ∀ i ∈ Ioc m n, r i (pred i)) (h2 : ∀ i ∈ Ioc n m, r (pred i) i) : TransGen r n m :=
-  transGen_of_succ_of_reflexive (α := αᵒᵈ) r hr (fun x hx => h1 x ⟨hx.2, hx.1⟩) fun x hx =>
-    h2 x ⟨hx.2, hx.1⟩
+  @transGen_of_succ_of_refl αᵒᵈ _ _ _ r _ _ ‹_› (fun x hx ↦ h1 x ⟨hx.2, hx.1⟩)
+    fun x hx ↦ h2 x ⟨hx.2, hx.1⟩
+
+@[deprecated (since := "2026-03-27")]
+alias transGen_of_pred_of_reflexive := transGen_of_pred_of_refl
 
 end LinearPred

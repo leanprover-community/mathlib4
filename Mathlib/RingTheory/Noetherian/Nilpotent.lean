@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Noetherian.Defs
 * `IsNoetherianRing.isNilpotent_nilradical`
 -/
 
-@[expose] public section
+public section
 
 open IsNoetherian
 

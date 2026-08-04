@@ -11,7 +11,7 @@ public import Mathlib.Data.Nat.Cast.Defs
 # Lemmas about nonzero elements of an `AddMonoidWithOne`
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

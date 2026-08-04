@@ -16,7 +16,7 @@ These are some lemmas split off from `ENNReal.Basic` because they need a lot mor
 They are probably good targets for further cleanup or moves.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Set NNReal
@@ -34,7 +34,7 @@ section Order
 
 @[simp, norm_cast]
 theorem coe_finset_sup {s : Finset α} {f : α → ℝ≥0} : ↑(s.sup f) = s.sup fun x => (f x : ℝ≥0∞) :=
-  Finset.comp_sup_eq_sup_comp_of_is_total _ coe_mono rfl
+  Finset.apply_sup_eq_sup_comp_of_linearOrder _ coe_mono rfl
 
 end Order
 

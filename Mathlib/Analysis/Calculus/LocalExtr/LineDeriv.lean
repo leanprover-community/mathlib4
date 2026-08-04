@@ -15,7 +15,7 @@ If `f` has a local extremum at a point, then the derivative at this point is zer
 In this file we prove several versions of this fact for line derivatives.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter
 open scoped Topology

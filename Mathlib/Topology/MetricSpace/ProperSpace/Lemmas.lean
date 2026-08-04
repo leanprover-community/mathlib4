@@ -23,7 +23,7 @@ This file contains some more involved results about `ProperSpace`s.
 * `Metric.exists_isLocalMin_mem_ball`
 -/
 
-@[expose] public section
+public section
 
 open Set Metric
 
@@ -38,7 +38,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
   have : IsCompact s :=
     (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
   obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
-    this.exists_isMaxOn (β := α) (α := ℝ) hne (continuous_id.dist continuous_const).continuousOn
+    this.exists_isMaxOn (β := α) (α := ℝ) hne (by fun_prop)
   have hyr : dist y x < r := h hys
   rcases exists_between hyr with ⟨r', hyr', hrr'⟩
   exact ⟨r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩, hy.trans <| closedBall_subset_ball hyr'⟩
@@ -56,7 +56,7 @@ theorem Metric.exists_isLocalMin_mem_ball [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
-  simp_rw [← closedBall_diff_ball] at hf1
+  simp_rw [← closedBall_sdiff_ball] at hf1
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
 
@@ -68,7 +68,7 @@ lemma isProperMap_dist (x : α) : IsProperMap (dist x) :=
 omit [ProperSpace α] in
 lemma properSpace_iff_isProperMap_dist : ProperSpace α ↔ ∀ x : α, IsProperMap (dist x) := by
   refine ⟨fun _ ↦ isProperMap_dist, fun H ↦ ⟨fun x r ↦ ?_⟩⟩
-  convert (H x).isCompact_preimage (isCompact_closedBall 0 r)
+  convert! (H x).isCompact_preimage (isCompact_closedBall 0 r)
   ext
   simp [dist_comm, Real.dist_eq]
 

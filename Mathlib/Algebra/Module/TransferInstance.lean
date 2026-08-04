@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
@@ -62,6 +63,26 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
       simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 
+@[simp]
+lemma linearEquiv_apply (a : α) [AddCommMonoid β] [Module R β] :
+    e.linearEquiv R a = e a := rfl
+
+@[simp]
+lemma linearEquiv_symm_apply (b : β) [AddCommMonoid β] [Module R β] :
+    letI := Equiv.addCommMonoid e
+    letI := Equiv.module R e
+    (e.linearEquiv R).symm b = e.symm b := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+variable (R) in
+/-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
+protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R β]
+    [Module.IsTorsionFree R β] :
+    let := e.addCommMonoid
+    let := e.module R
+    Module.IsTorsionFree R α := by
+  extract_lets; exact (e.linearEquiv R).injective.moduleIsTorsionFree _ (by simp)
+
 end Equiv
 
 variable (A) [Semiring A] [Module R A] [AddCommMonoid α] [AddCommMonoid β] [Module A β]
@@ -84,8 +105,18 @@ lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A �
     (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.module A
     IsScalarTower R A α := by
-  letI := e.toAddEquiv.module A
+  let := e.toAddEquiv.module A
   constructor
   intro x y z
   simp only [Equiv.smul_def, smul_assoc]
   apply e.symm.map_smul
+
+/-- When `α` is equipped with the `A`-module structure transferred via `e : α ≃+ β`,
+this isomorphism is `A`-linear. -/
+@[simps]
+def AddEquiv.linearEquiv (e : α ≃+ β) :
+    letI := e.module A
+    α ≃ₗ[A] β :=
+  letI := e.module A
+  { __ := e
+    map_smul' _ _ := e.apply_symm_apply _ }

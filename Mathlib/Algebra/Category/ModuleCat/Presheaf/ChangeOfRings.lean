@@ -44,7 +44,7 @@ noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶
         have eq := RingHom.congr_fun (congrArg RingCat.Hom.hom <| α.naturality f) r
         dsimp at eq
         rw [← eq]
-        rfl ) }
+        rfl) }
 
 /-- The restriction of scalars functor `PresheafOfModules R' ⥤ PresheafOfModules R`
 induced by a morphism of presheaves of rings `R ⟶ R'`. -/

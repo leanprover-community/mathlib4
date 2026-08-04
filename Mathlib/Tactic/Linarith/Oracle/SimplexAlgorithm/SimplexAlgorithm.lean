@@ -6,6 +6,7 @@ Authors: Vasily Nesterov
 module
 
 public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Simplex Algorithm
@@ -106,7 +107,7 @@ def chooseExitingVar (enterIdx : Nat) : SimplexAlgorithmM matType Nat := do
 
 /--
 Chooses entering and exiting variables using
-(Bland's rule)[(https://en.wikipedia.org/wiki/Bland%27s_rule)] that guarantees that the Simplex
+[Bland's rule](https://en.wikipedia.org/wiki/Bland%27s_rule) that guarantees that the Simplex
 Algorithm terminates.
 -/
 def choosePivots : SimplexAlgorithmM matType (Nat × Nat) := do

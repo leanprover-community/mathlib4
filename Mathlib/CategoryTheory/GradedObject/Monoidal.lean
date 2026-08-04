@@ -123,8 +123,7 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
@@ -309,6 +308,7 @@ lemma ιTensorObj₃_associator_inv
 
 variable {X₁ X₂ X₃}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable [HasTensor Y₁ Y₂] [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₂ Y₃]
   [HasTensor Y₁ (tensorObj Y₂ Y₃)] in
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃)
@@ -328,7 +328,7 @@ abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := Pres
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
       (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
-   ((curriedTensor C).obj Z)
+    ((curriedTensor C).obj Z)
 
 variable {X₁ X₂ X₃}
 variable [HasTensor X₂ X₃] [HasTensor X₁ (tensorObj X₂ X₃)]
@@ -417,6 +417,7 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasGoodTensorTensor₂₃ X₁ X₂ (tensorObj X₃ X₄)]
   [HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma pentagon_inv :
     tensorHom (𝟙 X₁) (associator X₂ X₃ X₄).inv ≫ (associator X₁ (tensorObj X₂ X₃) X₄).inv ≫
@@ -493,7 +494,7 @@ instance : HasTensor tensorUnit X :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
     ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor tensorUnit X)
+  inferInstanceAs <| HasTensor tensorUnit X
 
 /-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
@@ -526,7 +527,7 @@ instance : HasTensor X tensorUnit :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
     ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor X tensorUnit)
+  inferInstanceAs <| HasTensor X tensorUnit
 
 /-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
@@ -557,11 +558,13 @@ variable [DecidableEq I] [HasInitial C]
   [HasTensor (tensorObj X₁ tensorUnit) X₃] [HasTensor X₁ (tensorObj tensorUnit X₃)]
   [HasGoodTensor₁₂Tensor X₁ tensorUnit X₃] [HasGoodTensorTensor₂₃ X₁ tensorUnit X₃]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma triangle :
     (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
-  convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
-    (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
+  convert!
+    mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C) (rightUnitorNatIso C)
+      (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
   all_goals assumption
 
 end Triangle
@@ -606,12 +609,13 @@ instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := 
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
     (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
-  rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
-  simpa using h
+  intro _ _ h
+  exact Subtype.ext (congrArg (fun x => (x.1.1, x.2.1.1, x.2.2.1)) h)
 
 /-!
 The monoidal category structure on `GradedObject ℕ C` can be inferred

@@ -19,9 +19,9 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
-assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
+assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest
 
 namespace Rat
 

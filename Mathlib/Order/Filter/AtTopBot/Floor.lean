@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Positivity.Basic
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Nat

@@ -25,7 +25,7 @@ In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement tha
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Fin MulOpposite
 open List hiding tail
@@ -121,9 +121,6 @@ private lemma small_neg_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_pos_mul (A := A) (K := K) (by simpa)
 
--- TODO: find a good way to fix this non-terminal simp;
--- simp is called on 8 goals, with different simp sets
-set_option linter.flexible false in
 /-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|A^±1 * ... * A^±1|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
@@ -153,11 +150,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by lia)
-  have : K ^ 2 ≤ K ^ 3 := by
-    gcongr
-    · exact hK₁
-    · simp
+  have : K ^ 2 ≤ K ^ 3 := by gcongr; simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith

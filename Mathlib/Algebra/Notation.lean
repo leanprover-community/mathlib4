@@ -5,8 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Notations for operations involving order and algebraic structure
@@ -19,7 +18,7 @@ public import Mathlib.Tactic.ToAdditive
 * `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 -/
 
-@[expose] public section
+public section
 
 /-- A notation class for the *positive part* function: `a⁺`. -/
 class PosPart (α : Type*) where

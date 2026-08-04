@@ -24,7 +24,7 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 differentiable when `f` is (and giving a formula for its derivative).
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
@@ -32,30 +32,30 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
   [ContinuousStar F]
 
-variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
+variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}
 
 section TrivialStar
 
 variable [TrivialStar 𝕜]
 
+protected theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' L) :
+    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') L :=
+  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp h Filter.tendsto_map
+
 @[fun_prop]
 protected theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
-  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasStrictFDerivAt.comp x h
-
-protected theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' x L) :
-    HasFDerivAtFilter (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x L :=
-  (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp x h Filter.tendsto_map
+  HasFDerivAtFilter.star h
 
 @[fun_prop]
-protected nonrec theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :
+protected theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') s x :=
-  h.star
+  HasFDerivAtFilter.star h
 
 @[fun_prop]
-protected nonrec theorem HasFDerivAt.star (h : HasFDerivAt f f' x) :
+protected theorem HasFDerivAt.star (h : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
-  h.star
+  HasFDerivAtFilter.star h
 
 @[fun_prop]
 protected theorem DifferentiableWithinAt.star (h : DifferentiableWithinAt 𝕜 f s x) :

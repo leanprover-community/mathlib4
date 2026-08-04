@@ -34,8 +34,7 @@ noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
 @[to_additive /-- The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
-  (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
-    S.quotientKerRightHomEquivRight
+  QuotientGroup.liftEquiv _ S.rightHom_surjective S.range_inl_eq_ker_rightHom
 
 /-- An arbitrarily chosen section -/
 @[to_additive surjInvRightHom /-- An arbitrarily chosen section -/]
@@ -149,6 +148,7 @@ variable (s : S.Splitting)
 /-- `G` acts on `N` by conjugation. -/
 noncomputable def conjAct : G →* MulAut N := S.conjAct.comp s
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A split group extension is equivalent to the extension associated to a semidirect product. -/
 noncomputable def semidirectProductToGroupExtensionEquiv :
     (SemidirectProduct.toGroupExtension s.conjAct).Equiv S where

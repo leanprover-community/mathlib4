@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.NthRoot.Defs
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Zify
@@ -18,7 +17,7 @@ public import Mathlib.Algebra.Order.Ring.Pow
 In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
@@ -65,12 +64,20 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
   rw [Nat.le_div_iff_mul_le (by positivity), Nat.mul_comm,
     ← Nat.add_mul_div_right _ _ (by positivity),
     Nat.le_div_iff_mul_le (by positivity)]
+  #adaptation_note /-- Prior to nightly-2026-04-06, this was
+  ```
   have := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
     (by positivity) (sq_nonneg _) (sq_nonneg _) (by grind) (n + 1)
-  -- `grind` should solve this, but:  https://github.com/leanprover/lean4/issues/11539
-  simp [mul_sub, ← add_sub_assoc] at this
-  norm_cast at this
   grind
+  ```
+  -/
+  zify
+  have h := pow_add_mul_le_add_pow_of_sq_nonneg (a := (b : ℤ)) (b := (a : ℤ) - b)
+    (ha := by positivity) (Hsq := by positivity) (Hsq' := by positivity) (H := by omega)
+    (n := n + 1)
+  rw [← sub_nonneg] at h ⊢
+  convert! h using 1
+  rw [pow_succ]; push_cast; ring1
 
 private theorem nthRoot.always_exists (n a : ℕ) :
     ∃ c, c ^ (n + 1) ≤ a ∧ a < (c + 1) ^ (n + 1) := by
@@ -88,7 +95,7 @@ then `(a / b ^ n + n * b) / (n + 1) + 1` is a strict upper estimate on `√[n + 
 theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
      a < ((a / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
   have ⟨c, hc1, hc2⟩ := nthRoot.always_exists n a
-  calc a < (c + 1)^(n + 1) := hc2
+  calc a < (c + 1) ^ (n + 1) := hc2
     _ ≤ ((c ^ (n + 1) / b ^ n + n * b) / (n + 1) + 1) ^ (n + 1) := by
       gcongr
       exact nthRoot.lt_pow_go_succ_aux0 hb

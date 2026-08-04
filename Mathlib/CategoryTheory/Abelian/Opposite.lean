@@ -105,10 +105,12 @@ def cokernelOpOp : cokernel f.op ≅ Opposite.op (kernel f) :=
 def kernelUnopUnop : kernel g.unop ≅ (cokernel g).unop :=
   (kernelUnopOp g).unop.symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem kernel.ι_unop :
     (kernel.ι g.unop).op = eqToHom (Opposite.op_unop _) ≫ cokernel.π g ≫ (kernelUnopOp g).inv := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cokernel.π_unop :
     (cokernel.π g.unop).op =
       (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm := by
@@ -119,7 +121,7 @@ theorem cokernel.π_unop :
 def cokernelUnopUnop : cokernel g.unop ≅ (kernel g).unop :=
   (cokernelUnopOp g).unop.symm
 
-/-- The opposite of the image of `g.unop` is the image of `g.` -/
+/-- The opposite of the image of `g.unop` is the image of `g`. -/
 def imageUnopOp : Opposite.op (image g.unop) ≅ image g :=
   (Abelian.imageIsoImage _).op ≪≫
     (cokernelOpOp _).symm ≪≫

@@ -138,6 +138,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
 
 variable [IsDomain R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
 Basically, it says: let `N ≤ M` be a pair of submodules, then we can find a pair of
@@ -278,7 +279,7 @@ See also the stronger version `Submodule.smithNormalForm`.
 -/
 theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R M)
     (N : Submodule R M) : ∃ n : ℕ, Nonempty (Basis (Fin n) R N) := by
-  haveI := Classical.decEq M
+  have := Classical.decEq M
   cases nonempty_fintype ι
   induction N using inductionOnRank b with | ih N ih =>
   let b' := (b.reindex (Fintype.equivFin ι)).map (LinearEquiv.ofTop _ rfl).symm
@@ -326,7 +327,7 @@ noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι 
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
     have := exists_maximal_linearIndepOn R s
@@ -347,15 +348,15 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       · use 1, zero_ne_one.symm
         rw [one_smul]
         exact subset_span (mem_range_self (⟨i, hi⟩ : I))
-      · simpa [image_eq_range s I] using hI i hi
+      · simpa [image_eq_range s I] using! hI i hi
     choose a ha ha' using exists_a
     let A := ∏ i, a i
     have hA : A ≠ 0 := by
       rw [Finset.prod_ne_zero_iff]
-      simpa using ha
+      simpa using! ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : LinearMap.ker φ = ⊥ := @LinearMap.ker_lsmul R M _ _ _ _ _ hA
+    have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
     let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
     have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`
@@ -373,30 +374,29 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     exact ⟨n, b.map ψ.symm⟩
 
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Module.Free R M := by
   cases nonempty_fintype ι
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
   exact Module.Free.of_basis b
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
-    [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M :=
+    [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M :=
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
 
-instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
+instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [IsTorsionFree R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 
 instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
-    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+    [hI₂ : IsTorsionFree R I] : Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
-  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  have : IsTorsionFree R (restrictScalars R I) := hI₂
   change Module.Free R (restrictScalars R I)
   exact Module.free_of_finite_type_torsion_free'
 
-theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
-    Module.Free R M ↔ NoZeroSMulDivisors R M :=
+theorem Module.free_iff_isTorsionFree [Module.Finite R M] : Free R M ↔ IsTorsionFree R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 end StrongRankCondition
@@ -422,6 +422,7 @@ namespace Module.Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma repr_eq_zero_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     snf.bM.repr m i = 0 := by
   obtain ⟨m, hm⟩ := m
@@ -433,6 +434,7 @@ lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
   fun m hm ↦ snf.repr_eq_zero_of_notMem_range ⟨m, hm⟩ hi
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma repr_apply_embedding_eq_repr_smul {i : Fin n} :
     snf.bM.repr m (snf.f i) = snf.bN.repr (snf.a i • m) i := by
   obtain ⟨m, hm⟩ := m
@@ -448,11 +450,13 @@ lemma le_ker_coord_of_notMem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     Finsupp.mem_support_iff, ite_not, mul_comm, ite_eq_right_iff]
   exact fun a ↦ (mul_eq_zero_of_right _ a).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma repr_comp_embedding_eq_smul :
     snf.bM.repr m ∘ snf.f = snf.a • (snf.bN.repr m : Fin n → R) := by
   ext i
   simp [Pi.smul_apply (snf.a i)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coord_apply_embedding_eq_smul_coord {i : Fin n} :
     snf.bM.coord (snf.f i) ∘ₗ N.subtype = snf.a i • snf.bN.coord i := by
   ext m

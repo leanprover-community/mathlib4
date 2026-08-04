@@ -22,7 +22,7 @@ In particular, if `e : C ≌ D` is an equivalence of categories and
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
@@ -85,8 +85,9 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+  toHasCardinalFilteredColimits := ⟨fun J _ _ ↦
     let : Reflective G := ⟨_, adj⟩
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 

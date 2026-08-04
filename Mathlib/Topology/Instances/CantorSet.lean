@@ -39,7 +39,9 @@ This file defines the Cantor ternary set and proves a few properties.
 middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
 union of the images under the functions `(· / 3)` and `((2 + ·) / 3)` of `preCantorSet n`.
 -/
-def preCantorSet : ℕ → Set ℝ
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def preCantorSet : ℕ → Set ℝ
   | 0 => Set.Icc 0 1
   | n + 1 => (· / 3) '' preCantorSet n ∪ (fun x ↦ (2 + x) / 3) '' preCantorSet n
 
@@ -52,7 +54,9 @@ def preCantorSet : ℕ → Set ℝ
 pre-Cantor sets. This means that the Cantor set is obtained by iteratively removing the
 open middle third of each subinterval, starting from the unit interval `[0, 1]`.
 -/
-def cantorSet : Set ℝ := ⋂ n, preCantorSet n
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
 
 /-!
@@ -88,16 +92,8 @@ lemma zero_mem_preCantorSet (n : ℕ) : 0 ∈ preCantorSet n := by
 theorem zero_mem_cantorSet : 0 ∈ cantorSet := by simp [cantorSet, zero_mem_preCantorSet]
 
 theorem preCantorSet_antitone : Antitone preCantorSet := by
-  apply antitone_nat_of_succ_le
-  intro m
-  simp only [Set.le_eq_subset, preCantorSet_succ, Set.union_subset_iff]
-  induction m with
-  | zero =>
-    simp only [preCantorSet_zero]
-    constructor <;> intro x <;>
-      simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
-      intro y _ _ _ <;> constructor <;> linarith
-  | succ m ih => grind [preCantorSet_succ, Set.image_union]
+  refine antitone_nat_of_succ_le fun m ↦ ?_
+  induction m with grind [preCantorSet_zero, preCantorSet_succ]
 
 lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 1 := by
   rw [← preCantorSet_zero]
@@ -122,6 +118,7 @@ theorem cantorSet_eq_union_halves :
     Function.comp_def, ← preCantorSet_succ]
   exact (preCantorSet_antitone.iInter_nat_add _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preCantor sets are closed. -/
 lemma isClosed_preCantorSet (n : ℕ) : IsClosed (preCantorSet n) := by
   let f := Homeomorph.mulLeft₀ (1 / 3 : ℝ) (by simp)
@@ -279,7 +276,7 @@ theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : �
   rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
-  simpa using h_mem.left
+  simpa using! h_mem.left
 
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 # Multiplicative homomorphisms respect semiconjugation and commutation.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
