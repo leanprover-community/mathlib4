@@ -179,21 +179,9 @@ theorem isInt_lt_false [Ring α] [PartialOrder α] [IsOrderedRing α] {a b : α}
   not_lt_of_ge (isInt_le_true hb ha h)
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
-  let .app (.app f a) b ← whnfR e | failure
-  let ⟨u, α, a⟩ ← inferTypeQ' a
-  have b : Q($α) := b
-  let ra ← derive a; let rb ← derive b
-  let lα ← synthInstanceQ q(LE $α)
-  guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
-  core lα ra rb
-where
-  /-- Identify (as `true` or `false`) expressions of the form `a ≤ b`, where `a` and `b` are numeric
-  expressions whose evaluations to `NormNum.Result` have already been computed. -/
-  core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
+/-- Identify (as `true` or `false`) expressions of the form `a ≤ b`, where `a` and `b` are numeric
+expressions whose evaluations to `NormNum.Result` have already been computed. -/
+def evalLE.core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a ≤ $b)) := do
   let e := q($a ≤ $b)
   let rec intArm : MetaM (Result e) := do
@@ -243,22 +231,22 @@ where
     else -- Nats can appear in an ordered ring without `CharZero`.
       intArm
 
-attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `a < b`,
+/-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
+@[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  let lα ← synthInstanceQ q(LT $α)
-  guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
-  core lα ra rb
-where
-  /-- Identify (as `true` or `false`) expressions of the form `a < b`, where `a` and `b` are numeric
-  expressions whose evaluations to `NormNum.Result` have already been computed. -/
-  core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
+  let lα ← synthInstanceQ q(LE $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+  evalLE.core lα ra rb
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Identify (as `true` or `false`) expressions of the form `a < b`, where `a` and `b` are numeric
+expressions whose evaluations to `NormNum.Result` have already been computed. -/
+def evalLT.core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
     (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a < $b)) := do
   let e := q($a < $b)
   let rec intArm : MetaM (Result e) := do
@@ -322,5 +310,17 @@ where
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNat_lt_false $pa $pb $r)
+
+/-- The `norm_num` extension which identifies expressions of the form `a < b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  let .app (.app f a) b ← whnfR e | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
+  have b : Q($α) := b
+  let ra ← derive a; let rb ← derive b
+  let lα ← synthInstanceQ q(LT $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+  evalLT.core lα ra rb
 
 end Mathlib.Meta.NormNum
