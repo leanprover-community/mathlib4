@@ -268,6 +268,42 @@ noncomputable def relStruct₀ [KanComplex X] {p q : X.PtSimplex n x} (h : Homot
 
 end Homotopy
 
-def RelStruct₀.homotopy {p q : X.PtSimplex n x} (h : RelStruct₀ p q) : Homotopy p q := sorry
+-- to be moved
+@[simp, grind =] theorem cases_one {n : ℕ} {motive : Fin (n + 2) → Sort _} {zero succ} :
+  Fin.cases (motive := motive) zero succ 1 = succ 0 := rfl
+
+-- to be moved
+@[simp, grind =] theorem cases_last {n : ℕ} {motive : Fin (n + 2) → Sort _} {zero succ} :
+  Fin.cases (motive := motive) zero succ (Fin.last _) = succ (Fin.last _) := rfl
+
+/-- Given `p` and `q` in `X.PtSimplex n x`, this is a choice of map
+`RelStruct₀ p q → Homotopy p q`. -/
+noncomputable def RelStruct₀.homotopy [KanComplex X]
+    {p q : X.PtSimplex n x} (h : RelStruct₀ p q) : Homotopy p q :=
+  Nonempty.some (by
+    obtain ⟨s, hs⟩ := prodStdSimplex₁.exists_desc
+      (Fin.cases h.symm.map (fun i ↦ stdSimplex.σ i.succ ≫ p.map)) (fun i ↦ by
+        obtain _ | n := n
+        · fin_cases i
+        · obtain rfl | ⟨i, rfl⟩ := i.eq_zero_or_eq_succ
+          · simp [dsimp% stdSimplex.δ_comp_σ_self_assoc (n := n + 1) (i := 1),
+              dsimp% h.symm.δ_succ_map]
+          · simp [dsimp% stdSimplex.{u}.δ_comp_σ_self_assoc (i := i.succ.succ),
+              stdSimplex.{u}.δ_comp_σ_succ_assoc (i := i.castSucc.succ)])
+    exact ⟨{
+      h := s
+      h₀ := by
+        rw [← dsimp% h.symm.δ_succ_map, ← prodStdSimplex₁.δ_ι_last_assoc, hs]
+        obtain _ | n := n
+        · simp
+        · simp [dsimp% stdSimplex.δ_comp_σ_succ_assoc (i := Fin.last (n + 1)),
+            dsimp% h.symm.δ_succ_map]
+      h₁ := by
+        simpa [dsimp% h.symm.δ_castSucc_map,
+          prodStdSimplex₁.δ_ι_zero_assoc] using stdSimplex.δ 0 ≫= hs 0
+      rel := by
+        simp
+        sorry
+    }⟩)
 
 end SSet.PtSimplex
