@@ -72,8 +72,7 @@ theorem isRecurrent_def :
 theorem isRecurrent_iff_ae_iUnion :
     IsRecurrent f μ s ↔ (sᶜ ∪ ⋃ n ≠ 0, f^[n] ⁻¹' s : Set α) =ᵐ[μ] univ := by
   rw [isRecurrent_def, ae_iff, ae_eq_univ]
-  apply Eq.congr _ (Eq.refl 0)
-  congr 2
+  congrm μ { x | ?_ } = 0
   simp
 
 theorem isRecurrent_iff_restrict (f : α → α) (hs : NullMeasurableSet s μ) :
@@ -91,9 +90,14 @@ theorem IsRecurrent.of_absolutelyContinuous {ν : Measure α} (hν : ν ≪ μ) 
 theorem isRecurrent_of_null (hs : μ s = 0) : IsRecurrent f μ s :=
   (measure_eq_zero_iff_ae_notMem.1 hs).mono fun x _ _ ↦ by contradiction
 
+@[simp]
+theorem isRecurrent_empty : IsRecurrent f μ ∅ := by
+  simp [isRecurrent_of_null]
+
 theorem isRecurrent_of_mapsTo (hs : MapsTo f s s) : IsRecurrent f μ s :=
   isRecurrent_def.2 (Eventually.of_forall fun _ x_s ↦ ⟨1, one_ne_zero, hs x_s⟩)
 
+@[simp]
 theorem isRecurrent_univ : IsRecurrent f μ univ :=
   isRecurrent_of_mapsTo (mapsTo_univ f univ)
 
@@ -101,11 +105,7 @@ theorem isRecurrent_union {t : Set α} (hs : IsRecurrent f μ s) (ht : IsRecurre
     IsRecurrent f μ (s ∪ t) := by
   simp only [isRecurrent_def] at hs ht ⊢
   filter_upwards [hs, ht] with x xsn xtn xst
-  rcases xst with xs | xt
-  · obtain ⟨n, n₀, xn⟩ := xsn xs
-    exact ⟨n, n₀, mem_union_left t xn⟩
-  · obtain ⟨n, n₀, xn⟩ := xtn xt
-    exact ⟨n, n₀, mem_union_right s xn⟩
+  grind
 
 theorem isRecurrent_iUnion {ι : Type*} [Countable ι] {s : ι → Set α}
     (hs : ∀ i, IsRecurrent f μ (s i)) :
@@ -132,8 +132,7 @@ theorem isRecurrent_congr_set {t : Set α} (hf : QuasiMeasurePreserving f μ μ)
 theorem isRecurrent_of_ae (hf : QuasiMeasurePreserving f μ μ) (hs : s ∈ ae μ) :
     IsRecurrent f μ s := by
   rw [mem_ae_iff, ← ae_eq_univ] at hs
-  rw [isRecurrent_congr_set hf hs]
-  exact isRecurrent_univ
+  simp [isRecurrent_congr_set hf hs]
 
 theorem IsRecurrent.preimage (n : ℕ) (hf : QuasiMeasurePreserving f μ μ) (hs : IsRecurrent f μ s) :
     IsRecurrent f μ (f^[n] ⁻¹' s) := by
@@ -152,8 +151,7 @@ theorem isRecurrent_iff_isReccurent_iUnion_preimage (s : Set α)
   simp only [mem_iUnion, Set.mem_preimage, forall_exists_index] at hx
   specialize hx 0
   simp only [iterate_zero, id_eq, xs, forall_const, ← iterate_add_apply] at hx
-  obtain ⟨n, n₀, m, x_m⟩ := hx
-  exact ⟨m + n, add_ne_zero.2 (Or.inr n₀), x_m⟩
+  grind
 
 theorem isRecurrent_of_ae_iUnion_preimage (hf : QuasiMeasurePreserving f μ μ)
     (hs : ⋃ n, f^[n] ⁻¹' s ∈ ae μ) :
@@ -177,9 +175,9 @@ theorem IsRecurrent.frequently_measure_inter_ne_zero {t : Set α}
     simp only [mem_inter_iff, Set.mem_preimage, Set.mem_union, mem_iUnion, ← iterate_add_apply, r]
     grind
   obtain ⟨m, hm⟩ := exists_measure_pos_of_not_measure_iUnion_null
-    (pos_mono r_sub (pos_of_ne_zero r_μ)).ne.symm
-  obtain ⟨m₀, hm⟩ := exists_measure_pos_of_not_measure_iUnion_null hm.ne.symm
-  exact ⟨n + m, hm.ne.symm, lt_add_of_pos_right n (pos_of_ne_zero m₀)⟩
+    (pos_mono r_sub (pos_of_ne_zero r_μ)).ne'
+  obtain ⟨m₀, hm⟩ := exists_measure_pos_of_not_measure_iUnion_null hm.ne'
+  exact ⟨n + m, hm.ne', lt_add_of_pos_right n (pos_of_ne_zero m₀)⟩
 
 theorem IsRecurrent.ae_mem_imp_frequently_image_mem (hf : QuasiMeasurePreserving f μ μ)
     (hs : IsRecurrent f μ s) :
@@ -235,6 +233,7 @@ theorem MeasurePreserving.isRecurrent [IsFiniteMeasure μ] (hf : MeasurePreservi
     IsRecurrent f μ s :=
   isRecurrent_def.2 (hf.ae_mem_exists_iterate_mem hs)
 
+@[simp]
 theorem isRecurrent_id :
     IsRecurrent id μ s :=
   Eventually.of_forall fun x x_s ↦ mem_iUnion₂.2 ⟨1, one_ne_zero, by simpa⟩
@@ -273,7 +272,7 @@ namespace Conservative
 /-- The identity map is conservative w.r.t. any measure. -/
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
-    isRecurrent := fun _ _ ↦ isRecurrent_id }
+    isRecurrent := by simp }
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
     (h' : QuasiMeasurePreserving f ν ν) :

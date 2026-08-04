@@ -919,7 +919,7 @@ theorem _root_.Set.infinite_iff_exists_gt_mem (hs : s.Nonempty) :
   obtain ⟨a, ha⟩ := (Set.not_infinite.1 s_fin).exists_maximalFor id s hs
   rw [maximalFor_id] at ha
   obtain ⟨b, b_s, a_b⟩ := h a ha.prop
-  exact (ha.le_of_ge b_s a_b.le).not_gt a_b
+  exact (not_maximal_iff_exists_gt ha.prop).2 ⟨b, a_b, b_s⟩ ha
 
 end LocallyFiniteOrderBot
 
