@@ -574,7 +574,7 @@ instance lt_wf : WellFoundedLT Ordinal :=
     RelHomClass.wellFounded (enum _) wo.wf)
 
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
-  ⟨(· < ·), lt_wf⟩
+  WellFoundedLT.toWellFoundedRelation
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _

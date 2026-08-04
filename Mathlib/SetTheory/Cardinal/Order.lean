@@ -370,7 +370,7 @@ protected instance lt_wf : WellFoundedLT Cardinal.{u} :=
       simpa only [mk_out] using this⟩
 
 instance : WellFoundedRelation Cardinal.{u} :=
-  ⟨(· < ·), Cardinal.lt_wf⟩
+  WellFoundedLT.toWellFoundedRelation
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
