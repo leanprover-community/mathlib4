@@ -47,12 +47,13 @@ variable (R : Type*) [CommRing R] [IsPrincipalIdealRing R] {S : Type*} [CommRing
 /-- The denominator of an element `x` of an `R`-algebra: a generator of the ideal of scalars
 `r : R` such that `r • x` is integral over `R`. It is nonzero as soon as `x` is algebraic over
 `R`; see `IsAlgebraic.denominator_ne_zero`. -/
-@[expose] noncomputable def denominator (x : S) : R :=
+noncomputable def denominator (x : S) : R :=
   Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x})
 
-theorem denominator_def (x : S) :
+-- `denominator` is not `@[expose]`, so term-mode `rfl` is rejected in this exported lemma.
+lemma denominator_def (x : S) :
     denominator R x =
-      Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x}) :=
+      Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x}) := by
   rfl
 
 variable {R}
@@ -67,10 +68,10 @@ theorem isIntegral_denominator_smul (x : S) : IsIntegral R (denominator R x • 
 
 /-- The natural-number denominator of an element `x` of a ring: the absolute value of the
 denominator of `x` over `ℤ`. -/
-@[expose] noncomputable def natDenominator (x : S) : ℕ :=
+noncomputable def natDenominator (x : S) : ℕ :=
   (denominator ℤ x).natAbs
 
-theorem natDenominator_def (x : S) : natDenominator x = (denominator ℤ x).natAbs :=
+theorem natDenominator_def (x : S) : natDenominator x = (denominator ℤ x).natAbs := by
   rfl
 
 theorem natDenominator_dvd_iff {n : ℕ} {x : S} :
