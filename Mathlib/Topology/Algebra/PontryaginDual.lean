@@ -61,10 +61,6 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-#adaptation_note /-- nightly-2026-03-31
-This `set_option` is necessary because of a compiler bug.
--/
-set_option backward.inferInstanceAs.wrap.data false in
 instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
 
 deriving instance
@@ -89,7 +85,7 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
   let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (Circle.centeredArc (π / 2))}
   have hVopen : IsOpen V := by
     dsimp only [V]
-    exact isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ
+    exact isOpen_induced (ContinuousMap.isOpen_setOfPred_mapsTo isCompact_univ
       (Circle.isOpen_centeredArc (π / 2)))
   have hVeq : V = ({1} : Set (PontryaginDual A)) := by
     ext ψ

@@ -114,6 +114,7 @@ noncomputable def rTensorInv : (P ⊗[R] M →ₗ[R] Q ⊗[R] M) →ₗ[R] (P �
   ((rightCancelEquiv Q e).congrRight ≪≫ₗ (rightCancelEquiv P e).congrLeft _ R) ∘ₗ
     LinearMap.rTensorHom N
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTensorHom M) :=
   fun _ ↦ by
     simp_rw [rTensorInv, LinearEquiv.coe_trans, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
@@ -131,6 +132,7 @@ of `R`-modules. -/
   left_inv := rTensorInv_leftInverse P Q e
   right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`,
 the induced map `M → Nᵛ` is an isomorphism. -/
@@ -299,7 +301,7 @@ theorem leftInverse_iff_rightInverse :
 a left inverse of `g`, then in fact `f` is also the right inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
+  .ofLinearMap f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
 
 @[simp] lemma linearEquivOfLeftInverse_apply (hfg : Function.LeftInverse f g) (x : M) :
     linearEquivOfLeftInverse hfg x = f x := rfl
@@ -311,7 +313,7 @@ def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
 a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
+  .ofLinearMap f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
 
 @[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
     linearEquivOfRightInverse hfg x = f x := rfl
@@ -367,6 +369,35 @@ instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
 
+/-- An invertible module over a commutative semiring is Zariski-locally free of rank 1.
+Theorem 10.7 in [BorgerJun2024].
+
+More precisely, there is a finite set of elements of `R` that generate the unit ideal,
+and localizing `M` at any one of them yields a free module.
+
+Finite projective modules over a local commutative semiring may not be free,
+see Remark 7.10, Example 9.6 and 9.8. -/
+theorem exists_finset_free_localization :
+    ∃ s : Finset R, Ideal.span (s : Set R) = ⊤ ∧
+      ∀ r ∈ s, Free (Localization.Away r) (LocalizedModule.Away r M) := by
+  classical
+  -- write 1 = ∑ᵢ fᵢ(mᵢ) with `mᵢ : M` and `fᵢ : Dual R M`
+  obtain ⟨S, hS⟩ := ((linearEquiv R M).symm 1).exists_finset
+  refine ⟨S.image fun i ↦ i.1 i.2, ?_, fun r hr ↦ ?_⟩
+  -- Part 1: The evaluations fᵢ(mᵢ) generate the unit ideal
+  · simpa [Ideal.eq_top_iff_one, (LinearEquiv.symm_apply_eq _).mp hS, linearEquiv]
+      using Ideal.sum_mem _ fun i hi ↦ Ideal.subset_span (Finset.mem_image_of_mem _ hi)
+  -- Part 2: After localizing at any f(m), the module becomes free
+  obtain ⟨⟨f, m⟩, _, rfl⟩ := Finset.mem_image.mp hr
+  -- Extend f to a R_{f(m)}-linear functional f' on the localized module
+  let f' : Dual (Localization.Away (f m)) (LocalizedModule.Away (f m) M) :=
+    .extendScalarsOfIsLocalization (.powers (f m)) _ <| IsLocalizedModule.map
+      (.powers (f m)) (LocalizedModule.mkLinearMap _ M) (Algebra.linearMap R _) f
+  -- f'(m/1) = f(m)/1 is a unit in R_{f(m)}, so f' is surjective and therefore bijective
+  have surj : Function.Surjective f' := LinearMap.range_eq_top.mp <| Ideal.eq_top_of_isUnit_mem
+    _ ⟨_, IsLocalizedModule.map_apply ..⟩ (IsLocalization.Away.algebraMap_isUnit (f m))
+  exact .of_equiv <| .symm <| .ofBijective f' (bijective_of_surjective surj)
+
 end CommSemiring
 
 end Algebra
@@ -404,8 +435,7 @@ open CommRing (Pic)
 
 noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
 
-variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-  [Module.Invertible R M] [Module.Invertible R N]
+variable [Module.Invertible R M] [Module.Invertible R N]
 
 instance : Module.Invertible R (Finite.reprₛ R M) := .congr (Finite.reprEquivₛ R M).symm
 
@@ -420,6 +450,7 @@ noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
@@ -472,14 +503,14 @@ instance : Free R (1 : Pic R) := mk_eq_one_iff_free.mp mk_eq_self
 
 theorem mk_tensor : Pic.mk R (M ⊗[R] N) = Pic.mk R M * Pic.mk R N :=
   congr_arg (equivShrink _) <| Units.ext <| by
-    simp_rw [Pic.mk, Equiv.symm_apply_apply]
+    simp_rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     refine (Quotient.sound ?_).trans (Skeleton.toSkeleton_tensorObj ..)
     exact ⟨(Finite.reprEquivₛ R _ ≪≫ₗ TensorProduct.congr
       (Finite.reprEquivₛ R M).symm (Finite.reprEquivₛ R N).symm).toModuleIsoₛ⟩
 
 theorem mk_dual : Pic.mk R (Dual R M) = (Pic.mk R M)⁻¹ :=
   congr_arg (equivShrink _) <| Units.ext <| by
-    rw [Pic.mk, Equiv.symm_apply_apply]
+    rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     exact Quotient.sound ⟨(Finite.reprEquivₛ R _ ≪≫ₗ (Finite.reprEquivₛ R _).dualMap).toModuleIsoₛ⟩
 
 theorem inv_eq_dual (M : Pic R) : M⁻¹ = Pic.mk R (Dual R M) := by
@@ -503,11 +534,14 @@ instance [Subsingleton (Pic R)] : Free R M :=
   have := subsingleton_iffₛ.mp ‹_› (Finite.reprₛ R M) inferInstance
   .of_equiv (Finite.reprEquivₛ R M)
 
-/- TODO: it's still true that the Picard group of a (commutative) local semiring is trivial;
-in fact invertible modules over a semiring are Zariski-locally free (but projective module may
-not be). See Remark 7.10, Example 9.6 and 9.8, and Theorem 11.7 in [BorgerJun2024]. -/
-instance (R) [CommRing R] [IsLocalRing R] : Subsingleton (Pic R) :=
-  subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
+/-- The Picard group of a local semiring is trivial. -/
+instance [IsLocalRing R] : Subsingleton (Pic R) := subsingleton_iffₛ.mpr fun M _ _ _ ↦ by
+  obtain ⟨S, hS⟩ := ((Invertible.linearEquiv R M).symm 1).exists_finset
+  replace hS : 1 = ∑ i ∈ S, i.1 i.2 := by
+    simpa [LinearEquiv.symm_apply_eq, Invertible.linearEquiv] using hS
+  obtain ⟨⟨f, m⟩, mem, hfm⟩ := IsLocalRing.exists_of_isUnit_sum (hS ▸ isUnit_one)
+  exact .of_equiv <| .symm <| .ofBijective f (Invertible.bijective_of_surjective <|
+    LinearMap.range_eq_top.mp <| Ideal.eq_top_of_isUnit_mem _ ⟨m, rfl⟩ hfm)
 
 /-- The Picard group of a semilocal ring is trivial. -/
 instance (R) [CommRing R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
@@ -592,18 +626,15 @@ end PicardGroup
 
 namespace Module.Invertible
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+variable [Module.Invertible R M]
 
-set_option backward.defeqAttrib.useBackward true in
--- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
 theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
   let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
   let ff (P : Ideal R) [P.IsMaximal] := TensorProduct.map (f P) (f P)
   refine LinearEquiv.toLinearMap_injective <| LinearMap.eq_of_localization_maximal _ ff _ ff _ _
     fun P _ ↦ .trans (b := (TensorProduct.comm ..).toLinearMap) ?_ ?_
   · apply IsLocalizedModule.linearMap_ext P.primeCompl (ff P) (ff P)
-    ext; dsimp
-    apply IsLocalizedModule.map_apply
+    ext; exact IsLocalizedModule.map_apply _ (ff P) ..
   let Rp := Localization P.primeCompl
   have ⟨e⟩ := free_iff_linearEquiv.mp (inferInstance : Free Rp (LocalizedModule P.primeCompl M))
   have e := e.restrictScalars R
@@ -798,14 +829,6 @@ noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
 
 end Module.Flat
 
-namespace Module.Invertible
-
-@[deprecated (since := "2025-11-23")] alias embAlgebra := Flat.toAlgebra
-@[deprecated (since := "2025-11-23")] alias embAlgebra_injective := Flat.toAlgebra_injective
-@[deprecated (since := "2025-11-23")] alias toSubmodule := Flat.submoduleAlgebra
-
-end Module.Invertible
-
 section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
@@ -837,6 +860,9 @@ theorem Submodule.mulExact_unitsToPic_mapAlgebra :
     Function.MulExact (unitsToPic R A) (mapAlgebra R A) :=
   MonoidHom.mulExact_iff.mpr (range_unitsToPic R A).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 open QuotientGroup in
 /-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
 the group of the invertible `R`-submodules in `A` modulo the principal submodules. -/
@@ -845,6 +871,9 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=
@@ -854,7 +883,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 /-- The Picard group of a domain with normalizable gcd is trivial.
 This includes unique factorization domains. -/
 @[stacks 0BCH]
-instance (R) [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)] : Subsingleton (Pic R) :=
+instance (R) [CommRing R] [IsDomain R] [IsGCDMonoid R] : Subsingleton (Pic R) :=
   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup

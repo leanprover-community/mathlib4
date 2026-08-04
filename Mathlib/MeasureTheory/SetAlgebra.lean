@@ -200,7 +200,7 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
       exact hA a.1 a.2 (f a).1 (f a).2
     · ext x
       simp only [u_eq, compl_iUnion, compl_iInter, mem_iInter, mem_iUnion, mem_compl_iff,
-        exists_prop, Subtype.exists, mem_setOf_eq, iUnion_exists, iUnion_iUnion_eq',
+        exists_prop, Subtype.exists, mem_ofPred_eq, iUnion_exists, iUnion_iUnion_eq',
         iInter_exists]
       constructor <;> intro hx
       · choose f hf using hx
@@ -230,9 +230,9 @@ theorem countable_generateSetAlgebra (h : 𝒜.Countable) :
     exact this ▸ h.image compl
   let f : Set (Set (Set α)) → Set α := fun A ↦ ⋃ a ∈ A, ⋂ t ∈ a, t
   let 𝒞 := {a | a.Finite ∧ a ⊆ ℬ}
-  have count_𝒞 : 𝒞.Countable := countable_setOf_finite_subset (countable_coe_iff.1 count_ℬ)
+  have count_𝒞 : 𝒞.Countable := countable_ofPred_finite_subset (countable_coe_iff.1 count_ℬ)
   let 𝒟 := {A | A.Finite ∧ A ⊆ 𝒞}
-  have count_𝒟 : 𝒟.Countable := countable_setOf_finite_subset (countable_coe_iff.1 count_𝒞)
+  have count_𝒟 : 𝒟.Countable := countable_ofPred_finite_subset (countable_coe_iff.1 count_𝒞)
   have : generateSetAlgebra 𝒜 ⊆ f '' 𝒟 := by
     intro s s_mem
     rcases mem_generateSetAlgebra_elim s_mem with ⟨A, A_fin, mem_A, hA, rfl⟩

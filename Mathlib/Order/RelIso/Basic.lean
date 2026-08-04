@@ -873,3 +873,90 @@ def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 
 end RelIso
+
+/-- A function `f : α → β` induces a relation homomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelHom.toMap (r : α → α → Prop) (f : α → β) : r →r Relation.Map r f f where
+  toFun := f
+  map_rel' {a b} hr := ⟨a, b, hr, rfl, rfl⟩
+
+@[simp]
+theorem RelHom.coe_toMap (r : α → α → Prop) (f : α → β) : ⇑(RelHom.toMap r f) = f :=
+  rfl
+
+/-- An embedding `f : α ↪ β` induces a relation embedding from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelEmbedding.toMap (r : α → α → Prop) (f : α ↪ β) : r ↪r Relation.Map r f f where
+  __ := f
+  map_rel_iff' {a b} := by grind [Relation.onFun_map_eq_of_injective (r := r) f.injective]
+
+@[simp]
+theorem RelEmbedding.coe_toMap (r : α → α → Prop) (f : α ↪ β) : ⇑(RelEmbedding.toMap r f) = f :=
+  rfl
+
+/-- An equivalence `f : α ≃ β` induces a relation isomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def RelIso.toMap (r : α → α → Prop) (f : α ≃ β) : r ≃r Relation.Map r f f where
+  __ := f
+  __ := RelEmbedding.toMap r f.toEmbedding
+
+@[simp]
+theorem RelIso.coe_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.toMap r f) = f :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_toMap (r : α → α → Prop) (f : α ≃ β) : RelIso.toMap r f = f :=
+  rfl
+
+@[simp]
+theorem RelIso.coe_symm_toMap (r : α → α → Prop) (f : α ≃ β) : ⇑(RelIso.toMap r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_toMap (r : α → α → Prop) (f : α ≃ β) :
+    (RelIso.toMap r f).symm = f.symm :=
+  rfl
+
+/-- For a `β`-relation `r`, a function `f : α → β` induces a relation homomorphism from `r.onFun f`
+to `r`. -/
+def RelHom.ofOnFun (r : β → β → Prop) (f : α → β) : r.onFun f →r r where
+  toFun := f
+  map_rel' := id
+
+@[simp]
+theorem RelHom.coe_ofOnFun (r : β → β → Prop) (f : α → β) : ⇑(RelHom.ofOnFun r f) = f :=
+  rfl
+
+/-- For a `β`-relation `r`, an embedding `f : α ↪ β` induces a relation embedding from `r.onFun f`
+to `r`. -/
+def RelEmbedding.ofOnFun (r : β → β → Prop) (f : α ↪ β) : r.onFun f ↪r r where
+  __ := f
+  map_rel_iff' := by rfl
+
+@[simp]
+theorem RelEmbedding.coe_ofOnFun (r : β → β → Prop) (f : α ↪ β) : ⇑(RelEmbedding.ofOnFun r f) = f :=
+  rfl
+
+/-- For a `β`-relation `r`, an equivalence `f : α ≃ β` induces a relation isomorphism from
+`r.onFun f` to `r`. -/
+def RelIso.ofOnFun (r : β → β → Prop) (f : α ≃ β) : r.onFun f ≃r r where
+  __ := f
+  __ := RelEmbedding.ofOnFun r f.toEmbedding
+
+@[simp]
+theorem RelIso.coe_ofOnFun (r : β → β → Prop) (f : α ≃ β) : ⇑(RelIso.ofOnFun r f) = f :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_ofOnFun (r : β → β → Prop) (f : α ≃ β) : RelIso.ofOnFun r f = f :=
+  rfl
+
+@[simp]
+theorem RelIso.coe_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
+    ⇑(RelIso.ofOnFun r f).symm = f.symm :=
+  rfl
+
+@[simp]
+theorem RelIso.toEquiv_symm_ofOnFun (r : β → β → Prop) (f : α ≃ β) :
+    (RelIso.ofOnFun r f).symm = f.symm :=
+  rfl

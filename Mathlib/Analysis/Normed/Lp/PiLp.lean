@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
+
 Given finitely many metric spaces, one can put the max distance on their product, but there is also
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `Π i, α i`
@@ -416,6 +417,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
 
 attribute [local instance] PiLp.pseudoEmetricAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
 theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
@@ -565,10 +567,12 @@ instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   (Pi.uniformSpace β).comap ofLp
 
+@[fun_prop]
 lemma uniformContinuous_ofLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@ofLp p (∀ i, β i)) :=
   uniformContinuous_comap
 
+@[fun_prop]
 lemma uniformContinuous_toLp [∀ i, UniformSpace (β i)] :
     UniformContinuous (@toLp p (∀ i, β i)) :=
   uniformContinuous_comap' uniformContinuous_id
@@ -750,6 +754,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 section L1
 variable {β} [∀ i, SeminormedAddCommGroup (β i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
   simp [norm_eq_sum]
 
@@ -762,6 +767,7 @@ theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := 
 theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
   NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
   simp [PiLp.edist_eq_sum]
 
@@ -1010,7 +1016,7 @@ variable [DecidableEq ι]
 
 @[simp]
 theorem nnnorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup]
@@ -1129,19 +1135,31 @@ end Fintype
 
 section
 
-variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
+  continuous_invFun := (by fun_prop : Continuous fun (a : Π i, β i) ↦ toLp p a)
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl
 
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
+
+/-- The natural equivalence between `PiLp p β` and `β default`,
+for any index type `ι` with a unique element. -/
+@[simps! apply symm_apply]
+def equivOfUnique [Unique ι] : PiLp p β ≃L[𝕜] β default :=
+  (continuousLinearEquiv p 𝕜 β).trans <| .piUnique 𝕜 β
+
+end
+
+section
+
+variable [Semiring 𝕜] [∀ i, NormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
@@ -1247,7 +1265,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
-  letI := pseudoMetricSpaceToPi p α
+  let := pseudoMetricSpaceToPi p α
   refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
@@ -1257,7 +1275,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  let := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 

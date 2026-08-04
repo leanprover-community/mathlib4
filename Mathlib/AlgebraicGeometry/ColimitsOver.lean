@@ -259,7 +259,7 @@ def isColimitGluedCocone : IsColimit d.gluedCocone := by
       rw [reassoc_of% this]
       simp
   · intro s a
-    letI 𝒲 (a : J) : (D.obj a).left.OpenCover := 𝒰.pullback₁ (D.obj a).hom
+    let 𝒲 (a : J) : (D.obj a).left.OpenCover := 𝒰.pullback₁ (D.obj a).hom
     ext
     refine (𝒲 a).hom_ext _ _ fun i ↦ ?_
     dsimp
