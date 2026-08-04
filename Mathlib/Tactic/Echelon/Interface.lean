@@ -10,16 +10,11 @@ public import Mathlib.Tactic.Echelon.Bareiss
 public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
-# `norm_rank` simproc and `eval_rank` tactic
+# `eval_rank`: rank of matrix literals by Bareiss elimination
 
-`eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain,
-for matrices whose entries are numerals or `norm_num`-evaluable expressions.
-
-The commitment gate is `matchRankLit?` (the goal shape) followed by
-`checkBareissCommittal` (the element type); a miss in either skips silently. Past the
-gate, `normalizeRank` produces and elaborates a Bareiss decomposition of the matched
-matrix, applies `rank_eq`, and returns a `Simp.Result` rewriting the rank to a literal;
-its failures throw.
+`eval_rank` (and the underlying simproc `norm_rank`) closes goals of the form
+`Matrix.rank !![…] = k` over a commutative domain, for matrices whose entries are
+numerals or `norm_num`-evaluable expressions.
 -/
 
 public meta section
