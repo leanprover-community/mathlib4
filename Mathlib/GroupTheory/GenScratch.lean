@@ -1,0 +1,113 @@
+/-
+Copyright (c) 2026 Hang Lu Su. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Hang Lu Su
+-/
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.GroupTheory.FreeGroup.Basic
+
+/-!
+# Group generators as data
+
+A generating family is usually carried as a set together with a hypothesis
+`Subgroup.closure S = ⊤`. This file bundles the two, so that a choice of generators can be passed
+as an argument and pushed along surjections without re-supplying the hypothesis.
+
+## Main definitions
+
+* `Group.Generators G α`: a family `val : α → G`, indexed by `α`, whose range generates `G`.
+* `Group.Generators.map`: the image of a generating family under a surjection.
+
+## Main results
+
+* `Group.Generators.fg`: a group with a finite generating family is finitely generated.
+* `Group.fg_iff_nonempty_finite_generators`: a group is finitely generated if and only if it
+  admits a finite generating family.
+
+## Implementation notes
+
+* The index type `α` is a parameter, not a field. An index stored inside a term is invisible to
+  `rw`, `simp`, and instance search. `Algebra.Generators` unbundled its `vars` field for
+  these reasons (#25085), a move mathlib has made repeatedly and never reversed.
+* The generating condition is the closure equation. Terms of this structure are built from
+  mathlib's generation results, and those end in `closure … = ⊤`; making surjectivity of
+  `FreeGroup.lift val` the field would put a rewrite at every construction site. Consumers who
+  want surjectivity get it from `lift_val_surjective`, one rewrite away via
+  `FreeGroup.closure_range_eq_top_iff_surjective_lift`.
+* Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`. A
+  section earns its keep when elements have a standard form, as `a / rⁿ` does in
+  `Algebra.Generators.localizationAway`. Groups have no such form in general, since the word
+  problem is undecidable. That leaves `Classical.choice`, and nothing can be proved about the
+  words it picks. Nothing here needs a section.
+
+## References
+
+* [D. F. Holt, S. Rees, C. E. Röver, *Groups, Languages and Automata*][HoltReesRover2017], §1
+
+## Tags
+
+group generators, generating set, finitely generated
+-/
+
+@[expose] public section
+
+variable {G α : Type*} [Group G]
+
+/-- The generators of a group are given by a generating family indexed by `α` whose range generates
+`G`, or equivalently such that the induced homomorphism `FreeGroup.lift val : FreeGroup α →* G` is
+surjective. -/
+structure Group.Generators (G : Type*) [Group G] (α : Type*) where
+  /-- The generating family itself: `val a` is the element of `G` indexed by `a : α`. -/
+  val : α → G
+  /-- The subgroup closure of the generators is the whole group. -/
+  closure_eq_top : Subgroup.closure (Set.range val) = ⊤
+
+namespace Group.Generators
+
+variable (P : Group.Generators G α)
+
+lemma lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
+  FreeGroup.closure_range_eq_top_iff_surjective_lift.mp P.closure_eq_top
+
+/-- The generating family obtained using a generating set `S : Set G`. -/
+def ofSet {S : Set G} (h : Subgroup.closure S = ⊤) :
+    Group.Generators G S where
+  val :=  Subtype.val
+  closure_eq_top := by
+    rwa [Subtype.range_coe]
+
+/-- The transport of a generating family along a surjective homomorphism. -/
+protected def map {H : Type*} [Group H] (f : G →* H) (hf : Function.Surjective f) :
+    Group.Generators H α where
+  val := f ∘ P.val
+  closure_eq_top := by
+    rw [Set.range_comp, ← MonoidHom.map_closure, P.closure_eq_top,
+      Subgroup.map_top_of_surjective f hf]
+
+/-- The transport of a generating family along an equivalence of index types. -/
+def reindex {β : Type*} (P : Group.Generators G α) (e : β ≃ α) :
+    Group.Generators G β where
+  val := P.val ∘ e
+  closure_eq_top := by
+    rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
+
+@[simp]
+lemma reindex_val {β : Type*} (P : Group.Generators G α) (e : β ≃ α) :
+    (P.reindex e).val = P.val ∘ e := rfl
+
+/-- If `G` has a finite generating family, then `G` is finitely generated. -/
+theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
+  Group.fg_of_surjective P.lift_val_surjective
+
+end Group.Generators
+
+/-- A group is finitely generated if and only if it admits a finite generating family. -/
+theorem Group.fg_iff_nonempty_finite_generators :
+    Group.FG G ↔ ∃ n : ℕ, Nonempty (Group.Generators G (Fin n)) := by
+  constructor
+  · rintro ⟨S, hS⟩
+    exact ⟨S.card, ⟨(Group.Generators.ofSet hS).reindex S.equivFin.symm⟩⟩
+  · rintro ⟨n, ⟨P⟩⟩
+    exact P.fg

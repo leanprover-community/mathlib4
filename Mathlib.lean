@@ -4773,6 +4773,7 @@ public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 public import Mathlib.GroupTheory.FreeGroup.Orbit
 public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.GroupTheory.Generators
 public import Mathlib.GroupTheory.Goursat
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.Blocks
