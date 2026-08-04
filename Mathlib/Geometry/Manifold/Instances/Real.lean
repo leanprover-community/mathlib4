@@ -240,6 +240,13 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
+@[simp] lemma modelWithCornersEuclideanHalfSpace_toFun (n : ℕ) [NeZero n] :
+    (𝓡∂ n : _ → _) = Subtype.val := rfl
+
+lemma modelWithCornersEuclideanHalfSpace_symm_apply {n : ℕ} [NeZero n]
+    (x : EuclideanSpace ℝ (Fin n)) :
+    (𝓡∂ n).symm x = ⟨toLp 2 (update x 0 (max (x 0) 0)), by simp⟩ := rfl
+
 lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
@@ -298,6 +305,21 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   continuousOn_invFun := by fun_prop
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
+
+lemma IccLeftChart_apply (z : Icc x y) :
+    IccLeftChart x y z = ⟨toLp 2 fun _ ↦ z.val - x, by aesop⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccLeftChart x y).symm z = ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩ :=
+  rfl
+
+lemma IccLeftChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccLeftChart x y).symm z =
+      ⟨z.val 0 + x, by simpa [z.prop, hxy.out.le, ← le_add_neg_iff_add_le]⟩ := by
+  ext
+  simp only [IccLeftChart_symm_apply, inf_eq_left]
+  linarith
 
 namespace Fact.Manifold
 
@@ -361,6 +383,22 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     exact this.preimage continuous_subtype_val
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
+
+lemma IccRightChart_apply (z : Icc x y) :
+    IccRightChart x y z = ⟨toLp 2 fun _ ↦ y - z.val, by aesop⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply (x y : ℝ) [h : Fact (x < y)] (z : EuclideanHalfSpace 1) :
+    (IccRightChart x y).symm z =
+      ⟨max (y - z.val 0) x, by simp [z.prop, h.out.le, sub_eq_add_neg]⟩ :=
+  rfl
+
+lemma IccRightChart_symm_apply_of_le {z : EuclideanHalfSpace 1} (hz : z.val 0 ≤ y - x) :
+    (IccRightChart x y).symm z =
+      ⟨y - z.val 0, by simp [z.prop, sub_eq_add_neg, add_le_of_le_sub_left hz]⟩ := by
+  ext
+  simp only [IccRightChart_symm_apply, sup_eq_left]
+  linarith
 
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by

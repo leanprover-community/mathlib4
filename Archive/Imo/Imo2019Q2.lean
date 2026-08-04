@@ -275,7 +275,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
     rw [AffineSubspace.eq_iff_direction_eq_of_mem (left_mem_affineSpan_pair _ _ _)
       hwbtw.mem_affineSpan]
     exact cfg.PQ_parallel_AB.direction_eq
-  haveI := someOrientation V
+  have := someOrientation V
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
@@ -389,7 +389,7 @@ end Oriented
 
 
 theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
@@ -515,13 +515,13 @@ end Oriented
 
 
 theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.A₂, cfg.A₁} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CBA,
     Set.pair_comm, Set.insert_comm, Set.pair_comm]
   exact cfg.not_collinear_ABC
 
 theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.A₁, cfg.Q₁, cfg.C, cfg.A₂} : Set Pt) := by
-  haveI := someOrientation V
+  have := someOrientation V
   rw [Set.insert_comm cfg.Q₁, Set.insert_comm cfg.A₁, Set.pair_comm, Set.insert_comm cfg.A₁,
     Set.pair_comm]
   exact cospherical_of_two_zsmul_oangle_eq_of_not_collinear
