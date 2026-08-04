@@ -75,7 +75,7 @@ theorem comap_center_le_center {F} [FunLike F G H] [MonoidHomClass F G H] {f : F
 @[to_additive (attr := simp)]
 theorem map_center_eq {F} [EquivLike F G H] [MulEquivClass F G H] (f : F) :
     map f (center G) = center H :=
-  SetLike.coe_injective <| Set.image_center_eq _
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
