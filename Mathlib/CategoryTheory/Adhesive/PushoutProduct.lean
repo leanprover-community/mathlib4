@@ -46,14 +46,27 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [HasPushouts C]
 
+open CartesianMonoidalCategory in
 /-- The pushout-product of two monomorphisms in an adhesive cartesian monoidal category is a
 monomorphism. -/
 instance [CartesianMonoidalCategory C] [Adhesive C] {X Y : Arrow C} [Mono X.hom] [Mono Y.hom] :
-    Mono (X □ Y).hom :=
+    Mono (X □ Y).hom := by
   let : Mono (((curriedTensor C).obj X.right).map Y.hom) := (tensorLeft X.right).map_mono Y.hom
   let : Mono (((curriedTensor C).map X.hom).app Y.right) := (tensorRight Y.right).map_mono X.hom
-  mono_ι_of_isPullback (ofHasPushout (curriedTensor C) X.hom Y.hom)
-    (CartesianMonoidalCategory.isPullback_whisker_exchange X.hom Y.hom)
+  refine mono_ι_of_isPullback (ofHasPushout (curriedTensor C) X.hom Y.hom) ?_
+  refine IsPullback.mk' (whisker_exchange _ _).symm ?_ ?_
+  · intro _ _ _ h₁ h₂
+    apply CartesianMonoidalCategory.hom_ext
+    · simpa using h₂ =≫ fst _ _
+    · simpa using h₁ =≫ snd _ _
+  · intro _ a b h
+    refine ⟨lift (b ≫ fst _ _) (a ≫ snd _ _), ?_, ?_⟩
+    · apply CartesianMonoidalCategory.hom_ext
+      · simpa using (h =≫ fst _ _).symm
+      · simp
+    · apply CartesianMonoidalCategory.hom_ext
+      · simp
+      · simpa using h =≫ snd _ _
 
 end MonoidalCategory.Arrow.PushoutProduct
 
