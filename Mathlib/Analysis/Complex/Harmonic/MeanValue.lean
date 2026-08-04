@@ -115,3 +115,9 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   exact closedBall_subset_ball hr.2
 
 end InnerProductSpace
+
+@[deprecated InnerProductSpace.HarmonicOnNhd.circleAverage_eq (since := "2026-08-04")]
+alias HarmonicOnNhd.circleAverage_eq := InnerProductSpace.HarmonicOnNhd.circleAverage_eq
+
+@[deprecated InnerProductSpace.HarmonicContOnCl.circleAverage_eq (since := "2026-08-04")]
+alias HarmonicContOnCl.circleAverage_eq := InnerProductSpace.HarmonicContOnCl.circleAverage_eq
