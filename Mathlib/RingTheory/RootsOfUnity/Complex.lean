@@ -213,3 +213,11 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
     (starRingEnd ℂ) ζ = ζ⁻¹ := by
   rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
     one_pow]
+
+noncomputable instance {n : ℕ} [NeZero n] : Fintype (rootsOfUnity n ℂ) where
+  elems := Finset.univ.image fun (i : Fin n) =>
+    ⟨Units.mk0 _ (Complex.exp_ne_zero _), (Complex.mem_rootsOfUnity n _).mpr ⟨i, i.isLt, rfl⟩⟩
+  complete := by
+    rintro ⟨x, hx⟩
+    obtain ⟨i, hi, h_eq⟩ := (Complex.mem_rootsOfUnity n x).mp hx
+    exact Finset.mem_image.mpr ⟨⟨i, hi⟩, Finset.mem_univ _, by ext; exact h_eq⟩
