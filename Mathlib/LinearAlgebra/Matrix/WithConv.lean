@@ -122,7 +122,7 @@ def matrixToLin'StarAlgEquiv :
     WithConv (Matrix m n α) ≃⋆ₐ[α] WithConv ((n → α) →ₗ[α] m → α) where
   __ := congrLinearEquiv toLin'
   map_mul' _ _ := by ext; simp
-  map_star' _ := by classical exact Matrix.intrinsicStar_toLin' _ |>.symm
+  map_star' _ := by exact Matrix.intrinsicStar_toLin' _ |>.symm
 
 @[simp] lemma matrixToLin'StarAlgEquiv_apply (x : WithConv (Matrix m n α)) :
     matrixToLin'StarAlgEquiv m n α x = toConv x.ofConv.toLin' := rfl

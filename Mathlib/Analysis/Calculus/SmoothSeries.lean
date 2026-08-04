@@ -46,7 +46,7 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable (f · x₀))
     (hx : x ∈ s) : Summable fun n => f n x := by
-  haveI := Classical.decEq α
+  have := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i ∈ t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
@@ -73,15 +73,14 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable fun n => f n x₀)
     (hx : x ∈ s) : HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
-  classical
-    have A :
-      ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, f n x) atTop (𝓝 (∑' n, f n x)) := by
-      intro y hy
-      apply Summable.hasSum
-      exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
-    refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
-      (fun t y hy => ?_) A hx
-    exact HasFDerivAt.fun_sum fun n _ => hf n y hy
+  have A :
+    ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, f n x) atTop (𝓝 (∑' n, f n x)) := by
+    intro y hy
+    apply Summable.hasSum
+    exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
+  refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
+    (fun t y hy => ?_) A hx
+  exact HasFDerivAt.fun_sum fun n _ => hf n y hy
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
 at a point, and all functions in the series are differentiable with a summable bound on the
@@ -103,7 +102,7 @@ then the series converges everywhere. -/
 theorem summable_of_summable_hasFDerivAt (hu : Summable u)
     (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x) (hf' : ∀ n x, ‖f' n x‖ ≤ u n)
     (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
@@ -123,7 +122,7 @@ then the series is differentiable and its derivative is the sum of the derivativ
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
@@ -237,7 +236,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
       exact h'f _ _ _ hm
   · intro m hm
     have h'm : ((m + 1 : ℕ) : ℕ∞) ≤ N := by
-      simpa only [ENat.coe_add, ENat.coe_one] using Order.add_one_le_of_lt hm
+      simpa only [ENat.natCast_add, ENat.natCast_one] using Order.add_one_le_of_lt hm
     rw [iteratedFDeriv_tsum hf hv h'f hm.le]
     have A n x : HasFDerivAt (iteratedFDeriv 𝕜 m (f n)) (fderiv 𝕜 (iteratedFDeriv 𝕜 m (f n)) x) x :=
       (ContDiff.differentiable_iteratedFDeriv (mod_cast hm)
@@ -254,34 +253,33 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     (h'f : ∀ k : ℕ, k ≤ N →
       ∀ᶠ i in (Filter.cofinite : Filter α), ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
     ContDiff 𝕜 N fun x => ∑' i, f i x := by
-  classical
-    refine contDiff_iff_forall_nat_le.2 fun m hm => ?_
-    let t : Set α :=
-      { i : α | ¬∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i }
-    have ht : Set.Finite t :=
-      haveI A :
-        ∀ᶠ i in (Filter.cofinite : Filter α),
-          ∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i := by
-        rw [eventually_all_finset]
-        intro i hi
-        apply h'f
-        simp only [Finset.mem_range_succ_iff] at hi
-        exact (WithTop.coe_le_coe.2 hi).trans hm
-      eventually_cofinite.2 A
-    let T : Finset α := ht.toFinset
-    have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
-        fun x => ∑' i : { i // i ∉ T }, f i x := by
-      ext1 x
-      refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
-      refine .of_norm_bounded_eventually (hv 0 zero_le) ?_
-      filter_upwards [h'f 0 zero_le] with i hi
-      simpa only [norm_iteratedFDeriv_zero] using hi x
-    rw [this]
-    apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add
-    have h'u : ∀ k : ℕ, (k : ℕ∞) ≤ m → Summable (v k ∘ ((↑) : { i // i ∉ T } → α)) := fun k hk =>
-      (hv k (hk.trans hm)).subtype _
-    refine contDiff_tsum (fun i => (hf i).of_le (mod_cast hm)) h'u ?_
-    rintro k ⟨i, hi⟩ x hk
-    simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
-      exists_prop, not_exists, not_and, not_lt] at hi
-    exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x
+  refine contDiff_iff_forall_nat_le.2 fun m hm => ?_
+  let t : Set α :=
+    { i : α | ¬∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i }
+  have ht : Set.Finite t :=
+    haveI A :
+      ∀ᶠ i in (Filter.cofinite : Filter α),
+        ∀ k : ℕ, k ∈ Finset.range (m + 1) → ∀ x : E, ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i := by
+      rw [eventually_all_finset]
+      intro i hi
+      apply h'f
+      simp only [Finset.mem_range_succ_iff] at hi
+      exact (WithTop.coe_le_coe.2 hi).trans hm
+    eventually_cofinite.2 A
+  let T : Finset α := ht.toFinset
+  have : (fun x => ∑' i, f i x) = (fun x => ∑ i ∈ T, f i x) +
+      fun x => ∑' i : { i // i ∉ T }, f i x := by
+    ext1 x
+    refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
+    refine .of_norm_bounded_eventually (hv 0 zero_le) ?_
+    filter_upwards [h'f 0 zero_le] with i hi
+    simpa only [norm_iteratedFDeriv_zero] using hi x
+  rw [this]
+  apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add
+  have h'u : ∀ k : ℕ, (k : ℕ∞) ≤ m → Summable (v k ∘ ((↑) : { i // i ∉ T } → α)) := fun k hk =>
+    (hv k (hk.trans hm)).subtype _
+  refine contDiff_tsum (fun i => (hf i).of_le (mod_cast hm)) h'u ?_
+  rintro k ⟨i, hi⟩ x hk
+  simp only [t, T, Finite.mem_toFinset, mem_ofPred_eq, Finset.mem_range, not_forall, not_le,
+    exists_prop, not_exists, not_and, not_lt] at hi
+  exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x

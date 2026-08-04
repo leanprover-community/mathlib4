@@ -233,7 +233,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
         simpa only [this, restr_univ] using! hs
       · exfalso
-        rw [mem_setOf_eq] at hs
+        rw [mem_ofPred_eq] at hs
         rwa [hs] at x's
   mem_of_eqOnSource' e e' he he'e := by
     rcases he with he | he
@@ -244,7 +244,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
       rwa [← this]
     · right
       have he : e.toPartialEquiv.source = ∅ := he
-      rwa [Set.mem_setOf_eq, EqOnSource.source_eq he'e]
+      rwa [Set.mem_ofPred_eq, EqOnSource.source_eq he'e]
 
 /-- Every structure groupoid contains the identity groupoid. -/
 instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
@@ -254,7 +254,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
     have hf :
         f ∈ {OpenPartialHomeomorph.refl H} ∪ { e : OpenPartialHomeomorph H H | e.source = ∅ } :=
       hf
-    simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
+    simp only [singleton_union, mem_ofPred_eq, mem_insert_iff] at hf
     rcases hf with hf | hf
     · rw [hf]
       apply u.id_mem

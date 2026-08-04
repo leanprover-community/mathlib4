@@ -117,7 +117,7 @@ alias ⟨Set.Nonempty.ofIntrinsicClosure, Set.Nonempty.intrinsicClosure⟩ := in
 @[simp]
 theorem intrinsicInterior_singleton (x : P) : intrinsicInterior 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicInterior, preimage_coe_affineSpan_singleton, interior_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 @[simp]
 theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set P) = ∅ := by
@@ -126,7 +126,7 @@ theorem intrinsicFrontier_singleton (x : P) : intrinsicFrontier 𝕜 ({x} : Set 
 @[simp]
 theorem intrinsicClosure_singleton (x : P) : intrinsicClosure 𝕜 ({x} : Set P) = {x} := by
   simp only [intrinsicClosure, preimage_coe_affineSpan_singleton, closure_univ, image_univ,
-    Subtype.range_coe_subtype, mem_affineSpan_singleton, setOf_eq_eq_singleton]
+    Subtype.range_coe_subtype, mem_affineSpan_singleton, ofPred_eq_eq_singleton]
 
 /-!
 Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
@@ -232,6 +232,7 @@ section ImageOfHomeomorphAffineSpan
 variable [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q] [AddTorsor W Q]
   {f : P → Q} {s : Set P}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` agrees with a homeomorphism between the affine spans of `s` and `f '' s`, then pulling
 `f '' s` back to the affine span of `s` recovers `s` itself. -/
 private theorem preimage_image_eq_of_homeomorph_affineSpan
@@ -256,7 +257,7 @@ private theorem intrinsicInterior_image_of_homeomorph_affineSpan :
     intrinsicInterior 𝕜 (f '' s) = f '' intrinsicInterior 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  · haveI : Nonempty s := hs.to_subtype
+  · have : Nonempty s := hs.to_subtype
     rw [intrinsicInterior, ← image_interior_preimage_comp e he_homeo,
       (funext he : (↑) ∘ e = f ∘ (↑)),
       preimage_image_eq_of_homeomorph_affineSpan e he_homeo he, image_comp]; rfl
@@ -268,7 +269,7 @@ private theorem intrinsicFrontier_image_of_homeomorph_affineSpan :
     intrinsicFrontier 𝕜 (f '' s) = f '' intrinsicFrontier 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  · haveI : Nonempty s := hs.to_subtype
+  · have : Nonempty s := hs.to_subtype
     rw [intrinsicFrontier, ← image_frontier_preimage_comp e he_homeo,
       (funext he : (↑) ∘ e = f ∘ (↑)),
       preimage_image_eq_of_homeomorph_affineSpan e he_homeo he, image_comp]; rfl
@@ -280,7 +281,7 @@ private theorem intrinsicClosure_image_of_homeomorph_affineSpan :
     intrinsicClosure 𝕜 (f '' s) = f '' intrinsicClosure 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  · haveI : Nonempty s := hs.to_subtype
+  · have : Nonempty s := hs.to_subtype
     rw [intrinsicClosure, ← image_closure_preimage_comp e he_homeo,
       (funext he : (↑) ∘ e = f ∘ (↑)),
       preimage_image_eq_of_homeomorph_affineSpan e he_homeo he, image_comp]; rfl
@@ -449,7 +450,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by
-  haveI := hsne.coe_sort
+  have := hsne.coe_sort
   obtain ⟨p, hp⟩ := hsne
   let p' : _root_.affineSpan ℝ s := ⟨p, subset_affineSpan _ _ hp⟩
   rw [intrinsicInterior, image_nonempty,

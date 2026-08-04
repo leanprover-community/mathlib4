@@ -97,6 +97,7 @@ def multicospanIndex (P : C₀ᵒᵖ ⥤ A) : MulticospanIndex data.multicospanS
   fst j := P.map ((data.p₁ j.2).op)
   snd j := P.map ((data.p₂ j.2).op)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functoriality of the diagrams attached to `data : F.PreOneHypercoverDenseData X`
 with respect to morphisms in `C₀ᵒᵖ ⥤ A`. -/
@@ -213,6 +214,7 @@ section
 
 variable {X : C} (data : OneHypercoverDenseData.{w} F J₀ J X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
     (w : p₁ ≫ data.f i₁ = p₂ ≫ data.f i₂) : data.toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W := by
@@ -340,6 +342,7 @@ private lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data 
     liftAux hG₀ s i ≫ G.map (F.map a).op = s.ι ⟨_, F.map a ≫ (data X).f i, ha⟩ :=
   hG₀.amalgamate_map _ _ _ ⟨W₀, a, ha⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
 private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
@@ -359,6 +362,7 @@ private noncomputable def lift : s.pt ⟶ G.obj (op X) :=
     congr 2
     rw [map_comp_assoc, map_comp_assoc, (data X).w j])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 private lemma lift_map (i : (data X).I₀) :
     lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
@@ -553,6 +557,7 @@ noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
       apply presheafObj_mapPreimage_condition
       simp only [assoc, h₁.fac, h₂.fac, ← Functor.map_comp_assoc, w])
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
     (g : Y₀ ⟶ X₀) {i : (data X).I₀} (p : F.obj Y₀ ⟶ F.obj ((data X).X i))
     (fac : p ≫ (data X).f i = F.map g ≫ f) :
@@ -571,6 +576,7 @@ lemma restriction_eq_of_fac {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X)
       presheafObjπ data G₀ X i ≫ IsDenseSubsite.mapPreimage J F G₀ p := by
   simpa using restriction_map data G₀ f (𝟙 _) p (by simpa using fac)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheaf`. -/
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
@@ -587,6 +593,7 @@ noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     rw [restriction_map (p := p), restriction_map (p := p)]
     all_goals simp_all)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
     presheafMap data G₀ f ≫ presheafObjπ data G₀ X i =
@@ -646,7 +653,7 @@ lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 be a family. Let `G₀` be a sheaf on `C₀`. This is a presheaf on `C` which
 extends `G₀` (see `OneHypercoverDenseData.essSurj.compPresheafIso`) and it is a sheaf
 (see `OneHypercoverDenseData.essSurj.isSheaf`). -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def presheaf : Cᵒᵖ ⥤ A where
   obj X := presheafObj data G₀ X.unop
   map f := presheafMap data G₀ f.unop
@@ -677,6 +684,9 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.obj.
 
 variable {X₀}
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
@@ -689,6 +699,7 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
       ((Sieve.ofArrows.fac ha).trans fac.symm))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
@@ -706,6 +717,7 @@ lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (
 
 variable (X₀)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
 noncomputable def inv : G₀.obj.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
@@ -783,11 +795,13 @@ lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
   simp [presheafObjObjIso, IsDenseSubsite.mapPreimage_comp]
 
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.obj :=
   (NatIso.ofComponents (fun _ ↦ (presheafObjObjIso data G₀ _).symm)
     (fun f ↦ presheafObjObjIso_inv_naturality data G₀ f.unop)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
   rw [isSheaf_iff data]
