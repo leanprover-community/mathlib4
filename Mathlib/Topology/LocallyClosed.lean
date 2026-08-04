@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Tactic.TFAE
 
 /-!
@@ -133,6 +134,7 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       ∀ᶠ U in (𝓝 x).smallSets, U ∩ closure s = U ∩ s,
       closure s =ᶠ[𝓝 x] s,
       closure s ≤ᶠ[𝓝 x] s,
+      s ∈ 𝓝[closure s] x,
       coborder s ∈ 𝓝 x] := by
   have mono (U V : Set X) (U_sub_V : U ⊆ V) (h : IsClosed (V ↓∩ s)) : IsClosed (U ↓∩ s) :=
     h.preimage <| continuous_inclusion U_sub_V
@@ -161,8 +163,10 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
   tfae_have 8 → 9 := fun H ↦ H.le
   tfae_have 9 → 8 := fun H ↦ H.antisymm <| .of_forall subset_closure
   tfae_have 9 ↔ 10 := by
-    simp_rw [← eventually_mem_set, mem_coborder_iff_imp]
+    simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl
+  tfae_have 10 ↔ 11 := by
+    simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff, mem_coborder_iff_imp]
   tfae_finish
 
 end IsLocallyClosedAt
@@ -231,7 +235,7 @@ lemma isLocallyClosed_tfae (s : Set X) :
     rw [coborder, compl_sdiff, mem_union] at hx
     exact hx.elim (H x) (fun hx ↦ .of_notMem_closure hx)
   tfae_have 3 ↔ 4 := by
-    simp [isOpen_iff_mem_nhds, (isLocallyClosedAt_tfae s _) |>.out 0 9]
+    simp [isOpen_iff_mem_nhds, (isLocallyClosedAt_tfae s _) |>.out 0 10]
   tfae_have 4 → 5 := fun H ↦ ⟨coborder s, H, by rw [coborder_inter_closure]⟩
   tfae_have 5 → 1 := fun ⟨U, U_open, eq⟩ ↦ ⟨U, closure s, U_open, isClosed_closure, eq⟩
   tfae_have 5 ↔ 6 := by
