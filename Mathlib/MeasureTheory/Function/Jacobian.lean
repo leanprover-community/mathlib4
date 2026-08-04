@@ -8,11 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-public import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -43,7 +39,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 (with a derivative `f'`) and injective on `s`.
 
 * `measurable_image_of_fderivWithin`: the image `f '' s` is measurable.
-* `measurableEmbedding_of_fderivWithin`: the function `s.restrict f` is a measurable embedding.
+* `measurableEmbedding_of_fderivWithin`: the function `s.domRestrict f` is a measurable embedding.
 * `lintegral_abs_det_fderiv_eq_addHaar_image`: the image measure is given by
     `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
 * `lintegral_image_eq_lintegral_abs_det_fderiv_mul`: for `g : E → ℝ≥0∞`, one has
@@ -168,7 +164,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     calc
       ‖f y - f x - (f' z) (y - x)‖ = ‖f y - f x - (f' x) (y - x) + (f' x - f' z) (y - x)‖ := by
         congr 1
-        simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
+        simp only [FunLike.coe_sub, map_sub, Pi.sub_apply]
         abel
       _ ≤ ‖f y - f x - (f' x) (y - x)‖ + ‖(f' x - f' z) (y - x)‖ := norm_add_le _ _
       _ ≤ ε * ‖y - x‖ + ‖f' x - f' z‖ * ‖y - x‖ := by
@@ -223,7 +219,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     isClosed_closure.inter isClosed_closedBall
   -- reindex the sets `K n z p`, to let them only depend on an integer parameter `q`.
   obtain ⟨F, hF⟩ : ∃ F : ℕ → ℕ × T × ℕ, Function.Surjective F := by
-    haveI : Encodable T := T_count.toEncodable
+    have : Encodable T := T_count.toEncodable
     have : Nonempty T := by
       rcases hs with ⟨x, xs⟩
       rcases s_subset x xs with ⟨n, z, _⟩
@@ -370,7 +366,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
                 (∑' x : ↥t, μ (closedBall (↑x) (r ↑x))) ≤ μ s + a :=
       Besicovitch.exists_closedBall_covering_tsum_measure_le μ ha.ne' (fun _ => Ioi 0) s
         fun x _ δ δpos => ⟨δ / 2, by simp [half_pos δpos, δpos]⟩
-    haveI : Encodable t := t_count.toEncodable
+    have : Encodable t := t_count.toEncodable
     calc
       μ (f '' s) ≤ μ (⋃ x : t, f '' (s ∩ closedBall x (r x))) := by
         rw [biUnion_eq_iUnion] at st
@@ -389,7 +385,6 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   rw [add_zero] at L
   exact ge_of_tendsto L J
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at least `m` for any `m < det A`. -/
 theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -525,7 +520,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
         simp only [map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
-        simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
+        simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, FunLike.coe_sub,
           Pi.sub_apply, map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
@@ -536,7 +531,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   calc
     ‖(f' x - A) z‖ = ‖(f' x - A) a + (f' x - A) (z - a)‖ := by
       congr 1
-      simp only [ContinuousLinearMap.coe_sub', map_sub, Pi.sub_apply]
+      simp only [FunLike.coe_sub, map_sub, Pi.sub_apply]
       abel
     _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := norm_add_le _ _
     _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ‖z - a‖ := by
@@ -596,7 +591,6 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
       exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
     _ = 0 := by simp only [tsum_zero, mul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of **Sard's lemma** in fixed dimension: given a differentiable function from `E`
 to `E` and a set where the differential is not invertible, then the image of this set has
 zero measure. Here, we give an auxiliary statement towards this result. -/
@@ -779,7 +773,7 @@ theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
     refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
     apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
       (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
-    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+    exact (hf' x hx.1).differentiableWithinAt.mono sdiff_subset
   apply NullMeasurableSet.congr _ A.symm
   apply MeasurableSet.nullMeasurableSet
   apply measurable_image_of_fderivWithin ht _ (hf.mono ts) (f' := f')
@@ -790,7 +784,7 @@ theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
 to `s` is a measurable embedding. -/
 theorem measurableEmbedding_of_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
-    MeasurableEmbedding (s.restrict f) :=
+    MeasurableEmbedding (s.domRestrict f) :=
   haveI : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
   this.continuousOn.measurableEmbedding hs hf
 
@@ -803,7 +797,6 @@ directions, first up to controlled errors and then letting these errors tend to 
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) {ε : ℝ≥0} (εpos : 0 < ε) :
     μ (f '' s) ≤ (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s := by
@@ -1120,7 +1113,7 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s �
     refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
     apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
       (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
-    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+    exact (hf' x hx.1).differentiableWithinAt.mono sdiff_subset
   have B : (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ)
       = (∫⁻ x in t, ENNReal.ofReal |(f' x).det| ∂μ) :=
     setLIntegral_congr t_eq_s.symm
@@ -1152,12 +1145,12 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version is expressed
-in terms of the restricted function `s.restrict f`.
+in terms of the restricted function `s.domRestrict f`.
 For a version for the original function, see `map_withDensity_abs_det_fderiv_eq_addHaar`.
 -/
 theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
-    Measure.map (s.restrict f) (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
+    Measure.map (s.domRestrict f) (comap (↑) (μ.withDensity fun x => ENNReal.ofReal |(f' x).det|)) =
       μ.restrict (f '' s) := by
   obtain ⟨u, u_meas, uf⟩ : ∃ u, Measurable u ∧ EqOn u f s := by
     classical
@@ -1175,7 +1168,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
       restrict_withDensity hs]
     exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs.nullMeasurableSet u' (hf.congr uf.symm)
   rw [uf.image_eq] at A
-  have : F = s.restrict f := by
+  have : F = s.domRestrict f := by
     ext x
     exact uf x.2
   rwa [this] at A
@@ -1192,7 +1185,7 @@ theorem lintegral_image_eq_lintegral_abs_det_fderiv_mul (hs : MeasurableSet s)
     ∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).lintegral_map]
-  simp only [Set.restrict_apply, ← Function.comp_apply (f := g)]
+  simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g)]
   rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtype_coe hs,
     setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ _ _ _ hs]
   · simp only [Pi.mul_apply]
@@ -1208,7 +1201,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
     IntegrableOn g (f '' s) μ ↔ IntegrableOn (fun x => |(f' x).det| • g (f x)) s μ := by
   rw [IntegrableOn, ← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integrable_map_iff]
-  simp only [Set.restrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
+  simp only [Set.domRestrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integrable_map_iff, map_comap_subtype_coe hs,
     restrict_withDensity hs, integrable_withDensity_iff_integrable_coe_smul₀]
   · simp_rw [IntegrableOn, Real.coe_toNNReal _ (abs_nonneg _), Function.comp_apply]
@@ -1222,7 +1215,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
-  simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
+  simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtype_coe hs,
     setIntegral_withDensity_eq_setIntegral_smul₀
       (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]

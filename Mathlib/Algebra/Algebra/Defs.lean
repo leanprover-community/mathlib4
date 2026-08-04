@@ -380,6 +380,7 @@ theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
 theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 
+-- see Note [higher instance priority]
 /-- The identity map inducing an `Algebra` structure. -/
 instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
@@ -394,14 +395,6 @@ variable {R A}
 
 @[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
 lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
-
-namespace id
-
-@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
-theorem smul_eq_mul (x y : R) : x • y = x * y :=
-  rfl
-
-end id
 
 end Semiring
 

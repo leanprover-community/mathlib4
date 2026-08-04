@@ -338,7 +338,7 @@ theorem lintegral_rpow_add_le_add_eLpNorm_mul_lintegral_rpow_add {p q : ℝ}
           ∫⁻ a : α, (f a + g a) * (f + g) a ^ (p - 1) ∂μ :=
         rfl
       simp_rw [h_add_apply, add_mul]
-      rw [lintegral_add_left' (hf.mul h_add_m)]
+      rw [lintegral_add_left' (hf.fun_mul h_add_m)]
     _ ≤
         ((∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p)) *
           (∫⁻ a, (f a + g a) ^ p ∂μ) ^ (1 / q) := by

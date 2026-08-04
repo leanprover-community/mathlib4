@@ -14,4 +14,4 @@ use `set_option diagnostics true` to get diagnostic information
 #guard_msgs (error) in
 example (_h₁ : ((List.range 128).map (fun _ => 0)).sum = 0) : 0 ∣ 1 := by
   apply Nat.dvd_of_mul_dvd_mul_left Nat.zero_lt_one
-  convert Nat.dvd_mul_left 0 1
+  convert! Nat.dvd_mul_left 0 1
