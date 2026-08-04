@@ -6,8 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
-public import Mathlib.AlgebraicTopology.Quasicategory.Basic
-public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
+public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
 
 
 /-!
@@ -25,9 +24,6 @@ open HomotopicalAlgebra CategoryTheory Simplicial
 namespace SSet
 
 namespace KanComplex
-
-instance (X : SSet.{u}) [X.Quasicategory] :
-    ((SSet.truncation 2).obj X).Quasicategory₂ := sorry
 
 /-- The fundamental groupoid of a Kan complex. -/
 @[nolint unusedArguments]
