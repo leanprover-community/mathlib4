@@ -45,20 +45,21 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Atlas
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 theorem ModelWithCorners.contMDiff : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
-  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp)
+  simpa using contDiffWithinAt_id.congr
+    (fun y hy ↦ by simpa using! I.right_inv hy)
+    (by simp [chartAt_self_eq])
 @[deprecated (since := "2026-06-16")] alias contMDiff_model := ModelWithCorners.contMDiff
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 theorem ModelWithCorners.contMDiffOn_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   intro x hx
   apply contMDiffWithinAt_iff.mpr ⟨by fun_prop, ?_⟩
-  simpa using contDiffWithinAt_id.congr (fun y hy ↦ by simp [hy]) (by simp [hx])
+  simpa using contDiffWithinAt_id.congr
+    (fun y hy ↦ by simpa using! I.right_inv hy) (by simp [chartAt_self_eq, hx])
 @[deprecated (since := "2026-06-16")]
 alias contMDiffOn_model_symm := ModelWithCorners.contMDiffOn_symm
 

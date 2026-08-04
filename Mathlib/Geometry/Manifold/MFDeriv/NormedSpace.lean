@@ -105,12 +105,11 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
-set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
     DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
-  simpa [extChartAt_self_eq] using (mdifferentiableWithinAt_iff.1 hf).2
+  simpa [extChartAt_self_eq] using! (mdifferentiableWithinAt_iff.1 hf).2
 
 -- TODO: the `IsManifold I 1 M` assumption can probably be removed
 theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [IsManifold I 1 M]
@@ -593,3 +592,21 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     simp
   simpa using this
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+section
+
+variable {f : E → E'} {s : Set E} {x : E}
+
+/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide -/
+@[simp]
+theorem mvfderivWithin_eq_fderivWithin :
+    d[s] f x = fderivWithin 𝕜 f s x := by
+  convert! mfderivWithin_eq_fderivWithin (f := f) (s := s) (x := x)
+
+/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
+@[simp]
+theorem mvfderiv_eq_fderiv :
+    d% f x = fderiv 𝕜 f x := by
+  convert! mfderiv_eq_fderiv (f := f) (x := x)
+
+end
