@@ -547,6 +547,7 @@ protected lemma continuous_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
 theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (∀ i, β i)) :=
   continuous_induced_rng.2 continuous_id
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
   toEquiv := WithLp.equiv p (Π i, β i)
@@ -1139,6 +1140,7 @@ section
 
 variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Module 𝕜 (β i)] [∀ i, TopologicalSpace (β i)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where

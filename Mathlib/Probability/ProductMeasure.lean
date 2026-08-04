@@ -254,7 +254,7 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
     ← pi_map_piCongrLeft (e.restrictPreimageFinset I), map_apply _ hS, coe_piCongrLeft]
   · simp
   any_goals fun_prop
-  exact hS.preimage (by fun_prop)
+  exact hS.preimage (measurable_piCongrLeft _)
 
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
@@ -301,7 +301,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- We now transfer the properties of `Aₙ` and `Sₙ` to `Bₙ` and `Tₙ`
   have B_eq n : B n = cylinder (t n) (T n) := by
     simp_rw [B, A_eq, cylinder, ← Set.preimage_comp, r_comp_f]; rfl
-  have mT n : MeasurableSet (T n) := (mS n).preimage (by fun_prop)
+  have mT n : MeasurableSet (T n) := (mS n).preimage (measurable_piCongrLeft _)
   have B_mem n : B n ∈ measurableCylinders (fun i : u ↦ X i) :=
     (mem_measurableCylinders (B n)).2 ⟨t n, T n, mT n, B_eq n⟩
   have mB n : MeasurableSet (B n) := .of_mem_measurableCylinders (B_mem n)

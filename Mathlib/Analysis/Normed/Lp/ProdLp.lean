@@ -482,6 +482,7 @@ lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) :=
 @[continuity, fun_prop]
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_induced_dom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
   toEquiv := WithLp.equiv p (α × β)

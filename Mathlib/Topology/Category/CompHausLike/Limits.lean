@@ -227,6 +227,7 @@ def pullback.snd : pullback f g ⟶ Y :=
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
   ext ⟨_, h⟩; exact h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Construct a morphism to the explicit pullback given morphisms to the factors
 which are compatible with the maps to the base.

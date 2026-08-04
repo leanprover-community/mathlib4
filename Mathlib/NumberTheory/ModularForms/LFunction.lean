@@ -57,6 +57,7 @@ private lemma isBigO_comp_ofComplex_I_mul_sub_valueAtInfty (r : ℝ) :
 
 end asymptotics
 
+set_option fun_prop.reducibleApply false in
 /-- A `WeakFEPair` structure associated to a modular form. -/
 @[simps] noncomputable def weakFEPair : WeakFEPair ℂ where
   f t := f (ofComplex (I * t))

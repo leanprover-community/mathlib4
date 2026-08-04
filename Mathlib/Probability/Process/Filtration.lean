@@ -498,6 +498,7 @@ def piLE : @Filtration (Π i, X i) ι _ pi where
 
 variable [LocallyFiniteOrderBot ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
   refine le_antisymm (Measurable.comap_le ?_) (Measurable.comap_le ?_)
   · exact (MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j)

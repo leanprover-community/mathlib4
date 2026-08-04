@@ -142,6 +142,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) 
       -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
       cat_disch
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
 noncomputable
 def pullbackHomeoPreimage
