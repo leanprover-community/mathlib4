@@ -467,26 +467,22 @@ lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
   rw [coe_compTendsto]
   exact ⟨b, rfl⟩
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=
   coe_eq.trans const_eventuallyEq
 
-@[simp]
 theorem map_const (l : Filter α) (a : β) (f : β → γ) : (↑a : Germ l β).map f = ↑(f a) :=
   (rfl)
 
-@[simp]
 theorem map₂_const (l : Filter α) (b : β) (c : γ) (f : β → γ → δ) :
     map₂ f (↑b : Germ l β) ↑c = ↑(f b c) :=
   map₂_coe f _ _
 
-@[simp]
 theorem const_compTendsto {l : Filter α} (b : β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     (↑b : Germ l β).compTendsto g hg = ↑b := by
   rw [coe_compTendsto]
   rfl
 
-@[simp]
 theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ lc α}
     (hg : g.Tendsto l) : (↑b : Germ l β).compTendsto' g hg = ↑b := by
   rw [coe_compTendsto']
@@ -514,7 +510,6 @@ theorem liftPred_coe {p : β → Prop} {f : α → β} :
 theorem liftPred_const {p : β → Prop} {x : β} (hx : p x) : LiftPred p (↑x : Germ l β) :=
   liftPred_coe.2 <| Eventually.of_forall fun _y => hx
 
-@[simp]
 theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (↑x : Germ l β) ↔ p x :=
   liftPred_coe.trans eventually_const
 
@@ -533,7 +528,6 @@ theorem liftPred_iff_map_eq_const_true {p : β → Prop} {f : Germ l β} :
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
   LiftPred (Function.uncurry r) (map₂ Prod.mk f g)
 
-@[simp]
 theorem liftRel_coe {r : β → γ → Prop} {f : α → β} {g : α → γ} :
     LiftRel r (f : Germ l β) g ↔ ∀ᶠ x in l, r (f x) (g x) := by
   unfold LiftRel
@@ -672,11 +666,11 @@ theorem coe_smul [SMul M G] (n : M) (f : α → G) : ↑(n • f) = n • (f : G
 theorem const_smul [SMul M G] (n : M) (a : G) : (↑(n • a) : Germ l G) = n • (↑a : Germ l G) :=
   (rfl)
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive (attr := norm_cast), simp]
 theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^ n :=
   (rfl)
 
-@[to_additive (attr := simp, norm_cast)]
+@[to_additive (attr := norm_cast), simp]
 theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   (rfl)
 
@@ -1075,7 +1069,7 @@ theorem coe_nonneg [LE β] [Zero β] {f : α → β} : 0 ≤ (f : Germ l β) ↔
 theorem const_le [LE β] {x y : β} : x ≤ y → (↑x : Germ l β) ≤ ↑y :=
   liftRel_const
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y ↔ x ≤ y :=
   liftRel_const_iff
 

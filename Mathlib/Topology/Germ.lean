@@ -52,7 +52,6 @@ noncomputable def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (
 @[simp]
 theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := liftOn_coe _ _ f
 
-@[simp]
 theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := value_ofFun _ x
 
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)

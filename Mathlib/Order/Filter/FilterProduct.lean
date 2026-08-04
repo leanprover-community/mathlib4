@@ -130,11 +130,9 @@ theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
   rw [max_def, ← coe_neg, map₂_coe, map_coe]
   rfl
 
-@[simp]
 theorem const_max [LinearOrder β] (x y : β) : (↑(max x y : β) : β*) = max ↑x ↑y := by
   rw [max_def, map₂_const]
 
-@[simp]
 theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min ↑x ↑y := by
   rw [min_def, map₂_const]
 
