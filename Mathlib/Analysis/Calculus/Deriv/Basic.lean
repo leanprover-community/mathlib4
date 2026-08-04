@@ -451,14 +451,10 @@ theorem fderivWithin_derivWithin : (fderivWithin 𝕜 f s x : 𝕜 → F) 1 = de
 theorem toSpanSingleton_derivWithin :
     toSpanSingleton 𝕜 (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 
-@[deprecated (since := "2025-12-18")] alias derivWithin_fderivWithin := toSpanSingleton_derivWithin
-
 theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
   simp [← toSpanSingleton_derivWithin]
 
 theorem fderiv_apply_one_eq_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x := rfl
-
-@[deprecated (since := "2025-12-18")] alias fderiv_deriv := fderiv_apply_one_eq_deriv
 
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
@@ -467,8 +463,6 @@ theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y �
 
 theorem toSpanSingleton_deriv : toSpanSingleton 𝕜 (deriv f x) = fderiv 𝕜 f x := by
   simp only [deriv, ContinuousLinearMap.toSpanSingleton_apply_map_one]
-
-@[deprecated (since := "2025-12-18")] alias deriv_fderiv := toSpanSingleton_deriv
 
 lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
   simp [mul_comm]
@@ -918,6 +912,7 @@ variable {σ σ' : RingHom 𝕜 𝕜} [RingHomIsometric σ] [RingHomInvPair σ �
 
 variable (σ')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L` is a `σ`-semilinear map, and `f` has Fréchet derivative `f'` at `x`, then `L ∘ f ∘ σ⁻¹`
 has Fréchet derivative `L ∘ f'` at `σ x`. -/
 lemma HasDerivAt.comp_semilinear (hf : HasDerivAt f f' x) :

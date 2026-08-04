@@ -120,6 +120,11 @@ theorem tail_cons : tail (cons x p) = p := by
 theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 
 @[simp]
+theorem cons_comp_succ {α : Sort*} (x : α) (p : Fin n → α) :
+    cons x p ∘ Fin.succ = p :=
+  funext fun _ ↦ Fin.cons_succ ..
+
+@[simp]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 
 @[simp]
@@ -165,6 +170,10 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
 theorem cons_self_tail : cons (q 0) (tail q) = q := by
   ext j
   cases j using Fin.cases <;> simp [tail]
+
+@[simp]
+theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
+  cons_self_tail id
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
@@ -408,6 +417,7 @@ theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
   ext (i | j) <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
     Function.Injective (Fin.append xs ys) ↔
       Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
@@ -664,6 +674,7 @@ theorem append_right_cons {n m} {α : Sort*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_add_succ ..).symm := by
   rw [append_left_snoc]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
@@ -678,6 +689,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :
     Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
   funext i
@@ -715,6 +727,7 @@ def snocCases {motive : (∀ i : Fin n.succ, α i) → Sort*}
     (x : ∀ i : Fin n.succ, α i) : motive x :=
   _root_.cast (by rw [Fin.snoc_init_self]) <| snoc (Fin.init x) (x <| Fin.last _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma snocCases_snoc
     {motive : (∀ i : Fin (n + 1), α i) → Sort*} (snoc : ∀ x x₀, motive (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
@@ -865,6 +878,11 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
 lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
     p.removeNth f i = f (p.succAbove i) :=
   rfl
+
+@[simp]
+theorem cons_comp_succ_succAbove (x : β) (p : Fin (n + 1) → β) (i : Fin (n + 1)) :
+    cons x p ∘ i.succ.succAbove = cons x (i.removeNth p) :=
+  funext (Fin.cases rfl fun _ ↦ by simp [removeNth])
 
 lemma removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
     i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
@@ -1022,6 +1040,12 @@ lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAb
 
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
+
+@[simp]
+lemma range_insertNth {α : Type*} (p : Fin (n + 1)) (x : α) (f : Fin n → α) :
+    Set.range (p.insertNth x f) = Set.insert x (Set.range f) := by
+  ext y
+  simp [Fin.exists_iff_succAbove p, Set.insert, eq_comm]
 
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
@@ -1183,7 +1207,7 @@ lemma find_congr (hi : p i) (hpq : ∀ j ≤ i, p j ↔ q j) :
 
 /-- A weak version of `Fin.find_congr`, requiring `p = q` everywhere. -/
 lemma find_congr' {hp : ∃ i, p i} {hq : ∃ i, q i} (hpq : ∀ {i}, p i ↔ q i) :
-   Fin.find p hp = Fin.find q hq :=
+    Fin.find p hp = Fin.find q hq :=
   let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
 
 lemma find_le (hi : p i) : Fin.find p ⟨i, hi⟩ ≤ i :=

@@ -38,22 +38,24 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 /-- The average of all elements of the group `G`, considered as an element of `k[G]`. -/
 noncomputable def average : k[G] := ⅟(Fintype.card G : k) • ∑ g : G, of k G g
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under left multiplication by elements of `G`. -/
 @[simp]
-theorem mul_average_left (g : G) : ↑(Finsupp.single g 1) * average k G = average k G := by
+theorem mul_average_left (g : G) : .single g 1 * average k G = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (g * x) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulLeft_bijective g) _]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_right (g : G) : average k G * ↑(Finsupp.single g 1) = average k G := by
+theorem mul_average_right (g : G) : average k G * .single g 1 = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     MonoidAlgebra.single_mul_single]
-  set f : G → k[G] := fun x => Finsupp.single x 1
+  set f : G → k[G] := fun x => .single x 1
   change ⅟(Fintype.card G : k) • ∑ x : G, f (x * g) = ⅟(Fintype.card G : k) • ∑ x : G, f x
   rw [Function.Bijective.sum_comp (Group.mulRight_bijective g) _]
 
@@ -72,7 +74,7 @@ variable (ρ : Representation k G V) (σ : Representation k G W)
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
 def invariants : Submodule k V where
-  carrier := setOf fun v => ∀ g : G, ρ g v = v
+  carrier := Set.ofPred fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
   smul_mem' r v hv g := by simp only [hv g, map_smulₛₗ, RingHom.id_apply]

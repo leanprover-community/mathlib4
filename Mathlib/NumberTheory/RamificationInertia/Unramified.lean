@@ -27,14 +27,14 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 local notation3 "e(" P "|" R ")" =>
-  Ideal.ramificationIdx' P R
+  Ideal.ramificationIdx P R
 
 open IsLocalRing Algebra
 
 lemma Ideal.ramificationIdx_eq_one_of_isUnramifiedAt
     {p : Ideal S} [p.IsPrime] [IsUnramifiedAt R p] [EssFiniteType R S] :
     e(p|R) = 1 :=
-  p.ramificationIdx'_eq_one R
+  p.ramificationIdx_eq_one R
 
 variable (R) in
 lemma IsUnramifiedAt.of_liesOver_of_ne_bot
@@ -59,12 +59,12 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
       exact le_bot_iff.mp (Ideal.map_comap_le)
     rw [IsScalarTower.algebraMap_eq _ S, ← Ideal.map_map, this,
       Localization.AtPrime.map_eq_maximalIdeal]
-  rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hp Ideal.map_comap_le,
-    ← not_ne_iff, Ideal.ramificationIdx_ne_one_iff Ideal.map_comap_le]
+  rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hp Ideal.map_comap_le,
+    ← not_ne_iff, Ideal.ramificationIdx'_ne_one_iff Ideal.map_comap_le]
   intro H
-  have := Ideal.ramificationIdx_eq_one_of_map_localization
+  have := Ideal.ramificationIdx'_eq_one_of_map_localization
     (hp₀ ▸ Ideal.map_comap_le) (hP₂ hp) hP₁ h₂
-  rw [← not_ne_iff, Ideal.ramificationIdx_ne_one_iff (hp₀ ▸ Ideal.map_comap_le)] at this
+  rw [← not_ne_iff, Ideal.ramificationIdx'_ne_one_iff (hp₀ ▸ Ideal.map_comap_le)] at this
   replace H := Ideal.map_mono (f := algebraMap S T) H
   rw [Ideal.map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_pow] at H
   refine this (H.trans (Ideal.pow_right_mono ?_ _))
@@ -150,8 +150,8 @@ theorem isUnramifiedIn_iff_forall_of_isDedekindDomain [IsDomain R] [IsDedekindDo
 theorem IsUnramifiedIn.ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} (hunr : IsUnramifiedIn S 𝔭) {𝔓 : Ideal S}
-    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx' 𝔓 R = 1 :=
-  Ideal.ramificationIdx'_eq_one_iff.mpr
+    [𝔓.IsPrime] (hP : 𝔓.LiesOver 𝔭) : Ideal.ramificationIdx 𝔓 R = 1 :=
+  Ideal.ramificationIdx_eq_one_iff.mpr
     (hunr 𝔓 inferInstance hP)
 
 /-- A nonzero ideal of `R` is unramified in `S` if and only if every prime ideal of `S` lying
@@ -160,9 +160,9 @@ theorem isUnramifiedIn_iff_forall_ramificationIdx_eq_one [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [EssFiniteType R S]
     [Algebra.IsIntegral R S] {𝔭 : Ideal R} :
     IsUnramifiedIn S 𝔭 ↔
-      ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx' 𝔓 R = 1 := by
+      ∀ (𝔓 : Ideal S) [𝔓.IsPrime], 𝔓.LiesOver 𝔭 → Ideal.ramificationIdx 𝔓 R = 1 := by
   refine ⟨fun hunr 𝔓 _ hP ↦ hunr.ramificationIdx_eq_one hP, fun h 𝔓 _ hP ↦ ?_⟩
-  rw [← Ideal.ramificationIdx'_eq_one_iff]
+  rw [← Ideal.ramificationIdx_eq_one_iff]
   exact h 𝔓 hP
 
 end Algebra

@@ -215,7 +215,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
     #{x : F | x ^ 2 = a}.toFinset = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
-  · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,
+  · simp only [h₀, sq_eq_zero_iff, Set.ofPred_eq_eq_singleton, Set.toFinset_card,
     Set.card_singleton, Int.natCast_succ, Int.ofNat_zero, MulChar.map_zero]
   · set s := {x : F | x ^ 2 = a}.toFinset
     by_cases h : IsSquare a
@@ -225,7 +225,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       have h₁ : s = [b, -b].toFinset := by
         ext1
         rw [← pow_two] at h
-        simp_rw [s, Set.toFinset_setOf, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
+        simp_rw [s, Set.toFinset_ofPred, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
           insert_empty_eq, mem_insert, mem_singleton]
         exact sq_eq_sq_iff_eq_or_eq_neg
       norm_cast
