@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.TendstoCofinite
 
 /-!
 # Northcott Functions
@@ -62,10 +62,11 @@ lemma comp_of_bddAbove [Preorder β] [LE γ] [Northcott h] (H : ∀ c, BddAbove 
     exact (finite_le (h := h) b).subset <| by grind
 
 /-- A composition `h' ∘ h` is Northcott when `h'` is Northcott and the fibers of `h` are finite. -/
-lemma comp_of_finite_fibers [LE γ] [Northcott h'] (H : ∀ b, (h ⁻¹' {b}).Finite) :
+lemma comp_of_finite_fibers [LE γ] [Northcott h'] [Filter.TendstoCofinite h] :
     Northcott (h' ∘ h) where
   finite_le c := by
-    refine Set.Finite.of_finite_fibers h ?_ fun x _ ↦ (H x).inter_of_right _
+    refine Set.Finite.of_finite_fibers h ?_ fun x _ ↦
+      (Filter.TendstoCofinite.finite_preimage_singleton h x).inter_of_right _
     exact (finite_le (h := h') c).subset <| by grind
 
 end Northcott

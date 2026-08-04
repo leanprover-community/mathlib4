@@ -431,6 +431,12 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
     | _, ⟨⟨_, _⟩, rfl⟩ => ⟨_, ⟨_, rfl⟩, ⟨_, rfl⟩⟩,
     fun ⟨_, h₁, h₂⟩ => mem_bind h₁ h₂⟩
 
+/-- `Part.bind` produces `some b` iff the input is `some a` and the continuation maps `a` to
+`some b`. This is the `Part` analogue of `Option.bind_eq_some_iff`. -/
+theorem bind_eq_some_iff {b : β} {x : Part α} {f : α → Part β} :
+    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
+  simp only [eq_some_iff, mem_bind_iff]
+
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff]
@@ -497,10 +503,10 @@ instance : LawfulMonad
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
-    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·)])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
   pure_seq x y := ext'
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])

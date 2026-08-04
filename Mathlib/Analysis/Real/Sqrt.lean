@@ -303,6 +303,18 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
+@[simp] lemma sqrt_le_self_iff : √x ≤ x ↔ x = 0 ∨ 1 ≤ x := by
+  rw [sqrt_le_iff, ← sub_nonneg (a := x ^ 2), sq, ← mul_sub_one]
+  grind [mul_nonneg_iff]
+
+@[simp] lemma le_sqrt_self_iff : x ≤ √x ↔ x ≤ 1 := by
+  obtain hx | hx := le_or_gt x 0
+  · simp [hx.trans]
+  · rw [le_sqrt' hx, sq, mul_le_iff_le_one_left hx]
+
+@[simp] lemma sqrt_lt_self_iff : √x < x ↔ 1 < x := by simp [← not_le]
+@[simp] lemma lt_sqrt_self_iff : x < √x ↔ x ≠ 0 ∧ x < 1 := by simp [← not_le]
+
 end Real
 
 namespace Mathlib.Meta.Positivity
@@ -312,11 +324,12 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
     | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
@@ -325,11 +338,12 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-meta def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
-    let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← catchNone <| core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
     | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))

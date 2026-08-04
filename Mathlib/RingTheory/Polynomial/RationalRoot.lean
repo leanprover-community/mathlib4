@@ -69,12 +69,12 @@ then the numerator of `r` divides the constant coefficient -/
 theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣ p.coeff 0 := by
   suffices num A r ∣ (scaleRoots p (den A r)).coeff 0 by
     simp only [coeff_scaleRoots] at this
-    haveI inst := Classical.propDecidable
+    have inst := Classical.propDecidable
     by_cases hr : num A r = 0
     · simp_all [nonZeroDivisors.coe_ne_zero]
     · refine dvd_of_dvd_mul_left_of_no_prime_factors hr ?_ this
       intro q dvd_num dvd_denom_pow hq
-      apply hq.not_unit
+      apply hq.not_isUnit
       exact num_den_reduced A r dvd_num (hq.dvd_of_dvd_pow dvd_denom_pow)
   convert! dvd_term_of_isRoot_of_dvd_terms 0 (num_isRoot_scaleRoots_of_aeval_eq_zero hr) _
   · rw [pow_zero, mul_one]
@@ -93,7 +93,7 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
       dvd_of_dvd_mul_left_of_no_prime_factors (mem_nonZeroDivisors_iff_ne_zero.mp (den A r).2) ?_
         this
     intro q dvd_den dvd_num_pow hq
-    apply hq.not_unit
+    apply hq.not_isUnit
     exact num_den_reduced A r (hq.dvd_of_dvd_pow dvd_num_pow) dvd_den
   rw [← coeff_scaleRoots_natDegree]
   apply dvd_term_of_isRoot_of_dvd_terms _ (num_isRoot_scaleRoots_of_aeval_eq_zero hr)

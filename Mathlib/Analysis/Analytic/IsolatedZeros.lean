@@ -103,7 +103,7 @@ theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : �
     f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
   refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
   rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
-    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, ContinuousMultilinearMap.zero_apply]
+    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, _root_.zero_apply]
 
 theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
@@ -347,7 +347,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
     (hs : s ∈ codiscreteWithin (f '' U)) :
     f ⁻¹' s ∈ codiscreteWithin U := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_diff] at *
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff] at *
   intro x hx
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
   grind

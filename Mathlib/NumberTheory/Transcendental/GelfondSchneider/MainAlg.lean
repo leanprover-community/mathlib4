@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.NumberTheory.NumberField.House
-public import Mathlib.RingTheory.Algebraic.NatDenominator
+public import Mathlib.RingTheory.Algebraic.Denominator
 
 /-!
 # Hilbert's Seventh Problem (Gelfond–Schneider Theorem)
@@ -109,18 +109,16 @@ lemma log_α_ne_zero : log α ≠ 0 :=
 
 variable [NumberField K]
 
-open AlgebraicDenominator
-
 /-- Every element of a number field is algebraic over `ℤ`. -/
 lemma isAlgebraic_int (α : K) : IsAlgebraic ℤ α := by
   obtain ⟨y, hy, hr⟩ := exists_integral_multiples ℤ ℚ (L := K) {α}
   exact IsAlgebraic.of_smul_isIntegral (by simp [hy]) (hr α (mem_singleton_self _))
 
-/-- The integer denominator of `α`, given by `natDenominator`. -/
-abbrev intDenom (α : K) : ℤ := (natDenominator α).cast
+/-- The integer denominator of `α`, given by `Algebra.natDenominator`. -/
+abbrev intDenom (α : K) : ℤ := (Algebra.natDenominator α).cast
 
 lemma intDenom_ne_zero (α : K) : intDenom α ≠ 0 :=
-  Int.natCast_ne_zero.mpr (natDenominator_ne_zero (isAlgebraic_int α))
+  Int.natCast_ne_zero.mpr (isAlgebraic_int α).natDenominator_ne_zero
 
 /-- `c₁` is a positive integer such that `c₁ • α'`, `c₁ • β'`, and `c₁ • γ'`
 are algebraic integers. -/
@@ -146,7 +144,7 @@ private lemma isIntegral_c₁_smul_aux (x : K) (a b : ℤ)
   rw [c₁, ← he]
   exact isIntegral_zsmul_of_abs <| by
     simpa [zsmul_eq_mul, mul_assoc, intDenom] using
-      IsIntegral.smul (a * b) (isIntegral_natDenominator_smul x)
+      IsIntegral.smul (a * b) (Algebra.isIntegral_natDenominator_smul x)
 
 omit [NumberField K] in
 lemma isIntegral_c₁α : IsIntegral ℤ (c₁ α' β' γ' • α') :=
@@ -296,6 +294,10 @@ Its entries are scaled to strictly reside in the ring of integers `𝓞 K`. -/
 def A : Matrix (Fin (m K * n K q)) (Fin (q * q)) (𝓞 K) :=
   fun i j ↦ RingOfIntegers.restrict _
   (fun _ ↦ isIntegral_cCoeffs_smul_systemCoeffs α' β' γ' q i j) ℤ
+
+lemma map_A : algebraMap (𝓞 K) K (A α' β' γ' q u t) =
+    cCoeffs α' β' γ' q • systemCoeffs α' β' γ' q u t :=
+  rfl
 
 include α β σ hirr htriv habc in
 lemma c₁α_ne_zero : c₁ α' β' γ' • α' ≠ 0 :=
@@ -602,8 +604,7 @@ include α β K σ α' β' γ' hirr htriv habc hq0 h2mq u t q in
 lemma house_matrixA_le :
     house ((algebraMap (𝓞 K) K) ((A α' β' γ' q) u t)) ≤
       (c₃ α' β' γ' ^ (n K q : ℝ) * (n K q : ℝ) ^ (((n K q : ℝ) - 1) / 2)) := by
-  simp only [A, systemCoeffs, RingOfIntegers.restrict, RingOfIntegers.map_mk]
-  rw [house_cCoeffs_smul_eq_factorized]
+  rw [map_A, house_cCoeffs_smul_eq_factorized]
   have h₁ := @house_factorized_le_prod K _ α' β' γ' _ q u t
   have h₂ := @house_prod_le_smul_pow K _ α' β' γ' _ q u t
   have h₃ := @house_smul_pow_le_abs K _ α β σ α' β' γ' hirr htriv habc _ q hq0 u t h2mq

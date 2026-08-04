@@ -258,6 +258,7 @@ lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
 

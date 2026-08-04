@@ -120,6 +120,9 @@ variable {H : B ⥤ᵖ C}
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
   mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `CategoryStruct` on `B ⥤ᵖ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
@@ -178,12 +181,18 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
                  (η.naturality f).hom ▷ G.map g ▷ h ≫ (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_comp _ _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp), to_app]
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ (θ.naturality (𝟙 a)).hom ≫ f ◁ θ.app a ◁ (H.mapId a).hom =
       f ◁ (G.mapId a).hom ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv :=
   θ.toOplax.whiskerLeft_naturality_id _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp), to_app]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (η.naturality (𝟙 a)).hom ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ (G.mapId a).hom ▷ f =
@@ -191,6 +200,9 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_id _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_app (attr := reassoc)]
 lemma naturality_id_hom (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
@@ -203,6 +215,9 @@ lemma naturality_id_iso (α : F ⟶ G) (a : B) :
   ext
   simp [naturality_id_hom]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_app (attr := reassoc)]
 lemma naturality_id_inv (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).inv = α.app a ◁ (G.mapId a).hom ≫ (ρ_ (α.app a)).hom ≫
@@ -215,6 +230,7 @@ lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f
      (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
   simp [← IsIso.inv_comp_eq, ← G.map₂_inv η.inv]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma naturality_naturality_iso (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     α.naturality g = whiskerRightIso (F.map₂Iso η.symm) (α.app b) ≪≫
       (α.naturality f) ≪≫ whiskerLeftIso (α.app a) (G.map₂Iso η) := by
@@ -222,6 +238,7 @@ lemma naturality_naturality_iso (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f
   rw [naturality_naturality_hom α η]
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).inv =
       α.app a ◁ G.map₂ η.inv ≫ (α.naturality f).inv ≫ F.map₂ η.hom ▷ α.app b := by
