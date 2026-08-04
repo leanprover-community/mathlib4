@@ -479,7 +479,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   apply stereographic_neg_apply
 
 -- Without this option, the lemmas `EmbeddingLike.map_eq_zero_iff` and `Submodule.range_subtype`
--- are not  applied by simp.
+-- are not applied by simp below.
 set_option backward.isDefEq.respectTransparency false in
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
