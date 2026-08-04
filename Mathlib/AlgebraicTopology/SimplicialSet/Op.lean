@@ -36,8 +36,9 @@ open CategoryTheory Simplicial
 namespace SSet
 
 /-- The covariant involution of the category of simplicial sets that
-is induced by `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`. -/
-@[implicit_reducible]
+is induced by `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
+This functor is purposely not made `implicit_reducible` so as to avoid
+confusion between `X.op _⦋n⦌` and `X _⦋n⦌`: use the bijection `opObjEquiv`. -/
 def opFunctor : SSet.{u} ⥤ SSet.{u} := SimplicialObject.opFunctor
 
 /-- The image of a simplicial set by the involution `opFunctor : SSet ⥤ SSet`. -/

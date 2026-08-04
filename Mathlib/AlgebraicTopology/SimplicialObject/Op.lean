@@ -29,8 +29,10 @@ variable {C : Type*} [Category.{v} C]
 
 /-- The covariant involution of the category of simplicial objects
 that is induced by the involution
-`SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`. -/
-@[implicit_reducible]
+`SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
+This functor is purposely not made `implicit_reducible` so as to avoid
+confusion between `(opFunctor.obj X) _⦋n⦌` and `X _⦋n⦌`: use the
+isomorphism `opObjIso`. -/
 def opFunctor : SimplicialObject C ⥤ SimplicialObject C :=
   (Functor.whiskeringLeft _ _ _).obj SimplexCategory.rev.op
 
@@ -77,7 +79,6 @@ lemma opFunctorCompOpFunctorIso_inv_app_app (X : SimplicialObject C) (n : Simple
     (opFunctorCompOpFunctorIso.inv.app X).app n = opObjIso.inv ≫ opObjIso.inv := by
   simp [opFunctorCompOpFunctorIso, opObjIso, opFunctor]
 
-attribute [local simp] opObjIso opFunctor in
 /-- The functor `opFunctor : SimplicialObject C ⥤ SimplicialObject C`
 as an equivalence of categories. -/
 @[simps]
