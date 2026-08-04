@@ -402,6 +402,25 @@ the enumeration `nonDegenerateEquiv`. -/
 noncomputable def ι (i : Fin (p + 1)) : (Δ[p + 1] : SSet.{u}) ⟶ Δ[p] ⊗ Δ[1] :=
   yonedaEquiv.symm (nonDegenerateEquiv i)
 
+lemma ι_def (i : Fin (p + 1)) :
+    ι.{u} i = yonedaEquiv.symm (nonDegenerateEquiv i) := rfl
+
+@[reassoc (attr := simp)]
+lemma ι_fst (i : Fin (p + 1)) :
+    ι.{u} i ≫ fst _ _ = stdSimplex.σ i := rfl
+
+@[reassoc (attr := simp)]
+lemma ι_snd (i : Fin (p + 1)) :
+    ι.{u} i ≫ snd _ _ = yonedaEquiv.symm (stdSimplex.objMk₁ i.castSucc.succ) := rfl
+
+@[simp]
+lemma yonedaEquiv_ι (i : Fin (p + 1)) :
+    dsimp% yonedaEquiv (ι.{u} i) = nonDegenerateEquiv i := rfl
+
+@[simp]
+lemma yonedaEquiv_ι₀ (i : Fin (p + 1)) :
+    dsimp% (prodStdSimplex.objEquiv (yonedaEquiv (ι₀.{u})) i) = ⟨i, 0⟩ := rfl
+
 instance (i : Fin (p + 1)) : Mono (ι.{u} i) := Nonsingular.mono _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -428,49 +447,104 @@ lemma exists_desc
   exact ⟨(Subcomplex.topIso _).inv ≫ (Subcomplex.eqToIso (filtration_last p)).inv ≫ ψ,
     fun i ↦ by rw [← hψ i (Fin.le_last i)]; rfl⟩
 
+@[reassoc]
+lemma δ_ι_zero :
+    stdSimplex.{u}.δ 0 ≫ ι (0 : Fin (p + 1)) = ι₁ :=
+  yonedaEquiv.injective rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma δ_ι_last :
     stdSimplex.{u}.δ (Fin.last (p + 1)) ≫ ι (Fin.last p) = ι₀ := by
-  sorry
+  apply yonedaEquiv.injective
+  apply prodStdSimplex.objEquiv.injective
+  rw [stdSimplex.yonedaEquiv_δ_comp]
+  ext i : 2
+  dsimp
+  rw [prodStdSimplex.objEquiv_δ_apply]
+  ext : 1
+  · dsimp
+    rw [stdSimplex.objEquiv_symm_σ_apply]
+    simp
+  · rw [Fin.succAbove_last, prodStdSimplex.objEquiv_apply_snd]
+    dsimp
+    rw [stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind)]
 
-@[reassoc]
-lemma δ_ι_zero :
-    stdSimplex.{u}.δ 0 ≫ ι (0 : Fin (p + 1)) = ι₁ := by
-  sorry
-
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ι_δ_whiskerRight_of_le (i : Fin (p + 2)) (j : Fin (p + 1))
     (hij : i ≤ j.castSucc := by grind) :
-    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] =
-      stdSimplex.δ i.castSucc ≫ ι j.succ := by
-  sorry
+    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] = stdSimplex.δ i.castSucc ≫ ι j.succ := by
+  apply yonedaEquiv.injective
+  apply prodStdSimplex.objEquiv.injective
+  rw [stdSimplex.yonedaEquiv_δ_comp]
+  ext k : 2
+  dsimp
+  rw [prodStdSimplex.objEquiv_δ_apply]
+  ext : 1
+  · dsimp
+    simp only [Category.assoc, whiskerRight_fst, ι_fst_assoc,
+      ← stdSimplex.δ_comp_σ_of_le hij]
+    rfl
+  · dsimp
+    simp only [Category.assoc, whiskerRight_snd, ι_snd, Equiv.apply_symm_apply]
+    by_cases! hjk : j.castSucc < k
+    · rw [stdSimplex.objMk₁_of_le_castSucc _ _ (by grind),
+        stdSimplex.objMk₁_of_le_castSucc _ _ (by grind [Fin.succAbove])]
+    · rw [stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind),
+        stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind [Fin.succAbove])]
 
 @[reassoc]
 lemma δ_ι_of_lt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : i < j.castSucc := by grind) :
-    stdSimplex.{u}.δ i ≫ ι j =
-      ι (j.pred (by grind)) ≫
-        stdSimplex.δ (i.castPred (by grind)) ▷ Δ[1] := by
-  sorry
+    stdSimplex.{u}.δ i ≫ ι j = ι (j.pred (by grind)) ≫
+      stdSimplex.δ (i.castPred (by grind)) ▷ Δ[1] := by
+  obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (by simpa using Fin.ne_zero_of_lt hij)
+  obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hij)
+  rw [Fin.pred_succ, Fin.castPred_castSucc, ι_δ_whiskerRight_of_le ..]
 
 @[reassoc]
 lemma ι_δ_whiskerRight_of_gt (i : Fin (p + 2)) (j : Fin (p + 1))
     (hij : j.castSucc < i := by grind) :
-    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] =
-      stdSimplex.δ i.succ ≫ ι j.castSucc := by
+    ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] = stdSimplex.δ i.succ ≫ ι j.castSucc := by
   sorry
 
 @[reassoc]
 lemma δ_ι_of_gt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : j.succ < i := by grind) :
     stdSimplex.{u}.δ i ≫ ι j = ι (j.castPred (by grind)) ≫
       stdSimplex.δ (i.pred (by grind)) ▷ Δ[1] := by
-  sorry
+  rw [ι_δ_whiskerRight_of_gt _ _
+    (by rwa [← Fin.succ_lt_succ_iff, Fin.castSucc_castPred, Fin.succ_pred])]
+  simp
+
+set_option backward.isDefEq.respectTransparency.types false in
+lemma δ_succ_castSucc_nonDegenerateEquiv_succ (i : Fin p) :
+    (Δ[p] ⊗ Δ[1]).δ i.castSucc.succ (nonDegenerateEquiv i.succ) =
+      (Δ[p] ⊗ Δ[1]).δ i.castSucc.succ (nonDegenerateEquiv i.castSucc) := by
+  apply prodStdSimplex.objEquiv.injective
+  ext j : 2
+  dsimp
+  simp only [prodStdSimplex.objEquiv_δ_apply]
+  ext : 1
+  · dsimp
+    rw [stdSimplex.objEquiv_symm_apply, stdSimplex.objEquiv_symm_apply]
+    exact SimplexCategory.congr_toOrderHom_apply
+      ((SimplexCategory.δ_comp_σ_self (i := i.succ)).trans
+        (SimplexCategory.δ_comp_σ_succ (i := i.castSucc)).symm) j
+  · dsimp
+    by_cases! hk : j < i.succ
+    · rw [Fin.succAbove_of_castSucc_lt _ _ (by grind),
+        stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind),
+        stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind)]
+    · rw [Fin.succAbove_of_le_castSucc _ _ (by grind),
+        stdSimplex.objMk₁_of_le_castSucc _ _ (by grind),
+        stdSimplex.objMk₁_of_le_castSucc _ _ (by grind)]
 
 @[reassoc]
 lemma δ_succ_castSucc_ι_succ (i : Fin p) :
     stdSimplex.{u}.δ i.castSucc.succ ≫ prodStdSimplex₁.ι i.succ =
     stdSimplex.δ i.castSucc.succ ≫ prodStdSimplex₁.ι i.castSucc := by
-  sorry
+  simp only [ι_def, stdSimplex.δ_comp_yonedaEquiv_symm,
+    δ_succ_castSucc_nonDegenerateEquiv_succ]
 
 end prodStdSimplex₁
 

@@ -170,6 +170,14 @@ def prodIso {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex) :
 
 end Subcomplex
 
+@[simp]
+lemma fst_apply {X Y : SSet.{u}} {n : SimplexCategoryᵒᵖ} (x : X.obj n ⊗ Y.obj n) :
+    dsimp% (fst X Y).app n x = x.1 := rfl
+
+@[simp]
+lemma snd_apply {X Y : SSet.{u}} {n : SimplexCategoryᵒᵖ} (x : X.obj n ⊗ Y.obj n) :
+    dsimp% (snd X Y).app n x = x.2 := rfl
+
 /-- The inclusion `X ⟶ X ⊗ Δ[1]` which is `0` on the second factor. -/
 noncomputable def ι₀ {X : SSet.{u}} : X ⟶ X ⊗ Δ[1] :=
   lift (𝟙 X) (const (stdSimplex.obj₀Equiv.{u}.symm 0))
@@ -429,6 +437,16 @@ lemma rightUnitor_hom_ι₁ :
   rw [← rightUnitor_inv_map_δ_zero, Iso.hom_inv_id_assoc]
 
 end stdSimplex
+
+@[simp]
+lemma yonedaEquiv_fst {X Y : SSet.{u}} {n : SimplexCategory}
+    (x : stdSimplex.obj n ⟶ X ⊗ Y) :
+    dsimp% (yonedaEquiv x).1 = yonedaEquiv (x ≫ fst _ _) := rfl
+
+@[simp]
+lemma yonedaEquiv_snd {X Y : SSet.{u}} {n : SimplexCategory}
+    (x : stdSimplex.obj n ⟶ X ⊗ Y) :
+    dsimp% (yonedaEquiv x).2 = yonedaEquiv (x ≫ snd _ _) := rfl
 
 namespace Truncated
 
