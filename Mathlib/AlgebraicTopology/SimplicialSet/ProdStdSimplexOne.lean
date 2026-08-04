@@ -502,11 +502,29 @@ lemma δ_ι_of_lt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : i < j.castSucc := b
   obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hij)
   rw [Fin.pred_succ, Fin.castPred_castSucc, ι_δ_whiskerRight_of_le ..]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ι_δ_whiskerRight_of_gt (i : Fin (p + 2)) (j : Fin (p + 1))
     (hij : j.castSucc < i := by grind) :
     ι.{u} j ≫ stdSimplex.δ i ▷ Δ[1] = stdSimplex.δ i.succ ≫ ι j.castSucc := by
-  sorry
+  apply yonedaEquiv.injective
+  apply prodStdSimplex.objEquiv.injective
+  rw [stdSimplex.yonedaEquiv_δ_comp]
+  ext k : 2
+  dsimp
+  rw [prodStdSimplex.objEquiv_δ_apply]
+  ext : 1
+  · dsimp
+    simp only [Category.assoc, whiskerRight_fst, ι_fst_assoc,
+      ← stdSimplex.δ_comp_σ_of_gt hij]
+    rfl
+  · dsimp
+    simp only [Category.assoc, whiskerRight_snd, ι_snd, Equiv.apply_symm_apply]
+    by_cases! hjk : j.castSucc < k
+    · rw [stdSimplex.objMk₁_of_le_castSucc _ _ (by grind),
+        stdSimplex.objMk₁_of_le_castSucc _ _ (by grind [Fin.succAbove])]
+    · rw [stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind),
+        stdSimplex.objMk₁_of_castSucc_lt _ _ (by grind [Fin.succAbove])]
 
 @[reassoc]
 lemma δ_ι_of_gt (i : Fin (p + 3)) (j : Fin (p + 2)) (hij : j.succ < i := by grind) :
