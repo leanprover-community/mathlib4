@@ -844,10 +844,8 @@ a.e. strong measurability. This is the varying-scalar analogue of
 `aestronglyMeasurable_const_smul_iff`. -/
 theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv G]
     [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
-  refine ⟨fun h => (hc.fun_inv.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
-  filter_upwards with x
-  rw [smul_smul, inv_mul_cancel, one_smul]
+    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
+  ⟨fun h => (hc.fun_inv.fun_smul h).congr (by simp), fun h => hc.fun_smul h⟩
 
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul M β] {c : M}
     (hc : IsUnit c) :
