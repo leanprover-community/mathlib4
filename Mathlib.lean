@@ -7338,7 +7338,8 @@ public import Mathlib.Tactic.Determinant.Bird.Meta
 public import Mathlib.Tactic.DuplicateDecls
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Echelon.Bareiss
-public import Mathlib.Tactic.Echelon.Interface
+public import Mathlib.Tactic.Echelon.Parsing
+public import Mathlib.Tactic.Echelon.Rank
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eval
