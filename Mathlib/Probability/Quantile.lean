@@ -29,9 +29,14 @@ generalized inverse.
 * `ProbabilityTheory.lowerQuantile_le_iff`: the Galois connection.
 * `ProbabilityTheory.le_apply_lowerQuantile`: attainment.
 * `ProbabilityTheory.apply_lowerQuantile`: the plug-in identity.
+* `ProbabilityTheory.lowerQuantile_cdf_le_iff`: the Galois connection for
+  the cdf of a probability measure, with no side condition beyond `0 < p`
+  and `p < 1`.
 * `ProbabilityTheory.not_forall_le_apply_lowerQuantile` and its companions:
   the right-continuity hypotheses are refuted as `¬ ∀ ...`, not merely
   motivated.
+* `ProbabilityTheory.not_galoisConnection_lowerQuantile_cdf`: the bundled
+  `GaloisConnection` packaging is FALSE for every measure.
 
 ## Implementation notes
 
@@ -319,6 +324,111 @@ theorem not_forall_apply_lowerQuantile :
   have hcon := h jumpAtZero 1 monotone_jumpAtZero nonempty_quantileSet_jumpAtZero_one
     bddBelow_quantileSet_jumpAtZero_one
   rw [lowerQuantile_jumpAtZero_one, jumpAtZero_zero] at hcon
+  linarith
+
+/-- The quantile set of a cdf is nonempty at every level strictly below one, because the
+cdf tends to one at `atTop`. -/
+theorem nonempty_quantileSet_cdf (μ : Measure ℝ) (p : ℝ)
+    (hp : p < 1) :
+    Set.Nonempty (quantileSet (cdf μ) p) := by
+  have h := (tendsto_cdf_atTop μ).eventually (eventually_gt_nhds hp)
+  cases h.exists with
+  | intro x hx => exact Exists.intro x (le_of_lt hx)
+
+/-- The quantile set of a cdf is bounded below at every level strictly above zero, because
+the cdf tends to zero at `atBot`. -/
+theorem bddBelow_quantileSet_cdf (μ : Measure ℝ) (p : ℝ)
+    (hp : 0 < p) :
+    BddBelow (quantileSet (cdf μ) p) := by
+  have h := (tendsto_cdf_atBot μ).eventually (eventually_lt_nhds hp)
+  cases h.exists with
+  | intro a ha => exact bddBelow_quantileSet_of_lt (cdf μ) p a (monotone_cdf μ) ha
+
+/-- The Galois connection for a probability measure, with no side condition beyond the
+level lying strictly inside the unit interval. This is the form a user of the theory
+actually wants.
+
+The `IsProbabilityMeasure` instance is not consumed by the proof. It is kept so that this
+lemma and the three like it below remain the probability-measure-facing form of the
+general cdf lemmas above, whose instances were dropped where their proofs did not use
+them. -/
+@[nolint unusedArguments]
+theorem lowerQuantile_cdf_le_iff (μ : Measure ℝ) [IsProbabilityMeasure μ] (p x : ℝ)
+    (h0 : 0 < p) (h1 : p < 1) :
+    lowerQuantile (cdf μ) p ≤ x ↔ p ≤ cdf μ x :=
+  lowerQuantile_le_iff (cdf μ) p x (monotone_cdf μ)
+    (nonempty_quantileSet_cdf μ p h1) (bddBelow_quantileSet_cdf μ p h0)
+    ((cdf μ).right_continuous (lowerQuantile (cdf μ) p))
+
+/-- Monotonicity of the quantile of a probability measure in the level, side conditions
+discharged. The unconsumed instance is kept for the reason given at
+`lowerQuantile_cdf_le_iff`. -/
+@[nolint unusedArguments]
+theorem lowerQuantile_cdf_mono (μ : Measure ℝ) [IsProbabilityMeasure μ] (p q : ℝ)
+    (hpq : p ≤ q) (h0 : 0 < p) (h1 : q < 1) :
+    lowerQuantile (cdf μ) p ≤ lowerQuantile (cdf μ) q :=
+  lowerQuantile_mono (cdf μ) p q hpq (bddBelow_quantileSet_cdf μ p h0)
+    (nonempty_quantileSet_cdf μ q h1)
+
+/-- Attainment for the cdf of a probability measure: the cdf has reached `p` at the
+`p`-quantile. Only `p < 1` is needed, inherited from the sharpened
+`le_apply_lowerQuantile`. -/
+@[nolint unusedArguments]
+theorem le_cdf_lowerQuantile (μ : Measure ℝ) [IsProbabilityMeasure μ] (p : ℝ)
+    (h1 : p < 1) :
+    p ≤ cdf μ (lowerQuantile (cdf μ) p) :=
+  le_apply_lowerQuantile (cdf μ) p (monotone_cdf μ)
+    (nonempty_quantileSet_cdf μ p h1)
+    ((cdf μ).right_continuous (lowerQuantile (cdf μ) p))
+
+/-- The adjunction, bundled. The lower quantile is left adjoint to `F`, for any `F` that
+is monotone, right continuous, and whose quantile set is nonempty and bounded below at
+every level. -/
+theorem galoisConnection_lowerQuantile (F : ℝ → ℝ)
+    (hF : Monotone F)
+    (hrc : ∀ y : ℝ, ContinuousWithinAt F (Set.Ici y) y)
+    (hne : ∀ p : ℝ, Set.Nonempty (quantileSet F p))
+    (hbd : ∀ p : ℝ, BddBelow (quantileSet F p)) :
+    GaloisConnection (lowerQuantile F) F :=
+  fun p x => lowerQuantile_le_iff F p x hF (hne p) (hbd p) (hrc (lowerQuantile F p))
+
+/-- The bundled hypotheses are satisfiable. The four hypotheses of
+`galoisConnection_lowerQuantile` hold simultaneously for the identity, so the bundled
+statement is not vacuous, and the quantile it induces is the identity, which is the sanity
+check every generalized inverse has to pass. -/
+theorem galoisConnection_lowerQuantile_id :
+    GaloisConnection (lowerQuantile (fun x : ℝ => x)) (fun x : ℝ => x) :=
+  galoisConnection_lowerQuantile (fun x : ℝ => x) (fun _ _ h => h)
+    (fun _ => continuousWithinAt_id) (fun p => Exists.intro p (le_refl p))
+    (fun p => Exists.intro p (fun _ hy => hy))
+
+/-- The bundled hypotheses fail for every cdf. At level zero the quantile set of a cdf is
+the whole line, because a cdf is nonnegative. -/
+theorem not_forall_bddBelow_quantileSet_cdf (μ : Measure ℝ) :
+    ¬ ∀ p : ℝ, BddBelow (quantileSet (cdf μ) p) := by
+  intro h
+  cases exists_apply_lt_of_bddBelow (cdf μ) 0 (h 0) with
+  | intro a ha => exact absurd ha (not_lt.mpr (cdf_nonneg μ a))
+
+/-- And at level two it is empty, because a cdf is at most one. -/
+theorem not_forall_nonempty_quantileSet_cdf (μ : Measure ℝ) :
+    ¬ ∀ p : ℝ, Set.Nonempty (quantileSet (cdf μ) p) := by
+  intro h
+  cases h 2 with
+  | intro x hx =>
+    exact absurd (le_trans hx (cdf_le_one μ x)) (by norm_num)
+
+/-- The bundled conclusion is false for every measure, which is stronger than
+saying this development's bundling lemma does not reach it.
+
+At level two the quantile set is empty, so the quantile takes the junk value zero, so the
+left side of the adjunction holds at `x = 0` while the right side would require two to be
+at most a cdf value. The pointwise form is unaffected and is the form to use. -/
+theorem not_galoisConnection_lowerQuantile_cdf (μ : Measure ℝ) :
+    ¬ GaloisConnection (lowerQuantile (cdf μ)) (fun x : ℝ => cdf μ x) := by
+  intro h
+  have h2 := (h 2 (lowerQuantile (cdf μ) 2)).mp (le_refl _)
+  have h1 := cdf_le_one μ (lowerQuantile (cdf μ) 2)
   linarith
 
 end ProbabilityTheory
