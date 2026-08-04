@@ -23,7 +23,6 @@ variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
 lemma LinearMap.charpoly_baseChange :
     (f.baseChange A).charpoly = f.charpoly.map (algebraMap R A) := by
   nontriviality A
-  have := (algebraMap R A).domain_nontrivial
   let I := Module.Free.ChooseBasisIndex R M
   let b : Module.Basis I R M := Module.Free.chooseBasis R M
   rw [← f.charpoly_toMatrix b, ← (f.baseChange A).charpoly_toMatrix (b.baseChange A),

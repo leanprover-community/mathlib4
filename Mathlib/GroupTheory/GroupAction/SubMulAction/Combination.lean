@@ -251,7 +251,6 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
     IsPreprimitive (Perm α) (powersetCard α n) := by
   -- The finiteness of `α` follows from the assumptions of the theorem.
   have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt hn)
-  have : Fintype α := Fintype.ofFinite α
   -- The action is pretransitive.
   have : IsPretransitive (Perm α) (powersetCard α n) := powersetCard.isPretransitive
   -- The type on which the group acts is nontrivial.

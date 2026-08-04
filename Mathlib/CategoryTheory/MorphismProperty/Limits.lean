@@ -373,7 +373,6 @@ theorem pushoutMap
     [HasPushoutsAlong g'] {i₂ : Y ⟶ Y'} (h₁ : P i₁) (h₂ : P i₂)
     (e₁ : f' = f ≫ i₁) (e₂ : g' = g ≫ i₂) :
     P (pushout.map f g f' g' i₁ i₂ (𝟙 _) (by simp [e₁]) (by simp [e₂])) := by
-  have : HasPushoutsAlong (Under.mk g').hom := by cat_disch
   have : pushout.map f g f' g' i₁ i₂ (𝟙 _) (by simp [e₁]) (by simp [e₂]) =
       ((pushoutSymmetry _ _).hom ≫
         ((Under.pushout f).map (Under.homMk _ e₂.symm : Under.mk g ⟶ Under.mk g')).right) ≫

@@ -158,7 +158,6 @@ theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X
       Subtype.dense_iff.2 <| by rw [← Set.range_comp, Set.val_comp_inclusion, Subtype.range_coe]⟩
   let := pseudoMetrizableSpaceUniformity (closure u)
   have := pseudoMetrizableSpaceUniformity_countably_generated (closure u)
-  have := secondCountable_of_separable (closure u)
   (Topology.IsEmbedding.inclusion hs).secondCountableTopology
 
 instance (X : Type*) [TopologicalSpace X] [LindelofSpace X] [PseudoMetrizableSpace X] :

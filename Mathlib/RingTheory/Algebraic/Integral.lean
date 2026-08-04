@@ -254,7 +254,6 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   rw [← faithfulSMul_iff_algebraMap_injective] at hRS
   have := NoZeroDivisors.of_faithfulSMul R S
   have := Algebra.nontrivial_of_isAlgebraic R S
-  have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by

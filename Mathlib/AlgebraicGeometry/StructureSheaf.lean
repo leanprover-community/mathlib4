@@ -463,7 +463,6 @@ theorem exists_le_iSup_basicOpen_and_smul_eq_smul_and_eq_const
       LocalizedModule.mk (g j • f i) ⟨g i * g j, Submonoid.mem_powers _⟩ := by
     refine toBasicOpenₗ_injective (g i * g j) ?_
     simp only [toBasicOpenₗ_mk]
-    have := H i
     trans (structureSheafInType R M).obj.map (homOfLE ?_).op s
     · refine .trans (Subtype.ext <| funext fun a ↦ ?_) congr((structureSheafInType R M).obj.map
         (homOfLE ((PrimeSpectrum.basicOpen_mul (g i) (g j)).trans_le inf_le_right)).op $(H j))

@@ -213,7 +213,6 @@ theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < 
 theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   obtain rfl | ha := eq_zero_or_pos a
   · obtain rfl | hc := eq_zero_or_pos c; · simp
-    have : b + c ≠ 0 := (hc.trans_le le_add_self).ne'
     rw [zero_opow hc.ne', zero_opow, mul_zero]
     exact (hc.trans_le le_add_self).ne'
   obtain rfl | ha' := (one_le_iff_ne_zero.2 ha.ne').eq_or_lt; · simp

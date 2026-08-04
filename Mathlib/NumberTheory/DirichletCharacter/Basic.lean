@@ -500,7 +500,6 @@ noncomputable def subgroupOfPrimitiveMapToOne [NeZero n] (p : ℕ) [hp : Fact p.
 @[simp]
 theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) [hp : Fact p.Prime] :
     χ ∈ subgroupOfPrimitiveMapToOne R n p ↔ χ.primitiveCharacter p = 1 := by
-  have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
   have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
   simp only [subgroupOfPrimitiveMapToOne, Subgroup.mem_map, mem_annihilator_iff,
     Set.mem_singleton_iff, forall_eq, ZMod.coe_unitOfCoprime]

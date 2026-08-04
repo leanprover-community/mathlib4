@@ -269,7 +269,6 @@ theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜
     haveI : CompleteSpace U := FiniteDimensional.complete 𝕜 U
     ↑(f.normDet ^ 2) = (f.adjoint ∘L f).det := by
   have : CompleteSpace U := FiniteDimensional.complete 𝕜 U
-  have : CompleteSpace f.range := FiniteDimensional.complete 𝕜 f.range
   let bu := stdOrthonormalBasis 𝕜 U
   by_cases h : f.ker = ⊥
   · obtain ⟨b⟩ := (f.normDet_ne_zero_tfae.out 1 3).mp h

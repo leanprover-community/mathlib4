@@ -393,7 +393,6 @@ lemma Module.Free.bijective_algebraMap_of_finrank_eq_one {R S : Type*} [CommRing
     [Algebra R S] [Nontrivial R] [Free R S] (h : finrank R S = 1) :
     Function.Bijective (algebraMap R S) := by
   have : Module.Finite R S := finite_of_finrank_pos (by grind)
-  have : Free R (Module.End R S) := .of_equiv (dualTensorHomEquiv R S S)
   let f : S →ₐ[R] (S →ₗ[R] S) := Algebra.lmul R S
   have h1 : LinearMap.trace R S ∘ₗ f ∘ₗ Algebra.linearMap R S = LinearMap.id := by ext; simp [h]
   let b : Basis (Unit × Unit) R (End R S) :=

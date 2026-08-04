@@ -83,8 +83,6 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
   algebraize [φ.toRingHom, (φ.toRingHom.comp (algebraMap P Pp)), ψ.toRingHom,
     ψ.toRingHom.comp φ.toRingHom]
-  have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
-  have := IsScalarTower.of_algebraMap_eq' ψ.comp_algebraMap.symm
   have : IsScalarTower P S Sp := .of_algebraMap_eq' rfl
   have : IsScalarTower S Sp 𝓀[S] := .of_algebraMap_eq fun r ↦ by
     simp [RingHom.algebraMap_toAlgebra, ψ, Sp]
@@ -179,8 +177,6 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     rw [IsLocalization.mk'_mem_map_algebraMap_iff]
     exact ⟨a, ha, by simpa⟩
   algebraize [fP.toRingHom]
-  have : FormallyEtale (MvPolynomial (Fin n) R) P' := .of_isLocalization M'
-  have : FormallySmooth R P' := .comp _ (MvPolynomial (Fin n) R) _
   have : Module.Free P' Ω[P'⁄R] :=
     .of_equiv (KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale R (MvPolynomial (Fin n) R) P')
   exact FormallySmooth.of_formallySmooth_residueField_tensor_aux (R := R) (S := S) hf₁ hfP

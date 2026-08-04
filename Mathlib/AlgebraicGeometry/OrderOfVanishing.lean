@@ -126,7 +126,6 @@ lemma ord_le_smul {x : X} {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
     RingHom.algebraMap_toAlgebra, map_ne_zero_iff]
   rw [ord_le_ord_iff hx hx hf this]
   algebraize [(X.presheaf.germ U x hxU).hom]
-  have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight_le hx.le
   have : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk x) ↑X.functionField :=
     functionField_isScalarTower X U ⟨x, hxU⟩
   simp [ordHom, Ring.ordFrac_le_smul, RingHom.algebraMap_toAlgebra, map_ne_zero_iff,

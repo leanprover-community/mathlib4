@@ -348,7 +348,6 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
       simp [Finset.prod_range_succ']
     specialize IH (s + 1) ?_
     · rw [Nat.floor_eq_iff' (by lia)] at hs
-      have : s.re ≤ -m := by grind
       rw [Nat.floor_eq_iff <| by simpa using (show s.re ≤ 0 by grind)]
       grind [add_re, one_re]
     rw [Gamma_add_one _ hsne] at IH

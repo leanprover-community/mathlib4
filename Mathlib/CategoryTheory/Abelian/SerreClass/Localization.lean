@@ -347,9 +347,6 @@ lemma hasKernels : HasKernels D where
     obtain ⟨g, ⟨e⟩⟩ :=
       (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
     have := preservesKernel L P g.hom
-    have : HasLimit (parallelPair (L.map g.hom) 0) :=
-      ⟨_, (KernelFork.isLimitMapConeEquiv _ L).1
-        (isLimitOfPreserves L (kernelIsKernel g.hom))⟩
     exact hasLimit_of_iso (show parallelPair (L.map g.hom) 0 ≅ _ from
       parallelPair.ext (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e))
 
@@ -359,9 +356,6 @@ lemma hasCokernels : HasCokernels D where
     obtain ⟨g, ⟨e⟩⟩ :=
       (Localization.essSurj_mapArrow L P.isoModSerre).mem_essImage (Arrow.mk f)
     have := preservesCokernel L P g.hom
-    have : HasColimit (parallelPair (L.map g.hom) 0) :=
-      ⟨_, (CokernelCofork.isColimitMapCoconeEquiv _ L).1
-        (isColimitOfPreserves L (cokernelIsCokernel g.hom))⟩
     exact hasColimit_of_iso (show _ ≅ parallelPair (L.map g.hom) 0 from
       parallelPair.ext (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm))
 

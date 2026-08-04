@@ -140,7 +140,6 @@ lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex
       rintro _ _ _ ⟨c⟩
       have h0 := Fin.pos_iff_ne_zero.mpr (IsInner.ne_zero c.s rfl)
       have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
-      have : NeZero c.dim := ⟨by grind⟩
       exact .horn_ι h0 hn⟩
 
 instance : strongInnerAnodyneExtensions.{u}.RespectsIso where

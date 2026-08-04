@@ -186,7 +186,6 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   refine of_abv ?_
   simp only [abv_pow abv, geom_sum_eq hx1']
   conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
-  have : 0 < 1 - abv x := sub_pos.2 hx1
   refine of_mono_bounded _ (a := (1 : α) / (1 - abv x)) (m := 0) ?_ ?_
   · intro n _
     rw [abs_of_nonneg]

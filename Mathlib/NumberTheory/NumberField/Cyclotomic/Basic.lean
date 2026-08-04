@@ -561,7 +561,6 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       norm ℤ (hζ.toInteger - 1) = norm ℤ (hμ.toInteger - 1) ^ Module.finrank ℚ⟮ζ⟯ K := by
     refine ⟨IntermediateField.AdjoinSimple.gen ℚ ζ,
       intermediateField_adjoin_isCyclotomicExtension ℚ hζ, coe_submonoidClass_iff.mp hζ, ?_⟩
-    have : NumberField ℚ⟮ζ⟯ := of_intermediateField _
     rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl, map_sub, map_one, RingOfIntegers.map_mk,
       show ζ - 1 = algebraMap ℚ⟮ζ⟯ K (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
@@ -728,7 +727,6 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
 theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     (NumberField.discr K).natAbs = n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) := by
-  have : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
   rw [discr n K, Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_neg, Int.natAbs_one, one_pow, one_mul,
     Int.natAbs_ediv_of_dvd, Int.natAbs_pow, Int.natAbs_natCast, Int.natAbs_natCast]
   rw [← Nat.cast_pow, Int.natCast_dvd_natCast]

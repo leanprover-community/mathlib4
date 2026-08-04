@@ -455,7 +455,6 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
         _ = ((2 - K) * l + (K - 1) * #S) * #A := by ring
     -- By cancelling `|A|` on both sides, we get `|A| ≤ (2 - K)l + (K - 1)|S|`.
     -- By composing with `|S| ≤ K|A|`, we get `|S| ≤ (2 - K)Kl + (K - 1)K|S|`.
-    have : 0 < #A := by positivity
     replace ineq := calc
           (#S : ℝ)
       _ ≤ K * #A := ‹_›
@@ -467,8 +466,6 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
           (φ - K) * (K - ψ) / ((2 - K) * K) * #S
       _ = (φ - K) * (K - ψ) * #S / ((2 - K) * K) := div_mul_eq_mul_div ..
       _ ≤ (2 - K) * K * l / ((2 - K) * K) := by
-        have := Real.goldenRatio_mul_goldenConj
-        have := Real.goldenRatio_add_goldenConj
         rw [show (φ - K) * (K - ψ) = 1 - (K - 1) * K by grind]
         gcongr ?_ / _
         linarith [ineq]

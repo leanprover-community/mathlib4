@@ -170,7 +170,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
         (Algebra.TensorProduct.includeRight : B →ₐ[R] S ⊗[R] B).toRingHom
     simp [← IsScalarTower.algebraMap_eq]
   let := φ.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
   have : IsScalarTower (integralClosure R B) (integralClosure S (S ⊗[R] B)) (S ⊗[R] B) :=
     .of_algebraMap_eq' rfl
   have := IsLocalization.integralClosure (S := B) M (Rf := S) (Sf := S ⊗[R] B)

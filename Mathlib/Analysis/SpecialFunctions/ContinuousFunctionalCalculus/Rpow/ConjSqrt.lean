@@ -82,8 +82,6 @@ lemma conjSqrt_ringInverse_conjSqrt (c a : A) (hc : IsStrictlyPositive c := by c
     conjSqrt c⁻¹ʳ (conjSqrt c a) = a := by
   grind [IsSelfAdjoint.commute_of_mul_eq_isSelfAdjoint _ (sqrt c) 1, Ring.inverse_mul_cancel,
          conjSqrt_apply] =>
-    have : sqrt c⁻¹ʳ * sqrt c = 1
-    have : Commute (sqrt c) (sqrt c⁻¹ʳ)
     finish
 
 set_option backward.isDefEq.respectTransparency.types false in

@@ -479,7 +479,6 @@ theorem isOpenMap_of_surjectiveₛₗ [TopologicalSpace B'] [IsModuleTopology S 
     IsOpenMap φ := by
   have hOpenMap :=
     letI : TopologicalSpace A := moduleTopology R A
-    have : IsModuleTopology R A := ⟨rfl⟩
     isOpenQuotientMap_of_surjectiveₛₗ hσ φ hφ |>.isOpenMap
   intro U hU
   exact hOpenMap U <| moduleTopology_le R A U hU

@@ -325,7 +325,6 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   generalize hf : aeval (R := R) x = f at *
   obtain rfl : f X = x := by simp [← hf]
   let := f.toRingHom.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.Finite R[X] S := RingHom.finite_algebraMap.mpr hx'
   have : FaithfulSMul R[X] S := by
     rw [faithfulSMul_iff_algebraMap_injective, injective_iff_map_eq_zero]
@@ -360,11 +359,9 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
     ¬ IsStronglyTranscendental R x := by
   intro hx
   have := (FaithfulSMul.algebraMap_injective S' L).isDomain
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
   have : Algebra.IsIntegral R R' := IsIntegralClosure.isIntegral_algebra _ K
   have : FaithfulSMul R' K := (faithfulSMul_iff_algebraMap_injective _ _).mpr
     (IsIntegralClosure.algebraMap_injective R' R K)
-  have : FaithfulSMul R R' := .tower_bot _ _ K
   have : FaithfulSMul R' L := .trans _ K _
   have : FaithfulSMul R' S' := .tower_bot _ _ L
   have : IsIntegrallyClosedIn R' K := .of_isIntegralClosure R
@@ -712,8 +709,6 @@ lemma ZariskisMainProperty.quasiFiniteAt
     Algebra.QuasiFiniteAt R p := by
   obtain ⟨S', hS', r, hrp, H⟩ := H.exists_fg_and_exists_notMem_and_awayMap_bijective _
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
-  have : Algebra.QuasiFinite R (Localization.Away r) :=
-    .trans _ S' _
   have : Algebra.QuasiFinite R (Localization.Away r.1) :=
     .of_surjective_algHom (Localization.awayMapₐ S'.val r) H.2
   let f : Localization.Away r.1 →ₐ[S] Localization.AtPrime p :=

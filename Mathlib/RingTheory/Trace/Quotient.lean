@@ -108,11 +108,6 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     simp
   have : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
   have : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
-  have : IsPrincipalIdealRing Rₚ := by
-    by_cases hp : p = ⊥
-    · infer_instance
-    · have := (IsDedekindDomain.isDedekindDomainDvr R).2 p hp inferInstance
-      infer_instance
   have : Module.Free Rₚ Sₚ := Module.free_of_finite_type_torsion_free'
   apply (equivQuotMaximalIdeal p Rₚ).injective
   rw [trace_quotient_eq_trace_localization_quotient S p Rₚ Sₚ, IsScalarTower.algebraMap_eq S Sₚ,

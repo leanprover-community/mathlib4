@@ -50,8 +50,6 @@ lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} :
     have i1 : j < w.length := by lia
     have i2 : j + p < w.length := by lia
     have min : p < w.length := by lia
-    have : j + p - (List.take p w).length = j := by
-      simp_all [min_eq_left_of_lt]
     simp_all [getElem_append_right, IsPrefix.getElem pref, min_eq_left_of_lt]
   · intro lhs
     rw [HasPeriod]

@@ -202,8 +202,6 @@ lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
   refine fun {U} E ↦ ⟨?_, fun i₁ i₂ W p₁ p₂ h ↦ ?_⟩
   · simp [PreZeroHypercover.sieve₀_map, H.cover_preserve E.mem₀]
   · let P : C := pullback (E.f i₁) (E.f i₂)
-    have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
-      hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
     have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
     rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesPullbacks _ _ _
       pullback.condition] at this

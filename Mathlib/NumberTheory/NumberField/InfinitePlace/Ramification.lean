@@ -106,7 +106,6 @@ variable (k K)
 
 lemma card_mono [NumberField k] [NumberField K] :
     card (InfinitePlace k) ≤ card (InfinitePlace K) :=
-  have := Module.Finite.of_restrictScalars_finite ℚ k K
   Fintype.card_le_of_surjective _ comap_surjective
 
 variable {k K}

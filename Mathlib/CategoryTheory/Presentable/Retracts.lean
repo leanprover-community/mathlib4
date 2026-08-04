@@ -30,7 +30,6 @@ lemma Retract.isCardinalPresentable
     [IsCardinalPresentable X κ] :
     IsCardinalPresentable Y κ where
   preservesColimitOfShape J _ _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
-    have := essentiallySmallSelf J
     have := isFiltered_of_isCardinalFiltered J κ
     refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f₁ f₂ hf ↦ ?_)
     · obtain ⟨i, g, hg⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc (h.r ≫ f)

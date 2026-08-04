@@ -131,7 +131,6 @@ lemma isPresentable_eq_retractClosure :
   refine le_antisymm (fun X hX ↦ ?_) ?_
   · rw [isCardinalPresentable_iff] at hX
     obtain ⟨J, _, _, ⟨p⟩⟩ := h.exists_colimitsOfShape X
-    have := essentiallySmall_of_small_of_locallySmall.{w} J
     obtain ⟨j, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit (𝟙 X)
     exact ⟨_, p.prop_diag_obj j, ⟨{ i := _, r := _, retract := hf}⟩⟩
   · simpa only [ObjectProperty.retractClosure_le_iff] using h.le_isCardinalPresentable

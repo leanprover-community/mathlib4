@@ -172,7 +172,6 @@ lemma congr_of_eqOn
     apply Filter.eventuallyEq_of_mem hxs
     intro t ht
     simp [ψ, ht]
-  have := hcov.leibniz hσ hψ'.mdifferentiableAt
   -- Then, it's a chain of (dependent) equalities.
   calc cov σ x
     _ = cov ((ψ : M → 𝕜) • σ) x := by

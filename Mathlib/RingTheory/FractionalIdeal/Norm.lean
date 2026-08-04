@@ -108,7 +108,6 @@ variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ 
 theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
-  have := IsFractionRing.nontrivial R K
   let b₀ : Basis ι ℚ K := b.localizationLocalization ℚ ℤ⁰ K
   let bI.num : Basis ι ℤ I.num := bI.map
       ((equivNum (nonZeroDivisors.coe_ne_zero _)).restrictScalars ℤ)

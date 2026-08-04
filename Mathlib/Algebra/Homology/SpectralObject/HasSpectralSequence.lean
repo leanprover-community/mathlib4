@@ -114,7 +114,6 @@ lemma le₀₁' (r : ℤ) (hr : r₀ ≤ r) (pq' : κ) {i₀ i₁ : ι}
     (hi₀ : i₀ = data.i₀ r pq')
     (hi₁ : i₁ = data.i₁ pq') :
     i₀ ≤ i₁ := by
-  have := data.le₀₁ r pq'
   simpa only [hi₀, hi₁] using data.le₀₁ r pq'
 
 lemma le₁₂' (pq' : κ) {i₁ i₂ : ι} (hi₁ : i₁ = data.i₁ pq') (hi₂ : i₂ = data.i₂ pq') :
