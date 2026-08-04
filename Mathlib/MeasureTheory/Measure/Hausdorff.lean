@@ -1065,9 +1065,11 @@ theorem hausdorffMeasure_homothety_preimage {d : ℝ} (hd : 0 ≤ d) (x : P) {c 
     hausdorffMeasure_homothety_image hd x (_ : 𝕜ˣ).isUnit.ne_zero, Units.val_inv_eq_inv_val,
     Units.val_mk0, nnnorm_inv]
 
-/-! TODO: prove `Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d]`, which needs a
-more general version of `AffineMap.homothety_continuous`. -/
-
+theorem map_homothety_hausdorffMeasure {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0) :
+    Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d] := by
+  ext s hs
+  rw [Measure.map_apply (AffineMap.homothety_continuous x c).measurable hs,
+    hausdorffMeasure_homothety_preimage hd x hc s, Measure.smul_apply]
 
 end NormedFieldAffine
 

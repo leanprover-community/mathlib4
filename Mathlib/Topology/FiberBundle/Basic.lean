@@ -780,7 +780,7 @@ theorem isOpen_source (e : Pretrivialization F (π F E)) :
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
   refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
   ext ⟨x, hx⟩
-  simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
+  simp only [mem_preimage, Pretrivialization.setSymm, domRestrict, e.mem_target, e.mem_source,
     e'.proj_symm_apply hx]
 
 theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivialization F (π F E))
@@ -835,9 +835,9 @@ theorem inducing_totalSpaceMk_of_inducing_comp (b : B)
     (h : IsInducing (a.pretrivializationAt b ∘ TotalSpace.mk b)) :
     @IsInducing _ _ _ a.totalSpaceTopology (TotalSpace.mk b) := by
   let := a.totalSpaceTopology
-  rw [← restrict_comp_codRestrict (a.mem_pretrivializationAt_source b)] at h
+  rw [← domRestrict_comp_codRestrict (a.mem_pretrivializationAt_source b)] at h
   apply IsInducing.of_codRestrict (a.mem_pretrivializationAt_source b)
-  refine h.of_comp ?_ (continuousOn_iff_continuous_restrict.mp
+  refine h.of_comp ?_ (continuousOn_iff_continuous_domRestrict.mp
     (a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)).continuousOn)
   exact (a.continuous_totalSpaceMk b).codRestrict (a.mem_pretrivializationAt_source b)
 

@@ -223,10 +223,7 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
 
 protected theorem FormalMultilinearSeries.fderiv_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
     fderiv 𝕜 p.sum x = p.derivSeries.sum x := by
-  have h := p.hasFPowerSeriesOnBall (zero_le.trans_lt h) |>.fderiv.hasSum
-    (show x ∈ Metric.eball 0 p.radius by simpa using h) |>.tsum_eq
-  rw [zero_add] at h
-  rw [← h, FormalMultilinearSeries.sum]
+  simpa using (p.hasFPowerSeriesOnBall (zero_le.trans_lt h)).fderiv.sum (by simpa using h)
 
 protected theorem FormalMultilinearSeries.hasFDerivAt_sum [CompleteSpace F] (h : ‖x‖ₑ < p.radius) :
     HasFDerivAt p.sum (p.derivSeries.sum x) x := by
