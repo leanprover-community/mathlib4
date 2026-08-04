@@ -41,6 +41,7 @@ def productCone : BinaryFan X Y :=
   BinaryFan.mk (P := CompHausLike.of P (X × Y))
     (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
+set_option fun_prop.reducibleApply false in
 /--
 When the predicate `P` is preserved under taking type-theoretic products, that product is a
 category-theoretic product in `CompHausLike P`.
@@ -79,6 +80,7 @@ type-theoretic sums.
 def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := CompHausLike.of P (X ⊕ Y))
   (ofHom _ { toFun := Sum.inl }) (ofHom _ { toFun := Sum.inr })
 
+set_option fun_prop.reducibleApply false in
 /--
 When the predicate `P` is preserved under taking type-theoretic sums, that sum is a
 category-theoretic coproduct in `CompHausLike P`.

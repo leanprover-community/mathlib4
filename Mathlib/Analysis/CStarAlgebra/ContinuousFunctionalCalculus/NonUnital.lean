@@ -794,7 +794,7 @@ noncomputable def cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : 
 
 lemma continuous_cfcₙHom_of_cfcHom [ContinuousFunctionalCalculus R A p] {a : A} (ha : p a) :
     Continuous (cfcₙHom_of_cfcHom R ha) :=
-  (cfcHom_continuous ha).comp <| (ContinuousMap.continuous_precomp _).comp <| by fun_prop
+  (cfcHom_continuous ha).comp <| (ContinuousMap.continuous_precomp _).comp continuous_induced_dom
 
 lemma cfcₙHom_of_cfcHom_injective [ContinuousFunctionalCalculus R A p] {a : A} (ha : p a) :
     Function.Injective (cfcₙHom_of_cfcHom R ha) := by

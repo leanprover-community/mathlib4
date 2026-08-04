@@ -73,8 +73,10 @@ noncomputable def fromCompletion (f : α →SL[σ] β) :
     Completion α →SL[σ] β where
   __ := f.toAddMonoidHom.extension f.continuous
   map_smul' c a := induction_on a
-      (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by dsimp; fun_prop)) <| by
+      (isClosed_eq (continuous_extension.comp (continuous_const_smul c))
+        ((AddMonoidHom.continuous_extension _ _).const_smul _)) <| by
     simp [← Completion.coe_smul, AddMonoidHom.extension_coe f.toAddMonoidHom f.continuous]
+  cont := AddMonoidHom.continuous_extension _ _
 
 @[simp]
 lemma toAddMonoidHom_fromCompletion (f : α →SL[σ] β) :

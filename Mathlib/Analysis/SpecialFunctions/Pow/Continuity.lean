@@ -379,6 +379,7 @@ end CpowLimits2
 
 namespace NNReal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     ContinuousAt (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) (x, y) := by
   have :
@@ -391,7 +392,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
-  · fun_prop
+  · fun_prop [NNReal]
 
 theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by

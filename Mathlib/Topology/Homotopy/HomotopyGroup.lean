@@ -154,6 +154,7 @@ section
 
 variable {M} (x : X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Homeomorphism `Ω^M X ≃ₜ Ω^N X` if `M ≃ N`. -/
 def congr (e : M ≃ N) : Ω^ M X x ≃ₜ Ω^ N X x where
   toFun p := ⟨p.1.comp ⟨fun t m ↦ t (e m), by fun_prop⟩, fun y ⟨n, hn⟩ =>
@@ -259,6 +260,7 @@ section LoopHomeo
 
 variable [DecidableEq N]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Loop from a generalized loop by currying $I^N → X$ into $I → (I^{N\setminus\{j\}} → X)$. -/
 @[simps]
 def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where

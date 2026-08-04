@@ -243,6 +243,7 @@ variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+set_option fun_prop.reducibleApply false in
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
 measurable cylinders. See `infinitePi_map_piCongrLeft` for a general version. -/
@@ -258,6 +259,7 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
+set_option fun_prop.reducibleApply false in
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 
