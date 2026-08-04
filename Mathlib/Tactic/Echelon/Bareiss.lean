@@ -180,6 +180,7 @@ update both simultaneously, and a row interchange conjugates `L` by the swap.
 The divisions are exact by Sylvester's identity. -/
 def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
     MetaM BareissData := do
+  /- TODO: more comments -- implemented from wikipedia and other sources -/
   let m := M.size
   let n := (M.getD 0 #[]).size
   -- the main row elimination function
@@ -246,6 +247,7 @@ scoped elab "bareiss_certify " s:str : tactic => do
   catch e =>
     throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
 
+/- TODO: a bit of more explanation on the L transformation. -/
 /-- Elaborate the `Bareiss.Decomposition` certificate of `M` from the raw decomposition
 data, folding the row scales into `L`, with the kernel checking the certificate. -/
 def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : Array Nat)
