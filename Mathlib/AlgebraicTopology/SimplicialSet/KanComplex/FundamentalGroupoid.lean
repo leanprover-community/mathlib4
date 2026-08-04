@@ -82,7 +82,25 @@ lemma homMk_fac_of_compStruct {x y z : X _⦋0⦌} {e₁ : Edge x y} {e₂ : Edg
 instance : IsGroupoid (FundamentalGroupoid X) := by
   have h₂ {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
       ∃ (e' : Edge x₁ x₀), Nonempty (Edge.CompStruct e e' (.id x₀)) := by
-    sorry
+    let φ (j : Fin 3) (hk : j ≠ 0) : Δ[1] ⟶ X :=
+      if j = 1 then const x₀ else yonedaEquiv.symm e.edge
+    have hφ : horn.IsCompatible φ := by
+      rw [horn.isCompatible_iff]
+      intro j k
+      fin_cases j <;> fin_cases k <;> simp [φ, yonedaEquiv_symm_zero]
+    refine ⟨Edge.mk (yonedaEquiv (stdSimplex.δ 0 ≫ hφ.liftOfKanComplex))
+      (yonedaEquiv.symm.injective ?_) (yonedaEquiv.symm.injective ?_),
+      ⟨Edge.CompStruct.mk (yonedaEquiv hφ.liftOfKanComplex) ?_ ?_ ?_⟩⟩
+    · simp [← stdSimplex.δ_comp_yonedaEquiv_symm,
+        ← dsimp% stdSimplex.δ_comp_δ_assoc (n := 0) (i := 0) (j := 1) (by simp),
+        hφ.δ_liftOfKanComplex 2 (by simp), φ]
+    · simp [← stdSimplex.δ_comp_yonedaEquiv_symm,
+        dsimp% stdSimplex.δ_comp_δ_self_assoc (n := 0) (i := 0),
+        hφ.δ_liftOfKanComplex 1 (by simp), φ, yonedaEquiv_symm_zero]
+    · simp [← stdSimplex.yonedaEquiv_δ_comp, hφ.δ_liftOfKanComplex 2 (by simp), φ]
+    · simp [stdSimplex.yonedaEquiv_δ_comp]
+    · simp [← stdSimplex.yonedaEquiv_δ_comp, hφ.δ_liftOfKanComplex 1 (by simp), φ]
+      sorry
   have h₀ {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
       ∃ (e' : Edge x₁ x₀), Nonempty (Edge.CompStruct e' e (.id x₁)) := by
     sorry
