@@ -378,7 +378,7 @@ variable (h v)
   direction will intersect one of the neighbouring cubes on the same boundary as `mi`. -/
 theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈ _) j := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
-  haveI := h.nontrivial_fin
+  have := h.nontrivial_fin
   rcases exists_ne j with ⟨j', hj'⟩
   intro hj
   rcases smallest_onBoundary hj with ⟨x, ⟨hx, h2x⟩, h3x⟩
