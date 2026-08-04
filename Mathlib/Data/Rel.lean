@@ -124,7 +124,7 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
   Set.eq_empty_of_forall_notMem fun _ ⟨_, h⟩ ↦ h
 
 @[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) := by
-  simp only [Set.eq_empty_iff_forall_notMem, mem_dom, not_exists, Prod.forall]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 @[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = (∅ : SetRel α β) := by
   simp only [Set.eq_empty_iff_forall_notMem, mem_cod, not_exists, Prod.forall]
@@ -162,7 +162,7 @@ lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
     (R ○ S) ○ t = R ○ (S ○ t) := by
   ext ⟨a, d⟩
   simp only [mem_comp]
-  tauto
+  grind
 
 @[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := Set.ext fun ⟨_, _⟩ ↦ exists_eq_right
 
@@ -188,22 +188,22 @@ lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
 lemma comp_iUnion (R : SetRel α β) (S : ι → SetRel β γ) : R ○ ⋃ i, S i = ⋃ i, R ○ S i := by
   ext ⟨a, c⟩
   simp only [mem_comp, Set.mem_iUnion]
-  tauto
+  grind
 
 lemma iUnion_comp (R : ι → SetRel α β) (S : SetRel β γ) : (⋃ i, R i) ○ S = ⋃ i, R i ○ S := by
   ext ⟨a, c⟩
   simp only [mem_comp, Set.mem_iUnion]
-  tauto
+  grind
 
 lemma comp_sUnion (R : SetRel α β) (𝒮 : Set (SetRel β γ)) : R ○ ⋃₀ 𝒮 = ⋃ S ∈ 𝒮, R ○ S := by
   ext ⟨a, c⟩
   simp only [mem_comp, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
-  tauto
+  grind
 
 lemma sUnion_comp (ℛ : Set (SetRel α β)) (S : SetRel β γ) : ⋃₀ ℛ ○ S = ⋃ R ∈ ℛ, R ○ S := by
   ext ⟨a, c⟩
   simp only [mem_comp, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
-  tauto
+  grind
 
 @[gcongr]
 lemma comp_subset_comp {S₁ S₂ : SetRel β γ} (hR : R₁ ⊆ R₂) (hS : S₁ ⊆ S₂) : R₁ ○ S₁ ⊆ R₂ ○ S₂ :=
@@ -226,7 +226,7 @@ lemma prod_comp_prod_of_inter_nonempty (ht : (t₁ ∩ t₂).Nonempty) (s : Set 
   obtain ⟨b, hb₁, hb₂⟩ := ht
   ext ⟨a, c⟩
   simp only [mem_comp, Set.mem_prod]
-  tauto
+  grind
 
 lemma prod_comp_prod_of_disjoint (ht : Disjoint t₁ t₂) (s : Set α) (u : Set γ) :
     s ×ˢ t₁ ○ t₂ ×ˢ u = ∅ :=
@@ -298,13 +298,13 @@ variable (R) in
 lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by
   ext b
   simp only [mem_image, Set.mem_iUnion]
-  tauto
+  grind
 
 variable (R) in
 lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by
   ext b
   simp only [mem_image, Set.mem_sUnion, Set.mem_iUnion, exists_prop]
-  tauto
+  grind
 
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ :=
@@ -328,13 +328,13 @@ variable (R S s) in
 lemma image_comp : image (R ○ S) s = image S (image R s) := by
   ext c
   simp only [mem_image, mem_comp]
-  tauto
+  grind
 
 variable (R S u) in
 lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by
   ext a
   simp only [mem_preimage, mem_comp]
-  tauto
+  grind
 
 variable (s) in
 @[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ :=
