@@ -313,7 +313,7 @@ theorem comap_center_le_center {F} [FunLike F R S] [RingHomClass F R S] {f : F}
 @[simp]
 theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     map f (center R) = center S :=
-  SetLike.coe_injective <| Set.image_center_eq _
+  SetLike.coe_injective (Set.image_center_eq f)
 
 @[simp]
 theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
