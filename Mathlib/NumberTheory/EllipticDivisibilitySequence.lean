@@ -393,15 +393,17 @@ namespace IsEllipticNet
 
 variable {W}
 
-lemma isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W := (h · · · 0)
+lemma isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W :=
+  (h · · · 0)
 
-protected lemma id : IsEllipticNet (id : ℤ → ℤ) := fun _ _ _ _ ↦ by simp_rw [rel, id_eq]; ring1
+protected lemma id : IsEllipticNet (id : ℤ → ℤ) :=
+  fun _ _ _ _ ↦ by simp_rw [rel, id_eq]; ring1
 
 protected lemma smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun p q r s ↦ by
   convert congrArg (x ^ 4 * ·) <| h p q r s <;> simp [rel]; ring1
 
-protected lemma map (h : IsEllipticNet W) (f : F) : IsEllipticNet <| f ∘ W :=
-  fun p q r s ↦ by rw [← map_rel W f, h p q r s, map_zero]
+protected lemma comp (h : IsEllipticNet W) (f : F) : IsEllipticNet <| f ∘ W :=
+  fun _ _ _ _ ↦ by rw [← map_rel, h, map_zero]
 
 /-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic net. -/
 theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -416,13 +418,14 @@ namespace IsEllipticSequence
 
 variable {W}
 
-protected lemma id : IsEllipticSequence (id : ℤ → ℤ) := IsEllipticNet.id.isEllipticSequence
+protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
+  IsEllipticNet.id.isEllipticSequence
 
 protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
   fun p q r ↦ by convert congrArg (x ^ 4 * ·) <| h p q r using 1 <;> simp [IsEllipticNet.rel]; ring1
 
-protected lemma map (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
-  fun p q r ↦ by rw [← IsEllipticNet.map_rel W f, h p q r, map_zero]
+protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
+  fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
 
 /-- If a sequence satisfies the even and odd elliptic relations, then it is an elliptic sequence. -/
 theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -440,13 +443,14 @@ namespace IsEllipticDvdSequence
 variable {W}
 
 /-- The identity sequence is an EDS. -/
-protected theorem id : IsEllipticDvdSequence (id : ℤ → ℤ) := ⟨IsEllipticSequence.id, .id ℤ⟩
+protected theorem id : IsEllipticDvdSequence (id : ℤ → ℤ) :=
+  ⟨IsEllipticSequence.id, .id ℤ⟩
 
 protected lemma smul (h : IsEllipticDvdSequence W) (x : R) : IsEllipticDvdSequence <| x • W :=
   ⟨h.left.smul x, h.right.smul x⟩
 
-protected lemma map (h : IsEllipticDvdSequence W) (f : F) : IsEllipticDvdSequence <| f ∘ W :=
-  ⟨h.left.map f, h.right.map <| by apply map_dvd⟩
+protected lemma comp (h : IsEllipticDvdSequence W) (f : F) : IsEllipticDvdSequence <| f ∘ W :=
+  ⟨h.left.comp f, h.right.comp <| by apply map_dvd⟩
 
 end IsEllipticDvdSequence
 
@@ -898,5 +902,5 @@ open Polynomial in
 theorem isEllipticSequence_normEDS : IsEllipticSequence <| normEDS b c d := by
   convert IsEllipticSequence.of_even_odd (normEDS_neg X (C c) (C d)) (by simp)
     (by simpa using isRegular_X.mem_nonZeroDivisors) (normEDS_rel_even _ _ _)
-    (normEDS_rel_odd _ _ _) |>.map <| evalRingHom b
+    (normEDS_rel_odd _ _ _) |>.comp <| evalRingHom b
   ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
