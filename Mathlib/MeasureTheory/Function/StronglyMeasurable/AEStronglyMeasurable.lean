@@ -866,7 +866,7 @@ theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [Continu
     AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
   refine ⟨fun h => (hc.fun_inv₀.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
   filter_upwards [hc0] with x hx
-  rw [smul_smul, inv_mul_cancel₀ hx, one_smul]
+  simp [hx]
 
 end MulAction
 
