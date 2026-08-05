@@ -511,18 +511,6 @@ noncomputable def oneMulEqTrans (h : MulStruct .const p q i)
 
 end
 
-noncomputable def unique {p₀₁ p₁₂ p₀₂ p₀₁' p₁₂' p₀₂' : X.PtSimplex (n + 1) x} {i : Fin (n + 1)}
-    (h : MulStruct p₀₁ p₁₂ p₀₂ i)
-    (h' : MulStruct p₀₁' p₁₂' p₀₂' i)
-    (h₀₁ : RelStruct₀ p₀₁ p₀₁') (h₁₂ : RelStruct₀ p₁₂ p₁₂') :
-    RelStruct₀ p₀₂ p₀₂' :=
-  sorry
-
-noncomputable def unique' {p₀₁ p₁₂ p₀₂ p₀₂' : X.PtSimplex (n + 1) x} {i : Fin (n + 1)}
-    (h : MulStruct p₀₁ p₁₂ p₀₂ i) (h₀₂ : RelStruct₀ p₀₂ p₀₂') :
-    MulStruct p₀₁ p₁₂ p₀₂' i :=
-  sorry
-
 lemma nonempty (p q : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
     ∃ (r : X.PtSimplex (n + 1) x), Nonempty (MulStruct p q r i) := by
   sorry

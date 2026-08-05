@@ -316,4 +316,29 @@ noncomputable def RelStruct₀.homotopy [KanComplex X]
             · simp [dsimp% stdSimplex.δ_comp_σ_of_gt_assoc hij]
     }⟩)
 
+/-- Up to homotopy (expressed here using `PtSimplex.RelStruct₀`),
+the multiplication on the homotopy groups of Kan complexes (which is done in the file
+`Mathlib/AlgebraicTopology/SimplicialSet/KanComplex/HomotopyGroup.lean`) is well defined. -/
+@[no_expose]
+noncomputable def MulStruct.unique
+    [KanComplex X] {p₀₁ p₁₂ p₀₂ p₀₁' p₁₂' p₀₂' : X.PtSimplex (n + 1) x} {i : Fin (n + 1)}
+    (h : MulStruct p₀₁ p₁₂ p₀₂ i)
+    (h' : MulStruct p₀₁' p₁₂' p₀₂' i)
+    (h₀₁ : RelStruct₀ p₀₁ p₀₁') (h₁₂ : RelStruct₀ p₁₂ p₁₂') :
+    RelStruct₀ p₀₂ p₀₂' :=
+  RelStruct.relStruct₀
+    (relStructSuccEquivMulStruct.symm
+      (assoc h' (relStructSuccEquivMulStruct (h₁₂.relStruct i.succ))
+        (assoc (relStructSuccEquivMulStruct (h₀₁.symm.relStruct i.succ)) (oneMul p₁₂ i) h)))
+
+/-- From a `MulStruct p₀₁ p₁₂ p₀₂ i` structure for a Kan complex, one may obtain
+a `MulStruct p₀₁ p₁₂ p₀₂' i` structure when `p₀₂` and `p₀₂'` are homotopic. -/
+@[no_expose]
+noncomputable def MulStruct.unique'
+    [KanComplex X] {p₀₁ p₁₂ p₀₂ p₀₂' : X.PtSimplex (n + 1) x} {i : Fin (n + 1)}
+    (h : MulStruct p₀₁ p₁₂ p₀₂ i) (h₀₂ : RelStruct₀ p₀₂ p₀₂') :
+    MulStruct p₀₁ p₁₂ p₀₂' i :=
+  MulStruct.assoc' h (mulOne p₁₂ i)
+    (relStructSuccEquivMulStruct (h₀₂.symm.relStruct i.succ))
+
 end SSet.PtSimplex
