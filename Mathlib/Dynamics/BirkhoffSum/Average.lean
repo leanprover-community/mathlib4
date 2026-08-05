@@ -46,7 +46,8 @@ see `birkhoffAverage_congr_ring`. -/
 def birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := (n : R)⁻¹ • birkhoffSum f g n x
 
 theorem birkhoffAverage_apply_zero (f : α → α) (g : α → M) (x : α) :
-    birkhoffAverage R f g 0 x = 0 := by simp [birkhoffAverage]
+    birkhoffAverage R f g 0 x = 0 := by
+  simp [birkhoffAverage]
 
 @[simp]
 theorem birkhoffAverage_zero (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
