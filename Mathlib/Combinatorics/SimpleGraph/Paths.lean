@@ -504,8 +504,8 @@ theorem eq_snd_of_mem_darts_of_isPath_dropLast {d : G.Dart} {p : G.Walk u v} (hd
     (hp : p.dropLast.IsPath) : u = d.fst → p.snd = d.snd := by
   intro hu
   by_cases h : p.darts.getLast (List.ne_nil_of_mem hd) = d
-  · grind [darts_getElem_eq_getVert, p.dropLast.getVert_length, length_eq_zero_iff,
-           hp.getVert_eq_start_iff_of_not_nil, length_dropLast]
+  · grind [darts_getElem_eq_getVert, p.dropLast.getVert_length, hp.getVert_eq_start_iff_of_not_nil,
+           length_dropLast]
   · have hl : p.length ≠ 1 := by grind [List.length_eq_one_iff]
     rw [← p.snd_dropLast hl]
     symm; apply hp.eq_snd_of_mem_edges
