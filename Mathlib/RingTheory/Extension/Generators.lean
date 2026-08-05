@@ -214,17 +214,10 @@ def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   surj := by
-    rw [funext (MvPolynomial.aeval_sumElim (f := P.val) (g := Q.val))]
-    refine Q.surj.comp ?_
-    sorry
-  -- σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
-  --   rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
-  -- aeval_val_σ' s := by
-  --   have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
-  --     rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
-  --   conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
-  --   simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-  --     Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
+    have : aeval (Sum.elim X (C ∘ P.val)) =
+      (mapAlgHom (aeval P.val)).comp (sumAlgEquiv R ι' ι).toAlgHom := algHom_ext (by simp)
+    rw [funext (aeval_sumElim (f := P.val) (g := Q.val)), this]
+    exact Q.surj.comp ((map_surjective _ P.surj).comp (sumAlgEquiv R ι' ι).surjective)
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
