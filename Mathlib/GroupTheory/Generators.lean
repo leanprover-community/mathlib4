@@ -63,18 +63,17 @@ theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) 
     f = g := MonoidHom.eq_of_eqOn_dense P.closure_eq_top (Set.forall_mem_range.mpr h)
 
 /-- The generating family obtained using a generating set `S : Set G`. -/
-def ofSet {S : Set G} (h : Subgroup.closure S = ⊤) :
-    Group.Generators G S where
+def ofSet {S : Set G} (h : Subgroup.closure S = ⊤) : Group.Generators G S where
   val := Subtype.val
   closure_eq_top := by rwa [Subtype.range_coe]
 
 @[simp]
 lemma ofSet_val {S : Set G} (hS : Subgroup.closure S = ⊤) :
-    (Group.Generators.ofSet hS).val = Subtype.val := rfl
+    (Group.Generators.ofSet hS).val = Subtype.val :=
+  rfl
 
 /-- The transport of a generating family along a surjective homomorphism. -/
-protected def map (f : G →* H) (hf : Function.Surjective f) :
-    Group.Generators H α where
+protected def map (f : G →* H) (hf : Function.Surjective f) : Group.Generators H α where
   val := f ∘ P.val
   closure_eq_top := by
     rw [Set.range_comp, ← MonoidHom.map_closure, P.closure_eq_top,
@@ -82,7 +81,8 @@ protected def map (f : G →* H) (hf : Function.Surjective f) :
 
 @[simp]
 lemma map_val (P : Group.Generators G α) (f : G →* H) (hf : Function.Surjective f) :
-  (P.map f hf).val = f ∘ P.val := rfl
+    (P.map f hf).val = f ∘ P.val :=
+  rfl
 
 /-- The transport of a generating family along an equivalence of index types. -/
 def reindex (P : Group.Generators G α) (e : β ≃ α) : Group.Generators G β where
@@ -91,7 +91,8 @@ def reindex (P : Group.Generators G α) (e : β ≃ α) : Group.Generators G β 
     rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
 
 @[simp]
-lemma reindex_val (P : Group.Generators G α) (e : β ≃ α) : (P.reindex e).val = P.val ∘ e := rfl
+lemma reindex_val (P : Group.Generators G α) (e : β ≃ α) : (P.reindex e).val = P.val ∘ e :=
+  rfl
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
 theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
