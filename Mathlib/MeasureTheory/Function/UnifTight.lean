@@ -103,8 +103,7 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   · replace hη := hη_top ▸ hη
     refine ⟨∅, (by simp), fun i ↦ ?_⟩
     simp only [compl_empty, indicator_univ, Pi.add_apply]
-    exact (hη (f i) (g i) (hf_meas i) (hg_meas i) ((hf_meas i).add (hg_meas i))
-      le_top le_top).le
+    exact (hη (f i) (g i) ((hf_meas i).add (hg_meas i)) le_top le_top).le
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :=
     ((hf.eventually_cofinite_indicator hf_meas hη_pos.ne').and
       (hg.eventually_cofinite_indicator hg_meas hη_pos.ne')).exists_measurable_mem_of_smallSets
@@ -114,18 +113,15 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     eLpNorm (indicator sᶜᶜ (f i + g i)) p μ
       = eLpNorm (indicator s (f i) + indicator s (g i)) p μ := by rw [compl_compl, indicator_add']
     _ ≤ ε := le_of_lt <|
-      hη _ _ ((hf_meas i).indicator hsm) ((hg_meas i).indicator hsm)
-        (((hf_meas i).indicator hsm).add ((hg_meas i).indicator hsm))
+      hη _ _ (((hf_meas i).indicator hsm).add ((hg_meas i).indicator hsm))
         (η_cast ▸ hfs hsm i) (η_cast ▸ hgs hsm i)
 
 protected theorem neg (hf : UnifTight f p μ) : UnifTight (-f) p μ := by
   intro ε hε
   obtain ⟨s, hμs, hfs⟩ := hf hε
   refine ⟨s, hμs, fun i ↦ ?_⟩
-  rw [Pi.neg_apply, Set.indicator_neg', eLpNorm_neg _ _ _ ?_]
-  · exact hfs i
-  · exact aestronglyMeasurable_of_eLpNorm_ne_top <|
-      ne_top_of_le_ne_top ENNReal.coe_ne_top (hfs i)
+  rw [Pi.neg_apply, Set.indicator_neg', eLpNorm_neg]
+  exact hfs i
 
 protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
@@ -141,9 +137,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   have hind : sᶜ.indicator (f n) =ᵐ[μ] sᶜ.indicator (g n) := by
     filter_upwards [hfg n] with x hx
     simp only [indicator, mem_compl_iff, hx]
-  have hfm := aestronglyMeasurable_of_eLpNorm_ne_top <|
-    ne_top_of_le_ne_top ENNReal.coe_ne_top (hfε n)
-  exact (le_of_eq <| eLpNorm_congr_ae (hfm.congr hind) hind.symm).trans (hfε n)
+  exact (le_of_eq <| eLpNorm_congr_ae hind.symm).trans (hfε n)
 
 end UnifTight
 
@@ -194,14 +188,11 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
     by_cases! hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
-      apply (eLpNorm_indicator_le _ hms.compl
-        (aestronglyMeasurable_of_eLpNorm_ne_top <|
-          ne_top_of_lt (lt_of_le_of_lt (hFε (Fin.castLT i hi)) ENNReal.coe_lt_top))).trans
+      apply (eLpNorm_indicator_le _ hms.compl).trans
       exact hFε (Fin.castLT i hi)
     · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le hi)
       rw [compl_union, inter_comm, ← indicator_indicator]
-      exact (eLpNorm_indicator_le _ hmS.compl
-        (aestronglyMeasurable_of_eLpNorm_ne_top <| ne_top_of_lt hfε)).trans hfε.le
+      exact (eLpNorm_indicator_le _ hmS.compl).trans hfε.le
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -241,7 +232,7 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
   refine ⟨s, hμs.ne, fun n => ?_⟩
   by_cases! hn : n < N
   · exact hFε ⟨n, hn⟩
-  · exact (eLpNorm_indicator_le _ hms.compl (hf n).aestronglyMeasurable).trans (hNε n hn)
+  · exact (eLpNorm_indicator_le _ hms.compl).trans (hNε n hn)
 
 /-- Convergence in Lp implies uniform tightness. -/
 private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
@@ -308,7 +299,6 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
         unfold E; rw [compl_union, ← indicator_indicator]
     _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _ hmEf.compl
-      (hg.indicator hmEg.compl).aestronglyMeasurable
     _ ≤ ε / 3 := hgε.le
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
@@ -316,7 +306,6 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
         unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
     _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _ hmEg.compl
-      ((hf n).indicator hmEf.compl).aestronglyMeasurable
     _ ≤ ε / 3 := hfε n
   have hmfngEc : AEStronglyMeasurable _ μ :=
     (((hf n).sub hg).indicator hmE.compl).aestronglyMeasurable
@@ -333,7 +322,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       = eLpNorm (Eᶜ.indicator (f n - g) + E.indicator (f n - g)) p μ := by
         congr; exact (E.indicator_compl_add_self _).symm
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
-        apply eLpNorm_add_le hmfngEc hmfngE (hmfngEc.add hmfngE) hp
+        apply eLpNorm_add_le (hmfngEc.add hmfngE) hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [ENNReal.add_thirds]
 
@@ -357,7 +346,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   -- come up with an a.e. equal strongly measurable replacement `f` for `g`
   have hf := fun n => (haef n).stronglyMeasurable_mk
   have hff' := fun n => (haef n).ae_eq_mk (μ := μ)
-  have hui' := hui.ae_eq haef hff'
+  have hui' := hui.ae_eq hff'
   have hut' := hut.aeeq hff'
   have hg := hg'.aestronglyMeasurable.stronglyMeasurable_mk
   have hgg' := hg'.aestronglyMeasurable.ae_eq_mk (μ := μ)
@@ -366,8 +355,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   set f' := fun n => (haef n).mk (μ := μ)
   set g' := hg'.aestronglyMeasurable.mk (μ := μ)
   have haefg (n : ℕ) : f n - g =ᵐ[μ] f' n - g' := (hff' n).sub hgg'
-  have hsnfg (n : ℕ) := eLpNorm_congr_ae (p := p)
-    ((haef n).sub hg'.aestronglyMeasurable) (haefg n)
+  have hsnfg (n : ℕ) := eLpNorm_congr_ae (p := p) (haefg n)
   apply Filter.Tendsto.congr (fun n => (hsnfg n).symm)
   exact tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hg'' hui' hut' haefg'
 

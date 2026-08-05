@@ -117,8 +117,7 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (
   rw [tendsto_iff_dist_tendsto_zero]
   simp_rw [dist_def]
   rw [← ENNReal.toReal_zero, ENNReal.tendsto_toReal_iff (fun n => ?_) ENNReal.zero_ne_top]
-  rw [eLpNorm_congr_ae ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
-    (Lp.coeFn_sub _ _).symm]
+  rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
@@ -130,9 +129,7 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f
       (fun n => eLpNorm (⇑(f n) - ⇑(MemLp.toLp f_lim f_lim_ℒp)) p μ) =
         (fun n => eLpNorm (⇑(f n) - f_lim) p μ) by
     rw [h_eq]
-  exact funext fun n => eLpNorm_congr_ae
-    ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
-    (EventuallyEq.rfl.sub (MemLp.coeFn_toLp f_lim_ℒp))
+  exact funext fun n => eLpNorm_congr_ae (EventuallyEq.rfl.sub (MemLp.coeFn_toLp f_lim_ℒp))
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → α → E)
     (f_ℒp : ∀ n, MemLp (f n) p μ) (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ) :
@@ -141,7 +138,6 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] 
   rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm' (fun n => (f_ℒp n).toLp (f n)) (f_lim_ℒp.toLp f_lim)]
   refine Filter.tendsto_congr fun n => ?_
   apply eLpNorm_congr_ae
-    ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
   filter_upwards [((f_ℒp n).sub f_lim_ℒp).coeFn_toLp,
     Lp.coeFn_sub ((f_ℒp n).toLp (f n)) (f_lim_ℒp.toLp f_lim)] with _ hx₁ hx₂
   rw [← hx₂]
@@ -158,8 +154,7 @@ theorem cauchySeq_Lp_iff_cauchySeq_eLpNorm {ι} [Nonempty ι] [SemilatticeSup ι
     CauchySeq f ↔ Tendsto (fun n : ι × ι => eLpNorm (⇑(f n.fst) - ⇑(f n.snd)) p μ) atTop (𝓝 0) := by
   simp_rw [cauchySeq_iff_tendsto_dist_atTop_0, dist_def]
   rw [← ENNReal.toReal_zero, ENNReal.tendsto_toReal_iff (fun n => ?_) ENNReal.zero_ne_top]
-  rw [eLpNorm_congr_ae ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
-    (Lp.coeFn_sub _ _).symm]
+  rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact eLpNorm_ne_top _
 
 theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
@@ -194,8 +189,7 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
   rw [dist_def] at hf
   dsimp only [f1]
   rwa [ENNReal.lt_ofReal_iff_toReal_lt]
-  rw [eLpNorm_congr_ae ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
-    (Lp.coeFn_sub _ _).symm]
+  rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
 
 /-! ### Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp` -/
@@ -366,14 +360,13 @@ theorem memLp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : ∀ 
   specialize h_tendsto_1 N (le_refl N)
   have h_add : f_lim = f_lim - f N + f N := by abel
   rw [h_add]
-  refine lt_of_le_of_lt (eLpNorm_add_le (h_lim_meas.sub (hf N).aestronglyMeasurable)
-    (hf N).aestronglyMeasurable
+  refine lt_of_le_of_lt (eLpNorm_add_le
     ((h_lim_meas.sub (hf N).aestronglyMeasurable).add (hf N).aestronglyMeasurable) hp) ?_
   rw [ENNReal.add_lt_top]
   constructor
   · refine lt_of_le_of_lt ?_ ENNReal.one_lt_top
     have h_neg : f_lim - f N = -(f N - f_lim) := by simp
-    rwa [h_neg, eLpNorm_neg _ _ _ ((hf N).aestronglyMeasurable.sub h_lim_meas)]
+    rwa [h_neg, eLpNorm_neg]
   · exact hf N
 
 theorem cauchy_complete_eLpNorm [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α → E}

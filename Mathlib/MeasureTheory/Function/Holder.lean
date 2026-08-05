@@ -75,8 +75,7 @@ lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
 lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
-  apply eLpNorm_congr_ae (Lp.aestronglyMeasurable (B.holder r f g))
-    (coeFn_holder B f g) |>.trans_le
+  apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
   exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (Lp.memLp f).aestronglyMeasurable
     (Lp.memLp g).aestronglyMeasurable (B · ·) ‖B‖₊
     (B.aestronglyMeasurable_comp₂ (Lp.memLp f).aestronglyMeasurable
@@ -194,7 +193,7 @@ protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
   simp only [Lp.norm_def, ← ENNReal.toReal_mul]
   refine ENNReal.toReal_mono (by finiteness) ?_
-  rw [eLpNorm_congr_ae (Lp.aestronglyMeasurable (f • g)) (coeFn_lpSMul f g)]
+  rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
   exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero

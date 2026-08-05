@@ -333,16 +333,13 @@ almost everywhere equal to `𝔼[g | ℱ n]`. -/
 theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Martingale f ℱ μ)
     (hg : Integrable g μ) (hgtends : Tendsto (fun n => eLpNorm (f n - g) 1 μ) atTop (𝓝 0)) (n : ℕ) :
     f n =ᵐ[μ] μ[g | ℱ n] := by
-  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff (((hf.stronglyMeasurable n).mono (ℱ.le _)).sub
-    (stronglyMeasurable_condExp.mono (ℱ.le _))).aestronglyMeasurable one_ne_zero]
+  rw [← sub_ae_eq_zero, ← eLpNorm_eq_zero_iff one_ne_zero]
   have ht : Tendsto (fun m => eLpNorm (μ[f m - g | ℱ n]) 1 μ) atTop (𝓝 0) :=
     haveI hint : ∀ m, Integrable (f m - g) μ := fun m => (hf.integrable m).sub hg
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le)
       fun m => eLpNorm_condExp_le_eLpNorm _ le_rfl
   have hev : ∀ m ≥ n, eLpNorm (μ[f m - g | ℱ n]) 1 μ = eLpNorm (f n - μ[g | ℱ n]) 1 μ := by
-    refine fun m hm => eLpNorm_congr_ae
-      (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable
-      ((condExp_sub (hf.integrable m) hg _).trans ?_)
+    refine fun m hm => eLpNorm_congr_ae ((condExp_sub (hf.integrable m) hg _).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
@@ -448,9 +445,7 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
     integrable_condExp.tendsto_eLpNorm_condExp stronglyMeasurable_condExp
   have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
     condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
-  refine ht.congr fun n => eLpNorm_congr_ae
-    ((stronglyMeasurable_condExp.mono (ℱ.le n)).sub
-      (stronglyMeasurable_condExp.mono (iSup_le fun n => ℱ.le n))).aestronglyMeasurable ?_
+  refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
 

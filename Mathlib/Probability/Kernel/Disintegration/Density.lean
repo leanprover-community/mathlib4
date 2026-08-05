@@ -416,9 +416,7 @@ lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel �
       1 ((ν a).restrict A)) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le)
-    (fun n ↦ eLpNorm_restrict_le _ 1 (ν a) A
-      ((measurable_densityProcess_right κ ν n a hs).aestronglyMeasurable.sub
-        (memL1_limitProcess_densityProcess hκν a hs).aestronglyMeasurable))
+    (fun _ ↦ eLpNorm_restrict_le _ 1 (ν a) A)
 
 end DensityProcess
 
@@ -508,9 +506,7 @@ lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)
     (F := fun i x ↦ densityProcess κ ν i a x s) (l := atTop)
     (Eventually.of_forall (fun n ↦ integrable_densityProcess hκν _ _ hs)) ?_ A
   refine (tendsto_congr fun n ↦ ?_).mp (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs)
-  refine eLpNorm_congr_ae
-    ((measurable_densityProcess_right κ ν n a hs).aestronglyMeasurable.sub
-      (memL1_limitProcess_densityProcess hκν a hs).aestronglyMeasurable) ?_
+  refine eLpNorm_congr_ae ?_
   exact EventuallyEq.rfl.sub (density_ae_eq_limitProcess hκν a hs).symm
 
 /-- Auxiliary lemma for `setIntegral_density`. -/

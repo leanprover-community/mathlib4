@@ -38,10 +38,12 @@ for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to
 management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
-      AEStronglyMeasurable (s.indicator fun _ => c) μ →
+      NullMeasurableSet s μ →
       eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
   rcases eq_or_ne p 0 with (rfl | h'p)
-  · exact ⟨1, zero_lt_one, fun _ _ hs => by simp [eLpNorm_exponent_zero hs]⟩
+  · exact ⟨1, zero_lt_one, fun s _ hs => by
+      have : AEStronglyMeasurable (s.indicator fun _ => c) μ := by fun_prop
+      simp [eLpNorm_exponent_zero this]⟩
   have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
   have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
   have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
@@ -58,7 +60,8 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     refine ⟨η, hη, ?_⟩
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
   refine ⟨η, hη_pos, fun s hs hsc => ?_⟩
-  grw [eLpNorm_indicator_const_le c p hsc aestronglyMeasurable_const, ← hη_le, hs]
+  grw [eLpNorm_indicator_const_le c p, ← hη_le, hs]
+  exact hsc
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -128,16 +131,14 @@ theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicat
 
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
-  rw [Lp.norm_def, eLpNorm_congr_ae (Lp.aestronglyMeasurable _) indicatorConstLp_coeFn,
-    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top
-      (aestronglyMeasurable_const.indicator hs), ENNReal.toReal_mul, measureReal_def,
-    ENNReal.toReal_rpow, toReal_enorm]
+  rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
+    eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
+      measureReal_def, ENNReal.toReal_rpow, toReal_enorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
-  rw [Lp.norm_def, eLpNorm_congr_ae (Lp.aestronglyMeasurable _) indicatorConstLp_coeFn,
-    eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero
-      (aestronglyMeasurable_const.indicator hs), ENNReal.toReal_top,
+  rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
+    eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero, ENNReal.toReal_top,
     _root_.div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
@@ -151,8 +152,7 @@ theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
-  refine (eLpNorm_indicator_const_le c p (aestronglyMeasurable_const.indicator hs)
-    aestronglyMeasurable_const).trans_eq ?_
+  refine (eLpNorm_indicator_const_le c p hs.nullMeasurableSet).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
@@ -261,13 +261,13 @@ theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   have := NeZero.ne μ
   rw [← MemLp.toLp_const, Lp.norm_toLp,
-    eLpNorm_const _ hp_zero this aestronglyMeasurable_const]
+    eLpNorm_const _ hp_zero this]
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← MemLp.toLp_const, Lp.norm_toLp,
-    eLpNorm_const' _ hp_zero hp_top aestronglyMeasurable_const]
+    eLpNorm_const' _ hp_zero hp_top]
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by

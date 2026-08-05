@@ -89,7 +89,7 @@ lemma lpNorm_fun_zero (p : ℝ≥0∞) (μ : Measure α) : lpNorm (fun _ ↦ 0 :
 @[simp]
 lemma lpNorm_eq_zero (hf : MemLp f p μ) (hp : p ≠ 0) : lpNorm f p μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp [← toReal_eLpNorm hf.aestronglyMeasurable, ENNReal.toReal_eq_zero_iff, hf.eLpNorm_ne_top,
-    eLpNorm_eq_zero_iff hf.aestronglyMeasurable hp]
+    eLpNorm_eq_zero_iff hp]
 
 @[simp] lemma lpNorm_of_isEmpty [IsEmpty α] (f : α → E) (p : ℝ≥0∞) : lpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
@@ -186,8 +186,7 @@ lemma lpNorm_add_le (hf : MemLp f p μ) (hp : 1 ≤ p) :
       ← ENNReal.toReal_add hf.eLpNorm_ne_top hg.eLpNorm_ne_top]
     gcongr
     exacts [ENNReal.add_ne_top.2 ⟨hf.eLpNorm_ne_top, hg.eLpNorm_ne_top⟩,
-      eLpNorm_add_le hf.aestronglyMeasurable hg.aestronglyMeasurable
-        (hf.add hg).aestronglyMeasurable hp]
+      eLpNorm_add_le (hf.add hg).aestronglyMeasurable hp]
   · rw [lpNorm_of_not_memLp fun hfg ↦ hg <| by simpa using hfg.sub hf, lpNorm_of_not_memLp hg]
     simp
 
@@ -220,7 +219,7 @@ lemma lpNorm_sum_le {ι : Type*} {s : Finset ι} {f : ι → α → E} (hf : ∀
   rw [← Finset.sum_congr rfl fun i hi ↦ toReal_eLpNorm (hf i hi).aestronglyMeasurable,
     ← ENNReal.toReal_sum fun i hi ↦ (hf i hi).eLpNorm_ne_top,
     ← toReal_eLpNorm (Finset.aestronglyMeasurable_sum _ fun i hi ↦ (hf i hi).aestronglyMeasurable)]
-  grw [eLpNorm_sum_le (fun i hi ↦ (hf _ hi).aestronglyMeasurable) hp]
+  grw [eLpNorm_sum_le hp]
   simpa using fun i hi ↦ (hf i hi).eLpNorm_ne_top
 
 -- TODO: Golf using `eLpNorm_expect_le` once it exists

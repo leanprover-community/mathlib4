@@ -37,7 +37,7 @@ lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0)
     ‖f i‖ₑ = eLpNorm f p (dirac i) := by
       rw [eLpNorm_dirac f i hp hfd]
     _ = eLpNorm f p (count.restrict {i}) := by simp
-    _ ≤ eLpNorm f p count := eLpNorm_restrict_le f p count {i} hf
+    _ ≤ eLpNorm f p count := eLpNorm_restrict_le f p count {i}
 
 omit [MeasurableSingletonClass α] in
 lemma eLpNorm_count_lt_top_of_lt [Finite α] (hf : AEStronglyMeasurable f .count)

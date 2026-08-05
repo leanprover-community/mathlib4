@@ -1321,7 +1321,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : eLpNorm f 1 μ ≤ 2 * μ Set.univ * r := by
   by_cases hr : r = 0
   · suffices f =ᵐ[μ] 0 by
-      rw [eLpNorm_congr_ae hfint.1 this, eLpNorm_zero, hr, ENNReal.coe_zero, mul_zero]
+      rw [eLpNorm_congr_ae this, eLpNorm_zero, hr, ENNReal.coe_zero, mul_zero]
     rw [hr] at hf
     norm_cast at hf
     have hnegf : ∫ x, -f x ∂μ = 0 := by

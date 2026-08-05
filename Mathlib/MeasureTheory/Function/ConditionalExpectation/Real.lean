@@ -311,10 +311,9 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   refine uniformIntegrable_of le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable) fun ε hε => ?_
   by_cases hne : eLpNorm g 1 μ = 0
-  · rw [eLpNorm_eq_zero_iff hg.aestronglyMeasurable one_ne_zero] at hne
+  · rw [eLpNorm_eq_zero_iff one_ne_zero] at hne
     refine ⟨0, fun n => (le_of_eq <|
-      (eLpNorm_eq_zero_iff ((stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable.indicator
-        (hmeas n 0)) one_ne_zero).2 ?_).trans zero_le⟩
+      (eLpNorm_eq_zero_iff one_ne_zero).2 ?_).trans zero_le⟩
     filter_upwards [condExp_congr_ae (m := ℱ n) hne] with x hx
     simp [hx]
   obtain ⟨δ, hδ, h⟩ := hg.eLpNorm_indicator_le le_rfl ENNReal.one_ne_top hε
@@ -326,8 +325,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
         eLpNorm μ[g | ℱ n] 1 μ ^ ENNReal.toReal 1 := by
       rw [ENNReal.toReal_one, ENNReal.rpow_one]
       convert!
-        mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top
-          (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable C
+        mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top C
       · rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
     rw [ENNReal.toReal_one, ENNReal.rpow_one, mul_comm, ←
       ENNReal.le_div_iff_mul_le (Or.inl (ENNReal.coe_ne_zero.2 hCpos.ne'))
@@ -344,8 +342,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
       (@Measurable.nnnorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)
-  rw [← eLpNorm_congr_ae (stronglyMeasurable_condExp.mono (hℱ n)).aestronglyMeasurable
-    (condExp_indicator hint hmeasℱ)]
+  rw [← eLpNorm_congr_ae (condExp_indicator hint hmeasℱ)]
   exact eLpNorm_condExp_le_eLpNorm _ le_rfl
 
 end MeasureTheory

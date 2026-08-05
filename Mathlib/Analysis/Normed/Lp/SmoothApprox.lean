@@ -52,7 +52,7 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
   -- We will need that the support is non-empty, so we treat the trivial case `f = 0` first.
   · use 0
     refine ⟨HasCompactSupport.zero, contDiff_const, ?_⟩
-    rw [eLpNorm_congr_ae (h₂.sub continuous_zero).aestronglyMeasurable (by simpa using hf)]
+    rw [eLpNorm_congr_ae (by simpa using hf)]
     simp
   have hs₁ : μ (tsupport f) ≠ ⊤ := h₁.measure_lt_top.ne
   have hs₂ : 0 < (μ <| tsupport f).toReal := by
@@ -67,9 +67,8 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
       Real.rpow_zero, mul_one]
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε') (by fun_prop)
     (by intro; positivity)
-  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp h₁.measurableSet hε'.le
-    (h₂.sub hg₁.continuous).aestronglyMeasurable
-    (aestronglyMeasurable_const.indicator h₁.measurableSet) ?_
+  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp
+    h₁.measurableSet.nullMeasurableSet hε'.le (h₂.sub hg₁.continuous).aestronglyMeasurable ?_
     (subset_tsupport f) (hg₃.trans (subset_tsupport f))).trans hε₂⟩
   intro x
   rw [dist_comm]
@@ -99,8 +98,7 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
   have : f - g' = (f - g) - (g' - g) := by simp
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
     (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
-    eLpNorm_sub_comm (f := g') (g := g) (p := p) (μ := μ)
-      (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable),
+    eLpNorm_sub_comm (f := g') (g := g) (p := p) (μ := μ),
     hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
 theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤)
@@ -115,7 +113,7 @@ theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞
   rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
     ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
   convert! hg₃ using 1
-  apply eLpNorm_congr_ae ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).aestronglyMeasurable
+  apply eLpNorm_congr_ae
   gcongr
   exact hg₄.coeFn_toLp
 

@@ -408,8 +408,7 @@ variable {f : ι → α → E} {g : α → E}
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞` and only require `AEStronglyMeasurable`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAddCommGroup E]
-    (hp_ne_zero : p ≠ 0)
-    (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
+    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
@@ -423,7 +422,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
   refine le_trans ?_ hn
   rw [one_div, ← ENNReal.inv_mul_le_iff, inv_inv]
   · convert!
-      mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ((hf n).sub hg).aestronglyMeasurable ε
+      mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
       using 6
     simp [edist_eq_enorm_sub]
   · simp [hε_top]
@@ -436,14 +435,10 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
   refine TendstoInMeasure.congr (fun i => (hf i).ae_eq_mk.symm) hg.ae_eq_mk.symm ?_
-  refine tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
-    hp_ne_zero hp_ne_top (fun i => (hf i).stronglyMeasurable_mk) hg.stronglyMeasurable_mk ?_
+  refine tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable hp_ne_zero hp_ne_top ?_
   have : (fun n => eLpNorm ((hf n).mk (f n) - hg.mk g) p μ) = fun n => eLpNorm (f n - g) p μ := by
     ext1 n
-    exact eLpNorm_congr_ae
-      ((hf n).stronglyMeasurable_mk.aestronglyMeasurable.sub
-        hg.stronglyMeasurable_mk.aestronglyMeasurable)
-      (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
+    exact eLpNorm_congr_ae (EventuallyEq.sub (hf n).ae_eq_mk.symm hg.ae_eq_mk.symm)
   rw [this]
   exact hfg
 

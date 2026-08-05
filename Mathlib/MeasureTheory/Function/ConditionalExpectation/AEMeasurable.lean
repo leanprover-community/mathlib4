@@ -138,8 +138,7 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   unfold MemLp
   rw [eLpNorm_trim hm hf.stronglyMeasurable_mk]
   have heq : eLpNorm (hf.mk f) p μ = eLpNorm (f : α → F) p μ :=
-    eLpNorm_congr_ae (hf.stronglyMeasurable_mk.mono hm).aestronglyMeasurable
-      hf.ae_eq_mk.symm
+    eLpNorm_congr_ae hf.ae_eq_mk.symm
   rw [heq]
   exact Lp.eLpNorm_lt_top f
 
@@ -254,11 +253,8 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
 theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
   rw [Lp.norm_def, eLpNorm_trim hm (Lp.stronglyMeasurable _)]
-  have hsrc : AEStronglyMeasurable (lpMeasSubgroupToLpTrim F p μ hm f : α → F) μ :=
-    ((Lp.stronglyMeasurable (lpMeasSubgroupToLpTrim F p μ hm f)).mono hm).aestronglyMeasurable
   have heq : eLpNorm (lpMeasSubgroupToLpTrim F p μ hm f : α → F) p μ =
-      eLpNorm (f : α → F) p μ := eLpNorm_congr_ae
-    hsrc (lpMeasSubgroupToLpTrim_ae_eq hm _)
+      eLpNorm (f : α → F) p μ := eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _)
   rw [heq, ← Lp.norm_def]
   congr
 

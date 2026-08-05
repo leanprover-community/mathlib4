@@ -1342,8 +1342,7 @@ theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volum
 
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
-  rw [Lp.norm_def, eLpNorm_congr_ae (Lp.aestronglyMeasurable (f.toLp p μ))
-    (coeFn_toLp f p μ)]
+  rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
 
 theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p ≠ 0) (hp₂ : p ≠ ⊤)
     [hμ : μ.HasTemperateGrowth] :
@@ -1405,9 +1404,7 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
     filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp p μ]
     simp
   simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,
-    Lp.dist_def, eLpNorm_congr_ae
-      ((Lp.memLp f).aestronglyMeasurable.sub
-        (Lp.aestronglyMeasurable ((hg₁.toSchwartzMap hg₂).toLp p μ))) this]
+    Lp.dist_def, eLpNorm_congr_ae this]
   grw [hg₃, ENNReal.toReal_ofReal hε.le]
   simp
 

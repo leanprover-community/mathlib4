@@ -989,7 +989,7 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memLp f).restrict s).toLp f‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def,
-    eLpNorm_congr_ae (Lp.aestronglyMeasurable _) (MemLp.coeFn_toLp _)]
+    eLpNorm_congr_ae (MemLp.coeFn_toLp _)]
   refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
   exact eLpNorm_mono_measure _ Measure.restrict_le_self (Lp.aestronglyMeasurable f)
 

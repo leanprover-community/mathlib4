@@ -95,9 +95,12 @@ theorem eLpNorm'_le_eLpNormEssSup {q : ℝ} (hq_pos : 0 < q) [IsProbabilityMeasu
     eLpNorm' f q μ ≤ eLpNormEssSup f μ :=
   (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hq_pos).trans_eq (by simp [measure_univ])
 
-theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ]
-    (hf : AEStronglyMeasurable f μ) : eLpNorm f p μ ≤ eLpNorm f q μ :=
-  (eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf).trans (le_of_eq (by simp [measure_univ]))
+theorem eLpNorm_le_eLpNorm_of_exponent_le {p q : ℝ≥0∞} (hpq : p ≤ q) [IsProbabilityMeasure μ] :
+    eLpNorm f p μ ≤ eLpNorm f q μ := by
+  by_cases hf : AEStronglyMeasurable f μ
+  · exact (eLpNorm_le_eLpNorm_mul_rpow_measure_univ hpq hf).trans
+      (le_of_eq (by simp [measure_univ]))
+  · rw [eLpNorm_of_not_aestronglyMeasurable hf, eLpNorm_of_not_aestronglyMeasurable hf]
 
 theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) (hfq_lt_top : eLpNorm' f q μ < ∞) (hp_nonneg : 0 ≤ p)

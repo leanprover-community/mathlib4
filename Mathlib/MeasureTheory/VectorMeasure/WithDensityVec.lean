@@ -143,7 +143,7 @@ lemma variation_withDensity' [CompleteSpace G]
       by simpa only using hfg.smul_measure (R := NNReal) ‖B‖₊
     refine (eLpNorm_mono_measure _ (variation_transpose_le μ B) hfgc).trans ?_
     rw [eLpNorm_smul_measure_of_ne_top' (p := 1) (μ := μ.variation) (by simp)
-      ‖B‖₊ (f - ⇑g) hfgc hfg]
+      ‖B‖₊ (f - ⇑g) hfg]
     grw [h'g.le]
     simp only [ENNReal.toReal_one, inv_one, NNReal.rpow_one, ENNReal.smul_def, smul_eq_mul]
     exact_mod_cast hδ

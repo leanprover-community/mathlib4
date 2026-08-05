@@ -49,9 +49,12 @@ theorem eLpNormEssSup_add_le :
   simp_rw [Pi.add_apply]
   exact enorm_add_le _ _
 
-theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (hfg : AEStronglyMeasurable (f + g) μ) (hp1 : 1 ≤ p) :
+theorem eLpNorm_add_le (hfg : AEStronglyMeasurable (f + g) μ) (hp1 : 1 ≤ p) :
     eLpNorm (f + g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
+  by_cases! hf : ¬ AEStronglyMeasurable f μ
+  · simp [eLpNorm_of_not_aestronglyMeasurable hf]
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · simp [eLpNorm_of_not_aestronglyMeasurable hg]
   by_cases hp0 : p = 0
   · simp [hp0, hf, hg, hfg]
   by_cases hp_top : p = ∞
@@ -62,9 +65,12 @@ theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurab
     eLpNorm_eq_eLpNorm' hp0 hp_top hg]
   exact eLpNorm'_add_le hf hg hp1_real
 
-theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (hfg : AEStronglyMeasurable (f + g) μ) (p : ℝ≥0∞) :
+theorem eLpNorm_add_le' (hfg : AEStronglyMeasurable (f + g) μ) (p : ℝ≥0∞) :
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+  by_cases! hf : ¬ AEStronglyMeasurable f μ
+  · simp [eLpNorm_of_not_aestronglyMeasurable hf, mul_top (LpAddConst_ne_zero p)]
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · simp [eLpNorm_of_not_aestronglyMeasurable hg, mul_top (LpAddConst_ne_zero p)]
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp [hf, hg, hfg]
   rcases lt_or_ge p 1 with (h'p | h'p)
@@ -75,7 +81,7 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
       simp only [LpAddConst, if_pos this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
-  · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg hfg h'p
+  · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hfg h'p
 
 variable (μ ε) in
 /-- Technical lemma to control the addition of functions in `L^p` even for `p < 1`: Given `δ > 0`,
@@ -85,7 +91,7 @@ could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it wo
 theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
     ∃ η : ℝ≥0∞,
       0 < η ∧
-        ∀ (f g : α → ε), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
+        ∀ (f g : α → ε),
           AEStronglyMeasurable (f + g) μ →
           eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have :
@@ -96,10 +102,10 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
       nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine ⟨η, ηpos, fun f g hf hg hfg Hf Hg => ?_⟩
+  refine ⟨η, ηpos, fun f g hfg Hf Hg => ?_⟩
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
-      eLpNorm_add_le' hf hg hfg p
+      eLpNorm_add_le' hfg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
     _ < δ := hη
 
@@ -107,8 +113,8 @@ theorem eLpNorm_sub_le' {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (p : ℝ≥0∞) :
     eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
-  simpa only [sub_eq_add_neg, eLpNorm_neg _ _ _ hg] using
-    eLpNorm_add_le' hf hg.neg (by simpa only [sub_eq_add_neg] using hf.sub hg) p
+  simpa only [sub_eq_add_neg, eLpNorm_neg] using
+    eLpNorm_add_le' (f := f) (g := -g) (by simpa only [sub_eq_add_neg] using hf.sub hg) p
 
 theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
@@ -119,7 +125,7 @@ theorem eLpNorm_add_lt_top (hf : MemLp f p μ) (hg : MemLp g p μ)
     eLpNorm (f + g) p μ < ∞ :=
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
-      eLpNorm_add_le' hf.aestronglyMeasurable hg.aestronglyMeasurable
+      eLpNorm_add_le'
         hfg p
     _ < ∞ := by
       apply ENNReal.mul_lt_top (LpAddConst_lt_top p)
@@ -132,13 +138,18 @@ theorem eLpNorm'_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fi
     (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1)).le
     (fun _f _g hf hg => eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
 
-theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι}
-    (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
-    eLpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, eLpNorm (f i) p μ :=
-  Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm f p μ)
-    (fun f => AEStronglyMeasurable f μ) eLpNorm_zero.le
-    (fun _f _g hf hg => eLpNorm_add_le hf hg (hf.add hg) hp1)
-    (fun _f _g hf hg => hf.add hg) _ hfs
+theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Finset ι} (hp1 : 1 ≤ p) :
+    eLpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, eLpNorm (f i) p μ := by
+  by_cases! hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ
+  · exact Finset.le_sum_of_subadditive_on_pred (fun f : α → ε' => eLpNorm f p μ)
+      (fun f => AEStronglyMeasurable f μ) eLpNorm_zero.le
+      (fun _f _g hf hg => eLpNorm_add_le (hf.add hg) hp1)
+      (fun _f _g hf hg => hf.add hg) _ hfs
+  · convert le_top
+    · simp only [sum_eq_top]
+      obtain ⟨i, is, ih⟩ := hfs
+      exact ⟨i, is, eLpNorm_of_not_aestronglyMeasurable ih⟩
+    infer_instance
 
 -- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
 

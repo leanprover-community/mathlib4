@@ -130,7 +130,7 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
     ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const 2).aestronglyMeasurable
   refine (eLpNorm_mono_ae ((Lp.aestronglyMeasurable f).inner
     (Lp.aestronglyMeasurable g)) (ae_of_all _ h)).trans_lt
-      ((eLpNorm_add_le hf hg (hf.add hg) le_rfl).trans_lt ?_)
+      ((eLpNorm_add_le (hf.add hg) le_rfl).trans_lt ?_)
   rw [ENNReal.add_lt_top]
   exact ⟨eLpNorm_rpow_two_norm_lt_top f, eLpNorm_rpow_two_norm_lt_top g⟩
 

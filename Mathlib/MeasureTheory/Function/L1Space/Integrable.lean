@@ -672,7 +672,7 @@ where `‖f x‖ₑ ≥ ε` is finite for all positive `ε`. -/
 theorem Integrable.measure_enorm_ge_lt_top {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
-  refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero one_ne_top hf.1 hε.ne' (by simp [hε'])
+  refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero one_ne_top hε.ne' (by simp [hε'])
     |>.trans_lt ?_
   apply ENNReal.mul_lt_top
   · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]

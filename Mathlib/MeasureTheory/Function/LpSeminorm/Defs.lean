@@ -80,11 +80,11 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
-open Classical in
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
 def eLpNorm [TopologicalSpace ε] {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
+  open scoped Classical in
   if AEStronglyMeasurable f μ then
   if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
   else ∞
@@ -164,7 +164,8 @@ and to `essSup ‖f‖ μ` for `p = ∞`.
 
 This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
-  open scoped Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
+  open scoped Classical in
+  if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
 
 end Lp
 

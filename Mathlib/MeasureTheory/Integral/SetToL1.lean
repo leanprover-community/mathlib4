@@ -1026,11 +1026,10 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   have :
     eLpNorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
       eLpNorm (⇑g - ⇑f) 1 μ' :=
-    eLpNorm_congr_ae ((Lp.aestronglyMeasurable _).sub (Lp.aestronglyMeasurable _))
-      ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
+    eLpNorm_congr_ae ((Integrable.coeFn_toL1 _).sub (Integrable.coeFn_toL1 _))
   rw [this]
   have h_eLpNorm_ne_top : eLpNorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
-    rw [← eLpNorm_congr_ae (Lp.aestronglyMeasurable (g - f)) (Lp.coeFn_sub _ _)]
+    rw [← eLpNorm_congr_ae (Lp.coeFn_sub _ _)]
     exact Lp.eLpNorm_ne_top _
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
@@ -1040,7 +1039,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
       have hmeas' : AEStronglyMeasurable (⇑g - ⇑f) (c' • μ) :=
         hmeas.mono_ac Measure.smul_absolutelyContinuous
       refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le hmeas').trans_eq ?_
-      rw [eLpNorm_smul_measure_of_ne_zero hc'0 _ _ _ hmeas' hmeas, smul_eq_mul]
+      rw [eLpNorm_smul_measure_of_ne_zero hc'0 _ _ _ hmeas, smul_eq_mul]
       simp
     _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) := by gcongr

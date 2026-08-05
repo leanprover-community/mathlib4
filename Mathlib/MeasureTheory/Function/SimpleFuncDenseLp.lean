@@ -200,7 +200,7 @@ theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
   rsuffices ⟨g, hg, g_mem⟩ : ∃ g : β →ₛ E, eLpNorm (f' - ⇑g) p μ < ε ∧ MemLp g p μ
   · refine ⟨g, ?_, g_mem⟩
     suffices eLpNorm (f - ⇑g) p μ = eLpNorm (f' - ⇑g) p μ by rwa [this]
-    apply eLpNorm_congr_ae (hf.aestronglyMeasurable.sub g.aestronglyMeasurable)
+    apply eLpNorm_congr_ae
     filter_upwards [hf.aestronglyMeasurable.ae_eq_mk] with x hx
     simpa only [Pi.sub_apply, sub_left_inj] using hx
   have hf' : MemLp f' p μ := hf.ae_eq hf.aestronglyMeasurable.ae_eq_mk
@@ -210,9 +210,7 @@ theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
       hf.aestronglyMeasurable.stronglyMeasurable_mk
   rcases ((tendsto_approxOn_range_Lp_eLpNorm hp_ne_top f'meas hf').eventually <|
     gt_mem_nhds hε.bot_lt).exists with ⟨n, hn⟩
-  rw [← eLpNorm_neg _ _ _
-    ((memLp_approxOn_range f'meas hf' n).aestronglyMeasurable.sub
-      hf'.aestronglyMeasurable), neg_sub] at hn
+  rw [← eLpNorm_neg, neg_sub] at hn
   exact ⟨_, hn, memLp_approxOn_range f'meas hf' _⟩
 
 end Lp
@@ -871,11 +869,8 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : 
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
 theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (h0P :
-      ∀ (c : E) ⦃s : Set α⦄,
-        MeasurableSet s →
-          μ s < ∞ →
-            ∀ {ε : ℝ≥0∞}, ε ≠ 0 → ∃ g : α → E, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε ∧ P g)
+    (h0P : ∀ (c : E) ⦃s : Set α⦄, MeasurableSet s → μ s < ∞ →
+      ∀ {ε : ℝ≥0∞}, ε ≠ 0 → ∃ g : α → E, eLpNorm (g - s.indicator fun _ => c) p μ ≤ ε ∧ P g)
     (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
     (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ P g := by
   rcases eq_or_ne p 0 with (rfl | hp_pos)
@@ -890,28 +885,22 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     rcases hf.exists_simpleFunc_eLpNorm_sub_lt hp_ne_top ηpos.ne' with ⟨f', hf', f'_mem⟩
     rcases H f' η ηpos.ne' f'_mem with ⟨g, hg, Pg⟩
     refine ⟨g, ?_, Pg⟩
-    convert!
-      (hη _ _ (hf.aestronglyMeasurable.sub f'.aestronglyMeasurable)
-          (f'.aestronglyMeasurable.sub (h2P g Pg))
-          ((hf.aestronglyMeasurable.sub f'.aestronglyMeasurable).add
-            (f'.aestronglyMeasurable.sub (h2P g Pg))) hf'.le hg).le using 2
+    convert! (hη _ _ ((hf.aestronglyMeasurable.sub f'.aestronglyMeasurable).add
+      (f'.aestronglyMeasurable.sub (h2P g Pg))) hf'.le hg).le using 2
     simp only [sub_add_sub_cancel]
   apply SimpleFunc.induction
   · intro c s hs ε εpos Hs
     rcases eq_or_ne c 0 with (rfl | hc)
     · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
           εpos with ⟨g, hg, Pg⟩
-      rw [← eLpNorm_neg _ _ _
-        ((h2P g Pg).sub (aestronglyMeasurable_const.indicator MeasurableSet.empty)),
-        neg_sub] at hg
+      rw [← eLpNorm_neg, neg_sub] at hg
       refine ⟨g, ?_, Pg⟩
       convert! hg
       ext x
       simp
     · have : μ s < ∞ := SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs Hs
       rcases h0P c hs this εpos with ⟨g, hg, Pg⟩
-      rw [← eLpNorm_neg _ _ _
-        ((h2P g Pg).sub (aestronglyMeasurable_const.indicator hs)), neg_sub] at hg
+      rw [← eLpNorm_neg, neg_sub] at hg
       exact ⟨g, hg, Pg⟩
   · intro f f' hff' hf hf' δ δpos int_ff'
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p δpos
@@ -920,11 +909,8 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
     rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
     refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
-    convert!
-      (hη _ _ (f.aestronglyMeasurable.sub (h2P g Pg))
-          (f'.aestronglyMeasurable.sub (h2P g' Pg'))
-          ((f.aestronglyMeasurable.sub (h2P g Pg)).add
-            (f'.aestronglyMeasurable.sub (h2P g' Pg'))) hg hg').le using 2
+    convert! (hη _ _ ((f.aestronglyMeasurable.sub (h2P g Pg)).add
+      (f'.aestronglyMeasurable.sub (h2P g' Pg'))) hg hg').le using 2
     rw [SimpleFunc.coe_add]
     abel
 
