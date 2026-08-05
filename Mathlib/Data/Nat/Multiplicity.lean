@@ -79,7 +79,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
 namespace Prime
 
 theorem emultiplicity_one {p : ℕ} (hp : p.Prime) : emultiplicity p 1 = 0 :=
-  emultiplicity_of_one_right hp.prime.not_unit
+  emultiplicity_of_one_right hp.prime.not_isUnit
 
 theorem emultiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     emultiplicity p (m * n) = emultiplicity p m + emultiplicity p n :=
@@ -93,7 +93,7 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
   (Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
 
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
-  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
+  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_isUnit n
 
 /-- **Legendre's Theorem**
 
