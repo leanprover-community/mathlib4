@@ -92,8 +92,7 @@ def reindex (P : Group.Generators G α) (e : β ≃ α) :
     rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
 
 @[simp]
-lemma reindex_val (P : Group.Generators G α) (e : β ≃ α) :
-    (P.reindex e).val = P.val ∘ e := rfl
+lemma reindex_val (P : Group.Generators G α) (e : β ≃ α) : (P.reindex e).val = P.val ∘ e := rfl
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
 theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
