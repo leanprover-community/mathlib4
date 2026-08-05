@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 
 # Extension of continuous linear maps on Banach spaces
 
-In this file we provide three different ways to extend a continuous linear map defined on a dense
+In this file we provide several different ways to extend a continuous linear map defined on a dense
 subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
@@ -20,6 +20,9 @@ subspace to the entire Banach space.
 * `LinearMap.extendOfNorm`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
   `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
+* `LinearMap.extendOfIsometry`: Extend a linear map `f : E →ₛₗ[𝕜] F` between normed spaces to a
+  linear isometry `Eₗ →ₗᵢ[𝕜] Fₗ` between Banach spaces with a dense map `e₁ : E →ₗ[𝕜] Eₗ`, a linear map
+  `e₂ : F →ₗ[𝕜] Fₗ` and the corresponding norm estimate.
 
 Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
@@ -28,11 +31,6 @@ Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extendOfIsometry`: Extend `f : E ≃ₗ[𝕜] F` to a linear isometry equivalence
   `Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
   and `f` preserves the norm.
-
-Finally, we can extend a linear isometry:
-* `LinearIsometry.extendOfIsometry`: Extend a linear isometry `f : E ≃ₗᵢ[𝕜] F` between normed spaces
-  to a linear isometry `Eₗ →ₗᵢ[𝕜] Fₗ` between Banach spaces with a dense map `e₁ : E →ₗ[𝕜] Eₗ`, a
-  linear map `e₂ : F →ₗ[𝕜] Fₗ` and the corresponding norm estimates.
 -/
 
 @[expose] public section
