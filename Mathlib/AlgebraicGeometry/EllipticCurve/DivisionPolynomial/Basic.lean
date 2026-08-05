@@ -318,7 +318,8 @@ lemma Ψ_four : W.Ψ 4 = C W.preΨ₄ * W.ψ₂ := by
 
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
-  simp_rw [Ψ, preΨ_neg, C_neg, neg_mul, even_neg]
+  simp_rw [Ψ, preΨ_neg, C_neg, even_neg]
+  split_ifs <;> ring
 
 lemma Ψ_even (m : ℤ) : W.Ψ (2 * m) * W.ψ₂ =
     W.Ψ (m - 1) ^ 2 * W.Ψ m * W.Ψ (m + 2) - W.Ψ (m - 2) * W.Ψ m * W.Ψ (m + 1) ^ 2 := by
@@ -476,8 +477,8 @@ lemma φ_four :
 
 @[simp]
 lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
-  simp_rw [φ, ψ_neg, neg_sq, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add, ← neg_add', ψ_neg,
-    neg_mul_neg, mul_comm <| W.ψ <| n - 1]
+  simp_rw [φ, ψ_neg, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add, ← neg_add', ψ_neg]
+  ring
 
 lemma Affine.CoordinateRing.mk_φ (n : ℤ) : mk W (W.φ n) = mk W (C <| W.Φ n) := by
   simp_rw [φ, Φ, map_sub, map_mul, map_pow, mk_ψ, mk_Ψ_sq, Ψ, map_mul,
