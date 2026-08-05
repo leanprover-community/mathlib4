@@ -84,6 +84,7 @@ def integralSum (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : Tagg
 theorem integralSum_congr {f₁ f₂ : ℝⁿ → E} {vol₁ vol₂ : ι →ᵇᵃ E →L[ℝ] F}
     (hf : EqOn f₁ f₂ I.Icc) (hvol : EqOn vol₁ vol₂ π.boxes) :
     integralSum f₁ vol₁ π = integralSum f₂ vol₂ π := by
+  unfold integralSum
   congr! 2 with J hJ
   · exact hvol hJ
   · exact hf (π.tag_mem_Icc J)
