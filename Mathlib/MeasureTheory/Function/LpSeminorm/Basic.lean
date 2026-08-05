@@ -689,7 +689,7 @@ theorem eLpNorm_one_smul_measure {f : α → ε} (c : ℝ≥0∞) :
 theorem eLpNorm_le_of_measure_le_smul {c : ℝ≥0∞}
     {μ μ' : Measure α} (h : μ' ≤ c • μ) {f : α → ε} {p : ℝ≥0∞} :
     eLpNorm f p μ' ≤ c ^ (1 / p).toReal • eLpNorm f p μ := by
-  grw [eLpNorm_mono_measure f h, eLpNorm_smul_measure_le]
+  grw [h, eLpNorm_smul_measure_le]
 
 theorem MemLp.of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞)
     (hμ'_le : μ' ≤ c • μ) {f : α → ε} (hf : MemLp f p μ) : MemLp f p μ' := by
@@ -708,12 +708,12 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
   rw [lintegral_add_measure _ μ ν]
 
 theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
-    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f <| Measure.le_add_right <| le_refl _
+    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_right le_rfl]
 
 theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
-    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f <| Measure.le_add_left <| le_refl _
+    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_left le_rfl]
 
 variable {ε : Type*} [ENorm ε] in
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=
