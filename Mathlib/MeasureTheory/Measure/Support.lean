@@ -6,6 +6,7 @@ Authors: Jon Bannon, Jireh Loreaux
 module
 
 public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Support of a Measure
@@ -14,7 +15,7 @@ This file develops the theory of the **support** of a measure `μ` on a
 topological measurable space. The support is defined as the set of points whose every open
 neighborhood has positive measure. We give equivalent characterizations, prove basic
 measure-theoretic properties, and study interactions with sums, restrictions, and
-absolute continuity. Under various Lindelöf conditions, the support is conull,
+absolute continuity. Under various Lindelöf or regularity conditions, the support is conull,
 and various descriptions of the complement of the support are provided.
 
 ## Main definitions
@@ -31,6 +32,9 @@ and various descriptions of the complement of the support are provided.
 * `isClosed_support` : the support is a closed set.
 * `support_mem_ae_of_isLindelof` and `support_mem_ae` : under Lindelöf (or hereditarily
   Lindelöf) hypotheses, the support is conull.
+* `support_mem_ae_of_innerRegularWRT_isCompact_isOpen` and
+  `measure_compl_support_of_innerRegularWRT_isCompact_isOpen` : inner regularity by compact
+  sets on open sets imply that the support is conull.
 
 ## Tags
 
@@ -45,7 +49,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-open scoped Topology
+open scoped Topology ENNReal
 
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
@@ -126,12 +130,59 @@ lemma support_subset_of_isClosed {t : Set X} (ht : IsClosed t) (h : t ∈ ae μ)
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
   ext x
-  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_ofPred_eq, and_right_comm,
     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   convert! congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
   all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage_symm]
+
+section Regular
+
+/-- Any compact set contained in the complement of the support has zero measure. -/
+lemma measure_eq_zero_of_isCompact_subset_compl_support {K : Set X} (hK : IsCompact K)
+    (hKsub : K ⊆ μ.supportᶜ) : μ K = 0 := by
+  refine hK.induction_on measure_empty ?_ ?_ ?_
+  · exact fun _ _ hst ht ↦ measure_mono_null hst ht
+  · exact fun _ _ hs ht ↦ measure_union_null hs ht
+  · intro x hxK
+    obtain ⟨U, hUnhds, hU0⟩ := notMem_support_iff_exists.1 (hKsub hxK)
+    exact ⟨U, mem_nhdsWithin_of_mem_nhds hUnhds, hU0⟩
+
+/-- A measure which is compact-inner-regular on open sets has conull support. -/
+lemma support_mem_ae_of_innerRegularWRT_isCompact_isOpen
+    (hμ : μ.InnerRegularWRT IsCompact IsOpen) : μ.support ∈ ae μ := by
+  by_contra hne
+  obtain ⟨K, hKsub, hKcompact, hKpos⟩ := hμ isOpen_compl_support 0 (pos_iff_ne_zero.2 hne)
+  simp [measure_eq_zero_of_isCompact_subset_compl_support hKcompact hKsub] at hKpos
+
+/-- A measure which is compact-inner-regular on open sets has conull support. -/
+@[simp]
+lemma measure_compl_support_of_innerRegularWRT_isCompact_isOpen
+    (hμ : μ.InnerRegularWRT IsCompact IsOpen) : μ μ.supportᶜ = 0 :=
+  support_mem_ae_of_innerRegularWRT_isCompact_isOpen hμ
+
+/-- An inner regular measure has conull support when open sets are measurable. -/
+lemma support_mem_ae_of_innerRegular [OpensMeasurableSpace X] [μ.InnerRegular] :
+    μ.support ∈ ae μ :=
+  support_mem_ae_of_innerRegularWRT_isCompact_isOpen fun _ hU r hr =>
+    InnerRegular.innerRegular hU.measurableSet r hr
+
+/-- An inner regular measure has conull support when open sets are measurable. -/
+@[simp]
+lemma measure_compl_support_of_innerRegular [OpensMeasurableSpace X] [μ.InnerRegular] :
+    μ μ.supportᶜ = 0 := support_mem_ae_of_innerRegular
+
+/-- A regular measure has conull support. -/
+lemma support_mem_ae_of_regular [μ.Regular] : μ.support ∈ ae μ :=
+  support_mem_ae_of_innerRegularWRT_isCompact_isOpen Regular.innerRegular
+
+/-- A regular measure has conull support. -/
+@[simp]
+lemma measure_compl_support_of_regular [μ.Regular] : μ μ.supportᶜ = 0 :=
+  support_mem_ae_of_regular
+
+end Regular
 
 section Lindelof
 

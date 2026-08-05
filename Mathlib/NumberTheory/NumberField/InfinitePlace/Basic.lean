@@ -175,6 +175,12 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
     · rw [← mk_conjugate_eq]
       exact congr_arg mk h
 
+/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+protected abbrev LiesOver {L : Type*} [Field L] [Algebra K L]
+    (w : InfinitePlace L) (v : InfinitePlace K) :=
+  w.val.LiesOver v.val
+
 /-- An infinite place is real if it is defined by a real embedding. -/
 def IsReal (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ComplexEmbedding.IsReal φ ∧ mk φ = w
 
@@ -267,15 +273,21 @@ open scoped Classical in
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+theorem IsReal.mult_eq_one {w : InfinitePlace K} (hw : IsReal w) : mult w = 1 :=
+  if_pos hw
+
+theorem IsComplex.mult_eq_two {w : InfinitePlace K} (hw : IsComplex w) : mult w = 2 :=
+  if_neg (not_isReal_iff_isComplex.mpr hw)
+
 @[simp]
 theorem mult_isReal (w : {w : InfinitePlace K // IsReal w}) :
-    mult w.1 = 1 := by
-  rw [mult, if_pos w.prop]
+    mult w.1 = 1 :=
+  w.2.mult_eq_one
 
 @[simp]
 theorem mult_isComplex (w : {w : InfinitePlace K // IsComplex w}) :
-    mult w.1 = 2 := by
-  rw [mult, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
+    mult w.1 = 2 :=
+  w.2.mult_eq_two
 
 theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
   rw [mult]
@@ -309,6 +321,7 @@ open scoped Classical in
 protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
 
+set_option linter.dupNamespace false in
 @[deprecated (since := "2026-05-24")]
 alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
@@ -327,6 +340,7 @@ theorem sum_mult_eq [NumberField K] :
   exact Finset.sum_congr rfl
     (fun _ _ => by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
@@ -357,7 +371,7 @@ theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
   convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
-  · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
+  · rw [norm_prod, ← Fintype.prod_equiv (RingHom.equivRatAlgHom K ℂ) (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
@@ -438,6 +452,7 @@ theorem card_eq_nrRealPlaces_add_nrComplexPlaces :
       (disjoint_isReal_isComplex K) using 1
   exact (Fintype.card_of_subtype _ (fun w ↦ ⟨fun _ ↦ isReal_or_isComplex w, fun _ ↦ by simp⟩)).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 open scoped Classical in
 theorem card_complex_embeddings :
     card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * nrComplexPlaces K := by
@@ -558,16 +573,19 @@ namespace NumberField.InfinitePlace
 
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
   rcases v with ⟨_, _⟩
@@ -595,7 +613,6 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
-open Filter in
 /--
 *Weak approximation for infinite places*
 The number field `K` is dense when embedded diagonally in the product
@@ -603,39 +620,8 @@ The number field `K` is dense when embedded diagonally in the product
 topology coming from the infinite place `v`.
 -/
 theorem denseRange_algebraMap_pi [NumberField K] :
-    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
-  classical
-  -- We have to show that given `(zᵥ)ᵥ` with `zᵥ : WithAbs v.1`, there is a `y : K` that is
-  -- arbitrarily close to each `zᵥ` in `v`'s topology.
-  refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
-  -- Given `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
-  -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`.
-  choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
-    fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.mp hwv
-  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ⁻ⁿ) * zᵥ` in `K`
-  let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
-  -- We will show that this sequence converges to `z` in the product topology.
-  have : atTop.Tendsto
-      (fun n (v : InfinitePlace K) ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
-    -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
-    refine tendsto_pi_nhds.mpr fun u ↦ ?_
-    simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
-    refine tendsto_finsetSum _ fun w _ ↦ ?_
-    by_cases hw : u = w
-    · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
-      rw [← hw, Pi.single_eq_same]
-      have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
-      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
-    · -- And `1 / (1 + aᵤ⁻ⁿ) → 0` in `WithAbs w.1` when `w ≠ u`.
-      rw [Pi.single_eq_of_ne (M := fun v ↦ WithAbs v.1) hw (z w)]
-      have hu : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
-        ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
-      have := u.1.tendsto_div_one_add_pow_nhds_zero hu
-      simp_rw [← WithAbs.norm_toAbs_eq] at this
-      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
-        ((WithAbs.equiv u.1).symm (WithAbs.equiv w.1 (z w)))
-  -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
-  let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
-  exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
+    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
+  AbsoluteValue.denseRange_algebraMap_pi (fun v ↦ v.isNontrivial)
+    fun _ _ h ↦ (eq_iff_isEquiv (K := K)).not.mp h
 
 end NumberField.InfinitePlace

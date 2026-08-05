@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.Probability.Moments.Variance
 
@@ -113,8 +114,8 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       have aux₀ : Integrable (X ^ 2) μ := hX.integrable_sq
       have aux₁ : Integrable (2 * X * μ[X | m]) μ := by
         rw [mul_assoc]
-        exact (memLp_one_iff_integrable.1 <| hX.condExp.mul hX).const_mul _
-      have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
+        exact (memLp_one_iff_integrable.1 <| (hX.condExp one_le_two).mul hX).const_mul _
+      have aux₂ : Integrable (μ[X | m] ^ 2) μ := (hX.condExp one_le_two).integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
@@ -138,10 +139,10 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
     _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
-      · exact variance_eq_sub hX.condExp
+      · exact variance_eq_sub (hX.condExp one_le_two)
     _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
-      exact hX.condExp.integrable_sq
+      exact (hX.condExp one_le_two).integrable_sq
     _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
 
 lemma condVar_bot' [NeZero μ] (X : Ω → ℝ) :

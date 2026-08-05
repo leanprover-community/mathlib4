@@ -199,6 +199,7 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
@@ -242,7 +243,6 @@ theorem IsPositive.trace_nonneg {f : E →ₗ[𝕜] E} (hf : f.IsPositive) : 0 �
   unfold trace
   split_ifs with h
   · have : FiniteDimensional 𝕜 E := Module.Finite.of_basis h.choose_spec.some
-    classical
     simp_rw [traceAux_eq 𝕜 _ (stdOrthonormalBasis 𝕜 E).toBasis]
     exact posSemidef_toMatrix_iff (stdOrthonormalBasis 𝕜 E) |>.mpr hf |>.trace_nonneg
   · simp

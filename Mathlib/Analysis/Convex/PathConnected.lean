@@ -30,6 +30,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 namespace Path
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The path from `a` to `b` going along a straight line segment -/
 @[simps]
 protected def segment (a b : E) : Path a b where
@@ -61,6 +62,7 @@ theorem cast_segment {a b c d : E} (hac : c = a) (hbd : d = b) :
     (Path.segment a b).cast hac hbd = .segment c d := by
   subst_vars; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqOn_extend_segment (a b : E) :
     EqOn (Path.segment a b).extend (AffineMap.lineMap a b) I := by
   intro t ht
@@ -119,12 +121,14 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ
 
 section Real
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem segment_image_Ico {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ico 0 1 = Ico x y := by
   simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ico 0 1)]
   simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ico,
     Icc.coe_zero, Icc.coe_one]
   convert! image_affine_Ico (sub_pos_of_lt h) x 0 1 using 2 <;> ring
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem segment_image_Ioc {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ioc 0 1 = Ioc x y := by
   simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ioc 0 1)]
   simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ioc,

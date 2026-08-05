@@ -9,7 +9,7 @@ import Lean.Elab.ParseImportsFast
 
 namespace Cache.Hashing
 
-open Lean IO
+open Lean Cache.IO
 open System hiding SearchPath
 
 /--

@@ -53,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
 
 theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
     IsCoveringMapOn p.eval (p.eval '' {k | p.derivative.eval k = 0})ᶜ := by
-  refine p.isClosedMap_eval.isCoveringMapOn_of_openPartialHomeomorph (fun x hx ↦ ?_)
+  refine p.isClosedMap_eval.isCoveringMapOn_of_isLocalHomeomorphOn (fun x hx ↦ ?_)
     fun x hx ↦ ⟨_, ((p.hasStrictDerivAt x).hasStrictFDerivAt_equiv
       fun h ↦ hx ⟨x, h, rfl⟩).mem_toOpenPartialHomeomorph_source, by simp⟩
   obtain rfl | ne := eq_or_ne p (C x)
@@ -75,6 +75,7 @@ theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
       (.setCongr (s := {x | x ≠ 0}) _) using 1
   ext; simp [show n ≠ 0 by aesop]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, zpow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by

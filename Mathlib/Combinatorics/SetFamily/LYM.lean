@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SetFamily.Shadow
-public import Mathlib.Data.NNRat.Order
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!

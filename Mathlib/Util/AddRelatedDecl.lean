@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Linter.TacticTypeCheck
 
 /-!
 # `addRelatedDecl`
@@ -27,6 +28,55 @@ def elabOptAttrArg : TSyntax ``optAttrArg → TermElabM (Array Attribute)
   | `(optAttrArg| (attr := $[$attrs],*)) => elabAttrs attrs
   | _ => pure #[]
 
+/-- Re-implementation of the inner loop of `Lean.Linter.tacticCheckInstances` for use on
+declarations synthesized by Mathlib attributes (`@[simps]`, `@[reassoc]`, `@[elementwise]`, ...).
+Returns the list of semireducible non-instance definitions that `Meta.check declType .default`
+had to unfold but `Meta.check declType .implicit` would not, or `none` if `declType` already
+passes the `.implicit` check. -/
+private def checkImplicitTransparency (declType : Expr) : MetaM (Option (List Name)) := do
+  let origDiag := (← get).diag
+  let result : Option (List Name) ← withOptions (diagnostics.set · true) do
+    try Meta.check declType .default catch _ => return none
+    let counterDefault := (← get).diag.unfoldCounter
+    modify ({ · with diag := origDiag })
+    try
+      Meta.check declType .implicit
+      return none
+    catch _ =>
+      let counterInst := (← get).diag.unfoldCounter
+      let diff := Meta.subCounters counterDefault counterInst
+      let env ← getEnv
+      return some <| diff.toList.filterMap fun (n, count) => do
+        guard <| count > 0
+        guard <| getReducibilityStatusCore env n matches .semireducible
+        guard <| !Meta.isInstanceCore env n
+        return n
+  -- Always restore the original diagnostics snapshot, mirroring `tacticCheckInstances`.
+  modify ({ · with diag := origDiag })
+  return result
+
+/-- Extension of `linter.tacticCheckInstances` to lemmas produced by Mathlib attributes such as
+`@[simps]`, `@[reassoc]`, and `@[elementwise]`. Call sites pass the syntax of the user's
+attribute (`ref`), the name of the generated lemma (`declName`), and the lemma's type
+(`declType`); a warning is emitted at `ref` if `declType` is type-correct at `.default` but
+not at `.implicit`, listing the semireducible definitions that would need to be
+marked `@[implicit_reducible]` to fix the mismatch.
+
+The check is gated by the existing core option `linter.tacticCheckInstances` and is silent
+otherwise; following the convention of the core linter, it does *not* participate in
+`linter.all`. -/
+def warnIfImplicitIllTyped (ref : Syntax) (declName : Name) (declType : Expr) : MetaM Unit := do
+  let lintOpt : Lean.Option Bool :=
+    { name := `linter.tacticCheckInstances, defValue := false }
+  unless lintOpt.get (← getOptions) do return
+  let some candidates ← checkImplicitTransparency declType | return
+  if candidates.isEmpty then return
+  let bullets := MessageData.joinSep (candidates.map (m!"{MessageData.ofConstName ·}")) Format.line
+  Lean.Linter.logLint lintOpt ref
+    m!"generated lemma {MessageData.ofConstName declName} is not type-correct at \
+      `.implicit` transparency; consider marking some of the following as \
+      `@[implicit_reducible]`:{indentD bullets}"
+
 /-- A helper function for constructing a related declaration from an existing one.
 
 This is currently used by the attributes `reassoc` and `elementwise`,
@@ -34,6 +84,8 @@ and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
+* throws an error if a declaration named `tgt` already exists
+  (in the current module or in an imported one),
 * calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
 * copies the `protected` status of the existing declaration, and
 * supports copying attributes.
@@ -64,6 +116,10 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
     (docstringPrefix? : Option String := none)
     (hoverInfo : Bool := false) :
     MetaM Unit := do
+  -- If `tgt` already exists in an imported module, the `addDeclarationRangesFromSyntax` call
+  -- below panics (and if it exists in the current module, `addDecl` would fail with a less
+  -- helpful message), so we check for a pre-existing declaration up front.
+  checkNotAlreadyDeclared tgt
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
@@ -71,6 +127,7 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
   unless ← isProp newType do throwError "Related declaration is not a proposition: {newType}"
+  warnIfImplicitIllTyped ref tgt newType
   addDecl <| ← mkThmOrUnsafeDef
     { levelParams := newLevels, type := newType, name := tgt, value := newValue }
   if isProtected (← getEnv) src then

@@ -154,6 +154,7 @@ section
 
 open ToPartrec
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The alphabet for the stacks in the program. `bit0` and `bit1` are used to represent `ℕ` values
 as lists of binary digits, `cons` is used to separate `List ℕ` values, and `consₗ` is used to
 separate `List (List ℕ)` values. See the section documentation. -/
@@ -663,6 +664,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     simp only [List.head?_cons, e₂, List.tail_cons, cond_false]
     convert! @IH _ (update S k Sk) _ using 2 <;> simp [e₃]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
       ⟨some q, none, K'.elim (List.reverseAux b a) [] c (List.reverseAux b d)⟩ := by
@@ -751,6 +753,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
     convert! unrev_ok using 2
     simp [List.reverseAux_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem succ_ok {q s n} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.succ q), s, K'.elim (trList [n]) [] c d⟩
       ⟨some q, none, K'.elim (trList [n.succ]) [] c d⟩ := by
@@ -787,6 +790,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
       elim_rev, elim_update_rev, Function.update_self, Option.mem_def, Option.some.injEq]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
       (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
@@ -833,6 +837,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
       Option.getD, -natEnd]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trNormal_respects (c k v s) :
     ∃ b₂,
       TrCfg (stepNormal c k v) b₂ ∧

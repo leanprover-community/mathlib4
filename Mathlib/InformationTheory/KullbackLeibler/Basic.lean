@@ -52,7 +52,7 @@ namespace InformationTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
-open Classical in
+open scoped Classical in
 /-- Kullback-Leibler divergence between two measures. -/
 noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
@@ -107,7 +107,7 @@ section AlternativeFormulas
 
 variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
@@ -115,7 +115,7 @@ lemma klDiv_eq_integral_klFun :
   rw [klDiv_def]
   exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
-open Classical in
+open scoped Classical in
 lemma klDiv_eq_lintegral_klFun :
     klDiv μ ν = if μ ≪ ν then ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν else ∞ := by
   rw [klDiv_eq_integral_klFun]
