@@ -183,7 +183,6 @@ def derivative (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 theorem derivative_apply (f : LaurentSeries V) : derivative R f = hasseDeriv R 1 f := by
   exact rfl
 
-@[simp]
 theorem derivative_map {W : Type*} [AddCommGroup W] [Module R W]
     (g : V →ₗ[R] W) (f : LaurentSeries V) :
     derivative R (f.map g) = (derivative R f).map g :=
