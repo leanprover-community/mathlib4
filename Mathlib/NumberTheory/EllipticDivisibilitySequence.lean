@@ -400,8 +400,8 @@ lemma isEllipticSequence (h : IsEllipticNet W) : IsEllipticSequence W :=
 protected lemma id : IsEllipticNet (id : ℤ → ℤ) :=
   fun _ _ _ _ ↦ by simp_rw [rel, id_eq]; ring1
 
-protected lemma smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W := fun p q r s ↦ by
-  convert congrArg (x ^ 4 * ·) <| h p q r s <;> simp [rel]; ring1
+protected lemma smul (h : IsEllipticNet W) (x : R) : IsEllipticNet <| x • W :=
+  fun p q r s ↦ by grind [rel, h p q r s, Pi.smul_apply, smul_eq_mul]
 
 protected lemma comp (h : IsEllipticNet W) (f : F) : IsEllipticNet <| f ∘ W :=
   fun _ _ _ _ ↦ by rw [← map_rel, h, map_zero]
@@ -411,7 +411,7 @@ theorem of_even_odd (neg : W.Odd) (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (even : ∀ m : ℤ, rel W (m + 1) (m - 1) 1 0 = 0) (odd : ∀ m : ℤ, rel W (m + 1) m 1 0 = 0) :
     IsEllipticNet W := fun _ _ _ _ ↦ by
   simp_rw [rel_eq] at *
-  exact atomRel_of_even_odd neg one two (by grind) (by grind) <| by simp
+  apply atomRel_of_even_odd <;> grind
 
 end IsEllipticNet
 
@@ -423,7 +423,7 @@ protected lemma id : IsEllipticSequence (id : ℤ → ℤ) :=
   IsEllipticNet.id.isEllipticSequence
 
 protected lemma smul (h : IsEllipticSequence W) (x : R) : IsEllipticSequence <| x • W :=
-  fun p q r ↦ by convert congrArg (x ^ 4 * ·) <| h p q r using 1 <;> simp [IsEllipticNet.rel]; ring1
+  fun p q r ↦ by grind [IsEllipticNet.rel, h p q r, Pi.smul_apply, smul_eq_mul]
 
 protected lemma comp (h : IsEllipticSequence W) (f : F) : IsEllipticSequence <| f ∘ W :=
   fun _ _ _ ↦ by rw [← IsEllipticNet.map_rel, h, map_zero]
@@ -451,7 +451,7 @@ protected lemma smul (h : IsEllipticDvdSequence W) (x : R) : IsEllipticDvdSequen
   ⟨h.left.smul x, h.right.smul x⟩
 
 protected lemma comp (h : IsEllipticDvdSequence W) (f : F) : IsEllipticDvdSequence <| f ∘ W :=
-  ⟨h.left.comp f, h.right.comp <| by apply map_dvd⟩
+  ⟨h.left.comp f, h.right.comp fun _ _ ↦ map_dvd _⟩
 
 end IsEllipticDvdSequence
 
@@ -903,6 +903,6 @@ open Polynomial in
 /-- The canonical normalised EDS is an elliptic sequence. -/
 theorem isEllipticSequence_normEDS : IsEllipticSequence <| normEDS b c d := by
   convert IsEllipticSequence.of_even_odd (normEDS_neg X (C c) (C d)) (by simp)
-    (by simpa using isRegular_X.mem_nonZeroDivisors) (normEDS_rel_even _ _ _)
-    (normEDS_rel_odd _ _ _) |>.comp <| evalRingHom b
+    (by simp [X_mem_nonZeroDivisors]) (normEDS_rel_even _ _ _) (normEDS_rel_odd _ _ _) |>.comp <|
+    evalRingHom b
   ext; simp_rw [Function.comp_apply, map_normEDS, coe_evalRingHom, eval_X, eval_C]
