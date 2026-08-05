@@ -1,0 +1,16 @@
+name = "Geometry"
+version = "0.1.0"
+defaultTargets = ["Geometry"]
+moreLinkArgs = ["-L./.lake/packages/LeanCopilot/.lake/build/lib", "-lctranslate2"]
+
+[[lean_lib]]
+name = "Geometry"
+
+[[require]]
+name = "LeanCopilot"
+git = "https://github.com/lean-dojo/LeanCopilot.git"
+rev = "v4.31.0"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
