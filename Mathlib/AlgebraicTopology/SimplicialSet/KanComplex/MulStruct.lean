@@ -511,13 +511,52 @@ noncomputable def oneMulEqTrans (h : MulStruct .const p q i)
 
 end
 
-lemma nonempty (p q : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
+lemma nonempty [KanComplex X] (p q : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
     ∃ (r : X.PtSimplex (n + 1) x), Nonempty (MulStruct p q r i) := by
-  sorry
+  let α (j : Fin (n + 3)) (hj : j ≠ i.castSucc.succ) : Δ[n + 1] ⟶ X :=
+    if j = i.castSucc.castSucc then q.map else
+      if j = i.succ.succ then p.map else const x
+  have δ_α (j) (hj) (k : Fin (n + 2)) : stdSimplex.δ k ≫ α j hj = const x := by
+    dsimp [α]; split_ifs <;> simp
+  have hα : horn.IsCompatible α := fun _ _ _ _ _ ↦ by simp [δ_α]
+  refine ⟨.mk (stdSimplex.δ i.castSucc.succ ≫ hα.liftOfKanComplex) ?_,
+    ⟨{map := hα.liftOfKanComplex
+      δ_castSucc_castSucc_map := ?_
+      δ_succ_succ_map := ?_
+      δ_map_of_lt _ _ := ?_
+      δ_map_of_gt _ _ := ?_ }⟩⟩
+  · ext j : 1
+    simp only [boundary.ι_ι_assoc, Subcomplex.ofSimplex_ι, comp_const]
+    by_cases! hj : j ≤ i.castSucc
+    · rw [stdSimplex.δ_comp_δ_assoc (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+    · rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.succ) (j := j) (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+  all_goals grind [horn.IsCompatible.δ_liftOfKanComplex]
 
-lemma exists_left_inverse (p : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
+lemma exists_left_inverse [KanComplex X] (p : X.PtSimplex (n + 1) x) (i : Fin (n + 1)) :
     ∃ (q : X.PtSimplex (n + 1) x), Nonempty (MulStruct q p .const i) := by
-  sorry
+  let α (j : Fin (n + 3)) (hj : j ≠ i.succ.succ) : Δ[n + 1] ⟶ X :=
+    if j = i.castSucc.castSucc then p.map else const x
+  have h_α (j) (hj) (hj' : j ≠ i.castSucc.castSucc) : α j hj = const x := by grind
+  have δ_α (j) (hj) (k : Fin (n + 2)) : stdSimplex.δ k ≫ α j hj = const x := by
+    dsimp [α]; split_ifs <;> simp
+  have hα : horn.IsCompatible α := fun _ _ _ _ _ ↦ by simp [δ_α]
+  refine ⟨.mk (stdSimplex.δ i.succ.succ ≫ hα.liftOfKanComplex) ?_,
+    ⟨{map := hα.liftOfKanComplex
+      δ_succ_castSucc_map := ?_
+      δ_castSucc_castSucc_map := ?_
+      δ_map_of_lt _ _ := ?_
+      δ_map_of_gt _ _ := ?_ }⟩⟩
+  · ext j : 1
+    simp only [boundary.ι_ι_assoc, Subcomplex.ofSimplex_ι, comp_const]
+    by_cases! hj : j ≤ i.succ
+    · rw [stdSimplex.δ_comp_δ_assoc (by grind),
+        hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+    · obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (by grind)
+      rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.succ.succ) (j := j) (by grind),
+          hα.δ_liftOfKanComplex .., δ_α _ (by grind)]
+  all_goals grind [RelativeMorphism.const_map, horn.IsCompatible.δ_liftOfKanComplex]
 
 end MulStruct
 

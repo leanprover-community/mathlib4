@@ -10,6 +10,14 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.PtSimplexEquiv
 /-!
 # Homotopy groups of Kan complexes
 
+In this file, we define the homotopy groups `SSet.KanComplex.π n X x`
+of a Kan complex `X` where `n : ℕ` and `x : X _⦋n⦌`. For `n = 0`,
+this is only a type with a `One` element. In the case of
+`SSet.KanComplex.π (n + 1) X x`, we actually get a group structure
+for each `i : Fin (n + 1)` (but they should all coindice), and
+we use `i := Fin.last n` in order to define the group structure instance.
+The multiplication is characterized in terms of `SSet.PtSimplex.MulStruct`
+structured, see the lemma `SSet.KanComplex.π.mul_mk_eq_iff`.
 
 -/
 
@@ -161,7 +169,7 @@ lemma mul_eq_of_mulStruct'
     π.mk g₁ * π.mk g₂ = π.mk g₁₂ :=
   group.mul_eq_of_mulStruct h
 
-lemma mul_mk_eq_iff {g₁ g₂ g₁₂ : X.PtSimplex (n + 1) x} {i : Fin (n + 1)} :
+lemma mul_mk_eq_iff' {g₁ g₂ g₁₂ : X.PtSimplex (n + 1) x} {i : Fin (n + 1)} :
     letI := group' x i
     mk g₁ * mk g₂ = mk g₁₂ ↔
       Nonempty (PtSimplex.MulStruct g₁ g₂ g₁₂ i) :=
@@ -169,6 +177,11 @@ lemma mul_mk_eq_iff {g₁ g₂ g₁₂ : X.PtSimplex (n + 1) x} {i : Fin (n + 1)
     fun ⟨h⟩ ↦ mul_eq_of_mulStruct' h⟩
 
 noncomputable instance group : Group (π (n + 1) X x) := group' x (Fin.last n)
+
+lemma mul_mk_eq_iff {g₁ g₂ g₁₂ : X.PtSimplex (n + 1) x} :
+    mk g₁ * mk g₂ = mk g₁₂ ↔
+      Nonempty (PtSimplex.MulStruct g₁ g₂ g₁₂ (Fin.last _)) :=
+  mul_mk_eq_iff' ..
 
 end π
 
