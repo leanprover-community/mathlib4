@@ -2279,6 +2279,7 @@ public import Mathlib.Analysis.Normed.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.Analysis.Normed.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension

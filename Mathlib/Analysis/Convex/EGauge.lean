@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Normed.Seminorm.Basic
 public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
