@@ -109,10 +109,9 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
   let IP := (RingHom.ker (algebraMap R R')).map (algebraMap R P.Ring)
   let Gen : Algebra.Generators R' S' S := {
     val := algebraMap S S'
-    surj := by
-      sorry }
-    -- σ' := fun s' ↦ MvPolynomial.X (Classical.choose (surjS s'))
-    -- aeval_val_σ' s' := by simp [Classical.choose_spec (surjS s')]
+    surj s := by
+      use MvPolynomial.X (Classical.choose (surjS s))
+      simp [Classical.choose_spec (surjS s)] }
   let P' := Gen.toExtension
   let : Algebra.FormallySmooth R' P'.Ring := instFormallySmoothMvPolynomial S
   let : Algebra P.Ring P'.Ring := MvPolynomial.algebraMvPolynomial
