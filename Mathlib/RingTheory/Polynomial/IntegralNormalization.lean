@@ -185,7 +185,7 @@ variable [Semiring R] [IsCancelMulZero R]
 @[simp]
 theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
-  nontriviality R using Subsingleton.eq_zero
+  nontriviality R using Subsingleton.eq_zero (α := R[X])
   have : IsDomain R := {}
   by_cases hf : f = 0; · simp [hf]
   ext i

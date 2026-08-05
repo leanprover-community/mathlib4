@@ -182,7 +182,7 @@ theorem isElementary_closure (hA : L.MeetsDefinable A) :
         simp only [Subtype.coe_prop]
         ⟩).term) i, ?_⟩
     ext v
-    simp only [Fin.isValue, mem_setOf_eq, Formula.relabel, Formula.Realize,
+    simp only [Fin.isValue, mem_ofPred_eq, Formula.relabel, Formula.Realize,
       BoundedFormula.realize_subst, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero,
       Fin.cast_refl, Function.comp_id, Fin.natAdd_zero, D]
     rw [← Formula.Realize, BoundedFormula.realize_toFormula, LHom.realize_onBoundedFormula]

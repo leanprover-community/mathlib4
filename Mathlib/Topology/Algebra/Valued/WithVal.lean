@@ -218,7 +218,7 @@ instance : (valuation v).Compatible := .ofValuation (valuation v)
 
 instance : IsValuativeTopology (WithVal v) where
   mem_nhds_iff {s x} := by
-    simp only [Set.image_add_left, Set.preimage_setOf_eq, Valued.mem_nhds]
+    simp only [Set.image_add_left, Set.preimage_ofPred_eq, Valued.mem_nhds]
     let e := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation v)
     apply e.unitsCongr.symm.exists_congr fun a ↦ ?_
     simp [-OrderMonoidIso.val_unitsCongr_symm_apply, OrderMonoidIso.unitsCongr_symm_apply,
@@ -547,11 +547,11 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp [restrict_pos_iff, h.pos_iff, ← hv, hs₀]
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
-  rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
+  rw [← hr, equiv_apply, Set.mem_ofPred_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
   simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
-  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
+  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_ofPred_eq, lt_div_iff₀ hs0'] at hx
   rwa [← map_mul, restrict_lt_iff] at hx
 
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
@@ -569,8 +569,8 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
       (eq_zero h (r := s.ofVal)).ne]
     exact ⟨hr₀.ne', hs₀.ne'⟩)
   intro x hx
-  simp only [equiv_symm_apply, Set.mem_setOf_eq]
-  simp only [equiv_apply, Units.val_mk0, Set.mem_setOf_eq] at hx
+  simp only [equiv_symm_apply, Set.mem_ofPred_eq]
+  simp only [equiv_apply, Units.val_mk0, Set.mem_ofPred_eq] at hx
   rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
   · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
       ← h.orderRingIso_apply]
@@ -592,7 +592,7 @@ lemma IsEquiv.uniformContinuous (h : v.IsEquiv w) :
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
   obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
-  simp only [Set.mem_setOf_eq, RingHom.id_apply]
+  simp only [Set.mem_ofPred_eq, RingHom.id_apply]
   set y₀ := h_val.orderMonoidIso x with hy₀_def
   have hy₀_ne_zero : y₀ ≠ 0 := by simp [hy₀_def]
   set y := (Units.mk0 y₀ hy₀_ne_zero) with hy_def
@@ -659,7 +659,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
     convert!
-      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOfPred_iff
         (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl

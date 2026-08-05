@@ -148,7 +148,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext k
       simp [h]
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
-      applyComposition_ones, C, D, -Set.toFinset_setOf, -Finset.union_singleton]
+      applyComposition_ones, C, D, -Set.toFinset_ofPred, -Finset.union_singleton]
 
 /-! ### The right inverse of a formal multilinear series -/
 
@@ -222,7 +222,7 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
       p 1 fun _ : Fin 1 => q n v := by
     apply p.congr (Composition.single_length hn) fun j hj1 _ => ?_
     simp [applyComposition_single]
-  simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_setOf,
+  simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_ofPred,
     -add_right_inj, -Composition.single_length, -Finset.union_singleton]
 
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) (n : ℕ)
@@ -235,7 +235,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
-      Set.mem_setOf_eq] at hc
+      Set.mem_ofPred_eq] at hc
     simp [← Composition.ne_single_iff N, Composition.eq_single_iff_length, ne_of_gt hc]
   simp [applyComposition, this]
 
@@ -257,7 +257,7 @@ theorem comp_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F
       id_apply_one, ContinuousLinearEquiv.coe_apply, continuousMultilinearCurryFin1_symm_apply]
   | n + 2 =>
     have N : 0 < n + 2 := by simp
-    simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_setOf]
+    simp [comp_rightInv_aux1 N, h, rightInv, comp_rightInv_aux2, -Set.toFinset_ofPred]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E)
@@ -275,7 +275,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     ext v
     have N : 0 < n + 2 := by simp
     have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
-    simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_setOf]
+    simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_ofPred]
 
 /-! ### Coincidence of the left and the right inverse -/
 
@@ -392,7 +392,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         exact prod_nonneg fun j _ ↦ (by positivity [ha, hp (x.snd.blocksFun j)])
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
-        Set.mem_setOf_eq] at hd
+        Set.mem_ofPred_eq] at hd
       simp only [mem_compPartialSumTarget_iff]
       refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j => ?_⟩
       have : c ≠ Composition.single k (zero_lt_two.trans_le hd.1.1) := by

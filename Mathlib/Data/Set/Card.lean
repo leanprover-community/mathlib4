@@ -144,7 +144,7 @@ theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
     exact lt_tsub_iff_right.1 ht'
 
 theorem Finite.encard_eq_coe (h : s.Finite) : s.encard = ENat.toNat s.encard :=
-  (ENat.coe_toNat h.encard_lt_top.ne).symm
+  (ENat.natCast_toNat h.encard_lt_top.ne).symm
 
 theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n :=
   ⟨_, h.encard_eq_coe⟩
@@ -168,7 +168,7 @@ theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
   finite_of_encard_le_coe h.le
 
 theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ : ℕ), s.encard = n₀ ∧ n₀ ≤ k :=
-  ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_coe_iff] at h⟩,
+  ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_natCast_iff] at h⟩,
     fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
 
 @[simp]
@@ -282,7 +282,7 @@ theorem Finite.encard_lt_encard (hs : s.Finite) (h : s ⊂ t) : s.encard < t.enc
 theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) :=
   fun _ _ h ↦ (toFinite _).encard_lt_encard h
 
-theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
+theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (Set.ofPred Set.Finite) :=
   fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt
 
 theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
@@ -616,14 +616,14 @@ noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
-  rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
+  rwa [ncard, ENat.natCast_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
 variable (s) in
 @[simp]
 theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
   s.toFinite.cast_ncard_eq
 
-lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
+lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.natCast_toNat_le_self _
 
 @[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
 
@@ -646,7 +646,7 @@ lemma cast_ncard {s : Set α} (hs : s.Finite) :
 
 theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ s.ncard ≤ k := by
   rw [encard_le_coe_iff, and_congr_right_iff]
-  exact fun hfin ↦ ⟨fun ⟨n₀, hn₀, hle⟩ ↦ by rwa [ncard_def, hn₀, ENat.toNat_coe],
+  exact fun hfin ↦ ⟨fun ⟨n₀, hn₀, hle⟩ ↦ by rwa [ncard_def, hn₀, ENat.toNat_natCast],
     fun h ↦ ⟨s.ncard, by rw [hfin.cast_ncard_eq], h⟩⟩
 
 theorem Infinite.ncard (hs : s.Infinite) : s.ncard = 0 := by
@@ -845,7 +845,7 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
   ncard_image_of_injective _ f.inj'
 
 @[simp] theorem ncard_subtype (P : α → Prop) (s : Set α) :
-    { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ setOf P).ncard := by
+    { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ Set.ofPred P).ncard := by
   convert! (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
   ext x
   simp [← and_assoc, exists_eq_right]
@@ -886,7 +886,7 @@ theorem ncard_lt_card [Finite α] (h : s ≠ univ) : s.ncard < Nat.card α :=
 theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
   fun _ _ h ↦ ncard_lt_ncard h
 
-theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (setOf Set.Finite) :=
+theorem Finite.ncard_strictMonoOn : StrictMonoOn (α := Set α) ncard (Set.ofPred Set.Finite) :=
   fun _ _ _ ht hlt ↦ ncard_lt_ncard hlt ht
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
