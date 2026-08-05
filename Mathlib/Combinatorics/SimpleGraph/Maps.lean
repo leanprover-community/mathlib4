@@ -377,6 +377,7 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
+@[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
