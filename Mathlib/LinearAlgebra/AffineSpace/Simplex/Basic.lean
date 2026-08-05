@@ -799,10 +799,16 @@ theorem closedInterior_eq_interior_union_surface [IsOrderedAddMonoid k] [ZeroLEO
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
+@[deprecated (since := "2026-08-05")]
+alias closedInterior_eq_interior_union := closedInterior_eq_interior_union_surface
+
 theorem closedInterior_sdiff_interior [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = s.surface := by
   simpa [closedInterior_eq_interior_union_surface] using s.disjoint_interior_surface.symm
+
+@[deprecated (since := "2026-06-03")]
+alias closedInterior_diff_interior := closedInterior_sdiff_interior
 
 end LinearOrder
 
