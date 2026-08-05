@@ -87,9 +87,6 @@ instance : Algebra P.Ring S := P.algebra
 /-- The designated section w.r.t. a family of generators. -/
 noncomputable def σ (x : S) : P.Ring := (P.surj x).choose
 
-/-- See Note [custom simps projection] -/
-noncomputable def Simps.σ : S → P.Ring := P.σ
-
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := (P.surj s).choose_spec
 
@@ -236,9 +233,9 @@ def extendScalars [Algebra S T] [IsScalarTower R S T] (P : Generators R T ι) :
     Generators S T ι where
   val := P.val
   surj := by
-    sorry
-  -- σ' x := map (algebraMap R S) (P.σ x)
-  -- aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
+    apply Function.Surjective.of_comp (g := MvPolynomial.map (algebraMap R S))
+    simp_rw [Function.comp_def, aeval_map_algebraMap]
+    exact P.surj
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
@@ -351,13 +348,10 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
     (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
     Generators R (MvPolynomial σ R ⧸ I) σ where
   val i := Ideal.Quotient.mk _ (X i)
-  surj := sorry
-  -- σ' := s
-  -- aeval_val_σ' x := by
-  --   conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
-  --   simp [Function.comp_def]
-  -- algebra := inferInstance
-  -- algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
+  surj x := by
+    use s x
+    conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
+    simp [Function.comp_def]
 
 end
 
