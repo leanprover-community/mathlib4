@@ -1,4 +1,4 @@
-/-
+/-!
   Euclid's Elements, Book I, Proposition 9
   "To bisect a given rectilinear angle."
 

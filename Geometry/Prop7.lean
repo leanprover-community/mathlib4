@@ -1,4 +1,4 @@
-/-
+/-!
   Euclid's Elements, Book I, Proposition 7
   "On the same base and on the same side, two straight lines cannot be
   constructed meeting at a different point while having the same endpoints."
