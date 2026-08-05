@@ -18,12 +18,13 @@ import Mathlib.Tactic.NormNum.Basic
 Given a matrix literal `M` over a commutative domain, the entry point
 `mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
 Bareiss.Decomposition M`, with the certificate conditions checked by the kernel via
-`decide`. The production is data-only but relies on zero-checks (`isZeroInR`) in the kernel
-to decide pivot positions.
+`decide`. The production is data-only but relies on zero tests in `R` to decide pivot
+positions — integer tests in characteristic zero, kernel reduction (`isZeroInR`) otherwise.
 
 ## Main definitions
 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
+- `checkBareissCommittal`: the pre-commitment applicability check of the Bareiss method.
 - `bareissDecomp`: fraction-free Gaussian elimination on integer values.
 - `BareissData`: the raw decomposition data.
 -/
@@ -74,44 +75,24 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   else
     return n
 
-/- TODO: this is an ugly part of the parsing -- 1/2 somehow parses to HDiv. Check if we can
-reuse Expr.rat? -/
-/-- Read the rational value of a numeral. `a / b` is read as a fraction only when `fractions`
-is set: field division in characteristic zero, where the fraction reading is faithful. -/
-def rat? (fractions : Bool) (e : Expr) : Option Rat :=
-  let (sign, e) : Int × Expr :=
-    match_expr e.cleanupAnnotations with
-    | Neg.neg _ _ a => (-1, a)
-    | _ => (1, e)
-  match_expr e.cleanupAnnotations with
-  | HDiv.hDiv _ _ _ _ a b =>
-    if fractions then
-      match a.cleanupAnnotations.int?, b.cleanupAnnotations.nat? with
-      | some n, some d => some (mkRat (sign * n) d)
-      | _, _ => none
-    else
-      none
-  | _ => e.cleanupAnnotations.int?.map fun n => mkRat (sign * n) 1
-
-/-- Read a matrix entry's rational value: off its numeral syntax when possible, else off the
-`norm_num` normal form of the entry. The evaluation is data-only — the certificate is stated
-about the original entries, so no proof is kept. Fraction entries are refused outside
-characteristic zero (see `rat?`). -/
-def entryRat (isDivRing charZero : Bool) (e : Expr) : MetaM Rat := do
-  match rat? (isDivRing && charZero) e with
-  | some v => return v
-  | none =>
-    if isDivRing && !charZero then
-      let stripped := match_expr e.cleanupAnnotations with
-        | Neg.neg _ _ a => a
-        | _ => e
-      if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
-        throwError "division entries are supported only in characteristic zero{indentExpr e}"
-    let ctx ← Simp.mkContext (congrTheorems := ← getSimpCongrTheorems)
-    let r ← Meta.NormNum.deriveSimp ctx (useSimp := false) e
-    let some v := rat? (isDivRing && charZero) r.expr
-      | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
-    return v
+/-- Evaluate a matrix entry to its rational value via `norm_num`. The evaluation is
+data-only — the certificate is stated about the original entries, so no proof is kept.
+Fraction values are accepted only in characteristic zero, where the rational reading is
+faithful. -/
+def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
+  unless charZero do
+    let stripped := match_expr e.cleanupAnnotations with
+      | Neg.neg _ _ a => a
+      | _ => e
+    if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
+      throwError "division entries are supported only in characteristic zero{indentExpr e}"
+  let ⟨_, _, eQ⟩ ← inferTypeQ' e
+  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
+  let some v := r.bind (·.toRat)
+    | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
+  unless v.den == 1 || charZero do
+    throwError "division entries are supported only in characteristic zero{indentExpr e}"
+  return v
 
 /-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
 `(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
@@ -128,11 +109,11 @@ def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
     if r.isAppOf ``Decidable.isFalse then return false
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
-/-- Read the rational values of the matrix entries; throws when an entry does not
+/-- Evaluate the matrix entries to their rational values; throws when an entry does not
 evaluate to a rational numeral. -/
-def readEntryValues (isDivRing charZero : Bool) (entries : Array (Array Expr)) :
+def evalEntries (charZero : Bool) (entries : Array (Array Expr)) :
     MetaM (Array (Array Rat)) :=
-  entries.mapM fun row => row.mapM fun e => entryRat isDivRing charZero e
+  entries.mapM fun row => row.mapM fun e => evalEntry charZero e
 
 /-- Scale each row integral by the lcm of its denominators. Returns the integer matrix
 together with the row scales, which are later folded back into `L`. -/
@@ -241,8 +222,9 @@ def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
     return .error e.toMessageData
   return .ok ()
 
-/-- A wrapper for the `decide` decision of certificate with a named error. However, the errors
-are unreachable because the core function `bareissDecomp` should never fail. -/
+/-- A wrapper for the `decide` decision of a certificate condition with a named error. The
+error is unreachable from user input — the commitment gate ensures the conditions are
+kernel-decidable — and guards against a defective production. -/
 scoped elab "bareiss_certify " s:str : tactic => do
   try
     Tactic.evalTactic (← `(tactic| decide +kernel))
@@ -254,9 +236,9 @@ data, folding the row scales into `L`, with the kernel checking the certificate.
 def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : Array Nat)
     (d : BareissData) : TermElabM Expr := do
   -- The transformation matrix `L` is already in the correct form acting on the swapped matrix.
-  -- However, the input matrix might contains fractions that require scaling by scalars to
-  -- integer literals. This merges the scaling factors into the transformation matrix by multiplying
-  -- the correct roles after reordering.
+  -- However, the input matrix may contain fractions that required scaling by scalars to
+  -- integer literals. This merges the scaling factors into the transformation matrix by
+  -- scaling the correct columns after reordering.
   let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range m)
   let scaledL := d.L.map fun row =>
     row.mapIdx fun j a => a * (scales.getD (order.getD j 0) 1 : Int)
@@ -284,15 +266,13 @@ def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM Expr := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  -- tests if the ring has division and charzero to pass to the entry reading function
-  let isDivRing := (← synthInstance? q(DivisionRing $R)).isSome
   -- `CharZero`'s `[AddMonoidWithOne R]` argument must be synthesized first: `mkAppM`
   -- would leave it an unassigned metavariable and the probe would always fail
   let charZero ← do
     match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
     | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
     | none => pure false
-  let ratRows ← readEntryValues isDivRing charZero entries
+  let ratRows ← evalEntries charZero entries
   let (values, scales) := scaleRowsIntegral ratRows
   -- in characteristic zero `ℤ` embeds in `R`, so the integer zero test is faithful
   let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
