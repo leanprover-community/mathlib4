@@ -386,7 +386,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).excenter signs = s.excenter signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.excenter_map S.subtypeₐᵢ).symm
 
 /-- The incenter of a simplex. -/
@@ -798,7 +798,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpoint signs i = s.touchpoint signs i := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpoint_map S.subtypeₐᵢ i).symm
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
@@ -1034,6 +1034,7 @@ lemma touchpoint_empty_notMem_affineSpan_of_ne {i j : Fin (n + 1)} (hne : i ≠ 
     s.touchpoint ∅ i ∉ affineSpan ℝ (Set.range (s.faceOpposite j).points) :=
   s.excenterExists_empty.touchpoint_notMem_affineSpan_of_ne hne
 
+set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) {r : ℝ} (hr : r ∈ Set.Icc 0 1) :
@@ -1068,6 +1069,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
   convert! Set.mem_image_of_mem _ (Set.left_mem_Icc.2 (zero_le_one' ℝ))
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sign_signedInfDist_lineMap_incenter_touchpoint {i j : Fin (n + 1)} (hne : i ≠ j) {r : ℝ}
     (hr : r ∈ Set.Icc 0 1) :
     SignType.sign
@@ -1146,7 +1148,7 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
 
 variable {s} in

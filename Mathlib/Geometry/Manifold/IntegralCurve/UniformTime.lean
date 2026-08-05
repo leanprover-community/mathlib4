@@ -178,7 +178,7 @@ lemma exists_isMIntegralCurve_of_isMIntegralCurveOn [BoundarylessManifold I M]
   -- another centred at 0 with domain up to `a ∈ S` with `t₀ < a < asup`
   obtain ⟨a, ha, hlt⟩ := Real.add_neg_lt_sSup (⟨ε, h x⟩ : Set.Nonempty s) (ε := - (ε / 2))
     (by rw [neg_lt, neg_zero]; exact half_pos hε)
-  rw [mem_setOf] at ha
+  rw [mem_ofPred] at ha
   rw [← hasup, ← sub_eq_add_neg] at hlt
   -- integral curve defined on `Ioo (-a) a`
   obtain ⟨γ, h0, hγ⟩ := ha

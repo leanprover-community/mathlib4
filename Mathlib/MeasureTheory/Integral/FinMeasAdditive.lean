@@ -394,7 +394,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   refine fun x y hxy => h_zero _ ((measurableSet_fiber f x).inter (measurableSet_fiber g y)) ?_
   rw [EventuallyEq, ae_iff] at h
   refine measure_mono_null (fun z => ?_) h
-  simp_rw [Set.mem_inter_iff, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff]
+  simp_rw [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_singleton_iff]
   intro h
   rwa [h.1, h.2]
 
@@ -606,7 +606,7 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
       setToSimpleFunc_zero_apply]
   simp_rw [setToSimpleFunc]
   obtain rfl | hs_univ := eq_or_ne s univ
-  · haveI hα := hs_empty.to_type
+  · have hα := hs_empty.to_type
     simp [← Function.const_def]
   rw [range_indicator hs hs_empty hs_univ]
   by_cases hx0 : x = 0

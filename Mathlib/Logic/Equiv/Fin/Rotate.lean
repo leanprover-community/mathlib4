@@ -128,8 +128,8 @@ theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :
 def finCycle (k : Fin n) : Equiv.Perm (Fin n) where
   toFun i := i + k
   invFun i := i - k
-  left_inv i := by haveI := NeZero.of_pos k.pos; simp
-  right_inv i := by haveI := NeZero.of_pos k.pos; simp
+  left_inv i := by have := NeZero.of_pos k.pos; simp
+  right_inv i := by have := NeZero.of_pos k.pos; simp
 
 lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.1] := by
   match n with
