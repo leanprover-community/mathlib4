@@ -59,6 +59,7 @@ The logarithmic derivative converts products into sums: away from a codiscrete s
 logarithmic derivative of a finite product of meromorphic functions is the sum of the logarithmic
 derivatives.
 -/
+@[to_fun MeromorphicOn.logDeriv_fun_prod_eventuallyEq]
 theorem MeromorphicOn.logDeriv_prod_eventuallyEq {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜'}
     (h : ∀ i ∈ s, MeromorphicOn (F i) U)
     (h' : ∀ i ∈ s, ∀ x ∈ U, meromorphicOrderAt (F i) x ≠ ⊤) :
@@ -76,6 +77,7 @@ The logarithmic derivative converts products into sums: away from a codiscrete s
 logarithmic derivative of a finite product of meromorphic functions is the sum of the logarithmic
 derivatives.
 -/
+@[to_fun Meromorphic.logDeriv_fun_prod_eventuallyEq]
 theorem Meromorphic.logDeriv_prod_eventuallyEq {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜'}
     (h : ∀ i ∈ s, Meromorphic (F i)) (h' : ∀ i ∈ s, ∀ x, meromorphicOrderAt (F i) x ≠ ⊤) :
     logDeriv (∏ i ∈ s, F i) =ᶠ[codiscrete 𝕜] ∑ i ∈ s, logDeriv (F i) := by
@@ -127,6 +129,7 @@ theorem Meromorphic.logDeriv_zpow_eventuallyEq (hf : Meromorphic f) (n : ℤ) :
     logDeriv (f ^ n) =ᶠ[codiscrete 𝕜] n • logDeriv f := by
   apply MeromorphicOn.logDeriv_zpow_eventuallyEq (meromorphicOn_univ.mpr hf)
 
+
 /--
 The logarithmic derivative converts products into sums: away from a codiscrete subset of `U`, the
 logarithmic derivative of a finite product of integer powers of meromorphic functions is the
@@ -148,8 +151,7 @@ theorem MeromorphicOn.logDeriv_finprod_zpow_eventuallyEq {ι : Type*} {F : ι �
   have hsub : support (fun i ↦ d i • logDeriv (F i) y) ⊆ hd.toFinset := by
     simp +contextual [-support_mul, -mul_eq_zero, Set.subset_def, not_imp_not]
   calc logDeriv (∏ᶠ i, F i ^ d i) y
-      = logDeriv (fun z ↦ ∏ i ∈ hd.toFinset, (F i ^ d i) z) y := by
-        rw [h₀.trans (funext fun z ↦ Finset.prod_apply z hd.toFinset _)]
+      = logDeriv (fun z ↦ ∏ i ∈ hd.toFinset, (F i ^ d i) z) y := by rw [h₀, Finset.prod_fn]
     _ = ∑ i ∈ hd.toFinset, logDeriv (F i ^ d i) y :=
         logDeriv_prod (fun i hi ↦ zpow_ne_zero _ (h₂y i hi))
           (fun i hi ↦ ((h₁y i hi).zpow (h₂y i hi)).differentiableAt)
