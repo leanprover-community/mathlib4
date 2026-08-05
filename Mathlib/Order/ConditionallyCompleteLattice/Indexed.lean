@@ -216,7 +216,7 @@ theorem ciSup₂_eq_ciSup_diagonal [ConditionallyCompleteLattice α] (f : ι →
     ⟨_, forall_mem_range.2 fun i ↦ ciSup_le (key i)⟩
   exact le_antisymm (ciSup_le fun i ↦ ciSup_mono_of_forall_exists hf (h i))
     (ciSup_le fun k ↦ le_ciSup_of_le hcol k (le_ciSup (hrow k) k))
-    
+
 theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
   refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
   simp [show Exists p from ⟨i, hi⟩]
