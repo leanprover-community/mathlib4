@@ -260,7 +260,7 @@ noncomputable def coinvariantsTensorIndInv :
     (coinvariantsTensorMk (ind (k := k) φ A) B) ∘ₗ IndV.mk _ _ 1) fun s ↦ by
       simp only [MonoidalCategory.curriedTensor_obj_obj, tensor_V]
       ext x y
-      simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff] using Coinvariants.mem_ker_of_eq (φ s) 
+      simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff] using Coinvariants.mem_ker_of_eq (φ s)
         ((IndV.mk φ A.ρ (1 : H) x) ⊗ₜ[k] y) _ (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
