@@ -1609,6 +1609,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.FundamentalGroupoid
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.HomotopyGroup
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.PtSimplexEquiv
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
