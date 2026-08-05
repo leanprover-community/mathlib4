@@ -255,11 +255,10 @@ theorem hasseDeriv_mul {R : Type*} [CommRing R] (k : ℕ) (f g : LaurentSeries R
     rw [mem_filter, Finset.mem_antidiagonal] at hy
     obtain ⟨⟨hy1, hy2, hy_add⟩, hG_ne⟩ := hy
     rw [mem_support] at hy1 hy2
-    have h_coeff1 :
-      (hasseDeriv R ij.1 f).coeff y.1 = Ring.choose (y.1 + ↑ij.1) ij.1 • f.coeff (y.1 + ↑ij.1) := by
-      rw [hasseDeriv_coeff]
-    have h_coeff2 : (hasseDeriv R ij.2 g).coeff y.2 = Ring.choose (y.2 + ↑ij.2) ij.2 • g.coeff (y.2 + ↑ij.2) := by
-      rw [hasseDeriv_coeff]
+    have h_coeff1 : (hasseDeriv R ij.1 f).coeff y.1 =
+        Ring.choose (y.1 + ↑ij.1) ij.1 • f.coeff (y.1 + ↑ij.1) := by rw [hasseDeriv_coeff]
+    have h_coeff2 : (hasseDeriv R ij.2 g).coeff y.2 =
+        Ring.choose (y.2 + ↑ij.2) ij.2 • g.coeff (y.2 + ↑ij.2) := by rw [hasseDeriv_coeff]
     rw [h_coeff1] at hy1
     rw [h_coeff2] at hy2
     have hf_ne : f.coeff (y.1 + ↑ij.1) ≠ 0 := by
