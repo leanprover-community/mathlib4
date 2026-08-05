@@ -5,8 +5,6 @@ Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!

@@ -271,7 +271,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma Retract.injectiveDimension_le {X Y : C} (h : Retract X Y) :
     injectiveDimension X ≤ injectiveDimension Y :=
   sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
-    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+    simp only [Set.mem_ofPred_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
       Set.insert_eq_of_mem] at hn ⊢
     intro i hi
     have := hn i hi
@@ -281,7 +281,7 @@ lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
     injectiveDimension X < n ↔ HasInjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : injectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
-    simp only [Set.mem_setOf_eq] at this
+    simp only [Set.mem_ofPred_eq] at this
     exact this _ h
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasInjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
@@ -315,9 +315,9 @@ lemma injectiveDimension_ne_top_iff (X : C) :
       simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
       obtain ⟨n, hn⟩ := this
       rw [← injectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
-      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+      exact ENat.natCast_ne_top _ ((WithBot.coe_eq_coe).1 hn)
     | coe d =>
-      simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
+      simp only [ne_eq, WithBot.coe_eq_top, ENat.natCast_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← injectiveDimension_le_iff] using! hd.le⟩
 
 end CategoryTheory

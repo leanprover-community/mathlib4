@@ -95,7 +95,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
   let M := (mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (integralBasis K ∘ f.symm)
-    RingHom.equivRatAlgHom
+    (RingHom.equivRatAlgHom K ℂ)
   suffices M.map ofRealHom = matrixToStdBasis K *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
     calc volume (fundamentalDomain (latticeBasis K))

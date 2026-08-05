@@ -117,9 +117,12 @@ theorem preimage_eq_iff_eq_image {α β} (e : α ≃ β) (s t) : e ⁻¹' s = t 
 theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t ↔ e '' s = t :=
   Set.eq_preimage_iff_image_eq e.bijective
 
-lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
+lemma setOfPred_apply_symm_eq_image_setOfPred {α β} (e : α ≃ β) (p : α → Prop) :
     {b | p (e.symm b)} = e '' {a | p a} := by
-  rw [Equiv.image_eq_preimage_symm, preimage_setOf_eq]
+  rw [Equiv.image_eq_preimage_symm, preimage_ofPred_eq]
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_apply_symm_eq_image_setOf := setOfPred_apply_symm_eq_image_setOfPred
 
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :

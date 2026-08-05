@@ -861,7 +861,7 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖
   apply mem_closure_of_frequently_of_tendsto (α := ℝ)
       (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
   · apply Filter.Eventually.frequently
-    simp only [fdo, Set.mem_setOf, Filter.eventually_and, one_lt_normSq_iff]
+    simp only [fdo, Set.mem_ofPred, Filter.eventually_and, one_lt_normSq_iff]
     refine ⟨Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds), ?_⟩
     · have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
         refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))

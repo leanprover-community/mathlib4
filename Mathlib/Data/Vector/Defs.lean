@@ -65,6 +65,7 @@ def head : Vector α (Nat.succ n) → α
   | ⟨a :: _, _⟩ => a
 
 /-- The head of a vector obtained by prepending is the element prepended. -/
+@[simp, grind =]
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
@@ -74,6 +75,7 @@ def tail : Vector α n → Vector α (n - 1)
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
+@[simp, grind =]
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
   | ⟨_, _⟩ => rfl
 

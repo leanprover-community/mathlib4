@@ -310,7 +310,7 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
     letI s := {I : Ideal R | I.IsMaximal}
     DiscreteTopology (PrimeSpectrum R) ↔ Finite s ∧ sInf s ≤ nilradical R := by
   rw [discreteTopology_iff_finite_and_krullDimLE_zero, Ring.krullDimLE_zero_iff,
-    (equivSubtype R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
+    (equivSubtype R).finite_iff, ← Set.coe_ofPred, Set.finite_coe_iff, Set.finite_coe_iff]
   refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
     fun ⟨fin, le⟩ ↦ ?_⟩
   have hpm (I : Ideal R) (hI : I.IsPrime) : I.IsMaximal := by
@@ -593,7 +593,7 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
     [IsLocalization.Away r S] : Set.range (comap (algebraMap R S)) = basicOpen r := by
   rw [localization_comap_range S (Submonoid.powers r)]
   ext x
-  simp only [mem_zeroLocus, basicOpen_eq_zeroLocus_compl, SetLike.mem_coe, Set.mem_setOf_eq,
+  simp only [mem_zeroLocus, basicOpen_eq_zeroLocus_compl, SetLike.mem_coe, Set.mem_ofPred_eq,
     Set.singleton_subset_iff, Set.mem_compl_iff, disjoint_iff_inf_le]
   constructor
   · intro h₁ h₂
@@ -932,7 +932,7 @@ lemma vanishingIdeal_range_comap :
   ext x
   rw [RingHom.ker_eq_comap_bot, ← Ideal.comap_radical, Ideal.radical_eq_sInf]
   simp only [mem_vanishingIdeal, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-    comap_asIdeal, Ideal.mem_comap, bot_le, true_and, Submodule.mem_sInf, Set.mem_setOf_eq]
+    comap_asIdeal, Ideal.mem_comap, bot_le, true_and, Submodule.mem_sInf, Set.mem_ofPred_eq]
   exact ⟨fun H I hI ↦ H ⟨I, hI⟩, fun H I ↦ H I.1 I.2⟩
 
 lemma closure_range_comap :
@@ -951,7 +951,7 @@ lemma denseRange_comap_iff_minimalPrimes :
   · intro H I hI
     have : I ∈ (RingHom.ker f).minimalPrimes := by
       rw [denseRange_comap_iff_ker_le_nilRadical] at H
-      simp only [Set.mem_setOf, Ideal.IsMinimalPrime] at hI ⊢
+      simp only [Set.mem_ofPred, Ideal.IsMinimalPrime] at hI ⊢
       convert! hI using 2 with p
       exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
     obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
@@ -1239,7 +1239,7 @@ protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
     ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.1, x.1.2, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.setOfMinimalIsoSetOfMaximal
+  exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual))
 
@@ -1253,15 +1253,15 @@ protected def _root_.minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.setOfMinimalIsoSetOfMaximal
+  exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) = minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
-    image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
-    ← funext (@Set.mem_setOf_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
+    image_antitone_setOfPred_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
+    ← funext (@Set.mem_ofPred_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
   rfl
 
 lemma zeroLocus_minimalPrimes :

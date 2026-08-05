@@ -152,15 +152,15 @@ Note that the slash is `\textfractionsolidus`.
 -/
 def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
-deriving AddCommGroup, Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S), Inhabited
+deriving Inhabited
+
+-- The `SMul R'` instance exists to avoid a zsmul diamond.
+variable {R' : Type*} [CommRing R'] [Algebra R' S] [SMulCommClass R R' S] in
+deriving instance SMul R', AddCommGroup, Module R', Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S)
+  for KaehlerDifferential R S
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
-
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
-    [SMulCommClass R R' S] :
-    Module R' Ω[S⁄R] :=
-  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]

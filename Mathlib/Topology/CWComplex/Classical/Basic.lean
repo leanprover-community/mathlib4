@@ -71,10 +71,10 @@ together.
   below for a restriction on when we want to create aliases.
 * For types and definitions relevant to CW complexes like `cell`, `openCell`, `closedCell`,
   `cellFrontier`, `skeletonLT` and similar, we want there to exist only one actually used version,
-  namely the version in the `RelCWComplex` namespace (and thus no seperate definition in the
+  namely the version in the `RelCWComplex` namespace (and thus no separate definition in the
   `CWComplex` namespace.) This is to avoid unnecessary duplication of lemmas. To achieve this,
   definitions from the `RelCWComplex` namespace should be added to the `CWComplex` namespace with
-  `export` intead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
+  `export` instead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
   the instance `CWComplex.instRelCWComplex`.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
@@ -504,9 +504,10 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
         apply iUnion₂_subset fun l hl ↦ iUnion₂_subset fun i _ ↦ ?_
         rw [← cellFrontier_union_openCell_eq_closedCell]
         apply union_subset
-        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.coe_lt_coe.2 hl).trans hm) i)
+        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.natCast_lt_natCast.2 hl).trans hm) i)
         · apply subset_union_of_subset_right
-          exact subset_iUnion₂_of_subset l ((ENat.coe_lt_coe.2 hl).trans hm) <| subset_iUnion _ i
+          exact subset_iUnion₂_of_subset l ((ENat.natCast_lt_natCast.2 hl).trans hm) <|
+            subset_iUnion _ i
     · exact subset_union_of_subset_right (subset_iUnion₂_of_subset m hm (subset_iUnion _ j)) _
 
 lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
@@ -514,7 +515,7 @@ lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
   suffices D ∪ ⋃ n, ⋃ (j : cell C n), openCell n j =
       D ∪ ⋃ (m : ℕ) (_ : m < (⊤ : ℕ∞)) (j : cell C m), closedCell m j by
     simpa [union] using this
-  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.coe_lt_top, iUnion_true]
+  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.natCast_lt_top, iUnion_true]
 
 lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
     ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
@@ -1030,7 +1031,7 @@ lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} 
   apply disjoint_openCell_of_ne
   intro
   simp_all only [Sigma.mk.inj_iff]
-  exact (lt_self_iff_false m).mp (ENat.coe_lt_coe.1 (hln.trans_le hnm))
+  exact (lt_self_iff_false m).mp (ENat.natCast_lt_natCast.1 (hln.trans_le hnm))
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]
