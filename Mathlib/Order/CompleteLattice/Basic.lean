@@ -61,18 +61,13 @@ theorem sSup_singleton {a : α} : sSup {a} = a :=
 @[to_dual]
 theorem iSup₂_eq_iSup_diagonal
     (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
-    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
-  apply le_antisymm
-  · apply sSup_le
-    rintro _ ⟨i, rfl⟩
-    apply sSup_le
+    ⨆ i, ⨆ j, f i j = ⨆ k, f k k := by
+  refine le_antisymm (sSup_le ?_) (sSup_le ?_) <;> rintro _ ⟨i, rfl⟩
+  · refine sSup_le ?_
     rintro _ ⟨j, rfl⟩
     obtain ⟨k, hk⟩ := h i j
     exact hk.trans (le_sSup ⟨k, rfl⟩)
-  · apply sSup_le
-    rintro _ ⟨k, rfl⟩
-    exact (le_sSup (s := range (f k)) ⟨k, rfl⟩).trans
-      (le_sSup (s := range fun i ↦ ⨆ j, f i j) ⟨k, rfl⟩)
+  · exact (le_sSup (s := range (f i)) ⟨i, rfl⟩).trans (le_sSup ⟨i, rfl⟩)
 
 end
 
