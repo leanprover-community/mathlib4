@@ -26,8 +26,11 @@ public section
 
 section CommRing
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Commuting elements have commuting adjoint actions. -/
 theorem LieAlgebra.commute_ad_of_commute {a b : A} (h : Commute a b) :
     Commute (LieAlgebra.ad R A a) (LieAlgebra.ad R A b) := by
@@ -60,6 +63,8 @@ section Field
 
 variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The adjoint of a semisimple element is semisimple. -/
 theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :

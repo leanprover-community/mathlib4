@@ -258,9 +258,10 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
     (simpTheorems := #[← ext.getTheorems])
   let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
-  let pre := Simp.preDefault #[] >> fun e =>
+  let matchAndNorm : Simproc := fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
       catch _ => pure .continue
+  let pre := Simp.preDefault #[] >> matchAndNorm
   let post := Simp.postDefault #[]
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 

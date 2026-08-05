@@ -50,11 +50,13 @@ instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
 -- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
+set_option backward.isDefEq.respectTransparency.types false in
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := PFun X Y
   id X := PFun.id X
   comp f g := g.comp f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
@@ -69,12 +71,14 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 
 end PartialFun
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
   map f := PFun.lift (f : _ → _)
   map_comp _ _ := PFun.coe_comp _ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : typeToPartialFun.Faithful where
   map_injective h := by
     ext x
@@ -146,7 +150,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             exact hw.symm
   counitIso :=
     NatIso.ofComponents
-      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) rfl)
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
@@ -174,5 +178,5 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
     fun f =>
     Pointed.Hom.ext <|
       funext fun a => Option.recOn a rfl fun a => by
-        convert Part.some_toOption _
+        convert! Part.some_toOption _
         simpa using! (Part.get_eq_iff_mem (by trivial)).mp rfl

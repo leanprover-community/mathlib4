@@ -100,7 +100,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Modu
 
 instance funLike : FunLike (A →ₗc[R] B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     rcases f with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     rcases g with ⟨⟨⟨_, _⟩, _⟩, _, _⟩
     congr
