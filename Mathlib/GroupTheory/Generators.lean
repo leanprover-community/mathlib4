@@ -85,8 +85,7 @@ lemma map_val (P : Group.Generators G α) (f : G →* H) (hf : Function.Surjecti
   (P.map f hf).val = f ∘ P.val := rfl
 
 /-- The transport of a generating family along an equivalence of index types. -/
-def reindex (P : Group.Generators G α) (e : β ≃ α) :
-    Group.Generators G β where
+def reindex (P : Group.Generators G α) (e : β ≃ α) : Group.Generators G β where
   val := P.val ∘ e
   closure_eq_top := by
     rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
