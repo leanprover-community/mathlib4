@@ -805,11 +805,8 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
       fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
   · simp_rw [image_subset_iff, preimage_ofPred_eq, coe_finset_sup, Finset.sup_eq_iSup,
       iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
-    refine fun f hf => ⟨
-      fun U => subset_sUnion_of_subset _ _ (hf U trivial).2.2 U.2, fun U hU => ?_,
-      finite_iUnion fun U => (hf U trivial).2.1⟩
-    lift U to u using hU
-    obtain ⟨h₁, -, h₂⟩ := hf U trivial
+    refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩
+    obtain ⟨h₁, -, h₂⟩ := hf ⟨U, hU⟩ trivial
     exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
 end Compacts
 
