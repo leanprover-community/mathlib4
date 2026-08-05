@@ -643,46 +643,29 @@ lemma ECanonicalDecomp.log_norm_eq
       <;> simpa [ht₁, ht₂] using mulSupport_pow_subset_support ..
     _ =  ∑ i ∈ t₂, log (‖canonicalFactor R i w‖ ^ (divisor f B₀R) i)
         + ∑ i ∈ t₁, log (‖w - i‖ ^ (-divisor f S₀R) i) + log ‖meromorphicTrailingCoeffAt f w‖ := by
-      have η₀ : ∀ x ∈ t₁, ‖w - x‖ ^ (-divisor f S₀R) x ≠ 0 := by
-        intro x hx
-        rw [← Finset.mem_coe, ht₁] at hx
+      have η₀ (x) (hx : x ∈ t₁) : ‖w - x‖ ^ (-divisor f S₀R) x ≠ 0 := by
         refine zpow_ne_zero _ ?_
         rw [norm_ne_zero_iff, sub_ne_zero]
         rintro rfl
-        simp_all [divisor_def]
-      have η₁ : ∀ x ∈ t₂, ‖canonicalFactor R x w‖ ^ (divisor f B₀R) x ≠ 0 := by
-        intro x hx
-        rw [← Finset.mem_coe, ht₂] at hx
+        simp_all [divisor_def, ← Finset.mem_coe]
+      have η₁ (x) (hx : x ∈ t₂) : ‖canonicalFactor R x w‖ ^ (divisor f B₀R) x ≠ 0 := by
         refine zpow_ne_zero _ ?_
-        rw [ne_eq, norm_eq_zero]
-        have h₁x : x ∈ ball 0 R := (divisor f B₀R).supportWithinDomain hx
-        refine canonicalFactor_ne_zero h₁x h₁w ?_
-        rintro rfl
-        simp_all [divisor_def]
+        rw [norm_ne_zero_iff]
+        have h₁x : x ∈ ball 0 R := (divisor f B₀R).supportWithinDomain (ht₂ ▸ hx)
+        refine canonicalFactor_ne_zero h₁x h₁w fun _ ↦ ?_
+        simp_all [divisor_def, ← Finset.mem_coe]
       simp_rw [norm_smul, norm_mul, norm_prod, norm_zpow]
       rw [Real.log_mul (mul_ne_zero_iff.2 ⟨Finset.prod_ne_zero_iff.2 η₁,
-          Finset.prod_ne_zero_iff.2 η₀⟩), Real.log_mul (Finset.prod_ne_zero_iff.2 η₁)
+          Finset.prod_ne_zero_iff.2 η₀⟩) ?_, Real.log_mul (Finset.prod_ne_zero_iff.2 η₁)
         (Finset.prod_ne_zero_iff.2 η₀), Real.log_prod η₁, Real.log_prod η₀]
-      rw [ne_eq, norm_eq_zero]
-      apply (D.meromorphicOn w h₁w).meromorphicTrailingCoeffAt_ne_zero
-      rw [h₂w]
-      apply WithTop.zero_ne_top
+      simpa using (D.meromorphicOn w h₁w).meromorphicTrailingCoeffAt_ne_zero (by simp [h₂w])
     _ = ((∑ᶠ i, (divisor f B₀R i) * Real.log ‖canonicalFactor R i w‖)
         - (∑ᶠ i, (divisor f S₀R i) * Real.log ‖w - i‖))
         + Real.log ‖meromorphicTrailingCoeffAt f w‖ := by
       rw [finsum_eq_sum_of_support_subset (s := t₂) _ ?η₀,
         finsum_eq_sum_of_support_subset (s := t₁) _ ?η₁]
-      case η₀ | η₁ =>
-        intro _ _
-        simp_all only [ne_eq, support_mul, mem_inter_iff, mem_support, Int.cast_eq_zero,
-          log_eq_zero, norm_eq_zero, not_or, not_false_eq_true, S₀R, B₀R]
-      congr
-      · ext i
-        exact log_zpow ‖canonicalFactor R i w‖ ((divisor f B₀R) i)
-      · rw [← Finset.sum_neg_distrib]
-        apply Finset.sum_congr rfl
-        intro i hi
-        rw [log_zpow ‖w - i‖ ((-divisor f S₀R) i)]
-        simp
+      case η₀ | η₁ => intro _ _; simp_all [S₀R, B₀R]
+      rw [sub_eq_add_neg, ← Finset.sum_neg_distrib]
+      congr! 3 with i hi i hi <;> simp
 
 end Complex
