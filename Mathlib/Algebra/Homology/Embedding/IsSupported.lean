@@ -161,6 +161,13 @@ instance map_isStrictlySupported [K.IsStrictlySupported e] :
     dsimp
     rw [← F.map_id, (K.isZero_X_of_isStrictlySupported e i' hi').eq_of_src (𝟙 _) 0, F.map_zero]
 
+lemma isStrictlySupported_mapHomologicalComplex_obj_iff [F.Faithful] :
+    ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e ↔ K.IsStrictlySupported e := by
+  refine ⟨fun _ ↦ ⟨fun i' hi' ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [IsZero.iff_id_eq_zero]
+  exact F.map_injective ((isZero_X_of_isStrictlySupported
+    ((F.mapHomologicalComplex c').obj K) e i' hi').eq_of_src _ _)
+
 end
 
 end HomologicalComplex

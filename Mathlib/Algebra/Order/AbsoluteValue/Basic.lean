@@ -185,7 +185,7 @@ omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
+  · simp [Subsingleton.eq_zero (α := R)]
   induction n with
   | zero => simp
   | succ n ih =>
@@ -416,8 +416,8 @@ open Lean Meta Mathlib Meta Positivity Qq in
 For performance reasons, we only attempt to apply this when `abv` is a variable.
 If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e := do
-  let some _ := pα? | pure .none
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   let (.app f a) ← whnfR e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"

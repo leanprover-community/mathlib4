@@ -59,7 +59,7 @@ instance (priority := low) {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R
     simp_rw [Valuation.restrict_lt_iff_lt_embedding]
     convert! mem_nhds_zero_iff (R := R)
     simpa [← Valuation.restrict_lt_iff_lt_embedding] using
-      (valuation R).exists_setOf_restrict_le_iff 0 _
+      (valuation R).exists_setOfPred_restrict_le_iff 0 _
 
 lemma v_eq_valuation {R : Type*} [Ring R] [ValuativeRel R] [UniformSpace R]
     [IsUniformAddGroup R] [IsValuativeTopology R] :

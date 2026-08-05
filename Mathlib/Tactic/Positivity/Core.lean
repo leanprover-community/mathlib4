@@ -351,6 +351,7 @@ initialize registerTraceClass `Tactic.positivity.failure
 where `a` is a numeral. -/
 def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
     MetaM (Strictness zα e pα) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -396,6 +397,7 @@ def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
 
 /-- A variation on `assumption` when the hypothesis is `e ≠ 0` or `0 ≠ e`. -/
 def compareHypNonzero {pα?} (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα e pα?) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -417,17 +419,17 @@ It assumes `t₁` has already been run for a result, and runs `t₂` and takes t
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
 def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Strictness zα e pα?)) :
-    MetaM (Strictness zα e pα?) := do
+    MetaM (Strictness zα e pα?) :=
   match t₁ with
   | .none => catchNone t₂
   | p@(.positive _) => pure p
-  | .nonnegative p₁ =>
+  | .nonnegative p₁ => do
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
     | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
     | _ => pure (.nonnegative p₁)
-  | .nonzero p₁ =>
-    match ← catchNone t₂ with
+  | .nonzero p₁ => do
+    match (dependent := true) ← catchNone t₂ with
     | p@(.positive _) => pure p
     | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
     | _ => pure (.nonzero p₁)
@@ -442,22 +444,22 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
   trace[Tactic.positivity] "current result from positivity extensions: {result.toString}"
-  match pα? with
-  | some pα =>
+  match h : pα?, result with
+  | some pα, res =>
     trace[Tactic.positivity] "{α} has some {pα}"
-    result ← orElse result <| normNumPositivity zα pα e
-    trace[Tactic.positivity] "current result from normNum: {result.toString}"
-    result ← orElse result <| positivityCanon zα pα e
-    trace[Tactic.positivity] "current result from canonicity: {result.toString}"
-    if let .positive _ := result then
-      trace[Tactic.positivity] "{e} => {result.toString}"
-      return result
+    let mut res ← orElse res <| normNumPositivity zα pα e
+    trace[Tactic.positivity] "current result from normNum: {res.toString}"
+    res ← orElse res <| positivityCanon zα pα e
+    trace[Tactic.positivity] "current result from canonicity: {res.toString}"
+    if let .positive _ := res then
+      trace[Tactic.positivity] "{e} => {res.toString}"
+      return h ▸ res
     for ldecl in ← getLCtx do
       if !ldecl.isImplementationDetail then
-        result ← orElse result <| compareHyp zα pα e ldecl
-    trace[Tactic.positivity] "{e} => {result.toString}"
-    throwNone (pure result)
-  | .none =>
+        res ← orElse res <| compareHyp zα pα e ldecl
+    trace[Tactic.positivity] "{e} => {res.toString}"
+    throwNone (pure (h ▸ res))
+  | .none, _ =>
     trace[Tactic.positivity] "{α} has no PartialOrder"
     if let .nonzero _ := result then
       trace[Tactic.positivity] "{e} => {result.toString}"
@@ -486,10 +488,10 @@ def bestResult (e : Expr) : MetaM (Bool × Expr) := do
   let zα ← synthInstanceQ q(Zero $α)
   let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
   assumeInstancesCommute
-  match ← try? (Meta.Positivity.core zα pα? e) with
-  | some (.positive pf) => pure (true, pf)
-  | some (.nonnegative pf) => pure (false, pf)
-  | _ => throwError "could not establish the nonnegativity of {e}"
+  match pα?, ← try? (Meta.Positivity.core zα pα? e) with
+  | _, some (.positive pf) => pure (true, pf)
+  | _, some (.nonnegative pf) => pure (false, pf)
+  | _, _ => throwError "could not establish the nonnegativity of {e}"
 
 /-- Given an expression `e`, use the core method of the `positivity` tactic to prove it nonnegative.
 -/
@@ -508,7 +510,8 @@ def solve (t : Q(Prop)) : MetaM Expr := do
     let r ← catchNone <| Meta.Positivity.core zα pα? e
     let throw (a b : String) : MetaM Expr := throwError
       "failed to prove {a}, but it would be possible to prove {b} if desired"
-    if let some _ := pα? then
+    match (dependent := true) pα? with
+    | some _ =>
       match relDesired, r with
       | .lt, .positive p
       | .le, .nonnegative p
@@ -523,7 +526,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
       | .ne, .nonnegative _
       | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
       | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
-    else
+    | none =>
       match relDesired, r with
       | .ne, .nonzero p => pure p
       | .ne', .nonzero p => pure q(Ne.symm $p)

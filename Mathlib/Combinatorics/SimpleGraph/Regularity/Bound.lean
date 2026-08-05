@@ -239,10 +239,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
 @[positivity SzemerediRegularity.initialBound _ _]
-meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e := do
+meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(SzemerediRegularity.initialBound_pos $ε $l))
   | _, _, _ => throwError "not initialBound"
@@ -252,10 +252,10 @@ example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by p
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
 @[positivity SzemerediRegularity.bound _ _]
-meta def evalBound : PositivityExt where eval {u α} _ pα? e := do
+meta def evalBound : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
-    let some _ := pα? | pure .none
     assertInstancesCommute
     pure (.positive q(SzemerediRegularity.bound_pos $ε $l))
   | _, _, _ => throwError "not bound"

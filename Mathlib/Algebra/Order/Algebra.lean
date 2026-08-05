@@ -95,14 +95,13 @@ open Lean Meta Qq Function
 
 /-- Extension for `algebraMap`. -/
 @[positivity algebraMap _ _ _]
-meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e := do
+meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e :=
+  match pβ? with | none => pure .none | some _ => do
   let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
-  let pα ← try? <| synthInstanceQ q(PartialOrder $α)
-  match ← core q(inferInstance) pα a with
+  let some pα ← try? <| synthInstanceQ q(PartialOrder $α) | pure .none
+  match ← core q(inferInstance) (some pα) a with
   | .positive pa =>
-    let some _ := pβ? | pure .none
     let _instαSemiring ← synthInstanceQ q(Semiring $α)
-    let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
     try
       let _instβSemiring ← synthInstanceQ q(Semiring $β)
       let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
@@ -118,9 +117,7 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e := do
       assertInstancesCommute
       return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
   | .nonnegative pa =>
-    let some _ := pβ? | pure .none
     let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
-    let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
     let _instβSemiring ← synthInstanceQ q(Semiring $β)
     let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
     let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
