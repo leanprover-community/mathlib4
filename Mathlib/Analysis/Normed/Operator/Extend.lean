@@ -236,12 +236,11 @@ end NormedField
 
 section extendOfIsometry
 
-variable [NormedField 𝕜] [NormedField 𝕜₂]
-  [NormedAddCommGroup E] [Module 𝕜 E]
-  [NormedAddCommGroup F] [Module 𝕜₂ F]
-  [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ]
-  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
-
+variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
+  [AddCommGroup E] [Module 𝕜 E]
+  [AddCommGroup F] [Module 𝕜₂ F]
+  [NormedAddCommGroup Eₗ] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
+  [NormedAddCommGroup Fₗ] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ] [CompleteSpace Fₗ]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
 variable (f : E →ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
 
