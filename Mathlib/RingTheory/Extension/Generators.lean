@@ -205,7 +205,6 @@ end Localization
 
 variable {ι' : Type*} {T} [CommRing T] [Algebra R T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val]
