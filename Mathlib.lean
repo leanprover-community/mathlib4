@@ -1545,6 +1545,8 @@ public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
+public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
+public import Mathlib.AlgebraicTopology.Quasicategory.test
 public import Mathlib.AlgebraicTopology.Reedy.Basic
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
