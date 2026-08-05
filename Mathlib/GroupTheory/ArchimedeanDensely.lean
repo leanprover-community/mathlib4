@@ -157,7 +157,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rw [mem_closure_singleton] at ha
     obtain ⟨n, rfl⟩ := ha
     have := h.left
-    simp only [mem_closure_singleton, mem_setOf_eq] at this
+    simp only [mem_closure_singleton, mem_ofPred_eq] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
@@ -174,7 +174,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     refine ⟨?_, ?_⟩
     · simp [h]
     · intro x
-      simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
+      simp only [mem_closure_singleton, mem_ofPred_eq, and_imp, forall_exists_index]
       rintro k rfl hk
       rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
@@ -336,7 +336,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
 section WellFounded
 
 set_option backward.isDefEq.respectTransparency false in
-lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
+lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
     {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
   suffices Set.WellFoundedOn {x : G | 0 ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) by
@@ -370,41 +370,57 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     have : LocallyFiniteOrder G := LocallyFiniteOrder.ofOrderIsoClass f
     exact BddBelow.wellFoundedOn_lt ⟨0, by simp [mem_lowerBounds]⟩
 
-lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete :=
+  LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
+
+lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
     {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃+o ℤ) := by
-  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := -g)]
+  rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete (g := -g)]
   refine ⟨fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_, fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_⟩ <;>
   · intro
     simp [Function.onFun, neg_le]
 
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete :=
+  LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
+
 set_option backward.isDefEq.respectTransparency false in
-lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
+lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   let e : G ≃o Additive G := OrderIso.refl G
   suffices Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Set.WellFoundedOn {x | e g ≤ x} (· < ·) by
-    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete,
+    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete,
       OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
   refine ⟨fun h ↦ (h.mapsTo e.symm fun _ ↦ e.le_symm_apply.mpr).mono' ?_,
     fun h ↦ (h.mapsTo e fun _ ↦ ?_).mono' ?_⟩ <;>
   simp [Function.onFun]
 
-lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete :=
+  LinearOrderedCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete
+
+lemma LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
     {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [Nontrivial G] (g : G) :
     Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
-  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := g⁻¹)]
+  rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete (g := g⁻¹)]
   refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩ <;>
   · intro
     simp [Function.onFun, inv_le']
 
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete :=
+  LinearOrderedCommGroup.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete
+
 set_option backward.isDefEq.respectTransparency false in
-lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
+lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
     Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
-    rw [this, LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
+    rw [this, LinearOrderedCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete]
     refine Nonempty.congr (fun f ↦ ⟨?_, ?_⟩) (fun f ↦ ⟨?_, ?_⟩)
     · exact WithZero.withZeroUnitsEquiv.symm.trans f.withZero
     · intro a b
@@ -425,44 +441,52 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
   · simp [Function.onFun]
   · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
   · simp +contextual [← Units.val_le_val, MapsTo]
-  · simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, Function.onFun, and_imp]
     intro _ _ ha0 _ _ hb0 h
     simp [ha0, hb0, ← Units.val_lt_val, h]
 
-lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero :=
+  LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete_of_ne_zero
+
+lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
   have hg' : g⁻¹ ≠ 0 := by simp [hg]
-  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',
+  rw [← wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete_of_ne_zero hg',
     ← Set.wellFoundedOn_sdiff_singleton (a := 0)]
   refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
   · intro x
     rcases eq_or_ne x 0 with rfl | hx
     · simp [hg]
-    simp only [mem_setOf_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
+    simp only [mem_ofPred_eq, mem_sdiff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
     simp [zero_lt_iff, hg, hx]
-  · simp only [mem_setOf_eq, Function.onFun, gt_iff_lt]
+  · simp only [mem_ofPred_eq, Function.onFun, gt_iff_lt]
     intro a ha b _
     refine inv_strictAnti₀ ?_
     contrapose! ha
     simp only [le_zero_iff] at ha
     simp [zero_lt_iff, ha, hg]
   · intro x
-    simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, and_imp]
+    simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
     simp [zero_lt_iff, hx]
-  · simp only [mem_sdiff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]
 
+@[deprecated (since := "2026-07-09")]
+alias LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero :=
+  LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
+
 instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
     WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
   { wf :=
-    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero).mpr instNonemptyOfInhabited }
 
 end WellFounded

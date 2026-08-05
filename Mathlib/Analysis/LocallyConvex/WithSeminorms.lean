@@ -615,7 +615,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     grw [← ts]
     rcases (SeminormFamily.basisSets_iff _).1 ht with ⟨w, r, r_pos, hw⟩
     rcases eq_or_ne w ∅ with rfl | w_ne
-    · simp only [ball, Finset.sup_empty, sub_zero, coe_bot, Pi.zero_apply, r_pos, setOf_true] at hw
+    · simp only [ball, Finset.sup_empty, sub_zero, coe_bot, Pi.zero_apply, r_pos, ofPred_true] at hw
       simp [hw]
     have : t = p.ball 0 r := by
       have : w = Finset.univ := by

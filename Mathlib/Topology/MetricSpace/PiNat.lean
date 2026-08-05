@@ -412,7 +412,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
-      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_setOf_eq]
+      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_ofPred_eq]
       apply le_antisymm
       · simp only [le_iInf_iff, le_principal_iff]
         intro ε εpos
@@ -420,9 +420,9 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
         apply
           @mem_iInf_of_iInter _ _ _ _ _ (Finset.range n).finite_toSet fun i =>
             { p : (∀ n : ℕ, E n) × ∀ n : ℕ, E n | p.fst i = p.snd i }
-        · simp only [mem_principal, setOf_subset_setOf, imp_self, imp_true_iff]
+        · simp only [mem_principal, ofPred_subset_ofPred, imp_self, imp_true_iff]
         · rintro ⟨x, y⟩ hxy
-          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_setOf_eq]
+          simp only [Finset.mem_coe, Finset.mem_range, iInter_coe_set, mem_iInter, mem_ofPred_eq]
             at hxy
           apply lt_of_le_of_lt _ hn
           rw [← mem_cylinder_iff_dist_le, mem_cylinder_iff]
@@ -431,7 +431,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
         intro n
         refine mem_iInf_of_mem ((1 / 2) ^ n : ℝ) ?_
         refine mem_iInf_of_mem (by positivity) ?_
-        simp only [mem_principal, setOf_subset_setOf, Prod.forall]
+        simp only [mem_principal, ofPred_subset_ofPred, Prod.forall]
         intro x y hxy
         exact apply_eq_of_dist_lt hxy le_rfl }
 
@@ -842,7 +842,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     _ = _ := ENNReal.tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
-    simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
+    simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_ofPred_eq, comap_principal,
       PseudoEMetricSpace.uniformity_edist, le_antisymm_iff, le_iInf_iff, le_principal_iff]
     constructor
     · intro ε hε
@@ -858,7 +858,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_ofPred_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
@@ -878,7 +878,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     · intro i ε hε₀
       have : (0 : ℝ≥0∞) < 2⁻¹ ^ encode i := ENNReal.pow_pos (by norm_num) _
       refine mem_iInf_of_mem (min (2⁻¹ ^ encode i) ε) <| mem_iInf_of_mem (by positivity) ?_
-      simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
+      simp only [and_imp, Prod.forall, ofPred_subset_ofPred, lt_min_iff, mem_principal]
       intro x y hn
       exact (edist_le_edist_pi_of_edist_lt hn).trans_lt
 

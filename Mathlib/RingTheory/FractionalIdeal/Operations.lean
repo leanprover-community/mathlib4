@@ -289,7 +289,7 @@ variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
     ∃ x, x ≠ 0 ∧ algebraMap R K x ∈ I := by
   obtain ⟨y : K, y_mem, y_notMem⟩ :=
-    SetLike.exists_of_lt (by simpa only using bot_lt_iff_ne_bot.mpr hI)
+    SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr hI)
   have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩

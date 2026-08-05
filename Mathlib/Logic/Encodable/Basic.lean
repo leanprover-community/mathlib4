@@ -193,7 +193,7 @@ theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = som
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
-  simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
+  simp_rw [Set.range, Set.mem_ofPred_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 
 theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>

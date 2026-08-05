@@ -249,7 +249,7 @@ the elementary symmetric polynomials and would like to calculate the values of t
 theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
     psum σ R k = (-1) ^ (k + 1) * k * esymm σ R k -
     ∑ a ∈ antidiagonal k with a.1 ∈ Set.Ioo 0 k, (-1) ^ a.fst * esymm σ R a.1 * psum σ R a.2 := by
-  simp only [Set.Ioo, Set.mem_setOf_eq, and_comm]
+  simp only [Set.Ioo, Set.mem_ofPred_eq, and_comm]
   have hesymm := mul_esymm_eq_sum σ R k
   rw [← (sum_filter_add_sum_filter_not {a ∈ antidiagonal k | a.fst < k}
     (fun a ↦ 0 < a.fst) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm

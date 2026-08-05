@@ -48,8 +48,8 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       ← supportDiscreteWithin_iff_locallyFiniteWithin]
     by_cases hf : MeromorphicOn f U
     · filter_upwards [mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-        hf.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top]
-      simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
+        hf.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top]
+      simp only [Set.mem_image, Set.mem_ofPred_eq, Subtype.exists, exists_and_left, exists_prop,
         exists_eq_right_right, Pi.ofNat_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
       tauto
     · simp [hf, Pi.zero_def]
@@ -164,7 +164,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (h₁ : f₁ =�
         apply mem_nhdsWithin.mpr
         use U, h₂, hx, Set.inter_subset_left
       filter_upwards [this, h₁ x hx] with a h₁a h₂a
-      simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_setOf_eq, not_and] at h₂a
+      simp only [Set.mem_compl_iff, Set.mem_sdiff, Set.mem_ofPred_eq, not_and] at h₂a
       tauto
     · simp [hx]
   · simp [divisor, hf₁, (meromorphicOn_congr_codiscreteWithin h₁ h₂).not.1 hf₁]
