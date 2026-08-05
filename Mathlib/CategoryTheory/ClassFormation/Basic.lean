@@ -8,11 +8,14 @@ module
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Limits.Over
 
 /-!
 # ...
 
 -/
+
+-- #42397, #42396, #42320
 
 public section
 
@@ -24,6 +27,16 @@ open scoped FintypeCatDiscrete
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
+
+noncomputable def Over.isInitialEquiv {S : C} {X : Over S}
+    [PreservesColimit (Functor.empty (Over S)) (Over.forget S)] :
+    IsInitial X ≃ IsInitial X.left where
+  toFun h := IsInitial.isInitialObj (G := Over.forget S)  _  h
+  invFun h :=
+    IsInitial.ofUniqueHom (fun Z ↦ Over.homMk (h.to _) (h.hom_ext _ _))
+      (fun Z m ↦ by ext; apply h.hom_ext)
+  left_inv _ := by subsingleton
+  right_inv _ := by subsingleton
 
 variable (C) in
 abbrev PreGaloisCategory.isConnected : ObjectProperty C :=
@@ -158,6 +171,36 @@ instance [GaloisCategory C] : Preregular (isConnected C).FullSubcategory where
 
 example [GaloisCategory C] : GrothendieckTopology (isConnected C).FullSubcategory :=
   regularTopology (isConnected C).FullSubcategory
+
+lemma isConnected_over_iff
+    {S : C} (X : Over S)
+    [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)] :
+    PreGaloisCategory.IsConnected X ↔
+      PreGaloisCategory.IsConnected X.left := by
+  refine ⟨fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv.symm h), ?_⟩,
+    fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv h), ?_⟩⟩
+  · sorry
+  · sorry
+
+instance (S : C) [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)] :
+    PreservesIsConnected (Over.forget S) where
+  preserves {X} _ := by
+    rw [Over.forget_obj, ← isConnected_over_iff]
+    infer_instance
+
+section
+
+variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (S : C)
+  [PreGaloisCategory.IsConnected S] (s : F.obj S)
+
+@[implicit_reducible]
+def fiberFunctorOver : Over S ⥤ FintypeCat.{w} where
+  obj X := .of ((F.map X.hom) ⁻¹' {s})
+  map f := FintypeCat.homMk (fun x ↦⟨F.map f.left x, by
+    simpa only [← ConcreteCategory.comp_apply, ← F.map_comp, f.w,
+      Set.mem_preimage, Set.mem_singleton_iff] using x.prop⟩)
+
+end
 
 end GaloisCategory
 
