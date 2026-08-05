@@ -509,6 +509,41 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
   rw [eq_iff_le_not_lt, gauge_le_one_iff_mem_closure hc hs₀, gauge_lt_one_iff_mem_interior hc hs₀]
   rfl
 
+theorem closure_eq_iInter_gt_smul (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
+    closure s = ⋂ (r : ℝ) (_ : 1 < r), r • s := by
+  conv_lhs => rw [show closure s = {x | gauge s x ≤ 1} from
+    (Set.ext fun x => (gauge_le_one_iff_mem_closure hc hs₀).symm)]
+  exact setOf_gauge_le_eq hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) zero_le_one
+
+theorem setOf_gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
+    (ha : 0 < a) : { x | gauge s x ≤ a } = closure (a • s) := by
+  rw [closure_smul₀' ha.ne']
+  ext x
+  rw [Set.mem_setOf_eq, Set.mem_smul_set_iff_inv_smul_mem₀ ha.ne',
+    ← gauge_le_one_iff_mem_closure hc hs₀,
+    gauge_smul_of_nonneg (inv_nonneg.mpr ha.le), smul_eq_mul,
+    inv_mul_le_iff₀ ha, mul_one]
+
+/-- See `gauge_le_eq_closure_smul` for the version where `E` isn't assumed to be T1 in exchange of
+requiring `a` to be strictly positive. -/
+theorem setOf_gauge_le_eq_closure_smul [T1Space E] (hc : Convex ℝ s)
+    (hb : Bornology.IsVonNBounded ℝ s) (hs₀ : s ∈ 𝓝 0) (ha : 0 ≤ a) :
+    { x | gauge s x ≤ a } = closure (a • s) := by
+  obtain rfl | ha := eq_or_lt_of_le ha
+  · ext x
+    simp only [Set.mem_setOf_eq, show (0 : ℝ) • s = ({0} : Set E) from
+      zero_smul_set (Set.nonempty_of_mem (mem_of_mem_nhds hs₀)),
+      closure_singleton, Set.mem_singleton_iff]
+    exact ⟨fun h => (gauge_eq_zero (absorbent_nhds_zero hs₀) hb).mp
+      (le_antisymm h (gauge_nonneg _)), fun h => h ▸ gauge_zero.le⟩
+  · exact setOf_gauge_le_eq_closure_smul_of_pos hc hs₀ ha
+
+omit [IsTopologicalAddGroup E] in
+theorem mem_of_gauge_lt (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) (ha : gauge s x < a) :
+    x ∈ a • s := by
+  obtain ⟨b, hb_pos, hba, hx⟩ := exists_lt_of_gauge_lt (absorbent_nhds_zero hs₀) ha
+  exact hc.smul_mono_of_zero_mem (mem_of_mem_nhds hs₀) hb_pos.le hba.le hx
+
 end TopologicalVectorSpace
 
 section RCLike
