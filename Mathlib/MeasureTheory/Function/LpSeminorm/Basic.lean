@@ -813,15 +813,13 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) (add : AESt
     eLpNorm_one_eq_lintegral_enorm hfν]
   rw [lintegral_add_measure _ μ ν]
 
-theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞}
-    (hf : AEStronglyMeasurable f (μ + ν)) :
-    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f (Measure.le_add_right <| le_refl _) hf
+theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
+    eLpNorm f p μ ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_right le_rfl]
 
-theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞}
-    (hf : AEStronglyMeasurable f (μ + ν)) :
-    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) :=
-  eLpNorm_mono_measure f (Measure.le_add_left <| le_refl _) hf
+theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
+    eLpNorm f p ν ≤ eLpNorm f p (μ + ν) := by
+  grw [← Measure.le_add_left le_rfl]
 
 variable {ε : Type*} [ENorm ε] in
 lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNormEssSup f μ = ⨆ a, ‖f a‖ₑ :=

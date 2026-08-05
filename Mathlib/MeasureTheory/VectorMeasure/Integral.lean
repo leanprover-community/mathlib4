@@ -211,7 +211,8 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       simp only [flip_apply, hB] at this
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
         div_eq_inv_mul] at this
-      exact ENNReal.coe_le_coe_of_le this
+      change ENNReal.ofNNReal _ ≤ ENNReal.ofNNReal _
+      gcongr
     grw [this, enorm_measure_le_variation, Measure.smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
