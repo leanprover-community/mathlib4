@@ -361,7 +361,7 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
     simp
 }
 
-private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
+private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' :=
   let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
     h_lin with
@@ -383,7 +383,7 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
       ⟩
     rw [← Set.range_eq_univ, ← ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq,
       (h_dense.mono h_sub).closure_eq]
-  exact LinearIsometryEquiv.ofSurjective ofOfKernel h_surj
+  LinearIsometryEquiv.ofSurjective ofOfKernel h_surj
 
 end Equiv
 
