@@ -229,13 +229,12 @@ set_option backward.isDefEq.respectTransparency false in
       (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R) (Fin m ⊕ Fin k) (Fin n) :=
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   { val := Sum.elim (.X · ⊗ₜ 1) (1 ⊗ₜ .X ·)
-    surj := sorry
-    -- σ' f := (tensorEquivSum _ _ _ _ f).map C
-    -- aeval_val_σ' s := by
-    --   change ((aeval _).restrictScalars R |>.comp (mapAlgHom (Algebra.ofId _ _)) |>.comp
-    --       (tensorEquivSum R (Fin m) (Fin k) R).toAlgHom) s = AlgHom.id R _ s
-    --   congr 1
-    --   ext <;> simp
+    surj s := by
+      use (tensorEquivSum _ _ _ _ s).map C
+      change ((aeval _).restrictScalars R |>.comp (mapAlgHom (Algebra.ofId _ _)) |>.comp
+          (tensorEquivSum R (Fin m) (Fin k) R).toAlgHom) s = AlgHom.id R _ s
+      congr 1
+      ext <;> simp
     algebra := (aeval _).toAlgebra
     algebraMap_eq := rfl
     relation i := .C (.X i) - (tensorEquivSum R (Fin m) (Fin k) R
