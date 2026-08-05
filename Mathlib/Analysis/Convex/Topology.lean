@@ -148,7 +148,10 @@ theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Co
 omit [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] in
 /-- For a convex set `s`, the open segment between affine images of points in
 `interior (A ⁻¹' s)` and `closure (A ⁻¹' s)` is contained in the affine image of
-`interior (A ⁻¹' s)`. -/
+`interior (A ⁻¹' s)`. This is the affine-map version of
+`Convex.openSegment_interior_closure_subset_interior`; taking `A` to be the identity gives that
+statement, while the assumptions on `A` are exactly used to make `A ⁻¹' s` convex and to transport
+open segments through `A`. -/
 theorem Convex.openSegment_image_interior_closure_preimage_subset {F : Type*}
     [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 F] {A : F →ᵃ[𝕜] E} {s} (hs : Convex 𝕜 s)

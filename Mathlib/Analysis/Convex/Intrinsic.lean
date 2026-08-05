@@ -449,8 +449,7 @@ variable {E : Type*} [Field 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module �
 
 open Homeomorph in
 /-- If `x ∈ intrinsicInterior 𝕜 C` and `y ∈ intrinsicClosure 𝕜 C`, then the open segment
-from `x` to `y` stays in `intrinsicInterior 𝕜 C`. This is the intrinsic-closure form;
-the ambient-closure statement is the finite-dimensional corollary below. -/
+from `x` to `y` stays in `intrinsicInterior 𝕜 C`. -/
 theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicInterior {C : Set E}
     (hC : Convex 𝕜 C) {x y : E} (hx : x ∈ intrinsicInterior 𝕜 C) (hy : y ∈ intrinsicClosure 𝕜 C) :
     openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 C := by
