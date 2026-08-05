@@ -249,10 +249,8 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
 instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
-variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
-  [Preorder R] [Zero R] [IsOrderedModule R ℝ]
-
-instance : IsOrderedSMul R (Seminorm 𝕜 E) where
+instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [Preorder R] [Zero R]
+    [IsOrderedModule R ℝ] : IsOrderedSMul R (Seminorm 𝕜 E) where
   smul_le_smul_left p q hpq c x := calc
     _ ≤ (c • (1 : ℝ≥0)) • p x := by simp
     _ ≤ _ := by grw [hpq x]; simp
