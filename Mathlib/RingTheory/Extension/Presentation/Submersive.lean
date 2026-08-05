@@ -582,8 +582,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where
   val _ := 1
-  σ' _ := 1
-  aeval_val_σ' _ := Subsingleton.elim _ _
+  surj := Function.surjective_to_subsingleton _
   relation _ := 1
   span_range_relation_eq_ker := by
     simp [Generators.ker, Extension.ker, RingHom.ker_eq_top_of_subsingleton]

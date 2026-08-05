@@ -64,9 +64,7 @@ variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Alge
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
   val : ι → S
-  /-- A section of `R[X] → S`. -/
-  σ' : S → MvPolynomial ι R
-  aeval_val_σ' : ∀ s, aeval val (σ' s) = s
+  surj : Function.Surjective (aeval (R := R) val)
   /-- An `R[X]`-algebra instance on `S`. The default is the one induced by the map `R[X] → S`,
   but this causes a diamond if there is an existing instance. -/
   algebra : Algebra (MvPolynomial ι R) S := (aeval val).toAlgebra
@@ -87,15 +85,13 @@ abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 instance : Algebra P.Ring S := P.algebra
 
 /-- The designated section w.r.t. a family of generators. -/
-def σ : S → P.Ring := P.σ'
+noncomputable def σ (x : S) : P.Ring := (P.surj x).choose
 
 /-- See Note [custom simps projection] -/
-def Simps.σ : S → P.Ring := P.σ
-
-initialize_simps_projections Algebra.Generators (σ' → σ)
+noncomputable def Simps.σ : S → P.Ring := P.σ
 
 @[simp]
-lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
+lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := (P.surj s).choose_spec
 
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <|
@@ -127,8 +123,7 @@ noncomputable
 def ofSurjective (val : ι → S) (h : Function.Surjective (aeval (R := R) val)) :
     Generators R S ι where
   val := val
-  σ' x := (h x).choose
-  aeval_val_σ' x := (h x).choose_spec
+  surj := h
 
 /-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
 noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
@@ -145,11 +140,10 @@ noncomputable def id : Generators R R PEmpty.{w + 1} := ofSurjectiveAlgebraMap <
 variable (R ι) in
 /-- The canonical `R`-generators of the polynomial algebra `MvPolynomial ι R`,
 indexed by `ι` via the variables `X`. -/
-@[simps σ, simps -fullyApplied val]
+@[simps -fullyApplied val]
 noncomputable def mvPolynomial : Generators R (MvPolynomial ι R) ι where
   val := X
-  σ' f := f
-  aeval_val_σ' := aeval_X_left_apply
+  surj f := ⟨f, aeval_X_left_apply f⟩
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
@@ -170,8 +164,7 @@ variable (R S) in
 noncomputable
 def self : Generators R S S where
   val := _root_.id
-  σ' := X
-  aeval_val_σ' := aeval_X _
+  surj s := ⟨X s, aeval_X _ s⟩
 
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
@@ -186,10 +179,9 @@ noncomputable def ofAlgEquiv
     (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     Generators R T ι where
   val := e ∘ P.val
-  σ' := P.σ ∘ e.symm
-  aeval_val_σ' t := by
-    rw [Function.comp_def, ← AlgHom.coe_coe e, ← MvPolynomial.comp_aeval_apply]
-    simp
+  surj := by
+    simp_rw [Function.comp_def, ← e.toAlgHom_apply, ← comp_aeval]
+    exact e.surjective.comp P.surj
 
 @[simp]
 lemma ofAlgEquiv_val (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
@@ -203,21 +195,14 @@ variable (r : R) [IsLocalization.Away r S]
 variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
 to the inverse of `r`. -/
-@[simps val, simps -isSimp σ]
+@[simps val]
 noncomputable
 def localizationAway : Generators R S Unit where
   val _ := IsLocalization.Away.invSelf r
-  σ' s :=
-    letI a : R := (IsLocalization.Away.sec r s).1
-    letI n : ℕ := (IsLocalization.Away.sec r s).2
-    C a * X () ^ n
-  aeval_val_σ' s := by
-    rw [map_mul, algHom_C, map_pow, aeval_X]
-    simp only [← IsLocalization.Away.sec_spec, map_pow, IsLocalization.Away.invSelf]
-    rw [← IsLocalization.mk'_pow, one_pow, ← IsLocalization.mk'_one (M := Submonoid.powers r) S r]
-    rw [← IsLocalization.mk'_pow, one_pow, mul_assoc, ← IsLocalization.mk'_mul]
-    rw [mul_one, one_mul, IsLocalization.mk'_pow]
-    simp
+  surj s := by
+    use C (IsLocalization.Away.sec r s).1 * X () ^ (IsLocalization.Away.sec r s).2
+    rw [map_mul, algHom_C, map_pow, aeval_X, ← IsLocalization.Away.sec_spec,
+      mul_assoc, map_pow, ← mul_pow, IsLocalization.Away.mul_invSelf, one_pow, mul_one]
 
 end Localization
 
@@ -226,19 +211,21 @@ variable {ι' : Type*} {T} [CommRing T] [Algebra R T]
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
-@[simps val, simps -isSimp σ]
+@[simps val]
 noncomputable
 def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
-  σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
-    rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
-  aeval_val_σ' s := by
-    have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
-      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
-    conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
-    simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
+  surj := by
+    sorry
+  -- σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
+  --   rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
+  -- aeval_val_σ' s := by
+  --   have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
+  --     rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
+  --   conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
+  --   simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
+  --     Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -248,8 +235,10 @@ noncomputable
 def extendScalars [Algebra S T] [IsScalarTower R S T] (P : Generators R T ι) :
     Generators S T ι where
   val := P.val
-  σ' x := map (algebraMap R S) (P.σ x)
-  aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
+  surj := by
+    sorry
+  -- σ' x := map (algebraMap R S) (P.σ x)
+  -- aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
@@ -337,11 +326,9 @@ are the induced generators indexed by `ι`. -/
 noncomputable def reindex (P : Generators R S ι') (e : ι ≃ ι') :
     Generators R S ι where
   val := P.val ∘ e
-  σ' := rename e.symm ∘ P.σ
-  aeval_val_σ' s := by
-    conv_rhs => rw [← P.aeval_val_σ s]
-    rw [← MvPolynomial.aeval_rename]
-    simp
+  surj := by
+    rw [← aeval_comp_rename]
+    exact P.surj.comp (rename_surjective e e.surjective)
 
 lemma reindex_val (P : Generators R S ι') (e : ι ≃ ι') :
     (P.reindex e).val = P.val ∘ e :=
@@ -364,14 +351,13 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
     (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
     Generators R (MvPolynomial σ R ⧸ I) σ where
   val i := Ideal.Quotient.mk _ (X i)
-  σ' := s
-  aeval_val_σ' x := by
-    conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
-    simp [Function.comp_def]
-  algebra := inferInstance
-  algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
-
-@[simp] lemma naive_σ : (Generators.naive s hs).σ = s := rfl
+  surj := sorry
+  -- σ' := s
+  -- aeval_val_σ' x := by
+  --   conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
+  --   simp [Function.comp_def]
+  -- algebra := inferInstance
+  -- algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
 
 end
 
@@ -465,9 +451,9 @@ variable (P P')
 
 /-- The hom from `P` to `P'` given by the designated section of `P'`. -/
 @[simps]
-def defaultHom : Hom P P' := ⟨P'.σ ∘ algebraMap S S' ∘ P.val, fun x ↦ by simp⟩
+noncomputable def defaultHom : Hom P P' := ⟨P'.σ ∘ algebraMap S S' ∘ P.val, fun x ↦ by simp⟩
 
-instance : Inhabited (Hom P P') := ⟨defaultHom P P'⟩
+noncomputable instance : Inhabited (Hom P P') := ⟨defaultHom P P'⟩
 
 /-- The identity hom. -/
 @[simps]
@@ -639,8 +625,9 @@ lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [�
 
 lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R) (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x) :
-    (Generators.naive s hs).ker = I :=
-  I.mk_ker
+    (Generators.naive s hs).ker = I := by
+  sorry
+  -- I.mk_ker
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

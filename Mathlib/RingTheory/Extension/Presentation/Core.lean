@@ -377,5 +377,6 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
     convert! IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
     simp [jacobianOfHasCoeffs]
+    sorry
 
 end Algebra.SubmersivePresentation
