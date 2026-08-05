@@ -65,9 +65,8 @@ theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) 
 /-- The generating family obtained using a generating set `S : Set G`. -/
 def ofSet {S : Set G} (h : Subgroup.closure S = ⊤) :
     Group.Generators G S where
-  val :=  Subtype.val
-  closure_eq_top := by
-    rwa [Subtype.range_coe]
+  val := Subtype.val
+  closure_eq_top := by rwa [Subtype.range_coe]
 
 @[simp]
 lemma ofSet_val {S : Set G} (hS : Subgroup.closure S = ⊤) :
