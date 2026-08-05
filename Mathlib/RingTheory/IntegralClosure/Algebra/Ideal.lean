@@ -73,7 +73,6 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :
     ∃ p : R[X], p.Monic ∧ aeval x p = 0 ∧ ∀ i, p.coeff i ∈ I ^ (p.natDegree - i) := by
-  classical
   let A : Subalgebra R R[X] := Algebra.adjoin R { C r * X | r ∈ I }
   let := Polynomial.algebra R S
   refine exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral ?_

@@ -103,6 +103,7 @@ theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R J :=
   Ideal.span_mono (Set.monotone_image h)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R⁰)
     {Rₘ : Type*} (Sₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
@@ -351,8 +352,7 @@ variable {R} (S)
 
 attribute [local instance] Localization.AtPrime.liftAlgebra in
 theorem relNorm_algebraMap (I : Ideal R) :
-    relNorm R (I.map (algebraMap R S)) =
-      I ^ Module.finrank (FractionRing R) (FractionRing S) := by
+    relNorm R (I.map (algebraMap R S)) = I ^ finrank R S := by
   rw [← spanNorm_eq]
   refine eq_of_localization_maximal (fun P hPd ↦ ?_)
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
@@ -365,14 +365,15 @@ theorem relNorm_algebraMap (I : Ideal R) :
   congr 2
   apply IsFractionRing.injective Rₚ K
   rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
-    IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow]
+    IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow,
+    IsFractionRing.finrank_eq R (FractionRing R) S (FractionRing S)]
 
 variable (R)
 
 /-- A version of `relNorm_algebraMap` involving a tower of algebras `S/R/R'`. -/
 theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
-    [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
-      I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+    [Algebra R' S] [IsScalarTower R' R S] :
+    relNorm R (I.map (algebraMap R' S)) = I.map (algebraMap R' R) ^ finrank R S := by
   rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
 
 section relNorm_prime
@@ -424,7 +425,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   have h := (congr_arg (relNorm R ·) <|
     map_algebraMap_eq_finsetProd_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
-  rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
+  rwa [← IsGaloisGroup.card_eq_finrank' G R S,
     ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
@@ -477,8 +478,7 @@ theorem relNorm_int (I : Ideal S) :
   rw [← Int.ideal_span_absNorm_eq_self (relNorm ℤ I), absNorm_relNorm]
 
 theorem absNorm_algebraMap (I : Ideal R) [Module.Finite ℤ R] :
-    absNorm (I.map (algebraMap R S)) =
-      (absNorm I) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+    absNorm (I.map (algebraMap R S)) = absNorm I ^ finrank R S := by
   rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ R, relNorm_algebraMap, absNorm_relNorm, map_pow]
 
 end absNorm

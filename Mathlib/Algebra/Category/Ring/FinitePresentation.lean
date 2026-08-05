@@ -139,6 +139,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     rw [c.w, hg']
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
 lemma CommRingCat.preservesColimit_coyoneda_of_finitePresentation
@@ -161,27 +162,17 @@ lemma CommRingCat.preservesColimit_coyoneda_of_finitePresentation
       f₁.right (Under.w f₁) f₂.right (Under.w f₂) congr($(e).right)
     exact ⟨k, hik, hjk, Under.UnderMorphism.ext e⟩
 
-@[deprecated (since := "2025-12-19")]
-alias preservesColimit_coyoneda_of_finitePresentation :=
-  CommRingCat.preservesColimit_coyoneda_of_finitePresentation
-
 /-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
 lemma CommRingCat.preservesFilteredColimits_coyoneda (S : Under R)
     (hS : S.hom.hom.FinitePresentation) :
     PreservesFilteredColimits (coyoneda.obj (.op S)) :=
   ⟨fun _ _ _ ↦ ⟨preservesColimit_coyoneda_of_finitePresentation R S hS _⟩⟩
 
-@[deprecated (since := "2025-12-19")]
-alias preservesFilteredColimits_coyoneda := CommRingCat.preservesFilteredColimits_coyoneda
-
 /-- If `S` is a finitely presented `R`-algebra, `S : Under R` is finitely presentable. -/
 lemma CommRingCat.isFinitelyPresentable_under (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     IsFinitelyPresentable.{u} S := by
   rw [isFinitelyPresentable_iff_preservesFilteredColimits]
   exact preservesFilteredColimits_coyoneda R S hS
-
-@[deprecated (since := "2025-12-19")]
-alias isFinitelyPresentable := CommRingCat.isFinitelyPresentable_under
 
 variable {R} in
 lemma CommRingCat.isFinitelyPresentable_hom {S : CommRingCat.{u}} (f : R ⟶ S)

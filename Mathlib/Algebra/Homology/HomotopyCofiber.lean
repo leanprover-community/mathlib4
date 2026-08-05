@@ -256,7 +256,7 @@ end homotopyCofiber
 
 /-- The homotopy cofiber of a morphism of homological complexes,
 also known as the mapping cone. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homotopyCofiber : HomologicalComplex C c where
   X i := homotopyCofiber.X φ i
   d i j := homotopyCofiber.d φ i j
@@ -340,6 +340,7 @@ lemma desc_f' (j : ι) (hj : ¬ c.Rel j (c.next j)) :
     (desc φ α hα).f j = sndX φ j ≫ α.f j := by
   apply dif_neg hj
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma inlX_desc_f (i j : ι) (hjk : c.Rel j i) :
     inlX φ i j hjk ≫ (desc φ α hα).f j = hα.hom i j := by

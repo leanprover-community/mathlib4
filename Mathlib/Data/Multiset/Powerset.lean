@@ -300,6 +300,7 @@ theorem powersetCard_self (s : Multiset α) : powersetCard s.card s = {s} := by
   | empty => simp
   | cons _ _ ih => simp [ih]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
   induction s using Multiset.induction generalizing n with

@@ -97,6 +97,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
   · exact le_max_of_le_right (le_trans hy (norm_repr_le_norm B ixy))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is,
   `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))

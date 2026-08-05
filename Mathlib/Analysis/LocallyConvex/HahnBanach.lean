@@ -100,6 +100,7 @@ theorem StrongDual.exists_extension {𝕜} [NontriviallyNormedField 𝕜] [IsRCL
 variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F] [T2Space F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Corollary of the polynormable **Hahn-Banach theorem**: if `f : S → F` is a continuous
 linear map with finite-dimensional range, then `f` extends to a continuous linear map on the whole
 space. -/

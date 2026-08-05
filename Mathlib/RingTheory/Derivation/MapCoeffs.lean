@@ -52,6 +52,7 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
 @[simp]
 lemma mapCoeffs_apply (p : A[X]) (i) : (d.mapCoeffs p).coeff i = d (coeff p i) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
     d.mapCoeffs (monomial n x) = .single A n (d x) := by
@@ -80,6 +81,7 @@ theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
       _root_.map_natCast, h]
     rw [add_comm, ← smul_smul, ← smul_smul, Nat.cast_smul_eq_nsmul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
     (x : B) (p : A[X]) :
     d (aeval x p) =
@@ -109,6 +111,7 @@ def mapCoeffs : Derivation ℤ A[X] A[X] :=
 lemma coeff_mapCoeffs (p : A[X]) (i) :
     coeff (mapCoeffs p) i = (coeff p i)′ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
     mapCoeffs (monomial n x) = monomial n x′ := by
@@ -124,6 +127,7 @@ lemma mapCoeffs_C (x : A) :
 
 variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
   convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..

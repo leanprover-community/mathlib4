@@ -718,7 +718,6 @@ lemma leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
   map_dvd leadingCoeffHom hap
 
 lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · simp
   · rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]

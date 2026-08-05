@@ -149,12 +149,12 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     ∃ z : ℤ, z * t = 1 := by
-  classical
   obtain ⟨j, hj⟩ := ht
   obtain ⟨f, hf⟩ : ∃ f : b.support → ℤ, P.coroot i = ∑ i, (t * f i) • P.coroot i := by
     have : P.coroot j ∈ span ℤ (P.coroot '' b.support) := b.coroot_mem_span_int j

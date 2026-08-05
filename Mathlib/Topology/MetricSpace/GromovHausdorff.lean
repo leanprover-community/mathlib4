@@ -226,7 +226,7 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
     rw [eq_toGHSpace_iff]
     exact ⟨fun x => F (Ψ' x), (kuratowskiEmbedding.isometry _).comp IΨ', range_comp _ _⟩
   refine csInf_le ⟨0, ?_⟩ ?_
-  · simp only [lowerBounds, mem_image, mem_prod, mem_setOf_eq, Prod.exists, and_imp,
+  · simp only [lowerBounds, mem_image, mem_prod, mem_ofPred_eq, Prod.exists, and_imp,
       forall_exists_index]
     intro t _ _ _ _ ht
     rw [← ht]
@@ -289,7 +289,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
       simp only [F, candidates, forall_const,
-        dist_eq_zero, Set.mem_setOf_eq]
+        dist_eq_zero, Set.mem_ofPred_eq]
       repeat' constructor
       · exact fun x y =>
           calc
@@ -398,7 +398,7 @@ instance : MetricSpace GHSpace where
     refine le_antisymm ?_ ?_
     · apply csInf_le
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
-      · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
+      · simp only [mem_image, mem_prod, mem_ofPred_eq, Prod.exists]
         exists y, y
         simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true]
     · apply le_csInf
@@ -612,6 +612,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
 
 end --section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gromov-Hausdorff space is second countable. -/
 instance : SecondCountableTopology GHSpace := by
   refine secondCountable_of_countable_discretization fun δ δpos => ?_

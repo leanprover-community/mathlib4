@@ -175,6 +175,7 @@ lemma exists_mem_of_isClosed_of_nonempty'
 
 section Opens
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Let `{ Dᵢ }` be a cofiltered diagram of compact schemes with affine transition maps.
 If `U ⊆ Dⱼ` contains the image of `limᵢ Dᵢ ⟶ Dⱼ`, then it contains the image of some `Dₖ ⟶ Dⱼ`. -/
@@ -195,6 +196,7 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
@@ -356,6 +358,7 @@ lemma exists_preimage_eq
 
 end Opens
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hc in
 lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
     IsAffineHom (c.π.app i) where
@@ -1053,6 +1056,7 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
   exact ⟨j, ⟨isIso_of_isOpenImmersion_of_opensRange_eq_top _
     ((preimage_opensRange_toSpecΓ (D.map fij)).symm.trans hj)⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 include hc in
 @[stacks 01Z4 "(1)"]
@@ -1061,7 +1065,6 @@ lemma exists_isAffineOpen_preimage_eq
     [∀ i, QuasiSeparatedSpace (D.obj i)]
     (U : c.pt.Opens) (hU : IsAffineOpen U) :
     ∃ (i : I) (V : (D.obj i).Opens), IsAffineOpen V ∧ c.π.app i ⁻¹ᵁ V = U := by
-  classical
   obtain ⟨i, U, hU', rfl⟩ := exists_preimage_eq D c hc U hU.isCompact
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
     isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.2 hU')
@@ -1106,7 +1109,6 @@ lemma Scheme.exists_isOpenCover_and_isAffine [IsCofiltered I]
     {J : Type*} (U : J → c.pt.Opens) (hU : IsOpenCover U) (hU' : ∀ i, IsAffineOpen (U i)) :
     ∃ (i : I) (s : Finset J) (V : s → (D.obj i).Opens),
       IsOpenCover V ∧ ∀ j, IsAffineOpen (V j) ∧ U j = c.π.app i ⁻¹ᵁ (V j) := by
-  classical
   have := compactSpace_of_isLimit D c hc
   obtain ⟨s, hs⟩ := isCompact_univ.elim_finite_subcover _
     (fun i ↦ (U i).isOpen) hU.iSup_set_eq_univ.ge
@@ -1233,7 +1235,6 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
-  classical
   -- The open cover of `c := lim Dᵢ` indexed by triplets of affine opens `(U, V, W)` with
   -- `U ⊆ c`, `V ⊆ X`, `W ⊆ S` such that `U` maps to `V` maps to `W`.
   have 𝒰 := (c.pt.isBasis_affineOpens).isOpenCover_mem_and_le
