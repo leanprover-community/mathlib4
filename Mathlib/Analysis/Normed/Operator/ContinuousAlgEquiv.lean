@@ -34,6 +34,7 @@ variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGro
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
 public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
@@ -151,6 +152,7 @@ end auxiliaryDefs
 
 open ComplexOrder
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 
@@ -162,7 +164,8 @@ public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
   -- Assume nontriviality of `V`.
   by_cases! Subsingleton V
   · by_cases! Subsingleton W
-    · use { toLinearEquiv := 0, norm_map' _ := by simp [Subsingleton.eq_zero] }
+    · use { toLinearEquiv := 0,
+            norm_map' _ := by simp [Subsingleton.eq_zero (α := V), Subsingleton.eq_zero (α := W)] }
       exact ext fun _ ↦ Subsingleton.allEq _ _
     simpa using congr(f $(Subsingleton.allEq 0 1))
   /- By `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`,

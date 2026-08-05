@@ -25,7 +25,7 @@ matrices built out of blocks.
 
 * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
   is equal to the product of the determinants of all the blocks
-* `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
+* `Matrix.det_of_isUpperTriangular` and `Matrix.det_of_isLowerTriangular`: the determinant of
   a triangular matrix is the product of the entries along the diagonal
 
 ## Tags
@@ -61,6 +61,14 @@ variable [Zero R]
 def BlockTriangular (M : Matrix m m R) (b : m → α) : Prop :=
   ∀ ⦃i j⦄, b j < b i → M i j = 0
 
+/-- `M` is upper triangular: entries below the diagonal vanish. -/
+abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop :=
+  M.BlockTriangular id
+
+/-- `M` is lower triangular: entries above the diagonal vanish. -/
+abbrev IsLowerTriangular [LT m] (M : Matrix m m R) : Prop :=
+  M.BlockTriangular toDual
+
 @[simp]
 protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular b) :
     (M.submatrix f f).BlockTriangular (b ∘ f) := fun _ _ hij => h hij
@@ -84,6 +92,11 @@ protected theorem blockTriangular_transpose_iff {b : m → αᵒᵈ} :
 
 @[simp]
 theorem blockTriangular_zero : BlockTriangular (0 : Matrix m m R) b := fun _ _ _ => rfl
+
+instance decidableBlockTriangular [DecidableEq R] [Fintype m] [DecidableLT α] :
+    Decidable (M.BlockTriangular b) :=
+  decidable_of_iff (∀ ij : m × m, b ij.2 < b ij.1 → M ij.1 ij.2 = 0)
+    ⟨fun h i j hij => h (i, j) hij, fun h _ hij => h hij⟩
 
 end Zero
 
@@ -321,15 +334,19 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 
-theorem det_of_upperTriangular [LinearOrder m] (h : M.BlockTriangular id) :
+theorem det_of_isUpperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by
-  haveI : DecidableEq R := Classical.decEq _
+  have : DecidableEq R := Classical.decEq _
   simp_rw [h.det, image_id, det_toSquareBlock_id]
 
-theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTriangular toDual) :
+@[deprecated (since := "2026-07-30")] alias det_of_upperTriangular := det_of_isUpperTriangular
+
+theorem det_of_isLowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.IsLowerTriangular) :
     M.det = ∏ i : m, M i i := by
   rw [← det_transpose]
-  exact det_of_upperTriangular h.transpose
+  exact det_of_isUpperTriangular h.transpose
+
+@[deprecated (since := "2026-07-30")] alias det_of_lowerTriangular := det_of_isLowerTriangular
 
 open Polynomial
 
@@ -342,7 +359,7 @@ theorem matrixOfPolynomials_blockTriangular {R} [Semiring R] {n : ℕ} (p : Fin 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+  rw [Matrix.det_of_isUpperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
       Nat.le_of_eq (h_deg i)))]
   convert! prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
@@ -375,7 +392,7 @@ theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockT
   inv_eq_left_inv <| hM.toBlock_inverse_mul_toBlock_eq_one k
 
 /-- An upper-left subblock of an invertible block-triangular matrix is invertible. -/
-@[implicit_reducible]
+@[instance_reducible]
 def BlockTriangular.invertibleToBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) : Invertible (M.toBlock (fun i => b i < k) fun i => b i < k) :=
   invertibleOfLeftInverse _ ((⅟M).toBlock (fun i => b i < k) fun i => b i < k) <| by
@@ -395,7 +412,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     ext i j
     simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_gt i.2)
   have h_mul_eq_zero : M⁻¹.toBlock q p * M.toBlock p p = 0 := by simpa [h_zero] using h_sum
-  haveI : Invertible (M.toBlock p p) := hM.invertibleToBlock k
+  have : Invertible (M.toBlock p p) := hM.invertibleToBlock k
   have : (fun i => k ≤ b i) = q := by
     ext
     exact not_lt.symm
@@ -410,7 +427,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   induction s using Finset.strongInduction generalizing m with | H s ih =>
   subst hs
   intro i j hij
-  haveI : Inhabited m := ⟨i⟩
+  have : Inhabited m := ⟨i⟩
   let k := (univ.image b).max' (univ_nonempty.image _)
   let b' := fun i : { a // b a < k } => b ↑i
   let A := M.toBlock (fun i => b i < k) fun j => b j < k
@@ -418,7 +435,7 @@ theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
   · have : M⁻¹.toBlock (fun i => k ≤ b i) (fun i => b i < k) ⟨i, hbi.ge⟩ ⟨j, hbi ▸ hij⟩ = 0 := by
       simp only [toBlock_inverse_eq_zero hM k, Matrix.zero_apply]
     simp [this.symm]
-  haveI : Invertible A := hM.invertibleToBlock _
+  have : Invertible A := hM.invertibleToBlock _
   have hA : A.BlockTriangular b' := hM.submatrix
   have hb' : image b' univ ⊂ image b univ := by
     convert! image_subtype_univ_ssubset_image_univ k b _ (fun a => a < k) (lt_irrefl _)

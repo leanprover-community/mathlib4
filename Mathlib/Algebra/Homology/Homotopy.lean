@@ -483,6 +483,7 @@ def mkInductiveAux₁ :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkInductiveAux₂ :
@@ -493,23 +494,27 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using! I.2.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkInductiveAux₁ e zero one comm_one succ n
       ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using! I.2.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
       (P.xNextIso h).inv ≫ (mkInductiveAux₂ e zero comm_zero one comm_one succ j).1 := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkInductiveAux₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
 working by induction.
@@ -613,6 +618,7 @@ def mkCoinductiveAux₁ :
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary construction for `mkInductive`.
 -/
 def mkCoinductiveAux₂ :
@@ -622,23 +628,27 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using! I.2.2⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
       ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
       letI I := mkCoinductiveAux₁ e zero one comm_one succ n
       ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using! I.2.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
       (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).1 ≫ (Q.xPrevIso h).hom := by
   subst j
   rcases i with (_ | _ | i) <;> simp [mkCoinductiveAux₂]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
 working by induction.
@@ -704,9 +714,12 @@ def HomologicalComplex.homotopyEquivalences :
 
 namespace HomotopyEquiv
 
+variable {C D E : HomologicalComplex V c}
+
+variable (C) in
 /-- Any complex is homotopy equivalent to itself. -/
-@[refl]
-def refl (C : HomologicalComplex V c) : HomotopyEquiv C C where
+@[refl, simps]
+def refl : HomotopyEquiv C C where
   hom := 𝟙 C
   inv := 𝟙 C
   homotopyHomInvId := Homotopy.ofEq (by simp)
@@ -716,16 +729,16 @@ instance : Inhabited (HomotopyEquiv C C) :=
   ⟨refl C⟩
 
 /-- Being homotopy equivalent is a symmetric relation. -/
-@[symm]
-def symm {C D : HomologicalComplex V c} (f : HomotopyEquiv C D) : HomotopyEquiv D C where
+@[symm, simps]
+def symm (f : HomotopyEquiv C D) : HomotopyEquiv D C where
   hom := f.inv
   inv := f.hom
   homotopyHomInvId := f.homotopyInvHomId
   homotopyInvHomId := f.homotopyHomInvId
 
 /-- Homotopy equivalence is a transitive relation. -/
-@[trans]
-def trans {C D E : HomologicalComplex V c} (f : HomotopyEquiv C D) (g : HomotopyEquiv D E) :
+@[trans, simps]
+def trans (f : HomotopyEquiv C D) (g : HomotopyEquiv D E) :
     HomotopyEquiv C E where
   hom := f.hom ≫ g.hom
   inv := g.inv ≫ f.inv
@@ -739,7 +752,58 @@ def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : Comple
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
   ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
 
+lemma homotopyEquivalences_hom (f : HomotopyEquiv C D) :
+    homotopyEquivalences _ _ f.hom := ⟨f, rfl⟩
+
+lemma homotopyEquivalences_inv (f : HomotopyEquiv C D) :
+    homotopyEquivalences _ _ f.inv := f.symm.homotopyEquivalences_hom
+
+/-- If `f` if a homotopy equivalence and `h` is a homotopy from `f.hom` to
+a morphism `g`, then this is a homotopy equivalence whose `hom` field is `g`. -/
+@[simps hom inv]
+def copy (f : HomotopyEquiv C D) {g : C ⟶ D} (h : Homotopy f.hom g) :
+    HomotopyEquiv C D where
+  hom := g
+  inv := f.inv
+  homotopyHomInvId := (h.symm.compRight _).trans f.homotopyHomInvId
+  homotopyInvHomId := (h.symm.compLeft _).trans f.homotopyInvHomId
+
 end HomotopyEquiv
+
+namespace HomologicalComplex
+
+lemma homotopyEquivalences.of_isIso (f : C ⟶ D) [IsIso f] : homotopyEquivalences _ _ f :=
+  ⟨.ofIso (asIso f), rfl⟩
+
+lemma homotopyEquivalences.of_homotopy {f g : C ⟶ D} (h : homotopyEquivalences _ _ f)
+    (hfg : Homotopy f g) :
+    homotopyEquivalences _ _ g := by
+  obtain ⟨e, rfl⟩ := h
+  exact ⟨e.copy hfg, by simp⟩
+
+instance : (homotopyEquivalences V c).IsMultiplicative where
+  id_mem K := ⟨.refl _, rfl⟩
+  comp_mem f g := by
+    rintro ⟨f, rfl⟩ ⟨g, rfl⟩
+    exact ⟨f.trans g, rfl⟩
+
+instance : (homotopyEquivalences V c).HasTwoOutOfThreeProperty where
+  of_postcomp f _ := by
+    rintro ⟨g, rfl⟩ ⟨e, he⟩
+    refine (e.trans g.symm).homotopyEquivalences_hom.of_homotopy ?_
+    simp only [HomotopyEquiv.trans_hom, HomotopyEquiv.symm_hom, he, Category.assoc]
+    exact g.homotopyHomInvId.compLeftId f
+  of_precomp _ g := by
+    rintro ⟨f, rfl⟩ ⟨e, he⟩
+    refine (f.symm.trans e).homotopyEquivalences_hom.of_homotopy ?_
+    simp only [HomotopyEquiv.trans_hom, HomotopyEquiv.symm_hom, he, ← Category.assoc]
+    exact f.homotopyInvHomId.compRightId g
+
+instance : (homotopyEquivalences V c).RespectsIso :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition
+    (fun _ _ _ _ ↦ .of_isIso _)
+
+end HomologicalComplex
 
 end
 

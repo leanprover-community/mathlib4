@@ -71,6 +71,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : MorphismProperty.Respects @Flat @IsOpenImmersion where
   postcomp _ _ _ _ := inferInstance
 
@@ -80,12 +81,15 @@ instance : MorphismProperty.IsMultiplicative @Flat where
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Flat :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.Flat.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [Flat g] : Flat (pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [Flat f] : Flat (pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Y) (V : Y.Opens) [Flat f] : Flat (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
@@ -102,6 +106,7 @@ lemma stalkMap [Flat f] (x : X) : (f.stalkMap x).hom.Flat :=
 lemma iff_flat_stalkMap : Flat f ↔ ∀ x, (f.stalkMap x).hom.Flat :=
   ⟨fun _ ↦ stalkMap f, fun H ↦ of_stalkMap f H⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
     [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
   IsZariskiLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
@@ -146,6 +151,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
   · apply RingHom.Flat.generalizingMap_comap
     rwa [← HasRingHomProperty.Spec_iff (P := @Flat)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
 @[stacks 02VW]
 lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
@@ -160,6 +166,7 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
     Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
   rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective,
@@ -433,7 +440,6 @@ lemma isIso_pushoutSection_of_iSup_eq
 lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT) (hUX : IsCompact (X := X) UX) :
     Mono (pushoutSection H hUST hUSX hUY) := by
-  classical
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have := hI.to_subtype
   exact mono_pushoutSection_of_iSup_eq (ι := I) H hUST hUSX hUY (·) (by rwa [iSup_subtype, eq_comm])
@@ -452,7 +458,6 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
     (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
     (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX) :
     IsIso (pushoutSection H hUST hUSX hUY) := by
-  classical
   obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
   have hIUX (i : I) : i.1 ≤ UX := by rw [e]; intro i; aesop
   have := hI.to_subtype

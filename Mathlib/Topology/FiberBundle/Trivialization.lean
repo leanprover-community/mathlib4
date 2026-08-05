@@ -132,7 +132,7 @@ theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
 
 /-- Composition of inverse and coercion from the subtype of the target. -/
 def setSymm : e.target → Z :=
-  e.target.restrict e.toPartialEquiv.symm
+  e.target.domRestrict e.toPartialEquiv.symm
 
 theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
@@ -880,6 +880,7 @@ theorem frontier_preimage (e : Trivialization F proj) (s : Set B) :
   rw [← (e.isImage_preimage_prod s).frontier.preimage_eq, frontier_prod_univ_eq,
     (e.isImage_preimage_prod _).preimage_eq, e.source_eq, preimage_inter]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given two bundle trivializations `e`, `e'` of `proj : Z → B` and a set `s : Set B` such that
 the base sets of `e` and `e'` intersect `frontier s` on the same set and `e p = e' p` whenever
