@@ -720,8 +720,8 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 @[to_additive]
-theorem closure_range_eq_top_iff_lift_surjective :
-    Subgroup.closure (Set.range f) = ⊤ ↔ Function.Surjective (lift f) := by
+theorem lift_surjective_iff_closure_range_eq_top :
+    Function.Surjective (lift f) ↔ Subgroup.closure (Set.range f) = ⊤ := by
   rw [← MonoidHom.range_eq_top, range_lift_eq_closure]
 
 @[to_additive]
