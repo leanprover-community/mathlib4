@@ -359,14 +359,14 @@ theorem Set.EqOn.restr_eqOn_source {e e' : OpenPartialHomeomorph X Y}
     refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
 
 theorem restr_eqOnSource_of_eqOn {e e' : OpenPartialHomeomorph X Y} {s : Set X}
-    (heq : (e.source ∩ interior s).EqOn e e') (hsub : e.source ∩ interior s ⊆ e'.source) :
+    (heq : EqOn e e' (e.source ∩ interior s)) (hsub : e.source ∩ interior s ⊆ e'.source) :
     e.restr s ≈ e'.restr (e.source ∩ interior s) := by
   refine ⟨?_, fun z hz ↦ heq (e.restr_source s ▸ hz)⟩
   rw [e.restr_source s, e'.restr_source' _ (e.open_source.inter isOpen_interior),
     inter_eq_right.mpr hsub]
 
 theorem restr_eqOnSource_of_eqOn' {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
-    (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
+    (heq : EqOn e e' s) (hsub : e.source ∩ s ⊆ e'.source) :
     e.restr s ≈ e'.restr (e.source ∩ s) :=
   (hs.interior_eq ▸ restr_eqOnSource_of_eqOn) (heq.mono Set.inter_subset_right) hsub
 

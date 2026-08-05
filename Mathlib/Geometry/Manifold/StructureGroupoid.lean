@@ -386,7 +386,7 @@ theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestrictio
 
 lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid H} [ClosedUnderRestriction G]
     {e e' : OpenPartialHomeomorph H H} (he' : e' ∈ G) {s : Set H} (hs : IsOpen s)
-    (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) : e.restr s ∈ G :=
+    (heq : EqOn e e' s) (hsub : e.source ∩ s ⊆ e'.source) : e.restr s ∈ G :=
   G.mem_of_eqOnSource (closedUnderRestriction' he' (e.open_source.inter hs))
     (e.restr_eqOnSource_of_eqOn' hs heq hsub)
 
