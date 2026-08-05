@@ -40,13 +40,12 @@ protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) : NormedCo
   { NormedCommGroup.induced _ _ e.mulEquiv e.injective
     with toPseudoMetricSpace := e.pseudometricSpace }
 
+end Equiv
+
 /-- Transfer `NormedSpace` across an `Equiv` -/
-protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
-    [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
-    letI := Equiv.seminormedAddCommGroup e
+protected abbrev AddEquiv.normedSpace (𝕜 : Type*) [NormedField 𝕜]
+    [AddCommGroup α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃+ β) :
+    letI : SeminormedAddCommGroup α := .induced _ _ e
     NormedSpace 𝕜 α :=
-  letI := e.seminormedAddCommGroup
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
-
-end Equiv

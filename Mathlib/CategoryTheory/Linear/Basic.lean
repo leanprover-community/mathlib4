@@ -98,7 +98,7 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  homModule X Y := AddEquiv.module _ InducedCategory.homAddEquiv
   smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
   comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
 

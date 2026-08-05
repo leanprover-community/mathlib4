@@ -464,7 +464,7 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
       rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1 := by
   simp only [Presentation.comp, Sum.elim_inl, Presentation.compRelationAux,
     Presentation.localizationAway_relation, sub_eq_add_neg, C_mul_X_eq_monomial,
-    ← map_one C, ← map_neg C]
+    ← map_one C, ← map_neg C, AddMonoidAlgebra.coeff_add]
   refine (Finsupp.sum_single_add_single (Finsupp.single () 1) 0 g (-1 : S) _ ?_ ?_).trans ?_
   · simp
   · simp [h0]
