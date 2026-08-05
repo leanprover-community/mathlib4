@@ -34,7 +34,7 @@ is denoted `∫ʳ x in a..b, f x`.
 
 * `interval hab`: the one-dimensional interval `(a, b]` as a `Box (Fin 1)`, given a proof of
   `hab : a < b`.
-* `BoxAdditiveMap.ofDiff g`: the box-additive map on `Box (Fin 1)` defined by
+* `BoxAdditiveMap.increment g`: the box-additive map on `Box (Fin 1)` defined by
   `J ↦ g J.upper₁ - g J.lower₁`, where `g : ℝ → M` is a function to an additive commutative
   group `M`.
 * `BoxIntegral.StieltjesIntegrable a b B f g`: the predicate that the integral
@@ -117,19 +117,19 @@ lemma Icc_interval (hab : a < b) : Box.Icc (interval hab) = {x | x 0 ∈ Set.Icc
 
 end Interval
 
-section ofDiff
+section increment
 
 namespace BoxAdditiveMap
 
 open Function Set Box Prepartition Finset
 
-/-! ## The differential `ofDiff` of a function on `ℝ` -/
+/-! ## The increment of a function on `ℝ` as a box-additive map -/
 
 variable {M : Type*} [AddCommGroup M]
 
-/-- Underlying construction for `ofDiff`: sends `g : ℝ → M` to the box-additive map on
+/-- Underlying construction for `increment`: sends `g : ℝ → M` to the box-additive map on
 `Box (Fin 1)` defined by `J ↦ g J.upper₁ - g J.lower₁`. -/
-def ofDiffAux (g : ℝ → M) : (Fin 1) →ᵇᵃ M :=
+def incrementAux (g : ℝ → M) : (Fin 1) →ᵇᵃ M :=
   ofMapSplitAdd (fun J : Box (Fin 1) ↦ g J.upper₁ - g J.lower₁) ⊤
     (fun _ _ i x hx ↦ by
       fin_cases i
@@ -137,40 +137,45 @@ def ofDiffAux (g : ℝ → M) : (Fin 1) →ᵇᵃ M :=
       simp [Option.elim', upper₁, lower₁])
 
 @[simp]
-private lemma ofDiffAux_apply (g : ℝ → M) (J : Box (Fin 1)) :
-    ofDiffAux g J = g J.upper₁ - g J.lower₁ := rfl
+private lemma incrementAux_apply (g : ℝ → M) (J : Box (Fin 1)) :
+    incrementAux g J = g J.upper₁ - g J.lower₁ := rfl
 
-/-- The box-additive "differential" sending a function `g : ℝ → M` to the box-additive map on
+/-- The box-additive increment sending a function `g : ℝ → M` to the box-additive map on
 `Box (Fin 1)` defined by `J ↦ g J.upper₁ - g J.lower₁`, bundled as an
 `AddMonoidHom`. -/
-def ofDiff : (ℝ → M) →+ ((Fin 1) →ᵇᵃ M) where
-  toFun := ofDiffAux
+def increment : (ℝ → M) →+ ((Fin 1) →ᵇᵃ M) where
+  toFun := incrementAux
   map_zero' := by ext; simp
   map_add' g h := by ext; simp [sub_add_sub_comm]
 
 @[simp]
-lemma ofDiff_apply (g : ℝ → M) (J : Box (Fin 1)) : ofDiff g J = g J.upper₁ - g J.lower₁ := rfl
+lemma increment_apply (g : ℝ → M) (J : Box (Fin 1)) : increment g J = g J.upper₁ - g J.lower₁ := rfl
 
 @[simp]
-lemma ofDiff_smul {R : Type*} [Monoid R] [DistribMulAction R M] (c : R) (g : ℝ → M) :
-    ofDiff (c • g) = c • ofDiff g := by ext J; simp [smul_sub]
+lemma increment_smul {R : Type*} [Monoid R] [DistribMulAction R M] (c : R) (g : ℝ → M) :
+    increment (c • g) = c • increment g := by ext J; simp [smul_sub]
 
-/-- The Riemann–Stieltjes differential of `ContinuousLinearMap.lsmul ℝ ℝ : ℝ → (E →L[ℝ] E)`
+/-- The increment of `ContinuousLinearMap.lsmul ℝ ℝ : ℝ → (E →L[ℝ] E)`
 equals the Lebesgue volume box-additive map on `Box (Fin 1)`. -/
-lemma ofDiff_lsmul_eq_volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] :
-    ofDiff (fun x : ℝ ↦ (ContinuousLinearMap.lsmul ℝ ℝ : ℝ →L[ℝ] E →L[ℝ] E) x) =
+lemma increment_lsmul_eq_volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] :
+    increment (fun x : ℝ ↦ (ContinuousLinearMap.lsmul ℝ ℝ : ℝ →L[ℝ] E →L[ℝ] E) x) =
       (BoxAdditiveMap.volume : (Fin 1) →ᵇᵃ E →L[ℝ] E) := by
   ext; simp [volume_apply, Box.upper₁, Box.lower₁]; module
 
 end BoxAdditiveMap
 
-end ofDiff
+end increment
+
+end BoxIntegral
+
+namespace RiemannStieltjes
 
 /-! ## Definition of the Riemann--Stieltjes integral -/
 
 variable {E : Type*} {F : Type*} {G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
 
+open BoxIntegral
 section Defs
 
 variable (a b : ℝ) (B : E →L[ℝ] F →L[ℝ] G) (f : ℝ → E) (g : ℝ → F) (L : G)
@@ -178,22 +183,15 @@ variable (a b : ℝ) (B : E →L[ℝ] F →L[ℝ] G) (f : ℝ → E) (g : ℝ �
 /-- The (Riemann--)Stieltjes integral predicate of a function `f : ℝ → E` and `g : ℝ → F` having
 its Riemann--Stieltjes sums converge to a limit `L : G`, given a bilinear map `B : E → F → G` and
 endpoints `a`, `b` takes values in `G`. Initially defined under the implicit assumption that
-`a < b`, with junk values otherwise. -/
+`a < b`. -/
 def HasStieltjesIntegralOrdered (hab : a < b) : Prop := HasIntegral (interval hab)
-    IntegrationParams.Riemann (f <| · 0) (BoxAdditiveMap.ofDiff (B.flip <| g ·)) L
+    IntegrationParams.Riemann (f <| · 0) (BoxAdditiveMap.increment (B.flip <| g ·)) L
 
 /-- Extension of `HasStieltjesIntegralOrdered` to cover the cases `a = b` and `a > b`. -/
 def HasStieltjesIntegral : Prop :=
   if heq : a = b then L = 0 else
     if hab : a < b then HasStieltjesIntegralOrdered a b B f g L hab else
       HasStieltjesIntegralOrdered b a B f g (-L) (by order)
-
-/-- `StieltjesIntegrableOrdered a b B f g hab` asserts that the ordered Riemann–Stieltjes integral
-of `f` against `g` paired by `B` from `a` to `b` exists, i.e. some `L` satisfies
-`HasStieltjesIntegralOrdered a b B f g L hab`.
--/
-def StieltjesIntegrableOrdered (hab : a < b) : Prop :=
-  ∃ L, HasStieltjesIntegralOrdered a b B f g L hab
 
 /-- `StieltjesIntegrable a b B f g` asserts that the Riemann–Stieltjes integral of `f` against `g`
 paired by `B` from `a` to `b` exists, i.e. some `L` satisfies `HasStieltjesIntegral a b B f g L`.
@@ -243,8 +241,9 @@ def RiemannIntegrable := StieltjesIntegrable a b (lsmul ℝ ℝ).flip f id
 
 /-- `riemannIntegral a b f`, with notation `∫ʳ x in a..b, f x`, is defined to equal
 `∫ˢ x in a..b, f x ∂<•id`.  Use `unfold riemannIntegral` or similar to access the Stieltjes integral
-API.  A future PR will relate `riemannIntegral` to `intervalIntegral` under suitable hypotheses on
-`f`. -/
+API.  One could relate `riemannIntegral` to `intervalIntegral` under suitable hypotheses on `f`; see
+https://github.com/leanprover-community/mathlib-at-ICERM26/blob/stieltjes/Mathlib/Analysis/BoxIntegral/Stieltjes/Measure.lean
+-/
 noncomputable def riemannIntegral : E := ∫ˢ x in a..b, f x ∂<•id
 
 @[inherit_doc riemannIntegral]
@@ -256,7 +255,7 @@ section Simple
 
 /-! ## Simple properties -/
 
-variable {a b : ℝ} {B : E →L[ℝ] F →L[ℝ] G} {f f₁ f₂ : ℝ → E} {g g₁ g₂ : ℝ → F} {L L₁ L₂ : G}
+variable {a b : ℝ} {B B' : E →L[ℝ] F →L[ℝ] G} {f f₁ f₂ : ℝ → E} {g g₁ g₂ : ℝ → F} {L L₁ L₂ : G}
 
 @[simp]
 lemma HasStieltjesIntegral.of_eq_iff_zero : HasStieltjesIntegral a a B f g L ↔ L = 0 := by
@@ -285,8 +284,10 @@ lemma HasStieltjesIntegral.symm (h : HasStieltjesIntegral a b B f g L) :
 
 theorem stieltjesIntegrable_iff_integrable_of_lt (hab : a < b) :
     StieltjesIntegrable a b B f g ↔
-    Integrable (interval hab) IntegrationParams.Riemann (f <| · 0) (.ofDiff (B.flip <| g ·)) :=
-  ⟨fun ⟨_, hL⟩ ↦ HasIntegral.integrable hL, fun h ↦ ⟨_, h.hasIntegral⟩⟩
+    Integrable (interval hab) IntegrationParams.Riemann (f <| · 0)
+      (.increment (B.flip <| g ·)) := by
+  simp only [StieltjesIntegrable, HasStieltjesIntegral, hab.ne, ↓reduceDIte, hab, Fin.isValue]
+  exact ⟨fun ⟨_, hL⟩ ↦ HasIntegral.integrable hL, fun h ↦ ⟨_, h.hasIntegral⟩⟩
 
 @[simp]
 lemma StieltjesIntegrable.of_eq : StieltjesIntegrable a a B f g := by
@@ -301,9 +302,11 @@ lemma StieltjesIntegrable.symm_iff :
 lemma StieltjesIntegrable.symm (h : StieltjesIntegrable a b B f g) :
     StieltjesIntegrable b a B f g := by rwa [← symm_iff]
 
-lemma StieltjesIntegrable.of_gt (hba : b < a) :
-    StieltjesIntegrable a b B f g ↔ StieltjesIntegrableOrdered b a B f g hba := by
-  rw [symm_iff]; exact of_lt hba
+theorem stieltjesIntegrable_iff_integrable_of_gt (hab : b < a) :
+    StieltjesIntegrable a b B f g ↔
+    Integrable (interval hab) IntegrationParams.Riemann (f <| · 0)
+      (.increment (B.flip <| g ·)) := by
+  rw [StieltjesIntegrable.symm_iff, stieltjesIntegrable_iff_integrable_of_lt hab]
 
 lemma StieltjesIntegrable.iff_min_max :
     StieltjesIntegrable a b B f g ↔ StieltjesIntegrable (min a b) (max a b) B f g := by
@@ -355,42 +358,43 @@ theorem stieltjesIntegral.integral_symm :
   have h_integ_symm : ¬ StieltjesIntegrable b a B f g := by contrapose! h_integ; exact h_integ.symm
   simp [stieltjesIntegral, h_integ, h_integ_symm]
 
-theorem hasStieltjesIntegral'_congr (hab : a < b)
+theorem hasStieltjesIntegral'_congr (hab : a < b) (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.Icc a b)) (hg : Set.EqOn g₁ g₂ (.Icc a b)) :
     HasStieltjesIntegralOrdered a b B f₁ g₁ L hab ↔
-    HasStieltjesIntegralOrdered a b B f₂ g₂ L hab := by
+    HasStieltjesIntegralOrdered a b B' f₂ g₂ L hab := by
+  subst hBB'
   unfold HasStieltjesIntegralOrdered
   apply BoxIntegral.hasIntegral_congr
   · intro x hx; exact hf (by simpa [hab] using hx)
   intro J hJ
   simp only [Set.mem_Iic, Box.le_iff₁, interval_lower, interval_upper,
-    BoxAdditiveMap.ofDiff_apply] at hJ ⊢
+    BoxAdditiveMap.increment_apply] at hJ ⊢
   have := J.lower_lt_upper₁
   congr 2 <;> exact hg (by grind)
 
-theorem hasStieltjesIntegral_congr
+theorem hasStieltjesIntegral_congr (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :
-    HasStieltjesIntegral a b B f₁ g₁ L ↔ HasStieltjesIntegral a b B f₂ g₂ L := by
+    HasStieltjesIntegral a b B f₁ g₁ L ↔ HasStieltjesIntegral a b B' f₂ g₂ L := by
   rcases lt_trichotomy a b with hab | rfl | hab
   · simp only [hab.le, Set.uIcc_of_le, hab, HasStieltjesIntegral.of_lt] at hf hg ⊢
-    exact hasStieltjesIntegral'_congr hab hf hg
+    exact hasStieltjesIntegral'_congr hab hBB' hf hg
   · simp
-  simp only [HasStieltjesIntegral.symm_iff (a := a) (b := b), hab.le, Set.uIcc_of_ge, hab,
-    HasStieltjesIntegral.of_lt] at hf hg ⊢
-  exact hasStieltjesIntegral'_congr hab hf hg
+  · simp only [HasStieltjesIntegral.symm_iff (a := a) (b := b), hab.le, Set.uIcc_of_ge, hab,
+      HasStieltjesIntegral.of_lt] at hf hg ⊢
+    exact hasStieltjesIntegral'_congr hab hBB' hf hg
 
-theorem stieltjesIntegrable_congr
+theorem stieltjesIntegrable_congr (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :
-    StieltjesIntegrable a b B f₁ g₁ ↔ StieltjesIntegrable a b B f₂ g₂ := by
-  simp only [StieltjesIntegrable, hasStieltjesIntegral_congr hf hg]
+    StieltjesIntegrable a b B f₁ g₁ ↔ StieltjesIntegrable a b B' f₂ g₂ := by
+  simp only [StieltjesIntegrable, hasStieltjesIntegral_congr hBB' hf hg]
 
-theorem stieltjesIntegral_congr
+theorem stieltjesIntegral_congr (hBB' : B = B')
     (hf : Set.EqOn f₁ f₂ (.uIcc a b)) (hg : Set.EqOn g₁ g₂ (.uIcc a b)) :
-    ∫ˢ x in a..b, f₁ x ∂[B; g₁] = ∫ˢ x in a..b, f₂ x ∂[B; g₂] := by
+    ∫ˢ x in a..b, f₁ x ∂[B; g₁] = ∫ˢ x in a..b, f₂ x ∂[B'; g₂] := by
   by_cases! h : StieltjesIntegrable a b B f₁ g₁
-    <;> have h' := h <;> rw [stieltjesIntegrable_congr hf hg] at h'
+    <;> have h' := h <;> rw [stieltjesIntegrable_congr hBB' hf hg] at h'
   · apply h.hasStieltjesIntegral.unique
-    simp [hasStieltjesIntegral_congr hf hg, h'.hasStieltjesIntegral]
+    simp [hasStieltjesIntegral_congr hBB' hf hg, h'.hasStieltjesIntegral]
   simp [stieltjesIntegral, h, h']
 
 end Simple
@@ -404,7 +408,7 @@ variable {a b : ℝ} {f f₁ f₂ : ℝ → E} {L L₁ L₂ : E}
 theorem HasRiemannIntegral.iff_hasIntegral (hab : a < b) : HasRiemannIntegral a b f L ↔
     HasIntegral (interval hab) IntegrationParams.Riemann (f <| · 0) BoxAdditiveMap.volume L := by
   simp [HasRiemannIntegral, hab, HasStieltjesIntegral.of_lt, HasStieltjesIntegralOrdered,
-    BoxAdditiveMap.ofDiff_lsmul_eq_volume]
+    BoxAdditiveMap.increment_lsmul_eq_volume]
 
 lemma RiemannIntegrable_def : RiemannIntegrable a b f ↔ ∃ L, HasRiemannIntegral a b f L := Iff.rfl
 
@@ -454,11 +458,11 @@ theorem RiemannIntegrable.hasRiemannIntegral_iff (h : RiemannIntegrable a b f) (
 
 theorem hasRiemannIntegral_congr (hf : Set.EqOn f₁ f₂ (.uIcc a b)) :
     HasRiemannIntegral a b f₁ L ↔ HasRiemannIntegral a b f₂ L :=
-  hasStieltjesIntegral_congr hf (Set.graphOn_inj.mp rfl)
+  hasStieltjesIntegral_congr rfl hf (Set.graphOn_inj.mp rfl)
 
 theorem riemannIntegrable_congr (hf : Set.EqOn f₁ f₂ (.uIcc a b)) :
     RiemannIntegrable a b f₁ ↔ RiemannIntegrable a b f₂ :=
-  stieltjesIntegrable_congr hf (Set.graphOn_inj.mp rfl)
+  stieltjesIntegrable_congr rfl hf (Set.graphOn_inj.mp rfl)
 
 @[simp]
 theorem riemannIntegral.integral_undef (h : ¬RiemannIntegrable a b f) :
@@ -469,4 +473,4 @@ theorem riemannIntegral.integral_symm : ∫ʳ x in b..a, f x = -∫ʳ x in a..b,
 
 end Riemann
 
-end BoxIntegral
+end RiemannStieltjes
