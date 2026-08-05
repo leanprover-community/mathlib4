@@ -180,7 +180,6 @@ theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ j ∈ a, ∀ (k 
     ∀ᶠ (n : ℕ) in atTop, regularizedHGFunCoeff a b n ≠ 0 := by
   rw [Filter.eventually_atTop]
   use b.toFinset.sup (⌈-re ·⌉₊) + 1
-  --use ⌈sSup (b.map (-re)).toFi nset⌉₊ + 1
   intro n hn h'
   rw [regularizedHGFunCoeff_eq_zero_iff] at h'
   rcases h' with (h' | ⟨j, hj, m, h'⟩)
@@ -191,9 +190,7 @@ theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ j ∈ a, ∀ (k 
       simpa [h] using this
     calc
       -j.re ≤ ⌈-j.re⌉₊ := Nat.le_ceil (-j.re)
-      _ ≤ b.toFinset.sup (⌈-re ·⌉₊) := by
-        norm_cast
-        exact Finset.le_sup (by grind) (f := (⌈-re ·⌉₊))
+      _ ≤ b.toFinset.sup (⌈-re ·⌉₊) := mod_cast Finset.le_sup (by grind) (f := (⌈-re ·⌉₊))
       _ < n := by norm_cast
 
 variable (a) in
@@ -326,8 +323,8 @@ theorem Gamma_inv_mul_ordinaryHypergeometricSeries_eq (hc : ∀ k : ℕ, c ≠ -
 
 theorem ordinaryHypergeometric_div_Gamma_eq (hc : ∀ k : ℕ, c ≠ -k) :
     ordinaryHypergeometric a b c z / Gamma c = regularizedGaussHGFun a b c z := by
-  rw [regularizedGaussHGFun, ordinaryHypergeometric]
-  rw [div_eq_inv_mul, ← smul_eq_mul, FormalMultilinearSeries.const_smul_sum_apply]
+  rw [regularizedGaussHGFun, ordinaryHypergeometric, div_eq_inv_mul, ← smul_eq_mul,
+    FormalMultilinearSeries.const_smul_sum_apply]
   congr
   ext n
   simp [Gamma_inv_mul_ordinaryHypergeometricSeries_eq hc]
