@@ -159,17 +159,17 @@ example :
 
 /-! ## Failure tests -/
 
--- only closed matrix literals are in scope: the commitment gate skips an abstract matrix,
--- and `eval_rank` reports that nothing was found
+/-! ### No closed matrix literal in the goal -/
+
 /-- error: eval_rank failed to evaluate the rank of any closed matrix literal in the goal -/
 #guard_msgs in
 example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
 
--- a literal with symbolic entries is likewise not closed; substitute or unfold the
--- variables before calling the tactic
 /-- error: eval_rank failed to evaluate the rank of any closed matrix literal in the goal -/
 #guard_msgs in
 example (a : ℚ) : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2 := by eval_rank
+
+/-! ### Out of scope for the Bareiss method -/
 
 /-- error: expected the element type to be a commutative ring -/
 #guard_msgs in
@@ -179,6 +179,11 @@ example : Matrix.rank (R := ℕ) !![1, 2; 3, 4] = 2 := by eval_rank
 #guard_msgs in
 example : Matrix.rank (R := ZMod 4) !![1, 2; 3, 4] = 2 := by eval_rank
 
+/-! ### Possible extensions
+
+Rejected today; extensions of the tactic could support these inputs. -/
+
+-- Requires a more general cert checker that works for rational literals in types like ℝ
 /--
 error: equality in the element type does not reduce in the kernel
   ℝ
@@ -186,6 +191,7 @@ error: equality in the element type does not reduce in the kernel
 #guard_msgs in
 example : Matrix.rank (R := ℝ) !![1, 2; 3, 4] = 2 := by eval_rank
 
+-- Requires computable polynomial ops in the kernel
 open Polynomial in
 /--
 error: equality in the element type does not reduce in the kernel
@@ -194,6 +200,7 @@ error: equality in the element type does not reduce in the kernel
 #guard_msgs in
 example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
 
+-- Requires an extension to compute the modulo inverse
 /--
 error: division entries are supported only in characteristic zero
   2 / 3
@@ -201,6 +208,7 @@ error: division entries are supported only in characteristic zero
 #guard_msgs in
 example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 
+-- Requires the producer to eliminate with values in ℤ[i] rather than ℚ
 /--
 error: the entry does not evaluate to a rational numeral
   { re := 0, im := 1 }
