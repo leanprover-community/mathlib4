@@ -491,8 +491,10 @@ theorem LaplaceConvergent.indicator_comp_sub [MulActionWithZero ℂ E] [IsBounde
   rw [← Set.indicator_smul, integrable_indicator_iff measurableSet_Ioi, IntegrableOn]
   rw [Measure.restrict_restrict measurableSet_Ioi, Ioi_inter_Ioi, sup_eq_left.mpr ha,
     ← (show Measure.map τ (volume.restrict (Ioi 0)) = volume.restrict (Ioi a) by
-      simpa [τ, preimage_add_const_Ioi] using
-        map_add_right_restrict volume a (s := Ioi a) measurableSet_Ioi),
+      have : Measure.map (· + a) (volume.restrict ((· + a) ⁻¹' Ioi a))
+          = volume.restrict (Ioi a) := by
+        rw [← Measure.restrict_map (by fun_prop) measurableSet_Ioi, map_add_right_eq_self]
+      simpa [τ, preimage_add_const_Ioi] using this),
     integrable_map_equiv τ]
   rw [show ((fun t : ℝ => Complex.exp ((-s) * (t : ℂ)) • f (t - a)) ∘ τ) =
       Complex.exp ((-s) * (a : ℂ)) • g by
@@ -517,8 +519,11 @@ theorem laplace_indicator_comp_sub [NormedSpace ℝ E] [Module ℂ E] [IsBounded
           rw [laplace_eq_integral_Ioi, ← Set.indicator_smul,
             setIntegral_indicator measurableSet_Ioi, Ioi_inter_Ioi, sup_eq_right.mpr ha,
             ← (show Measure.map τ (volume.restrict (Ioi 0)) = volume.restrict (Ioi a) by
-              simpa [τ, preimage_add_const_Ioi] using
-                map_add_right_restrict volume a (s := Ioi a) measurableSet_Ioi)]
+              have : Measure.map (· + a) (volume.restrict ((· + a) ⁻¹' Ioi a))
+                  = volume.restrict (Ioi a) := by
+                rw [← Measure.restrict_map (by fun_prop) measurableSet_Ioi,
+                  map_add_right_eq_self]
+              simpa [τ, preimage_add_const_Ioi] using this)]
           exact τ.measurableEmbedding.integral_map h
     _ = Complex.exp ((-s) * (a : ℂ)) • laplace f s := by
           rw [laplace_eq_integral_Ioi, ← integral_smul]

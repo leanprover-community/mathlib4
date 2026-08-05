@@ -16,8 +16,9 @@ for integrability:
 
 * `integrable_of_isBigO_exp_neg`: If `f` is continuous on `[a,∞)`, for some `a ∈ ℝ`, and there
   exists `b > 0` such that `f(x) = O(exp(-b x))` as `x → ∞`, then `f` is integrable on `(a, ∞)`.
-* `integrableOn_exp_neg_mul_norm_of_isBigO_exp`: exponential decay dominates a locally integrable
-  function of strictly smaller exponential order.
+* `integrableOn_exp_neg_smul_of_isBigO_exp`: exponential decay dominates a locally integrable
+  function of strictly smaller exponential order, with `integrableOn_exp_neg_mul_of_isBigO_exp`
+  and `integrableOn_exp_neg_mul_norm_of_isBigO_exp` as the real-valued and norm specializations.
 -/
 
 public section
@@ -47,19 +48,33 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
     (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop
     ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
 
-/-- Exponential decay beats exponential growth: if `f` is locally integrable on `[c, ∞)` and
+/-- If `f` is locally integrable on `[c, ∞)` and `f x = O(exp (a * x))` at `∞`, then
+`exp (-b * x) • f x` is integrable on `(c, ∞)` for every `a < b`. -/
+theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
+    (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
+    IntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ioi c) := by
+  refine integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp ?_
+  have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) :=
+    hfc.continuousOn_smul isClosed_Ici.isLocallyClosed
+      ((by fun_prop : Continuous fun x : ℝ => exp (-b * x)).continuousOn)
+  refine hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
+    (((isBigO_refl _ atTop).smul hf).congr_right fun x => by
+      simp only [smul_eq_mul, ← exp_add]; ring_nf)
+    ⟨Ioi c, Ioi_mem_atTop c, by
+      simpa [neg_sub] using exp_neg_integrableOn_Ioi c (sub_pos.mpr hab)⟩
+
+/-- Real-valued specialization of `integrableOn_exp_neg_smul_of_isBigO_exp`. -/
+theorem integrableOn_exp_neg_mul_of_isBigO_exp {a b c : ℝ} {f : ℝ → ℝ}
+    (hfc : LocallyIntegrableOn f (Ici c)) (hf : f =O[atTop] fun x : ℝ => exp (a * x))
+    (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ioi c) := by
+  simpa [smul_eq_mul] using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab
+
+/-- Exponential decay dominates exponential growth: if `f` is locally integrable on `[c, ∞)` and
 `f x = O(exp (a * x))` at `∞`, then `exp (-b * x) * ‖f x‖` is integrable on `(c, ∞)`
 for every `a < b`. -/
 theorem integrableOn_exp_neg_mul_norm_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
     {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
     (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
-    IntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ioi c) := by
-  refine integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp ?_
-  have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ici c) := by
-    simpa [mul_comm] using hfc.norm.mul_continuousOn
-      ((by fun_prop : Continuous fun x : ℝ => exp (-b * x)).continuousOn)
-      isClosed_Ici.isLocallyClosed
-  refine hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
-    (((isBigO_refl _ atTop).mul hf.norm_left).congr_right fun x => by rw [← exp_add]; ring_nf)
-    ⟨Ioi c, Ioi_mem_atTop c, by
-      simpa [neg_sub] using exp_neg_integrableOn_Ioi c (sub_pos.mpr hab)⟩
+    IntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ioi c) :=
+  integrableOn_exp_neg_mul_of_isBigO_exp hfc.norm hf.norm_left hab
