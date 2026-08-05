@@ -813,11 +813,13 @@ theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) (add : AESt
     eLpNorm_one_eq_lintegral_enorm hfν]
   rw [lintegral_add_measure _ μ ν]
 
-theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
+theorem eLpNorm_le_add_measure_right (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞}
+    (hf : AEStronglyMeasurable f (μ + ν)) :
     eLpNorm f p μ ≤ eLpNorm f p (μ + ν) := by
   grw [← Measure.le_add_right le_rfl]
 
-theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α) {p : ℝ≥0∞} :
+theorem eLpNorm_le_add_measure_left (f : α → ε) (μ ν : Measure α)
+    (hf : AEStronglyMeasurable f (μ + ν)) {p : ℝ≥0∞} :
     eLpNorm f p ν ≤ eLpNorm f p (μ + ν) := by
   grw [← Measure.le_add_left le_rfl]
 
