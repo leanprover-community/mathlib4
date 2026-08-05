@@ -29,6 +29,7 @@ namespace AffineIndependent
 
 variable [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `exists_affineCombination_eq_smul_eq`. -/
 private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : AffineIndependent k p)
     {s : Set ι} (hs : s.Nonempty) {fs : s → Finset ι} (hfs : ∀ i, (i : ι) ∈ fs i) {w : s → ι → k}
@@ -131,6 +132,7 @@ section CommRing
 
 variable [CommRing k] [NoZeroDivisors k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Ceva's theorem** for a triangle, expressed in terms of multiplying weights. -/
 lemma prod_eq_prod_one_sub_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k} {p' : P}
     (hp' : ∀ i : Fin 3, p' ∈
@@ -200,6 +202,7 @@ section Field
 
 variable [Field k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Ceva's theorem** for a triangle, expressed using division. -/
 lemma prod_div_one_sub_eq_one_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k}
     (hr0 : ∀ i, r i ≠ 0) {p' : P} (hp' : ∀ i : Fin 3, p' ∈

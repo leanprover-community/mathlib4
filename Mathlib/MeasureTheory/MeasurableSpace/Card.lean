@@ -125,9 +125,6 @@ theorem generateMeasurableRec_omega_one (s : Set (Set α)) :
       iUnion_mem_generateMeasurableRec fun n => ⟨_, Ordinal.lt_iSup_add_one I n, (hI n).2⟩⟩
     simp
 
-@[deprecated (since := "2025-12-22")]
-alias generateMeasurableRec_omega1 := generateMeasurableRec_omega_one
-
 theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
   apply WellFoundedLT.induction i
@@ -157,9 +154,6 @@ theorem generateMeasurableRec_of_omega_one_le (s : Set (Set α)) {i : Ordinal.{v
   apply (generateMeasurableRec_mono s hi).antisymm'
   rw [← generateMeasurable_eq_rec]
   exact generateMeasurableRec_subset s i
-
-@[deprecated (since := "2025-12-22")]
-alias generateMeasurableRec_of_omega1_le := generateMeasurableRec_of_omega_one_le
 
 /-- At each step of the inductive construction, the cardinality bound `≤ #s ^ ℵ₀` holds. -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :

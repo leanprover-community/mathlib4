@@ -45,6 +45,9 @@ lemma congr_preservesLimit {F F' : K ⥤ J} (e : F ≅ F') :
   exact ⟨fun h ↦ preservesLimit_of_iso_diagram _ e,
     fun h ↦ preservesLimit_of_iso_diagram _ e.symm⟩
 
+instance (F : K ⥤ J) : (preservesLimit (C := C) F).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesLimit_of_natIso _ e
+
 variable {K} in
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves the colimit of a functor `F : K ⥤ J`. -/
@@ -60,6 +63,9 @@ lemma congr_preservesColimit {F F' : K ⥤ J} (e : F ≅ F') :
   simp_rw [preservesColimit_iff]
   exact ⟨fun h ↦ preservesColimit_of_iso_diagram _ e,
     fun h ↦ preservesColimit_of_iso_diagram _ e.symm⟩
+
+instance (F : K ⥤ J) : (preservesColimit (C := C) F).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesColimit_of_natIso _ e
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves limits of shape `K`. -/
@@ -84,6 +90,10 @@ lemma congr_preservesLimitsOfShape (e : K ≌ K') :
   exact ⟨fun _ ↦ preservesLimitsOfShape_of_equiv e _,
     fun _ ↦ preservesLimitsOfShape_of_equiv e.symm _⟩
 
+instance : (preservesLimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphisms := by
+  rw [preservesLimitsOfShape_eq_iSup]
+  infer_instance
+
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves colimits of shape `K`. -/
 abbrev preservesColimitsOfShape : ObjectProperty (J ⥤ C) := PreservesColimitsOfShape K
@@ -107,6 +117,10 @@ lemma congr_preservesColimitsOfShape (e : K ≌ K') :
   exact ⟨fun _ ↦ preservesColimitsOfShape_of_equiv e _,
     fun _ ↦ preservesColimitsOfShape_of_equiv e.symm _⟩
 
+instance : (preservesColimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphisms := by
+  rw [preservesColimitsOfShape_eq_iSup]
+  infer_instance
+
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite limits. -/
 abbrev preservesFiniteLimits : ObjectProperty (J ⥤ C) := PreservesFiniteLimits
@@ -115,9 +129,15 @@ abbrev preservesFiniteLimits : ObjectProperty (J ⥤ C) := PreservesFiniteLimits
 lemma preservesFiniteLimits_iff (F : J ⥤ C) :
     preservesFiniteLimits F ↔ PreservesFiniteLimits F := Iff.rfl
 
+instance : (preservesFiniteLimits (J := J) (C := C)).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesFiniteLimits_of_natIso e
+
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite colimits. -/
 abbrev preservesFiniteColimits : ObjectProperty (J ⥤ C) := PreservesFiniteColimits
+
+instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesFiniteColimits_of_natIso e
 
 @[simp]
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :

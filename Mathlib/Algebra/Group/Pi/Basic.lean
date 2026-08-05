@@ -198,7 +198,7 @@ lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : In
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- If the zero function is surjective, the codomain is trivial. -/]
 def uniqueOfSurjectiveOne (α : Type*) {β : Type*} [One β] (h : Function.Surjective (1 : α → β)) :
     Unique β :=

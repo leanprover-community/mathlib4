@@ -171,12 +171,11 @@ theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.
 
 @[simp]
 theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
-  Basis.ext_elem b fun _ => by classical simp only [repr_fract_apply, Int.fract_fract]
+  Basis.ext_elem b fun _ => by simp only [repr_fract_apply, Int.fract_fract]
 
 @[simp]
 theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
-  classical
   refine (Basis.ext_elem_iff b).mpr fun i => ?_
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
   use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
@@ -189,7 +188,7 @@ theorem fract_add_ZSpan (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
 
 variable {b} in
 theorem fract_eq_self {x : E} : fract b x = x ↔ x ∈ fundamentalDomain b := by
-  classical simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
+  simp only [Basis.ext_elem_iff b, repr_fract_apply, Int.fract_eq_self,
     mem_fundamentalDomain, Set.mem_Ico]
 
 theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b :=
@@ -205,14 +204,12 @@ theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
 theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl
 
 theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ (Set.range b) := by
-  classical
   rw [eq_comm, Basis.ext_elem_iff b]
   simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
     sub_eq_neg_add, map_add, map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
     Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
 
 theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b i‖ := by
-  classical
   calc
     ‖fract b m‖ = ‖∑ i, b.repr (fract b m) i • b i‖ := by rw [b.sum_repr]
     _ = ‖∑ i, Int.fract (b.repr m i) • b i‖ := by simp_rw [repr_fract_apply]
@@ -314,7 +311,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
 theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
     fundamentalDomain b ⊆ parallelepiped b := by
-  rw [fundamentalDomain, parallelepiped_basis_eq, Set.setOf_subset_setOf]
+  rw [fundamentalDomain, parallelepiped_basis_eq, Set.ofPred_subset_ofPred]
   exact fun _ h i ↦ Set.Ico_subset_Icc_self (h i)
 
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
@@ -339,13 +336,13 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
-  haveI : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico
   · ext
-    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_setOf_eq, LinearEquiv.coe_coe,
+    simp only [D, fundamentalDomain, Set.mem_Ico, Set.mem_ofPred_eq, LinearEquiv.coe_coe,
       Set.mem_preimage, Basis.equivFun_apply, Set.mem_pi, Set.mem_univ, forall_true_left]
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
@@ -412,7 +409,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
-  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_setOf_eq,
+  simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_sdiff, Set.mem_ofPred_eq,
     mem_fundamentalDomain, Set.mem_Ico, not_forall, not_and, not_lt] at hx
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
@@ -461,7 +458,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     refine fg_def.mpr ⟨map (span ℤ s).mkQ L, ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
       rw [← hs.span_top, ← h_span]
-      exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
+      exact span_mono (by simp only [Subtype.range_coe_subtype, Set.ofPred_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ → E) ∘ quotientEquiv b) ?_
@@ -479,7 +476,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     · rw [fract, SetLike.mem_coe, sub_eq_add_neg]
       refine Submodule.add_mem _ h_mem
         (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (floor b x))))
-      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.ofPred_mem_eq]
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
@@ -560,7 +557,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
-      rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
+      rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.ofPred_mem_eq, ← Set.toFinset_nonempty]
       contrapose! h
       rw [Set.toFinset_sdiff, Finset.sdiff_eq_empty_iff_subset] at h
       replace h := Finset.card_le_card h

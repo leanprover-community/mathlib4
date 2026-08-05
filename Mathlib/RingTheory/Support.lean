@@ -56,6 +56,7 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
@@ -198,7 +199,6 @@ open PrimeSpectrum
 
 lemma Module.mem_support_iff_of_finite :
     p ∈ Module.support R M ↔ Module.annihilator R M ≤ p.asIdeal := by
-  classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
   simp only [SetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢
@@ -236,6 +236,12 @@ lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M']
     ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by
   let e := IsLocalizedModule.iso p.primeCompl l
   have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
+  exact LocalizedModule.exists_subsingleton_away p
+
+lemma Module.exists_localizedMap_away_surjective_of_localizedMap_atPrime_surjective (p : Ideal R)
+    [p.IsPrime] (φ : N →ₗ[R] M) (hφ : Function.Surjective (LocalizedModule.map p.primeCompl φ)) :
+    ∃ a ∉ p, Function.Surjective (LocalizedModule.map (Submonoid.powers a) φ) := by
+  simp_rw [φ.localizedMap_surjective_iff_subsingleton_localized_coker] at hφ ⊢
   exact LocalizedModule.exists_subsingleton_away p
 
 /-- `Supp(M/IM) = Supp(M) ∩ Z(I)`. -/

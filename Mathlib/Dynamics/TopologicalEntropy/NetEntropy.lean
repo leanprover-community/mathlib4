@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy via nets
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
 The major design decisions are the same as in
@@ -112,37 +113,36 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ netMaxcard T F U n :=
   fun _ _ U_V ↦ biSup_mono fun _ h ↦ h.of_entourage_subset U_V
 
-set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
   apply Iff.intro <;> intro h
-  · obtain ⟨k, k_max⟩ := WithTop.ne_top_iff_exists.1 h.ne
+  · obtain ⟨k, k_max⟩ := ENat.ne_top_iff_exists.mp h.ne
     rw [← k_max]
-    simp only [ENat.some_eq_coe, Nat.cast_inj]
+    simp only [Nat.cast_inj]
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
       = sSup (WithTop.some '' Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       rw [netMaxcard, ← image_comp, sSup_image]
-      simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
+      simp only [mem_ofPred_eq, ENat.some_eq_natCast, Function.comp_apply]
+      exact biSup_congr (fun _ _ ↦ rfl)
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
-      simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+      simp only [mem_image, mem_ofPred_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s h
-      rw [← WithTop.coe_le_coe, k_max]
+      rw [← ENat.natCast_le_natCast, k_max]
       apply le_sSup
-      simp only [ENat.some_eq_coe, mem_image, mem_setOf_eq, Nat.cast_inj, exists_eq_right]
-      exact Filter.frequently_principal.mp fun a ↦ a h rfl
+      exact Filter.frequently_principal.mp fun a ↦ a (by simpa using ⟨_, h, rfl⟩) rfl
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
-      simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
+      simp only [mem_image, mem_ofPred_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetIn_empty
-    rw [← WithTop.coe_sSup' h_bdda, ENat.some_eq_coe, Nat.cast_inj] at k_max
+    rw [← WithTop.coe_sSup' h_bdda] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
-    rw [← k_max, mem_image] at key
-    simp only [mem_setOf_eq] at key
+    rw [← Nat.cast_inj.mp k_max, mem_image] at key
+    simp only [mem_ofPred_eq] at key
     exact key
   · obtain ⟨s, _, s_card⟩ := h
     rw [← s_card]
@@ -188,21 +188,20 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h
   · intro k
     rw [netMaxcard, iSup_subtype', iSup_eq_top] at h
-    specialize h k (ENat.coe_lt_top k)
+    specialize h k (ENat.natCast_lt_top k)
     simp only [Nat.cast_lt, Subtype.exists, exists_prop] at h
     obtain ⟨s, s_net, s_k⟩ := h
     exact ⟨s, s_net, s_k.le⟩
-  · refine WithTop.eq_top_iff_forall_gt.2 fun k ↦ ?_
+  · refine ENat.eq_top_iff_forall_gt.mpr fun k ↦ ?_
     specialize h (k + 1)
     obtain ⟨s, s_net, s_card⟩ := h
     apply s_net.card_le_netMaxcard.trans_lt'
-    rw [ENat.some_eq_coe, Nat.cast_lt]
+    rw [Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
 lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
