@@ -220,47 +220,16 @@ noncomputable def rotateHomotopyEquiv :
     (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
   homotopyHomInvId := Homotopy.ofEq (by
     ext n
-    -- the following list of lemmas has been obtained by doing
-    -- simp? [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
-    --   (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])]
-    simp only [shiftFunctor_obj_X', Int.reduceNeg, HomologicalComplex.comp_f,
-      lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg, Cocycle.leftShift_coe,
-      Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v,
-      comp_zero, (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
-      mul_zero, sub_self, Int.zero_ediv, add_zero, Int.negOnePow_zero,
-      shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, one_smul,
-      Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg, zero_add,
-      HomologicalComplex.id_f])
+    simp [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
+      (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])])
   homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
     ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
       ext n
-      -- the following list of lemmas has been obtained by doing
-      -- simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
-      --   δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
-      --   (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by lia),
-      --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
-      --   Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia)]
-      simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
-        Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
-        shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1), δ_inl,
-        Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
-        Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
-        neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia),
-        Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
-        ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
-        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
-        mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
-        shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
-        Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
-        neg_zero, neg_add_cancel_comm, ext_from_iff _ (n + 1) _ rfl, inl_v_descCochain_v_assoc,
-        Cochain.zero_v, zero_comp, Preadditive.comp_neg, inl_v_snd_v_assoc,
-        inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
-        Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
-        liftCochain_v_snd_v,
+      simp [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
+        δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
         (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by lia),
-        Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
-        inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
+        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by lia),
+        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by lia)]⟩
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -270,31 +239,11 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
       (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
       ⟨-(snd φ).comp (inl (inr φ)) (zero_add (-1)), by
         ext p
-        dsimp [rotateHomotopyEquiv]
-        -- the following list of lemmas has been obtained by doing
-        -- simp? [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
-        --  (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by lia),
-        --  δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
-        --  Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by lia),
-        --  (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia)]⟩
-        simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_lift, Cocycle.coe_neg,
-          Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
-          shiftFunctor_obj_X', Cochain.ofHom_v, δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
-          δ_inl, Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
-          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul, neg_neg,
-          neg_add_rev, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by lia),
-          Cochain.zero_cochain_comp_v, ext_from_iff _ _ _ rfl, inl_v_triangle_mor₃_f_assoc,
-          triangle_obj₁, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
-          Iso.refl_inv, Preadditive.neg_comp, id_comp, Preadditive.comp_add, Preadditive.comp_neg,
-          inl_v_fst_v_assoc, inl_v_snd_v_assoc, zero_comp, neg_zero, add_zero, ext_to_iff _ _ _ rfl,
-          liftCochain_v_fst_v,
-          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia), mul_one,
-          sub_self, mul_zero, Int.zero_ediv, Iso.refl_hom, Preadditive.add_comp, assoc, inl_v_fst_v,
-          comp_id, inr_f_fst_v, comp_zero, liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by lia),
-          Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, and_self,
-          inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, inr_f_snd_v_assoc, neg_add_cancel]⟩
+        simp [rotateHomotopyEquiv, ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
+         (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by lia),
+         δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+         Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by lia),
+         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia)]⟩
 
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₂ :
@@ -309,18 +258,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma rotateHomotopyEquiv_comm₃ :
     (rotateHomotopyEquiv φ).hom ≫ (triangle (inr φ)).mor₃ = -φ⟦1⟧' := by
   ext p
-  dsimp [rotateHomotopyEquiv]
-  -- the following list of lemmas has been obtained by doing
-  -- simp? [lift_f _ _ _ _ _ (p + 1) rfl,
-  --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia)]
-  simp only [Int.reduceNeg, lift_f _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X', Cocycle.coe_neg,
-    Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.neg_v,
-    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia), mul_one,
-      sub_self, mul_zero, Int.zero_ediv, add_zero, Int.negOnePow_one,
-    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Cochain.ofHom_v, id_comp,
-    Units.neg_smul, one_smul, neg_neg, Preadditive.neg_comp, Preadditive.add_comp, assoc,
-    inl_v_triangle_mor₃_f, Iso.refl_inv, Preadditive.comp_neg, comp_id, inr_f_triangle_mor₃_f,
-    comp_zero, neg_zero]
+  simp [rotateHomotopyEquiv, lift_f _ _ _ _ _ (p + 1) rfl,
+    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by lia)]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

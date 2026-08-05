@@ -395,12 +395,13 @@ lemma leftShift_comp (a n' : ℤ) (hn' : n + a = n') {m t t' : ℤ} (γ' : Cocha
       (by rw [← ht', ← h, ← hn', add_assoc, add_comm a, add_assoc]) := by
   ext p q hpq
   have h' : n' + m = t' := by lia
-  dsimp
-  simp only [Cochain.comp_v _ _ h' p (p + n') q rfl (by lia),
-    γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by lia),
-    (γ.comp γ' h).leftShift_v a t' (by lia) p q hpq (p + a) (by lia),
-    smul_smul, Linear.units_smul_comp, assoc, Int.negOnePow_add, ← mul_assoc, ← h',
-    comp_v _ _ h (p + a) (p + n') q (by lia) (by lia)]
+  simp only [shiftFunctor_obj_X', (γ.comp γ' h).leftShift_v a t' (by lia) p q hpq (p + a) (by lia),
+    shiftFunctor_obj_X, ← h', Int.negOnePow_add, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom,
+    comp_v _ _ h (p + a) (p + n') q (by lia) (by lia), id_comp, units_smul_v,
+    Cochain.comp_v _ _ h' p (p + n') q rfl (by lia),
+    γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by lia), Linear.units_smul_comp, smul_smul,
+    ← mul_assoc]
   congr 2
   rw [add_comm n', mul_add, Int.negOnePow_add]
 
@@ -421,10 +422,10 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
       δ_v n' m' hnm' _ p q hpq (p + n') (p + 1) (by lia) rfl,
       γ.rightShift_v a n' hn' p (p + n') rfl (p + n) rfl,
       γ.rightShift_v a n' hn' (p + 1) q _ (p + m) (by lia)]
-    simp only [shiftFunctorObjXIso, shiftFunctor_obj_d',
-      Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
-      add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
-      add_right_inj, smul_smul]
+    simp only [shiftFunctor_obj_X', shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctor_obj_d',
+      Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d, add_comp,
+      HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add, smul_smul,
+      add_right_inj]
     simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc,
       Int.units_mul_self, one_mul]
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by lia)
@@ -448,9 +449,9 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
       δ_v n' m' hnm' _ p q hpq (p + n') (p + 1) (by lia) rfl,
       γ.leftShift_v a n' hn' p (p + n') rfl (p + a) (by lia),
       γ.leftShift_v a n' hn' (p + 1) q (by lia) (p + 1 + a) (by lia)]
-    simp only [shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
-      Iso.refl_hom, id_comp, Linear.units_smul_comp, shiftFunctor_obj_d',
-      Linear.comp_units_smul, smul_add, smul_smul]
+    simp only [shiftFunctor_obj_X', shiftFunctor_obj_X, shiftFunctorObjXIso,
+      HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, Linear.units_smul_comp,
+      shiftFunctor_obj_d', Linear.comp_units_smul, smul_smul, comp_add, smul_add]
     congr 2
     · rw [← hnm', add_comm n', mul_add, mul_one]
       simp only [Int.negOnePow_add, ← mul_assoc, Int.units_mul_self, one_mul]
