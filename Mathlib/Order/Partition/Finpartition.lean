@@ -190,7 +190,6 @@ theorem congr_congr_symm (e : ι ≃ κ) (P : Finpartition (univ : Finset κ)) :
     (P.congr e.symm).congr e = P := by
   simpa using congr_symm_congr e.symm P
 
-@[simp]
 theorem card_parts_congr (e : ι ≃ κ) (P : Finpartition (univ : Finset ι)) :
     (P.congr e).parts.card = P.parts.card := by
   rw [parts_congr, Finset.card_image_of_injective _ (Finset.map_injective e.toEmbedding)]

@@ -807,7 +807,6 @@ def congrOrderIso (e : α ≃ β) : Finset α ≃o Finset β where
 theorem congrOrderIso_apply (e : α ≃ β) (s : Finset α) :
     congrOrderIso e s = s.map e.toEmbedding := rfl
 
-@[simp]
 theorem congrOrderIso_univ [Fintype α] [Fintype β] (e : α ≃ β) :
     congrOrderIso e (univ : Finset α) = (univ : Finset β) := by
   rw [congrOrderIso_apply]
