@@ -4785,6 +4785,7 @@ public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 public import Mathlib.GroupTheory.FreeGroup.Orbit
 public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.GroupTheory.Generators
 public import Mathlib.GroupTheory.Goursat
 public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.GroupAction.Blocks
@@ -4865,6 +4866,7 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.GroupTheory.Perm.Subgroup
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Presentation
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.PushoutI
 public import Mathlib.GroupTheory.QuotientGroup.Basic
