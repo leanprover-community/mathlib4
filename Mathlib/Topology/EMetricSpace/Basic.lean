@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -217,14 +218,14 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
   rwa [mem_closedEBall, edist_comm] at hy
 
--- TODO: generalize to metrizable spaces
-/-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
-countable set. -/
-theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
+/-- A compact set in a pseudo metrizable space is separable, i.e., it is a subset of the closure of
+a countable set. -/
+theorem subset_countable_closure_of_compact {α : Type*} [TopologicalSpace α]
+    [TopologicalSpace.PseudoMetrizableSpace α] {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
-  rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
-  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => eball_subset_closedEBall⟩
+  let := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  have := TopologicalSpace.pseudoMetrizableSpaceUniformity_countably_generated α
+  exact hs.totallyBounded.isSeparable.exists_countable_dense_subset
 
 end Compact
 
