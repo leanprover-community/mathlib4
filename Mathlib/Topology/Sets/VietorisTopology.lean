@@ -808,7 +808,7 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
     refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩
     obtain ⟨h₁, -, h₂⟩ := hf ⟨U, hU⟩ trivial
     exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
-    
+
 end Compacts
 
 namespace NonemptyCompacts
