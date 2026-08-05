@@ -54,6 +54,7 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
   isCompact_Icc : ∀ {a b : α}, IsCompact (Icc a b)
 
 export CompactIccSpace (isCompact_Icc)
+attribute [compactness .] isCompact_Icc
 
 variable {α : Type*}
 
@@ -91,6 +92,7 @@ instance {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α
   ⟨fun {a b} => (Icc_prod_eq a b).symm ▸ isCompact_Icc.prod isCompact_Icc⟩
 
 /-- An unordered closed interval is compact. -/
+@[compactness .]
 theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α]
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
@@ -145,7 +147,7 @@ variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
-  haveI : Nonempty s := ne_s.to_subtype
+  have : Nonempty s := ne_s.to_subtype
   suffices (s ∩ ⋂ x ∈ s, Iic x).Nonempty from
     ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
@@ -195,7 +197,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
     convert! univ_mem
-  · haveI := h_nonempty.nonempty
+  · have := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
     exact Filter.mem_atBot_sets.mpr ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction

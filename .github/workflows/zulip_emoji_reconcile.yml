@@ -1,0 +1,45 @@
+# Periodic safety net that keeps the Zulip emoji reactions on PR-related messages
+# in sync with each PR's actual state (open/closed/merged, labels, CI result).
+# The event-driven zulip_emoji_* workflows react to individual label/close/CI
+# events; this sweep repairs any drift they miss (dropped webhooks, outages,
+# state changes while a workflow was broken). See
+# https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md
+name: Zulip emoji reconcile
+
+on:
+  schedule:
+    - cron: "37 * * * *"  # hourly, offset to dodge top-of-hour runner load
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Log planned reaction changes without modifying Zulip
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  reconcile:
+    if: github.repository == 'leanprover-community/mathlib4'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out reconcile config
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          sparse-checkout: .github/zulip-emoji-config.json
+          sparse-checkout-cone-mode: false
+
+      - name: Reconcile
+        uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@5668fbbccf0fecefdfcddf539b8406db197dfc59
+        with:
+          config: .github/zulip-emoji-config.json
+          sweep: true
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          zulip-api-key: ${{ secrets.ZULIP_API_KEY }}
+          github-token: ${{ github.token }}
