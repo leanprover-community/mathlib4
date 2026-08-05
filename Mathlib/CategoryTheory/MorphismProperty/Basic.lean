@@ -287,7 +287,7 @@ section
 variable (P : MorphismProperty C)
 
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
-def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+def toSet : Set (Arrow C) := Set.ofPred (fun f ↦ P f.hom)
 
 lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
 

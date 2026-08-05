@@ -398,7 +398,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree 
     intro F hF ⟨y, hy⟩ hy'
     simp only [Φ'] at hy' ⊢
     rw [range_inclusion] at hy'
-    simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    simp only [SetLike.coe_sort_coe, mem_ofPred_eq] at hy' ⊢
     rw [range_inclusion]
     exact hF hy'
   exact eq_of_preReflection_mapsTo hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
