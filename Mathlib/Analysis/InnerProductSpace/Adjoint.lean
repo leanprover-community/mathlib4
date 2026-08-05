@@ -204,7 +204,7 @@ theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
 
 /-- The fitted value `A x` minimizes the distance to `y` among points in `A.range`
 if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
-theorem norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero (A : E →L[𝕜] F) (y : F) (x : E) :
+theorem norm_eq_iInf_range_iff_adjoint_apply_eq_zero (A : E →L[𝕜] F) (y : F) (x : E) :
     (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
   rw [A.range.norm_eq_iInf_iff_inner_eq_zero (by simp),
     ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe]
@@ -214,9 +214,8 @@ the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
     (A : E →L[𝕜] F) (y : F) (x : E) :
     (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
-  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) :=
-    ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩
-  rw [← A.norm_sub_apply_eq_iInf_iff_adjoint_apply_sub_eq_zero y x, le_antisymm_iff,
+  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) := ⟨0, by rintro - ⟨_, rfl⟩; positivity⟩
+  rw [← A.norm_eq_iInf_range_iff_adjoint_apply_eq_zero y x, le_antisymm_iff,
     and_iff_left (ciInf_le hb ⟨A x, x, rfl⟩), le_ciInf_iff hb]
   simp
 
