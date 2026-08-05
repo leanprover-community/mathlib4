@@ -21,8 +21,8 @@ subspace to the entire Banach space.
   `Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
   `‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
 * `LinearMap.extendOfIsometry`: Extend a linear map `f : E →ₛₗ[𝕜] F` between normed spaces to a
-  linear isometry `Eₗ →ₗᵢ[𝕜] Fₗ` between Banach spaces with a dense map `e₁ : E →ₗ[𝕜] Eₗ`, a linear map
-  `e₂ : F →ₗ[𝕜] Fₗ` and the corresponding norm estimate.
+  linear isometry `Eₗ →ₗᵢ[𝕜] Fₗ` between Banach spaces with a dense map `e₁ : E →ₗ[𝕜] Eₗ`, a linear
+  map `e₂ : F →ₗ[𝕜] Fₗ` and the corresponding norm estimate.
 
 Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
