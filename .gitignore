@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # macOS leaves these files everywhere:
 .DS_Store
 # Created by `lake exe cache get` if no home directory is available
@@ -14,6 +13,3 @@ scripts/.rm_set_option_progress.jsonl
 
 # Output of scripts/export_crossrefs.lean
 /crossrefs.json
-=======
-/.lake
->>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
