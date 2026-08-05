@@ -790,23 +790,19 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
     grw [← (basis.isOpen hU).inter_closure, dense_setOfPred_finite.closure_eq, inter_univ]
   obtain ⟨u, ⟨hu', hu⟩, rfl⟩ := hU
   simp_rw [← ofPred_and, and_assoc]
-  lift u to Finset (Set α) using hu'
+  let := hu'.fintype
   /- The finite sets in the basic open set are can be written as the unions of finite sets from
   each connected neighborhood. By the continuity of union, these form a connected set. -/
-  suffices {K : Compacts α | ↑K ⊆ ⋃₀ (u : Set (Set α)) ∧ (∀ U ∈ (u : Set (Set α)),
-      (↑K ∩ U).Nonempty) ∧ (K : Set α).Finite} = Finset.univ.sup '' Set.pi univ fun U : u =>
-        {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
+  suffices {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ (∀ U ∈ u, (↑K ∩ U).Nonempty) ∧ (K : Set α).Finite} =
+    Finset.univ.sup '' Set.pi univ fun U : u =>
+      {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ (K : Set α) ⊆ U} by
     rw [this]
     exact .image
       (isPreconnected_univ_pi fun U => isPreconnected_nonempty_finite_subsets (hu U.2).2)
       _ (by fun_prop)
   apply subset_antisymm
-  · refine fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U : u => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
-      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, ?_⟩
-    ext1
-    simp_rw [coe_finset_sup, Finset.sup_eq_iSup, iSup_eq_iUnion, Finset.mem_univ, iUnion_true,
-      coe_mk, ← inter_iUnion, iUnion_subtype, ← SetLike.mem_coe, ← sUnion_eq_biUnion,
-      inter_eq_left.mpr hK₁]
+  · exact fun K ⟨hK₁, hK₂, hK₃⟩ => ⟨fun U => ⟨K ∩ U, (hK₃.inter_of_left _).isCompact⟩,
+      fun U _ => ⟨hK₂ U U.2, hK₃.inter_of_left _, inter_subset_right⟩, by aesop⟩
   · simp_rw [image_subset_iff, preimage_ofPred_eq, coe_finset_sup, Finset.sup_eq_iSup,
       iSup_eq_iUnion, Finset.mem_univ, iUnion_true, iUnion_subset_iff]
     refine fun f hf => ⟨
@@ -815,8 +811,6 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
     lift U to u using hU
     obtain ⟨h₁, -, h₂⟩ := hf U trivial
     exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
-
-
 end Compacts
 
 namespace NonemptyCompacts
@@ -1134,9 +1128,7 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (NonemptyCompacts α
 @[simp]
 theorem locallyConnectedSpace_iff :
     LocallyConnectedSpace (NonemptyCompacts α) ↔ LocallyConnectedSpace α := by
-  refine ⟨fun h => ?_, fun _ => inferInstance⟩
-  rw [locallyConnectedSpace_iff_connected_basis]
-  intro x
+  refine ⟨fun h => locallyConnectedSpace_iff_connected_basis.2 fun x ↦ ?_, fun _ => inferInstance⟩
   refine (nhds_basis_opens x).to_hasBasis' (fun U ⟨hx, hU⟩ => ?_) (by grind)
   obtain ⟨V, ⟨hV₁, hV₂⟩, hxV, hKV⟩ :=
     IsTopologicalBasis.isOpen_isPreconnected.exists_subset_of_mem_open
