@@ -593,3 +593,52 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     simp
   simpa using this
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+section
+
+variable {f : M' → M} {g : M → 𝕜} (x : M') {y : M} {u : Set M} {s : Set M'}
+
+theorem mvfderivWithin_comp (hg : MDiffAt[u] g (f x)) (hf : MDiffAt[s] f x) (h : s ⊆ f ⁻¹' u)
+    (hxs : UniqueMDiffAt[s] x) : d[s] (g ∘ f) x = (d[u] g (f x)).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp x hg hf h hxs
+
+theorem mvfderivWithin_comp_of_eq {x : M'} (hg : MDiffAt[u] g y) (hf : MDiffAt[s] f x)
+    (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffAt[s] x) (hy : f x = y) :
+    d[s] (g ∘ f) x = (d[u] g y).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_eq hg hf h hxs hy
+
+theorem mvfderivWithin_comp_of_preimage_mem_nhdsWithin (hg : MDiffAt[u] g (f x))
+    (hf : MDiffAt[s] f x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hxs : UniqueMDiffAt[s] x) :
+    d[s] (g ∘ f) x = (d[u] g (f x)).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_preimage_mem_nhdsWithin x hg hf h hxs
+
+theorem mvfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq (hg : MDiffAt[u] g y)
+    (hf : MDiffAt[s] f x) (h : f ⁻¹' u ∈ 𝓝[s] x) (hxs : UniqueMDiffAt[s] x) (hy : f x = y) :
+    d[s] (g ∘ f) x = (d[u] g y).comp (mfderiv[s] f x) :=
+  mfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq x hg hf h hxs hy
+
+theorem mvfderiv_comp_mvfderivWithin (hg : MDiffAt g (f x)) (hf : MDiffAt[s] f x)
+    (hxs : UniqueMDiffAt[s] x) : d[s] (g ∘ f) x = (d% g (f x)).comp (mfderiv[s] f x) :=
+  mfderiv_comp_mfderivWithin x hg hf hxs
+
+theorem mvfderiv_comp_mvfderivWithin_of_eq {x : M'} (hg : MDiffAt g y) (hf : MDiffAt[s] f x)
+    (hxs : UniqueMDiffAt[s] x) (hy : f x = y) : d[s] (g ∘ f) x = (d% g y).comp (mfderiv[s] f x) :=
+  mfderiv_comp_mfderivWithin_of_eq hg hf hxs hy
+
+theorem mvfderiv_comp (hg : MDiffAt g (f x)) (hf : MDiffAt f x) :
+    d% (g ∘ f) x = (d% g (f x)).comp (mfderiv% f x) :=
+  mfderiv_comp x hg hf
+
+theorem mvfderiv_comp_of_eq {x : M'} {y : M} (hg : MDiffAt g y) (hf : MDiffAt f x) (hy : f x = y) :
+    d% (g ∘ f) x = (d% g (f x)).comp (mfderiv% f x) :=
+  mfderiv_comp_of_eq hg hf hy
+
+theorem mvfderiv_comp_apply (hg : MDiffAt g (f x)) (hf : MDiffAt f x) (v : TangentSpace% x) :
+    d% (g ∘ f) x v = (d% g (f x)) ((mfderiv% f x) v) :=
+  mfderiv_comp_apply x hg hf v
+
+theorem mvfderiv_comp_apply_of_eq (hg : MDiffAt g y) (hf : MDiffAt f x) (hy : f x = y)
+    (v : TangentSpace% x) : d% (g ∘ f) x v = (d% g y) ((mfderiv% f x) v) :=
+  mfderiv_comp_apply_of_eq x hg hf hy v
+
+end
