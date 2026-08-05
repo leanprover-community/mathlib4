@@ -5,8 +5,6 @@ Authors: Albert Smith
 -/
 module
 
--- TODO: minimise imports
-
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.RingTheory.Algebraic.Basic
 
@@ -44,8 +42,8 @@ open scoped nonZeroDivisors
 
 variable
   (R : Type u) (S : Type v) [CommRing R] [CommRing S] [NoZeroDivisors S] [Algebra R S]
-  -- beware the _ universe level
-  (M : Type _) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 
 namespace Module
 
@@ -54,7 +52,8 @@ section isFractionRing_isLocalization
 variable
   (FS : Type v') [CommRing FS] [Algebra S FS] [IsFractionRing S FS]
   [h : IsLocalization (algebraMapSubmonoid S R⁰) FS]
-  (M : Type _) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 include h
 
 /-- **Tower law over domains.**
@@ -106,8 +105,8 @@ we obtain a tower law.
 See `_root.rank_mul_rank` for when your modules are free.
 -/
 theorem rank_mul_rank_of_isFractionRing_isLocalization :
-    rank R S * rank S M = rank R M := by
-  convert lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M <;> rw [lift_id]
+    rank R S * rank S M₁ = rank R M₁ := by
+  convert lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M₁ <;> rw [lift_id]
 
 /-- **Tower law over domains.**
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
@@ -116,7 +115,7 @@ we obtain a tower law.
 See `Module.finrank_mul_finrank` for when your modules are free.
 -/
 theorem finrank_mul_finrank_of_isFractionRing_isLocalization :
-    finrank R S * finrank S M = finrank.{_, w} R M := by
+    finrank R S * finrank S M = finrank R M := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (rank R S), ← toNat_lift.{v} (rank S M), ← toNat_mul,
     lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS, toNat_lift]
@@ -128,7 +127,8 @@ section field_isLocalization
 variable
   (FS : Type v') [Field FS] [Algebra S FS]
   [h : IsLocalization (algebraMapSubmonoid S R⁰) FS]
-  (M : Type _) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 include h
 
 /-- **Tower law over domains.**
@@ -149,7 +149,7 @@ we obtain a tower law.
 See `Module.finrank_mul_finrank` for when your modules are free.
 -/
 theorem rank_mul_rank_of_field_isLocalization :
-    rank R S * rank S M = rank R M :=
+    rank R S * rank S M₁ = rank R M₁ :=
   have _ : IsFractionRing S FS := .of_semifield_isLocalization (algebraMapSubmonoid S R⁰) _
   rank_mul_rank_of_isFractionRing_isLocalization R S FS ..
 
@@ -160,7 +160,7 @@ we obtain a tower law.
 See `Module.finrank_mul_finrank` for when your modules are free.
 -/
 theorem finrank_mul_finrank_of_field_isLocalization :
-    finrank R S * finrank S M = finrank.{u, w} R M :=
+    finrank R S * finrank S M = finrank R M :=
   have _ : IsFractionRing S FS := .of_semifield_isLocalization (algebraMapSubmonoid S R⁰) _
   finrank_mul_finrank_of_isFractionRing_isLocalization R S FS ..
 
@@ -171,7 +171,7 @@ The tower law for ENat `Module.rank` of a `S`-torsion-free module over an algebr
 See `Module.IsTorsionFree.finrank_mul_finrank` for a `finrank` version.
 -/
 theorem IsTorsionFree.erank_mul_erank [hM : IsTorsionFree S M] :
-    toENat (rank R S) * toENat (rank S M) = toENat (rank.{_, w} R M) := by
+    toENat (rank R S) * toENat (rank S M) = toENat (rank R M) := by
   by_cases h : FaithfulSMul R S
   case neg =>
     have : ¬ FaithfulSMul R M := mt (·.tower_bot ..) h
@@ -219,7 +219,7 @@ The tower law for `Module.finrank` of a `S`-torsion-free module over an algebra 
 See `Module.finrank_mul_finrank` for when your modules are free.
 -/
 theorem IsTorsionFree.finrank_mul_finrank [h : IsTorsionFree S M] :
-    finrank R S * finrank S M = finrank.{_, w} R M := by
+    finrank R S * finrank S M = finrank R M := by
   simpa [finrank] using congr($(h.erank_mul_erank R S M).toNat)
 
 alias finrank_mul_finrank' := IsTorsionFree.finrank_mul_finrank
@@ -249,7 +249,7 @@ $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)
 See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a universe polymorphic version, and
 `_root_.rank_mul_rank` for when your modules are free. -/
 theorem rank_mul_rank :
-    rank R S * rank S M = rank R M :=
+    rank R S * rank S M₁ = rank R M₁ :=
   rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 /-- **Tower law over algebraic extensions of domains.**
@@ -259,7 +259,7 @@ $$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)
 
 See `Module.finrank_mul_finrank` for when your modules are free. -/
 theorem finrank_mul_finrank :
-    finrank R S * finrank S M = finrank.{u, w} R M :=
+    finrank R S * finrank S M = finrank R M :=
   finrank_mul_finrank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
 end Algebra.IsAlgebraic
