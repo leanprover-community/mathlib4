@@ -178,6 +178,30 @@ lemma OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
   · exact hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
   · exact he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
 
+lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : OpenPartialHomeomorph M M}
+    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
+    e.symm.trans (h.trans e') ∈ maximalAtlas I n H := by
+  refine (e.symm.trans (h.trans e')).mem_maximalAtlas_of_contMDiffOn ?_ ?_
+  · exact (contMDiffOn_of_mem_maximalAtlas he').comp
+      (hh.comp ((contMDiffOn_symm_of_mem_maximalAtlas he).mono fun z hz ↦ hz.1)
+        fun z hz ↦ hz.2.1)
+      fun z hz ↦ hz.2.2
+  · exact (contMDiffOn_of_mem_maximalAtlas he).comp
+      (hhsymm.comp ((contMDiffOn_symm_of_mem_maximalAtlas he').mono fun z hz ↦ hz.1.1)
+        fun z hz ↦ hz.1.2)
+      fun z hz ↦ hz.2
+
+lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M)
+    {h : OpenPartialHomeomorph M M}
+    (hh : ContMDiffOn I I n h h.source) (hhsymm : ContMDiffOn I I n h.symm h.target) :
+    e.symm.trans (h.trans e') ∈ contDiffGroupoid n I := by
+  simpa [OpenPartialHomeomorph.refl_trans, OpenPartialHomeomorph.refl_symm] using
+    compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
+    (symm_trans_trans_mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
+
 lemma IsManifold.mem_maximalAtlas_iff_contMDiffOn [IsManifold I n M]
     (φ : OpenPartialHomeomorph M H) :
     φ ∈ maximalAtlas I n M ↔ ContMDiffOn I I n φ φ.source ∧ ContMDiffOn I I n φ.symm φ.target :=
