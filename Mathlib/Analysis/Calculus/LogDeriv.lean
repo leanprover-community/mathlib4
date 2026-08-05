@@ -63,6 +63,13 @@ theorem logDeriv_congr_codiscreteWithin {f g : 𝕜 → 𝕜'} {U : Set 𝕜} (h
     nhdsWithin_le_nhds (hU.mem_nhds hx)] with z hz hzU
   exact hz.resolve_right (not_not_intro hzU)
 
+/--
+If two functions agree on a codiscrete subset of `𝕜`, then so do their logarithmic derivatives.
+-/
+theorem logDeriv_congr_codiscrete {f g : 𝕜 → 𝕜'} (h : f =ᶠ[codiscrete 𝕜] g) :
+    logDeriv f =ᶠ[codiscrete 𝕜] logDeriv g :=
+  logDeriv_congr_codiscreteWithin isOpen_univ h
+
 @[simp]
 theorem logDeriv_id (x : 𝕜) : logDeriv id x = 1 / x := by
   simp [logDeriv_apply]
