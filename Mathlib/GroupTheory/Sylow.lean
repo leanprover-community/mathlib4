@@ -694,18 +694,6 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
-theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n m : ℕ}
-    {H L : Subgroup G} [Finite L] (hH : Nat.card H = p ^ n) (hL : p ^ m ∣ Nat.card L)
-    (hHL : H ≤ L) (hnm : n ≤ m) :
-    ∃ K : Subgroup G, Nat.card K = p ^ m ∧ H ≤ K ∧ K ≤ L := by
-  have : Fact p.Prime := ⟨hp⟩
-  have hcardeq := Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv.symm ▸ hH
-  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hnm
-  refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
-  · rw [Subgroup.card_map_of_injective L.subtype_injective, hcard]
-  · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
-    exact Subgroup.map_mono hHK
-
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
@@ -714,176 +702,77 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 
-private theorem exists_subgroup_tower_aux [Finite G] {p n : ℕ} (hp : p.Prime)
-    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
-    (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n)
-    (missing : Finset (Fin (n + 1)))
-    (hmissing : ∀ k, (∃ g ∈ s, Nat.card g = p ^ k.val) ↔ k ∉ missing) :
-    ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
-  have hdvd' : p ^ n ∣ Nat.card (⊤ : Subgroup G) := by simpa using hdvd
-  have : Fact p.Prime := ⟨hp⟩
-  induction missing using Finset.induction_on_min generalizing s with
-  | empty =>
-    -- if `missing` is empty, the chain is already complete. Rearrange them into an OrderEmbedding
-    simp only [notMem_empty, not_false_eq_true, iff_true] at hmissing
-    choose f hfs hfcard using hmissing
-    have hmono : StrictMono f := by
-      intro a b h
-      apply hchain.lt_of_not_ge (hfs b) (hfs a)
-      contrapose! h
-      simpa [hfcard, pow_le_pow_iff_right₀ hp.one_lt] using Subgroup.card_le_of_le h
-    refine ⟨.ofStrictMono f hmono, fun g hg ↦ ?_, hfcard⟩
-    obtain ⟨k, hk⟩ := (hpgroup g hg).exists_card_eq
-    simp only [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
-    have hklt : k < n + 1 := by simpa [hk, pow_le_pow_iff_right₀ hp.one_lt] using hcard g hg
-    use ⟨k, hklt⟩
-    rcases hchain.total (hfs ⟨k, hklt⟩) hg with hfg | hfg
-    · apply Subgroup.eq_of_le_of_card_ge hfg
-      simp [hk, hfcard]
-    · refine (Subgroup.eq_of_le_of_card_ge hfg ?_).symm
-      simp [hk, hfcard]
-  | insert j missing hj ih =>
-    -- Remove the element `j` from `missing` and
-    -- insert a subgroup `u` of order `p ^ j` to the chain `s`.
-    -- If j = 0, we set `u = ⊥`.
-    -- Otherwise, `j - 1` is not in `missing` and there is a corresponding subgroup of
-    -- order `p ^ (j - 1)` (because our induction is on minimal elements of `missing`)
-    -- We choose a subgroup of order `p ^ j` between `p ^ (j - 1)` and `L`, where `L` is the next
-    -- available element in `s`, or `⊤` if there is no more element.
-    have hiexist (hj0 : j ≠ 0) : ∃ g ∈ s, Nat.card g = p ^ (j.val - 1) := by
-      -- If j ≠ 0, there exists a subgroup in `s` of order `p ^ (j - 1)`
-      have hn0 : n ≠ 0 := by grind
-      obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn0
-      convert (hmissing (j - 1)).mpr (fun h ↦ ?_)
-      · simp [Fin.coe_sub_iff_le.mpr (Fin.one_le_of_ne_zero hj0)]
-      · simp only [mem_insert, sub_eq_self, one_ne_zero, false_or] at h
-        specialize hj _ h
-        simp [hj0] at hj
-    have hiexist' (hj0 : j ≠ 0) :
-        ∃ K : Subgroup G, Nat.card K = p ^ j.val ∧ (hiexist hj0).choose ≤ K ∧
-        ∀ g ∈ s, p ^ j.val < Nat.card g → K ≤ g := by
-      -- If j ≠ 0, there exists a subgroup of order `p ^ j` that fits in the chain
-      by_cases hnonempty :  ((missingᶜ).filter (j < ·)).Nonempty
-      · let m := ((missingᶜ).filter (j < ·)).min' hnonempty
-        have hm : m ∈ (missingᶜ).filter (j < ·) := Finset.min'_mem _ _
-        simp only [Finset.mem_filter, mem_compl] at hm
-        obtain ⟨e, hes, hcarde⟩ := (hmissing m).mpr (fun h ↦ by
-          rcases Finset.mem_insert.mp h with h | h
-          · exact hm.2.ne' h
-          · exact hm.1 h
-        )
-        have hje : p ^ j.val ∣ Nat.card e := by
-          rw [hcarde]
-          exact pow_dvd_pow _ hm.2.le
-        have hlee : (hiexist hj0).choose ≤ e := by
-          refine hchain.le_of_not_gt hes (hiexist hj0).choose_spec.1 fun h ↦ ?_
-          have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
-            hcarde ▸ (hiexist hj0).choose_spec.2 ▸ Subgroup.card_lt_of_lt h
-          grind
-        obtain ⟨K, hKcard, hleft, hright⟩ := exists_subgroup_card_pow_prime_le_le hp
-          (hiexist hj0).choose_spec.2 hje hlee (by simp)
-        refine ⟨K, hKcard, hleft, fun g hg hjcardg ↦ ?_⟩
-        obtain ⟨d, hcardg⟩ := (hpgroup g hg).exists_card_eq
-        have hd := Nat.lt_add_one_of_le <| (pow_le_pow_iff_right₀ hp.one_lt).mp <|
-          hcardg ▸ hcard g hg
-        refine hright.trans <| hchain.le_of_not_gt hg hes fun h ↦ ?_
-        have hdm := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
-          hcardg ▸ hcarde ▸ Subgroup.card_lt_of_lt h
-        refine hdm.not_ge <| Finset.min'_le _ (⟨d, hd⟩ : Fin (n + 1)) ?_
-        simp only [Finset.mem_filter, mem_compl]
-        constructor
-        · have := (hmissing ⟨d, hd⟩).mp ⟨g, hg, hcardg⟩
-          contrapose this
-          exact Finset.mem_insert_of_mem this
-        · rw [hcardg, pow_lt_pow_iff_right₀ hp.one_lt] at hjcardg
-          exact hjcardg
-      · obtain ⟨K, hKcard, hleft, hright⟩ :=
-          exists_subgroup_card_pow_prime_le_le hp (hiexist hj0).choose_spec.2
-          ((pow_dvd_pow _ (Nat.lt_add_one_iff.mp j.prop)).trans hdvd') (by simp) (by simp)
-        refine ⟨K, hKcard, hleft, fun g hg hgcard ↦ ?_⟩
-        absurd hnonempty
-        obtain ⟨l, hl⟩ := (hpgroup g hg).exists_card_eq
-        specialize hcard g hg
-        rw [hl, pow_lt_pow_iff_right₀ hp.one_lt] at hgcard
-        rw [hl, pow_le_pow_iff_right₀ hp.one_lt, ← Nat.lt_add_one_iff] at hcard
-        use ⟨l, hcard⟩
-        rw [Finset.mem_filter, mem_compl, Fin.lt_def]
-        simp only [hgcard, and_true]
-        intro h
-        absurd (hmissing ⟨l, hcard⟩).not_left.mpr (Finset.mem_insert_of_mem h)
-        use g
-    let u : Subgroup G := if hj0 : j = 0 then ⊥ else (hiexist' (hj0)).choose
-    have hcardu : Nat.card u = p ^ j.val := by
-      unfold u
-      split_ifs with hj0
-      · simp [hj0]
-      · exact (hiexist' (hj0)).choose_spec.1
-    have hchain' : IsChain (· ≤ ·) (insert u s) := by
-      apply hchain.insert
-      unfold u
-      split_ifs with hj0
-      · simp
-      intro v hv huv
-      obtain ⟨l, hcardv⟩ := (hpgroup v hv).exists_card_eq
-      have hl := Nat.lt_add_one_iff.mpr <|
-        (pow_le_pow_iff_right₀ hp.one_lt).mp (hcardv.symm ▸ hcard v hv)
-      have hlj := (hmissing ⟨l, hl⟩).mp ⟨v, hv, hcardv⟩
-      simp only [mem_insert, not_or] at hlj
-      rcases lt_or_gt_of_ne hlj.1 with hlj | hlj
-      · right
-        apply le_trans ?_ (hiexist' hj0).choose_spec.2.1
-        apply hchain.le_of_not_gt (hiexist hj0).choose_spec.1 hv
-        intro h
-        have := (pow_lt_pow_iff_right₀ hp.one_lt).mp <|
-          (hiexist hj0).choose_spec.2 ▸ hcardv ▸ Subgroup.card_lt_of_lt h
-        grind
-      · left
-        apply (hiexist' (hj0)).choose_spec.2.2 v hv
-        rw [hcardv, pow_lt_pow_iff_right₀ hp.one_lt]
-        exact hlj
-    have hpgroup' : ∀ g ∈ insert u s, IsPGroup p g := by
-      intro g hg
-      rcases Set.mem_insert_iff.mp hg with rfl | hg
-      · exact IsPGroup.iff_card.mpr ⟨j, hcardu⟩
-      · exact hpgroup g hg
-    have hcard' : ∀ g ∈ insert u s, Nat.card g ≤ p ^ n := by
-      intro g hg
-      rcases Set.mem_insert_iff.mp hg with rfl | hg
-      · rw [hcardu]
-        exact pow_right_mono₀ hp.one_le <| Nat.lt_add_one_iff.mp j.prop
-      · exact hcard g hg
-    have hmissing' (k : Fin (n + 1)) :
-        (∃ g ∈ insert u s, Nat.card g = p ^ k.val) ↔ k ∉ missing := by
-      simp only [Set.mem_insert_iff, exists_eq_or_imp]
-      constructor
-      · intro h
-        rcases h with h | h
-        · rw [hcardu, Nat.pow_right_inj hp.one_lt, ← Fin.ext_iff] at h
-          rw [← h]
-          intro h
-          simpa using hj j h
-        · have h := (hmissing k).mp h
-          contrapose h
-          exact Finset.mem_insert_of_mem h
-      · intro h
-        by_cases hkj : k = j
-        · left
-          rw [hkj, hcardu]
-        · exact Or.inr ((hmissing k).mpr (by simp [hkj, h]))
-    obtain ⟨f, hsf, hfcard⟩ := ih hchain' hpgroup' hcard' hmissing'
-    exact ⟨f, Set.Subset.trans (s.subset_insert u) hsf, hfcard⟩
-
 /-- A corollary of **Sylow's first theorem**. Given a chain of `p`-subgroups, one can complete the
-chain to contain subgroup of size `p ^ k` for all `k` up to `n` such that `p ^ n` divides the order
+chain to contain subgroups of size `p ^ k` for all `k` up to `n` such that `p ^ n` divides the order
 of the group. -/
 theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
     (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
     (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   classical
-  apply exists_subgroup_tower_aux hp hdvd hchain hpgroup hcard
-    {k | ¬ ∃ g ∈ s, Nat.card g = p ^ k.val}
-  grind
+  have : Fact p.Prime := ⟨hp⟩
+  induction n generalizing G s with
+  | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa [card_le_one_iff_eq_bot] using hcard⟩
+  | succ n ih =>
+    obtain ⟨t, htcard, hst⟩ : ∃ t : Subgroup G, Nat.card t = p ^ (n + 1) ∧ (∀ g ∈ s, g ≤ t) := by
+      by_cases h : ∃ t ∈ s, Nat.card t = p ^ (n + 1)
+      · obtain ⟨t, hts, hcardt⟩ := h
+        refine ⟨t, hcardt, fun g hg ↦ hchain.le_of_not_gt hts hg fun h ↦ ?_⟩
+        grind [card_lt_of_lt h]
+      · let : Fintype s := Fintype.ofFinite _
+        let : LinearOrder s := hchain.linearOrder
+        let left := if h : (Finset.univ : Finset s).Nonempty then (Finset.max' _ h).val else ⊥
+        obtain ⟨k, hk, hkn⟩ : ∃ k, Nat.card left = p ^ k ∧ k ≤ (n + 1) := by
+          unfold left
+          split_ifs with h
+          · obtain ⟨k, hk⟩ := (hpgroup _ (Finset.max' _ h).prop).exists_card_eq
+            refine ⟨k, hk, ?_⟩
+            exact (pow_le_pow_iff_right₀ hp.one_lt).mp <| hk.symm ▸ hcard _ (Finset.max' _ h).prop
+          · exact ⟨0, by simp, by simp⟩
+        obtain ⟨t, hcardt, hlet⟩ := exists_subgroup_card_pow_prime_le p hdvd left hk hkn
+        refine ⟨t, hcardt, fun g hg ↦ le_trans ?_ hlet⟩
+        have h : (Finset.univ : Finset s).Nonempty := ⟨⟨g, hg⟩, by simp⟩
+        simp only [left, h, ↓reduceDIte]
+        exact Finset.le_max' (Finset.univ : Finset s) ⟨g, hg⟩ (Finset.mem_univ _)
+    let s' : Set (Subgroup t) := (subgroupOf · t) '' (s \ {t})
+    have hdvd' : p ^ n ∣ Nat.card t := by simp [htcard, pow_add]
+    have hchain' : IsChain (· ≤ ·) s' := (hchain.mono (Set.sdiff_subset)).image
+      (OrderHom.mk (subgroupOf · t) fun a b h ↦ subgroupOf_mono t h)
+    have hpgroup' (g : Subgroup t) (hg : g ∈ s') : IsPGroup p g := by
+      simp only [Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, s'] at hg
+      obtain ⟨e, ⟨hes, het⟩, rfl⟩ := hg
+      obtain ⟨m, hm⟩ := (hpgroup e hes).exists_card_eq
+      refine IsPGroup.of_card (show _ = p ^ m from ?_)
+      rw [Nat.card_congr (subgroupOfEquivOfLe (hst e hes)).toEquiv, hm]
+    have hcard' (g : Subgroup t) (hg : g ∈ s') : Nat.card g ≤ p ^ n := by
+      simp only [Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, s'] at hg
+      obtain ⟨e, ⟨hes, het⟩, rfl⟩ := hg
+      obtain ⟨m, hm⟩ := (hpgroup e hes).exists_card_eq
+      rw [Nat.card_congr (subgroupOfEquivOfLe (hst e hes)).toEquiv, hm,
+        pow_le_pow_iff_right₀ hp.one_lt, ← Nat.lt_add_one_iff, ← pow_lt_pow_iff_right₀ hp.one_lt,
+        ← hm, ← htcard]
+      exact card_lt_of_lt <| lt_of_le_of_ne (hst e hes) het
+    obtain ⟨f', hsf', hcardf'⟩ := ih hdvd' hchain' hpgroup' hcard'
+    let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else (f' (x.castPred hx)).map t.subtype
+    have hf : StrictMono f := fun x y h ↦ by
+      by_cases hy : y = Fin.last (n + 1)
+      · simp only [f, Fin.ne_last_of_lt h, hy, ↓reduceDIte]
+        apply lt_of_le_of_ne (map_subtype_le _)
+        grind [card_map_of_injective t.subtype_injective, Nat.pow_right_inj hp.one_lt]
+      · simpa [f, Fin.ne_last_of_lt h, hy] using h
+    refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
+    · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
+      by_cases hgt : g = t
+      · use Fin.last (n + 1)
+        simp [f, hgt]
+      have hgs' : g.subgroupOf t ∈ Set.range f' := by grind
+      obtain ⟨x, hx⟩ := Set.mem_range.mp hgs'
+      exact ⟨x.castSucc, by simp [f, hx, hst g hg]⟩
+    · simp only [OrderEmbedding.coe_ofStrictMono, f]
+      split_ifs with hx
+      · simp [hx, htcard]
+      · rw [card_map_of_injective t.subtype_injective, hcardf']
+        simp
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
