@@ -214,6 +214,8 @@ def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   surj := by
+    rw [funext (MvPolynomial.aeval_sumElim (f := P.val) (g := Q.val))]
+    refine Q.surj.comp ?_
     sorry
   -- σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
   --   rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
@@ -542,7 +544,6 @@ lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p
     (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
   DFunLike.congr_fun this p
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma toAlgHom_ofComp_surjective (Q : Generators S T ι') (P : Generators R S ι) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
   intro p
@@ -640,7 +641,6 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
     AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   let : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
@@ -732,7 +732,6 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
     simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
       coeff]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
