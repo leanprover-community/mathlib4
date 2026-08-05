@@ -65,7 +65,7 @@ theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]
     congr
-    rwa [Set.mem_setOf, weight_apply, sum_fintype] at hm
+    rwa [Set.mem_ofPred, weight_apply, sum_fintype] at hm
     intro; apply zero_smul
   · simp
   · simp_rw [map_add, left_distrib, smul_add, sum_add_distrib, hp, hq]

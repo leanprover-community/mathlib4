@@ -76,25 +76,25 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
   simp_rw [piecewise_apply] at hs hr
   split_ifs at hs with hp
   · refine ⟨⟨{ j | r j i → j ∈ p }, piecewise x₁ x { j | r j i }, x₂⟩,
-      .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .fst ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
     · simp only [if_pos hj]
     · split_ifs with hi
       · rwa [hr i hi, if_pos hp] at hs
       · assumption
     · ext1 j
-      simp only [piecewise_apply, Set.mem_setOf_eq]
+      simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₂, if_pos (h₁ h₂)]
       · rw [Classical.not_imp] at h₁
         rw [hr j h₁.1, if_neg h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
-      .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
+      .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_ofPred_eq]
     · exact if_pos hj
     · split_ifs with hi
       · rwa [hr i hi, if_neg hp] at hs
       · assumption
     · ext1 j
-      simp only [piecewise_apply, Set.mem_setOf_eq]
+      simp only [piecewise_apply, Set.mem_ofPred_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₁.1, if_pos h₁.2]
       · rw [hr j h₂, if_neg]

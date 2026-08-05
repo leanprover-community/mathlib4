@@ -178,7 +178,7 @@ lemma not_LSeriesSummable_at_one {N : ℕ} (hN : N ≠ 0) (χ : DirichletCharact
   refine fun h ↦ (Real.not_summable_indicator_one_div_natCast hN 1) ?_
   refine h.norm.of_nonneg_of_le (fun m ↦ Set.indicator_apply_nonneg (fun _ ↦ by positivity))
     (fun n ↦ ?_)
-  simp only [norm_term_eq, Set.indicator, Set.mem_setOf_eq]
+  simp only [norm_term_eq, Set.indicator, Set.mem_ofPred_eq]
   split_ifs with h₁ h₂
   · simp [h₂]
   · simp [h₁, χ.map_one]
@@ -429,7 +429,7 @@ of the L-series of the constant sequence `1` on its domain of convergence `re s 
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
   refine (LSeries_congr (fun {n} _ ↦ ?_) s).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
-  simp [Subsingleton.eq_one (n : ZMod 1)]
+  simp [Subsingleton.eq_one (α := ZMod 1)]
 
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the Riemann zeta function on its domain of convergence `re s > 1`. -/

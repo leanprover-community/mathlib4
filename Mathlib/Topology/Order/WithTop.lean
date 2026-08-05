@@ -76,7 +76,7 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
   have h_basis : IsTopologicalBasis basis := isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom c hc
   rw [OrderTopology.topology_eq_generate_intervals (α := WithTop ι)]
   apply le_generateFrom_iff_subset_isOpen.2
-  simp only [setOf_subset_setOf, forall_exists_index]
+  simp only [ofPred_subset_ofPred, forall_exists_index]
   rintro u a (rfl | rfl)
   -- Consider an interval of the form `Ioi a`. We should cover it by finite intersections of
   -- our sets.
@@ -233,7 +233,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
     Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
   have : Nonempty ι := ⟨untop a.1 a.2⟩
-  simp only [← untopA_eq_untop, ne_eq, coe_setOf, mem_setOf_eq]
+  simp only [← untopA_eq_untop, ne_eq, coe_ofPred, mem_ofPred_eq]
   exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
 
 @[to_dual]

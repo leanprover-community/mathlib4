@@ -307,7 +307,7 @@ theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := b
 
 lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
     Topology.IsOpenEmbedding (stereographic hv).symm :=
-  (stereographic hv).symm.to_isOpenEmbedding (by simp)
+  (stereographic hv).symm.isOpenEmbedding (by simp)
 
 end StereographicProjection
 
@@ -413,7 +413,8 @@ instance EuclideanSpace.instIsManifoldSphere
         OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
         PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
-        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
+        Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq,
+        Set.preimage_ofPred_eq]
       simp only [id, comp_apply, OpenPartialHomeomorph.coe_toPartialEquiv_symm,
         innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)

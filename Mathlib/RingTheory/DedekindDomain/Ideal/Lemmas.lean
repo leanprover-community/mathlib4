@@ -102,7 +102,7 @@ theorem isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
   refine ⟨?_, fun hxy => ?_⟩
   · rintro rfl
     rw [← one_eq_top] at h
-    exact h.not_unit isUnit_one
+    exact h.not_isUnit isUnit_one
   · simp only [← dvd_span_singleton, ← span_singleton_mul_span_singleton] at hxy ⊢
     exact h.dvd_or_dvd hxy
 
@@ -155,7 +155,7 @@ open UniqueFactorizationMonoid in
 theorem mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
     [Algebra R A] [IsDomain R] [IsTorsionFree R A] (hp : p ≠ ⊥) {P : Ideal A} :
     P ∈ p.primesOver A ↔ P ∈ normalizedFactors (map (algebraMap R A) p) := by
-  rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
+  rw [primesOver, Set.mem_ofPred_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
     liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
   intro hP
   refine ⟨fun h ↦ le_of_eq h, fun h' ↦ ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h').symm⟩
