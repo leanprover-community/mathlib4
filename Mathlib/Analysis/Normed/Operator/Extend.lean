@@ -244,7 +244,7 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂}
 variable (f : E →ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
 
-/-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] Fₗ` between
+/-- Extend a linear map `f : E →ₛₗ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] Fₗ` between
 Banach spaces, using a dense linear map `e₁ : E →ₗ[𝕜] Eₗ` and a linear map `e₂ : F →ₗ[𝕜₂] Fₗ`
 together with the norm equality `‖e₂ (f x)‖ = ‖e₁ x‖` for all `x : E`. -/
 def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) :
