@@ -617,11 +617,11 @@ theorem mvfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq (hg : MDiffAt[u] g 
     d[s] (g ∘ f) x = (d[u] g y).comp (mfderiv[s] f x) :=
   mfderivWithin_comp_of_preimage_mem_nhdsWithin_of_eq x hg hf h hxs hy
 
-theorem mvfderiv_comp_mvfderivWithin (hg : MDiffAt g (f x)) (hf : MDiffAt[s] f x)
+theorem mvfderiv_comp_mfderivWithin (hg : MDiffAt g (f x)) (hf : MDiffAt[s] f x)
     (hxs : UniqueMDiffAt[s] x) : d[s] (g ∘ f) x = (d% g (f x)).comp (mfderiv[s] f x) :=
   mfderiv_comp_mfderivWithin x hg hf hxs
 
-theorem mvfderiv_comp_mvfderivWithin_of_eq {x : M'} (hg : MDiffAt g y) (hf : MDiffAt[s] f x)
+theorem mvfderiv_comp_mfderivWithin_of_eq {x : M'} (hg : MDiffAt g y) (hf : MDiffAt[s] f x)
     (hxs : UniqueMDiffAt[s] x) (hy : f x = y) : d[s] (g ∘ f) x = (d% g y).comp (mfderiv[s] f x) :=
   mfderiv_comp_mfderivWithin_of_eq hg hf hxs hy
 
