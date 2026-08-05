@@ -13,8 +13,8 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 
 ## Main definitions
 
-* `Group.Generators G α`: The generators of a group are given by a generating family indexed by `α`
-and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) = ⊤`.
+* `Group.Generators G ι`: The generators of a group are given by a generating family indexed by `ι`
+and an assignment `val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`.
 
 ## Main results
 
@@ -25,7 +25,7 @@ and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) =
 
 ## Implementation notes
 
-* The index type `α` is a parameter, not a field, following the pattern of `Algebra.Generators`.
+* The index type `ι` is a parameter, not a field, following the pattern of `Algebra.Generators`.
 * Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`,
   it just bundles a proof of surjectivity.
 
@@ -40,25 +40,25 @@ group generators, generating set, finitely generated
 
 @[expose] public section
 
-variable {G H α β : Type*} [Group G] [Group H]
+variable {G H ι ι' : Type*} [Group G] [Group H]
 
-/-- The generators of a group are given by a generating family indexed by `α` and an assignment
-`val : α → G` such that `Subgroup.closure (Set.range val) = ⊤`. -/
-structure Group.Generators (G : Type*) [Group G] (α : Type*) where
-  /-- The generating family itself: `val a` is the element of `G` indexed by `a : α`. -/
-  val : α → G
+/-- The generators of a group are given by a generating family indexed by `ι` and an assignment
+`val : ι → G` such that `Subgroup.closure (Set.range val) = ⊤`. -/
+structure Group.Generators (G : Type*) [Group G] (ι : Type*) where
+  /-- The generating family itself: `val i` is the element of `G` indexed by `i : ι`. -/
+  val : ι → G
   /-- The subgroup closure of the generators is the whole group. -/
   closure_eq_top : Subgroup.closure (Set.range val) = ⊤
 
 namespace Group.Generators
 
-variable (P : Group.Generators G α)
+variable (P : Group.Generators G ι)
 
 theorem lift_val_surjective : Function.Surjective (FreeGroup.lift P.val) :=
   FreeGroup.lift_surjective_iff_closure_range_eq_top.mpr P.closure_eq_top
 
 /-- If two homomorphisms coincide on the elements of a generating family, then they are equal. -/
-theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ a, f (P.val a) = g (P.val a)) :
+theorem hom_ext {M : Type*} [Monoid M] (f g : G →* M) (h : ∀ i, f (P.val i) = g (P.val i)) :
     f = g := MonoidHom.eq_of_eqOn_dense P.closure_eq_top (Set.forall_mem_range.mpr h)
 
 /-- The generating family obtained using a generating set `S : Set G`. -/
@@ -72,29 +72,29 @@ lemma ofSet_val {S : Set G} (hS : Subgroup.closure S = ⊤) :
   rfl
 
 /-- The transport of a generating family along a surjective homomorphism. -/
-protected def map (f : G →* H) (hf : Function.Surjective f) : Group.Generators H α where
+protected def map (f : G →* H) (hf : Function.Surjective f) : Group.Generators H ι where
   val := f ∘ P.val
   closure_eq_top := by
     rw [Set.range_comp, ← MonoidHom.map_closure, P.closure_eq_top,
       Subgroup.map_top_of_surjective f hf]
 
 @[simp]
-lemma map_val (P : Group.Generators G α) (f : G →* H) (hf : Function.Surjective f) :
+lemma map_val (P : Group.Generators G ι) (f : G →* H) (hf : Function.Surjective f) :
     (P.map f hf).val = f ∘ P.val :=
   rfl
 
 /-- The transport of a generating family along an equivalence of index types. -/
-def reindex (P : Group.Generators G α) (e : β ≃ α) : Group.Generators G β where
+def reindex (P : Group.Generators G ι) (e : ι' ≃ ι) : Group.Generators G ι' where
   val := P.val ∘ e
   closure_eq_top := by
     rw [Set.range_comp, EquivLike.range_eq_univ, Set.image_univ, P.closure_eq_top]
 
 @[simp]
-lemma reindex_val (P : Group.Generators G α) (e : β ≃ α) : (P.reindex e).val = P.val ∘ e :=
+lemma reindex_val (P : Group.Generators G ι) (e : ι' ≃ ι) : (P.reindex e).val = P.val ∘ e :=
   rfl
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
-theorem fg [Finite α] (P : Group.Generators G α) : Group.FG G :=
+theorem fg [Finite ι] (P : Group.Generators G ι) : Group.FG G :=
   Group.fg_of_surjective P.lift_val_surjective
 
 end Group.Generators
