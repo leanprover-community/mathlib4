@@ -15,7 +15,7 @@ order type of the ordinals. These are related via `Cardinal.univ.ord = Ordinal.u
 `Ordinal.univ.card = Cardinal.univ`.
 
 The cardinal `Cardinal.univ` is strongly inaccessible. This reflects the fact that in ZFC, the
-cardinals form a proper class. See `IsInaccessible.univ` for a proof.
+cardinals form a proper class. See `Cardinal.IsInaccessible.univ` for a proof.
 
 ## Implementation notes
 
@@ -33,7 +33,7 @@ open Ordinal in
 -- intended to be used with explicit universe parameters
 /-- The ordinal `univ.{u, v}` is the order type of `Ordinal.{u}` or `Cardinal.{u}`, as an element of
 `Ordinal.{v}` (when `u < v`). -/
-@[pp_with_univ, nolint checkUnivs]
+@[pp_with_univ]
 def Ordinal.univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (typeLT Ordinal)
 
@@ -42,7 +42,7 @@ open Cardinal in
 -- intended to be used with explicit universe parameters
 /-- The cardinal `univ.{u, v}` is the cardinality of `Ordinal.{u}` or `Cardinal.{u}`, as an element
 of `Cardinal.{v}` (when `u < v`). -/
-@[pp_with_univ, nolint checkUnivs]
+@[pp_with_univ]
 def Cardinal.univ : Cardinal.{max (u + 1) v} :=
   lift.{v, u + 1} #Ordinal
 

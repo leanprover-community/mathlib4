@@ -73,8 +73,8 @@ attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_
   LinearEquiv.coe_trans LinearEquiv.trans_symm
   LinearEquiv.refl_toLinearMap TensorProduct.toLinearMap_congr
   LinearEquiv.comp_symm LinearEquiv.symm_comp LinearEquiv.symm_symm
-  LinearEquiv.coe_lTensor LinearEquiv.coe_lTensor_symm
-  LinearEquiv.coe_rTensor LinearEquiv.coe_rTensor_symm
+  LinearEquiv.coe_lTensor LinearEquiv.symm_lTensor
+  LinearEquiv.coe_rTensor LinearEquiv.symm_rTensor
   IsCocomm.comm_comp_comul TensorProduct.AlgebraTensorModule.map_eq
   TensorProduct.AlgebraTensorModule.assoc_eq TensorProduct.AlgebraTensorModule.rightComm_eq
   TensorProduct.tensorTensorTensorComm TensorProduct.AlgebraTensorModule.tensorTensorTensorComm

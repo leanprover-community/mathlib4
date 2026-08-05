@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 module
 
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Alias
 
@@ -38,12 +39,10 @@ compile_inductive% BinaryTree
 @[deprecated (since := "2026-06-07"), reducible]
 alias Tree := BinaryTree
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.nil`. -/
 @[deprecated BinaryTree.nil (since := "2026-06-07")]
 abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.node`. -/
 @[deprecated BinaryTree.node (since := "2026-06-07")]
 abbrev Tree.node.{u} {α : Type u}
@@ -70,7 +69,6 @@ def traverse
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.traverse`. -/
 @[deprecated BinaryTree.traverse (since := "2026-06-07")]
 abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
@@ -84,7 +82,6 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.map`. -/
 @[deprecated BinaryTree.map (since := "2026-06-07")]
 abbrev _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
@@ -114,7 +111,6 @@ def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.numNodes`. -/
 @[deprecated BinaryTree.numNodes (since := "2026-06-07")]
 abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
@@ -125,7 +121,6 @@ def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.numLeaves`. -/
 @[deprecated BinaryTree.numLeaves (since := "2026-06-07")]
 abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
@@ -136,7 +131,6 @@ def height : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => max a.height b.height + 1
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.height`. -/
 @[deprecated BinaryTree.height (since := "2026-06-07")]
 abbrev _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
@@ -160,7 +154,6 @@ def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.left`. -/
 @[deprecated BinaryTree.left (since := "2026-06-07")]
 abbrev _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
@@ -171,7 +164,6 @@ def right : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ _l r => r
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.right`. -/
 @[deprecated BinaryTree.right (since := "2026-06-07")]
 abbrev _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
@@ -185,7 +177,6 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
 
-set_option linter.deprecated false in
 /-- **Alias** of `BinaryTree.unitRecOn`. -/
 @[deprecated BinaryTree.unitRecOn (since := "2026-06-07")]
 abbrev _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)

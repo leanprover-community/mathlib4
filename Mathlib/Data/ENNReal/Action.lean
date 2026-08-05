@@ -58,6 +58,7 @@ noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M]
 noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   fast_instance% Module.compHom M ofNNRealHom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]

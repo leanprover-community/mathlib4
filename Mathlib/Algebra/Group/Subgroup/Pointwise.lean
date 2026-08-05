@@ -552,6 +552,7 @@ theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj 
     ← mul_assoc, inv_mul_cancel, one_mul]
   exact hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
     H.normalCore = ⨅ (g : ConjAct G), g • H := by
   ext g

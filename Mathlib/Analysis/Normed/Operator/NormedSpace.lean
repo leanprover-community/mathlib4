@@ -303,7 +303,7 @@ variable (𝕜)
 @[simp]
 theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ := by
   have hx : 0 < ‖x‖ := norm_pos_iff.mpr h
-  haveI : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
+  have : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
   exact ContinuousLinearMap.homothety_norm _ fun y =>
     homothety_inverse _ hx _ (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h) _
 
@@ -438,7 +438,7 @@ lemma ContinuousLinearMap.norm_inl [SeminormedAddCommGroup E] [NontrivialTopolog
     ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
 
-lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E] [NontrivialTopology E]
+lemma ContinuousLinearMap.norm_inr [SeminormedAddCommGroup E]
     [NormedSpace 𝕜 E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap
