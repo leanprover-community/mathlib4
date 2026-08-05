@@ -132,10 +132,18 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
 def iInfPrimeCompl {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] : Submonoid α :=
   ⨅ i, (P i).primeCompl
 
+lemma iInfPrimeCompl_def {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] :
+    iInfPrimeCompl P = ⨅ i, (P i).primeCompl := rfl
+
 @[simp]
 theorem mem_iInfPrimeCompl_iff {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] {x : α} :
     x ∈ iInfPrimeCompl P ↔ ∀ i, x ∉ P i := by
   simp [iInfPrimeCompl]
+
+@[simp]
+theorem iInfPrimeCompl_eq_PrimeCompl {ι : Type*} [Nonempty ι] (P : Ideal α) [P.IsPrime] :
+    iInfPrimeCompl (fun _ : ι ↦ P) = P.primeCompl := by
+  rw [iInfPrimeCompl_def, iInf_const]
 
 end Ideal
 

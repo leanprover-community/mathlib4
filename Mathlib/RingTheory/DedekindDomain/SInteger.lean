@@ -87,8 +87,14 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
 /-- The submonoid of non-zero elements of `R` that are not contained in any prime ideal away from
     `S`. -/
 def submonoid : Submonoid R :=
-  Ideal.iInfPrimeCompl (fun v : {v : HeightOneSpectrum R // v ∉ S} ↦ v.1.asIdeal) ⊓
+  Ideal.iInfPrimeCompl (fun v : {v : HeightOneSpectrum R | v ∉ S} ↦ v.1.asIdeal) ⊓
     nonZeroDivisors R
+
+omit [IsDedekindDomain R] in
+theorem submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
+    ({v | v ≠ P}).submonoid = Ideal.primeCompl P ⊓ nonZeroDivisors R := by
+  ext
+  simp [Set.submonoid]
 
 end Set
 
