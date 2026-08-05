@@ -808,6 +808,7 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
     refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩
     obtain ⟨h₁, -, h₂⟩ := hf ⟨U, hU⟩ trivial
     exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
+    
 end Compacts
 
 namespace NonemptyCompacts
@@ -1131,10 +1132,10 @@ theorem locallyConnectedSpace_iff :
     IsTopologicalBasis.isOpen_isPreconnected.exists_subset_of_mem_open
       (show {x} ∈ {K : NonemptyCompacts α | ↑K ⊆ U} by simpa)
       (isOpen_subsets_of_isOpen hU)
-  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, vietoris.isPreconnected_biUnion hV₂ (by fun_prop)
-    ⟨{x}, hxV, isPreconnected_singleton⟩⟩, ?_⟩
+  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, ?_⟩, ?_⟩
   · filter_upwards [continuous_singleton.tendsto x (hV₁.mem_nhds hxV)] with y hy
     exact mem_iUnion₂_of_mem hy rfl
+  · exact vietoris.isPreconnected_biUnion hV₂ (by fun_prop) ⟨{x}, hxV, isPreconnected_singleton⟩
   · rwa [id, iUnion₂_subset_iff]
 
 @[simp]
