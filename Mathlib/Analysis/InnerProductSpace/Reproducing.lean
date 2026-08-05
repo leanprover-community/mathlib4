@@ -362,7 +362,7 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
 }
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
-  let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion 
+  let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
     h_lin with
     norm_map' x := by
