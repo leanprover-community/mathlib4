@@ -89,17 +89,11 @@ there exists `η` such that two functions bounded by `η` in `L^p` have a sum bo
 could take `η = δ / 2` for `p ≥ 1`, but the point of the lemma is that it works also for `p < 1`.
 -/
 theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
-    ∃ η : ℝ≥0∞,
-      0 < η ∧
-        ∀ (f g : α → ε),
-          AEStronglyMeasurable (f + g) μ →
-          eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
-  have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0)
-        (𝓝 (LpAddConst p * (0 + 0))) :=
+    ∃ η : ℝ≥0∞, 0 < η ∧ ∀ (f g : α → ε), AEStronglyMeasurable (f + g) μ →
+      eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
+  have : Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
     (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
-          (Or.inr (LpAddConst_lt_top p).ne)).mono_left
-      nhdsWithin_le_nhds
+      (Or.inr (LpAddConst_lt_top p).ne)).mono_left nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
   refine ⟨η, ηpos, fun f g hfg Hf Hg => ?_⟩
@@ -109,16 +103,20 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
     _ ≤ LpAddConst p * (η + η) := by gcongr
     _ < δ := hη
 
-theorem eLpNorm_sub_le' {f g : α → E}
-    (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) :
+theorem eLpNorm_sub_le' {f g : α → E} (p : ℝ≥0∞) :
     eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+  by_cases! hf : ¬ AEStronglyMeasurable f μ
+  · rw [eLpNorm_of_not_aestronglyMeasurable hf, top_add, mul_top (LpAddConst_ne_zero p)]
+    exact le_top
+  by_cases! hg : ¬ AEStronglyMeasurable g μ
+  · rw [eLpNorm_of_not_aestronglyMeasurable hg, add_top, mul_top (LpAddConst_ne_zero p)]
+    exact le_top
   simpa only [sub_eq_add_neg, eLpNorm_neg] using
     eLpNorm_add_le' (f := f) (g := -g) (by simpa only [sub_eq_add_neg] using hf.sub hg) p
 
-theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
-  simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
+theorem eLpNorm_sub_le {f g : α → E} (hp : 1 ≤ p) :
+    eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
+  simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' p
 
 theorem eLpNorm_add_lt_top (hf : MemLp f p μ) (hg : MemLp g p μ)
     (hfg : AEStronglyMeasurable (f + g) μ) :

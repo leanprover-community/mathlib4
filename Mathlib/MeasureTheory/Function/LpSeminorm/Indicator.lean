@@ -62,7 +62,7 @@ lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : MeasurableSet s) :
 lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
     eLpNorm f p (μ.restrict s) ≤ eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · exact eLpNorm_mono_measure f Measure.restrict_le_self hf
+  · exact eLpNorm_mono_measure f Measure.restrict_le_self hf.restrict
   · rw [eLpNorm_of_not_aestronglyMeasurable hf]
     exact le_top
 

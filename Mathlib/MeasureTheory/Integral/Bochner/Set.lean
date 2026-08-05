@@ -991,7 +991,7 @@ theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
   rw [Lp.norm_def, Lp.norm_def,
     eLpNorm_congr_ae (MemLp.coeFn_toLp _)]
   refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
-  exact eLpNorm_mono_measure _ Measure.restrict_le_self (Lp.aestronglyMeasurable f)
+  exact eLpNorm_mono_measure _ Measure.restrict_le_self (Lp.aestronglyMeasurable f).restrict
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in

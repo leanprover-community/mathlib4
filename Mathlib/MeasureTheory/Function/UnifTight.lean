@@ -314,7 +314,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       = eLpNorm (Eᶜ.indicator (f n) - Eᶜ.indicator g) p μ := by
         rw [(Eᶜ.indicator_sub' _ _)]
     _ ≤ eLpNorm (Eᶜ.indicator (f n)) p μ + eLpNorm (Eᶜ.indicator g) p μ := by
-        apply eLpNorm_sub_le (by assumption) (by assumption) hp
+        apply eLpNorm_sub_le hp
     _ ≤ ε / 3 + ε / 3 := add_le_add hfnEcε hgEcε
   -- finally, combine interior and exterior estimates
   calc

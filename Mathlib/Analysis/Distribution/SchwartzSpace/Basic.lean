@@ -1293,7 +1293,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     have hf' : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖) ^ k • f x) μ :=
       ((continuous_const.add continuous_norm).pow k).aestronglyMeasurable.smul
         f.continuous.aestronglyMeasurable
-    exact eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ hpow hf' (hpow.smul hf')
+    exact eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ hpow hf'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr

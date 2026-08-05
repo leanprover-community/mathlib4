@@ -43,7 +43,7 @@ theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ 
 theorem eLpNorm_const_smul_le :
     eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hf.const_smul c) hf
+  · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hf.const_smul c)
       (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
   rw [eLpNorm_of_not_aestronglyMeasurable hf]
   rcases eq_or_ne c 0 with rfl | hc
@@ -129,8 +129,7 @@ theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Meas
 lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F)
     (hf : AEStronglyMeasurable f μ) :
     eLpNorm (n • f) p μ = n * eLpNorm f p μ := by
-  simpa [Nat.cast_smul_eq_nsmul] using
-    eLpNorm_const_smul (n : ℝ) f p μ (hf.const_smul (n : ℝ))
+  simpa [Nat.cast_smul_eq_nsmul] using eLpNorm_const_smul (n : ℝ) f p μ (hf.const_smul (n : ℝ))
 
 end NormedSpace
 

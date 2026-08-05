@@ -446,8 +446,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
 Lp-convergence for all `p ≠ 0`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {f : ι → α → E}
     {g : α → E} {l : Filter ι} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hg : AEStronglyMeasurable g μ)
-    (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
+    (hg : AEStronglyMeasurable g μ) (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   refine tendstoInMeasure_of_ne_top fun δ hδ hδ_top ↦ ?_
   simp only [eLpNorm_exponent_top ((hf _).sub hg), eLpNormEssSup] at hfg
@@ -463,9 +462,8 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {
   simp [edist_eq_enorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
-    {l : Filter ι} (hp_ne_zero : p ≠ 0)
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
+theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E] {l : Filter ι}
+    (hp_ne_zero : p ≠ 0) (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
   by_cases hp_ne_top : p = ∞
   · subst hp_ne_top

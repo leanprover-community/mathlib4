@@ -333,7 +333,7 @@ theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
   have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
-    (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g) h p
+    (Lp.aestronglyMeasurable f) h p
   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
   · finiteness
@@ -940,7 +940,9 @@ private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
   simp only [Lp.enorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
   apply eLpNorm_le_of_measure_le_smul h
-  simpa using ((Lp.aestronglyMeasurable f).mono_ac (Measure.smul_absolutelyContinuous (c := 1)))
+  have := (Lp.aestronglyMeasurable f).mono_ac (Measure.smul_absolutelyContinuous (c := 1))
+  simp only [one_smul] at this
+  exact (this.smul_measure c).mono_measure h
 
 private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :

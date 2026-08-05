@@ -57,7 +57,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
       apply ENNReal.mul_lt_top ?_ ?_
       · apply lt_of_le_of_lt ?_ h'f.lt_top
         gcongr
-        · exact hf i
+        · exact (hf i).restrict
         · exact Measure.restrict_le_self
       · simp only [MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, ENNReal.toReal_one,
           ne_eq, one_ne_zero, not_false_eq_true, div_self, one_div]

@@ -1038,7 +1038,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
         (Lp.aestronglyMeasurable g).sub (Lp.aestronglyMeasurable f)
       have hmeas' : AEStronglyMeasurable (⇑g - ⇑f) (c' • μ) :=
         hmeas.mono_ac Measure.smul_absolutelyContinuous
-      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le hmeas').trans_eq ?_
+      refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le (hmeas'.mono_measure hμ'_le)).trans_eq ?_
       rw [eLpNorm_smul_measure_of_ne_zero hc'0 _ _ _ hmeas, smul_eq_mul]
       simp
     _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul

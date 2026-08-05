@@ -73,8 +73,7 @@ theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty �
   exact ENNReal.essSup_liminf_le _
 
 theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E)
-    (hf_lim : AEStronglyMeasurable f_lim μ)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E) (hf_lim : AEStronglyMeasurable f_lim μ)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim p μ ≤ atTop.liminf fun n => eLpNorm (f n) p μ := by
   obtain rfl | hp0 := eq_or_ne p 0

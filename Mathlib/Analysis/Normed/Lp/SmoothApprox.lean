@@ -96,9 +96,7 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
     hg₁.exist_eLpNorm_sub_le_of_continuous (p := p) μ hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
   have : f - g' = (f - g) - (g' - g) := by simp
-  grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
-    (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
-    eLpNorm_sub_comm (f := g') (g := g) (p := p) (μ := μ),
+  grw [this, eLpNorm_sub_le hp₂, hg₂, eLpNorm_sub_comm (f := g') (g := g) (p := p) (μ := μ),
     hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
 theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤)

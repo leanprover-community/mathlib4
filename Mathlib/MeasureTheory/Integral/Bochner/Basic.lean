@@ -409,7 +409,7 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : AEStronglyMeasurable 
     have h_restrict : Tendsto (fun i ↦ eLpNorm (F i - f) 1 (μ.restrict s)) l (𝓝 0) :=
       tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hF'
         (Eventually.of_forall fun _ ↦ zero_le) <| hFi.mono fun i hi ↦
-          eLpNorm_mono_measure _ Measure.restrict_le_self (hi.1.sub hfi)
+          eLpNorm_mono_measure _ Measure.restrict_le_self (hi.1.sub hfi).restrict
     apply h_restrict.congr'
     filter_upwards [hFi] with i hi
     rw [eLpNorm_one_eq_lintegral_enorm (hi.1.sub hfi).restrict]

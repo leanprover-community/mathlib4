@@ -300,17 +300,15 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
   [NormedAddCommGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
-    (φ : α → 𝕜) (hφ : AEStronglyMeasurable φ μ)
-    (hφf : AEStronglyMeasurable (φ • f) μ) :
+    (φ : α → 𝕜) (hφ : AEStronglyMeasurable φ μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
-  simpa using! (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hφ hf (· • ·) 1 hφf
+  simpa using! (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hφ hf (· • ·) 1 (hφ.smul hf)
     (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
-    (hφ : AEStronglyMeasurable φ μ) (hf : AEStronglyMeasurable f μ)
-    (hφf : AEStronglyMeasurable (φ • f) μ) :
+    (hφ : AEStronglyMeasurable φ μ) (hf : AEStronglyMeasurable f μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
-  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f hf (· • ·) 1 hφf
+  simpa using! (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f hf (· • ·) 1 (hφ.smul hf)
     (.of_forall fun _ => by simpa using! nnnorm_smul_le _ _) :)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
