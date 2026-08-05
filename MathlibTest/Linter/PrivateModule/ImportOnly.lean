@@ -1,7 +1,7 @@
 module
 
+import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Linter.PrivateModule
-import Mathlib.Logic.Basic
 
 set_option linter.privateModule true
 

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Order.TypeTags
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Tactic.Contrapose

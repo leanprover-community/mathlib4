@@ -5,8 +5,8 @@ Authors: Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Logic.IsEmpty.Defs
 public import Mathlib.Logic.Relator
 
 /-!
