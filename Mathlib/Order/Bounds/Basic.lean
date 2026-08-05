@@ -604,9 +604,11 @@ end
 theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
   Iff.rfl
 
-theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
-  simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
-    bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
+theorem subset_Icc_iff : s ⊆ Icc a b ↔ a ∈ lowerBounds s ∧ b ∈ upperBounds s :=
+  subset_inter_iff.trans (mem_lowerBounds_iff_subset_Ici.and mem_upperBounds_iff_subset_Iic)
+
+theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b :=
+  exists_and_exists_comm.trans <| exists₂_congr fun _ _ ↦ subset_Icc_iff.symm
 
 /-!
 #### Univ

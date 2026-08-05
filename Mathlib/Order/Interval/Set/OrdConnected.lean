@@ -64,6 +64,10 @@ protected theorem Icc_subset (s : Set α) [hs : OrdConnected s] {x y} (hx : x �
     Icc x y ⊆ s :=
   hs.out hx hy
 
+theorem OrdConnected.eq_Icc {a b : α} (hs : OrdConnected s) (ha : IsLeast s a)
+    (hb : IsGreatest s b) : s = Icc a b :=
+  Subset.antisymm (fun _ hx ↦ ⟨ha.2 hx, hb.2 hx⟩) (hs.out ha.1 hb.1)
+
 end Preorder
 
 end Set
