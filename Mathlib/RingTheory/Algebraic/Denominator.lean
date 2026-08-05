@@ -5,12 +5,8 @@ Authors: Michail Karatarakis
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Denominators of elements of an algebra
@@ -40,9 +36,9 @@ denominator is `0`. See the `example` below, taking `x` to be the variable in `�
 
 public section
 
+variable (R : Type*) {S : Type*} [CommRing R]
+variable [IsPrincipalIdealRing R] [CommRing S] [Algebra R S]
 namespace Algebra
-
-variable (R : Type*) [CommRing R] [IsPrincipalIdealRing R] {S : Type*} [CommRing S] [Algebra R S]
 
 /-- The denominator of an element `x` of an `R`-algebra: a generator of the ideal of scalars
 `r : R` such that `r • x` is integral over `R`. It is nonzero as soon as `x` is algebraic over
@@ -50,7 +46,6 @@ variable (R : Type*) [CommRing R] [IsPrincipalIdealRing R] {S : Type*} [CommRing
 noncomputable def denominator (x : S) : R :=
   Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x})
 
--- `denominator` is not `@[expose]`, so term-mode `rfl` is rejected in this exported lemma.
 lemma denominator_def (x : S) :
     denominator R x =
       Submodule.IsPrincipal.generator ((integralClosure R S).toSubmodule.colon {x}) := by
@@ -66,7 +61,7 @@ theorem denominator_dvd_iff {r : R} {x : S} :
 theorem isIntegral_denominator_smul (x : S) : IsIntegral R (denominator R x • x) :=
   denominator_dvd_iff.mp dvd_rfl
 
-/-- The natural-number denominator of an element `x` of a ring: the absolute value of the
+/-- The natural-number denominator of an element `x` of a ring: it is the absolute value of the
 denominator of `x` over `ℤ`. -/
 noncomputable def natDenominator (x : S) : ℕ :=
   (denominator ℤ x).natAbs
@@ -84,9 +79,6 @@ theorem isIntegral_natDenominator_smul (x : S) : IsIntegral ℤ (natDenominator 
 end Algebra
 
 namespace IsAlgebraic
-
-variable {R : Type*} [CommRing R] [IsPrincipalIdealRing R]
-variable {S : Type*} [CommRing S] [Algebra R S]
 
 theorem denominator_ne_zero {x : S} (hx : IsAlgebraic R x) : Algebra.denominator R x ≠ 0 := by
   obtain ⟨r, hr0, hr⟩ := hx.exists_integral_multiple
