@@ -481,13 +481,6 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
     rw [natDegree_divByMonic p (monic_X_sub_C a), natDegree_X_sub_C]
     exact (Nat.pred_lt hp).trans_le h
 
-variable (R) in
-theorem not_isField : ¬IsField R[X] := by
-  nontriviality R
-  intro h
-  let := h.toField
-  simpa using congr_arg natDegree (monic_X.eq_one_of_isUnit <| monic_X (R := R).ne_zero.isUnit)
-
 section multiplicity
 
 /-- An algorithm for deciding polynomial divisibility.
