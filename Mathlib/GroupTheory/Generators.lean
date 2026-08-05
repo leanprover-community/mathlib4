@@ -25,17 +25,10 @@ and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) =
 
 ## Implementation notes
 
-* The index type `α` is a parameter, not a field. An index stored inside a term has transparency
-  issues with `rw`, `simp`, and instance search. `Algebra.Generators` unbundled its `vars` field for
-  these reasons (#25085).
-* The generating condition is the closure equation. Terms of this structure are built from
-  mathlib's generation results, and those tend toend in `closure … = ⊤`. The lemma
-   `lift_val_surjective` bridges with the alternative characterization by
-  `Function.Surjective (FreeGroup.lift P.val)`.
-* Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`. A
-  section earns its keep when elements have a standard form, as `a / rⁿ` does in
-  `Algebra.Generators.localizationAway`. Groups have no such form in general, since the word
-  problem is undecidable.
+* The index type `α` is a parameter, not a field, following the pattern of `Algebra.Generators`.
+
+* Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`,
+  it just bundles a proof of surjectivity.
 
 ## References
 
