@@ -80,8 +80,9 @@ alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
 
 theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
   rw [isPGroup_iff_exponent_dvd_pow]
-  refine ⟨fun ⟨n, h⟩ ↦ ⟨n * Nat.card G, ?_⟩, .imp fun _ ↦ Group.exponent_dvd_nat_card.trans⟩
-  grw [Group.card_dvd_exponent_pow G, h, pow_mul]
+  rcases eq_or_ne p 0 with rfl | hp
+  · exact iff_of_true ⟨1, by simp⟩ ⟨1, by simp⟩
+  · simp_rw [Nat.exists_dvd_pow_iff NeZero.out hp, Group.primeFactors_exponent_eq_primeFactors_card]
 
 alias ⟨exists_card_dvd_pow, _⟩ := isPGroup_iff_card_dvd_pow
 
