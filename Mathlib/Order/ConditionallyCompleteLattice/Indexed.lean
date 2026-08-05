@@ -208,32 +208,6 @@ theorem ciInf_mono_of_forall_exists {ι'} [Nonempty ι'] {f : ι → α} {g : ι
     (hf : BddBelow <| range f) (h : ∀ i', ∃ i, f i ≤ g i') : ⨅ i, f i ≤ ⨅ i', g i' :=
   ciSup_mono_of_forall_exists (α := αᵒᵈ) hf h
 
-/-- A doubly indexed conditionally complete supremum equals the supremum along its diagonal when
-that diagonal is cofinal. Boundedness of the diagonal bounds the entire double family. -/
-theorem ciSup₂_eq_ciSup_diagonal {α : Type*} {ι : Sort*}
-    [ConditionallyCompleteLattice α] [Nonempty ι]
-    (f : ι → ι → α)
-    (h : ∀ i j, ∃ k, f i j ≤ f k k)
-    (hb : BddAbove (Set.range fun k ↦ f k k)) :
-    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
-  let b := Classical.choose hb
-  have hb' := Classical.choose_spec hb
-  have hf : ∀ i, BddAbove (range (f i)) := fun i ↦
-    ⟨b, by
-      rintro _ ⟨j, rfl⟩
-      obtain ⟨k, hik⟩ := h i j
-      exact hik.trans (hb' ⟨k, rfl⟩)⟩
-  have hfi : BddAbove (range fun i ↦ ⨆ j, f i j) :=
-    ⟨b, by
-      rintro _ ⟨i, rfl⟩
-      exact ciSup_le fun j ↦ by
-        obtain ⟨k, hik⟩ := h i j
-        exact hik.trans (hb' ⟨k, rfl⟩)⟩
-  apply le_antisymm
-  · exact ciSup_le fun i ↦ ciSup_mono_of_forall_exists hb (h i)
-  · exact ciSup_mono_of_forall_exists hfi fun k ↦
-      ⟨k, le_ciSup (hf k) k⟩
-
 /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
 theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
@@ -594,32 +568,6 @@ theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg 
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
 @[deprecated (since := "2026-05-03")] alias ciSup_mono' := ciSup_mono_of_forall_exists'
-
-/-- The bottomed linear-order version of `ciSup₂_eq_ciSup_diagonal`. No `Nonempty ι` assumption is
-needed because an empty indexed supremum is `⊥`. -/
-theorem ciSup₂_eq_ciSup_diagonal' {α : Type*} {ι : Sort*}
-    [ConditionallyCompleteLinearOrderBot α]
-    (f : ι → ι → α)
-    (h : ∀ i j, ∃ k, f i j ≤ f k k)
-    (hb : BddAbove (Set.range fun k ↦ f k k)) :
-    (⨆ i, ⨆ j, f i j) = ⨆ k, f k k := by
-  let b := Classical.choose hb
-  have hb' := Classical.choose_spec hb
-  have hf : ∀ i, BddAbove (range (f i)) := fun i ↦
-    ⟨b, by
-      rintro _ ⟨j, rfl⟩
-      obtain ⟨k, hik⟩ := h i j
-      exact hik.trans (hb' ⟨k, rfl⟩)⟩
-  have hfi : BddAbove (range fun i ↦ ⨆ j, f i j) :=
-    ⟨b, by
-      rintro _ ⟨i, rfl⟩
-      exact ciSup_le' fun j ↦ by
-        obtain ⟨k, hik⟩ := h i j
-        exact hik.trans (hb' ⟨k, rfl⟩)⟩
-  apply le_antisymm
-  · exact ciSup_le' fun i ↦ ciSup_mono_of_forall_exists' hb (h i)
-  · exact ciSup_mono_of_forall_exists' hfi fun k ↦
-      ⟨k, le_ciSup (hf k) k⟩
 
 theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
   refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
