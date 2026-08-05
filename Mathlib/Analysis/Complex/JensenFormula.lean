@@ -25,8 +25,8 @@ the setting where `g` is merely meromorphic. In that case, the `circleAverage (l
 equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros and
 poles of `g` within the ball.
 
-The Poisson-Jensen formula, formulated in `MeromorphicOn.log_norm_meromorphicTrailingCoeffAt`
-generalizes the Jensen formula to from the circle centre to an arbitrary interior point.
+The Poisson-Jensen formula, formulated in `MeromorphicOn.log_norm_meromorphicTrailingCoeffAt`,
+generalizes the Jensen formula from the circle centre to an arbitrary interior point.
 -/
 
 public section
