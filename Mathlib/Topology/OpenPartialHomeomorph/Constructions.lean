@@ -269,7 +269,7 @@ theorem subtypeRestr_def : e.subtypeRestr hs = (s.openPartialHomeomorphSubtypeCo
 
 @[simp, mfld_simps]
 theorem subtypeRestr_coe :
-    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.restrict ↑s (e : X → Y) :=
+    ((e.subtypeRestr hs : OpenPartialHomeomorph s Y) : s → Y) = Set.domRestrict ↑s (e : X → Y) :=
   rfl
 
 @[simp, mfld_simps]
@@ -312,7 +312,7 @@ theorem subtypeRestr_symm_apply {U : Opens X} (hU : Nonempty U)
     {y : Y} (hy : y ∈ (e.subtypeRestr hU).target) :
     (Subtype.val ∘ (e.subtypeRestr hU).symm) y = e.symm y := by
   rw [e.eq_symm_apply _ hy.1]
-  · change restrict _ e _ = _
+  · change domRestrict _ e _ = _
     rw [← e.subtypeRestr_coe hU, (e.subtypeRestr hU).right_inv hy]
   · have := OpenPartialHomeomorph.map_target _ hy
     rwa [e.subtypeRestr_source] at this
