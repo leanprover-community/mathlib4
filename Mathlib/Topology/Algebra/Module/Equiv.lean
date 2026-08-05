@@ -959,6 +959,9 @@ variable [IsTopologicalAddGroup M₄]
 def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) : (M × M₃) ≃L[R] M₂ × M₄ where
   __ := e.toLinearEquiv.skewProd e'.toLinearEquiv ↑f
   continuous_invFun := by
+    /- `fun_prop_simp` does not work here because `simp` results in subtraction on `M₃`. We cannot
+    use `ContinuousAddHom.isTopologicalAddGroup` to get `[IsTopologicalAddGroup M₃]` because it is
+    defined in a downstream file. -/
     eta_expand
     simp only [LinearEquiv.invFun_eq_symm, LinearEquiv.skewProd_symm_apply, coe_symm_toLinearEquiv]
     fun_prop
