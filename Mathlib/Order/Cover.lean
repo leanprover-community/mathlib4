@@ -113,6 +113,9 @@ theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnecte
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb
 
+theorem WCovBy.of_isLUB_Iio (h : IsLUB (.Iio b) a) : a ⩿ b :=
+  ⟨h.right fun _ ↦ le_of_lt, fun _ hac hcb ↦ hac.not_ge <| h.left hcb⟩
+
 @[to_dual self]
 theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).OrdConnected) :
     f a ⩿ f b ↔ a ⩿ b :=
