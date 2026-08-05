@@ -103,20 +103,20 @@ section Aliases
 /-! Since the constructors for `FS` and `FP` cheat using the `Set M = M → Prop` defeq,
 we provide match patterns that preserve the defeq correctly in their type. -/
 
-variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+variable {M} [Semigroup M] (a : Stream' M) (m : M)
 
 /-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/
-@[to_additive (attr := match_pattern)
+@[to_additive
 /-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
 theorem FP.head : a.head ∈ FP a := FP.head' a
 /-- Constructor for `FP`. This is the preferred spelling over `FP.tail'`. -/
-@[to_additive (attr := match_pattern)
+@[to_additive
 /-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
-theorem FP.tail : m ∈ FP a := FP.tail' a m h
+theorem FP.tail (h : FP a.tail m) : m ∈ FP a := FP.tail' a m h
 /-- Constructor for `FP`. This is the preferred spelling over `FP.cons'`. -/
-@[to_additive (attr := match_pattern)
+@[to_additive
 /-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]
-theorem FP.cons : a.head * m ∈ FP a := FP.cons' a m h
+theorem FP.cons (h : FP a.tail m) : a.head * m ∈ FP a := FP.cons' a m h
 
 end Aliases
 
