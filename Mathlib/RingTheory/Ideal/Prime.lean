@@ -128,6 +128,15 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
   ext
   simp
 
+/-- The elements lying outside every prime ideal in an indexed family form a submonoid. -/
+def iInfPrimeCompl {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] : Submonoid α :=
+  ⨅ i, (P i).primeCompl
+
+@[simp]
+theorem mem_iInfPrimeCompl_iff {ι : Type*} (P : ι → Ideal α) [∀ i, (P i).IsPrime] {x : α} :
+    x ∈ iInfPrimeCompl P ↔ ∀ i, x ∉ P i := by
+  simp [iInfPrimeCompl]
+
 end Ideal
 
 end Semiring
