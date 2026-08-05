@@ -388,6 +388,12 @@ theorem isPreconnected_sUnion {s : Set (Set α)} (hs : IsPreconnected s)
     grw [← hts'] at hUV ⊢
     exact ht U V hU hV hUV htU htV
 
+theorem isPreconnected_biUnion {s : Set α} {f : α → Set β} (hs : IsPreconnected s)
+    (hf : ContinuousOn f s) (h : ∃ x ∈ s, IsPreconnected (f x)) :
+    IsPreconnected (⋃ x ∈ s, f x) := by
+  rw [← sUnion_image]
+  exact isPreconnected_sUnion (hs.image _ hf) (by grind)
+
 end vietoris
 
 namespace Compacts
@@ -1136,13 +1142,10 @@ theorem locallyConnectedSpace_iff :
     IsTopologicalBasis.isOpen_isPreconnected.exists_subset_of_mem_open
       (show {x} ∈ {K : NonemptyCompacts α | ↑K ⊆ U} by simpa)
       (isOpen_subsets_of_isOpen hU)
-  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, ?_⟩, ?_⟩
+  refine ⟨⋃ L ∈ V, ↑L, ⟨?_, vietoris.isPreconnected_biUnion hV₂ (by fun_prop)
+    ⟨{x}, hxV, isPreconnected_singleton⟩⟩, ?_⟩
   · filter_upwards [continuous_singleton.tendsto x (hV₁.mem_nhds hxV)] with y hy
     exact mem_iUnion₂_of_mem hy rfl
-  · rw [← sUnion_image]
-    refine vietoris.isPreconnected_sUnion (hV₂.image _ (by fun_prop)) ?_
-    rw [exists_mem_image]
-    exact ⟨{x}, hxV, isPreconnected_singleton⟩
   · rwa [id, iUnion₂_subset_iff]
 
 @[simp]
