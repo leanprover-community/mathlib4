@@ -1,7 +1,31 @@
 {"version": "1.2.0",
  "packagesDir": ".lake/packages",
  "packages":
+<<<<<<< HEAD
  [{"url": "https://github.com/leanprover-community/plausible",
+=======
+ [{"url": "https://github.com/leanprover-community/mathlib4",
+   "type": "git",
+   "subDir": null,
+   "scope": "leanprover-community",
+   "rev": "4d6f98930f48b11c2b668bd0f37cb0c76c1f2ef1",
+   "name": "mathlib",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "master",
+   "inherited": false,
+   "configFile": "lakefile.lean"},
+  {"url": "https://github.com/lean-dojo/LeanCopilot.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "2458f7339df4d90643cdc6eb3fbbe968cd73ac78",
+   "name": "LeanCopilot",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "v4.31.0",
+   "inherited": false,
+   "configFile": "lakefile.lean"},
+  {"url": "https://github.com/leanprover-community/plausible",
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
@@ -9,7 +33,11 @@
    "name": "plausible",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/LeanSearchClient",
    "type": "git",
@@ -19,7 +47,11 @@
    "name": "LeanSearchClient",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/import-graph",
    "type": "git",
@@ -29,7 +61,11 @@
    "name": "importGraph",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/ProofWidgets4",
    "type": "git",
@@ -39,7 +75,11 @@
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
@@ -49,7 +89,11 @@
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "master",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/quote4",
    "type": "git",
@@ -59,7 +103,11 @@
    "name": "Qq",
    "manifestFile": "lake-manifest.json",
    "inputRev": "master",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover-community/batteries",
    "type": "git",
@@ -69,7 +117,11 @@
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
+<<<<<<< HEAD
    "inherited": false,
+=======
+   "inherited": true,
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover/lean4-cli",
    "type": "git",
@@ -81,6 +133,12 @@
    "inputRev": "v4.33.0-rc2",
    "inherited": true,
    "configFile": "lakefile.toml"}],
+<<<<<<< HEAD
  "name": "mathlib",
  "lakeDir": ".lake",
  "fixedToolchain": true}
+=======
+ "name": "Geometry",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}
+>>>>>>> 7d142bde02 (Euclid Book I: five novel theorems (I.1, I.2, I.3, I.7, I.9))
