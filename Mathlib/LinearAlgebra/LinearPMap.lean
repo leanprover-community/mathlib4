@@ -1071,7 +1071,9 @@ theorem inverse_domain : f.inverse.domain = f.toFun.range := by
   rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
 
-/-- The graph of the inverse generates a `LinearPMap`. -/
+/-- The graph of the inverse generates a `LinearPMap`.
+
+This should not be used directly, all properties about the inverse follow from `inverse_graph`. -/
 private theorem mem_inverse_graph_snd_eq_zero (hf : f.ker = ⊥) (x : F × E)
     (hv : x ∈ f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by
@@ -1088,8 +1090,8 @@ theorem inverse_graph (hf : f.ker = ⊥) :
   rw [inverse, Submodule.toLinearPMap_graph_eq _ (mem_inverse_graph_snd_eq_zero hf)]
 
 theorem inverse_range (hf : f.ker = ⊥) : f.inverse.toFun.range = f.domain := by
-  rw [inverse, Submodule.toLinearPMap_range _ (mem_inverse_graph_snd_eq_zero hf),
-    ← graph_map_fst_eq_domain, ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
+  rw [← LinearPMap.graph_map_snd_eq_range, inverse_graph hf, ← Submodule.map_comp]
+  exact f.graph_map_fst_eq_domain
 
 theorem mem_inverse_graph (hf : f.ker = ⊥) (x : f.domain) : (f x, (x : E)) ∈ f.inverse.graph := by
   simp [inverse_graph hf]
