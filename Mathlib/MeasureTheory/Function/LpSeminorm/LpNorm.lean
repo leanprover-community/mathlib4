@@ -45,8 +45,7 @@ lemma lpNorm_eq_integral_norm_rpow_toReal (hp₀ : p ≠ 0) (hp : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
   rw [← toReal_eLpNorm hf, eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp hf,
-    ← ENNReal.toReal_rpow,
-    ← integral_toReal]
+    ← ENNReal.toReal_rpow, ← integral_toReal]
   · simp [← ENNReal.toReal_rpow]
   · simp_rw [← ofReal_norm]
     borelize E
