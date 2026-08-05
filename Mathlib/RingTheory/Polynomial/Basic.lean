@@ -540,8 +540,9 @@ section Ring
 
 variable [Ring R]
 
+variable (R) in
 /-- `R[X]` is never a field for any ring `R`. -/
-theorem polynomial_not_isField : ¬IsField R[X] := by
+theorem _root_.Polynomial.not_isField : ¬IsField R[X] := by
   nontriviality R
   intro hR
   obtain ⟨p, hp⟩ := hR.mul_inv_cancel X_ne_zero
@@ -549,6 +550,9 @@ theorem polynomial_not_isField : ¬IsField R[X] := by
   have := degree_lt_degree_mul_X hp0
   rw [← X_mul, congr_arg degree hp, degree_one, Nat.WithBot.lt_zero_iff, degree_eq_bot] at this
   exact hp0 this
+
+@[deprecated (since := "2026-08-01")]
+alias polynomial_not_isField := Polynomial.not_isField
 
 /-- The only constant in a maximal ideal over a field is `0`. -/
 theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI : I.IsMaximal]

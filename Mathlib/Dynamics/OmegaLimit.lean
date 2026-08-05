@@ -291,9 +291,7 @@ theorem nonempty_omegaLimit_of_isCompact_absorbing [NeBot f] {c : Set β} (hc₁
     exact hn.mono subset_closure
   · intro
     apply hc₁.of_isClosed_subset isClosed_closure
-    calc
-      _ ⊆ closure (image2 ϕ v s) := closure_mono (image2_subset inter_subset_right Subset.rfl)
-      _ ⊆ c := hv₂
+    grw [inter_subset_right, hv₂]
   · exact fun _ ↦ isClosed_closure
 
 theorem nonempty_omegaLimit [CompactSpace β] [NeBot f] (hs : s.Nonempty) : (ω f ϕ s).Nonempty :=
