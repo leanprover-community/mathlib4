@@ -265,6 +265,12 @@ theorem extendOfIsometry_eq (h_dense₁ : DenseRange e₁) (h_norm : ∀ x, ‖e
     f.extendOfIsometry e₁ e₂ h_dense₁ h_norm (e₁ x) = e₂ (f x) :=
   LinearMap.extendOfNorm_eq h_dense₁ ⟨1, fun x ↦ by simp [h_norm x]⟩ x
 
+theorem extendOfIsometry_unique (h_dense : DenseRange e₁) (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖)
+    (g : Eₗ →ₛₗᵢ[σ₁₂] Fₗ) (H : g.toLinearMap.comp e₁ = e₂.comp f) :
+    f.extendOfIsometry e₁ e₂ h_dense h_norm = g := by
+  simp [extendOfIsometry, extendOfNorm_unique (f:=(e₂ ∘ₛₗ f)) h_dense 1 (by simp [h_norm])
+    g.toContinuousLinearMap H]
+
 end extendOfIsometry
 
 end LinearMap
