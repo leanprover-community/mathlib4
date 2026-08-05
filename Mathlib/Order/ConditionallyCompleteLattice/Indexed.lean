@@ -217,10 +217,6 @@ theorem ciSup₂_eq_ciSup_diagonal [ConditionallyCompleteLattice α] (f : ι →
   exact le_antisymm (ciSup_le fun i ↦ ciSup_mono_of_forall_exists hf (h i))
     (ciSup_le fun k ↦ le_ciSup_of_le hcol k (le_ciSup (hrow k) k))
 
-theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
-  refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
-  simp [show Exists p from ⟨i, hi⟩]
-
 theorem ciInf_mono_of_forall_exists {ι'} [Nonempty ι'] {f : ι → α} {g : ι' → α}
     (hf : BddBelow <| range f) (h : ∀ i', ∃ i, f i ≤ g i') : ⨅ i, f i ≤ ⨅ i', g i' :=
   ciSup_mono_of_forall_exists (α := αᵒᵈ) hf h
@@ -585,6 +581,10 @@ theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg 
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
 
 @[deprecated (since := "2026-05-03")] alias ciSup_mono' := ciSup_mono_of_forall_exists'
+
+theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
+  refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
+  simp [show Exists p from ⟨i, hi⟩]
 
 @[simp]
 theorem ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
