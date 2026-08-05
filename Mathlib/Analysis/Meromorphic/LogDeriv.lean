@@ -68,8 +68,7 @@ theorem logDeriv_prod_eventuallyEq {ι : Type*} {s : Finset ι} {F : ι → 𝕜
   have hN : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ s, F i y ≠ 0 :=
     (eventually_all_finset s).2 fun i hi ↦ (h i hi).ne_zero_mem_codiscreteWithin (h' i hi)
   filter_upwards [hA, hN] with y h₁y h₂y
-  rw [Finset.sum_apply,
-    show (∏ i ∈ s, F i) = (∏ i ∈ s, F i ·) from funext fun z ↦ Finset.prod_apply z s F]
+  rw [Finset.sum_apply, Finset.prod_fn]
   exact logDeriv_prod h₂y fun i hi ↦ (h₁y i hi).differentiableAt
 
 /--
@@ -82,12 +81,7 @@ theorem logDeriv_finprod_eventuallyEq {ι : Type*} {F : ι → 𝕜 → 𝕜'}
     (h' : ∀ i, ∀ x ∈ U, meromorphicOrderAt (F i) x ≠ ⊤) :
     logDeriv (∏ᶠ i, F i) =ᶠ[codiscreteWithin U] ∑ᶠ i, logDeriv (F i) := by
   have hsub : support (fun i ↦ logDeriv (F i)) ⊆ hF.toFinset := by
-    intro i hi
-    simp only [Finite.coe_toFinset, mem_mulSupport]
-    intro h₁i
-    apply hi
-    change logDeriv (F i) = 0
-    rw [h₁i, Pi.one_def, logDeriv_const]
+    simp +contextual [Set.subset_def, not_imp_not, Pi.one_def]
   rw [finprod_eq_prod_of_mulSupport_subset F (s := hF.toFinset) (by simp),
     finsum_eq_sum_of_support_subset _ hsub]
   exact logDeriv_prod_eventuallyEq (fun i _ ↦ h i) (fun i _ ↦ h' i)
@@ -118,20 +112,10 @@ theorem logDeriv_finprod_zpow_eventuallyEq {ι : Type*} {F : ι → 𝕜 → �
   have hN : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ hd.toFinset, F i y ≠ 0 :=
     (eventually_all_finset hd.toFinset).2 fun i _ ↦ (h i).ne_zero_mem_codiscreteWithin (h' i)
   filter_upwards [hA, hN] with y h₁y h₂y
-  have h₀ : ∏ᶠ i, F i ^ d i = ∏ i ∈ hd.toFinset, F i ^ d i := by
-    apply finprod_eq_prod_of_mulSupport_subset
-    intro i hi
-    simp only [mem_mulSupport] at hi
-    simp only [Finite.coe_toFinset, mem_support]
-    intro h₁i
-    exact hi (by rw [h₁i, zpow_zero])
+  have h₀ : ∏ᶠ i, F i ^ d i = ∏ i ∈ hd.toFinset, F i ^ d i :=
+    finprod_eq_prod_of_mulSupport_subset _ <| by simp +contextual [Set.subset_def, not_imp_not]
   have hsub : support (fun i ↦ d i • logDeriv (F i) y) ⊆ hd.toFinset := by
-    intro i hi
-    simp only [Finite.coe_toFinset, mem_support]
-    intro h₁i
-    apply hi
-    change d i • logDeriv (F i) y = 0
-    rw [h₁i, zero_zsmul]
+    simp +contextual [-support_mul, -mul_eq_zero, Set.subset_def, not_imp_not]
   calc logDeriv (∏ᶠ i, F i ^ d i) y
       = logDeriv (fun z ↦ ∏ i ∈ hd.toFinset, (F i ^ d i) z) y := by
         rw [h₀.trans (funext fun z ↦ Finset.prod_apply z hd.toFinset _)]
@@ -139,8 +123,7 @@ theorem logDeriv_finprod_zpow_eventuallyEq {ι : Type*} {F : ι → 𝕜 → �
         logDeriv_prod (fun i hi ↦ zpow_ne_zero _ (h₂y i hi))
           (fun i hi ↦ ((h₁y i hi).zpow (h₂y i hi)).differentiableAt)
     _ = ∑ i ∈ hd.toFinset, d i • logDeriv (F i) y := by
-        apply Finset.sum_congr rfl
-        intro i hi
-        rw [zsmul_eq_mul, show F i ^ d i = (F i · ^ d i) from rfl]
+        congr! with i hi
+        rw [zsmul_eq_mul, Pi.pow_def]
         exact logDeriv_fun_zpow (h₁y i hi).differentiableAt (d i)
     _ = ∑ᶠ i, d i • logDeriv (F i) y := (finsum_eq_sum_of_support_subset _ hsub).symm
