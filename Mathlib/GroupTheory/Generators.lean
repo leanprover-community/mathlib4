@@ -26,7 +26,6 @@ and an assignment `val : α → G` such that `Subgroup.closure (Set.range val) =
 ## Implementation notes
 
 * The index type `α` is a parameter, not a field, following the pattern of `Algebra.Generators`.
-
 * Unlike `Algebra.Generators`, this structure bundles no section of `FreeGroup.lift val`,
   it just bundles a proof of surjectivity.
 
