@@ -174,15 +174,25 @@ example [GaloisCategory C] : GrothendieckTopology (isConnected C).FullSubcategor
 
 lemma isConnected_over_iff
     {S : C} (X : Over S)
+    [(Over.forget S).PreservesMonomorphisms]
     [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)] :
     PreGaloisCategory.IsConnected X ↔
       PreGaloisCategory.IsConnected X.left := by
-  refine ⟨fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv.symm h), ?_⟩,
-    fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv h), ?_⟩⟩
-  · sorry
-  · sorry
+  refine ⟨fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv.symm h),
+    fun Y i _ h ↦ ?_⟩,
+    fun _ ↦ ⟨fun h ↦ IsConnected.notInitial (Over.isInitialEquiv h), fun Y i _ h ↦ ?_⟩⟩
+  · let f : Over.mk (i ≫ X.hom) ⟶ X := Over.homMk i
+    have := IsConnected.noTrivialComponent _ f (fun h' ↦ h (Over.isInitialEquiv h'))
+    exact inferInstanceAs (IsIso ((Over.forget S).map f))
+  · have : Mono i.left := inferInstanceAs (Mono ((Over.forget S).map i))
+    have : IsIso ((Over.forget S).map i) :=
+      IsConnected.noTrivialComponent Y.left i.left
+        (fun h' ↦ h (Over.isInitialEquiv.symm h'))
+    exact isIso_of_reflects_iso _ (Over.forget _)
 
-instance (S : C) [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)] :
+instance (S : C)
+    [(Over.forget S).PreservesMonomorphisms]
+    [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)] :
     PreservesIsConnected (Over.forget S) where
   preserves {X} _ := by
     rw [Over.forget_obj, ← isConnected_over_iff]
