@@ -362,15 +362,13 @@ private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H'
 }
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' := by
-  let h_lin := ContinuousLinearMap.fromCompletion (toH' H h).toContinuousLinearMap
+  let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion 
   let ofOfKernel : OfKernel (kernel H) →ₗᵢ[𝕜] H' := {
     h_lin with
     norm_map' x := by
-      apply (toH' H h).isometry.completion_extension.norm_map_of_map_zero
-      exact h_lin.map_zero
+      apply (toH' H h).isometry.completion_extension.norm_map_of_map_zero h_lin.map_zero
   }
   have h_surj : Function.Surjective ofOfKernel := by
-    apply Set.range_eq_univ.mp
     have h_sub : Set.range (toH' H h) ⊆ Set.range ⇑ofOfKernel := by
       rintro _ ⟨f, rfl⟩
       exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometry.uniformContinuous f⟩
@@ -383,7 +381,7 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
         fun ⟨⟨x, v⟩, h⟩ ↦ ⟨x, v, h⟩,
         fun ⟨x, v, h⟩ ↦ ⟨⟨x, v⟩, h⟩
       ⟩
-    rw [ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq.symm,
+    rw [← Set.range_eq_univ, ← ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq,
       (h_dense.mono h_sub).closure_eq]
   exact LinearIsometryEquiv.ofSurjective ofOfKernel h_surj
 
@@ -402,12 +400,10 @@ def equiv (h : kernel H = kernel H') : H ≃ₗᵢ[𝕜] H' :=
 
 theorem equiv_kerFun_eq_kerFun (h : kernel H = kernel H') (x : X) (v : V) :
     equiv h (kerFun H x v) = kerFun H' x v := by
-  have h1 : (OfKernel.equivAux (rfl : kernel H = kernel H)).symm (kerFun H x v) =
-      .coe' (α := H₀ (kernel H)) (.single (x, v) 1) := by
-    apply (((OfKernel.equivAux (rfl : kernel H = kernel H))).symm).eq_symm_apply.mp
+  have h1 : (OfKernel.equivAux rfl).symm (kerFun H x v) = .coe' (.single (x, v) 1) := by
+    apply (OfKernel.equivAux rfl).symm.eq_symm_apply.mp
     simp [OfKernel.equivAux, OfKernel.toH']
-  have h2 : OfKernel.equivAux h (.coe' (α := H₀ (kernel H)) (.single (x, v) 1)) =
-      kerFun H' x v := by
+  have h2 : OfKernel.equivAux h (.coe' (.single (x, v) 1)) = kerFun H' x v := by
     simp [OfKernel.equivAux, OfKernel.toH']
   simp only [equiv, LinearIsometryEquiv.trans_apply, h1, h2]
 
