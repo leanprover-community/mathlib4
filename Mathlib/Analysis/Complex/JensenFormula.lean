@@ -340,16 +340,13 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt (h₁w : w ∈ ball 0 
   have cast_smul {x : ℂ} {φ : ℂ → ℝ} :
       (divisor f (sphere 0 R)) x • φ = ((divisor f (sphere 0 R)) x : ℝ) • φ := by aesop
   have ρ₁ : CircleIntegrable (Complex.re ∘ herglotzRieszKernel 0 w • (log ‖h ·‖)) 0 R := by
-    apply CircleIntegrable.re_herglotzRieszKernel_smul h₁w
-    apply circleIntegrable_log_norm (h₁h.meromorphicOn.mono_set _)
-    simpa [abs_of_pos hR] using sphere_subset_closedBall
+    have : CircleIntegrable (fun z ↦ Real.log ‖h z‖) 0 R := by
+      apply circleIntegrable_log_norm (h₁h.meromorphicOn.mono_set _)
+      simpa [abs_of_pos hR] using sphere_subset_closedBall
+    fun_prop
   have ρ₂ : ∀ i ∈ h₂f.toFinset, CircleIntegrable ((divisor f (sphere 0 R)) i •
-      Complex.re ∘ herglotzRieszKernel 0 w • (log ‖· - i‖)) 0 R := by
-    intro i hi
-    rw [cast_smul]
-    apply CircleIntegrable.const_smul
-    apply CircleIntegrable.re_herglotzRieszKernel_smul h₁w
-    apply circleIntegrable_log_norm (fun x hx ↦ by fun_prop)
+      Complex.re ∘ herglotzRieszKernel 0 w • (log ‖· - i‖)) 0 R :=
+    fun i _ ↦ by fun_prop
   -- The Poisson–Jensen identity for the circle average of `log ‖f‖`, obtained by replacing `f` with
   -- its canonical decomposition and integrating term by term.
   have key : circleAverage (Complex.re ∘ herglotzRieszKernel 0 w • (log ‖f ·‖)) 0 R =
