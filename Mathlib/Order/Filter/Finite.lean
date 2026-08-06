@@ -79,10 +79,11 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
     {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
-  haveI := I_fin.fintype
+  have := I_fin.fintype
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     (U ∈ ⨅ i, s i) ↔
       ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
@@ -132,6 +133,7 @@ theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Fil
   rintro ⟨t, ht, rfl⟩
   exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {t : Set α} :
     t ∈ ⨅ (i : ι) (_ : p i), 𝓟 (s i) ↔
       ∃ I : Set ι, I.Finite ∧ (∀ i ∈ I, p i) ∧ ⋂ i ∈ I, s i ⊆ t := by
@@ -140,7 +142,7 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     rintro ⟨I, hIf, V, hV₁, hV₂, rfl⟩
     choose! t ht₁ ht₂ using hV₁
     refine ⟨I ∩ {i | p i}, hIf.inter_of_left _, fun i ↦ And.right, ?_⟩
-    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_setOf_eq]
+    simp only [mem_inter_iff, iInter_and, biInter_eq_iInter, ht₂, mem_ofPred_eq]
     gcongr with i hpi
     exact ht₁ i hpi
   · rintro ⟨I, hIf, hpI, hst⟩
@@ -164,7 +166,7 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {
 theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → Filter α} {t : Set ι}
     (hd : t.PairwiseDisjoint l) (ht : t.Finite) :
     ∃ s : ι → Set α, (∀ i, s i ∈ l i) ∧ t.PairwiseDisjoint s := by
-  haveI := ht.to_subtype
+  have := ht.to_subtype
   rcases (hd.subtype _ _).exists_mem_filter_of_disjoint with ⟨s, hsl, hsd⟩
   lift s to (i : t) → {s // s ∈ l i} using hsl
   rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
@@ -246,12 +248,12 @@ end Lattice
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using iInter_mem
+  simpa only [Filter.Eventually, ofPred_forall] using iInter_mem
 
 @[simp]
 theorem eventually_all_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i ∈ I, p i x) ↔ ∀ i ∈ I, ∀ᶠ x in l, p i x := by
-  simpa only [Filter.Eventually, setOf_forall] using biInter_mem hI
+  simpa only [Filter.Eventually, ofPred_forall] using biInter_mem hI
 
 protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
 

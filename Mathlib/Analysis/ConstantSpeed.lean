@@ -233,7 +233,7 @@ theorem edist_naturalParameterization_eq_zero {f : α → E} {s : Set α}
     (hf : LocallyBoundedVariationOn f s) {a : α} (as : a ∈ s) {b : α} (bs : b ∈ s) :
     edist (naturalParameterization f s a (variationOnFromTo f s a b)) (f b) = 0 := by
   dsimp only [naturalParameterization]
-  haveI : Nonempty α := ⟨a⟩
+  have : Nonempty α := ⟨a⟩
   obtain ⟨cs, hc⟩ := Function.invFunOn_pos (b := variationOnFromTo f s a b) ⟨b, bs, rfl⟩
   rw [variationOnFromTo.eq_left_iff hf as cs bs] at hc
   apply variationOnFromTo.edist_zero_of_eq_zero hf cs bs hc

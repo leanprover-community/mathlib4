@@ -24,6 +24,7 @@ namespace Ideal
 
 open TensorProduct LinearMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma pi_mkQ_rTensor [Fintype ι] [DecidableEq ι] :
     (LinearMap.pi fun i ↦ (I i).mkQ).rTensor M = (piLeft ..).symm.toLinearMap ∘ₗ
       .pi (fun i ↦ TensorProduct.mk R (R ⧸ I i) M 1) ∘ₗ TensorProduct.lid R M := by

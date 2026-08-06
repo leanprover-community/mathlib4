@@ -92,7 +92,7 @@ variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
 theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 • g x.2) u) : s • t = u :=
   have key₁ : HasSum (fun i ↦ f i • t) (s • t) := hf.smul_const t
-  have this : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
+  have : ∀ i : ι, HasSum (fun c : κ ↦ f i • g c) (f i • t) := fun i ↦ hg.const_smul (f i)
   have key₂ : HasSum (fun i ↦ f i • t) u := HasSum.prod_fiberwise hfg this
   key₁.unique key₂
 

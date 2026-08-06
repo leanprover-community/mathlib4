@@ -396,6 +396,7 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where

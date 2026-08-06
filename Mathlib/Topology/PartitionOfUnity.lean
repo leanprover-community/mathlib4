@@ -185,7 +185,7 @@ def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 @[simp]
 theorem mem_finsupport (x₀ : X) {i} :
     i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
-  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_ofPred_eq]
 
 @[simp]
 theorem coe_finsupport (x₀ : X) :
@@ -522,7 +522,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
     rw [hs, mulSupport_one_sub]
     exact fun i => id
   classical
-  letI : LinearOrder ι := linearOrderOfSTO WellOrderingRel
+  let : LinearOrder ι := linearOrderOfSTO WellOrderingRel
   rw [finsum_eq_sum_of_support_subset _ A, finprod_eq_prod_of_mulSupport_subset _ B,
     Finset.prod_one_sub_ordered, sub_sub_cancel]
   refine Finset.sum_congr rfl fun i _ => ?_
