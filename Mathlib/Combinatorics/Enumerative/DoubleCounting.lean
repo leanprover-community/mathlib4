@@ -213,6 +213,33 @@ lemma sum_card_eq_sum_biUnion_card [Fintype α] [DecidableEq α] [DecidableEq β
   · grind [bipartiteAbove]
   · grind [bipartiteBelow]
 
+/-- Given a finite collection of finite subsets $B_1, \ldots, B_k$ such that
+each $B_i$ has at least $n$ elements. For every $x \in \bigcup_i B_i$, let $C_x$
+be the set of indices of the $B_i$’s that contain $x$. Then, if every $C_x$ contains
+at most $n$ elements, then $\bigcup_i B_i$ has at least $k$ elements. -/
+lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
+    (B : α → Finset β) (s : Finset α) (hn : 0 < n)
+    (h_card : ∀ j ∈ s, n ≤ Finset.card (B j))
+    (h_ub : ∀ x ∈ s.biUnion B, Finset.card {j ∈ s | x ∈ B j} ≤ n) :
+    Finset.card s ≤ Finset.card (s.biUnion B) := by
+  have h_sum : Finset.card s * n ≤ Finset.card (s.biUnion B) * n := calc
+    Finset.card s * n = ∑ j ∈ s, n := by simp
+    _ ≤ ∑ j ∈ s, Finset.card (B j) := Finset.sum_le_sum h_card
+    _ = ∑ j ∈ s, Finset.card ((s.biUnion B).bipartiteAbove (fun j x ↦ x ∈ B j) j) := by
+      apply Finset.sum_congr rfl
+      intro j hj
+      rw [Finset.bipartiteAbove]
+      congr 1
+      ext x
+      simp only [Finset.mem_filter, Finset.mem_biUnion]
+      exact ⟨fun hx ↦ ⟨⟨j, hj, hx⟩, hx⟩, fun hx ↦ hx.2⟩
+    _ = ∑ x ∈ s.biUnion B, Finset.card (s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
+      Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (fun j x ↦ x ∈ B j)
+    _ = ∑ x ∈ s.biUnion B, Finset.card {j ∈ s | x ∈ B j} := rfl
+    _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
+    _ = Finset.card (s.biUnion B) * n := by simp
+  exact Nat.le_of_mul_le_mul_right h_sum hn
+
 end Bipartite
 
 end Finset

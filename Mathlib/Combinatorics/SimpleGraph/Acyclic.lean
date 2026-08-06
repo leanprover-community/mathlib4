@@ -402,9 +402,9 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
   rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
   have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
-  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj, edge_adj]
+  suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm]
+  grind [Maximal, sup_le, le_iff_adj, huv.symm]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
