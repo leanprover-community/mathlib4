@@ -779,8 +779,9 @@ lemma QuotientMeasureEqMeasurePreimage.unique
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk /-- The quotient map to
-the additive quotient of `α` by `G` is measure-preserving between the restriction of `volume` to an additive fundamental
-domain in `α` and a related measure satisfying `AddQuotientMeasureEqMeasurePreimage`. -/]
+the additive quotient of `α` by `G` is measure-preserving between the restriction of `volume` to
+an additive fundamental domain in `α` and a related measure satisfying
+`AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.measurePreserving_quotient_mk
     {𝓕 : Set α} (h𝓕 : IsFundamentalDomain G 𝓕 ν)
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -853,8 +854,8 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
-@[to_additive /-- A measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage` and
-having finite covolume is a finite measure. -/]
+@[to_additive /-- A measure `μ` on the additive quotient of `α` by `G` satisfying
+`AddQuotientMeasureEqMeasurePreimage` and having finite covolume is a finite measure. -/]
 theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ]
     [hasFun : HasFundamentalDomain G α ν] (h : covolume G α ν ≠ ∞) :
@@ -869,8 +870,8 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
 
 /-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
 covolume. -/
-@[to_additive /-- A finite measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage`
-has finite covolume. -/]
+@[to_additive /-- A finite measure `μ` on the additive quotient of `α` by `G` satisfying
+`AddQuotientMeasureEqMeasurePreimage` has finite covolume. -/]
 theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ] :
     covolume G α ν < ∞ := by
