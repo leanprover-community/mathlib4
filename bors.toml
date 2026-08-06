@@ -1,4 +1,4 @@
-status = ["ci (staging) / Build", "ci (staging) / Lint style", "ci (staging) / Post-Build Step", "ci (staging) / Post-CI job"]
+status = ["ci (staging) / Build", "ci (staging) / Test and lint", "ci (staging) / Lint style", "ci (staging) / Post-Build Step", "ci (staging) / Post-CI job"]
 use_squash_merge = true
 timeout_sec = 7200
 block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI"]
@@ -6,6 +6,13 @@ delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "\n---"
 max_batch_size = 16
+
+[labels]
+on_queue  = "ready-to-merge"   # PR is on the merge queue (a batch waiting or running)
+building  = "bors-staging"     # PR is currently building on staging (such PRs will also have the on_queue label)
+failed    = "awaiting-requeue" # PR's merge build failed terminally and was dropped; needs a re-queue
+delegated = "delegated"        # PR has at least one active (non-expired) delegation
+
 [delegation]
 default_expiry_sec = 1209600 # 2 weeks
 # Entries below are Erlang `:glob` patterns (NOT gitignore): `*` matches across `/`,

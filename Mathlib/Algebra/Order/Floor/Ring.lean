@@ -50,10 +50,10 @@ theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : �
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊_⌋]
-meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
-    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute
@@ -70,10 +70,10 @@ theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉₊]
-meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
-    let some _ := pα? | pure .none
     let _i ← synthInstanceQ q(LinearOrder $α')
     let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
     assertInstancesCommute
@@ -89,10 +89,10 @@ theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈_⌉]
-meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e := do
+meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
-    let some _ := pα? | pure .none
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute
@@ -117,9 +117,6 @@ variable [Ring R] [LinearOrder R] [FloorRing R] {z : ℤ} {a b : R}
 /-! #### Floor -/
 
 section floor
-
-@[deprecated floor_lt (since := "2025-12-26")]
-theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
 
 @[simp]
 theorem floor_le_neg_one_iff : ⌊a⌋ ≤ -1 ↔ a < 0 := by
@@ -578,9 +575,6 @@ end fract
 
 section ceil
 
-@[deprecated lt_ceil (since := "2025-12-26")]
-theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
-
 @[simp]
 theorem one_le_ceil_iff : 1 ≤ ⌈a⌉ ↔ 0 < a := by
   simpa using le_ceil_iff (z := 1)
@@ -916,3 +910,17 @@ theorem subsingleton_floorRing {R} [Ring R] [LinearOrder R] : Subsingleton (Floo
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Int.fract` is always nonnegative. -/
+@[positivity Int.fract _]
+meta def evalIntFract : PositivityExt where eval {_u} (_α _zα pα?) e :=
+  match pα? with | none => pure .none | some pα' => do
+  let ~q(@Int.fract _ (_) (_) (_) $a) := e | throwError "not Int.fract"
+  let pa' ← mkAppM ``Int.fract_nonneg #[a]
+  pure (.nonnegative (pα := pα') pa')
+
+end Mathlib.Meta.Positivity

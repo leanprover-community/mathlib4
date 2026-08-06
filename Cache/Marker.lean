@@ -20,7 +20,9 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-URL for the per-SHA marker blob: `{container}/m/{repo}/{sha}`.
+URL for the per-SHA marker blob: `{container}/m/{repo}/{sha}`, where `repo` is
+lowercased via `normalizeRepo` so the path is case-insensitive in the GitHub
+owner/repo name.
 
 The marker is uploaded by `put-staged` as the last step when an upload is
 SHA-scoped (`MATHLIB_CACHE_REPO_SCOPE` set). Its presence at this URL
@@ -29,7 +31,7 @@ indicates that the full `.ltar` upload completed for this commit, and lets
 a blob-listing call.
 -/
 def markerURL (container : Container) (repo sha : String) : String :=
-  s!"{container.azureURL}/m/{repo}/{sha}"
+  s!"{container.azureURL}/m/{normalizeRepo repo}/{sha}"
 
 /--
 Upload a tiny marker blob to `/m/{repo}/{sha}` in the given container. The

@@ -220,8 +220,12 @@ variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H
   one_mul := one_mul
   mul_one := mul_one
   npow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_pow _ x n
-  npow_zero := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, pow_zero, one_def i]
-  npow_succ n := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, pow_succ, mul_def]
+  npow_zero := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp_rw [map_def, pow_zero, one_def i]
+  npow_succ n := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow]
+    simp_rw [map_def, pow_succ, mul_def]
 
 @[to_additive] theorem npow_def (i x) (n : ℕ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
@@ -256,11 +260,12 @@ variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H
   zpow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_zpow _ x n
   div_eq_mul_inv := DirectLimit.induction₂ _ fun i _ _ ↦ show map₂ .. = _ * map .. by
     simp_rw [map₂_def, map_def, div_eq_mul_inv, mul_def]
-  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, zpow_zero, one_def i]
+  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow, map_def, zpow_zero, one_def i]
   zpow_succ' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
+    simp_rw [HPow.hPow, Pow.pow, map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
   zpow_neg' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw +instances [map_def]; congr; apply DivInvMonoid.zpow_neg'
+    simp_rw [HPow.hPow, Pow.pow, map_def]; congr; apply DivInvMonoid.zpow_neg'
   inv_mul_cancel := DirectLimit.induction _ fun i _ ↦ by
     simp_rw [map_def, mul_def, inv_mul_cancel, one_def i]
 
@@ -341,11 +346,12 @@ instance : GroupWithZero (DirectLimit G f) where
   zpow n := map _ _ (fun _ ↦ (· ^ n)) fun _ _ _ x ↦ map_zpow₀ _ x n
   div_eq_mul_inv := DirectLimit.induction₂ _ fun i _ _ ↦ show map₂ .. = _ * map .. by
     simp_rw [map₂_def, map_def, div_eq_mul_inv, mul_def]
-  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by simp_rw [map_def, zpow_zero, one_def i]
+  zpow_zero' := DirectLimit.induction _ fun i _ ↦ by
+    simp_rw [HPow.hPow, Pow.pow, map_def, zpow_zero, one_def i]
   zpow_succ' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
+    simp_rw [HPow.hPow, Pow.pow, map_def, mul_def]; congr; apply DivInvMonoid.zpow_succ'
   zpow_neg' n := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [map_def]; congr; apply DivInvMonoid.zpow_neg'
+    simp_rw [HPow.hPow, Pow.pow, map_def]; congr; apply DivInvMonoid.zpow_neg'
   inv_zero := show ⟦_⟧ = ⟦_⟧ by simp_rw [inv_zero]
   mul_inv_cancel := DirectLimit.induction _ fun i x ne ↦ by
     have : x ≠ 0 := by rintro rfl; exact ne (zero_def i).symm
@@ -628,6 +634,7 @@ lemma map₀_algebraMap (i : ι) (r : R) :
     map₀ f (fun i ↦ algebraMap R (G i) r) = ⟦⟨i, algebraMap R (G i) r⟩⟧ :=
   map₀_def _ _ (fun _ _ _ => AlgHomClass.commutes _ _) i
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Algebra R (DirectLimit G f) where
   algebraMap := map₀RingHom (f := f).comp (algebraMap R (∀ i, G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
@@ -637,6 +644,7 @@ instance : Algebra R (DirectLimit G f) where
     dsimp [Pi.algebraMap_def, map₀RingHom]
     rw [smul_def, map₀_algebraMap i, mul_def, Algebra.smul_def']
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma algebraMap_def (i : ι) (r : R) :
     algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧ :=
   map₀_algebraMap i r
@@ -837,6 +845,7 @@ variable [∀ i, Semiring (G i)] [∀ i, Algebra R (G i)]
 variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 @[simps]
@@ -845,10 +854,12 @@ def of (i) : G i →ₐ[R] DirectLimit G f where
   __ := (DirectLimit.Ring.of G f i)
   commutes' r := by rw [algebraMap_def i]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [Semiring P] [Algebra R P]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another R-algebra
 that respect the directed system structure (i.e. make some diagram commute) give rise
@@ -870,6 +881,7 @@ theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
 
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →ₐ[R] P}
     (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :

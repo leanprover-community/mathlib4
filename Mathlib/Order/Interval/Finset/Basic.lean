@@ -264,7 +264,7 @@ theorem Ioo_self : Ioo a a = ∅ :=
 variable {a}
 
 /-- A set with upper and lower bounds in a locally finite order is a fintype -/
-@[implicit_reducible]
+@[instance_reducible]
 def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
@@ -648,21 +648,19 @@ theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
   grind
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
-  classical
-    by_cases h : a ≤ b
-    · rw [Icc_eq_cons_Ico h, card_cons]
-      exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
+  by_cases h : a ≤ b
+  · rw [Icc_eq_cons_Ico h, card_cons]
+    exact (Nat.add_sub_cancel _ _).symm
+  · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
 
 theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : #(Ioc a b) = #(Icc a b) - 1 :=
   @card_Ico_eq_card_Icc_sub_one αᵒᵈ _ _ _ _
 
 theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : #(Ioo a b) = #(Ico a b) - 1 := by
-  classical
-    by_cases h : a < b
-    · rw [Ico_eq_cons_Ioo h, card_cons]
-      exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
+  by_cases h : a < b
+  · rw [Ico_eq_cons_Ioo h, card_cons]
+    exact (Nat.add_sub_cancel _ _).symm
+  · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
 
 theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : #(Ioo a b) = #(Ioc a b) - 1 :=
   @card_Ioo_eq_card_Ico_sub_one αᵒᵈ _ _ _ _
@@ -1143,21 +1141,21 @@ restricted to pairs satisfying `a ⩿ b`. -/
 lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [transGen_eq_self] using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
+  simpa [transGen_eq_self] using TransGen.lift f h a b <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
 restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [reflTransGen_eq_self] using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
+  simpa [reflTransGen_eq_self] using ReflTransGen.lift f h a b <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
 monotone when restricted to pairs satisfying `a ⋖ b`. -/
 lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
-  have := Relation.TransGen.lift f h (a := a) (b := b)
+  have := Relation.TransGen.lift f h a b
   rw [← lt_iff_transGen_covBy, transGen_eq_self] at this
   exact this hab
 
