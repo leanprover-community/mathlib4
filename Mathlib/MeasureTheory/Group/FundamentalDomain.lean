@@ -779,7 +779,7 @@ lemma QuotientMeasureEqMeasurePreimage.unique
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk /-- The quotient map to
-`α ⧸ G` is measure-preserving between the restriction of `volume` to an additive fundamental
+the additive quotient of `α` by `G` is measure-preserving between the restriction of `volume` to an additive fundamental
 domain in `α` and a related measure satisfying `AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.measurePreserving_quotient_mk
     {𝓕 : Set α} (h𝓕 : IsFundamentalDomain G 𝓕 ν)
