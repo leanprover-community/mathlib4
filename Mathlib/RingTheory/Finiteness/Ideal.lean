@@ -35,10 +35,10 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
     (g : S →+* A) (hf : (RingHom.ker f).FG) (hg : (RingHom.ker g).FG)
     (hsur : Function.Surjective f) :
     (RingHom.ker (g.comp f)).FG := by
-  letI : Algebra R S := RingHom.toAlgebra f
-  letI : Algebra R A := RingHom.toAlgebra (g.comp f)
-  letI : Algebra S A := RingHom.toAlgebra g
-  letI : IsScalarTower R S A := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  let : Algebra R S := RingHom.toAlgebra f
+  let : Algebra R A := RingHom.toAlgebra (g.comp f)
+  let : Algebra S A := RingHom.toAlgebra g
+  let : IsScalarTower R S A := IsScalarTower.of_algebraMap_eq fun _ => rfl
   let f₁ := Algebra.linearMap R S
   let g₁ := (IsScalarTower.toAlgHom R S A).toLinearMap
   exact Submodule.fg_ker_comp f₁ g₁ hf

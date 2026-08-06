@@ -360,7 +360,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
   have H : deriv (LFunctionTrivChar₁ n) s =
       deriv (fun w ↦ (w - 1) * LFunctionTrivChar n w) s := by
     refine eventuallyEq_iff_exists_mem.mpr ?_ |>.deriv_eq
-    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_of_ne (Set.mem_setOf.mp hw) ..⟩
+    exact ⟨_, isOpen_ne.mem_nhds hs, fun _ hw ↦ Function.update_of_ne (Set.mem_ofPred.mp hw) ..⟩
   rw [H, deriv_fun_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
@@ -376,7 +376,7 @@ lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
   rcases eq_or_ne w 1 with rfl | hw'
   · exact LFunctionTrivChar₁_apply_one_ne_zero _
   · rw [LFunctionTrivChar₁, Function.update_of_ne hw', mul_ne_zero_iff]
-    exact ⟨sub_ne_zero_of_ne hw', (Set.mem_setOf.mp hw).resolve_left hw'⟩
+    exact ⟨sub_ne_zero_of_ne hw', (Set.mem_ofPred.mp hw).resolve_left hw'⟩
 
 end trivial
 

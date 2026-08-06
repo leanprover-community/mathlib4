@@ -181,7 +181,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   refine fun hx => span_induction ?_ ?_ ?_ ?_ (mem_smul_span.mp hx)
   · rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
     refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
-    · letI := Classical.decEq ι
+    · let := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs
       · assumption
@@ -672,13 +672,12 @@ theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
       ⟨_, mem_span_singleton'.mpr ⟨_, rfl⟩, _, mem_span_singleton'.mpr ⟨_, rfl⟩, h1⟩
 
 theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
-  classical
-    refine s.induction_on ?_ ?_
-    · rw [Multiset.inf_zero]
-      exact le_top
-    intro a s ih
-    rw [Multiset.prod_cons, Multiset.inf_cons]
-    exact le_trans mul_le_inf (inf_le_inf le_rfl ih)
+  refine s.induction_on ?_ ?_
+  · rw [Multiset.inf_zero]
+    exact le_top
+  intro a s ih
+  rw [Multiset.prod_cons, Multiset.inf_cons]
+  exact le_trans mul_le_inf (inf_le_inf le_rfl ih)
 
 theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f :=
   multiset_prod_le_inf
@@ -966,13 +965,17 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
+@[deprecated isRadical_bot (since := "2026-08-03")]
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
-    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => eq_zero_of_pow_eq_zero hn
+    (⊥ : Ideal R).IsRadical := isRadical_bot
 
 @[simp]
-theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivisors R] :
+theorem radical_bot_of_isReduced {R : Type u} [CommSemiring R] [IsReduced R] :
     radical (⊥ : Ideal R) = ⊥ :=
-  eq_bot_iff.2 isRadical_bot_of_noZeroDivisors
+  eq_bot_iff.2 isRadical_bot
+
+@[deprecated (since := "2026-08-03")]
+alias radical_bot_of_noZeroDivisors := radical_bot_of_isReduced
 
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
@@ -1224,6 +1227,16 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
   rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
   exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
 
+lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
+    {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
+    (hs : S.Finite) (a b : Ideal R) (hp : ∀ I ∈ S, I ≠ a → I ≠ b → I.IsPrime)
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) : ((M : Set R) ⊆ ⋃ I ∈ S, I) ↔ M ∈ S := by
+  refine (subset_union_prime_finite hs a b hp).trans ⟨fun ⟨I, mem, le⟩ ↦ ?_, (⟨M, ·, le_rfl⟩)⟩
+  rwa [‹M.IsMaximal›.eq_of_le _ le]
+  simp_rw [← or_iff_not_imp_left] at hp
+  obtain rfl | rfl | hp := hp I mem
+  exacts [ha, hb, hp.ne_top]
+
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]
     {x : R} (hx : x ∉ I) (n : ℕ) : ∃ (y : R), ∃ i ∈ I ^ n, y * x + i = 1 := by
@@ -1301,6 +1314,7 @@ noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
 variable {ι M v}
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppTotal_apply (f : ι →₀ I) :
     finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i := by
   dsimp [finsuppTotal]

@@ -116,6 +116,7 @@ noncomputable def truncGE'XIsoOpcycles {i : ι} {i' : ι'} (hi' : e.f i = i') (h
     (K.truncGE' e).X i ≅ K.opcycles i' :=
   (truncGE'.XIsoOpcycles K e hi) ≪≫ eqToIso (by subst hi'; rfl)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma truncGE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hi : ¬ e.BoundaryGE i) :
     (K.truncGE' e).d i j = (K.truncGE'XIso e hi' hi).hom ≫ K.d i' j' ≫
@@ -125,6 +126,7 @@ lemma truncGE'_d_eq {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
   subst hi' hj'
   simp [truncGE'XIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma truncGE'_d_eq_fromOpcycles {i j : ι} (hij : c.Rel i j) {i' j' : ι'}
     (hi' : e.f i = i') (hj' : e.f j = j') (hi : e.BoundaryGE i) :
     (K.truncGE' e).d i j = (K.truncGE'XIsoOpcycles e hi' hi).hom ≫ K.fromOpcycles i' j' ≫
@@ -234,6 +236,7 @@ noncomputable def f (i : ι) : (K.restriction e).X i ⟶ (K.truncGE' e).X i :=
   else
     (K.truncGE'XIso e rfl hi).inv
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ K.pOpcycles i' ≫
@@ -243,6 +246,7 @@ lemma f_eq_iso_hom_pOpcycles_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi 
   subst hi'
   simp [restrictionXIso]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma f_eq_iso_hom_iso_inv {i : ι} {i' : ι'} (hi' : e.f i = i') (hi : ¬ e.BoundaryGE i) :
     f K e i = (K.restrictionXIso e hi').hom ≫ (K.truncGE'XIso e hi' hi).inv := by
@@ -273,6 +277,7 @@ end restrictionToTruncGE'
 noncomputable def restrictionToTruncGE' : K.restriction e ⟶ K.truncGE' e where
   f := restrictionToTruncGE'.f K e
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma restrictionToTruncGE'_hasLift : e.HasLift (K.restrictionToTruncGE' e) := by
   intro j hj i' _
@@ -298,6 +303,7 @@ lemma isIso_restrictionToTruncGE' (i : ι) (hi : ¬ e.BoundaryGE i) :
   rw [K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e rfl hi]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc (attr := simp)]
