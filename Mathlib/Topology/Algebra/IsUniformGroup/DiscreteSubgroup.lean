@@ -64,7 +64,7 @@ lemma Subgroup.discreteTopology_iff_of_finiteIndex {H : Subgroup G} [H.FiniteInd
 @[to_additive]
 lemma Subgroup.discreteTopology_iff_of_isFiniteRelIndex {H K : Subgroup G} (hHK : H ≤ K)
     [IsFiniteRelIndex H K] : DiscreteTopology H ↔ DiscreteTopology K := by
-  haveI : (H.subgroupOf K).FiniteIndex := IsFiniteRelIndex.to_finiteIndex_subgroupOf
+  have : (H.subgroupOf K).FiniteIndex := IsFiniteRelIndex.to_finiteIndex_subgroupOf
   rw [← (subgroupOfContinuousMulEquivOfLe hHK).discreteTopology_iff,
     discreteTopology_iff_of_finiteIndex]
 

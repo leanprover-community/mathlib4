@@ -180,7 +180,7 @@ theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f
     _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
       apply circleAverage_mono
       · apply (Meromorphic.fun_sum hf).meromorphicOn.circleIntegrable_posLog_norm
-      · apply (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
+      · fun_prop
       · intro x hx
         rw [add_comm]
         apply posLog_norm_sum_le
@@ -228,8 +228,6 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · exact MeromorphicOn.circleIntegrable_posLog_norm (fun x a ↦ h₁f₂ x)
     _ = proximity f₁ ⊤ + proximity f₂ ⊤ := by simp [proximity]
 
-@[deprecated (since := "2025-12-11")] alias proximity_top_mul_le := proximity_mul_top_le
-
 /--
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
@@ -242,8 +240,6 @@ theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic 
       apply proximity_mul_top_le h₁f₁.inv h₁f₂.inv
     _ = (proximity f₁ 0) + (proximity f₂ 0) := by
       rw [proximity_inv, proximity_inv]
-
-@[deprecated (since := "2025-12-11")] alias proximity_zero_mul_le := proximity_mul_zero_le
 
 /--
 For natural numbers `n`, the proximity function of `f ^ n` at `⊤` equals `n` times the proximity

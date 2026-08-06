@@ -24,37 +24,46 @@ open scoped Filter
 
 open Filter Set Metric
 
-theorem setOf_liouville_eq_iInter_iUnion :
+theorem setOfPred_liouville_eq_iInter_iUnion :
     { x | Liouville x } =
       ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
   ext x
-  simp only [mem_iInter, mem_iUnion, Liouville, mem_setOf_eq, exists_prop, Set.mem_sdiff,
+  simp only [mem_iInter, mem_iUnion, Liouville, mem_ofPred_eq, exists_prop, Set.mem_sdiff,
     mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
 
-theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
-  rw [setOf_liouville_eq_iInter_iUnion]
+@[deprecated (since := "2026-07-09")]
+alias setOf_liouville_eq_iInter_iUnion := setOfPred_liouville_eq_iInter_iUnion
+
+theorem IsGδ.setOfPred_liouville : IsGδ { x | Liouville x } := by
+  rw [setOfPred_liouville_eq_iInter_iUnion]
   refine .iInter fun n => IsOpen.isGδ ?_
   refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
   exact isOpen_ball.inter isClosed_singleton.isOpen_compl
 
+@[deprecated (since := "2026-07-09")]
+alias IsGδ.setOf_liouville := IsGδ.setOfPred_liouville
 
-theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
+theorem setOfPred_liouville_eq_irrational_inter_iInter_iUnion :
     { x | Liouville x } =
       { x | Irrational x } ∩ ⋂ n : ℕ, ⋃ (a : ℤ) (b : ℤ) (_ : 1 < b),
       ball (a / b) (1 / (b : ℝ) ^ n) := by
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
-    rw [setOf_liouville_eq_iInter_iUnion]
+    rw [setOfPred_liouville_eq_iInter_iUnion]
     exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => sdiff_subset
-  · simp only [inter_iInter, inter_iUnion, setOf_liouville_eq_iInter_iUnion]
+  · simp only [inter_iInter, inter_iUnion, setOfPred_liouville_eq_iInter_iUnion]
     refine iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
     rw [inter_comm]
     exact sdiff_subset_sdiff Subset.rfl (singleton_subset_iff.2 ⟨a / b, by norm_cast⟩)
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_liouville_eq_irrational_inter_iInter_iUnion :=
+  setOfPred_liouville_eq_irrational_inter_iInter_iUnion
+
 /-- The set of Liouville numbers is a residual set. -/
 theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
-  rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
+  rw [Filter.Eventually, setOfPred_liouville_eq_irrational_inter_iInter_iUnion]
   refine eventually_residual_irrational.and ?_
   refine residual_of_dense_Gδ ?_ (Rat.isDenseEmbedding_coe_real.dense.mono ?_)
   · exact .iInter fun n => IsOpen.isGδ <|

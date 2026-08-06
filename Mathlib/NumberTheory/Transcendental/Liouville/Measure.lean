@@ -15,7 +15,7 @@ public import Mathlib.Analysis.PSeries
 
 In this file we prove that the set of Liouville numbers with exponent (irrationality measure)
 strictly greater than two is a set of Lebesgue measure zero, see
-`volume_iUnion_setOf_liouvilleWith`.
+`volume_iUnion_setOfPred_liouvilleWith`.
 
 Since this set is a residual set, we show that the filters `residual` and `ae volume` are disjoint.
 These filters correspond to two common notions of genericity on `ℝ`: residual sets and sets of full
@@ -33,7 +33,7 @@ open scoped Filter ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
-theorem setOf_liouvilleWith_subset_aux :
+theorem setOfPred_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),
         { x : ℝ | ∃ᶠ b : ℕ in atTop, ∃ a ∈ Finset.Icc (0 : ℤ) b,
@@ -72,20 +72,23 @@ theorem setOf_liouvilleWith_subset_aux :
   · rw [add_le_add_iff_left]
     exact mul_le_of_le_one_left hb0.le hx01.2.le
 
+@[deprecated (since := "2026-07-09")]
+alias setOf_liouvilleWith_subset_aux := setOfPred_liouvilleWith_subset_aux
+
 /-- The set of numbers satisfying the Liouville condition with some exponent `p > 2` has Lebesgue
 measure zero. -/
 @[simp]
-theorem volume_iUnion_setOf_liouvilleWith :
+theorem volume_iUnion_setOfPred_liouvilleWith :
     volume (⋃ (p : ℝ) (_hp : 2 < p), { x : ℝ | LiouvilleWith p x }) = 0 := by
-  simp only [← setOf_exists, exists_prop]
-  refine measure_mono_null setOf_liouvilleWith_subset_aux ?_
+  simp only [← ofPred_exists, exists_prop]
+  refine measure_mono_null setOfPred_liouvilleWith_subset_aux ?_
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
   refine (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => ?_
   generalize hr : (2 + 1 / n : ℝ) = r
   replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
-  refine measure_setOf_frequently_eq_zero ?_
-  simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]
+  refine measure_setOfPred_frequently_eq_zero ?_
+  simp only [ofPred_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, ofPred_mem_eq]
   set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / (b : ℝ) ^ r)
   have hB : ∀ a b, volume (B a b) = ↑((2 : ℝ≥0) / (b : ℝ≥0) ^ r) := fun a b ↦ by
     rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_natCast, ← NNReal.coe_rpow,
@@ -106,17 +109,23 @@ theorem volume_iUnion_setOf_liouvilleWith :
   refine ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 ?_) (ENNReal.tsum_le_tsum this)
   refine (Summable.add ?_ ?_).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
 
+@[deprecated (since := "2026-07-09")]
+alias volume_iUnion_setOf_liouvilleWith := volume_iUnion_setOfPred_liouvilleWith
+
 theorem ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
-  simpa only [ae_iff, not_forall, Classical.not_not, setOf_exists] using
-    volume_iUnion_setOf_liouvilleWith
+  simpa only [ae_iff, not_forall, Classical.not_not, ofPred_exists] using
+    volume_iUnion_setOfPred_liouvilleWith
 
 theorem ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
   ae_not_liouvilleWith.mono fun _ h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
 
 /-- The set of Liouville numbers has Lebesgue measure zero. -/
 @[simp]
-theorem volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
+theorem volume_setOfPred_liouville : volume { x : ℝ | Liouville x } = 0 := by
   simpa only [ae_iff, Classical.not_not] using ae_not_liouville
+
+@[deprecated (since := "2026-07-09")]
+alias volume_setOf_liouville := volume_setOfPred_liouville
 
 /-- The filters `residual ℝ` and `ae volume` are disjoint. This means that there exists a residual
 set of Lebesgue measure zero (e.g., the set of Liouville numbers). -/

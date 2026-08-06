@@ -45,7 +45,6 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
-set_option backward.privateInPublic true in
 /-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
@@ -264,7 +263,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `SemimoduleCat R`. -/
 def toLinearEquivₛ {X Y : SemimoduleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 end CategoryTheory.Iso
 
