@@ -431,9 +431,7 @@ theorem toContinuousLinearMap_completion :
   ext x
   induction x using Completion.induction_on with
   | hp => exact isClosed_eq f.completion.continuous f.toContinuousLinearMap.completion.continuous
-  | ih x =>
-      rw [ContinuousLinearMap.completion_apply_coe, ← ContinuousMap.coe_apply]
-      simp [← Completion.map_coe f.isometry.uniformContinuous]
+  | ih x => congr
 
 @[simp]
 theorem toAddMonoidHom_completion :
