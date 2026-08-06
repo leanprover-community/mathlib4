@@ -141,6 +141,7 @@ theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Injective f)
     (hs : (S.map f).FG) : S.FG :=
   let ⟨s, hs⟩ := hs

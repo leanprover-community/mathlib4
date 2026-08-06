@@ -113,7 +113,7 @@ This lemma provides a convenient way to unfold the definition of `tangentConeAt`
 theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
     ∃ (α : Type (max u v)) (l : Filter α) (_hl : l.NeBot) (c : α → R) (d : α → E),
       Tendsto d l (𝓝 0) ∧ (∀ᶠ n in l, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) l (𝓝 y) := by
-  rw [tangentConeAt, mem_setOf, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
+  rw [tangentConeAt, mem_ofPred, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
     ← neBot_inf_comap_iff_map'] at h
   refine ⟨R × E, _, h, Prod.fst, Prod.snd, ?_, ?_, ?_⟩
   · refine (tendsto_snd (f := ⊤)).mono_left <| inf_le_right.trans <| ?_
