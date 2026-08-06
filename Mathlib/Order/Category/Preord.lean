@@ -46,7 +46,6 @@ attribute [coe] Preord.carrier
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
-  private mk ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
