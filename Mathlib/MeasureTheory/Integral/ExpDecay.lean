@@ -67,7 +67,7 @@ theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup 
 theorem integrableOn_exp_neg_mul_of_isBigO_exp {a b c : ℝ} {f : ℝ → ℝ}
     (hfc : LocallyIntegrableOn f (Ici c)) (hf : f =O[atTop] fun x : ℝ => exp (a * x))
     (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ioi c) := by
-  simpa [smul_eq_mul] using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab
+  simpa using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab
 
 /-- Exponential decay dominates exponential growth: if `f` is locally integrable on `[c, ∞)` and
 `f x = O(exp (a * x))` at `∞`, then `exp (-b * x) * ‖f x‖` is integrable on `(c, ∞)`
