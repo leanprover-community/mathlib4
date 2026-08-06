@@ -119,9 +119,11 @@ theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
     t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] (s ∩ t : Set α) := by
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
   mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
   mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
 
@@ -389,7 +391,7 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds {f : α → β} {a : α} {s : Set α}
 
 theorem eventually_mem_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α} {l : Filter β}
     (h : Tendsto f l (𝓝[s] a)) : ∀ᶠ i in l, f i ∈ s := by
-  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_setOf_eq, tendsto_principal, mem_inter_iff,
+  simp_rw [nhdsWithin_eq, tendsto_iInf, mem_ofPred_eq, tendsto_principal, mem_inter_iff,
     eventually_and] at h
   exact (h univ ⟨mem_univ a, isOpen_univ⟩).2
 
@@ -514,7 +516,7 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
   eventually_nhds_subtype_iff s a (¬ P ·) |>.not
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
-    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
+    Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 
 theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
@@ -593,7 +595,7 @@ lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
 
 lemma mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
     u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
-  letI := t.induced f
+  let := t.induced f
   simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
   refine ⟨fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_, fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_⟩
   · refine ⟨v', ⟨v', hv'.1, ?_, subset_rfl⟩, hv'.2.trans_subset hv.2⟩

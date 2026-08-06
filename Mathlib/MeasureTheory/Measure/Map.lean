@@ -67,7 +67,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
     f μ.toOuterMeasure s ≤ liftLinear f hf μ s :=
   le_toMeasure_apply _ (hf μ) s
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
 noncomputable
@@ -77,13 +77,14 @@ def mapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure �
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
   else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
     mapₗ f μ = mapₗ g μ := by
   ext1 s hs
   simpa only [mapₗ, hf, hg, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply]
     using! measure_congr (h.preimage s)
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
 noncomputable

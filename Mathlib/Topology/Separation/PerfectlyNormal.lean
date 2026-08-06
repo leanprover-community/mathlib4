@@ -34,7 +34,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
     -- write `s` as the intersection of a sequence of open sets `U n`
     obtain ⟨U, ho, hu⟩ := isGδ_iff_eq_iInter_nat.1 hs.isGδ
     have (n : ℕ) : Disjoint s (U n)ᶜ := by
-      apply HasSubset.Subset.disjoint_compl_right
+      apply LE.le.disjoint_compl_right
       grw [hu, iInter_subset]
     -- for each `n`, construct a continuous function `f n` that separates `s` from `(U n)ᶜ`
     choose f hfs hfu hfr using fun n =>
@@ -55,7 +55,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       · suffices ∀ n, f n x = 0 from by simp [h, this]
         exact fun n => hfs n hp
       · contrapose h
-        simp only [preimage, notMem_setOf_iff, ContinuousMap.coe_mk, mem_singleton_iff]
+        simp only [preimage, notMem_ofPred_iff, ContinuousMap.coe_mk, mem_singleton_iff]
         apply ne_of_gt
         obtain ⟨i, hi⟩ := mem_iUnion.1 <| compl_iInter _ ▸ mem_compl (hu ▸ h)
         calc

@@ -67,7 +67,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
 noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.inertiaDeg' A else 0
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then h.choose.inertiaDeg A else 0
 
 section MulAction
 
@@ -145,9 +145,9 @@ theorem ramificationIdx_eq_of_isGaloisGroup :
 include p G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGaloisGroup :
-    P.inertiaDeg' A = Q.inertiaDeg' A := by
+    P.inertiaDeg A = Q.inertiaDeg A := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
-  rw [inertiaDeg'_smul]
+  rw [inertiaDeg_smul]
 
 include p G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
@@ -168,7 +168,7 @@ theorem ramificationIdxIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Id
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
 theorem inertiaDegIn_eq_inertiaDeg :
-    inertiaDegIn p B = P.inertiaDeg' A := by
+    inertiaDegIn p B = P.inertiaDeg A := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
@@ -179,7 +179,7 @@ theorem inertiaDegIn_ne_zero [Module.Finite A B] [FaithfulSMul A B] {p : Ideal A
     inertiaDegIn p B ≠ 0 := by
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [inertiaDegIn_eq_inertiaDeg p P G]
-  exact (P.1.inertiaDeg'_pos A).ne'
+  exact (P.1.inertiaDeg_pos A).ne'
 
 section tower
 
@@ -194,7 +194,7 @@ theorem inertiaDegIn_mul_inertiaDegIn :
   obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
   have : Q.LiesOver p := LiesOver.trans Q P p
   rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
-    inertiaDegIn_eq_inertiaDeg P Q GBC, ← inertiaDeg'_tower P Q]
+    inertiaDegIn_eq_inertiaDeg P Q GBC, ← inertiaDeg_tower P Q]
 
 variable {p} in
 include G GAC GBC in
@@ -286,7 +286,7 @@ open Algebra
 attribute [local instance] Ideal.Quotient.field in
 theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
-    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg' R := by
+    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) * P.inertiaDeg R := by
   let := Localization.AtPrime.algebraOfLiesOver p P
   have heq : (algebraMap (S ⧸ P) P.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ P)) =
       (algebraMap p.ResidueField P.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField) := by
@@ -301,14 +301,14 @@ theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     Ideal.IsFractionRing.finite_of_isInvariant G p P p.ResidueField P.ResidueField
   have : Subgroup.index _ = _ := Nat.card_congr
     (IsFractionRing.stabilizerQuotientInertiaEquiv G p P p.ResidueField P.ResidueField).toEquiv
-  rw [inertiaDeg'_eq p P, ← IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField, ← this,
+  rw [inertiaDeg_eq p P, ← IsGalois.card_aut_eq_finrank p.ResidueField P.ResidueField, ← this,
     ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
     Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv,
     AddSubgroup.subgroupOf_inertia]
 
 lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsPrime]
     (P : Ideal S) [P.LiesOver p] [P.IsPrime] [PerfectField p.ResidueField] :
-    (p.primesOver S).ncard * Nat.card (P.inertia G) * P.inertiaDeg' R = Nat.card G := by
+    (p.primesOver S).ncard * Nat.card (P.inertia G) * P.inertiaDeg R = Nat.card G := by
   rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank p P,
     ← IsInvariant.orbit_eq_primesOver R S G p P]
   simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)

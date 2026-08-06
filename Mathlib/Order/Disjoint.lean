@@ -64,8 +64,7 @@ theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
 instance symm_disjoint : Std.Symm (Disjoint : α → α → Prop) where
   symm := Disjoint.symm
 
-@[deprecated (since := "2026-06-10")] alias symmetric_codisjoint := symm_codisjoint
-@[to_dual existing, deprecated (since := "2026-06-10")] alias symmetric_disjoint := symm_disjoint
+@[to_dual (attr := deprecated (since := "2026-06-10"))] alias symmetric_disjoint := symm_disjoint
 
 @[to_dual (attr := simp, grind ←)]
 theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
@@ -169,8 +168,8 @@ lemma disjoint_subtype_iff {pr : α → Prop} (Pinf : ∀ ⦃s t : α⦄, pr s �
     letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
     letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
     Disjoint a b ↔ Disjoint a.val b.val := by
-  letI : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
-  letI : OrderBot (Subtype pr) := Subtype.orderBot hbot
+  let : SemilatticeInf (Subtype pr) := Subtype.semilatticeInf Pinf
+  let : OrderBot (Subtype pr) := Subtype.orderBot hbot
   rw [disjoint_iff, disjoint_iff, ← Subtype.coe_inf Pinf, ← Subtype.coe_bot hbot]
   exact Subtype.coe_inj.symm
 
@@ -308,6 +307,7 @@ section DistribLattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b c : α}
 
+@[to_dual]
 theorem Disjoint.le_of_codisjoint (hab : Disjoint a b) (hbc : Codisjoint b c) : a ≤ c := by
   rw [← @inf_top_eq _ _ _ a, ← @bot_sup_eq _ _ _ c, ← hab.eq_bot, ← hbc.eq_top, sup_inf_right]
   exact inf_le_inf_right _ le_sup_left

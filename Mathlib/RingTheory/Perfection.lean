@@ -149,6 +149,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
     coeffMonoidHom M p n ((powMonoidHom p)^[m] f) = coeffMonoidHom M p (n - m) f := by
   rw [← coeffMonoidHom_iterate_powMonoidHom f (n - m) m, Nat.sub_add_cancel hmn]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps! symm_apply]
@@ -169,10 +170,12 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma coeffMonoidHom_zero_liftMonoidHom
     (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
     coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
 def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M →* N) :
     Perfection M p →* Perfection N p where
@@ -420,7 +423,7 @@ variable (p R P)
 
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
-  mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
+  mk' (RingEquiv.refl _) <| (Equiv.eq_symm_apply _).1 rfl
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
@@ -475,7 +478,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
-        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
+        RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
 variable {R p}
 
@@ -809,8 +812,8 @@ include hv
 
 theorem isDomain : IsDomain (PreTilt O p) := by
   have hp : Nat.Prime p := Fact.out
-  haveI : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
-  haveI : NoZeroDivisors (PreTilt O p) :=
+  have : Nontrivial (PreTilt O p) := ⟨(CharP.nontrivial_of_char_ne_one hp.ne_one).1⟩
+  have : NoZeroDivisors (PreTilt O p) :=
     ⟨fun hfg => by
       simp_rw [← map_eq_zero hv] at hfg ⊢; contrapose! hfg; rw [Valuation.map_mul]
       exact mul_ne_zero hfg.1 hfg.2⟩

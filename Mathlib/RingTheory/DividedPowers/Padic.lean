@@ -41,7 +41,7 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
-  dpow n x := open Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
+  dpow n x := open scoped Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
   dpow_null hx := by simp [dif_neg hx]
   dpow_zero {x} hx := by
     simp only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
@@ -70,9 +70,6 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
       exact hJ.dpow_comp hm (hIJ ▸ I.mem_map_of_mem f hx)
     · rw [dif_pos hx]
       exact (Exists.choose_spec (hmem m hx)).1 hm
-
-@[deprecated (since := "2025-12-09")]
-alias PadicInt.dividedPowers_of_injective := DividedPowers.ofInjective
 
 end Injective
 
@@ -133,6 +130,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   simp only [cast_one, zpow_neg_one]
   exact dpow'_norm_le_of_ne_zero p hm hx
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
@@ -152,8 +150,9 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
-    (dividedPowers p).dpow n x = open Classical in
+    (dividedPowers p).dpow n x = open scoped Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, ofInjective]
   split_ifs with hx
@@ -166,8 +165,9 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       RatAlgebra.dpow_apply, Submodule.mem_top] using! heq.symm
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_dpow_eq (n : ℕ) (x : ℤ_[p]) :
-    ((dividedPowers p).dpow n x : ℚ_[p]) = open Classical in
+    ((dividedPowers p).dpow n x : ℚ_[p]) = open scoped Classical in
       if _ : x ∈ Ideal.span {(p : ℤ_[p])} then inverse (n ! : ℚ_[p]) * x ^ n else 0 := by
   simp only [dividedPowers_eq, dpow', inverse_eq_inv', dite_eq_ite]
   split_ifs <;> simp
