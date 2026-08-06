@@ -451,7 +451,6 @@ noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
   have {M N : Skeleton (SemimoduleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
@@ -464,8 +463,6 @@ protected noncomputable def mk : Pic R := equivShrink _ <|
     rw [← toSkeleton, ← toSkeleton, mul_comm, ← Skeleton.toSkeleton_tensorObj]
     exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIsoₛ⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `mk R M` is indeed the class of `M`. -/
 noncomputable def mk.linearEquiv : Pic.mk R M ≃ₗ[R] M :=
   equivShrinkLinearEquiv R _ ≪≫ₗ (Quotient.mk_out (s := isIsomorphicSetoid _)
@@ -661,7 +658,6 @@ section Semiring
 variable [Semiring A] [Algebra R A] [FaithfulSMul R A]
 
 open LinearMap in
-set_option backward.privateInPublic true in
 private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule R A)ˣ) :
     Projective R I ∧ Function.Bijective (mul' R A ∘ₗ I.1.subtype.lTensor A) := by
   obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.inv_mul ▸ one_le.mp le_rfl)
@@ -702,8 +698,6 @@ theorem projective_of_isUnit {I : Submodule R A} (hI : IsUnit I) : Projective R 
 
 variable (I J : (Submodule R A)ˣ)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given two invertible `R`-submodules in an `R`-algebra `A`, the `R`-linear map from
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by

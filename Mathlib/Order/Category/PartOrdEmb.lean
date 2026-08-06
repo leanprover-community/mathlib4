@@ -50,15 +50,11 @@ structure Hom (X Y : PartOrdEmb.{u}) where
   /-- The underlying `OrderEmbedding`. -/
   hom' : X ↪o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category PartOrdEmb.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨RelEmbedding.refl _⟩
   comp f g := ⟨f.hom'.trans g.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrdEmb (· ↪o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

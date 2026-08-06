@@ -347,7 +347,6 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
-set_option backward.privateInPublic true in
 /-- The Möbius function of the incidence algebra as a bare function defined recursively. -/
 private def muFun (a : α) : α → 𝕜
   | b =>
@@ -363,8 +362,6 @@ termination_by b => (Icc a b).card
 private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
   ⟨muFun 𝕜, fun a b ↦ not_imp_comm.1 fun h ↦ by

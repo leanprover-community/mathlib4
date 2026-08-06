@@ -198,7 +198,6 @@ def inverseObj (F : C ⥤ Comon D) : Comon (C ⥤ D) where
     comul := { app X := Δ[(F.obj X).X] } }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- Functor translating a functor into the category of comonoid objects
 to a comonoid object in the functor category
 -/
@@ -214,7 +213,6 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- The unit for the equivalence `Comon (C ⥤ D) ≌ C ⥤ Comon D`.
 -/
 @[simps!]
@@ -225,8 +223,6 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
 
 set_option backward.isDefEq.respectTransparency false in
 -- probably this was originally also intended to be a private def
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
 @[simps!]
@@ -240,8 +236,6 @@ open ComonFunctorCategoryEquivalence
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- When `D` is a monoidal category,
 comonoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the comonoid objects of `D`.

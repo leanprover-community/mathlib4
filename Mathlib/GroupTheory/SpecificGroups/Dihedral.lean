@@ -39,7 +39,6 @@ namespace DihedralGroup
 
 variable {n : ℕ}
 
-set_option backward.privateInPublic true in
 /-- Multiplication of the dihedral group.
 -/
 private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
@@ -48,26 +47,20 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
   | sr i, r j => sr (i + j)
   | sr i, sr j => r (j - i)
 
-set_option backward.privateInPublic true in
 /-- The identity `1` is the rotation by `0`.
 -/
 private def one : DihedralGroup n :=
   r 0
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
-set_option backward.privateInPublic true in
 /-- The inverse of an element of the dihedral group.
 -/
 private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
 -/
 instance : Group (DihedralGroup n) where

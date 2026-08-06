@@ -37,7 +37,6 @@ namespace extendToSucc
 
 variable (X)
 
-set_option backward.privateInPublic true in
 /-- `extendToSucc`, on objects: it coincides with `F.obj` for `i ≤ j`, and
 it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=

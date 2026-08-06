@@ -51,7 +51,6 @@ def toCommGrp : C ⥤ CommGrp C where
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
 -- `CartesianMonoidalCategory` in preadditive categories, to give this lemma a proper home.
-set_option backward.privateInPublic true in
 omit [BraidedCategory C] in
 private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (h₁ : lift (𝟙 X) 0 ≫ f = lift (𝟙 X) 0 ≫ g) (h₂ : lift 0 (𝟙 Y) ≫ f = lift 0 (𝟙 Y) ≫ g) :
@@ -60,8 +59,6 @@ private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (binaryBiconeIsBilimitOfLimitConeOfIsLimit (tensorProductIsBinaryProduct X Y)).isColimit h₁ h₂
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `commGrpEquivalence`. -/
 @[simps!]
 def commGrpEquivalenceAux : CommGrp.forget C ⋙ toCommGrp C ≅

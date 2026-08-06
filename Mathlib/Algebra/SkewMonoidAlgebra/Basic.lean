@@ -59,25 +59,19 @@ variable [AddMonoid k]
 @[simp] lemma eta (f : SkewMonoidAlgebra k G) : ofCoeff f.coeff = f := rfl
 @[simp] lemma coeff_ofCoeff (f : G →₀ k) : coeff (ofCoeff f) = f := rfl
 
-set_option backward.privateInPublic true in
 @[irreducible]
 private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-set_option backward.privateInPublic true in
 private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
 instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f

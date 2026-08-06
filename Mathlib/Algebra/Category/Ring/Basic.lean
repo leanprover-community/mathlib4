@@ -71,15 +71,11 @@ structure Hom (R S : SemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -236,15 +232,11 @@ structure Hom (R S : RingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -410,15 +402,11 @@ structure Hom (R S : CommSemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -500,8 +488,6 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   inferInstanceAs <| CommSemiring R.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
@@ -582,15 +568,11 @@ structure Hom (R S : CommRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩

@@ -94,15 +94,12 @@ end TypeCat
 
 open TypeCat CategoryTheory
 
-set_option backward.privateInPublic true in
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} (Type u) where
   Hom := Hom
   id X := .mk <| .id X
   comp f g := .mk <| g.hom'.comp f.hom'
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The concrete category instance on `Type u`.
 

@@ -85,7 +85,6 @@ variable {k : ℤ} (f : ℍ → ℂ)
 
 section privateSlash
 
-set_option backward.privateInPublic true in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. Invoking this directly is
 deprecated; it should always be used via the `SlashAction` instance. -/
 private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
@@ -95,7 +94,6 @@ private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : 
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
-set_option backward.privateInPublic true in
 private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
     f ∣[k] (A * B) = (f ∣[k] A) ∣[k] B := by
   ext1 τ
@@ -110,22 +108,17 @@ private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
      ring
   _ = ((f ∣[k] A) ∣[k] B) τ := rfl
 
-set_option backward.privateInPublic true in
 private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
     (f + g) ∣[k] A = f ∣[k] A + g ∣[k] A := by
   ext1 τ
   simp [privateSlash, add_mul]
 
-set_option backward.privateInPublic true in
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [privateSlash, σ, denom]
 
-set_option backward.privateInPublic true in
 private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k] A = 0 :=
   funext fun _ => by simp [privateSlash]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. -/
 instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) where
   map := privateSlash

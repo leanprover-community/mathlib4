@@ -136,7 +136,6 @@ variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
-set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries inferInstance
 

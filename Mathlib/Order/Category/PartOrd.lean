@@ -47,15 +47,11 @@ structure Hom (X Y : PartOrd.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

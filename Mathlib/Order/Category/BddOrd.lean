@@ -49,15 +49,11 @@ structure Hom (X Y : BddOrd.{u}) where
   /-- The underlying `BoundedOrderHom`. -/
   hom' : BoundedOrderHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category BddOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨BoundedOrderHom.id _⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

@@ -71,15 +71,11 @@ structure Hom (X Y : TopCat.{u}) where
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category TopCat where
   Hom X Y := Hom X Y
   id X := ⟨ContinuousMap.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩

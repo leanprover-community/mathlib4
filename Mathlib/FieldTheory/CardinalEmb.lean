@@ -231,7 +231,6 @@ instance : InverseSystem (embFunctor F E) where
   map_self _ _ := rfl
   map_map _ _ _ _ _ _ := rfl
 
-set_option backward.privateInPublic true in
 private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i).ne'
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/

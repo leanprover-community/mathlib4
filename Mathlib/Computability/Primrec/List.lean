@@ -34,7 +34,6 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 
 open Primrec
 
-set_option backward.privateInPublic true in
 @[instance_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
@@ -51,7 +50,6 @@ private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → �
       .id (encode_iff.2 hf)
   option_some_iff.1 <| this.of_eq fun a => by rcases f a with - | ⟨b, l⟩ <;> simp [encodek]
 
-set_option backward.privateInPublic true in
 private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ × β → σ}
     (hf : haveI := prim H; Primrec f) (hg : Primrec g) (hh : haveI := prim H; Primrec₂ h) :
     Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) := by
@@ -79,12 +77,10 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     simp only [iterate_succ, comp_apply]
     rcases l with - | ⟨b, l⟩ <;> simp [G, IH]
 
-set_option backward.privateInPublic true in
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
   encode_iff.1 (succ.comp <| Primrec₂.natPair.comp (encode_iff.2 fst) (encode_iff.2 snd))
 
-set_option backward.privateInPublic true in
 private theorem list_reverse' :
     haveI := prim H
     Primrec (@List.reverse β) :=
@@ -103,8 +99,6 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 instance list : Primcodable (List α) :=
   ⟨letI H := Primcodable.prim (List ℕ)
