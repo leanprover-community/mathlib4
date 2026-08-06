@@ -228,6 +228,48 @@ theorem norm_starProjection_orthogonal_eq_iInf
     ‖Uᗮ.starProjection y‖ = ⨅ u : U, ‖y - u‖ := by
   rw [U.starProjection_orthogonal_val, U.starProjection_minimal]
 
+/-- A parameter `z` can be completed by some `u : U` to a joint minimizer of
+`‖y - (u + f z)‖` if and only if it minimizes the norm of the residual projected onto `Uᗮ`.
+This is the abstract partialling-out principle underlying the Frisch–Waugh–Lovell theorem.
+
+When `f` is the function underlying a continuous linear map `B : G →L[𝕜] E`, linearity rewrites
+the projected residual as `Uᗮ.starProjection y - (Uᗮ.starProjection ∘L B) z`. -/
+theorem exists_forall_norm_sub_add_apply_le_iff_forall_norm_starProjection_orthogonal_sub_apply_le
+    {G : Type*} {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
+    (f : G → E) (y : E) (z : G) :
+    (∃ u : U, ∀ (u' : U) (z' : G),
+      ‖y - ((u : E) + f z)‖ ≤ ‖y - ((u' : E) + f z')‖) ↔
+      ∀ z' : G,
+        ‖Uᗮ.starProjection (y - f z)‖ ≤ ‖Uᗮ.starProjection (y - f z')‖ := by
+  have h_le (x : E) (u : U) : ‖Uᗮ.starProjection x‖ ≤ ‖x - u‖ := by
+    rw [U.norm_starProjection_orthogonal_eq_iInf]
+    exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ ↦ norm_nonneg _⟩ u
+  have h_residual (u : U) (z : G) :
+      ‖y - ((u : E) + f z)‖ = ‖(y - f z) - u‖ := by
+    congr 1
+    abel
+  have h_projection (z : G) :
+      ‖y - ((U.orthogonalProjectionOnto (y - f z) : E) + f z)‖ =
+        ‖Uᗮ.starProjection (y - f z)‖ := by
+    rw [h_residual, U.starProjection_orthogonal_val, U.coe_orthogonalProjectionOnto_apply]
+  constructor
+  · rintro ⟨u, hu⟩ z'
+    calc
+      ‖Uᗮ.starProjection (y - f z)‖ ≤ ‖(y - f z) - u‖ := h_le _ u
+      _ = ‖y - ((u : E) + f z)‖ := (h_residual u z).symm
+      _ ≤ ‖y - ((U.orthogonalProjectionOnto (y - f z') : E) + f z')‖ :=
+        hu (U.orthogonalProjectionOnto (y - f z')) z'
+      _ = ‖Uᗮ.starProjection (y - f z')‖ := h_projection z'
+  · intro hz
+    refine ⟨U.orthogonalProjectionOnto (y - f z), ?_⟩
+    intro u' z'
+    calc
+      ‖y - ((U.orthogonalProjectionOnto (y - f z) : E) + f z)‖ =
+          ‖Uᗮ.starProjection (y - f z)‖ := h_projection z
+      _ ≤ ‖Uᗮ.starProjection (y - f z')‖ := hz z'
+      _ ≤ ‖(y - f z') - u'‖ := h_le _ u'
+      _ = ‖y - ((u' : E) + f z')‖ := (h_residual u' z').symm
+
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjectionOnto_mem_subspace_eq_self (v : K) :
