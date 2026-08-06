@@ -460,11 +460,20 @@ theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition
 def totalVariation (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.posPart + s.toJordanDecomposition.negPart
 
+instance (s : SignedMeasure α) : IsFiniteMeasure s.totalVariation := by
+  unfold totalVariation; infer_instance
+
 theorem totalVariation_zero : (0 : SignedMeasure α).totalVariation = 0 := by
   simp [totalVariation, toJordanDecomposition_zero]
 
 theorem totalVariation_neg (s : SignedMeasure α) : (-s).totalVariation = s.totalVariation := by
   simp [totalVariation, toJordanDecomposition_neg, add_comm]
+
+/-- Pointwise form of `toSignedMeasure_toJordanDecomposition`. -/
+theorem apply_eq_posPart_real_sub_negPart_real (s : SignedMeasure α) {i : Set α}
+    (hi : MeasurableSet i) :
+    s i = s.toJordanDecomposition.posPart.real i - s.toJordanDecomposition.negPart.real i := by
+  grind [Measure.toSignedMeasure_sub_apply, toSignedMeasure, toSignedMeasure_toJordanDecomposition]
 
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by

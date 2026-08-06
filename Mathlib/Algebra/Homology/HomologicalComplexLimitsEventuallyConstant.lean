@@ -25,7 +25,7 @@ public section
 open CategoryTheory Category Limits
 
 variable {C J ι : Type*} [Category C] [Category J]
-   {c : ComplexShape ι} [IsCofiltered J]
+  {c : ComplexShape ι} [IsCofiltered J]
 
 namespace HomologicalComplex
 

@@ -98,7 +98,7 @@ lemma zerothHomotopyEquiv_symm_mk (x : (toSSet.obj X) _⦋0⦌) :
     zerothHomotopyEquiv.symm (.mk x) = .mk (toSSetObj₀Equiv x) := rfl
 
 instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
-  letI : Unique (ZerothHomotopy X) := Nonempty.some (by
+  let : Unique (ZerothHomotopy X) := Nonempty.some (by
     rw [unique_iff_subsingleton_and_nonempty]
     constructor <;> infer_instance)
   rw [SSet.isConnected_iff_nonempty_unique]

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Binary product of standard simplices

@@ -39,6 +39,7 @@ def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
     (2 • (K.starProjection.toLinearMap) - LinearMap.id) fun x => by
     simp [two_smul, starProjection_eq_self_iff.mpr]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
 more generally to cover operations such as reflection in a point.  The definition here, of
