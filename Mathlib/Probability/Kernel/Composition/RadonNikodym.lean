@@ -18,7 +18,7 @@ composition product `ν ⊗ₘ η` in terms of the Radon-Nikodym derivatives `�
 `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 
 If `α` is countable or `β` is countably generated, the kernels have a Radon-Nikodym derivative
-`∂κ/∂η` and we give equivalent statements with `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` replaced by `∂κ/∂η`.
+`∂κ/∂η` and we give statements in terms of `∂κ/∂η`.
 
 ## Main statements
 
