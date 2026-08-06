@@ -288,7 +288,7 @@ theorem polar_def (s : Set M) : polar 𝕜 s = { f : WeakDual 𝕜 M | ∀ x ∈
 /-- The polar `polar 𝕜 s` of a set `s : E` is a closed subset when the weak star topology
 is used. -/
 theorem isClosed_polar (s : Set M) : IsClosed (polar 𝕜 s) := by
-  simp only [polar_def, setOf_forall]
+  simp only [polar_def, ofPred_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
 /-- Polar sets of neighborhoods of the origin are bounded in the weak dual. -/
