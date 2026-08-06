@@ -105,7 +105,7 @@ variable (A) in
 `Ind_S^G(A) →ₗ[k] Coind_S^G(A)` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
 noncomputable abbrev indToCoind :
     ind S.subtype A →ₗ[k] coind S.subtype A :=
-  Representation.IndV.lift S.subtype A.ρ 
+  Representation.IndV.lift S.subtype A.ρ
     (fun g => LinearMap.codRestrict _ (indToCoindAux A g) (by intro a s h; simp))
     (by intros; ext; simp)
 

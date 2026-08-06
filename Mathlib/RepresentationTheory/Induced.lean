@@ -111,7 +111,7 @@ lemma IndV.mk_map_inv_eq (g : G) (a : A) :
     IndV.mk φ ρ (φ g)⁻¹ a = IndV.mk φ ρ 1 (ρ g a) := by
   simp [← map_inv]
 
-/-- Construct a linear map `IndV φ ρ →ₗ[k] B` from a compatible family of linear maps 
+/-- Construct a linear map `IndV φ ρ →ₗ[k] B` from a compatible family of linear maps
 `IndV.mk φ ρ h : A →ₗ[k] B`. -/
 noncomputable def IndV.lift (f : H → A →ₗ[k] B)
     (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
