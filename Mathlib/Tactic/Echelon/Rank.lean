@@ -11,9 +11,18 @@ public import Mathlib.Tactic.Echelon.Parsing
 /-!
 # `eval_rank`: rank of matrix literals by Bareiss elimination
 
-`eval_rank` (and the underlying simproc `norm_rank`) closes goals of the form
-`Matrix.rank !![…] = k` over a commutative domain, for matrices whose entries are
-numerals or `norm_num`-evaluable expressions.
+`eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain
+with kernel-decidable equality, for entries the selected computation model evaluates:
+numerals and `norm_num`-evaluable expressions everywhere, plus ring-specific literals
+such as the `⟨a, b⟩` pairs of `ℤ√d`. The simproc `norm_rank` rewrites such ranks inside
+`simp` sets, skipping any term it cannot evaluate; its throwing variant
+`norm_rank_throw` reports the failure instead, and underlies `eval_rank`.
+
+## Main definitions
+
+- `eval_rank`: the tactic.
+- `norm_rank`: the simproc, for use in `simp` sets.
+- `norm_rank_throw`: the throwing variant of `norm_rank`, used by `eval_rank`.
 -/
 
 public meta section
@@ -26,18 +35,18 @@ namespace Mathlib.Tactic.Echelon
 def matchRankLit? (e : Expr) :
     MetaM (Option (Expr × Nat × Nat × Expr × Array (Array Expr))) := do
   match_expr e with
-  | Matrix.rank _ _ _ _ _ M =>
-    let M ← instantiateMVars M
-    let some (m, n, R, entries) ← matchMatrixLit? M | return none
-    return some (M, m, n, R, entries)
+  | Matrix.rank _ _ _ _ _ A =>
+    let A ← instantiateMVars A
+    let some (m, n, R, entries) ← matchMatrixLit? A | return none
+    return some (A, m, n, R, entries)
   | _ => return none
 
-/-- Rewrite `Matrix.rank M` to the pivot count of the Bareiss decomposition of the matrix
-literal `M`. -/
-def normalizeRank (e M : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
+/-- Rewrite `Matrix.rank A` to the pivot count of the Bareiss decomposition of the matrix
+literal `A`. -/
+def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
     MetaM Simp.Result := do
-  let decomp ← (mkBareissDecomposition M m n R entries).run'
-  let pf ← mkAppM ``Bareiss.Decomposition.rank_eq #[decomp]
+  let decomp ← (mkBareissDecomposition A m n R entries).run'
+  let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[decomp]
   -- the statement's right-hand side: the pivoted-row count of the certificate
   let cnt := (← inferType pf).appArg!
   let some len := ((Kernel.whnf (← getEnv) (← getLCtx) cnt).toOption).bind (·.rawNatLit?)
@@ -45,17 +54,17 @@ def normalizeRank (e M : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
   let k := mkNatLit len
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 
-end Mathlib.Tactic.Echelon
-
-open Mathlib.Tactic.Echelon
-
 /-- Core of the `norm_rank` simprocs: normalize `Matrix.rank` of a closed matrix literal
 via its Bareiss decomposition. Skips terms outside the method's scope; a failure of a
 committed attempt throws. -/
 def normRankCore : Simp.Simproc := fun e => do
-  let some (M, m, n, R, entries) ← matchRankLit? e | return .continue
-  let .ok _ ← checkBareissCommittal R | return .continue
-  return .done (← normalizeRank e M m n R entries)
+  let some (A, m, n, R, entries) ← matchRankLit? e | return .continue
+  let .ok _ ← checkBareissApplicable R | return .continue
+  return .done (← normalizeRank e A m n R entries)
+
+end Mathlib.Tactic.Echelon
+
+open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
 Bareiss decomposition. Terms it cannot evaluate — outside the method's scope or failing
@@ -78,7 +87,7 @@ elab (name := evalRank) "eval_rank" : tactic => do
     (← goal.getType).forEach fun e => do
       if e.isAppOfArity ``Matrix.rank 6 then
         if let some (_, _, _, R, _) ← matchRankLit? e then
-          if let .error why ← checkBareissCommittal R then
+          if let .error why ← checkBareissApplicable R then
             throwError why
     throwError "eval_rank failed to evaluate the rank of any closed matrix literal in the goal"
   Tactic.evalTactic (← `(tactic| try lia))

@@ -17,13 +17,13 @@ public meta import Mathlib.Tactic.NormNum.Basic
 The rational model of a ring: entries evaluate to rational numerals via `norm_num`,
 rows scale integral, and the elimination runs on integer values. It applies to any ring
 whose entries evaluate to rationals — `ratExt` is the fallback model the tactic uses
-when no registered extension matches the ring.
+when no ring-specific model matches the ring.
 
 ## Main definitions
 
-- `ratExt`: the rational model, as a `BareissExt`.
+- `ratExt`: the rational model.
 - `evalEntry`: evaluate a matrix entry to its rational value.
-- `isZeroInR`: the kernel zero test for an integer value in a ring.
+- `isZeroInRing`: the kernel zero test for an integer value in a ring.
 -/
 
 public meta section
@@ -51,12 +51,6 @@ def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
     throwError "division entries are supported only in characteristic zero{indentExpr e}"
   return v
 
-/-- Evaluate the matrix entries to their rational values; throws when an entry does not
-evaluate to a rational numeral. -/
-def evalEntries (charZero : Bool) (entries : Array (Array Expr)) :
-    MetaM (Array (Array Rat)) :=
-  entries.mapM fun row => row.mapM fun e => evalEntry charZero e
-
 /-- Scale each row integral by the lcm of its denominators. Returns the integer matrix
 together with the row scales, which are later folded back into `L`. -/
 def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array Nat :=
@@ -76,7 +70,7 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
 
 /-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
 `(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
-def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
+def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   if v == 0 then return true
   let _instCast ← synthInstanceQ q(IntCast $R)
   let _instZero ← synthInstanceQ q(Zero $R)
@@ -90,8 +84,9 @@ def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
 /-- The rational model of a ring: entries evaluate to rational numerals, rows scale
-integral, and the elimination runs on integer values. -/
-def ratExt : BareissExt := fun R => do
+integral, and the elimination runs on integer values. It applies to every ring, so it
+returns a producer unconditionally. -/
+def ratExt (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
   -- `CharZero`'s `[AddMonoidWithOne R]` argument must be synthesized first: `mkAppM`
@@ -106,12 +101,12 @@ def ratExt : BareissExt := fun R => do
     mul := (· * ·)
     sub := (· - ·)
     divExact := (· / ·)
-    isZero := if charZero then fun v => pure (v == 0) else isZeroInR R }
+    isZero := if charZero then fun v => pure (v == 0) else isZeroInRing R }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array Int) × (BareissData Int → BareissData Int)) := do
-    let ratRows ← evalEntries charZero entries
+    let ratRows ← entries.mapM (·.mapM (evalEntry charZero))
     let (values, scales) := scaleRowsIntegral ratRows
     return (values, foldScales ops (scales.map Int.ofNat))
-  return some (mkProducer ops prepare (mkIntNumeral R))
+  return mkProducer ops prepare (mkIntNumeral R)
 
 end Mathlib.Tactic.Echelon

@@ -5,28 +5,26 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Echelon.Defs
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.Tactic.Echelon.Core
-
-public meta import Mathlib.LinearAlgebra.Matrix.Notation
-public meta import Mathlib.Util.Qq
-
 public import Mathlib.Tactic.Echelon.Rat
 public import Mathlib.Tactic.Echelon.Zsqrtd
+
+public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # The Bareiss decomposition method
 
-Given a matrix literal `M` over a commutative domain, the entry point
+Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
-elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Bareiss.Decomposition M`,
+elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`,
 with the certificate conditions checked by the kernel via `decide`.
 
 ## Main definitions
 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
-- `checkBareissCommittal`: the pre-commitment applicability check of the Bareiss method.
-- `producerFor?`: select the computation model for a ring.
+- `checkBareissApplicable`: the applicability check of the Bareiss method.
+- `producerFor`: select the computation model for a ring.
 -/
 
 public meta section
@@ -64,9 +62,9 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
     acc := q($acc * Equiv.swap $aE $bE)
   return acc
 
-/-- The pre-commitment applicability check of the Bareiss method, which requires a
-commutative domain with kernel-decidable equality. -/
-def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
+/-- The applicability check of the Bareiss method, which requires a commutative domain
+with kernel-decidable equality. -/
+def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
   if (← synthInstance? (← mkAppM ``CommRing #[R])).isNone then
     return .error m!"expected the element type to be a commutative ring"
   if (← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])).isNone then
@@ -75,13 +73,13 @@ def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
   try
-    discard <| isZeroInR R 1
+    discard <| isZeroInRing R 1
   catch e =>
     return .error e.toMessageData
   return .ok ()
 
 /-- A wrapper for the `decide` decision of a certificate condition with a named error. The
-error is unreachable from user input — the commitment gate ensures the conditions are
+error is unreachable from user input — the applicability check ensures the conditions are
 kernel-decidable — and guards against a defective production. -/
 scoped elab "bareiss_certify " s:str : tactic => do
   try
@@ -89,16 +87,16 @@ scoped elab "bareiss_certify " s:str : tactic => do
   catch e =>
     throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
 
-/-- Elaborate the `Bareiss.Decomposition` certificate of `M` from its rendered
+/-- Elaborate the `Echelon.Decomposition` certificate of `A` from its rendered
 components, with the kernel checking the certificate conditions. -/
-def elabCertificate (M L σ pivotE : Expr) : TermElabM Expr := do
+def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
                 $(← Term.exprToSyntax pivotE),
                 -- TODO: switch to an efficient decision of matrix mult once implemented
                 by bareiss_certify "the echelon-pivot condition",
                 by bareiss_certify "lower triangularity of the transform",
                 by bareiss_certify "the nonzero diagonal of the transform"⟩ :
-              Bareiss.Decomposition $(← Term.exprToSyntax M)))
+              Echelon.Decomposition $(← Term.exprToSyntax A)))
   -- without the recovery barrier a failing obligation would be logged and patched with
   -- `sorryAx` instead of thrown
   let e ← Term.withoutErrToSorry do
@@ -108,20 +106,18 @@ def elabCertificate (M L σ pivotE : Expr) : TermElabM Expr := do
   instantiateMVars e
 
 /-- Select the computation model for the ring expression `R`. -/
-def producerFor? (R : Expr) : MetaM (Option Producer) := do
+def producerFor (R : Expr) : MetaM Producer := do
   -- ring-specific models match on the head of `R` here, before the fallback
-  if let some p ← zsqrtdExt R then return some p
+  if let some p ← zsqrtdExt R then return p
   ratExt R
 
-/-- Produce and elaborate the `Bareiss.Decomposition` certificate of the matrix literal
-`M`. -/
-def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
+/-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
+`A`. -/
+def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM Expr := do
-  let some produce ← producerFor? R
-    | throwError "no computation model applies to the element type{indentExpr R}"
-  let d ← produce entries
+  let d ← (← producerFor R) entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  elabCertificate M (mkMatrixLit R d.L) (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
+  elabCertificate A (mkMatrixLit R d.L) (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
 
 end Mathlib.Tactic.Echelon

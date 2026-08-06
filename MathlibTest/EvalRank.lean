@@ -1,6 +1,6 @@
 module
 
-public import Mathlib.Tactic.Echelon.Rank
+import Mathlib.Tactic.Echelon.Rank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic
@@ -92,7 +92,7 @@ example : Matrix.rank (R := ℚ) !![1/2 * 5/2, 1; 1, 1] = 2 := by eval_rank
 -- 1/2 * 4 = 2 collapses the rank
 example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 
-/-! ## Element-type coverage: Zmod p, ℤ[sqrt(d)] -/
+/-! ## Element-type coverage: `ZMod p`, `ℤ√d` -/
 
 instance : Fact (Nat.Prime 7) := ⟨by decide⟩
 
@@ -135,7 +135,7 @@ section Binet
 local notation "Φ" => (⟨1, 1⟩ : Zsqrtd 5)
 local notation "Ψ" => (⟨1, -1⟩ : Zsqrtd 5)
 
-private theorem mulDef {d : ℤ} (x y x' y' : ℤ) :
+private theorem mul_def {d : ℤ} (x y x' y' : ℤ) :
     (⟨x, y⟩ * ⟨x', y'⟩ : Zsqrtd d) = ⟨x * x' + d * y * y', x * y' + y * x'⟩ := rfl
 
 /- The first two columns are the powers `Φⁿ` and `Ψⁿ` of `Φ = 1 + √5 = 2φ` and
@@ -146,7 +146,7 @@ example : Matrix.rank (R := Zsqrtd 5)
     !![Φ, Ψ, ⟨0, 2^1 * Nat.fib 1⟩;
        Φ^2, Ψ^2, ⟨0, 2^2 * Nat.fib 2⟩;
        Φ^3, Ψ^3, ⟨0, 2^3 * Nat.fib 3⟩] = 2 := by
-  norm_num [pow_succ, mulDef]
+  norm_num [pow_succ, mul_def]
   eval_rank
 
 end Binet

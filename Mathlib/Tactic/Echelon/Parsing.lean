@@ -12,6 +12,10 @@ public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 Parsers matching `!![…]` matrix literal expressions into their dimensions, element type,
 and entry expressions, for tactics evaluating functions of a concrete matrix.
+
+## Main definitions
+
+- `matchMatrixLit?`: match a closed matrix literal.
 -/
 
 public meta section
@@ -22,38 +26,25 @@ namespace Mathlib.Tactic.Echelon
 
 /- TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; but there is
 an active draft PR that switches it to the merged `Matrix.ofArray`.
-The parsers below need a corresponding adaptation if that is merged. -/
-/-- Parse a `![a, b, …]` vector literal into its entries. -/
-partial def parseVec? (e : Expr) : Option (Array Expr) :=
-  go #[] e
-where
-  go (acc : Array Expr) (e : Expr) : Option (Array Expr) :=
-    match_expr e.cleanupAnnotations with
-    | Matrix.vecEmpty _ => some acc
-    | Matrix.vecCons _ _ head tail => go (acc.push head) tail
-    | _ => none
-
-/-- Parse a `!![…]` matrix literal into its rows of entry expressions. -/
-def parseMatrix? (M : Expr) : Option (Array (Array Expr)) :=
-  match_expr M.cleanupAnnotations with
-  | DFunLike.coe _ _ _ _ f v =>
-    match_expr f.cleanupAnnotations with
-    | Matrix.of _ _ _ => (parseVec? v).bind (·.mapM parseVec?)
-    | _ => none
-  | _ => none
-
+The parser below needs a corresponding adaptation if that is merged. -/
 /-- Match a closed `Fin`-indexed matrix literal: its dimensions, element type, and rows of
 entries. -/
-def matchMatrixLit? (M : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
-  let some entries := parseMatrix? M | return none
-  let_expr Matrix finM finN R := ← inferType M | return none
+def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
+  let_expr Matrix finM finN R := ← inferType A | return none
   let_expr Fin mE := finM.cleanupAnnotations | return none
   let_expr Fin nE := finN.cleanupAnnotations | return none
   -- the counts appear as `OfNat` numerals or as raw literals; `Expr.nat?` matches only the
   -- former
   let some m := mE.nat?.orElse fun _ => mE.rawNatLit? | return none
   let some n := nE.nat?.orElse fun _ => nE.rawNatLit? | return none
-  unless entries.size == m && entries.all (·.size == n) do return none
+  let_expr DFunLike.coe _ _ _ _ f v := A.cleanupAnnotations | return none
+  let_expr Matrix.of _ _ _ := f.cleanupAnnotations | return none
+  let (rows, _, _) ← Matrix.matchVecConsPrefix mE v
+  unless rows.length == m do return none
+  let entries ← rows.toArray.mapM fun row => do
+    let (es, _, _) ← Matrix.matchVecConsPrefix nE row
+    return es.toArray
+  unless entries.all (·.size == n) do return none
   -- closedness: an entry with free variables (hypothesis- or let-bound) is not evaluable
   -- here; unfold or substitute such variables before calling the tactic
   unless entries.all (·.all fun e => !e.hasFVar && !e.hasExprMVar) do return none

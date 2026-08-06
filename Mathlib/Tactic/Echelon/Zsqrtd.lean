@@ -15,6 +15,10 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 The computable model of the quadratic extensions `ℤ√d`: values are pairs `(a, b)`
 denoting `a + b√d`, with the multiplication reduced by `√d * √d = d` and exact division
 by conjugation. Entries are `⟨a, b⟩` literals, `√d`, or numerals.
+
+## Main definitions
+
+- `zsqrtdExt`: the `ℤ√d` model.
 -/
 
 public meta section
@@ -23,29 +27,27 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Evaluate an integer component of a `ℤ√d` entry. -/
-def evalIntComponent (e : Expr) : MetaM Int := do
+/-- Evaluate an entry or component of the `ℤ√d` model to an integer. -/
+def evalInt (e : Expr) : MetaM Int := do
   let v ← evalEntry true e
   unless v.den == 1 do
-    throwError "the component does not evaluate to an integer numeral{indentExpr e}"
+    throwError "the value does not evaluate to an integer numeral{indentExpr e}"
   return v.num
 
 /-- Evaluate a `ℤ√d` entry to its pair of integer components: a `⟨a, b⟩` literal, `√d`
 itself, or an entry without `√d` content evaluating through `norm_num`. -/
 def evalZsqrtdEntry (e : Expr) : MetaM (Int × Int) := do
   match_expr e.cleanupAnnotations with
-  | Zsqrtd.mk _ a b => return (← evalIntComponent a, ← evalIntComponent b)
+  | Zsqrtd.mk _ a b => return (← evalInt a, ← evalInt b)
   | Zsqrtd.sqrtd _ => return (0, 1)
-  | _ =>
-    let v ← evalEntry true e
-    return (v.num, 0)
+  | _ => return (← evalInt e, 0)
 
 /-- The `ℤ√d` model: values are pairs `(a, b)` denoting `a + b√d`, and the elimination
 runs on integer pairs. -/
 def zsqrtdExt : BareissExt := fun R => do
   let R ← whnf R
-  let_expr Zsqrtd dE := R.cleanupAnnotations | return none
-  let some d := dE.int? | return none
+  let_expr Zsqrtd dE := R | return none
+  let some d := (← whnf dE).int? | return none
   have dQ : Q(ℤ) := dE
   let ops : RingOps (Int × Int) := {
     zero := (0, 0)

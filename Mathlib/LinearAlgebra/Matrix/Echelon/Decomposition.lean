@@ -7,26 +7,25 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 
-
 /-!
-# Bareiss decomposition certificates
+# Echelon decomposition certificates
 
-`Bareiss.Decomposition` certifies an echelon decomposition of a matrix `A`: pivots for
+`Echelon.Decomposition` certifies an echelon decomposition of a matrix `A`: pivots for
 `L * (A.submatrix σ id)` with `L` lower triangular with nonzero diagonal and `σ` a row
 permutation. The certificate records the decomposed form rather than a computation trace,
 so a producer is free to choose how to find it.
 
 ## Main definitions
 
-- `Bareiss.Decomposition`: the certificate structure.
+- `Echelon.Decomposition`: the certificate structure.
 
 ## Main results
 
-- `Bareiss.Decomposition.rank_eq`: `A.rank` is the pivot count of any certificate for `A`.
+- `Echelon.Decomposition.rank_eq`: `A.rank` is the pivot count of any certificate for `A`.
 
 ## Tags
 
-matrix, echelon form, Bareiss
+matrix, echelon form
 -/
 
 @[expose] public section
@@ -36,13 +35,15 @@ universe v
 variable {m n : ℕ}
 variable {R : Type v} {A : Matrix (Fin m) (Fin n) R}
 
-namespace Bareiss
+namespace Echelon
 
 open Finset
 
 variable [CommRing R] [IsDomain R]
 
-/-- The result returned by the Bareiss algorithm. -/
+/-- A certificate of an echelon decomposition of `A`: pivots for
+`L * (A.submatrix σ id)`, with `L` lower triangular with nonzero diagonal and `σ` a
+row permutation. -/
 structure Decomposition (A : Matrix (Fin m) (Fin n) R) where
   /-- The lower-triangular transform. -/
   L : Matrix (Fin m) (Fin m) R
@@ -60,4 +61,4 @@ theorem Decomposition.rank_eq (cert : Decomposition A) :
   rw [← hr, ← Matrix.rank_mul_eq_right_of_isLowerTriangular cert.L _ cert.L_lowerTriangular
     cert.L_diag_ne_zero, cert.isPivotedBy.rank_eq]
 
-end Bareiss
+end Echelon

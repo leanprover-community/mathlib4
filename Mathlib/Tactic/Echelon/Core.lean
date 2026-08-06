@@ -16,15 +16,22 @@ syntax and values. `mkProducer` assembles a `Producer` from a model's parts; rin
 families provide a `BareissExt`, and the tactic selects one by matching on the ring
 expression.
 
-`BareissExt` traffics in `Producer`s rather than model records: a structure bundling
-`V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
-inside each extension's closure.
-
 ## Main definitions
 
 - `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
 - `mkProducer`: assemble a producer from a model's parts.
 - `BareissExt`: a ring model extension.
+
+## Implementation notes
+
+`BareissExt` traffics in `Producer`s rather than model records: a structure bundling
+`V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
+inside each extension's closure.
+
+## References
+
+* E. H. Bareiss, *Sylvester's identity and multistep integer-preserving Gaussian
+  elimination*, Mathematics of Computation 22 (1968).
 -/
 
 public meta section
@@ -75,16 +82,16 @@ Extensions decline by returning `none`. -/
 @[expose] def BareissExt := Expr → MetaM (Option Producer)
 
 /- Pivot swap mechanism
-Let `M_σ := M.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
+Let `A_σ := A.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
 accumulated so far.
 
-When the pivot search swaps the rows at positions `r < p`, the invariant `L * M_σ = W` must be
-restored against the new `M_σ' = S * M_σ`, where `S` is the permutation matrix of the
-transposition `σ`:
+When the pivot search swaps the rows at positions `r < p`, the invariant `L * A_σ = W` must be
+restored against the new `A_σ' = S * A_σ`, where `S` is the permutation matrix of the
+transposition `τ = (r, p)`:
 
-  `S * W = S * L * (S⁻¹ * S) * M_σ = (S * L * S⁻¹) * M_σ'`
+  `S * W = S * L * (S⁻¹ * S) * A_σ = (S * L * S⁻¹) * A_σ'`
 
-so `L` needs to be conjugated by the matrix corresponding to `σ = (r, p)`.
+so `L` needs to be conjugated by the matrix corresponding to `τ`.
 
 This is similar to LU factorisation with partial pivoting. -/
 
@@ -92,31 +99,30 @@ This is similar to LU factorisation with partial pivoting. -/
 by the model.
 
 A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
-invariant is `L * (M.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
+invariant is `L * (A.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
 update both simultaneously, and a row interchange conjugates `L` by the swap.
 The divisions are exact by Sylvester's identity, although the data-only computation does
 not prove that. -/
-def bareissDecomp {V : Type} (ops : RingOps V) (M : Array (Array V)) :
+def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
-  let rows := M.size
-  let cols := (M.getD 0 #[]).size
-  let get (A : Array (Array V)) (i j : Nat) : V := (A.getD i #[]).getD j ops.zero
-  -- the main row elimination function
+  let rows := A.size
+  let cols := (A.getD 0 #[]).size
+  let get (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
   let eliminate : V → V → V → Array V → Array V → Array V :=
     fun piv f prev rowI rowR => rowI.mapIdx fun j a =>
       ops.divExact (ops.sub (ops.mul piv a) (ops.mul f (rowR.getD j ops.zero))) prev
-  let mut W := M
+  let mut W := A
   let mut L : Array (Array V) :=
     (Array.range rows).map fun i =>
       (Array.range rows).map fun j => if i == j then ops.one else ops.zero
   let mut swaps : Array (Nat × Nat) := #[]
   let mut pivots : Array Nat := #[]
   let mut r : Nat := 0
+  -- the pivot of the previous round: the exact divisor of the elimination step
   let mut prev : V := ops.one
-  /- TODO: more comments for how the loops actually work again -- implemented from
-  wikipedia and other sources -/
   for c in [0:cols] do
     if r == rows then break
+    -- find the first row at or below `r` with a nonzero entry in column `c`
     let mut p : Nat := rows
     for q in [r:rows] do
       if !(← ops.isZero (get W q c)) then
