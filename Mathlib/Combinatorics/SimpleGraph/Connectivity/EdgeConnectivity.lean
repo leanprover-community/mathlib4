@@ -194,13 +194,11 @@ theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReac
   intro hk
   unfold edgeReachability
   apply le_iSup_of_le
-  apply le_iSup_of_le
-  exact le_rfl
-  have := hk u v
-  assumption
+  · apply le_iSup_of_le
+    · exact le_rfl
+    have := hk u v
+    assumption
 --  exact le_iSup_of_le k <| le_iSup_of_le (hk u v) le_rfl
-
-
 
 
 /-!
