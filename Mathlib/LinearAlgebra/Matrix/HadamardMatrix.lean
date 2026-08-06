@@ -250,14 +250,12 @@ theorem IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
 /-- A matrix over a commutative ring with trivial star whose entries square to one and whose
 distinct rows have dot product zero is Hadamard, provided the order is regular in the ring. -/
 theorem IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular [TrivialStar R]
-    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
-    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * A k j = 0)
-    (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard :=
+    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1) (horth : Pairwise (A · ⬝ᵥ A · = 0))
+    (hcard : IsRegular (Fintype.card n : R)) :
+    A.IsHadamard :=
   IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
-    (fun i j => by
-      rw [Unitary.mem_iff]
-      constructor <;> simpa [sq] using hentry_sq i j)
-    (fun {i k} hik => by simpa using horth (i := i) (k := k) hik) hcard
+    (by grind [Unitary.mem_iff, star_trivial])
+    (by simpa [Pi.star_def] using horth) hcard
 
 section CharZeroNoZeroDivisors
 variable [TrivialStar R] [CharZero R] [NoZeroDivisors R]
