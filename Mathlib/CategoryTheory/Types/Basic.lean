@@ -86,7 +86,6 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
 /-- The type of morphisms in `Type`. -/
 @[ext]
 structure Hom (X Y : Type u) where
-  private mk ::
   /-- The underlying function -/
   hom' : Fun X Y
 
