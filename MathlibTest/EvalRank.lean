@@ -7,6 +7,8 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.Matrix.Cartan
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatSqrt
 
 /-! # Tests for the `eval_rank` tactic -/
 
@@ -90,9 +92,16 @@ example : Matrix.rank (R := ℚ) !![1/2 * 5/2, 1; 1, 1] = 2 := by eval_rank
 -- 1/2 * 4 = 2 collapses the rank
 example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 
-/-! ## Element-type coverage -/
+/-! ## Element-type coverage: Zmod p, ℤ[sqrt(d)] -/
 
 instance : Fact (Nat.Prime 7) := ⟨by decide⟩
+
+instance : Zsqrtd.Nonsquare 5 :=
+  ⟨fun n h => by have := (Nat.exists_mul_self 5).mp ⟨n, h.symm⟩; norm_num at this⟩
+
+-- mathlib states the `Nonsquare`-based instance for `ℕ`-coerced `d` only
+instance : IsDomain (Zsqrtd 5) :=
+  inferInstanceAs (IsDomain (Zsqrtd ((5 : ℕ) : ℤ)))
 
 example : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
 
@@ -105,7 +114,10 @@ example : Matrix.rank (R := ZMod 7) !![2 * 4, 1; 1, 1] = 1 := by eval_rank
 -- ℤ[i] with integer entries
 example : Matrix.rank (R := GaussianInt) !![2, 5; 3, 4] = 2 := by eval_rank
 
-/-! ## Unfolding and rewrites -/
+-- row 2 = i · row 1 over ℤ[i]
+example : Matrix.rank (R := GaussianInt) !![1, ⟨0, 1⟩; ⟨0, 1⟩, -1] = 1 := by eval_rank
+
+/-! ## Unfolding, rewrites, and simplifications -/
 
 -- rewrite
 example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
@@ -117,6 +129,28 @@ example (A : Matrix (Fin 1) (Fin 3) ℤ) (hA : A = !![1, 2, 3]) :
 example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by
   unfold CartanMatrix.E₇
   eval_rank
+
+section Binet
+
+local notation "Φ" => (⟨1, 1⟩ : Zsqrtd 5)
+local notation "Ψ" => (⟨1, -1⟩ : Zsqrtd 5)
+
+private theorem mulDef {d : ℤ} (x y x' y' : ℤ) :
+    (⟨x, y⟩ * ⟨x', y'⟩ : Zsqrtd d) = ⟨x * x' + d * y * y', x * y' + y * x'⟩ := rfl
+
+/- The first two columns are the powers `Φⁿ` and `Ψⁿ` of `Φ = 1 + √5 = 2φ` and
+`Ψ = 1 - √5 = 2ψ`, the scaled golden ratio and its conjugate; the third is the Fibonacci
+data `√5 * 2ⁿ * Fₙ`. Binet's formula gives that `Φⁿ - Ψⁿ = √5 * 2ⁿ * Fₙ`
+(cf. `Real.coe_fib_eq`), so the rank is 2. -/
+example : Matrix.rank (R := Zsqrtd 5)
+    !![Φ, Ψ, ⟨0, 2^1 * Nat.fib 1⟩;
+       Φ^2, Ψ^2, ⟨0, 2^2 * Nat.fib 2⟩;
+       Φ^3, Ψ^3, ⟨0, 2^3 * Nat.fib 3⟩] = 2 := by
+  norm_num [pow_succ, mulDef]
+  eval_rank
+
+end Binet
+
 
 /-! ## Behavior inside `simp` -/
 
@@ -135,11 +169,11 @@ example :
   eval_rank
   simp [← Matrix.one_fin_two, Matrix.rank_one]
 
--- a literal with symbolic entries is not closed: it is skipped, not an error
+-- a literal with symbolic entries is skipped instead of reporting an error
 example (a : ℚ) (h : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2) :
     Matrix.rank (R := ℚ) !![1, 0; 0, 1] = Matrix.rank (R := ℚ) !![a, 1; 1, a] := by
   simp only [norm_rank]
-  omega
+  lia
 
 /-! ## A larger matrix -/
 
@@ -200,7 +234,7 @@ error: equality in the element type does not reduce in the kernel
 #guard_msgs in
 example : Matrix.rank (R := ℚ[X]) !![X, 1; 1, X] = 2 := by eval_rank
 
--- Requires an extension to compute the modulo inverse
+-- Requires an extension to compute the modulo inverse and handle the syntax parsing
 /--
 error: division entries are supported only in characteristic zero
   2 / 3
@@ -208,10 +242,10 @@ error: division entries are supported only in characteristic zero
 #guard_msgs in
 example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 
--- Requires the producer to eliminate with values in ℤ[i] rather than ℚ
-/--
-error: the entry does not evaluate to a rational numeral
-  { re := 0, im := 1 }
--/
+-- under bare `simp` the same committed failure is a skip, so `simp` reports no progress;
+-- `eval_rank` reports the specific entry error (above)
+/-- error: `simp` made no progress -/
 #guard_msgs in
-example : Matrix.rank (R := GaussianInt) !![⟨0, 1⟩, 1; 1, ⟨0, 1⟩] = 2 := by eval_rank
+example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by
+  simp only [norm_rank]
+

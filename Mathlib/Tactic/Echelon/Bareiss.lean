@@ -5,28 +5,28 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Echelon.Bareiss.Defs
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Defs
+public import Mathlib.Tactic.Echelon.Core
 
 public meta import Mathlib.LinearAlgebra.Matrix.Notation
 public meta import Mathlib.Util.Qq
 
-import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.Echelon.Rat
+public import Mathlib.Tactic.Echelon.Zsqrtd
 
 /-!
-# Computation engine for the Bareiss decomposition tactic
+# The Bareiss decomposition method
 
 Given a matrix literal `M` over a commutative domain, the entry point
-`mkBareissDecomposition` elaborates a certificate `⟨L, σ, pivot, …⟩ :
-Bareiss.Decomposition M`, with the certificate conditions checked by the kernel via
-`decide`. The production is data-only but relies on zero tests in `R` to decide pivot
-positions — integer tests in characteristic zero, kernel reduction (`isZeroInR`) otherwise.
+`mkBareissDecomposition` selects a computation model for the element type, runs the
+elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Bareiss.Decomposition M`,
+with the certificate conditions checked by the kernel via `decide`.
 
 ## Main definitions
 
 - `mkBareissDecomposition`: produce and elaborate the decomposition of a matrix literal.
 - `checkBareissCommittal`: the pre-commitment applicability check of the Bareiss method.
-- `bareissDecomp`: fraction-free Gaussian elimination on integer values.
-- `BareissData`: the raw decomposition data.
+- `producerFor?`: select the computation model for a ring.
 -/
 
 public meta section
@@ -64,148 +64,6 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
     acc := q($acc * Equiv.swap $aE $bE)
   return acc
 
-/-- Build the numeral of an integer in `R`: `mkNumeral` on the absolute value, negated if
-`i` is negative. -/
-def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
-  let n ← mkNumeral R i.natAbs
-  have n : Q($R) := n
-  if i < 0 then
-    let _instNeg ← synthInstanceQ q(Neg $R)
-    return q(-$n)
-  else
-    return n
-
-/-- Evaluate a matrix entry to its rational value via `norm_num`. The evaluation is
-data-only — the certificate is stated about the original entries, so no proof is kept.
-Fraction values are accepted only in characteristic zero, where the rational reading is
-faithful. -/
-def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
-  unless charZero do
-    let stripped := match_expr e.cleanupAnnotations with
-      | Neg.neg _ _ a => a
-      | _ => e
-    if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
-      throwError "division entries are supported only in characteristic zero{indentExpr e}"
-  let ⟨_, _, eQ⟩ ← inferTypeQ' e
-  let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
-  let some v := r.bind (·.toRat)
-    | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
-  unless v.den == 1 || charZero do
-    throwError "division entries are supported only in characteristic zero{indentExpr e}"
-  return v
-
-/-- Whether the integer value `v` is zero in `R`, by reducing the `Decidable` instance of
-`(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
-def isZeroInR {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
-  if v == 0 then return true
-  let _instCast ← synthInstanceQ q(IntCast $R)
-  let _instZero ← synthInstanceQ q(Zero $R)
-  have vE : Q(Int) := toExpr v
-  let eq : Q(Prop) := q((Int.cast $vE : $R) = 0)
-  let some inst ← synthInstance? q(Decidable $eq)
-    | throwError "equality with zero in the element type is not decidable{indentExpr R}"
-  if let .ok r := Kernel.whnf (← getEnv) (← getLCtx) inst then
-    if r.isAppOf ``Decidable.isTrue then return true
-    if r.isAppOf ``Decidable.isFalse then return false
-  throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
-
-/-- Evaluate the matrix entries to their rational values; throws when an entry does not
-evaluate to a rational numeral. -/
-def evalEntries (charZero : Bool) (entries : Array (Array Expr)) :
-    MetaM (Array (Array Rat)) :=
-  entries.mapM fun row => row.mapM fun e => evalEntry charZero e
-
-/-- Scale each row integral by the lcm of its denominators. Returns the integer matrix
-together with the row scales, which are later folded back into `L`. -/
-def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array Nat :=
-  let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
-  (((ratRows.zip scales).map fun (row, s) => row.map fun v => (mkRat s 1 * v).num), scales)
-
-/-- Raw data of a Bareiss decomposition on integer values. -/
-structure BareissData where
-  /-- The lower-triangular transform. -/
-  L : Array (Array Int)
-  /-- Stores the swaps instead of row re-indexing, since in common cases swaps are infrequent
-  and therefore produce a smaller term needed to be checked by the kernel.
-    The row permutation `σ` is later constructed by their product. -/
-  swaps : Array (Nat × Nat)
-  /-- The pivot columns. The `k`-th entry is the column of the pivot
-  in row `k` of the final echelon form. -/
-  pivot : Array Nat
-
-/-- `get A i j` is the `(i, j)`-th entry of the matrix `A`, or `0` when out of bounds. -/
-protected def get {α : Type*} [Zero α] (A : Array (Array α)) (i j : Nat) : α :=
-  (A.getD i #[]).getD j 0
-
-/- Pivot swap mechanism
-Let `M_σ := M.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
-accumulated so far.
-
-When the pivot search swaps the rows at positions `r < p`, the invariant `L * M_σ = W` must be
-restored against the new `M_σ' = S * M_σ`, where `S` is the permutation matrix of the
-transposition `σ`:
-
-  `S * W = S * L * (S⁻¹ * S) * M_σ = (S * L * S⁻¹) * M_σ'`
-
-so `L` needs to be conjugated by the matrix corresponding to `σ = (r, p)`.
-
-This is similar to LU factorisation with partial pivoting. -/
-
-/-- Core algorithm of Fraction-free Gaussian elimination.
-
-A separate `isZero` function handles testing for zero in the original ring `R`.
-
-A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
-invariant is `L * (M.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
-update both simultaneously, and a row interchange conjugates `L` by the swap.
-The divisions are exact by Sylvester's identity, although the data-only computation does
-not prove that. -/
-def bareissDecomp (isZero : Int → MetaM Bool) (M : Array (Array Int)) :
-    MetaM BareissData := do
-  let m := M.size
-  let n := (M.getD 0 #[]).size
-  -- the main row elimination function
-  let eliminate : Int → Int → Int → Array Int → Array Int → Array Int :=
-    fun piv f prev rowI rowR =>
-      rowI.mapIdx fun j a => (piv * a - f * rowR.getD j 0) / prev
-  let mut W := M
-  let mut L : Array (Array Int) :=
-    (Array.range m).map fun i => (Array.range m).map fun j => if i == j then 1 else 0
-  let mut swaps : Array (Nat × Nat) := #[]
-  let mut pivots : Array Nat := #[]
-  let mut r : Nat := 0
-  let mut prev : Int := 1
-  /- TODO: more comments for how the loops actually work again -- implemented from wikipedia and
-  other sources -/
-  for c in [0:n] do
-    if r == m then break
-    let mut p : Nat := m
-    for q in [r:m] do
-      if !(← isZero (Echelon.get W q c)) then
-        p := q
-        break
-    if p < m then
-      if p ≠ r then
-        W := W.swapIfInBounds r p
-        -- the interchange conjugates the transform, `L ← S * L * S⁻¹`.
-        -- row swap
-        L := L.swapIfInBounds r p
-        -- column swap. This affects only rows `r` and `p`, since every other
-        -- row vanishes at both columns
-        L := (L.modify r (·.swapIfInBounds r p)).modify p (·.swapIfInBounds r p)
-        swaps := swaps.push (r, p)
-      pivots := pivots.push c
-      let piv := Echelon.get W r c
-      let rowR := W.getD r #[]
-      let lRow := L.getD r #[]
-      for i in [r+1:m] do
-        let f := Echelon.get W i c
-        W := W.set! i (eliminate piv f prev (W.getD i #[]) rowR)
-        L := L.set! i (eliminate piv f prev (L.getD i #[]) lRow)
-      prev := piv
-      r := r + 1
-  return { L, swaps, pivot := pivots }
-
 /-- The pre-commitment applicability check of the Bareiss method, which requires a
 commutative domain with kernel-decidable equality. -/
 def checkBareissCommittal (R : Expr) : MetaM (Except MessageData Unit) := do
@@ -231,20 +89,9 @@ scoped elab "bareiss_certify " s:str : tactic => do
   catch e =>
     throwError "cannot verify the rank certificate: {s.getString} failed:\n{e.toMessageData}"
 
-/-- Elaborate the `Bareiss.Decomposition` certificate of `M` from the raw decomposition
-data, folding the row scales into `L`, with the kernel checking the certificate. -/
-def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : Array Nat)
-    (d : BareissData) : TermElabM Expr := do
-  -- The transformation matrix `L` is already in the correct form acting on the swapped matrix.
-  -- However, the input matrix may contain fractions that required scaling by scalars to
-  -- integer literals. This merges the scaling factors into the transformation matrix by
-  -- scaling the correct columns after reordering.
-  let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range m)
-  let scaledL := d.L.map fun row =>
-    row.mapIdx fun j a => a * (scales.getD (order.getD j 0) 1 : Int)
-  let L := mkMatrixLit R (← scaledL.mapM fun row => row.mapM fun v => mkIntNumeral R v)
-  let σ ← mkPerm m d.swaps
-  let pivotE ← mkPivotLit m n d.pivot
+/-- Elaborate the `Bareiss.Decomposition` certificate of `M` from its rendered
+components, with the kernel checking the certificate conditions. -/
+def elabCertificate (M L σ pivotE : Expr) : TermElabM Expr := do
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
                 $(← Term.exprToSyntax pivotE),
                 -- TODO: switch to an efficient decision of matrix mult once implemented
@@ -260,24 +107,21 @@ def mkCertificate {u : Level} (R : Q(Type u)) (M : Expr) (m n : Nat) (scales : A
     pure e
   instantiateMVars e
 
+/-- Select the computation model for the ring expression `R`. -/
+def producerFor? (R : Expr) : MetaM (Option Producer) := do
+  -- ring-specific models match on the head of `R` here, before the fallback
+  if let some p ← zsqrtdExt R then return some p
+  ratExt R
+
 /-- Produce and elaborate the `Bareiss.Decomposition` certificate of the matrix literal
 `M`. -/
 def mkBareissDecomposition (M : Expr) (m n : Nat) (R : Expr)
     (entries : Array (Array Expr)) : TermElabM Expr := do
+  let some produce ← producerFor? R
+    | throwError "no computation model applies to the element type{indentExpr R}"
+  let d ← produce entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  -- `CharZero`'s `[AddMonoidWithOne R]` argument must be synthesized first: `mkAppM`
-  -- would leave it an unassigned metavariable and the probe would always fail
-  let charZero ← do
-    match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
-    | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
-    | none => pure false
-  let ratRows ← evalEntries charZero entries
-  let (values, scales) := scaleRowsIntegral ratRows
-  -- in characteristic zero `ℤ` embeds in `R`, so the integer zero test is faithful
-  let d ← bareissDecomp (if charZero then fun v => pure (v == 0) else isZeroInR R) values
-  mkCertificate R M m n scales d
+  elabCertificate M (mkMatrixLit R d.L) (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
 
 end Mathlib.Tactic.Echelon
-
-end

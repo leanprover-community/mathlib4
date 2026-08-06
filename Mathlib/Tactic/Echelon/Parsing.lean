@@ -20,9 +20,9 @@ open Lean Meta
 
 namespace Mathlib.Tactic.Echelon
 
-/- TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; if
-#41160 switches it to the merged `Matrix.ofArray`, the parsers below need a corresponding
-adaptation. -/
+/- TODO: `!![…]` still elaborates to `Matrix.of` applied to `Matrix.vecCons` chains; but there is
+an active draft PR that switches it to the merged `Matrix.ofArray`.
+The parsers below need a corresponding adaptation if that is merged. -/
 /-- Parse a `![a, b, …]` vector literal into its entries. -/
 partial def parseVec? (e : Expr) : Option (Array Expr) :=
   go #[] e

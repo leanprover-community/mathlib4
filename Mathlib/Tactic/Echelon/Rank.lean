@@ -49,19 +49,29 @@ end Mathlib.Tactic.Echelon
 
 open Mathlib.Tactic.Echelon
 
-/-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
-Bareiss decomposition. Other `rank` terms, and element types the Bareiss method does not
-apply to, are skipped. -/
-simproc_decl norm_rank (Matrix.rank _) := fun e => do
+/-- Core of the `norm_rank` simprocs: normalize `Matrix.rank` of a closed matrix literal
+via its Bareiss decomposition. Skips terms outside the method's scope; a failure of a
+committed attempt throws. -/
+def normRankCore : Simp.Simproc := fun e => do
   let some (M, m, n, R, entries) ← matchRankLit? e | return .continue
   let .ok _ ← checkBareissCommittal R | return .continue
   return .done (← normalizeRank e M m n R entries)
+
+/-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
+Bareiss decomposition. Terms it cannot evaluate — outside the method's scope or failing
+evaluation — are skipped. -/
+simproc_decl norm_rank (Matrix.rank _) := fun e => do
+  try normRankCore e catch _ => return .continue
+
+/-- The throwing variant of `norm_rank`: a failure of a committed attempt surfaces as an
+error naming its cause. Used by `eval_rank`. -/
+simproc_decl norm_rank_throw (Matrix.rank _) := fun e => normRankCore e
 
 /-- `eval_rank` reduces `Matrix.rank` of a closed matrix literal to a literal and tries to
 close the goal. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
-  Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank]))
+  Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank_throw]))
   unless ← goal.isAssigned do
     -- diagnose the skip: a closed rank literal over an unsupported element type reports the
     -- method's rejection reason; otherwise there was no closed rank literal to work on
@@ -71,4 +81,4 @@ elab (name := evalRank) "eval_rank" : tactic => do
           if let .error why ← checkBareissCommittal R then
             throwError why
     throwError "eval_rank failed to evaluate the rank of any closed matrix literal in the goal"
-  Tactic.evalTactic (← `(tactic| try omega))
+  Tactic.evalTactic (← `(tactic| try lia))

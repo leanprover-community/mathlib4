@@ -1,0 +1,166 @@
+/-
+Copyright (c) 2026 Rao Xiaojia. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rao Xiaojia
+-/
+module
+
+public import Mathlib.Init
+
+/-!
+# Parameterized computation core for the Bareiss elimination
+
+A computable model of a ring packages the representation the untrusted producer computes
+with: a value type `V`, its arithmetic (`RingOps V`), and the encoding between entry
+syntax and values. `mkProducer` assembles a `Producer` from a model's parts; ring
+families provide a `BareissExt`, and the tactic selects one by matching on the ring
+expression.
+
+`BareissExt` traffics in `Producer`s rather than model records: a structure bundling
+`V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
+inside each extension's closure.
+
+## Main definitions
+
+- `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
+- `mkProducer`: assemble a producer from a model's parts.
+- `BareissExt`: a ring model extension.
+-/
+
+public meta section
+
+open Lean Meta
+
+namespace Mathlib.Tactic.Echelon
+
+/-- Arithmetic of a model's value type. -/
+structure RingOps (V : Type) where
+  /-- The zero value. -/
+  zero : V
+  /-- The one value. -/
+  one : V
+  /-- Multiplication. -/
+  mul : V → V → V
+  /-- Subtraction. -/
+  sub : V → V → V
+  /-- Exact division: total on the quotients of the elimination (Sylvester's identity). -/
+  divExact : V → V → V
+  /-- The pivot zero test. -/
+  isZero : V → MetaM Bool
+
+/-- Decomposition data with entries in `V`: the values of the elimination, or the
+rendered ring expressions (`V := Expr`). -/
+structure BareissData (V : Type) where
+  /-- The lower-triangular transform. -/
+  L : Array (Array V)
+  /-- The row swaps, in order. Stores the swaps instead of row re-indexing, since in
+  common cases swaps are infrequent and therefore produce a smaller term to be checked
+  by the kernel. The row permutation `σ` is later constructed by their product. -/
+  swaps : Array (Nat × Nat)
+  /-- The pivot columns. The `k`-th entry is the column of the pivot in row `k` of the
+  final echelon form. -/
+  pivot : Array Nat
+
+/-- Map over the entries of the transform. -/
+def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
+    MetaM (BareissData W) :=
+  return { L := ← d.L.mapM (·.mapM f), swaps := d.swaps, pivot := d.pivot }
+
+/-- A producer: run the elimination on the parsed entries of a matrix literal, returning
+the rendered decomposition. -/
+@[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
+
+/-- A ring model extension: match a ring expression and construct its producer.
+Extensions decline by returning `none`. -/
+@[expose] def BareissExt := Expr → MetaM (Option Producer)
+
+/- Pivot swap mechanism
+Let `M_σ := M.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
+accumulated so far.
+
+When the pivot search swaps the rows at positions `r < p`, the invariant `L * M_σ = W` must be
+restored against the new `M_σ' = S * M_σ`, where `S` is the permutation matrix of the
+transposition `σ`:
+
+  `S * W = S * L * (S⁻¹ * S) * M_σ = (S * L * S⁻¹) * M_σ'`
+
+so `L` needs to be conjugated by the matrix corresponding to `σ = (r, p)`.
+
+This is similar to LU factorisation with partial pivoting. -/
+
+/-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
+by the model.
+
+A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
+invariant is `L * (M.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
+update both simultaneously, and a row interchange conjugates `L` by the swap.
+The divisions are exact by Sylvester's identity, although the data-only computation does
+not prove that. -/
+def bareissDecomp {V : Type} (ops : RingOps V) (M : Array (Array V)) :
+    MetaM (BareissData V) := do
+  let rows := M.size
+  let cols := (M.getD 0 #[]).size
+  let get (A : Array (Array V)) (i j : Nat) : V := (A.getD i #[]).getD j ops.zero
+  -- the main row elimination function
+  let eliminate : V → V → V → Array V → Array V → Array V :=
+    fun piv f prev rowI rowR => rowI.mapIdx fun j a =>
+      ops.divExact (ops.sub (ops.mul piv a) (ops.mul f (rowR.getD j ops.zero))) prev
+  let mut W := M
+  let mut L : Array (Array V) :=
+    (Array.range rows).map fun i =>
+      (Array.range rows).map fun j => if i == j then ops.one else ops.zero
+  let mut swaps : Array (Nat × Nat) := #[]
+  let mut pivots : Array Nat := #[]
+  let mut r : Nat := 0
+  let mut prev : V := ops.one
+  /- TODO: more comments for how the loops actually work again -- implemented from
+  wikipedia and other sources -/
+  for c in [0:cols] do
+    if r == rows then break
+    let mut p : Nat := rows
+    for q in [r:rows] do
+      if !(← ops.isZero (get W q c)) then
+        p := q
+        break
+    if p < rows then
+      if p ≠ r then
+        W := W.swapIfInBounds r p
+        -- row swap
+        L := L.swapIfInBounds r p
+        -- column swap. This affects only rows `r` and `p`, since every other
+        -- row vanishes at both columns
+        L := (L.modify r (·.swapIfInBounds r p)).modify p (·.swapIfInBounds r p)
+        swaps := swaps.push (r, p)
+      pivots := pivots.push c
+      let piv := get W r c
+      let rowR := W.getD r #[]
+      let lRow := L.getD r #[]
+      for i in [r+1:rows] do
+        let f := get W i c
+        W := W.set! i (eliminate piv f prev (W.getD i #[]) rowR)
+        L := L.set! i (eliminate piv f prev (L.getD i #[]) lRow)
+      prev := piv
+      r := r + 1
+  return { L, swaps, pivot := pivots }
+
+/-- Fold the row scales into the transform: scale column `j` by the factor of the row
+that ends up in position `j`. -/
+def foldScales {V : Type} (ops : RingOps V) (scales : Array V) (d : BareissData V) :
+    BareissData V :=
+  let order := d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b)
+    (Array.range d.L.size)
+  { d with L := d.L.map fun row =>
+      row.mapIdx fun j a => ops.mul a (scales.getD (order.getD j 0) ops.one) }
+
+/-- Assemble a producer from a model's parts: `prepare` the entries into the matrix the
+elimination runs on — with license to transform the problem — eliminate, `restore` the
+decomposition to one of the original matrix, and render it back to ring expressions. -/
+def mkProducer {V : Type} (ops : RingOps V)
+    (prepare : Array (Array Expr) →
+      MetaM (Array (Array V) × (BareissData V → BareissData V)))
+    (render : V → MetaM Expr) : Producer := fun entries => do
+  let (values, restore) ← prepare entries
+  let d ← bareissDecomp ops values
+  (restore d).mapM render
+
+end Mathlib.Tactic.Echelon
