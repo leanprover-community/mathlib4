@@ -39,7 +39,10 @@ variable (R M)
 /-- The base ring is a left identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def lid : R ⊗[R] M ≃ₗ[R] M :=
-  LinearEquiv.ofLinear (lift <| LinearMap.lsmul R M) (mk R R M 1) (LinearMap.ext fun _ => by simp)
+  LinearEquiv.ofLinearMap
+    (lift <| LinearMap.lsmul R M)
+    (mk R R M 1)
+    (LinearMap.ext fun _ => by simp)
     (ext' fun r m => by simp [← tmul_smul, ← smul_tmul, smul_eq_mul, mul_one])
 
 end
@@ -69,7 +72,7 @@ variable (R M)
 /-- The base ring is a right identity for the tensor product of modules, up to linear equivalence.
 -/
 protected def rid : M ⊗[R] R ≃ₗ[R] M :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| .flip (LinearMap.lsmul R M))
     (mk R M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
@@ -92,10 +95,18 @@ theorem comm_trans_lid :
     TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
 
+@[simp] lemma lid_comm (x) :
+    TensorProduct.lid R M (TensorProduct.comm R M R x) = TensorProduct.rid R M x :=
+  congr($comm_trans_lid _)
+
 @[simp]
 theorem comm_trans_rid :
     TensorProduct.comm R R M ≪≫ₗ TensorProduct.rid R M = TensorProduct.lid R M :=
   LinearEquiv.toLinearMap_injective (ext (by ext; rfl))
+
+@[simp] lemma rid_comm (x) :
+    TensorProduct.rid R M (TensorProduct.comm R R M x) = TensorProduct.lid R M x :=
+  congr($comm_trans_rid _)
 
 variable (R) in
 theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
@@ -134,7 +145,7 @@ variable (R M N P)
 attribute [local ext high] ext in
 /-- The associator for tensor product of R-modules, as a linear equivalence. -/
 protected def assoc : M ⊗[R] N ⊗[R] P ≃ₗ[R] M ⊗[R] (N ⊗[R] P) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift <| lift <| lcurry _ _ _ _ ∘ₗ mk _ _ _)
     (lift <| uncurry _ _ _ _ ∘ₗ curry (mk R _ _))
     (by ext; rfl)
@@ -237,7 +248,7 @@ variable (M N P) in
 attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
 def rightComm : M ⊗[R] N ⊗[R] P ≃ₗ[R] M ⊗[R] P ⊗[R] N :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
     (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
   (by ext; rfl) (by ext; rfl)

@@ -5,10 +5,7 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
-public meta import Mathlib.Lean.Meta
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
-public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
-public import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
@@ -27,7 +24,7 @@ are equal.
 
 -/
 
-public meta section
+public section
 
 universe v u
 
@@ -112,11 +109,11 @@ end lifting
 open Lean Meta Elab Tactic
 
 /-- Helper function for throwing exceptions. -/
-def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
+meta def exception {α : Type} (g : MVarId) (msg : MessageData) : MetaM α :=
   throwTacticEx `monoidal_coherence g msg
 
 /-- Helper function for throwing exceptions with respect to the main goal. -/
-def exception' (msg : MessageData) : TacticM Unit := do
+meta def exception' (msg : MessageData) : TacticM Unit := do
   try
     liftMetaTactic (exception (msg := msg))
   catch _ =>
@@ -126,13 +123,13 @@ def exception' (msg : MessageData) : TacticM Unit := do
 /-- Auxiliary definition for `monoidal_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
 -- but it would require preparing many implicit arguments by hand.
-def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
+meta def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
   Term.elabTerm
     (← ``(FreeMonoidalCategory.projectMap _root_.id _ _ (LiftHom.lift $(← Term.exprToSyntax e))))
     none
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
+meta def monoidalCoherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
   let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
@@ -157,7 +154,7 @@ open Mathlib.Tactic.BicategoryCoherence
 /--
 If set to `false`, the warning on the use of the deprecated coherence tactic is disabled.
 -/
-register_option warn.refl_coherence : Bool := {
+meta register_option warn.refl_coherence : Bool := {
   defValue := true
   descr := "warn when the deprecated coherence tactic is used"
 }
@@ -233,7 +230,7 @@ lemma insert_id_rhs {C : Type*} [Category* C] {X Y : C} (f g : X ⟶ Y) (w : f =
   simpa using w
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
-def insertTrailingIds (g : MVarId) : MetaM MVarId := do
+meta def insertTrailingIds (g : MVarId) : MetaM MVarId := do
   let some (_, lhs, rhs) := (← withReducible g.getType').eq? | exception g "Not an equality."
   let mut g := g
   if !(lhs.isAppOf ``CategoryStruct.comp) then
@@ -248,7 +245,7 @@ def insertTrailingIds (g : MVarId) : MetaM MVarId := do
 -- Porting note: this is an ugly port, using too many `evalTactic`s.
 -- We can refactor later into either a `macro` (but the flow control is awkward)
 -- or a `MetaM` tactic.
-def coherenceLoop (maxSteps := 37) : TacticM Unit :=
+meta def coherenceLoop (maxSteps := 37) : TacticM Unit :=
   match maxSteps with
   | 0 => exception' "`coherence` tactic reached iteration limit"
   | maxSteps' + 1 => do

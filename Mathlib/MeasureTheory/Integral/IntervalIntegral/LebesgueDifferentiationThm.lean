@@ -15,11 +15,11 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 This file proves the interval version of the Lebesgue Differentiation Theorem. There are two
 versions in this file.
 
-* `LocallyIntegrable.ae_hasDerivAt_integral` is the global version. It states that if `f : ℝ → ℝ`
-  is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
-  `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+* `LocallyIntegrable.ae_hasDerivAt_integral` is the global version. It states that if `f : ℝ → E`
+  is locally integrable (`E` a Banach space), then for almost every `x`, for any `c : ℝ`, the
+  derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 
-* `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → ℝ`
+* `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → E`
   is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`,
   the derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
@@ -30,10 +30,12 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
-/-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+/-- The (global) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → E` is
 locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : LocallyIntegrable f volume) :
+theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → E} (hf : LocallyIntegrable f volume) :
     ∀ᵐ x, ∀ c, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   have hg (x y : ℝ) : IntervalIntegrable f volume x y :=
     intervalIntegrable_iff.mpr <|
@@ -48,24 +50,24 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
   · refine Filter.tendsto_congr' ?_ |>.mpr (hx.comp x.tendsto_Icc_vitaliFamily_left)
     filter_upwards [self_mem_nhdsWithin] with y hy
     replace hy : y ≤ x := hy.le
-    suffices -((y - x)⁻¹ * ∫ (t : ℝ) in Icc y x, f t) = (x - y)⁻¹ * ∫ (t : ℝ) in Icc y x, f t by
+    suffices -((y - x)⁻¹ • ∫ (t : ℝ) in Icc y x, f t) = (x - y)⁻¹ • ∫ (t : ℝ) in Icc y x, f t by
       simpa [slope, average, intervalIntegral.integral_interval_sub_left, hg,
         intervalIntegral.integral_of_ge, hy, h]
-    rw [← neg_mul, neg_inv, neg_sub]
+    rw [← neg_smul, neg_inv, neg_sub]
   · refine Filter.tendsto_congr' ?_ |>.mpr (hx.comp x.tendsto_Icc_vitaliFamily_right)
     filter_upwards [self_mem_nhdsWithin] with y hy
     replace hy : x ≤ y := hy.le
     simp [slope, average, intervalIntegral.integral_interval_sub_left, hg,
         intervalIntegral.integral_of_le, hy, h]
 
-/-- The (local) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
+/-- The (local) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → E` is
 interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
 derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
+theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → E} {a b : ℝ}
     (hf : IntervalIntegrable f volume a b) :
     ∀ᵐ x, x ∈ uIcc a b → ∀ c ∈ uIcc a b, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ @this f b a hf.symm (by linarith)
+  · exact uIcc_comm b a ▸ this hf.symm (by linarith)
   rw [uIcc_of_le hab]
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
