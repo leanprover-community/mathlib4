@@ -660,6 +660,9 @@ theorem IsComplement'.card_mul_card (h : IsComplement' H K) :
 @[deprecated (since := "2026-08-06")]
 alias IsComplement.card_mul := IsComplement.card_mul_card
 
+@[deprecated (since := "2026-08-06")]
+alias IsComplement'.card_mul := IsComplement'.card_mul_card
+
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
   refine ⟨mul_injective_of_disjoint h1, fun g => ?_⟩
