@@ -174,7 +174,7 @@ instance instDenumerable : Denumerable Code :=
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
         induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
-      encode_ofNatCode⟩
+      private encode_ofNatCode⟩
 
 theorem encodeCode_eq : encode = encodeCode :=
   rfl

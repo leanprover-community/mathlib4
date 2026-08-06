@@ -445,7 +445,7 @@ instance commRing : CommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm }
+    mul_comm := private mul_comm }
 
 instance nontrivial : Nontrivial ZNum :=
   { exists_pair_ne := ⟨0, 1, by decide⟩ }
