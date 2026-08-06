@@ -218,14 +218,6 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
   rwa [mem_closedEBall, edist_comm] at hy
 
-/-- A compact set in a pseudo metrizable space is separable, i.e., it is a subset of the closure of
-a countable set. -/
-theorem subset_countable_closure_of_compact {α : Type*} [TopologicalSpace α]
-    [TopologicalSpace.PseudoMetrizableSpace α] {s : Set α} (hs : IsCompact s) :
-    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  let := TopologicalSpace.pseudoMetrizableSpaceUniformity α
-  have := TopologicalSpace.pseudoMetrizableSpaceUniformity_countably_generated α
-  exact hs.totallyBounded.isSeparable.exists_countable_dense_subset
 
 end Compact
 
