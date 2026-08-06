@@ -148,8 +148,7 @@ lemma rnDeriv_measure_compProd (μ ν : Measure α) (κ η : Kernel α β)
   have h_sing : (μ ⊗ₘ κ.singularPart η).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η] 0 :=
     Measure.rnDeriv_eq_zero_of_mutuallySingular
       (Measure.MutuallySingular.compProd_of_right μ ν
-        (.of_forall <| Kernel.mutuallySingular_singularPart κ η))
-      Measure.AbsolutelyContinuous.rfl
+        (.of_forall <| Kernel.mutuallySingular_singularPart κ η)) .rfl
   have h_ne_top : ∀ᵐ p ∂(μ ⊗ₘ η), κ.rnDeriv η p.1 p.2 ≠ ∞ := by
     refine Measure.ae_compProd_of_ae_ae (p := fun p ↦ κ.rnDeriv η p.1 p.2 ≠ ∞)
       (Kernel.measurable_rnDeriv κ η (measurableSet_singleton ∞)).compl ?_
