@@ -171,7 +171,7 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
 
 noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
-    ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
+  ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
 
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
     ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
