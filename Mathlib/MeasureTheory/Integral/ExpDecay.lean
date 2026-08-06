@@ -18,7 +18,7 @@ for integrability:
   exists `b > 0` such that `f(x) = O(exp(-b x))` as `x → ∞`, then `f` is integrable on `(a, ∞)`.
 * `integrableOn_exp_neg_smul_of_isBigO_exp`: exponential decay dominates a locally integrable
   function of strictly smaller exponential order, with `integrableOn_exp_neg_mul_of_isBigO_exp`
-  and `integrableOn_exp_neg_mul_norm_of_isBigO_exp` as the real-valued and norm specializations.
+  as the real-valued specialization.
 -/
 
 public section
@@ -68,12 +68,3 @@ theorem integrableOn_exp_neg_mul_of_isBigO_exp {a b c : ℝ} {f : ℝ → ℝ}
     (hfc : LocallyIntegrableOn f (Ici c)) (hf : f =O[atTop] fun x : ℝ => exp (a * x))
     (hab : a < b) : IntegrableOn (fun x : ℝ => exp (-b * x) * f x) (Ioi c) := by
   simpa using integrableOn_exp_neg_smul_of_isBigO_exp hfc hf hab
-
-/-- Exponential decay dominates exponential growth: if `f` is locally integrable on `[c, ∞)` and
-`f x = O(exp (a * x))` at `∞`, then `exp (-b * x) * ‖f x‖` is integrable on `(c, ∞)`
-for every `a < b`. -/
-theorem integrableOn_exp_neg_mul_norm_of_isBigO_exp {E : Type*} [NormedAddCommGroup E]
-    {a b c : ℝ} {f : ℝ → E} (hfc : LocallyIntegrableOn f (Ici c))
-    (hf : f =O[atTop] fun x : ℝ => exp (a * x)) (hab : a < b) :
-    IntegrableOn (fun x : ℝ => exp (-b * x) * ‖f x‖) (Ioi c) :=
-  integrableOn_exp_neg_mul_of_isBigO_exp hfc.norm hf.norm_left hab
