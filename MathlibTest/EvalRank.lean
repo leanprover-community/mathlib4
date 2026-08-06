@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Echelon.Rank
+import Mathlib.Tactic.NormRank
 
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Basic

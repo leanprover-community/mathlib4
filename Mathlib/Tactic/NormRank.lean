@@ -31,16 +31,6 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Match `Matrix.rank` of a matrix literal. -/
-def matchRankLit? (e : Expr) :
-    MetaM (Option (Expr × Nat × Nat × Expr × Array (Array Expr))) := do
-  match_expr e with
-  | Matrix.rank _ _ _ _ _ A =>
-    let A ← instantiateMVars A
-    let some (m, n, R, entries) ← matchMatrixLit? A | return none
-    return some (A, m, n, R, entries)
-  | _ => return none
-
 /-- Rewrite `Matrix.rank A` to the pivot count of the Bareiss decomposition of the matrix
 literal `A`. -/
 def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Expr)) :
@@ -58,7 +48,9 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
 via its Bareiss decomposition. Skips terms outside the method's scope; a failure of a
 committed attempt throws. -/
 def normRankCore : Simp.Simproc := fun e => do
-  let some (A, m, n, R, entries) ← matchRankLit? e | return .continue
+  let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
+  let A ← instantiateMVars A
+  let some (m, n, R, entries) ← matchMatrixLit? A | return .continue
   let .ok _ ← checkBareissApplicable R | return .continue
   return .done (← normalizeRank e A m n R entries)
 
@@ -82,11 +74,13 @@ elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank_throw]))
   unless ← goal.isAssigned do
-    -- diagnose the skip: a closed rank literal over an unsupported element type reports the
-    -- method's rejection reason; otherwise there was no closed rank literal to work on
-    (← goal.getType).forEach fun e => do
+    /- diagnose the skip: a closed rank literal over an unsupported element type reports the
+     method's rejection reason; otherwise there was no closed rank literal to work on.
+      However, this causes a duplicate parsing and re-check of the error message for the ring R.
+    -/
+    (← instantiateMVars (← goal.getType)).forEach fun e => do
       if e.isAppOfArity ``Matrix.rank 6 then
-        if let some (_, _, _, R, _) ← matchRankLit? e then
+        if let some (_, _, R, _) ← matchMatrixLit? e.appArg! then
           if let .error why ← checkBareissApplicable R then
             throwError why
     throwError "eval_rank failed to evaluate the rank of any closed matrix literal in the goal"

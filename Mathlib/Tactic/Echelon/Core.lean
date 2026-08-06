@@ -42,17 +42,12 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Arithmetic of a model's value type. -/
 structure RingOps (V : Type) where
-  /-- The zero value. -/
   zero : V
-  /-- The one value. -/
   one : V
-  /-- Multiplication. -/
   mul : V → V → V
-  /-- Subtraction. -/
   sub : V → V → V
-  /-- Exact division: total on the quotients of the elimination (Sylvester's identity). -/
+  /-- Exact division: total on the quotients of the elimination -/
   divExact : V → V → V
-  /-- The pivot zero test. -/
   isZero : V → MetaM Bool
 
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
