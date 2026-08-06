@@ -1069,7 +1069,7 @@ theorem map_homothety_hausdorffMeasure {d : ℝ} (hd : 0 ≤ d) (x : P) {c : �
     Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d] := by
   ext s hs
   rw [Measure.map_apply (AffineMap.homothety_continuous x c).measurable hs,
-    hausdorffMeasure_homothety_preimage hd x hc s, Measure.smul_apply]
+    hausdorffMeasure_homothety_preimage hd x hc s, smul_apply]
 
 end NormedFieldAffine
 
