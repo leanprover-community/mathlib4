@@ -341,6 +341,9 @@ lemma isLocallyClosed_iff_isOpen_coborder : IsLocallyClosed s ↔ IsOpen (cobord
 
 alias ⟨IsLocallyClosed.isOpen_coborder, _⟩ := isLocallyClosed_iff_isOpen_coborder
 
+lemma isLocallyClosed_iff_isLocallyClosedAt : IsLocallyClosed s ↔ ∀ x ∈ s, IsLocallyClosedAt s x :=
+  (isLocallyClosed_tfae s).out 0 1
+
 lemma isLocallyClosed_iff_isOpen_preimage_val_closure :
     IsLocallyClosed s ↔ IsOpen (closure s ↓∩ s) :=
   (isLocallyClosed_tfae s).out 0 5
