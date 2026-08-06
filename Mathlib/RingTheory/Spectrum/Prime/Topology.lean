@@ -743,6 +743,7 @@ noncomputable def sigmaToPiOrderIso [Finite ι] :
     · simp_rw [hij, IsEmpty.exists_iff, iff_false]
       exact Pi.not_comap_evalRingHom_le_comap_of_neq R hij p q (Ideal.IsPrime.ne_top')
 
+@[simp]
 lemma sigmaToPiOrderIso_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
     sigmaToPiOrderIso R p = sigmaToPi R p := rfl
 
