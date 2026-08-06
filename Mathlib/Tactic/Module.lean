@@ -60,6 +60,13 @@ def cons (p : R × M) (l : NF R M) : NF R M := p :: l
 
 @[inherit_doc cons] infixl:100 " ::ᵣ " => cons
 
+/-- An induction principle for `NF` which mirrors induction on lists, with cases
+for `[]` and `NF.cons` -/
+@[elab_as_elim, induction_eliminator]
+protected theorem inductionOn {motive : NF R M → Prop} (l : NF R M) (nil : motive [])
+    (cons : ∀ (p : R × M) (l : NF R M), motive l → motive (p ::ᵣ l)) : motive l :=
+  List.rec nil cons l
+
 /-- Evaluate a `Module.NF R M` object `l`, i.e. a list of pairs in `R × M`, to an element of `M`, by
 forming the "linear combination" it specifies: scalar-multiply each `R` term to the corresponding
 `M` term, then add them all up. -/
@@ -137,12 +144,12 @@ theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddCommGroup M] [Ring R] [Mod
 instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
-set_option backward.isDefEq.respectTransparency false in
+theorem neg_cons [Neg R] (p : R × M) (l : NF R M) : -(p ::ᵣ l) = (-p.1, p.2) ::ᵣ (-l) := rfl
+
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
-  congr
-  ext p
-  simp
+  induction l with
+  | nil => exact neg_zero.symm
+  | cons p l ih => simp only [eval_cons, neg_add, neg_cons, ih, neg_smul]
 
 theorem zero_sub_eq_eval [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) :
     0 - l.eval = (-l).eval := by
@@ -159,14 +166,15 @@ instance [Mul R] : SMul R (NF R M) where
 @[simp] theorem smul_apply [Mul R] (r : R) (l : NF R M) : r • l = l.map fun (a, x) ↦ (r * a, x) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+theorem smul_cons [Mul R] (r : R) (p : R × M) (l : NF R M) :
+    r • (p ::ᵣ l) = (r * p.1, p.2) ::ᵣ (r • l) := rfl
+
 theorem eval_smul [AddCommMonoid M] [Semiring R] [Module R M] {l : NF R M} {x : M} (h : x = l.eval)
     (r : R) : (r • l).eval = r • x := by
-  unfold NF.eval at h ⊢
-  simp only [h, smul_sum, map_map, NF.smul_apply]
-  congr
-  ext p
-  simp [mul_smul]
+  subst h
+  induction l with
+  | nil => exact (smul_zero r).symm
+  | cons p l ih => simp only [smul_cons, eval_cons, ih, smul_add, mul_smul]
 
 theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₀]
     [Module R₀ M] [Semiring S] [Module S M] {l : NF R M} {l₀ : NF R₀ M} {s : S} {r : R}
@@ -205,14 +213,15 @@ commutative semiring, by applying to each `S`-component the algebra-map from `S`
 def algebraMap [CommSemiring S] [Semiring R] [Algebra S R] (l : NF S M) : NF R M :=
   l.map (fun ⟨s, x⟩ ↦ (Algebra.algebraMap S R s, x))
 
-set_option backward.isDefEq.respectTransparency false in
+theorem algebraMap_cons [CommSemiring S] [Semiring R] [Algebra S R] (p : S × M) (l : NF S M) :
+    (p ::ᵣ l).algebraMap R = (Algebra.algebraMap S R p.1, p.2) ::ᵣ (l.algebraMap R) := rfl
+
 theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M] [SMul S M]
     [MulAction R M] [IsScalarTower S R M] (l : NF S M) :
     (l.algebraMap R).eval = l.eval := by
-  simp only [NF.eval, algebraMap, map_map]
-  congr
-  ext
-  simp [IsScalarTower.algebraMap_smul]
+  induction l with
+  | nil => rfl
+  | cons p l ih => simp only [algebraMap_cons, eval_cons, ih, IsScalarTower.algebraMap_smul]
 
 end NF
 end
