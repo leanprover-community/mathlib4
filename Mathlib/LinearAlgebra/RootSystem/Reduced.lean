@@ -32,7 +32,7 @@ solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
 
 -/
 
-@[expose] public section
+public section
 
 open Module Set Function
 

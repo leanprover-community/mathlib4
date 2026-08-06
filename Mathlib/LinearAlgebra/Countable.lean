@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
 # Countable modules
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

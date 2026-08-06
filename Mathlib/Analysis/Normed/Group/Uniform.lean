@@ -17,7 +17,7 @@ This file proves lipschitzness of normed group operations and shows that normed 
 groups.
 -/
 
-@[expose] public section
+public section
 
 variable {𝓕 E F : Type*}
 
@@ -44,6 +44,10 @@ theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 
 theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
+
+@[to_additive (attr := simp) enorm_map]
+lemma enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+    ‖f x‖ₑ = ‖x‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by
@@ -181,11 +185,11 @@ theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
 theorem lipschitzWith_one_nnnorm' : LipschitzWith 1 (NNNorm.nnnorm : E → ℝ≥0) :=
   lipschitzWith_one_norm'
 
-@[to_additive uniformContinuous_norm]
+@[to_additive (attr := fun_prop) uniformContinuous_norm]
 theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
   lipschitzWith_one_norm'.uniformContinuous
 
-@[to_additive uniformContinuous_nnnorm]
+@[to_additive (attr := fun_prop) uniformContinuous_nnnorm]
 theorem uniformContinuous_nnnorm' : UniformContinuous fun a : E => ‖a‖₊ :=
   uniformContinuous_norm'.subtype_mk _
 
@@ -321,29 +325,29 @@ lemma LocallyLipschitz.mul (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
 @[to_additive]
 lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
     LipschitzOnWith (Kf + Kg) (fun x ↦ f x / g x) s := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (Kf + Kg) fun x => f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitzOn.div (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
     LocallyLipschitzOn s fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 @[to_additive]
 lemma LocallyLipschitz.div (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz fun x ↦ f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+  simpa only [div_eq_mul_inv] using! hf.mul hg.inv
 
 namespace AntilipschitzWith
 
 @[to_additive]
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
     AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
-  letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
+  let : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]

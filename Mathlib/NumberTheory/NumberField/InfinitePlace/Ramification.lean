@@ -188,6 +188,9 @@ An infinite place is ramified in a field extension if it is not unramified.
 -/
 abbrev IsRamified : Prop := ¬w.IsUnramified k
 
+lemma isUnramified_or_isRamified : w.IsUnramified k ∨ w.IsRamified k :=
+  or_not
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -331,10 +334,11 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   rw [not_isUnramified_iff] at hφ
   rw [comap_mk, isReal_mk_iff, ← not_isReal_iff_isComplex, isReal_mk_iff,
     ← ComplexEmbedding.isConj_one_iff (k := k)] at hφ
-  letI := (φ.comp (algebraMap k K)).toAlgebra
-  letI := φ.toAlgebra
+  let := (φ.comp (algebraMap k K)).toAlgebra
+  let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let φ' : K →ₐ[k] ℂ := { star φ with commutes' := fun r ↦ by simpa using RingHom.congr_fun hφ.2 r }
+  let φ' : K →ₐ[k] ℂ := { star φ with
+    commutes' := fun r ↦ by simpa using! RingHom.congr_fun hφ.2 r }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)
@@ -418,7 +422,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert Even.zero
+  · convert! Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
@@ -592,7 +596,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 section LiesOver
 
-variable (w : InfinitePlace L) (v : InfinitePlace K) [w.1.LiesOver v.1]
+variable (w : InfinitePlace L) (v : InfinitePlace K) [w.LiesOver v]
 
 namespace LiesOver
 
@@ -602,7 +606,7 @@ instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
+  simpa only [coe_apply] using! AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
@@ -647,13 +651,13 @@ section placesOver
 variable (v : InfinitePlace K) (L)
 
 /-- The set of infinite places of `L` that lie above a given infinite place of `K`. -/
-def placesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 }
+def placesOver : Set (InfinitePlace L) := { w | w.LiesOver v }
 
 /-- The set of infinite places of `L` that are unramified over a given infinite place of `K`. -/
-def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsUnramified K }
+def unramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsUnramified K }
 
 /-- The set of infinite places of `L` that are ramified over a given infinite place of `K`. -/
-def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.1.LiesOver v.1 ∧ w.IsRamified K }
+def ramifiedPlacesOver : Set (InfinitePlace L) := { w | w.LiesOver v ∧ w.IsRamified K }
 
 variable {L} {v} {w : InfinitePlace L}
 
@@ -693,7 +697,7 @@ theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver :
 
 theorem union_ramifiedPlacesOver_unramifiedPlacesOver :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
-  rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
+  rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.ofPred_or]
   grind
 
 theorem bijOn_sumElim_conjugate :
@@ -740,7 +744,6 @@ private theorem mapsTo_embeddingConjugateIte : (unramifiedPlacesOver L v).MapsTo
 
 private theorem surjOn_embeddingConjugateIte : (unramifiedPlacesOver L v).SurjOn
     (embeddingConjugateIte v) (unmixedEmbeddingsOver L v.embedding) := by
-  classical
   refine fun ψ h ↦ ⟨mk ψ, mk_mem_unramifiedPlacesOver h, ?_⟩
   rcases embedding_mk_eq ψ with (_ | hψ)
   · aesop (add simp [embeddingConjugateIte, unmixedEmbeddingsOver])
@@ -772,7 +775,7 @@ theorem unramifedPlacesOver_ncard_add_eq_finrank [NumberField K] [NumberField L]
     union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
   apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simpa using ⟨by aesop⟩)
     AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
-  simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
+  simp only [Set.Finite.toFinset_ofPred, coe_filter, mem_univ, true_and, Set.mem_ofPred_eq] at hψ
   exact ⟨⟨ψ, fun _ ↦ by simp [RingHom.algebraMap_toAlgebra, ← hψ.over]⟩, by simp⟩
 
 end placesOver

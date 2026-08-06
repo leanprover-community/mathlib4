@@ -13,7 +13,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Separation properties: profinite spaces
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -28,7 +28,7 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
-  choose U hU using exists_isOpen_xor'_mem hxy
+  choose U hU using exists_isOpen_xor_mem hxy
   obtain ⟨hU₀, hU₁⟩ := hU
   rcases hU₁ with hx | hy
   · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
@@ -50,9 +50,9 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       let N := { s // IsClopen s ∧ x ∈ s }
       rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
       · exact ⟨s, ⟨hs', hs⟩, hs''⟩
-      haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
+      have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
-      have hdir : Directed Superset fun s : N => s.val := by
+      have hdir : Directed GE.ge fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
       have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
@@ -91,7 +91,7 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
-  haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
+  have : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
     refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
@@ -174,16 +174,16 @@ lemma exists_clopen_partition_of_clopen_cover
     have U_open : IsOpen U := IsOpen.sdiff (D_clopen none).2
       (isClosed_iUnion_of_finite (fun i ↦ Z_closed (some i)))
     have Z0_subset_U : Z none ⊆ U := by
-      rw [subset_diff]
+      rw [subset_sdiff]
       simpa using ⟨Z_subset_D none, fun i ↦ (by apply Z_disj; all_goals simp)⟩
     obtain ⟨V, V_clopen, Z0_subset_V, V_subset_U⟩ :=
       exists_clopen_of_closed_subset_open (Z_closed none) U_open Z0_subset_U
-    have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U diff_subset
+    have V_subset_D0 : V ⊆ D none := subset_trans V_subset_U sdiff_subset
     -- choose `Z' i ⊆ C' i ⊆ D' i = D i.succ \ V` using the inductive hypothesis
     let D' : I → Set X := fun i ↦ D (some i) \ V
     have D'_clopen (i : I) : IsClopen (D' i) := (D_clopen (some i)).diff V_clopen
     have Z'_subset_D' (i : I) : Z' i ⊆ D' i := by
-      rw [subset_diff]
+      rw [subset_sdiff]
       refine ⟨by grind, Disjoint.mono_right V_subset_U ?_⟩
       exact Disjoint.mono_left (subset_iUnion_of_subset i fun _ h ↦ h) (by grind)
     obtain ⟨C', C'_clopen, Z'_subset_C', C'_subset_D', C'_cover_D', C'_disj⟩ :=
@@ -192,7 +192,7 @@ lemma exists_clopen_partition_of_clopen_cover
     let C0 : Set X := D none \ ⋃ i, C' i
     have : IsClopen C0 := (D_clopen none).diff (isClopen_iUnion_of_finite C'_clopen)
     have : Z none ⊆ C0 := by
-      simp only [C0, subset_diff]
+      simp only [C0, subset_sdiff]
       exact ⟨by grind, Disjoint.mono_left Z0_subset_V (by simp; grind)⟩
     -- patch together to define `C none := C0`, `C (some i) := C' i`
     -- and verify the needed properties

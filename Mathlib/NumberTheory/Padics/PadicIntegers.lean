@@ -132,8 +132,10 @@ def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
     (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
@@ -158,6 +160,7 @@ instance : CharZero ℤ_[p] where
 @[norm_cast]
 theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
 def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : ℤ_[p] :=
@@ -255,7 +258,7 @@ instance complete : CauSeq.IsComplete ℤ_[p] norm :=
     have hqn : ‖CauSeq.lim (cauSeq_to_rat_cauSeq f)‖ ≤ 1 :=
       padicNormE_lim_le zero_lt_one fun _ => norm_le_one _
     ⟨⟨_, hqn⟩, fun ε => by
-      simpa [norm, norm_def] using CauSeq.equiv_lim (cauSeq_to_rat_cauSeq f) ε⟩⟩
+      simpa [norm, norm_def] using! CauSeq.equiv_lim (cauSeq_to_rat_cauSeq f) ε⟩⟩
 
 theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
@@ -265,7 +268,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     apply lt_of_lt_of_le hk
     norm_cast
     apply le_of_lt
-    convert Nat.lt_pow_self _ using 1
+    convert! Nat.lt_pow_self _ using 1
     exact hp.1.one_lt
   · exact mod_cast hp.1.pos
 
@@ -351,6 +354,7 @@ section Units
 
 /-! ### Units of `ℤ_[p]` -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by
     have hk : k ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)
@@ -561,6 +565,7 @@ instance algebra : Algebra ℤ_[p] ℚ_[p] :=
 theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
   map_units := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←

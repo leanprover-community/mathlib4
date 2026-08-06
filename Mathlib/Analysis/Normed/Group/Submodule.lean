@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Group.Basic
 
 /-! # Submodules of normed groups -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E : Type*}
 

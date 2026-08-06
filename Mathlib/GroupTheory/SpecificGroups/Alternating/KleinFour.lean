@@ -118,12 +118,12 @@ theorem coe_two_sylow_of_card_eq_four
   · -- inclusion S ⊆ {1} ∪ {g |  cycleType g = { 2, 2 }}
     obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup') ⟨k, hk⟩
     replace hn : (orderOf (k : Perm α)) = 2 ^ n := by simpa using hn
-    convert mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
+    convert! mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
     simp
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
     refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
-    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
+    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_ofPred]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]
     decide
@@ -173,9 +173,9 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
     simp only [Subgroup.orderOf_mk, orderOf_dvd_iff_pow_eq_one]
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4] at hg'
     rcases hg' with hg' | hg'
-    · convert one_pow _
+    · convert! one_pow _
       simpa only [Set.mem_singleton_iff, Subgroup.mk_eq_one] using hg'
-    · convert pow_orderOf_eq_one g
+    · convert! pow_orderOf_eq_one g
       rw [← Equiv.Perm.lcm_cycleType, hg']
       simp
   rw [Nat.dvd_prime Nat.prime_two] at this
@@ -212,7 +212,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     refine le_antisymm ?_ comm_le
     intro g hg
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hg
+      Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hg
     rcases hg with ⟨rfl⟩ | hg
     · exact Subgroup.one_mem _
     · rw [← hg, ← Equiv.Perm.isConj_iff_cycleType_eq, isConj_iff] at hk22
@@ -227,7 +227,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
       simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-    Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk2
+    Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hk2
   exact hk2.resolve_left hk'
 
 end alternatingGroup

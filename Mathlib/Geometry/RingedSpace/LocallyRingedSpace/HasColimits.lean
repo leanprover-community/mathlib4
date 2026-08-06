@@ -68,7 +68,7 @@ noncomputable def coproduct : LocallyRingedSpace where
     (F ⋙ forgetToSheafedSpace)
   isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
-    haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
+    have : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
       (F.obj i).isLocalRing _
     exact
       (asIso ((colimit.ι (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
@@ -82,6 +82,7 @@ noncomputable def coproductCofan : Cocone F where
     { app j := LocallyRingedSpace.homMk (colimit.ι (F ⋙ forgetToSheafedSpace) j)
       naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The explicit coproduct cofan constructed in `coproductCofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
@@ -126,6 +127,7 @@ variable {X Y : LocallyRingedSpace.{v}} (f g : X ⟶ Y)
 
 namespace HasCoequalizer
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[instance]
 theorem coequalizer_π_app_isLocalHom
@@ -137,7 +139,7 @@ theorem coequalizer_π_app_isLocalHom
   rw [← this, PresheafedSpace.comp_c_app,
     ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): this instance has to be manually added
-  haveI : IsIso (PreservesCoequalizer.iso
+  have : IsIso (PreservesCoequalizer.iso
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
     inferInstance
   apply +allowSynthFailures RingHom.isLocalHom_comp
@@ -159,7 +161,7 @@ restriction of `s` onto `U'` is invertible. This `U'` is given by `π '' V`, whe
 basic open set of `π⋆x`.
 
 Since `f ⁻¹' V = Y.basic_open (f ≫ π)꙳ x = Y.basic_open (g ≫ π)꙳ x = g ⁻¹' V`, we have
-`π ⁻¹' (π '' V) = V` (as the underlying set map is merely the set-theoretic coequalizer).
+`π ⁻¹' π '' V = V` (as the underlying set map is merely the set-theoretic coequalizer).
 This shows that `π '' V` is indeed open, and `s` is invertible on `π '' V` as the components of `π꙳`
 are local ring homs.
 -/
@@ -174,13 +176,14 @@ noncomputable def imageBasicOpen : Opens Y :=
     (show Y.presheaf.obj (op (unop _)) from
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
         (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
-  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (TypeCat.ofHom f.base)
-    (TypeCat.ofHom g.base) (TypeCat.ofHom (coequalizer.π f.toShHom g.toShHom).hom.base)
+  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (↾f.base)
+    (↾g.base) (↾(coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
     simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
@@ -223,7 +226,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     IsLocalHom ((coequalizer.π f.toShHom g.toShHom :).hom.stalkMap x).hom := by
   constructor
   rintro a ha
-  rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
+  rcases TopCat.Presheaf.exists_germ_eq _ a with ⟨U, hU, s, rfl⟩
   rw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.toShHom g.toShHom).hom U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
@@ -245,11 +248,13 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op).hom]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
-  convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
+  convert!
+    @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
 end HasCoequalizer
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The coequalizer of two locally ringed spaces in the category of sheafed spaces is a locally
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where

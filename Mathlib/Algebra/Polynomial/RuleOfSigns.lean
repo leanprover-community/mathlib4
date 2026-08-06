@@ -209,7 +209,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
 lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < η) :
     (monomial d c).signVariations + 1 ≤ ((X - C η) * monomial d c).signVariations := by
   have h₁ : nextCoeff ((X - C η) * monomial d c) = -(η * c) := by
-    convert coeff_mul_monomial (X - C η) d 0 c using 1
+    convert coeff_mul_monomial (X - C η) d 0 c
     · simp [hc, nextCoeff, natDegree_mul (X_sub_C_ne_zero η)]
     · simp
   have h₂ : eraseLead ((X - C η) * monomial d c) ≠ 0 := by
@@ -219,7 +219,7 @@ lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < �
     simp [hη, hc, Left.sign_neg, sign_mul]
   simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.destutter_cons_cons,
     ← leadingCoeff_cons_eraseLead, coeffList_eraseLead, leadingCoeff_eraseLead_eq_nextCoeff]
-  using List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
+  using! List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
 
 private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (h₂ : P.nextCoeff ≠ 0) :
     ∃ c₀ cs, ((X - C η) * P).coeffList = P.leadingCoeff :: c₀ :: cs ∧
@@ -378,8 +378,8 @@ variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (P : P
 variations. -/
 theorem roots_countP_pos_le_signVariations : P.roots.countP (0 < ·) ≤ signVariations P := by
   generalize h : P.roots.countP (0 < ·) = num_pos_roots
-  induction num_pos_roots generalizing P --Induct on number of roots.
-  · exact zero_le _
+  induction num_pos_roots generalizing P -- Induct on number of roots.
+  · exact zero_le
   rename_i ih
   have hp : P ≠ 0 := by grind [roots_zero, Multiset.countP_zero]
   -- we can take a positive root, η, because the number of roots is positive

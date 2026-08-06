@@ -31,7 +31,7 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 `to_additive`ized from the versions for `^`.
 -/
 
-@[expose] public section
+public section
 
 namespace Function
 

@@ -31,7 +31,7 @@ the same ray).
 convex, uniformly convex
 -/
 
-@[expose] public section
+public section
 
 
 open Set Metric

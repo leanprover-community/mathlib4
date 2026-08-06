@@ -41,6 +41,7 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (cR) in
 /-- Given a cocone `cR` for a functor `R : Cᵒᵖ ⥤ RingCat`, this is the
 functor `ModuleCat cR.pt ⥤ PresheafOfModules R` which sends a module `M`
@@ -51,7 +52,7 @@ noncomputable def constFunctor : ModuleCat cR.pt ⥤ PresheafOfModules.{w} R whe
     { obj X := (ModuleCat.restrictScalars (cR.ι.app X).hom).obj M
       map {X Y} f :=
         (ModuleCat.restrictScalarsComp' _ _ _
-          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp; rfl)).hom.app _ }
+          (by ext; dsimp; rw [← Cocone.w cR f]; dsimp)).hom.app _ }
   map φ := { app X := (ModuleCat.restrictScalars (cR.ι.app X).hom).map φ }
 
 section
@@ -79,7 +80,7 @@ by `cR.pt` on `ModuleColimit hcR hcM`. -/
 noncomputable def coconeSMul :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) where
   pt := ModuleColimit hcR hcM
-  ι.app U := TypeCat.ofHom fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
+  ι.app U := ↾fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
   ι.naturality V U f := by
     ext ⟨r, m⟩
     exact (ConcreteCategory.congr_arg (cM.ι.app U)
@@ -220,6 +221,7 @@ lemma homEquiv'_symm_apply {N : ModuleCat.{w} cR.pt}
     (homEquiv' hcR hcM).symm β (cM.ι.app X x) = β.app X x :=
   ConcreteCategory.congr_hom (hcM.ι_app_homEquiv_symm β X) x
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     (α : ModuleColimit hcR hcM →+ N) :
     dsimp% (∀ (U : Cᵒᵖ) (r : R.obj U) (m : M.obj U), (homEquiv' hcR hcM α).app U (r • m) =
@@ -235,6 +237,7 @@ lemma map_smul_homEquiv'_iff {N : ModuleCat.{w} cR.pt}
     congr 1
     exact (smul_eq ..).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the universal property of `PresheafOfModules.ModuleColimit` as a module.
 See also `PresheafOfModules.colimitAdjunction`. -/
 noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
@@ -261,16 +264,19 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
     ((homEquiv' hcR hcM).map_add ((forget₂ _ AddCommGrpCat).map φ₁).hom
       ((forget₂ _ AddCommGrpCat).map φ₂).hom)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homEquiv_app_apply {N : ModuleCat.{w} cR.pt}
     (α : ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) {X : Cᵒᵖ} (x : M.obj X) :
     dsimp% (homEquiv hcR hcM α).app X x = α (cM.ι.app X x) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homEquiv_naturality_right {N N' : ModuleCat.{w} cR.pt}
     (φ : ModuleCat.of cR.pt (ModuleColimit hcR hcM) ⟶ N) (g : N ⟶ N') :
     homEquiv hcR hcM (φ ≫ g) = homEquiv hcR hcM φ ≫ (constFunctor cR).map g := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma homEquiv_symm_apply {N : ModuleCat.{w} cR.pt} (β : M ⟶ (constFunctor cR).obj N)
     {X : Cᵒᵖ} (x : M.obj X) :
@@ -282,6 +288,8 @@ section
 variable {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
   (hcM' : IsColimit cM')
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The linear map between the colimit modules induced by a morphism of modules. -/
 noncomputable def map (f : M ⟶ M') :
     ModuleColimit hcR hcM →ₗ[cR.pt] ModuleColimit hcR hcM' where
@@ -297,17 +305,20 @@ noncomputable def map (f : M ⟶ M') :
     erw [h₁, h₂, ModuleColimit.smul_eq, ← (f.app U).hom.map_smul]
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma map_apply (f : M ⟶ M') {U : Cᵒᵖ} (m : M.obj U) :
     dsimp% map hcR hcM hcM' f (ιM m) = ιM (f.app _ m) :=
   ConcreteCategory.congr_hom (hcM.fac ((Cocone.precompose ((toPresheaf _).map f)).obj cM') U) m
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma map_id : map hcR hcM hcM (𝟙 M) = .id := by
   ext m
   obtain ⟨U, m, rfl⟩ := ιM_jointly_surjective m
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma comp_map
     (f : M ⟶ M')
     {M'' : PresheafOfModules.{w} R} {cM'' : Cocone M''.presheaf}
@@ -319,6 +330,7 @@ lemma comp_map
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homEquiv_naturality_left {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
     (hcM' : IsColimit cM') {N : ModuleCat.{w} cR.pt}
     (φ' : ModuleCat.of cR.pt (ModuleColimit hcR hcM') ⟶ N)
@@ -331,6 +343,7 @@ lemma homEquiv_naturality_left {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.p
   apply congr_arg
   exact map_apply hcR hcM hcM' f m
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homEquiv_naturality_left_symm {M' : PresheafOfModules.{w} R} {cM' : Cocone M'.presheaf}
     (hcM' : IsColimit cM') {N : ModuleCat.{w} cR.pt}
     (f : M ⟶ M') (g : M' ⟶ (constFunctor cR).obj N) :
@@ -344,6 +357,7 @@ end ModuleColimit
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit module functor from the category of presheaves of modules
 over a presheaf of rings `R` on a cofiltered category to the category
 of modules over a colimit of `R`. -/
@@ -352,6 +366,7 @@ noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat.{w} cR.
   map f := ModuleCat.ofHom (ModuleColimit.map _ _ _ f)
   map_comp f g := by ext : 1; exact (ModuleColimit.comp_map ..).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a presheaf of rings `R` on a cofiltered category, this is the
 adjunction between `colimitFunctor : PresheafOfModules R ⥤ ModuleCat cR.pt`
 and the constant functor. -/
@@ -362,6 +377,8 @@ noncomputable def colimitAdjunction :
       homEquiv_naturality_left_symm _ _ := ModuleColimit.homEquiv_naturality_left_symm _ _ _ _ _
       homEquiv_naturality_right _ _ := ModuleColimit.homEquiv_naturality_right _ _ _ _ }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma colimitAdjunction_homEquiv
     (F : PresheafOfModules R) (G : ModuleCat cR.pt) :
     dsimp% (colimitAdjunction.{w} hcR).homEquiv F G =
@@ -369,6 +386,7 @@ lemma colimitAdjunction_homEquiv
         (colimit.isColimit F.presheaf)).toEquiv := by
   simp [colimitAdjunction]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ModuleColimit in
 lemma colimitAdjunction_homEquiv_symm_apply
     {F : PresheafOfModules R} {G : ModuleCat cR.pt}

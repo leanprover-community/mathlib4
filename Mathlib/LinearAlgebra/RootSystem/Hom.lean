@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings
+
 This file defines morphisms of root pairings, following the definition of morphisms of root data
 given in SGA III Exp. 21 Section 6.
 
@@ -225,7 +226,7 @@ lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (coweightHom 
     have h := congrArg (LinearMap.comp (M₃ := Module.Dual R M) (σ₂₃ := .id R) P.flip.toPerfPair) hfg
     rw [← f.weight_coweight_transpose, ← g.weight_coweight_transpose] at h
     have : f.weightMap = g.weightMap := by
-      haveI : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+      have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
       refine (Module.dualMap_dualMap_eq_iff R M).mp (congrArg LinearMap.dualMap
         ((LinearEquiv.eq_comp_toLinearMap_iff f.weightMap.dualMap g.weightMap.dualMap).mp h))
     exact congrFun (congrArg DFunLike.coe this) x
@@ -316,7 +317,6 @@ def id (P : RootPairing ι R M N) : RootPairing.Equiv P P :=
     bijective_coweightMap := _root_.id bijective_id }
 
 /-- Composition of equivalences -/
-@[simps!]
 def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
     [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
@@ -677,7 +677,7 @@ instance : DistribMulAction P.Aut M where
 
 @[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
     P.root (g.indexEquiv i) = g • P.root i := by
-  simpa using (congr_fun g.root_weightMap i).symm
+  simpa using! (congr_fun g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where

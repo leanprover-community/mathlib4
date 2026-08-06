@@ -48,6 +48,11 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
+@[to_additive]
+lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S} (x : s) (t : Set β) :
+    (x • t : Set β) = (x : α) • t :=
+  rfl
+
 @[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
     ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
@@ -122,7 +127,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
   /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
@@ -141,7 +146,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive (attr := implicit_reducible) /-- Inversion is involutive on additive submonoids. -/]
+@[to_additive (attr := instance_reducible) /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
@@ -215,7 +220,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
     change S.map _ = S
-    simpa only [map_one] using S.map_id
+    simpa only [map_one] using! S.map_id
   mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm

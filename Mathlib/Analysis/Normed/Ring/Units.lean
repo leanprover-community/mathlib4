@@ -176,7 +176,7 @@ theorem inverse_add_norm_diff_first_order (x : Rˣ) :
 /-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹ + x⁻¹ * t * x⁻¹` is `O(t ^ 2)` as `t → 0`. -/
 theorem inverse_add_norm_diff_second_order (x : Rˣ) :
     (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ ^ 2 := by
-  convert inverse_add_norm_diff_nth_order x 2 using 2
+  convert! inverse_add_norm_diff_nth_order x 2 using 2
   simp only [sum_range_succ, sum_range_zero, zero_add, pow_zero, pow_one, add_mul, one_mul,
     ← sub_sub, neg_mul, sub_neg_eq_add]
 
@@ -222,7 +222,7 @@ theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 -
 geometric series is proper. -/
 theorem closure_ne_top (I : Ideal R) (hI : I ≠ ⊤) : I.closure ≠ ⊤ := by
   have h := closure_minimal (coe_subset_nonunits hI) nonunits.isClosed
-  simpa only [I.closure.eq_top_iff_one, Ne] using mt (@h 1) one_notMem_nonunits
+  simpa only [I.closure.eq_top_iff_one, Ne] using! mt (@h 1) one_notMem_nonunits
 
 /-- The `Ideal.closure` of a maximal ideal in a normed ring with summable
 geometric series is the ideal itself. -/

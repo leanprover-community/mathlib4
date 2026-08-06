@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 -/
 
-@[expose] public section
+public section
 
 namespace TrivSqZeroExt
 

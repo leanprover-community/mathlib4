@@ -92,7 +92,7 @@ theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.
   · rw [toMultiset_zero, Multiset.toFinset_zero, support_zero]
   · intro a n f ha hn ih
     rw [toMultiset_add, Multiset.toFinset_add, ih, toMultiset_single, support_add_eq,
-      support_single_ne_zero _ hn, Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton]
+      support_single _ hn, Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton]
     refine Disjoint.mono_left support_single_subset ?_
     rwa [Finset.disjoint_singleton_left]
 
@@ -166,7 +166,7 @@ theorem toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s
 
 theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
     toFinsupp s = f ↔ s = Finsupp.toMultiset f :=
-  Multiset.toFinsupp.apply_eq_iff_symm_apply
+  Multiset.toFinsupp.eq_symm_apply.symm
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext

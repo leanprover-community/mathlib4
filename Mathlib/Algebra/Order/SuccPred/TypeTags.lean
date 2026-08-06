@@ -15,7 +15,7 @@ This file declares successor and predecessor orders on type tags.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

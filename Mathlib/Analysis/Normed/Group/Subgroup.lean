@@ -18,7 +18,7 @@ In this file, we prove that subgroups of a normed (semi)group are also normed (s
 normed group
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Function Metric Bornology

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.Ideal.Int
 
 /-!
@@ -72,7 +72,7 @@ theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
     ¬ p ∣ exponent θ ↔ Codisjoint (comap (algebraMap ℤ (𝓞 K)) (conductor ℤ θ)) (span {↑p}) := by
   rw [codisjoint_comm, ← IsCoatom.not_le_iff_codisjoint, ← under_def, ← Ideal.dvd_iff_le,
     ← Int.ideal_span_absNorm_eq_self (under ℤ (conductor ℤ θ)),
-    span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
+    Ideal.span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
 
 theorem exponent_eq_sInf : exponent θ = sInf {d : ℕ | 0 < d ∧ (d : 𝓞 K) ∈ conductor ℤ θ} := by
@@ -181,8 +181,9 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ
         inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm
         ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
-          exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
+          exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).prop⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.
@@ -209,20 +210,24 @@ The residual degree of the ideal corresponding to the class of `Q ∈ ℤ[X]` mo
 -/
 theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
-    inertiaDeg (span {(p : ℤ)}) ((primesOverSpanEquivMonicFactorsMod hp).symm
-      ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
+    inertiaDeg ((primesOverSpanEquivMonicFactorsMod hp).symm
+      ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) ℤ =
         natDegree (Q.map (Int.castRingHom (ZMod p))) := by
   -- This is needed for `inertiaDeg_algebraMap` below to work
+  have : (span {↑p, (aeval θ) Q}).IsMaximal := by
+    rw [← Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span hp hQ]
+    apply Ideal.primesOver.isMaximal
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
-  rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
+  rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span,
+    inertiaDeg_eq_of_isMaximal (span {(p : ℤ)}),
     ← finrank_quotient_span_eq_natDegree]
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
   exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm
 
 theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
-    inertiaDeg (span {(p : ℤ)})
-      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) = natDegree Q := by
+    inertiaDeg
+      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) ℤ = natDegree Q := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
@@ -233,12 +238,12 @@ The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]`
 -/
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : ℤ[X]} (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
-    ramificationIdx (span {(p : ℤ)})
+    ramificationIdx
       ((primesOverSpanEquivMonicFactorsMod hp).symm
-        ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
+        ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) ℤ =
           multiplicity (Q.map (Int.castRingHom (ZMod p)))
             ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
-  rw [ramificationIdx_eq_multiplicity (map_ne_bot_of_ne_bot (by simp [NeZero.ne p])) inferInstance]
+  rw [ramificationIdx_eq_multiplicity (span {↑p}) _ (map_ne_bot_of_ne_bot (by simp [NeZero.ne p]))]
   · apply multiplicity_eq_of_emultiplicity_eq
     rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
       emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
@@ -251,8 +256,8 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
 
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
-    ramificationIdx (span {(p : ℤ)})
-      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
+    ramificationIdx
+      ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) ℤ =
         multiplicity Q ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply]

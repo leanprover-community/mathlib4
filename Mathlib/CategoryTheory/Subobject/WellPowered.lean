@@ -28,7 +28,7 @@ and
 `equivShrink (Subobject X) : Subobject X ≃ Shrink (Subobject X)`.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v v₂ u₁ u₂

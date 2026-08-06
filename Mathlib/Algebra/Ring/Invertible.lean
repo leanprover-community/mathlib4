@@ -42,9 +42,6 @@ variable {x y}
 theorem AddUnits.neg_mulLeft : -(x.mulLeft y) = (-x).mulLeft y := rfl
 theorem AddUnits.neg_mulRight : -(x.mulRight y) = (-x).mulRight y := rfl
 
-@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_left := AddUnits.neg_mulLeft
-@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_right := AddUnits.neg_mulRight
-
 theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x * ↑(-y) := by
   rw [← neg_eq_val_neg, ← val_neg_mulRight]
   apply AddUnits.neg_eq_of_add_eq_zero_left
@@ -64,7 +61,7 @@ theorem IsAddUnit.mul_right {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (x * y
 end NonUnitalNonAssocSemiring
 
 /-- `-⅟a` is the inverse of `-a` -/
-@[implicit_reducible]
+@[instance_reducible]
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
   ⟨-⅟a, by simp, by simp⟩
 

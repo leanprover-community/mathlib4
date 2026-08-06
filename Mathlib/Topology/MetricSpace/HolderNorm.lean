@@ -95,9 +95,8 @@ lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 
 variable (X) in
 @[simp]
 lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
-  refine le_antisymm (ENNReal.coe_le_coe.1 <|
-    le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
-  rw [eHolderNorm_const, ENNReal.coe_zero]
+  rw [← nonpos_iff_eq_zero, ← ENNReal.coe_le_coe, ENNReal.coe_zero, ← eHolderNorm_const X r c]
+  exact coe_nnHolderNorm_le_eHolderNorm
 
 variable (X) in
 @[simp]
@@ -149,7 +148,7 @@ lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
     (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
     MemHolder s f := by
   obtain ⟨C, hX⟩ := hX
-  letI := PseudoEMetricSpace.toPseudoMetricSpace
+  let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
   have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
   exact hf.of_le hs
@@ -172,7 +171,7 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
     (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
     ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
-  letI := PseudoEMetricSpace.toPseudoMetricSpace
+  let := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
   have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
   exact MemHolder.of_le hf hs
@@ -203,7 +202,7 @@ variable [MetricSpace X] [EMetricSpace Y]
 lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   constructor
-  · refine fun h x₁ x₂ => ?_
+  · intro h x₁ x₂
     by_cases hx : x₁ = x₂
     · rw [hx]
     · rw [eHolderNorm, ← ENNReal.bot_eq_zero, iInf₂_eq_bot] at h

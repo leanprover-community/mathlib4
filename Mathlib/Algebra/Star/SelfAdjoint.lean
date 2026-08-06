@@ -95,7 +95,7 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
     (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : Commute x y ↔ IsSelfAdjoint (x * y) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [isSelfAdjoint_iff, star_mul, hx.star_eq, hy.star_eq, h.eq]
-  · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
+  · simpa only [star_mul, hx.star_eq, hy.star_eq] using! h.symm
 
 lemma commute_of_mul_eq_isSelfAdjoint {R : Type*} [Mul R] [StarMul R] (x y z : R)
     (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) (hz : IsSelfAdjoint z) (hxyz : x * y = z) :
@@ -210,11 +210,6 @@ lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff {a u : R} (hu : IsUnit u) :
 lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff' {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
   simpa using hu.star.isSelfAdjoint_conjugate_iff
-
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit :=
-  IsUnit.isSelfAdjoint_conjugate_iff
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit' :=
-  IsUnit.isSelfAdjoint_conjugate_iff'
 
 end Monoid
 
@@ -634,7 +629,7 @@ protected instance IsStarNormal.val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStar
 protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
-  star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
+  star_comm_self := by simpa [map_star] using! congr(f $(hr.star_comm_self))
 
 protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
     [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
@@ -671,6 +666,12 @@ instance IsStarNormal.one_add [NonAssocSemiring R] [StarRing R] {a : R}
 instance IsStarNormal.one_sub [NonAssocRing R] [StarRing R] {a : R}
     [ha : IsStarNormal a] : IsStarNormal (1 - a) :=
   Commute.one_left (star a) |>.isStarNormal_sub
+
+lemma IsSelfAdjoint.commute_of_mul_eq_zero [NonUnitalNonAssocRing R] [StarRing R]
+    {a b : R} (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+    Commute a b := by
+  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  grind [commute_iff_eq]
 
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}

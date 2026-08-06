@@ -16,7 +16,7 @@ This file provides basic results about the star on product types defined in
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

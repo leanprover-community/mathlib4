@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -31,7 +32,7 @@ We take the following route from polynomials to L-functions:
 For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at each prime `p`.
 
 For context, here is a diagram of the possible routes from polynomials to L-functions:
-
+```
                    T=q⁻ˢ                     s ∈ ℂ
 [polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
           |                           |                           |
@@ -42,6 +43,7 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           | (product)                 | (product)                 | (product)
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
+```
 -/
 
 @[expose] public section
@@ -56,6 +58,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
 
@@ -128,6 +131,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
         exact ⟨0, by simp [hn]⟩
     · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowerSeries_apply {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
   simp [ofPowerSeries, dif_pos hq]
@@ -139,6 +143,7 @@ theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : 
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 -- note that `ofPowerSeries_apply_one` relies on the junk value `f.constantCoeff`.
 theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
@@ -157,7 +162,6 @@ variable [CommRing R]
 to substituting `X` with `X ^ k` in the original power series. -/
 theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
-  classical
   by_cases hq : 1 < q
   · ext n
     by_cases hn : ∃ i, q ^ i = n
@@ -251,7 +255,7 @@ local instance : CompleteSpace (ArithmeticFunction R) := by
     ext f
     exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
   rw [ArithmeticFunction.range_coe]
-  apply isClosed_setOf_map_zero
+  apply isClosed_setOfPred_map_zero
 
 /-- The Euler product of a family of arithmetic functions. Defined as a `tprod`, but see
 `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
@@ -323,6 +327,23 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
       exact eventually_const.mp (EventuallyEq.trans (.symm h2) (.mul (key m) (key n)))
   · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
     exact isMultiplicative_one
+
+/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
+to the Euler product pointwise. -/
+theorem tendsTo_eulerProduct_ofPowerSeries (q : ι → ℕ) [hq : Northcott q]
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (n : ℕ) :
+    ∀ᶠ s in atTop, (∏ i ∈ s, ofPowerSeries (q i) (f i)) n =
+      eulerProduct (fun i ↦ ofPowerSeries (q i) (f i)) n := by
+  apply tendsTo_eulerProduct_of_tendsTo
+  refine fun n ↦ (tendsto_atTop.mp ((northcott_iff_tendsto q).mp hq) (n + 1)).mono fun i hi ↦ ?_
+  rcases n with rfl | rfl | n
+  · simp
+  · simp [hf]
+  · have hqi : 1 < q i := by lia
+    rw [ofPowerSeries_apply hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne (by lia)]
+    rintro ⟨k, hk⟩
+    have h : k ≠ 0 := fun h ↦ by simp_all
+    grind [Nat.le_pow h.pos (a := q i)]
 
 end EulerProduct
 

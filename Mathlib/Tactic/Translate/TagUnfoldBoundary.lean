@@ -76,7 +76,7 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
   let newName ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
   addDecl newName newType newValue
   -- Now add the translation attribute to relate the two new declarations
-  _ ← addTranslationAttr t name { tgt := newName, existing := true, ref := .missing }
+  _ ← addTranslationAttr t name { target := newName, existing := true, ref := .missing }
   return (name, newName)
 where
   unfoldLHS? : CastKind → Expr → OptionT TermElabM Expr

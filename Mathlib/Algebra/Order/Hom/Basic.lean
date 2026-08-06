@@ -47,7 +47,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

@@ -73,28 +73,38 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-/-! ### Lemmas about `mem` and `setOf` -/
+/-! ### Lemmas about `mem` and `Set.ofPred` -/
 
 @[simp, mfld_simps, push]
-theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+theorem mem_ofPred_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
-grind_pattern mem_setOf_eq => x ∈ setOf p
+@[deprecated (since := "2026-07-09")] alias mem_setOf_eq := mem_ofPred_eq
+
+grind_pattern mem_ofPred_eq => x ∈ Set.ofPred p
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
-See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
-theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
+See also `Set.mem_ofPred_eq` for the reverse direction applied to an argument. -/
+theorem eq_mem_ofPred (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
 
-theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a := Iff.rfl
+@[deprecated (since := "2026-07-09")] alias eq_mem_setOf := eq_mem_ofPred
+
+theorem mem_ofPred {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a := Iff.rfl
+
+@[deprecated (since := "2026-07-09")] alias mem_setOf := mem_ofPred
 
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
 argument to `simp`. -/
-alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
+alias ⟨_root_.Membership.mem.out, _⟩ := mem_ofPred
 
-theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
+theorem notMem_ofPred_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
 
-@[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
+@[deprecated (since := "2026-07-09")] alias notMem_setOf_iff := notMem_ofPred_iff
+
+@[simp] theorem ofPred_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_eq := ofPred_mem_eq
 
 @[simp, mfld_simps, grind ←, push]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
@@ -106,25 +116,32 @@ instance : Compl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 @[simp, grind =, push]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
-theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+theorem sdiff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
+
+@[deprecated (since := "2026-06-03")] alias diff_eq := sdiff_eq
 
 @[simp, grind =, push]
-theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
+theorem mem_sdiff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
-theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+@[deprecated (since := "2026-06-03")] alias mem_diff := mem_sdiff
+
+theorem mem_sdiff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
+
+@[deprecated (since := "2026-06-03")] alias mem_diff_of_mem := mem_sdiff_of_mem
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
+@[implicit_reducible]
 def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
-infixl:80 " ⁻¹' " => preimage
+infixr:80 " ⁻¹' " => preimage
 
 @[simp, mfld_simps, grind =, push]
 theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
-infixl:80 " '' " => image
+infixr:80 " '' " => image
 
 @[simp, grind =, push]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=

@@ -19,7 +19,7 @@ In this file, we prove that any simplicial set satisfying the strict Segal
 condition is a quasicategory.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -28,6 +28,7 @@ open Simplicial SimplicialObject SimplexCategory
 
 namespace SSet.StrictSegal
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by

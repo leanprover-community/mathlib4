@@ -29,7 +29,7 @@ TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondi
 See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
 
-@[expose] public section
+public section
 universe u v
 
 open Function Set Cardinal Module Submodule LinearMap
@@ -77,13 +77,13 @@ attribute [local instance] nontrivial_of_hasRankNullity
 theorem LinearMap.lift_rank_range_add_rank_ker (f : M →ₗ[R] M') :
     lift.{u} (Module.rank R (LinearMap.range f)) + lift.{v} (Module.rank R (LinearMap.ker f)) =
       lift.{v} (Module.rank R M) := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.lift_rank_eq, ← lift_add, rank_quotient_add_rank]
 
 /-- The **rank-nullity theorem** -/
 theorem LinearMap.rank_range_add_rank_ker (f : M →ₗ[R] M₁) :
     Module.rank R (LinearMap.range f) + Module.rank R (LinearMap.ker f) = Module.rank R M := by
-  haveI := fun p : Submodule R M => Classical.decEq (M ⧸ p)
+  have := fun p : Submodule R M => Classical.decEq (M ⧸ p)
   rw [← f.quotKerEquivRange.rank_eq, rank_quotient_add_rank]
 
 theorem LinearMap.lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjective f) :
@@ -94,6 +94,45 @@ theorem LinearMap.lift_rank_eq_of_surjective {f : M →ₗ[R] M'} (h : Surjectiv
 theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f) :
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
+
+theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
+    lift.{v} (Module.rank R (comap f p)) ≤
+      lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
+  let f' : comap f p →ₗ[R] p := f.restrict (by aesop)
+  have hk : Module.rank R f'.ker ≤ Module.rank R f.ker := by
+    rw [← rank_map_eq (injective_subtype (comap f p))]
+    exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
+  have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
+  rw [← f'.lift_rank_range_add_rank_ker]
+  gcongr <;> rwa [lift_le]
+
+omit [HasRankNullity.{u} R] in
+lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]
+    {f : M →ₗ[R] M'} (p : Submodule R M) :
+    Module.rank R (M' ⧸ map f p) =
+      Module.rank R (M' ⧸ f.range) + Module.rank R (f.range ⧸ map f.rangeRestrict p) := by
+  let f' : M' ⧸ map f p →ₗ[R] M' ⧸ f.range := factor map_le_range
+  let +nondep e : (f.range ⧸ map f.rangeRestrict p) ≃ₗ[R] f'.ker := by
+    let g : f.range →ₗ[R] f'.ker :=
+      (LinearEquiv.ofEq (map (map f p).mkQ f.range) f'.ker) (by rw [ker_mapQ]; rfl) ∘ₗ
+        (map f p).mkQ.submoduleMap f.range
+    have g_surj : Surjective g := by simpa [g] using submoduleMap_surjective (map f p).mkQ f.range
+    have g_ker : g.ker = map f.rangeRestrict p := by
+      simp [g, submoduleMap, ker_restrict, map_codRestrict]
+    let e := g.quotKerEquivOfSurjective g_surj
+    rwa [g_ker] at e
+  have := f'.rank_eq_of_surjective <| factor_surjective map_le_range
+  rwa [← e.rank_eq] at this
+
+omit [HasRankNullity.{u} R] in
+theorem LinearMap.lift_rank_quot_map_le [HasRankNullity.{v} R]
+    {f : M →ₗ[R] M'} (p : Submodule R M) :
+    lift.{u} (Module.rank R (M' ⧸ map f p)) ≤
+      lift.{u} (Module.rank R (M' ⧸ f.range)) + lift.{v} (Module.rank R (M ⧸ p)) := by
+  rw [rank_quot_submodule_map_eq, lift_add]; gcongr
+  let f' : M ⧸ p →ₗ[R] f.range ⧸ map f.rangeRestrict p :=
+    mapQ p (map f.rangeRestrict p) f.rangeRestrict <| by rw [comap_map_eq]; exact le_sup_left
+  exact lift_rank_le_of_surjective f' <| by rw [← range_eq_top, range_mapQ]; simp
 
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
@@ -148,6 +187,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
   rw [this] at hy
   exact ⟨y, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
@@ -221,7 +261,7 @@ lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N :
     [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
     Disjoint L (LinearMap.ker f) := by
-  refine disjoint_iff.mpr <| LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
+  refine LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
     Submodule.rank_eq_zero.mp ?_
   rw [← Submodule.finrank_eq_rank, Nat.cast_eq_zero]
   rw [← LinearMap.range_domRestrict] at h

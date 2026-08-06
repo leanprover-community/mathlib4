@@ -85,7 +85,7 @@ variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -152,6 +152,12 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
+
+/-- The `SeminormedRing` structure on a ring `R` determined by a `RingSeminorm`. -/
+abbrev toSeminormedRing : SeminormedRing R where
+  __ := ‹Ring R›
+  __ := p.toAddGroupSeminorm.toSeminormedAddCommGroup
+  norm_mul_le := map_mul_le_mul p
 
 end Ring
 
@@ -223,7 +229,7 @@ variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -259,7 +265,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 
 end NonUnitalRing
 
-/-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
+/-- The `NormedRing` structure on a ring `R` determined by a `RingNorm`. -/
 -- See note |reducible non-instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›
@@ -274,7 +280,7 @@ variable [NonAssocRing R]
 
 instance funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -325,7 +331,7 @@ variable [NonAssocRing R]
 
 instance funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr

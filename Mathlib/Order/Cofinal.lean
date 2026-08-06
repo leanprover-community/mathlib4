@@ -17,15 +17,14 @@ import Mathlib.Data.Set.Lattice
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
 
 ## TODO
 
-- Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -34,12 +33,16 @@ variable {α β : Type*}
 section LE
 variable [LE α]
 
-theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
+
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  exact (hs default).imp fun _ ↦ And.left
 
 @[simp]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
@@ -162,12 +165,18 @@ theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s 
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
-theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
+theorem isCofinal_setOfPred_imp_lt (r : α → α → Prop) [h : IsWellFounded α r] :
     IsCofinal { a | ∀ b, r b a → b < a } := by
   intro a
   obtain ⟨b, hb, hb'⟩ := h.wf.has_min (Set.Ici a) Set.nonempty_Ici
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
+
+@[deprecated (since := "2026-07-09")] alias isCofinal_setOf_imp_lt := isCofinal_setOfPred_imp_lt
+
+theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
+    IsCofinal (range f) :=
+  fun x ↦ ⟨_, ⟨x, rfl⟩, hf.le_apply⟩
 
 end LinearOrder

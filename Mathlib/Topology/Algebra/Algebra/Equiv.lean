@@ -232,11 +232,11 @@ theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
   e.1.left_inv a
 
 @[simp]
-theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' (e '' S) = S :=
+theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=
   e.toEquiv.symm_image_image S
 
 @[simp]
-theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' (e.symm '' S) = S :=
+theorem image_symm_image (e : A ≃A[R] B) (S : Set B) : e '' e.symm '' S = S :=
   e.symm.symm_image_image S
 
 @[simp]
@@ -325,11 +325,11 @@ theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e �
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
+theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' e ⁻¹' S = S :=
   e.toEquiv.symm_preimage_preimage S
 
 @[simp]
-theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm ⁻¹' S) = S :=
+theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' e.symm ⁻¹' S = S :=
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]

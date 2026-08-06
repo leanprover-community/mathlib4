@@ -83,7 +83,7 @@ theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
   simp [shadow]
 
 /-- The shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
 
@@ -195,7 +195,7 @@ theorem upShadow_empty : ∂⁺ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 
 /-- The upper shadow is monotone. -/
-@[mono]
+@[gcongr, mono]
 theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (Finset α)) :=
   fun _ _ => sup_mono
 

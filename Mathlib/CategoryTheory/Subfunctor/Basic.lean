@@ -43,8 +43,6 @@ structure Subfunctor (F : C ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-@[deprecated (since := "2025-12-11")] alias Subpresheaf := Subfunctor
-
 variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
@@ -142,14 +140,14 @@ instance : Nonempty (Subfunctor F) :=
 @[simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
-  map i := TypeCat.ofHom fun x => ⟨F.map i x, G.map i x.prop⟩
+  map i := ↾fun x => ⟨F.map i x, G.map i x.prop⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val
 
 /-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
-def ι : G.toFunctor ⟶ F where app _ := TypeCat.ofHom (fun x ↦ x)
+def ι : G.toFunctor ⟶ F where app _ := ↾fun x ↦ x
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
@@ -158,7 +156,7 @@ instance : Mono G.ι :=
 /-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
 def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor where
-  app U := TypeCat.ofHom fun x ↦ ⟨x, h U x.prop⟩
+  app U := ↾fun x ↦ ⟨x, h U x.prop⟩
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
@@ -190,26 +188,6 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
 
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.le_def := le_def
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.top_obj := top_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.bot_obj := bot_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.sSup_obj := sSup_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.sInf_obj := sInf_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iSup_obj := iSup_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iInf_obj := iInf_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.max_obj := max_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.min_obj := min_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.max_min := max_min
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.iSup_min := iSup_min
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toFunctor := toFunctor
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.ι := ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe := homOfLe
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.homOfLe_ι := homOfLe_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.eq_top_iff_isIso := eq_top_iff_isIso
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map
 @[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor

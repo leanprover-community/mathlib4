@@ -141,8 +141,12 @@ instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
 instance instAddZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
   inferInstanceAs <| AddZeroClass (Matrix m n A)
 
-instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
-  inferInstanceAs <| AddMonoid (Matrix m n A)
+instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
+  inferInstanceAs <| SMul R (Matrix m n A)
+
+instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) where
+  nsmul := letI := instSMul (R := ℕ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddMonoid (CStarMatrix m n A) := inferInstanceAs <| AddMonoid (Matrix m n A)
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommMonoid (Matrix m n A)
@@ -153,8 +157,9 @@ instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
 instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
   inferInstanceAs <| Sub (Matrix m n A)
 
-instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
-  inferInstanceAs <| AddGroup (Matrix m n A)
+instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) where
+  zsmul := letI := instSMul (R := ℤ) (A := A) (m := m) (n := n); (· • · )
+  __ : AddGroup (CStarMatrix m n A) := inferInstanceAs <| AddGroup (Matrix m n A)
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
   inferInstanceAs <| AddCommGroup (Matrix m n A)
@@ -167,9 +172,6 @@ instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   inferInstanceAs <| Nontrivial (Matrix m n A)
-
-instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
-  inferInstanceAs <| SMul R (Matrix m n A)
 
 instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=
@@ -387,6 +389,7 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R) (A) in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
@@ -401,6 +404,7 @@ lemma reindexₗ_apply {l o : Type*} [Semiring R] [AddCommMonoid A] [Module R A]
     {eₘ : m ≃ l} {eₙ : n ≃ o} {M : CStarMatrix m n A} {i : l} {j : o} :
     reindexₗ R A eₘ eₙ M i j = Matrix.reindex eₘ eₙ M i j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
 equivalence. -/
 def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -420,20 +424,24 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] {e : m ≃ n} : reindexₐ R A e.symm = (reindexₐ R A e).symm := by
   simp [reindexₐ, reindexₗ]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Applying a non-unital ⋆-algebra homomorphism to every entry of a matrix is itself a
 ⋆-algebra homomorphism on matrices. -/
 @[simps]
@@ -455,6 +463,7 @@ theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring 
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
 def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
@@ -480,19 +489,18 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
-               map_smul' := M.smul_vecMul
-               cont := Continuous.comp (by fun_prop) (by fun_prop) }
+               map_smul' := M.smul_vecMul }
   map_add' M₁ M₂ := by
     ext
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
+      WithCStarModule.equiv_symm_pi_apply, _root_.add_apply, WithCStarModule.add_apply]
     rw [Matrix.vecMul_add, Pi.add_apply]
   map_smul' c M := by
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.equiv_symm_pi_apply, _root_.smul_apply,
       WithCStarModule.smul_apply, RingHom.id_apply]
     rw [Matrix.vecMul_smul, Pi.smul_apply]
 
@@ -556,6 +564,7 @@ lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
 
 variable [Fintype n]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open WithCStarModule in
 lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}
     {w : C⋆ᵐᵒᵈ(A, m → A)} : ⟪toCLM Mᴴ v, w⟫_A = ⟪v, toCLM M w⟫_A := by
@@ -564,6 +573,7 @@ lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(
   rw [Finset.sum_comm]
   simp_rw [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma inner_toCLM_conjTranspose_right {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
     {w : C⋆ᵐᵒᵈ(A, n → A)} : ⟪v, toCLM Mᴴ w⟫_A = ⟪toCLM M v, w⟫_A := by
   apply Eq.symm
@@ -580,9 +590,9 @@ lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A :
 lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
-  norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
+  norm_triangle M₁ M₂ := by simpa [← map_add] using! norm_add_le (toCLM M₁) (toCLM M₂)
   norm_eq_zero_iff := by
-    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
+    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using! toCLM_injective
 
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
@@ -635,7 +645,7 @@ private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-@[implicit_reducible]
+@[instance_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -812,7 +822,6 @@ noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra : CStarAlgebra (CStarMatrix n n A) where
 

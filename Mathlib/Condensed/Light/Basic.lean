@@ -16,7 +16,7 @@ of Clausen-Scholze (see https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gm
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

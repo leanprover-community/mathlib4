@@ -17,7 +17,7 @@ If `X` is a weakly locally compact σ-compact space and `Y` is a (pseudo)metriza
 then `C(X, Y)` is a (pseudo)metrizable space.
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace
 

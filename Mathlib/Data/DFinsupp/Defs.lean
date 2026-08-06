@@ -234,7 +234,7 @@ lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) :
   rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 instance [∀ i, AddGroup (β i)] : Neg (Π₀ i, β i) :=
   ⟨fun f => f.mapRange (fun _ => Neg.neg) fun _ => neg_zero⟩
@@ -267,12 +267,12 @@ theorem coe_zsmul [∀ i, AddGroup (β i)] (b : ℤ) (v : Π₀ i, β i) : ⇑(b
   rfl
 
 instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 end Algebra
 
@@ -295,10 +295,12 @@ theorem filter_apply_pos [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
 theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p] (f : Π₀ i, β i) {i : ι}
     (h : ¬p i) : f.filter p i = 0 := by grind
 
-theorem filter_pos_add_filter_neg [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
+@[simp] theorem filter_add_filter_not [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
     [DecidablePred p] : (f.filter p + f.filter fun i => ¬p i) = f :=
   ext fun i => by
     simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
+
+@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
 
 @[simp]
 theorem filter_zero [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] :
@@ -531,6 +533,17 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
+
+@[simp] lemma filter_eq (f : Π₀ i, β i) (i : ι) : f.filter (i = ·) = single i (f i) := by
+  ext
+  rw [filter_apply, single_apply]
+  split
+  · subst i
+    simp
+  · simp
+
+@[simp] lemma filter_eq' (f : Π₀ i, β i) (i : ι) : f.filter (· = i) = single i (f i) := by
+  simp [eq_comm]
 
 section SingleAndZipWith
 
@@ -871,7 +884,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
       case mp =>
         intro hs₁; ext i
         -- This instance prevent consuming `DecidableEq ι` in the next `by_cases`.
-        letI := Classical.propDecidable
+        let := Classical.propDecidable
         by_cases hs₂ : i ∈ s.val
         case pos => exact hs₁ _ hs₂
         case neg => exact (s.prop i).resolve_left hs₂
@@ -879,8 +892,11 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
-theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
+@[simp]
+theorem support_single {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   grind
+
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
   support_mk'_subset
@@ -910,6 +926,7 @@ theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 =
   classical exact ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [DecidableEq ι] in
 theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
     Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
@@ -1088,6 +1105,7 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
     comapDomain' h hh' (single (h k) x) = single k x := by
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing terms of a dfinsupp.
 
 This is the dfinsupp version of `Equiv.piCongrLeft'`. -/
@@ -1106,21 +1124,6 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
     ext k
     rw [comapDomain'_apply, mapRange_apply, comapDomain'_apply, Equiv.cast_eq_iff_heq,
       h.apply_symm_apply]
-
-section SigmaCurry
-
-variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
-
-instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
-  inferInstance
-
-end SigmaCurry
 
 variable {α : Option ι → Type v}
 

@@ -27,7 +27,7 @@ Technically, we don't require pairwise disjointness or endpoints to be within `[
 require that `a ≤ b`, but it makes the most sense if they are actually satisfied.
 -/
 
-@[expose] public section
+public section
 
 open Fin Fin.NatCast
 

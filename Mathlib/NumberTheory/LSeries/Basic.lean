@@ -141,7 +141,7 @@ lemma term_nonneg {a : ℕ → ℂ} {n : ℕ} (h : 0 ≤ a n) (x : ℝ) : 0 ≤ 
   exacts [le_rfl, mul_nonneg h (inv_natCast_cpow_ofReal_pos hn x).le]
 
 lemma term_pos {a : ℕ → ℂ} {n : ℕ} (hn : n ≠ 0) (h : 0 < a n) (x : ℝ) : 0 < term a x n := by
-  simpa only [term_of_ne_zero hn] using mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
+  simpa only [term_of_ne_zero hn] using! mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
 
 end positivity
 
@@ -169,6 +169,11 @@ lemma LSeries_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s 
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
+/-- An alternate spelling of `LSeries` as `∑' n, f n / n ^ s` for the case `f 0 = 0`. -/
+lemma LSeries_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) :
+    LSeries f s = ∑' n, f n / (n ^ s) := by
+  simp [LSeries, LSeries.term_def₀ hf, cpow_neg, div_eq_mul_inv]
+
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
@@ -187,8 +192,8 @@ lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
-    refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
-    rw [Set.mem_diff, Set.mem_singleton_iff] at hn
+    refine ⟨S \ {0}, sdiff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
+    rw [Set.mem_sdiff, Set.mem_singleton_iff] at hn
     simp [hn.2, hS' hn.1]
   exact this.symm.mono fun n hn ↦ by simp [hn]
 
@@ -333,7 +338,7 @@ lemma LSeriesSummable.isBigO_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummab
     f =O[atTop] fun n ↦ (n : ℝ) ^ s.re := by
   obtain ⟨C, hC⟩ := h.le_const_mul_rpow
   refine Asymptotics.IsBigO.of_bound C <| eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩
-  convert hC n (Nat.pos_iff_ne_zero.mp hn) using 2
+  convert! hC n (Nat.pos_iff_ne_zero.mp hn) using 2
   rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg n.cast_nonneg, abs_of_nonneg n.cast_nonneg]
 
 /-- If `f n` is bounded in absolute value by a constant times `n^(x-1)` and `re s > x`,
