@@ -110,7 +110,7 @@ theorem div_wf_lemma (h : degree q ≤ degree p ∧ p ≠ 0) (hq : Monic q) :
   have hlt : natDegree q ≤ natDegree p :=
     (Nat.cast_le (α := WithBot ℕ)).1
       (by rw [← degree_eq_natDegree h.2, ← degree_eq_natDegree hq0]; exact h.1)
-  degree_sub_lt
+  degree_sub_lt_left
     (by
       rw [hq.degree_mul_comm, hq.degree_mul, degree_C_mul_X_pow _ hp, degree_eq_natDegree h.2,
         degree_eq_natDegree hq0, ← Nat.cast_add, tsub_add_cancel_of_le hlt])
