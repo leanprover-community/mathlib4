@@ -545,9 +545,14 @@ protected theorem add_div_of_dvd_left {a b c : ℕ} (hca : c ∣ b) : (a + b) / 
 theorem add_div_eq_of_le_mod_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) (hc0 : 0 < c) :
     (a + b) / c = a / c + b / c + 1 := by rw [Nat.add_div hc0, if_pos hc]
 
+@[deprecated Nat.div_add_div_le_add_div (since := "2026-08-05")]
 theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
-  if hc0 : c = 0 then by simp [hc0]
-  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0)]; exact Nat.le_add_right _ _
+  Nat.div_add_div_le_add_div
+
+theorem add_div_le_div_add_div_add_one (a b c : ℕ) : (a + b) / c ≤ a / c + b / c + 1 :=
+  if h : c = 0 then by simp [h] else
+    (Nat.add_div (Nat.pos_of_ne_zero h)).trans_le
+      (Nat.add_le_add_left (by split <;> decide) _)
 
 theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha : ¬c ∣ a) :
     c ≤ a % c + b % c :=
