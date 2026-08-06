@@ -192,6 +192,7 @@ def currySum (q : Ω^ (M ⊕ N) X x) : C(I^M, Ω^ N X x) where
     ⟨sumArrowHomeomorphProdArrow.invFun,
       sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.continuous_toFun _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma currySum_apply_inl_inr (p : Ω^ (M ⊕ N) X x) (y : I^(M ⊕ N)) :
     currySum x p (y ∘ Sum.inl) (y ∘ Sum.inr) = p y := by
@@ -211,6 +212,7 @@ protected def uncurry (p : Ω^ M (Ω^ N X x) const) : C((I^M) × (I^N), X) :=
 lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :
     GenLoop.uncurry x p y = p y.1 y.2 := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `Ω^M (Ω^N X) ≃ₜ Ω^(M ⊕ N) X`. -/
 @[simps]
 def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X x where
@@ -341,6 +343,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
   refine Nonempty.map fun H ↦ ⟨⟨⟨fun t ↦ ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
@@ -531,7 +534,7 @@ lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] 
       (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
   ext t
   simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy,
-    one_div, Equiv.coe_fn_mk, GenLoop.mk_apply, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
+    one_div, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
     Function.comp_apply]
   refine ite_congr rfl (fun _ ↦ congrArg q ?_)
     fun _ ↦ congrArg p ?_

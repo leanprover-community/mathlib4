@@ -114,6 +114,7 @@ noncomputable def rTensorInv : (P ⊗[R] M →ₗ[R] Q ⊗[R] M) →ₗ[R] (P �
   ((rightCancelEquiv Q e).congrRight ≪≫ₗ (rightCancelEquiv P e).congrLeft _ R) ∘ₗ
     LinearMap.rTensorHom N
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem rTensorInv_leftInverse : Function.LeftInverse (rTensorInv P Q e) (.rTensorHom M) :=
   fun _ ↦ by
     simp_rw [rTensorInv, LinearEquiv.coe_trans, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap]
@@ -131,6 +132,7 @@ of `R`-modules. -/
   left_inv := rTensorInv_leftInverse P Q e
   right_inv _ := rTensorInv_injective P Q e (by rw [LinearMap.toFun_eq_coe, rTensorInv_leftInverse])
 
+set_option backward.isDefEq.respectTransparency.types false in
 open LinearMap in
 /-- If there is an `R`-isomorphism between `M ⊗[R] N` and `R`,
 the induced map `M → Nᵛ` is an isomorphism. -/
@@ -299,7 +301,7 @@ theorem leftInverse_iff_rightInverse :
 a left inverse of `g`, then in fact `f` is also the right inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
+  .ofLinearMap f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
 
 @[simp] lemma linearEquivOfLeftInverse_apply (hfg : Function.LeftInverse f g) (x : M) :
     linearEquivOfLeftInverse hfg x = f x := rfl
@@ -311,7 +313,7 @@ def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
 a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
+  .ofLinearMap f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
 
 @[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
     linearEquivOfRightInverse hfg x = f x := rfl
@@ -448,6 +450,7 @@ noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.privateInPublic true in
 private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
@@ -472,7 +475,7 @@ variable {R M N}
 
 theorem mk_eq_iff {N : Pic R} : Pic.mk R M = N ↔ Nonempty (M ≃ₗ[R] N) where
   mp := (· ▸ ⟨(mk.linearEquiv R M).symm⟩)
-  mpr := fun ⟨e⟩ ↦ ((equivShrink _).apply_eq_iff_eq_symm_apply).mpr <|
+  mpr := fun ⟨e⟩ ↦ ((equivShrink _).eq_symm_apply).mp <|
     Units.ext <| Quotient.mk_eq_iff_out.mpr ⟨(Finite.reprEquivₛ R M ≪≫ₗ e).toModuleIsoₛ⟩
 
 theorem mk_eq_self {M : Pic R} : Pic.mk R M = M := mk_eq_iff.mpr ⟨.refl ..⟩
@@ -826,14 +829,6 @@ noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
 
 end Module.Flat
 
-namespace Module.Invertible
-
-@[deprecated (since := "2025-11-23")] alias embAlgebra := Flat.toAlgebra
-@[deprecated (since := "2025-11-23")] alias embAlgebra_injective := Flat.toAlgebra_injective
-@[deprecated (since := "2025-11-23")] alias toSubmodule := Flat.submoduleAlgebra
-
-end Module.Invertible
-
 section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
@@ -865,6 +860,9 @@ theorem Submodule.mulExact_unitsToPic_mapAlgebra :
     Function.MulExact (unitsToPic R A) (mapAlgebra R A) :=
   MonoidHom.mulExact_iff.mpr (range_unitsToPic R A).symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 open QuotientGroup in
 /-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
 the group of the invertible `R`-submodules in `A` modulo the principal submodules. -/
@@ -873,6 +871,9 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=

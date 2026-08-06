@@ -534,9 +534,6 @@ theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ �
   · simpa using apply_omega0_of_isNormal (isNormal_opow ho₁)
   · simp
 
-@[deprecated (since := "2025-12-25")]
-alias iSup_pow := iSup_pow_natCast
-
 @[simp, norm_cast]
 lemma natCast_log (m n : ℕ) : ↑(Nat.log m n) = Ordinal.log ↑m ↑n := by
   obtain hm | hm := le_or_gt m 1

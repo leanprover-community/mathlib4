@@ -138,7 +138,7 @@ theorem basisSets_neg (U) (hU' : U ∈ p.basisSets) :
   exact ⟨U, hU', Eq.subset hU⟩
 
 /-- The `addGroupFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected def addGroupFilterBasis : AddGroupFilterBasis E :=
   addGroupFilterBasisOfComm p.basisSets p.basisSets_nonempty p.basisSets_intersect p.basisSets_zero
     p.basisSets_add p.basisSets_neg
@@ -163,7 +163,7 @@ theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
   refine Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) ?_
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 
-variable [NormedField 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
+variable [NormedDivisionRing 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
 
 theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
     ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : F => x • y) ⁻¹' U := by
@@ -615,7 +615,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     grw [← ts]
     rcases (SeminormFamily.basisSets_iff _).1 ht with ⟨w, r, r_pos, hw⟩
     rcases eq_or_ne w ∅ with rfl | w_ne
-    · simp only [ball, Finset.sup_empty, sub_zero, coe_bot, Pi.zero_apply, r_pos, setOf_true] at hw
+    · simp only [ball, Finset.sup_empty, sub_zero, coe_bot, Pi.zero_apply, r_pos, ofPred_true] at hw
       simp [hw]
     have : t = p.ball 0 r := by
       have : w = Finset.univ := by

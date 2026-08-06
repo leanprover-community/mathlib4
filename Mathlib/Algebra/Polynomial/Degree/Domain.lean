@@ -52,7 +52,6 @@ lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.
 
 @[simp]
 lemma natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
   exact natDegree_pow' <| by

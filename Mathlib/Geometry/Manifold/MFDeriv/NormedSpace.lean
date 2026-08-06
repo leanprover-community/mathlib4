@@ -105,6 +105,7 @@ section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- TODO: add pre-composition version also
 theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
     letI φ := extChartAt I x
@@ -592,3 +593,14 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     simp
   simpa using this
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
+
+-- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:
+-- the right hand side should be of the form `fderiv ∘SL TangentSpaceCastModel`.
+protected theorem MDifferentiableWithinAt.mvfderivWithin {f : M → E'} (h : MDiffAt[s] f x) :
+    d[s] f x = fderivWithin 𝕜 (writtenInExtChartAt I 𝓘(𝕜, E') x f)
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  convert! h.mfderivWithin
+
+protected theorem MDifferentiableAt.mvfderiv {f : M → E'} (h : MDiffAt f x) :
+    d% f x = fderivWithin 𝕜 (writtenInExtChartAt I 𝓘(𝕜, E') x f) (range I) (extChartAt I x x) := by
+  convert! h.mfderiv
