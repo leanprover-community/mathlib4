@@ -238,8 +238,7 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
   [AddCommGroup E] [Module 𝕜 E]
   [NormedAddCommGroup Eₗ] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
   [NormedAddCommGroup F] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [CompleteSpace F]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
 
 /-- Extend a linear map `f : E →ₛₗ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] F` between
 Banach spaces, using a dense linear map `e : E →ₗ[𝕜] Eₗ` together with the norm equality
@@ -253,20 +252,18 @@ def extendOfIsometry (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e 
     norm_cast
     rw [LinearMap.extendOfNorm_eq h_dense (by use 1; simp [h_norm]), h_norm y]
 
-variable {f e₁ e₂}
-
 theorem extendOfIsometry_apply (h_dense : DenseRange e)
     (h_norm : ∀ x, ‖f x‖ = ‖e x‖) (x : Eₗ) :
-    f.extendOfIsometry e h_dense h_norm x = f.extendOfNorm e x := rfl
+    f.extendOfIsometry h_dense h_norm x = f.extendOfNorm e x := rfl
 
 @[simp]
 theorem extendOfIsometry_eq (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖) (x : E) :
-    f.extendOfIsometry e h_dense h_norm (e x) = f x :=
+    f.extendOfIsometry h_dense h_norm (e x) = f x :=
   LinearMap.extendOfNorm_eq h_dense ⟨1, fun x ↦ by simp [h_norm x]⟩ x
 
 theorem extendOfIsometry_unique (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖)
     (g : Eₗ →ₛₗᵢ[σ₁₂] F) (H : g.toLinearMap.comp e = f) :
-    f.extendOfIsometry e h_dense h_norm = g := by
+    f.extendOfIsometry h_dense h_norm = g := by
   simp [extendOfIsometry, extendOfNorm_unique h_dense 1 (by simp [h_norm])
     g.toContinuousLinearMap H]
 
