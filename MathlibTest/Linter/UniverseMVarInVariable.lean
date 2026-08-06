@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Linter.UniverseMVar
 import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Tactic.CategoryTheory.CategoryStar
 
 set_option linter.universeMVarInVariable true
 

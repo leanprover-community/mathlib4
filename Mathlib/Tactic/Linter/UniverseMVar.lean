@@ -27,11 +27,12 @@ public register_option linter.universeMVarInVariable : Bool := {
 namespace universeMVarInVariableLinter
 
 open Term in
-def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do match stx with
+def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do
+  match stx with
   | `(variable $[$x:bracketedBinder]*) =>
     runTermElabM <| fun fvars ↦ elabBinders x fun s => do
       for x in s do
-        let v ← Meta.inferType x
+        let v ← instantiateMVars <| ← Meta.inferType x
         if v.hasLevelMVar then
           Linter.logLint linter.universeMVarInVariable stx
             m!"Type has universe level metavariable! {v}"
