@@ -404,6 +404,42 @@ theorem extendOfIsometry_eq (h_dense₁ : DenseRange e₁) (h_norm : ∀ x, ‖e
 
 end extend
 
+section fromCompletion
+
+open UniformSpace ContinuousLinearMap
+
+variable [NormedSpace 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
+variable [NormedSpace 𝕜₂ F] [CompleteSpace F]
+
+/-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
+`UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F` between the completions of `E` and a complete space
+`F`, via the canonical completion embedding. -/
+def fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
+  __ := f.toContinuousLinearMap.fromCompletion
+  norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
+    f.toContinuousLinearMap.fromCompletion.map_zero
+-- UniformSpace.Completion.toComplₗᵢ
+
+theorem fromCompletion_eq (f : E →ₛₗᵢ[σ₁₂] F) (x : E) :
+    f.fromCompletion x = f x := by
+  have := ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
+  exact ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
+
+@[simp low]
+theorem coe_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
+    f.fromCompletion = Completion.extension f := by
+  refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
+  rw [fromCompletion_eq, Completion.extension_coe f.isometry.uniformContinuous]
+
+theorem toContinuousLinearMap_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
+    f.fromCompletion.toContinuousLinearMap = f.toContinuousLinearMap.fromCompletion := rfl
+
+@[simp]
+theorem toAddMonoidHom_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
+    f.fromCompletion.toAddMonoidHom = f.toAddMonoidHom.extension f.continuous := rfl
+
+end fromCompletion
+
 section completion
 
 open UniformSpace
@@ -415,27 +451,20 @@ variable [NormedSpace 𝕜₂ F] [UniformContinuousConstSMul 𝕜₂ F]
 `UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F` between the completions of `E` and
 `F`, via the canonical completion embeddings. -/
 def completion (f : E →ₛₗᵢ[σ₁₂] F) :
-    UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F :=
-  f.extendOfIsometry
-    (UniformSpace.Completion.toComplₗᵢ (E:=E) (𝕜:=𝕜))
-    (UniformSpace.Completion.toComplₗᵢ (E:=F) (𝕜:=𝕜₂))
-    (UniformSpace.Completion.denseRange_coe)
-    (fun x ↦ by
-      simp [UniformSpace.Completion.norm_coe, f.norm_map])
+    UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F where
+  __ := f.toContinuousLinearMap.completion
+  norm_map' e := Completion.induction_on e
+      (isClosed_eq (f.toContinuousLinearMap.completion.continuous.norm) continuous_norm) <| by
+    simp [UniformSpace.Completion.norm_coe]
 
 theorem completion_eq (f : E →ₛₗᵢ[σ₁₂] F) (x : E) : f.completion x = f x := by
-  exact extendOfIsometry_eq _ _ x
+  exact ContinuousLinearMap.completion_apply_coe f.toContinuousLinearMap x
 
 @[simp low]
 theorem coe_completion (f : E →ₛₗᵢ[σ₁₂] F) :
     f.completion = Completion.map f := by
   refine Completion.ext f.completion.continuous Completion.continuous_map fun a => ?_
   rw [completion_eq, Completion.map_coe f.isometry.uniformContinuous]
-
-theorem toLinearMap_completion (f : E →ₛₗᵢ[σ₁₂] F) :
-    f.completion.toLinearMap =
-      ((Completion.toComplₗᵢ (E := F) (𝕜 := 𝕜₂)).toLinearMap ∘ₛₗ f.toLinearMap).extendOfNorm
-        (Completion.toComplₗᵢ (E := E) (𝕜 := 𝕜)).toLinearMap := rfl
 
 theorem toContinuousLinearMap_completion (f : E →ₛₗᵢ[σ₁₂] F) :
     f.completion.toContinuousLinearMap = f.toContinuousLinearMap.completion := by
@@ -446,41 +475,10 @@ theorem toContinuousLinearMap_completion (f : E →ₛₗᵢ[σ₁₂] F) :
       rw [ContinuousLinearMap.completion_apply_coe, ← ContinuousMap.coe_apply]
       simp [← Completion.map_coe f.isometry.uniformContinuous]
 
+@[simp]
+theorem toAddMonoidHom_completion (f : E →ₛₗᵢ[σ₁₂] F) :
+    f.completion.toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
+
 end completion
-
-section fromCompletion
-
-open UniformSpace
-
-variable [NormedSpace 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
-variable [NormedSpace 𝕜₂ F] [CompleteSpace F]
-
-/-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
-`UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F` between the completions of `E` and a complete space
-`F`, via the canonical completion embedding. -/
-def fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
-    UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F :=
-  f.extendOfIsometry
-    (UniformSpace.Completion.toComplₗᵢ (E:=E) (𝕜:=𝕜))
-    (LinearMap.id : F →ₗ[𝕜₂] F)
-    (UniformSpace.Completion.denseRange_coe)
-    (fun x ↦ by
-      simp [f.norm_map])
-
-theorem fromCompletion_eq (f : E →ₛₗᵢ[σ₁₂] F) (x : E) :
-    f.fromCompletion x = f x := by
-  exact extendOfIsometry_eq _ _ x
-
-@[simp low]
-theorem coe_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
-    f.fromCompletion = Completion.extension f := by
-  refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
-  rw [fromCompletion_eq, Completion.extension_coe f.isometry.uniformContinuous]
-
-theorem toLinearMap_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
-    f.fromCompletion.toLinearMap =
-      f.toLinearMap.extendOfNorm (Completion.toComplₗᵢ (E := E) (𝕜 := 𝕜)).toLinearMap := rfl
-
-end fromCompletion
 
 end LinearIsometry
