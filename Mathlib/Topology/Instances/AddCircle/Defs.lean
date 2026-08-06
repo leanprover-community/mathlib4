@@ -545,6 +545,7 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
 theorem continuous_equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) :
     Continuous ⇑(equivAddCircle p q hp hq) :=
   (homeomorphAddCircle ..).continuous
+
 end
 
 lemma natCast_div_mul_eq_nsmul (r : 𝕜) (m : ℕ) :
