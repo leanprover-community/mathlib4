@@ -766,12 +766,12 @@ theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
       refine card_lt_of_lt <| lt_of_le_of_ne (hst g (Set.mem_of_mem_sdiff hg)) ?_
       simpa using Set.notMem_of_mem_sdiff hg
     have hle' (g : Subgroup G) (hg : g ∈ s \ {t}) : g ≤ t := hst g (Set.mem_of_mem_sdiff hg)
-    obtain ⟨f', hsf', hcardf'⟩ := ih t hdvd' (s \ {t}) hchain' hpgroup' hcard' hle'
+    obtain ⟨f', hsf', hf'⟩ := ih t hdvd' (s \ {t}) hchain' hpgroup' hcard' hle'
     let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else f' (x.castPred hx)
     have hf : StrictMono f := fun x y h ↦ by
       by_cases hy : y = Fin.last (n + 1)
       · simp only [f, Fin.ne_last_of_lt h, hy, ↓reduceDIte]
-        apply lt_of_le_of_ne (hcardf' _).2
+        apply lt_of_le_of_ne (hf' _).2
         grind [card_map_of_injective t.subtype_injective, Nat.pow_right_inj hp.one_lt]
       · simpa [f, Fin.ne_last_of_lt h, hy] using h
     refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
@@ -784,7 +784,7 @@ theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
     · simp only [OrderEmbedding.coe_ofStrictMono, f]
       split_ifs with hx
       · simp [hx, htcard, htH]
-      · simp [(hcardf' _).1, (hcardf' _).2.trans htH]
+      · simp [(hf' _).1, (hf' _).2.trans htH]
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
