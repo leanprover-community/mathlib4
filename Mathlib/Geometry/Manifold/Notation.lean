@@ -517,6 +517,13 @@ where
         | mkApp (.const `EuclideanQuadrant _) n =>
           mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
         | _ =>
+        if H.isConstOf `UpperHalfPlane || H.isConstOf `Complex.UnitDisc then
+          return ← mkAppOptM ``modelWithCornersSelf
+            #[mkConst `Complex, none, mkConst `Complex, none, none]
+        else if H.isConstOf `Circle then
+          let r ← Term.exprToSyntax q(ℝ)
+          let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
+          return ← Term.elabTerm (← ``(𝓘($r, $eE))) none
         trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
         let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
           match_expr type with
