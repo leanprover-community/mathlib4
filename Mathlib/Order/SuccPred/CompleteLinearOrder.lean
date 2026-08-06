@@ -118,6 +118,7 @@ theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x 
 theorem Order.IsSuccPrelimit.iSup_Iio (h : IsSuccPrelimit x) : ⨆ a : Iio x, a.1 = x := by
   rw [← sSup_eq_iSup', h.sSup_Iio]
 
+@[to_dual]
 theorem Order.IsSuccLimit.sSup_Iio {α : Type*} [ConditionallyCompleteLattice α] {x : α}
     (h : IsSuccLimit x) : sSup (Iio x) = x :=
   h.isLUB_Iio.csSup_eq <| Set.Iio_nonempty.mpr h.not_isMin
