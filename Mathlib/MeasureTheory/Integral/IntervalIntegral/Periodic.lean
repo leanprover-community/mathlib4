@@ -285,7 +285,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
   wlog hT : 0 < T
   · rcases (not_lt.1 hT).eq_or_lt with h | h
     · tauto
-    · have hnT : 0 < -T := by aesop
+    · have hnT : 0 < -T := neg_pos.mpr h
       nth_rw 1 [(by ring : t = (t + T) + (-T))] at h₂f
       apply this h₁f.neg hnT.ne' h₂f.symm _ _ hnT
   -- Replace [a₁, a₂] by [t - n₁ * T, t + n₂ * T], where n₁ and n₂ are natural numbers
@@ -307,7 +307,7 @@ theorem intervalIntegrable {t : ℝ} (h₁f : Function.Periodic f T)
   apply IntervalIntegrable.trans_iterate
   -- Show integrability over a shifted period
   intro k hk
-  convert! (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) (by aesop)) using 1
+  convert! (IntervalIntegrable.comp_sub_right h₂f ((k - n₁) * T) enorm_ne_top) using 1
   · funext x
     simpa using (h₁f.sub_int_mul_eq (k - n₁)).symm
   · simp [a, Nat.cast_add]
@@ -347,10 +347,10 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
     ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   wlog hT : 0 < T
   · rcases (not_lt.1 hT).eq_or_lt with hT | hT
-    · aesop
+    · simp [hT]
     · rw [← neg_inj, ← integral_symm, ← integral_symm]
       simpa only [← sub_eq_add_neg, add_sub_cancel_right] using
-        this hf.neg (t + T) (s + T) (by aesop : 0 < -T)
+        this hf.neg (t + T) (s + T) (neg_pos.mpr hT)
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   have : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
