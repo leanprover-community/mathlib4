@@ -38,7 +38,8 @@ theorem MeromorphicOn.logDeriv_mul_eventuallyEq (hf : MeromorphicOn f U) (hg : M
     (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) (h'g : ∀ x ∈ U, meromorphicOrderAt g x ≠ ⊤) :
     logDeriv (f * g) =ᶠ[codiscreteWithin U] logDeriv f + logDeriv g := by
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, hg.analyticAt_mem_codiscreteWithin,
-    hf.ne_zero_mem_codiscreteWithin h'f, hg.ne_zero_mem_codiscreteWithin h'g]
+    hf.eventually_codiscreteWithin_apply_ne_zero h'f,
+    hg.eventually_codiscreteWithin_apply_ne_zero h'g]
     with y h₁y h₂y h₃y h₄y
   rw [Pi.add_apply, Pi.mul_def]
   exact logDeriv_mul y h₃y h₄y h₁y.differentiableAt h₂y.differentiableAt
@@ -67,7 +68,8 @@ theorem MeromorphicOn.logDeriv_prod_eventuallyEq {ι : Type*} {s : Finset ι} {F
   have hA : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ s, AnalyticAt 𝕜 (F i) y :=
     (eventually_all_finset s).2 fun i hi ↦ (h i hi).analyticAt_mem_codiscreteWithin
   have hN : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ s, F i y ≠ 0 :=
-    (eventually_all_finset s).2 fun i hi ↦ (h i hi).ne_zero_mem_codiscreteWithin (h' i hi)
+    (eventually_all_finset s).2 fun i hi ↦ (h i hi).eventually_codiscreteWithin_apply_ne_zero
+      (h' i hi)
   filter_upwards [hA, hN] with y h₁y h₂y
   rw [Finset.sum_apply, Finset.prod_fn]
   exact logDeriv_prod h₂y fun i hi ↦ (h₁y i hi).differentiableAt
@@ -144,7 +146,8 @@ theorem MeromorphicOn.logDeriv_finprod_zpow_eventuallyEq {ι : Type*} {F : ι �
   have hA : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ hd.toFinset, AnalyticAt 𝕜 (F i) y :=
     (eventually_all_finset hd.toFinset).2 fun i _ ↦ (h i).analyticAt_mem_codiscreteWithin
   have hN : ∀ᶠ y in codiscreteWithin U, ∀ i ∈ hd.toFinset, F i y ≠ 0 :=
-    (eventually_all_finset hd.toFinset).2 fun i _ ↦ (h i).ne_zero_mem_codiscreteWithin (h' i)
+    (eventually_all_finset hd.toFinset).2 fun i _ ↦ (h i).eventually_codiscreteWithin_apply_ne_zero
+      (h' i)
   filter_upwards [hA, hN] with y h₁y h₂y
   have h₀ : ∏ᶠ i, F i ^ d i = ∏ i ∈ hd.toFinset, F i ^ d i :=
     finprod_eq_prod_of_mulSupport_subset _ <| by simp +contextual [Set.subset_def, not_imp_not]

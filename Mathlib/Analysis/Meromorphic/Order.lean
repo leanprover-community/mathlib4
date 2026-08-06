@@ -151,10 +151,10 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
 A function meromorphic on `U`, with meromorphic order nowhere `⊤`, is nonvanishing away from a
 codiscrete subset of `U`.
 -/
-theorem MeromorphicOn.ne_zero_mem_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E} (hf : MeromorphicOn f U)
-    (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
+theorem MeromorphicOn.eventually_codiscreteWithin_apply_ne_zero {U : Set 𝕜} {f : 𝕜 → E}
+    (hf : MeromorphicOn f U) (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
     ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right]
+  simp_rw [eventually_iff, mem_codiscreteWithin, disjoint_principal_right]
   intro x hx
   filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero (hf x hx)).1 (h'f x hx)]
     with y hy
