@@ -100,6 +100,7 @@ lemma birkhoffAverage_add_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
 
 @[deprecated (since := "2026-08-19")] alias birkhoffSum_add' := birkhoffSum_add_apply
 
+@[to_fun]
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' :=
   funext₂ <| birkhoffAverage_add_apply R
@@ -148,6 +149,7 @@ lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
     birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, smul_sub]
 
+@[to_fun]
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
   funext₂ <| birkhoffAverage_sub_apply
