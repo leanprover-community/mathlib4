@@ -237,11 +237,12 @@ related by `r`.
 protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ → δ → Prop := fun c d ↦
   ∃ a b, r a b ∧ f a = c ∧ g b = d
 
+@[grind =]
 lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b = d := Iff.rfl
 
 @[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
-  grind [Relation.Map]
+  grind
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
@@ -270,7 +271,7 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → �
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
-  grind [isTrans_def, Relation.Map]
+  grind [isTrans_def]
 
 @[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
 
@@ -288,7 +289,7 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r
 
 lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
   unfold Pi.hasLe Prop.le
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
     (Relation.Map r f f on f) = r := by
@@ -297,26 +298,26 @@ lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj :
 
 lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on f) f f ≤ r := by
   unfold Pi.hasLe Prop.le
-  grind [Relation.Map]
+  grind
 
 lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
     Relation.Map (r on f) f f = r := by
   ext x y
   have _ := hsurj x
   have _ := hsurj y
-  grind [Relation.Map]
+  grind
 
 lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
     Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
     (Relation.Map (r on f) f f on f) = (r on f) := by
-  grind [Relation.Map]
+  grind
 
 lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
     Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
-  grind [Relation.Map]
+  grind
 
 end Map
 
