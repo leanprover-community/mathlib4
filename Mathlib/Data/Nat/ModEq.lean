@@ -552,7 +552,7 @@ theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
 theorem add_div_le_div_add_div_add_one (a b c : ℕ) : (a + b) / c ≤ a / c + b / c + 1 := by
   by_cases h : c = 0
   · simp [h]
-  · rw [Nat.add_div (Nat.pos_of_ne_zero h), Nat.add_le_add_left]
+  · rw [Nat.add_div (Nat.pos_of_ne_zero h), Nat.add_le_add_iff_left]
     split <;> decide
 
 theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha : ¬c ∣ a) :
