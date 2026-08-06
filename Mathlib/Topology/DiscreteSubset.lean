@@ -260,6 +260,26 @@ theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsNE {U : Set X}
   rw [EventuallyEq, eventually_iff, mem_codiscreteWithin_iff_forall_mem_nhdsNE, h]
   rfl
 
+/-- A set `S` is codiscrete within `T` iff it is a punctured neighborhood within `T` of every
+point of `T`. -/
+theorem mem_codiscreteWithin_iff_forall_mem_nhdsWithin {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∈ 𝓝[T \ {x}] x := by
+  simp [codiscreteWithin]
+
+/-- If `S` is codiscrete within `T`, then `S` is a punctured neighborhood within `T` of every
+point of `T`. -/
+theorem mem_nhdsWithin_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteWithin T)
+    {x : X} (hx : x ∈ T) : S ∈ 𝓝[T \ {x}] x :=
+  mem_codiscreteWithin_iff_forall_mem_nhdsWithin.1 hS x hx
+
+omit [TopologicalSpace Y] in
+/-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
+along the punctured neighborhood within `U` of `x`. -/
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X}
+    {f₁ f₂ : X → Y} :
+    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ := by
+  simp [codiscreteWithin, EventuallyEq]
+
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]

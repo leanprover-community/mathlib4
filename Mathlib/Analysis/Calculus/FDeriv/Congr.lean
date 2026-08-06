@@ -266,15 +266,12 @@ any subset `t` of `U`. -/
 theorem Filter.EventuallyEq.codiscreteWithin_fderivWithin' {U : Set E}
     (h : f₁ =ᶠ[codiscreteWithin U] f) (ht : t ⊆ U) :
     fderivWithin 𝕜 f₁ t =ᶠ[codiscreteWithin U] fderivWithin 𝕜 f t := by
-  filter_upwards [h, self_mem_codiscreteWithin U] with y h₁y h₂y
-  refine Filter.EventuallyEq.fderivWithin_eq ?_ h₁y
-  have h₄ : {z | f₁ z = f z} ∪ Uᶜ ∈ 𝓝 y := by
-    rw [← nhdsNE_sup_pure y, mem_sup]
-    exact ⟨mem_nhdsNE_of_mem_codiscreteWithin h h₂y, mem_pure.2 (mem_union_left _ h₁y)⟩
-  filter_upwards [nhdsWithin_le_nhds h₄, self_mem_nhdsWithin] with z h₁z h₂z
-  rcases h₁z with h₁z | h₁z
-  · exact h₁z
-  · exact absurd (ht h₂z) h₁z
+  filter_upwards [h, self_mem_codiscreteWithin U] with x hx hxU
+  have hUx : f₁ =ᶠ[𝓝[U] x] f := by
+    rw [← sdiff_union_of_subset (show {x} ⊆ U by simpa), nhdsWithin_union, EventuallyEq,
+      eventually_sup, nhdsWithin_singleton, eventually_pure]
+    exact ⟨eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin.1 h x hxU, hx⟩
+  exact (hUx.filter_mono <| nhdsWithin_mono x ht).fderivWithin_eq hx
 
 /-- If two functions agree on a codiscrete subset of `U`, then so do their derivatives
 within `U`. -/
@@ -288,11 +285,8 @@ derivatives. -/
 theorem Filter.EventuallyEq.codiscreteWithin_fderiv {U : Set E}
     (h : f₁ =ᶠ[codiscreteWithin U] f) (hU : IsOpen U) :
     fderiv 𝕜 f₁ =ᶠ[codiscreteWithin U] fderiv 𝕜 f := by
-  filter_upwards [h.codiscreteWithin_fderivWithin (𝕜 := 𝕜), self_mem_codiscreteWithin U]
-    with y h₁y h₂y
-  calc fderiv 𝕜 f₁ y = fderivWithin 𝕜 f₁ U y := (fderivWithin_of_isOpen hU h₂y).symm
-    _ = fderivWithin 𝕜 f U y := h₁y
-    _ = fderiv 𝕜 f y := fderivWithin_of_isOpen hU h₂y
+  filter_upwards [h.codiscreteWithin_fderivWithin (𝕜 := 𝕜), self_mem_codiscreteWithin U] with
+    _ _ _ using by simp_all [fderivWithin_of_isOpen]
 
 end congr
 
