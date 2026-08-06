@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
-public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
-
 
 /-!
 # The fundamental groupoid of a Kan complex
@@ -107,7 +106,6 @@ private lemma isGroupoid_aux {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
 
 private lemma isGroupoid_aux' {x₀ x₁ : X _⦋0⦌} (e : Edge x₀ x₁) :
     ∃ (e' : Edge x₁ x₀), Nonempty (Edge.CompStruct e' e (.id x₁)) := by
-  have : X.op.KanComplex := sorry
   obtain ⟨e', ⟨h⟩⟩ := isGroupoid_aux e.op
   exact ⟨e'.unop, ⟨h.unop.ofEq rfl rfl (by simp)⟩⟩
 
