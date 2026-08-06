@@ -61,8 +61,7 @@ theorem exists_of_isUnit_sum {ι : Type*} {s : Finset ι} {f : ι → R}
 
 instance : IsLocalRing Rᵐᵒᵖ where
   isUnit_or_isUnit_of_add_one h := by
-    have := (‹_› : IsLocalRing R).isUnit_or_isUnit_of_add_one <| (MulOpposite.op_eq_one_iff _).mp h
-    simpa [isUnit_unop] using this
+    simpa using isUnit_or_isUnit_of_add_one <| (MulOpposite.op_eq_one_iff _).mp h
 
 end Semiring
 
