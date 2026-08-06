@@ -98,9 +98,8 @@ lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
     fun_prop
 
 lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
-  isClosed_le' := by
-    refine isClosed_le_of_isClosed_nonneg ?_
-    simp [LE.le, sub_zero, posSemidef_is_closed]
+  isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
+    simpa [nonneg_iff_posSemidef] using posSemidef_is_closed
 
 scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
 
