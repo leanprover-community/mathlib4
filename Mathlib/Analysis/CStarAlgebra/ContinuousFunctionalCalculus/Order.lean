@@ -481,7 +481,7 @@ theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ 
   by_cases! ha : ¬ IsSelfAdjoint a
   · simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate, ha, mt (IsSelfAdjoint.of_le hab) ha]
   have hb : IsSelfAdjoint b := ha.of_ge hab
-  replace h : a ≤ b⁺ := hab.trans CFC.le_posPart
+  have h : a ≤ b⁺ := hab.trans CFC.le_posPart
   have key := IsSelfAdjoint.conjugate_le_conjugate h (CFC.posPart_nonneg a).isSelfAdjoint
   nth_rw 2 [← CFC.posPart_sub_negPart a] at key
   simp only [mul_sub, CFC.posPart_mul_negPart, sub_zero] at key
@@ -493,12 +493,12 @@ theorem norm_posPart_mono {a b : A} (hab : a ≤ b) : ‖a⁺‖ ≤ ‖b⁺‖ 
     _ ≤ ‖a⁺ * b⁺ * a⁺‖ := norm_le_norm_of_nonneg_of_le (by cfc_tac) key
     _ ≤ ‖a⁺‖ * ‖b⁺‖ * ‖a⁺‖ := norm_mul₃_le ..
 
-theorem norm_posPart_anti {a b : A} (hab : a ≤ b) : ‖b⁻‖ ≤ ‖a⁻‖ := by
+theorem norm_negPart_anti {a b : A} (hab : a ≤ b) : ‖b⁻‖ ≤ ‖a⁻‖ := by
   rw [← neg_neg a, ← neg_le] at hab
   simpa using norm_posPart_mono hab
 
 theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
-    (hb : IsSelfAdjoint b := by cfc_tac) (hab : a ≤ b) (hbc : b ≤ c) :
+    (hab : a ≤ b) (hbc : b ≤ c) (hb : IsSelfAdjoint b := by cfc_tac) :
     ‖b‖ ≤ max ‖a‖ ‖c‖ := calc
   ‖b‖ = max ‖b⁻‖ ‖b⁺‖ := by rw [hb.norm_eq_max_norm_posPart_negPart b, max_comm]
   _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_posPart_anti hab, norm_posPart_mono hbc]
@@ -509,23 +509,10 @@ open scoped ComplexStarModule in
 bounded in norm. -/
 lemma isBounded_of_bddAbove_of_bddBelow {s : Set A} (hbd : BddAbove s) (hbd' : BddBelow s) :
     Bornology.IsBounded s := by
-  obtain (rfl | hs) := s.eq_empty_or_nonempty
-  · simp
-  obtain ⟨x₀, hx₀⟩ := hs
-  rw [Metric.isBounded_iff_subset_closedBall x₀]
   obtain ⟨a, ha⟩ := hbd'
   obtain ⟨b, hb⟩ := hbd
-  use max ‖ℜ (a - x₀)‖ ‖ℜ (b - x₀)‖
-  intro x hx
-  have : IsSelfAdjoint (x - x₀) := by
-    simp only [← imaginaryPart_eq_zero_iff, map_sub, sub_eq_zero]
-    rw [imaginaryPart_eq_of_le (hb hx),
-      imaginaryPart_eq_of_le (hb hx₀)]
-  simp only [Metric.mem_closedBall, dist_eq_norm]
-  rw [← this.coe_realPart]
-  simp only [map_sub, AddSubgroupClass.coe_sub]
-  apply IsSelfAdjoint.norm_le_max_of_le_of_le (by cfc_tac)
-  all_goals simpa using realPart_mono (by aesop)
+  refine (Metric.isBounded_iff_subset_closedBall a).mpr ⟨‖b - a‖, fun x hx ↦ ?_⟩
+  aesop (add simp [dist_eq_norm, norm_le_norm_of_nonneg_of_le, mem_lowerBounds, mem_upperBounds])
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
