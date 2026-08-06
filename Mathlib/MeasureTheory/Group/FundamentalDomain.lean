@@ -778,10 +778,9 @@ lemma QuotientMeasureEqMeasurePreimage.unique
 
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk
-/-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to an
-  additive fundamental domain in `α` and a related measure satisfying
-  `AddQuotientMeasureEqMeasurePreimage`. -/]
+@[to_additive IsAddFundamentalDomain.measurePreserving_add_quotient_mk /-- The quotient map to
+`α ⧸ G` is measure-preserving between the restriction of `volume` to an additive fundamental
+domain in `α` and a related measure satisfying `AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.measurePreserving_quotient_mk
     {𝓕 : Set α} (h𝓕 : IsFundamentalDomain G 𝓕 ν)
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -796,10 +795,9 @@ variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
 `QuotientMeasureEqMeasurePreimage` typeclass. -/
-@[to_additive
-/-- Given a measure upstairs (i.e., on `α`), and a choice `s` of additive fundamental domain,
-there's always an artificial way to generate a measure downstairs such that the pair satisfies the
-`AddQuotientMeasureEqMeasurePreimage` typeclass. -/]
+@[to_additive /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of additive
+fundamental domain, there's always an artificial way to generate a measure downstairs such that
+the pair satisfies the `AddQuotientMeasureEqMeasurePreimage` typeclass. -/]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
     QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
@@ -807,9 +805,8 @@ lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
 
 /-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
 fundamental domain. -/
-@[to_additive
-/-- One can prove `AddQuotientMeasureEqMeasurePreimage` by checking behavior with respect to a
-single additive fundamental domain. -/]
+@[to_additive /-- One can prove `AddQuotientMeasureEqMeasurePreimage` by checking behavior with
+respect to a single additive fundamental domain. -/]
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage {μ : Measure (Quotient α_mod_G)}
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) (h : μ = (ν.restrict s).map π) :
     QuotientMeasureEqMeasurePreimage ν μ := by
@@ -831,9 +828,8 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
 sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/
-@[to_additive
-/-- If a measure `μ` on a quotient satisfies `AddQuotientMeasureEqMeasurePreimage` with respect to a
-sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/]
+@[to_additive /-- If a measure `μ` on a quotient satisfies `AddQuotientMeasureEqMeasurePreimage`
+with respect to a sigma-finite measure `ν`, then it is itself `SigmaFinite`. -/]
 lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     [i : SigmaFinite ν] [i' : HasFundamentalDomain G α ν]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] :
@@ -858,9 +854,8 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
-@[to_additive
-/-- A measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage` and having finite
-covolume is a finite measure. -/]
+@[to_additive /-- A measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage` and
+having finite covolume is a finite measure. -/]
 theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ]
     [hasFun : HasFundamentalDomain G α ν] (h : covolume G α ν ≠ ∞) :
@@ -875,9 +870,8 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
 
 /-- A finite measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` has finite
 covolume. -/
-@[to_additive
-/-- A finite measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage` has finite
-covolume. -/]
+@[to_additive /-- A finite measure `μ` on `α ⧸ G` satisfying `AddQuotientMeasureEqMeasurePreimage`
+has finite covolume. -/]
 theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage ν μ] [IsFiniteMeasure μ] :
     covolume G α ν < ∞ := by
