@@ -777,8 +777,7 @@ theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
     refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
     · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
       by_cases hgt : g = t
-      · use Fin.last (n + 1)
-        simp [f, hgt]
+      · exact ⟨Fin.last (n + 1), by simp [f, hgt]⟩
       have hgs' : g ∈ Set.range f' := by grind
       obtain ⟨x, hx⟩ := Set.mem_range.mp hgs'
       exact ⟨x.castSucc, by simp [f, hx]⟩
