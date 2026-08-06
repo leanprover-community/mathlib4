@@ -52,7 +52,7 @@ def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
-  have mE : Q(ℕ) := mkNatLit m
+  have mE : Q(ℕ) := mkNatLitQ m
   let mut acc : Q(Equiv.Perm (Fin $mE)) := q(Equiv.refl (Fin $mE))
   for (a, b) in swaps do
     let aE ← mkNumeral q(Fin $mE) a
@@ -65,13 +65,13 @@ def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
 /-- The applicability check of the Bareiss method, which requires a commutative domain
 with kernel-decidable equality. -/
 def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
-  if (← synthInstance? (← mkAppM ``CommRing #[R])).isNone then
-    return .error m!"expected the element type to be a commutative ring"
-  if (← synthInstance? (← mkAppOptM ``IsDomain #[some R, none])).isNone then
-    return .error m!"expected the element type to be a domain"
-  -- the certificate conditions are decided by kernel reduction: probe one zero test
   let u ← getDecLevel R
   have R : Q(Type u) := R
+  let .some _cr ← trySynthInstanceQ q(CommRing $R)
+    | return .error m!"expected the element type to be a commutative ring"
+  let .some _ ← trySynthInstanceQ q(IsDomain $R)
+    | return .error m!"expected the element type to be a domain"
+  -- the certificate conditions are decided by kernel reduction: probe one zero test
   try
     discard <| isZeroInRing R 1
   catch e =>

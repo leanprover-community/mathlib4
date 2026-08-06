@@ -74,7 +74,7 @@ def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   if v == 0 then return true
   let _instCast ← synthInstanceQ q(IntCast $R)
   let _instZero ← synthInstanceQ q(Zero $R)
-  have vE : Q(Int) := toExpr v
+  have vE : Q(Int) := mkIntLitQ v
   let eq : Q(Prop) := q((Int.cast $vE : $R) = 0)
   let some inst ← synthInstance? q(Decidable $eq)
     | throwError "equality with zero in the element type is not decidable{indentExpr R}"
@@ -89,12 +89,10 @@ returns a producer unconditionally. -/
 def ratExt (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  -- `CharZero`'s `[AddMonoidWithOne R]` argument must be synthesized first: `mkAppM`
-  -- would leave it an unassigned metavariable and the probe would always fail
   let charZero ← do
-    match ← synthInstance? (← mkAppM ``AddMonoidWithOne #[R]) with
-    | some amo => pure (← synthInstance? (mkApp2 (mkConst ``CharZero [u]) R amo)).isSome
-    | none => pure false
+    match ← trySynthInstanceQ q(AddMonoidWithOne $R) with
+    | .some _amo => pure (← trySynthInstanceQ q(CharZero $R)).toOption.isSome
+    | _ => pure false
   let ops : RingOps Int := {
     zero := 0
     one := 1
