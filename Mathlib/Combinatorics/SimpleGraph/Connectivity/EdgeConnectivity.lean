@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.Set.Card
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Edge Connectivity
@@ -167,6 +169,39 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
+
+noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
+    ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
+
+noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
+    ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+
+theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
+  simp only [edgeConnectivity, IsEdgeConnected, IsEdgeReachable, Subsingleton.forall₂_iff,
+    Reachable.rfl, implies_true, iSup_pos]
+  exact ENat.iSup_natCast
+
+theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
+  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast] 
+
+theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
+  simp only [isEdgeReachable_comm,edgeReachability]
+
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := by
+  apply iSup_le
+  intro k
+  apply iSup_le
+  intro hk
+  unfold edgeReachability 
+  apply le_iSup_of_le
+  apply le_iSup_of_le
+  exact le_rfl
+  have := hk u v
+  assumption
+--  exact le_iSup_of_le k <| le_iSup_of_le (hk u v) le_rfl
+
+
+
 
 /-!
 ### 2-reachability
