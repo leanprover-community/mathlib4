@@ -340,6 +340,7 @@ end helper
 
 variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by

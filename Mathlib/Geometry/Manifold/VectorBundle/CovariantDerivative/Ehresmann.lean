@@ -129,7 +129,7 @@ def pushCovDer
     (M → F) → (Π x : M, TangentSpace% x →L[𝕜] F) :=
   fun σ x ↦ e.continuousLinearMapAt 𝕜 x ∘L (cov (e.funToSec σ) x)
 
-
+set_option backward.isDefEq.respectTransparency.types false in
 -- FIXME Decide whether we want to add enough assumption to use the commented out statement
 omit [IsManifold I 1 M] in
 lemma pushCovDer_secToFun -- [CompleteSpace 𝕜]
@@ -304,7 +304,7 @@ lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalS
   -- FIXME: needing all those lets and the change is awful
   let t := trivializationAt F V v.proj
   let Tvt := t.deriv I v
-  haveI hcov := cov.isCovariantDerivativeOn_pushCovDer t
+  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   let tproj := hcov.projection v.proj (t v).2
   let t' := t.continuousLinearEquivAt 𝕜 v.proj (mem_baseSet_trivializationAt F V v.proj)
   ext u
@@ -349,6 +349,7 @@ lemma proj_mderiv {σ : Π x : M, V x} (x : M)
        hcov.cov_eq_proj s X₀ hs, t.mfderiv_comp_section hσ _ hx]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E]
     {cov : CovariantDerivative I F V} {v : TotalSpace F V}
     (w : TangentSpace% v) :

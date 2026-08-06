@@ -169,7 +169,7 @@ lemma pointwise (hΦ : TensorialNear I F Φ x) {σ σ' : Π x : M, V x}
   have x_mem : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt F V x
   let b := Basis.ofVectorSpace 𝕜 F
   let s := t.localFrame b
-  let c := t.localFrame_coeff I b
+  let c := t.localFrameCoeff I b
   have mem := t.open_baseSet.mem_nhds x_mem
   have hs : ∀ᶠ x' in 𝓝 x, ∀ i, MDiffAt (T% (s i)) x' := by
     filter_upwards [mem] with x' hx'
@@ -177,7 +177,7 @@ lemma pointwise (hΦ : TensorialNear I F Φ x) {σ σ' : Π x : M, V x}
   have hc {σ : (x : M) → V x} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') :
       ∀ᶠ x' in 𝓝 x, ∀ i, MDiffAt (LinearMap.piApply (c i) σ) x' :=
     (hσ.and mem).mono fun x' ⟨hx', hx''⟩ i ↦
-      mdifferentiableAt_localFrame_coeff b hx'' hx' i
+      mdifferentiableAt_localFrameCoeff b hx'' hx' i
   -- By the locality of the operation `(Φ · x)`, its value on `σ` agrees with the value of `Φ` on
   -- the expansion of `σ` into coefficients relative to the frame.
   have hΦ_eq {σ : (x : M) → V x} (hσ : ∀ᶠ x' in 𝓝 x, MDiffAt (T% σ) x') :

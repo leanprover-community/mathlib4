@@ -118,6 +118,7 @@ lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace% 
   rw [← cov.mem_horiz_iff_proj]
   exact lift_vec_mem_horiz u
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : TangentSpace% v.proj) :
     mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v (cov.lift_vec v u) = u := by
@@ -153,6 +154,7 @@ lemma CovariantDerivative.lift_vec_eq_iff' {v : TotalSpace F V} (u : TangentSpac
       w ∈ cov.horiz v ∧ mfderiv% (TotalSpace.proj : TotalSpace F V → M) v w = u := by
   simp [CovariantDerivative.lift_vec_eq_iff, horiz]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- We can compute `lift_vec v` using any trivialization whose
 base set contains `v.proj`. This is crucial to prove smoothness
 of `lift_vec`. -/

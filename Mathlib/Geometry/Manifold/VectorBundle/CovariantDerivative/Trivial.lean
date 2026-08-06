@@ -101,6 +101,7 @@ lemma trivial_isSmooth : ContMDiffCovariantDerivative (trivial 𝓘(𝕜, E) E E
     -- or perhaps a contMDiffOn version of this lemma?
     sorry -/⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
     CovariantDerivative 𝓘(𝕜, E) E' (Trivial E E') where
   toFun σ := fun x ↦ fderiv 𝕜 σ x + A x (σ x)

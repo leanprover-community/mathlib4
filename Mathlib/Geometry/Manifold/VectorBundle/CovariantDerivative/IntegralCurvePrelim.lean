@@ -50,6 +50,7 @@ protected lemma IsMIntegralCurveAt.velocity_eventuallyEq
   filter_upwards [hγ.mfderiv] with t ht
   simp [ht, velocity]
 
+set_option backward.isDefEq.respectTransparency.types false in
 -- Is this really missing??
 lemma IsMIntegralCurveAt_iff_mfderiv (hγ : ∀ᶠ t in 𝓝 t₀, MDiffAt γ t) :
     IsMIntegralCurveAt γ v t₀ ↔ ∀ᶠ t in 𝓝 t₀, mfderiv% γ t (1 : ℝ) = v (γ t) := by

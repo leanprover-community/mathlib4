@@ -628,15 +628,15 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 @[simp]
-theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
+theorem _root_.Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
     MDiffAt (T% σ) e ↔ DifferentiableAt 𝕜 σ e := by
   simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
 
 -- unused but we need all combinations at some point.
 @[simp]
-theorem Bundle.Trivial.contMDiffOn_iff {n : WithTop ℕ∞} {σ : (x : E) → Trivial E E' x} {s : Set E} :
-    ContMDiffOn 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) n (T% σ) s ↔
-    ContDiffOn 𝕜 n σ s := by
+theorem _root_.Bundle.Trivial.contMDiffOn_iff
+    {σ : (x : E) → Trivial E E' x} {s : Set E} :
+    ContMDiffOn 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) n (T% σ) s ↔ ContDiffOn 𝕜 n σ s := by
   sorry
 
 end to_trivialization

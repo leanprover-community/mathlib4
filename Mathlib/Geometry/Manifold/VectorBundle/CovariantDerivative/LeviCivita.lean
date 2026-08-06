@@ -134,7 +134,7 @@ instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDif
     refine ⟨by fun_prop, ?_⟩
     suffices ContDiffAt 𝕜 n (fun p ↦ p.1 * p.2) x by
       simp
-      simpa [ModelProd, contDiffWithinAt_univ] using this
+      simpa [ModelProd, contDiffWithinAt_univ] using! this
     fun_prop
 
 variable {I}
