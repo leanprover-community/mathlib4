@@ -37,12 +37,16 @@ theorem birkhoffSum_apply_zero (f : α → α) (g : α → M) (x : α) : birkhof
 theorem birkhoffSum_zero (f : α → α) (g : α → M) : birkhoffSum f g 0 = 0 :=
   funext <| birkhoffSum_apply_zero _ _
 
+@[deprecated (since := "2026-08-06")] alias birkhoffSum_zero' := birkhoffSum_zero
+
 theorem birkhoffSum_apply_one (f : α → α) (g : α → M) (x : α) : birkhoffSum f g 1 x = g x :=
   sum_range_one _
 
 @[simp]
 theorem birkhoffSum_one (f : α → α) (g : α → M) : birkhoffSum f g 1 = g :=
   funext <| birkhoffSum_apply_one f g
+
+@[deprecated (since := "2026-08-06")] alias birkhoffSum_one' := birkhoffSum_one
 
 theorem birkhoffSum_apply_succ (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffSum f g (n + 1) x = birkhoffSum f g n x + g (f^[n] x) :=

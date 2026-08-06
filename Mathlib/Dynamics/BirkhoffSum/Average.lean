@@ -53,6 +53,8 @@ theorem birkhoffAverage_apply_zero (f : α → α) (g : α → M) (x : α) :
 theorem birkhoffAverage_zero (f : α → α) (g : α → M) : birkhoffAverage R f g 0 = 0 :=
   funext <| birkhoffAverage_apply_zero _ _ _
 
+@[deprecated (since := "2026-08-06")] alias birkhoffAverage_zero' := birkhoffAverage_zero
+
 theorem birkhoffAverage_apply_one (f : α → α) (g : α → M) (x : α) :
     birkhoffAverage R f g 1 x = g x := by
   simp [birkhoffAverage]
@@ -60,6 +62,8 @@ theorem birkhoffAverage_apply_one (f : α → α) (g : α → M) (x : α) :
 @[simp]
 theorem birkhoffAverage_one (f : α → α) (g : α → M) : birkhoffAverage R f g 1 = g :=
   funext <| birkhoffAverage_apply_one R f g
+
+@[deprecated (since := "2026-08-06")] alias birkhoffAverage_one' := birkhoffAverage_one
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
@@ -81,6 +85,8 @@ theorem birkhoffAverage_apply_congr_ring (S : Type*) [DivisionSemiring S] [Modul
 theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M] :
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_apply_congr_ring
+
+@[deprecated (since := "2026-08-06")] alias birkhoffAverage_congr_ring':= birkhoffAverage_congr_ring
 
 theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
