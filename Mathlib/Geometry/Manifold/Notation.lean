@@ -394,6 +394,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
+  if let some m ← tryStrategy "ComplexUnitDisc"     fromUnitDisc        then return some m
   if let some m ← tryStrategy "Units of algebra"    fromUnitsOfAlgebra  then return some m
   if let some m ← tryStrategy "Complex unit circle" fromCircle          then return some m
   if let some m ← tryStrategy "Sphere"              fromSphere          then return some m
@@ -554,6 +555,12 @@ where
     | mkApp (.const `EuclideanQuadrant _) n =>
       mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
     | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+  /-- Attempt to find a model with corners on the complex unit disc -/
+  fromUnitDisc : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `Complex.UnitDisc then
+      mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
+    else throwError "`{e}` is not the complex unit disc"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
