@@ -67,8 +67,11 @@
 #
 # Environment:
 #   GH_TOKEN            token for gh (pushes use the remote's configured auth)
+#   ADM_BRANCH_TOKEN    optional token for REST calls against --push-repo
+#                       (branch deletion); needed when GH_TOKEN has no
+#                       contents:write there. Defaults to gh's normal auth.
 #   ADM_GIT_NAME/EMAIL  git identity for the stub commit
-#                       (default: mathlib-nolints[bot])
+#                       (default: mathlib-splicebot[bot])
 
 set -euo pipefail
 export LC_ALL=C
@@ -129,8 +132,8 @@ if [ -z "$PUSH_REMOTE" ]; then
 fi
 
 STUB_BRANCH="deprecation-stubs/pr-${PR}"
-GIT_NAME="${ADM_GIT_NAME:-mathlib-nolints[bot]}"
-GIT_EMAIL="${ADM_GIT_EMAIL:-258989889+mathlib-nolints[bot]@users.noreply.github.com}"
+GIT_NAME="${ADM_GIT_NAME:-mathlib-splicebot[bot]}"
+GIT_EMAIL="${ADM_GIT_EMAIL:-261196803+mathlib-splicebot[bot]@users.noreply.github.com}"
 
 cd "$(git rev-parse --show-toplevel)"
 
@@ -144,6 +147,17 @@ cleanup() {
 trap cleanup EXIT
 
 log() { printf '%s\n' "$*" >&2; }
+
+# delete_stub_branch: delete the stub branch from the push repository,
+# using the branch-scoped token when one is provided.
+delete_stub_branch() {
+  if [ -n "${ADM_BRANCH_TOKEN:-}" ]; then
+    GH_TOKEN="$ADM_BRANCH_TOKEN" gh api -X DELETE \
+      "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null
+  else
+    gh api -X DELETE "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null
+  fi
+}
 
 # find_stub_pr: print the number of the open stub PR, if any. The head
 # filter takes the branch label (`owner:branch`); for a same-org fork the
@@ -166,7 +180,7 @@ close_stub_pr() {
     return 0
   fi
   gh pr close "$num" --repo "$REPO" --comment "$reason"
-  gh api -X DELETE "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null ||
+  delete_stub_branch ||
     log "note: branch ${STUB_BRANCH} was already gone from ${PUSH_REPO}"
   log "closed stub PR #${num} and deleted ${PUSH_REPO}:${STUB_BRANCH}"
 }
@@ -179,7 +193,7 @@ gc_stub_branch() {
     log "parent #${PR} was merged but the stub PR is still open; leaving it untouched"
   elif [ -n "$DRY_RUN" ]; then
     log "dry-run: would delete ${PUSH_REPO}:${STUB_BRANCH} if it still exists"
-  elif gh api -X DELETE "repos/${PUSH_REPO}/git/refs/heads/${STUB_BRANCH}" 2>/dev/null; then
+  elif delete_stub_branch; then
     log "deleted merged stub branch ${PUSH_REPO}:${STUB_BRANCH}"
   else
     log "no stub branch to clean up"
@@ -300,19 +314,31 @@ while IFS=$'\t' read -r kind old new; do
   date="$(stub_date "$old")"
   out="$TMP/stubs/${old}"
   mkdir -p "$(dirname "$out")"
+  # Emit module-system syntax only when the old file used it. Mathlib is
+  # fully migrated, but Archive/ and Counterexamples/ still use plain
+  # imports. (create_deprecated_modules.lean hardcodes the module form for
+  # renames; this detection is deliberately more careful.)
+  old_src="$(git show "${MB}:${old}")"
+  is_module=""
+  if grep -qE '^module([[:space:]]|$)' <<<"$old_src"; then
+    is_module=1
+  fi
   if [ "$kind" = "R" ]; then
     {
-      printf 'module -- shake: keep-all\n\n'
-      printf 'public import %s\n\n' "$(mod_name "$new")"
+      if [ -n "$is_module" ]; then
+        printf 'module -- shake: keep-all\n\n'
+        printf 'public import %s\n\n' "$(mod_name "$new")"
+      else
+        printf 'import %s\n\n' "$(mod_name "$new")"
+      fi
       printf 'deprecated_module "`%s` has been renamed to `%s`" (since := "%s")\n' \
         "$(mod_name "$old")" "$(mod_name "$new")" "$date"
     } > "$out"
     printf -- '- `%s` → `%s` (renamed)\n' "$old" "$new" >> "$SUMMARY"
   else
-    old_src="$(git show "${MB}:${old}")"
     imports="$(grep -E '^((public|meta)[[:space:]]+)*import[[:space:]]' <<<"$old_src" || true)"
     {
-      if grep -qE '^module([[:space:]]|$)' <<<"$old_src"; then
+      if [ -n "$is_module" ]; then
         printf 'module -- shake: keep-all\n\n'
       fi
       if [ -n "$imports" ]; then
@@ -349,19 +375,30 @@ prefix_for() {
   esac
 }
 
-# insert_import FILE MOD PREFIX: insert `public import MOD` into FILE at
-# its sorted position among the `public import PREFIX*` lines. No-op when
-# the line is already present.
+# import_keyword FILE: the import style FILE uses — `public import` for
+# module-system roots (Mathlib.lean, Mathlib/Tactic.lean), plain `import`
+# otherwise (Archive.lean, Counterexamples.lean).
+import_keyword() {
+  if grep -q '^public import ' "$1"; then
+    printf 'public import'
+  else
+    printf 'import'
+  fi
+}
+
+# insert_import FILE MOD PREFIX KW: insert `KW MOD` into FILE at its sorted
+# position among the `KW PREFIX*` lines. No-op when the line is already
+# present.
 insert_import() {
-  local file="$1" mod="$2" prefix="$3"
-  awk -v mod="$mod" -v prefix="$prefix" '
-    BEGIN { newline = "public import " mod; done = 0; inregion = 0 }
+  local file="$1" mod="$2" prefix="$3" kw="$4"
+  awk -v mod="$mod" -v prefix="$prefix" -v kw="$kw" '
+    BEGIN { newline = kw " " mod; done = 0; inregion = 0; modstart = length(kw) + 2 }
     {
-      matches = (index($0, "public import " prefix) == 1)
+      matches = (index($0, kw " " prefix) == 1)
       if (!done && $0 == newline) { done = 1 }
       else if (!done && matches) {
         inregion = 1
-        cur = substr($0, 15)
+        cur = substr($0, modstart)
         if (cur > mod) { print newline; done = 1 }
       }
       else if (!done && inregion && !matches) { print newline; done = 1 }
@@ -389,7 +426,8 @@ while IFS=$'\t' read -r kind old new; do
       git cat-file blob "${HEAD_SHA}:${root}" > "$rootcopy"
       printf '%s\n' "$root" >> "$ROOTS_TOUCHED"
     fi
-    insert_import "$rootcopy" "$(mod_name "$old")" "$(prefix_for "$root")"
+    insert_import "$rootcopy" "$(mod_name "$old")" "$(prefix_for "$root")" \
+      "$(import_keyword "$rootcopy")"
   done < <(roots_for "$old")
 done < "$STUBS_FILE"
 
@@ -397,14 +435,16 @@ done < "$STUBS_FILE"
 # checked out.
 export GIT_INDEX_FILE="$TMP/index"
 git read-tree "$HEAD_SHA"
+# --index-info takes `<mode> SP <sha> SP <stage> TAB <path>`, which keeps
+# the path clear of the comma-separated --cacheinfo syntax.
 while IFS=$'\t' read -r kind old new; do
   blob="$(git hash-object -w -- "$TMP/stubs/${old}")"
-  git update-index --add --cacheinfo "100644,${blob},${old}"
-done < "$STUBS_FILE"
+  printf '100644 %s 0\t%s\n' "$blob" "$old"
+done < "$STUBS_FILE" | git update-index --add --index-info
 sort -u "$ROOTS_TOUCHED" | while IFS= read -r root; do
   blob="$(git hash-object -w -- "$TMP/roots/${root//\//__}")"
-  git update-index --add --cacheinfo "100644,${blob},${root}"
-done
+  printf '100644 %s 0\t%s\n' "$blob" "$root"
+done | git update-index --add --index-info
 TREE="$(git write-tree)"
 unset GIT_INDEX_FILE
 
@@ -425,7 +465,7 @@ if [ -n "$DRY_RUN" ]; then
     cat "$TMP/stubs/${old}" >&2
   done < "$STUBS_FILE"
   log ""
-  log "dry-run: would push ${COMMIT} to ${PUSH_REPO}:${STUB_BRANCH}"
+  log "dry-run: would push ${COMMIT} to ${PUSH_REPO:-$PUSH_REMOTE}:${STUB_BRANCH}"
   log "dry-run: would open or refresh the stub PR and comment 'bors stack #${PR}'"
   exit 0
 fi
@@ -490,5 +530,15 @@ if [ -z "$EXISTING_PR" ]; then
   log "posted 'bors stack #${PR}' on #${EXISTING_PR}"
 else
   gh pr edit "$EXISTING_PR" --repo "$REPO" --body-file "$BODY"
+  # Self-heal: an earlier run can be canceled between PR creation and the
+  # stack comment, which would leave the stub PR unbundled forever. Only
+  # post when no `bors stack` command was ever issued on this PR, so a
+  # deliberate `bors unlink` by a person is not overridden.
+  n_stack="$(gh api "repos/${REPO}/issues/${EXISTING_PR}/comments?per_page=100" \
+    --jq '[.[] | select(.body | startswith("bors stack"))] | length')"
+  if [ "$n_stack" = "0" ]; then
+    gh pr comment "$EXISTING_PR" --repo "$REPO" --body "bors stack #${PR}"
+    log "posted missing 'bors stack #${PR}' on #${EXISTING_PR}"
+  fi
   log "refreshed stub PR #${EXISTING_PR}"
 fi
