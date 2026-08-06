@@ -15,9 +15,8 @@ public meta import Mathlib.Tactic.NormNum.Basic
 # The rational model for the Bareiss elimination
 
 The rational model of a ring: entries evaluate to rational numerals via `norm_num`,
-rows scale integral, and the elimination runs on integer values. It applies to any ring
-whose entries evaluate to rationals — `ratExt` is the fallback model the tactic uses
-when no ring-specific model matches the ring.
+rows scale integral, and the elimination runs on integer values. It is the fallback model
+the tactic uses when no ring-specific model matches the ring.
 
 ## Main definitions
 
@@ -32,10 +31,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Evaluate a matrix entry to its rational value via `norm_num`. The evaluation is
-data-only — the certificate is stated about the original entries, so no proof is kept.
-Fraction values are accepted only in characteristic zero, where the rational reading is
-faithful. -/
+/-- Data-only evaluation a matrix entry to its rational value via `norm_num`.
+Fraction values are accepted only in characteristic zero. -/
 def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   unless charZero do
     let stripped := match_expr e with

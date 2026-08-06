@@ -59,8 +59,7 @@ end Mathlib.Tactic.Echelon
 open Mathlib.Tactic.Echelon
 
 /-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
-Bareiss decomposition. Terms it cannot evaluate — outside the method's scope or failing
-evaluation — are skipped. -/
+Bareiss decomposition. Terms it cannot evaluate are skipped. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e catch _ => return .continue
 

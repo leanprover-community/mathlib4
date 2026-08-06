@@ -153,9 +153,11 @@ def foldScales {V : Type} (ops : RingOps V) (scales : Array V) (d : BareissData 
   { d with L := d.L.map fun row =>
       row.mapIdx fun j a => ops.mul a (scales.getD (order.getD j 0) ops.one) }
 
-/-- Assemble a producer from a model's parts: `prepare` the entries into the matrix the
-elimination runs on — with license to transform the problem — eliminate, `restore` the
-decomposition to one of the original matrix, and render it back to ring expressions. -/
+/-- Assemble a producer from a computation model's parts.
+`ops` describes the ring operation structure;
+`prepare` prepares the entries into the matrix the elimination runs on and also the restoration
+function of the decomp (needed when scaling by constants are required);
+`render` prints it back to ring expressions. -/
 def mkProducer {V : Type} (ops : RingOps V)
     (prepare : Array (Array Expr) →
       MetaM (Array (Array V) × (BareissData V → BareissData V)))

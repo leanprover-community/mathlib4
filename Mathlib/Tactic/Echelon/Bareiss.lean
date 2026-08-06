@@ -70,9 +70,7 @@ def checkBareissApplicable (R : Expr) : MetaM (Except MessageData Unit) := do
     return .error e.toMessageData
   return .ok ()
 
-/-- A wrapper for the `decide` decision of a certificate condition with a named error. The
-error is unreachable from user input — the applicability check ensures the conditions are
-kernel-decidable — and guards against a defective production. -/
+/-- A wrapper for the `decide` decision of a certificate condition with a named error. -/
 scoped elab "bareiss_certify " s:str : tactic => do
   try
     Tactic.evalTactic (← `(tactic| decide +kernel))
