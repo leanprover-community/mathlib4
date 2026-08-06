@@ -173,13 +173,13 @@ section Lattice
 
 @[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instMax [RelCWComplex C D] : Max (Subcomplex C) where
-  max E F := {
-    carrier := E ∪ F
-    I n := E.I n ∪ F.I n
-    closed' := (closed E).union (closed F)
-    union' :=  by
-      simp [mem_union, iUnion_or, iUnion_union_distrib, ← union, ← union_assoc _ D, union_comm,
-        union_assoc]}
+  max E F :=
+    { carrier := E ∪ F
+      I n := E.I n ∪ F.I n
+      closed' := (closed E).union (closed F)
+      union' :=  by
+        simp [mem_union, iUnion_or, iUnion_union_distrib, ← union, ← union_assoc _ D, union_comm,
+          union_assoc] }
 
 @[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.coe_sup [RelCWComplex C D] (E F : Subcomplex C) :
@@ -193,22 +193,22 @@ lemma RelCWComplex.Subcomplex.sup_I [RelCWComplex C D] (E F : Subcomplex C) (n :
 
 @[alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instMin [RelCWComplex C D] : Min (Subcomplex C) where
-  min E F := {
-    carrier := E ∩ F
-    I n := E.I n ∩ F.I n
-    closed' := (closed E).inter (closed F)
-    union' := by
-      simp_rw [← Subcomplex.union, ← union_inter_distrib_left, iUnion_coe_set]
-      congrm D ∪ ?_
-      calc
-        ⋃ n, ⋃ i ∈ (E.I n ∩ F.I n), openCell n i
-        _ = ⋃ (x ∈ {x : Σ n, cell C n | x.2 ∈ E.I x.1} ∩ {x : Σ n, cell C n | x.2 ∈ F.I x.1}),
-            openCell x.1 x.2 := by
-          simp [iUnion_sigma]
-        _ = (⋃ n, ⋃ i ∈ E.I n, openCell n i) ∩ ⋃ n, ⋃ i ∈ F.I n, openCell n i := by
-          rw [biUnion_inter_of_pairwise_disjoint
-            (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
-          simp [iUnion_sigma]}
+  min E F :=
+    { carrier := E ∩ F
+      I n := E.I n ∩ F.I n
+      closed' := (closed E).inter (closed F)
+      union' := by
+        simp_rw [← Subcomplex.union, ← union_inter_distrib_left, iUnion_coe_set]
+        congrm D ∪ ?_
+        calc
+          ⋃ n, ⋃ i ∈ (E.I n ∩ F.I n), openCell n i
+          _ = ⋃ (x ∈ {x : Σ n, cell C n | x.2 ∈ E.I x.1} ∩ {x : Σ n, cell C n | x.2 ∈ F.I x.1}),
+              openCell x.1 x.2 := by
+            simp [iUnion_sigma]
+          _ = (⋃ n, ⋃ i ∈ E.I n, openCell n i) ∩ ⋃ n, ⋃ i ∈ F.I n, openCell n i := by
+            rw [biUnion_inter_of_pairwise_disjoint
+              (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
+            simp [iUnion_sigma] }
 
 @[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.coe_inf [RelCWComplex C D] (E F : Subcomplex C) :
@@ -239,11 +239,11 @@ instance RelCWComplex.Subcomplex.instDistribLattice [RelCWComplex C D] :
 
 @[simps (attr := alias_in CWComplex.Subcomplex) -isSimp, alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instTop [T2Space X] [RelCWComplex C D] : Top (Subcomplex C) where
-  top := {
-    carrier := C
-    I n := univ
-    closed' := isClosed
-    union' := by simp [← union_iUnion_openCell_eq_complex]}
+  top :=
+    { carrier := C
+      I n := univ
+      closed' := isClosed
+      union' := by simp [← union_iUnion_openCell_eq_complex] }
 
 @[simps (attr := alias_in CWComplex.Subcomplex) -isSimp, alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instBot [RelCWComplex C D] : Bot (Subcomplex C) where
@@ -325,29 +325,29 @@ instance RelCWComplex.Subcomplex.finiteType_finite_iSup_of_finiteType [T2Space X
 @[simps! (attr := alias_in CWComplex.Subcomplex) -isSimp, alias_in CWComplex.Subcomplex]
 instance RelCWComplex.Subcomplex.instInfSet [T2Space X] [RelCWComplex C D] :
     InfSet (Subcomplex C) where
-  sInf S := {
-    carrier := C ∩ ⋂ (E ∈ S), E
-    I n := ⋂ (E ∈ S), E.I n
-    closed' := isClosed.inter (isClosed_biInter (fun E _ ↦ closed E))
-    union' := by
-      rw [← iInter_subtype (p := fun E ↦ E ∈ S) (s := fun E ↦ (E: Set X))]
-      by_cases h : Nonempty S
-      · simp_rw [inter_iInter, inter_eq_right.2 (subset_complex _), ← Subcomplex.union,
-          ← union_iInter]
-        congrm D ∪ ?_
-        simp_rw [iUnion_subtype]
-        calc
-          ⋃ n, ⋃ x ∈ ⋂ E ∈ S, E.I n, openCell n x
-          _ = ⋃ x ∈ ⋂ (E : { x // x ∈ S }), {x : Σ n, cell C n | x.2 ∈ E.1.I x.1},
-              openCell x.1 x.2 := by
-            simp [iUnion_sigma]
-          _ = ⋂ (E : { x // x ∈ S }), ⋃ n, ⋃ x ∈ E.1.I n, openCell n x := by
-            rw [biUnion_iInter_of_pairwise_disjoint
-              (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
-            simp [iUnion_sigma]
-      · simp_all only [nonempty_subtype, not_exists, iUnion_coe_set, iInter_of_empty, iInter_univ,
-          mem_univ, iUnion_true, iInter_coe_set, inter_univ]
-        exact union_iUnion_openCell_eq_complex}
+  sInf S :=
+    { carrier := C ∩ ⋂ (E ∈ S), E
+      I n := ⋂ (E ∈ S), E.I n
+      closed' := isClosed.inter (isClosed_biInter (fun E _ ↦ closed E))
+      union' := by
+        rw [← iInter_subtype (p := fun E ↦ E ∈ S) (s := fun E ↦ (E: Set X))]
+        by_cases h : Nonempty S
+        · simp_rw [inter_iInter, inter_eq_right.2 (subset_complex _), ← Subcomplex.union,
+            ← union_iInter]
+          congrm D ∪ ?_
+          simp_rw [iUnion_subtype]
+          calc
+            ⋃ n, ⋃ x ∈ ⋂ E ∈ S, E.I n, openCell n x
+            _ = ⋃ x ∈ ⋂ (E : { x // x ∈ S }), {x : Σ n, cell C n | x.2 ∈ E.1.I x.1},
+                openCell x.1 x.2 := by
+              simp [iUnion_sigma]
+            _ = ⋂ (E : { x // x ∈ S }), ⋃ n, ⋃ x ∈ E.1.I n, openCell n x := by
+              rw [biUnion_iInter_of_pairwise_disjoint
+                (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
+              simp [iUnion_sigma]
+        · simp_all only [nonempty_subtype, not_exists, iUnion_coe_set, iInter_of_empty, iInter_univ,
+            mem_univ, iUnion_true, iInter_coe_set, inter_univ]
+          exact union_iUnion_openCell_eq_complex }
 
 @[alias_in CWComplex.Subcomplex]
 lemma RelCWComplex.Subcomplex.coe_iInf [T2Space X] [RelCWComplex C D]
