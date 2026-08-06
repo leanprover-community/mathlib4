@@ -26,13 +26,10 @@ If `α` is countable or `β` is countably generated, the kernels have a Radon-Ni
   `∂μ/∂ν` and `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 * `rnDeriv_measure_compProd_left`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ κ)`
   (with the same kernel) equals `∂μ/∂ν`.
-
-Under the assumption `CountableOrCountablyGenerated α β`:
-
-* `rnDeriv_measure_compProd_right`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`
-  (with the same measure) equals `∂κ/∂η`.
 * `rnDeriv_measure_compProd`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the
   product of `∂μ/∂ν` and `∂κ/∂η`.
+* `rnDeriv_measure_compProd_right`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`
+  (with the same measure) equals `∂κ/∂η`.
 
 -/
 
@@ -126,17 +123,6 @@ section CountableOrCountablyGenerated
 
 variable [MeasurableSpace.CountableOrCountablyGenerated α β]
 
-/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` (with the same measure)
-equals `∂κ/∂η`. -/
-lemma rnDeriv_measure_compProd_right (μ : Measure α) (κ η : Kernel α β)
-    [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η] :
-    (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) =ᵐ[μ ⊗ₘ η] fun p ↦ κ.rnDeriv η p.1 p.2 := by
-  refine (Measure.eq_rnDeriv (Kernel.measurable_rnDeriv κ η)
-    (Measure.MutuallySingular.compProd_of_right μ μ
-      (.of_forall <| Kernel.mutuallySingular_singularPart κ η)) ?_).symm
-  rw [← Measure.compProd_withDensity (Kernel.measurable_rnDeriv κ η),
-    ← Measure.compProd_add_right, add_comm, Kernel.rnDeriv_add_singularPart]
-
 /-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
 `∂κ/∂η`. -/
 lemma rnDeriv_measure_compProd (μ ν : Measure α) (κ η : Kernel α β)
@@ -163,6 +149,15 @@ lemma rnDeriv_measure_compProd (μ ν : Measure α) (κ η : Kernel α β)
   filter_upwards [h_add', h_sing, h_wd, rnDeriv_measure_compProd_left μ ν η]
     with p h1 h2 h3 h4
   rw [h1, Pi.add_apply, h2, Pi.zero_apply, zero_add, h3, h4, mul_comm]
+
+/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` (with the same measure)
+equals `∂κ/∂η`. -/
+lemma rnDeriv_measure_compProd_right (μ : Measure α) (κ η : Kernel α β)
+    [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) =ᵐ[μ ⊗ₘ η] fun p ↦ κ.rnDeriv η p.1 p.2 := by
+  filter_upwards [Measure.ae_compProd_of_ae_fst η (by measurability) μ.rnDeriv_self,
+    rnDeriv_measure_compProd μ μ κ η]
+  simp_all
 
 end CountableOrCountablyGenerated
 
