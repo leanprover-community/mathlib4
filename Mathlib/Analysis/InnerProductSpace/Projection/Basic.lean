@@ -222,53 +222,64 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
-/-- The norm of the orthogonal projection of `y` onto `Uᗮ` is the distance from `y` to `U`. -/
-theorem norm_starProjection_orthogonal_eq_iInf
+/-- The norm of the orthogonal projection of `y` onto `Uᗮ` is `Metric.infDist y U`. -/
+theorem norm_starProjection_orthogonal_eq_infDist
     {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (y : E) :
-    ‖Uᗮ.starProjection y‖ = ⨅ u : U, ‖y - u‖ := by
-  rw [U.starProjection_orthogonal_val, U.starProjection_minimal]
+    ‖Uᗮ.starProjection y‖ = Metric.infDist y U := by
+  apply le_antisymm
+  · rw [Metric.le_infDist ⟨0, U.zero_mem⟩,
+      U.starProjection_orthogonal_val, U.starProjection_minimal]
+    intro u hu
+    simpa [dist_eq_norm] using
+      ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ ↦ norm_nonneg _⟩
+        (⟨u, hu⟩ : U)
+  · calc
+      Metric.infDist y U ≤
+          dist y (U.orthogonalProjectionOnto y : E) :=
+        Metric.infDist_le_dist_of_mem
+          (U.orthogonalProjectionOnto y).property
+      _ = ‖y - (U.orthogonalProjectionOnto y : E)‖ :=
+        dist_eq_norm y (U.orthogonalProjectionOnto y : E)
+      _ = ‖Uᗮ.starProjection y‖ := by
+        rw [U.starProjection_orthogonal_val,
+          U.coe_orthogonalProjectionOnto_apply]
 
-/-- A parameter `z` can be completed by some `u : U` to a joint minimizer of
-`‖y - (u + f z)‖` if and only if it minimizes the norm of the residual projected onto `Uᗮ`.
-This is the abstract partialling-out principle underlying the Frisch–Waugh–Lovell theorem.
+/-- A point `a` can be paired with some `u : U` whose distance is no greater than the distance
+between any point in `A` and any point in `U` if and only if the distance from `a` to `U` is no
+greater than the distance from any point in `A` to `U`. When `a ∈ A`, this characterizes joint
+minimizers of the distance on `A × U`.
 
-When `f` is the function underlying a continuous linear map `B : G →L[𝕜] E`, linearity rewrites
-the projected residual as `Uᗮ.starProjection y - (Uᗮ.starProjection ∘L B) z`. -/
-theorem exists_forall_norm_sub_add_apply_le_iff_forall_norm_starProjection_orthogonal_sub_apply_le
-    {G : Type*} {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
-    (f : G → E) (y : E) (z : G) :
-    (∃ u : U, ∀ (u' : U) (z' : G),
-      ‖y - ((u : E) + f z)‖ ≤ ‖y - ((u' : E) + f z')‖) ↔
-      ∀ z' : G,
-        ‖Uᗮ.starProjection (y - f z)‖ ≤ ‖Uᗮ.starProjection (y - f z')‖ := by
-  have h_le (x : E) (u : U) : ‖Uᗮ.starProjection x‖ ≤ ‖x - u‖ := by
-    rw [U.norm_starProjection_orthogonal_eq_iInf]
-    exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ ↦ norm_nonneg _⟩ u
-  have h_residual (u : U) (z : G) :
-      ‖y - ((u : E) + f z)‖ = ‖(y - f z) - u‖ := by
-    congr 1
-    abel
-  have h_projection (z : G) :
-      ‖y - ((U.orthogonalProjectionOnto (y - f z) : E) + f z)‖ =
-        ‖Uᗮ.starProjection (y - f z)‖ := by
-    rw [h_residual, U.starProjection_orthogonal_val, U.coe_orthogonalProjectionOnto_apply]
+Taking `A = Set.range (fun z' ↦ y - f z')` and `a = y - f z` gives the abstract
+partialling-out principle underlying the Frisch–Waugh–Lovell theorem. -/
+theorem exists_forall_norm_sub_le_iff_forall_infDist_le
+    {U : Submodule 𝕜 E} [U.HasOrthogonalProjection] (A : Set E) (a : E) :
+    (∃ u : U, ∀ (u' : U) (a' : A), ‖a - u‖ ≤ ‖(a' : E) - u'‖) ↔
+      ∀ a' : A, Metric.infDist a U ≤ Metric.infDist (a' : E) U := by
   constructor
-  · rintro ⟨u, hu⟩ z'
+  · rintro ⟨u, hmin⟩ a'
+    rw [Metric.le_infDist ⟨0, U.zero_mem⟩]
+    intro u' hu'
+    let u'' : U := ⟨u', hu'⟩
     calc
-      ‖Uᗮ.starProjection (y - f z)‖ ≤ ‖(y - f z) - u‖ := h_le _ u
-      _ = ‖y - ((u : E) + f z)‖ := (h_residual u z).symm
-      _ ≤ ‖y - ((U.orthogonalProjectionOnto (y - f z') : E) + f z')‖ :=
-        hu (U.orthogonalProjectionOnto (y - f z')) z'
-      _ = ‖Uᗮ.starProjection (y - f z')‖ := h_projection z'
-  · intro hz
-    refine ⟨U.orthogonalProjectionOnto (y - f z), ?_⟩
-    intro u' z'
+      Metric.infDist a U ≤ dist a (u : E) :=
+        Metric.infDist_le_dist_of_mem u.property
+      _ = ‖a - u‖ := dist_eq_norm a (u : E)
+      _ ≤ ‖(a' : E) - u''‖ := hmin u'' a'
+      _ = dist (a' : E) u' := (dist_eq_norm (a' : E) u').symm
+  · intro h
+    refine ⟨U.orthogonalProjectionOnto a, ?_⟩
+    intro u' a'
     calc
-      ‖y - ((U.orthogonalProjectionOnto (y - f z) : E) + f z)‖ =
-          ‖Uᗮ.starProjection (y - f z)‖ := h_projection z
-      _ ≤ ‖Uᗮ.starProjection (y - f z')‖ := hz z'
-      _ ≤ ‖(y - f z') - u'‖ := h_le _ u'
-      _ = ‖y - ((u' : E) + f z')‖ := (h_residual u' z').symm
+      ‖a - (U.orthogonalProjectionOnto a : E)‖ =
+          ‖Uᗮ.starProjection a‖ := by
+            rw [U.starProjection_orthogonal_val,
+              U.coe_orthogonalProjectionOnto_apply]
+      _ = Metric.infDist a U :=
+        U.norm_starProjection_orthogonal_eq_infDist _
+      _ ≤ Metric.infDist (a' : E) U := h a'
+      _ ≤ dist (a' : E) (u' : E) :=
+        Metric.infDist_le_dist_of_mem u'.property
+      _ = ‖(a' : E) - u'‖ := dist_eq_norm (a' : E) (u' : E)
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
