@@ -94,11 +94,7 @@ class _root_.AddAction.IsMultiplyPreprimitive
 pretransitive and if, when `n ≥ 1`, for every set `s` of cardinality
 `n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
-@[mk_iff, to_additive existing
-/-- A group action is `n`-multiply preprimitive  if it is `n`-multiply
-pretransitive and if, when `n ≥ 1`, for every set `s` of cardinality
-`n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
-is preprimitive. -/]
+@[mk_iff, to_additive existing]
 class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive. -/
   isMultiplyPretransitive (M α n) : IsMultiplyPretransitive M α n
@@ -200,9 +196,9 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       simp only
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by simp [hs'],
+      rw [show s = g⁻¹ • s' by simp [hs'],
         ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
-      rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
+      rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.natCast_one]
       exact notMem_val_image M t
 
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
@@ -264,7 +260,7 @@ theorem isMultiplyPreprimitive_of_le
     · apply hrec
         (isMultiplyPreprimitive_of_isMultiplyPretransitive_succ M α hα)
         (Nat.lt_succ_iff.mp hmn')
-      · refine le_trans ?_ hα; rw [ENat.coe_le_coe]; exact Nat.le_succ n
+      · refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
 
 variable {M α}
 

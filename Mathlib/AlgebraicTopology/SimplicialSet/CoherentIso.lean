@@ -81,6 +81,7 @@ protected def rec : ∀ a, motive a
 
 end induction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From an isomorphism in a category, we can build a functor out of `WalkingIso` to
 that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
@@ -113,6 +114,7 @@ lemma fromIso_map_one_one (f : one ⟶ one) : (fromIso.{w} e).map f = 𝟙 Y := 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
 @[simps]
 def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where

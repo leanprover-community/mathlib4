@@ -60,7 +60,7 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
   rw [E.coe_Δ', Δ_of_isCharTwoJEqZeroNF_of_char_two, pow_ne_zero_iff (Nat.succ_ne_zero _)] at ha₃
   have ha₃' := E'.Δ'.ne_zero
   rw [E'.coe_Δ', Δ_of_isCharTwoJEqZeroNF_of_char_two, pow_ne_zero_iff (Nat.succ_ne_zero _)] at ha₃'
-  haveI : NeZero (3 : F) := NeZero.mk <| by
+  have : NeZero (3 : F) := NeZero.mk <| by
     rw [show (3 : F) = 1 by linear_combination CharP.cast_eq_zero F 2]
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₃ / E'.a₃) 3
@@ -126,7 +126,7 @@ private lemma exists_variableChange_of_char_three_of_j_ne_zero
   rw [E'.coe_Δ', Δ_of_isCharThreeJNeZeroNF_of_char_three, mul_ne_zero_iff, neg_ne_zero,
     pow_ne_zero_iff three_ne_zero] at h
   obtain ⟨ha₂', ha₆'⟩ := h
-  haveI : NeZero (2 : F) := NeZero.mk <| by
+  have : NeZero (2 : F) := NeZero.mk <| by
     rw [show (2 : F) = -1 by linear_combination CharP.cast_eq_zero F 3, neg_ne_zero]
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₂ / E'.a₂) 2
@@ -158,7 +158,7 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
   rw [E.coe_Δ', Δ_of_isShortNF_of_char_three, neg_ne_zero, pow_ne_zero_iff three_ne_zero] at ha₄
   have ha₄' := E'.Δ'.ne_zero
   rw [E'.coe_Δ', Δ_of_isShortNF_of_char_three, neg_ne_zero, pow_ne_zero_iff three_ne_zero] at ha₄'
-  haveI : NeZero (4 : F) := NeZero.mk <| by
+  have : NeZero (4 : F) := NeZero.mk <| by
     rw [show (4 : F) = 1 by linear_combination CharP.cast_eq_zero F 3]
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₄ / E'.a₄) 4
@@ -213,17 +213,17 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     ∃ C : VariableChange F, C • E = E' := by
   replace hchar2 : (2 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_two hchar2
   replace hchar3 : (3 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_three hchar3
-  haveI := NeZero.mk hchar2
-  haveI : NeZero (4 : F) := NeZero.mk <| by
+  have := NeZero.mk hchar2
+  have : NeZero (4 : F) := NeZero.mk <| by
     have := pow_ne_zero 2 hchar2
     norm_num1 at this
     exact this
-  haveI : NeZero (6 : F) := NeZero.mk <| by
+  have : NeZero (6 : F) := NeZero.mk <| by
     have := mul_ne_zero hchar2 hchar3
     norm_num1 at this
     exact this
-  letI : Invertible (2 : F) := invertibleOfNonzero hchar2
-  letI : Invertible (3 : F) := invertibleOfNonzero hchar3
+  let : Invertible (2 : F) := invertibleOfNonzero hchar2
+  let : Invertible (3 : F) := invertibleOfNonzero hchar3
   wlog _ : E.IsShortNF generalizing E
   · obtain ⟨C, hE⟩ := E.exists_variableChange_isShortNF
     rw [← variableChange_j E C] at heq
@@ -237,7 +237,7 @@ private lemma exists_variableChange_of_char_ne_two_or_three
   simp_rw [j, Units.val_inv_eq_inv_val, inv_mul_eq_div,
     div_eq_div_iff E.Δ'.ne_zero E'.Δ'.ne_zero, coe_Δ', Δ_of_isShortNF, c₄_of_isShortNF] at heq
   replace heq : E.a₄ ^ 3 * E'.a₆ ^ 2 = E'.a₄ ^ 3 * E.a₆ ^ 2 := by
-    letI : Invertible (47775744 : F) := invertibleOfNonzero <| by
+    let : Invertible (47775744 : F) := invertibleOfNonzero <| by
       have := mul_ne_zero (pow_ne_zero 16 hchar2) (pow_ne_zero 6 hchar3)
       norm_num1 at this
       exact this

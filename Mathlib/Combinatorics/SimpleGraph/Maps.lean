@@ -146,7 +146,7 @@ instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
     G.comap e.symm.toEmbedding = G.map e.toEmbedding := by
-  ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
+  ext; simp only [← Equiv.eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
 lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
@@ -377,6 +377,7 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
+@[implicit_reducible]
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
@@ -608,6 +609,7 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
     (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
   ext; simp
@@ -792,12 +794,21 @@ theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
     (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
   Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
+
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+@[simps!]
+def completeBipartiteGraphCongr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  __ := hV.sumCongr hW
+  map_rel_iff' := by simp
 
 section Finite
 

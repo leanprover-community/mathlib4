@@ -376,9 +376,6 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b :=
   fun a hab ↦ (H a hab.lt).ne hab.succ_eq
 
-@[deprecated (since := "2025-12-20")]
-alias isPredPrelimit_of_pred_lt := isPredPrelimit_of_lt_pred
-
 @[to_dual lt_pred]
 theorem IsSuccPrelimit.succ_lt (hb : IsSuccPrelimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a

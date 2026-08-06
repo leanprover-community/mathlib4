@@ -97,6 +97,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
   · exact le_max_of_le_right (le_trans hy (norm_repr_le_norm B ixy))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `K`-basis of `L`, `B.norm` is bounded with respect to multiplication. That is,
   `∃ (c : ℝ), c > 0` such that ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`. -/
 theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
@@ -176,8 +177,8 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   have h1 : LinearIndepOn K id ({1} : Set L) := .singleton one_ne_zero
   set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1
-  letI hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
-  haveI hem : Nonempty ι := B.index_nonempty
+  let hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
+  have hem : Nonempty ι := B.index_nonempty
   have h1L : (1 : L) ∈ LinearIndepOn.extend h1 _ :=
     Basis.subset_extend _ (Set.mem_singleton (1 : L))
   have hB1 : B ⟨1, h1L⟩ = (1 : L) := by rw [Basis.coe_extend, Subtype.coe_mk]

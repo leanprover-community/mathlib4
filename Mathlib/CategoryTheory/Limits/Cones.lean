@@ -32,8 +32,6 @@ And, of course, we dualise all this to cocones as well.
 For more results about the category of cones, see `cone_category.lean`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -65,7 +63,7 @@ variable (F : J ⥤ C)
 type of natural transformations from the constant functor with value `X` to `F`.
 An object representing this functor is a limit of `F`.
 -/
-@[simps! obj map]
+@[implicit_reducible, simps! obj map]
 def cones : Cᵒᵖ ⥤ Type (max u₁ v₃) :=
   (const J).op ⋙ yoneda.obj F
 
@@ -73,7 +71,7 @@ def cones : Cᵒᵖ ⥤ Type (max u₁ v₃) :=
 the type of natural transformations from `F` to the constant functor with value `X`.
 An object corepresenting this functor is a colimit of `F`.
 -/
-@[simps! obj map]
+@[implicit_reducible, simps! obj map]
 def cocones : C ⥤ Type (max u₁ v₃) :=
   const J ⋙ coyoneda.obj (op F)
 
@@ -150,11 +148,26 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
            }
   }⟩
 
-set_option backward.defeqAttrib.useBackward true in
-@[to_dual (attr := reassoc (attr := simp), elementwise)]
+@[to_dual (attr := reassoc), elementwise]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
   simpa using (c.π.naturality f).symm
+
+attribute [simp] Cone.w Cone.w_assoc -- `Cocone.w` and `Cocone.w_assoc` are redundant
+
+#adaptation_note
+/--
+This lemma can be derived by `simp`, so `[elementwise]` does errors out.
+For symmetry reasons, it seems good to have the dual of `Cone.w_apply`, though,
+so we provide it by hand now.
+-/
+theorem Cocone.w_apply.{uF, w} {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j' ⟶ j)
+    {F' : C → C → Type uF} {carrier : C → Type w}
+    {instFunLike : (X Y : C) → FunLike (F' X Y) (carrier X) (carrier Y)}
+    [inst : ConcreteCategory C F'] (x : carrier (F.obj j')) :
+    (ConcreteCategory.hom (c.ι.app j)) ((ConcreteCategory.hom (F.map f)) x) =
+      (ConcreteCategory.hom (c.ι.app j')) x := by
+  simp
 
 end
 
@@ -184,14 +197,14 @@ def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
   app _ := ↾fun f ↦ (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- A map from the vertex of a cocone induces a cocone by composition. -/]
 def extend (c : Cone F) {X : C} (f : X ⟶ c.pt) : Cone F where
   pt := X
   π := (const J).map f ≫ c.π
 
 /-- Whisker a cone by precomposition of a functor. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Whisker a cocone by precomposition of a functor. See `whiskering` for a functorial
 version.
 -/]
@@ -256,9 +269,6 @@ instance Cone.category : Category (Cone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/-- We do not want `simps` automatically generate the lemma for simplifying the
-hom field of a category. So we need to write the `ext` lemma in terms of the
-categorical morphism, rather than the underlying structure. -/
 @[to_dual (attr := ext)
 /- We do not want `simps` automatically generate the lemma for simplifying the
 hom field of a category. So we need to write the `ext` lemma in terms of the
@@ -383,7 +393,7 @@ instance {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : IsIso (s.extendHom f)
 /--
 Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to give a cone for `G`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Functorially precompose a cocone for `F` by a natural transformation `G ⟶ F` to give a cocone
 for `G`. -/]
 def postcompose {G : J ⥤ C} (α : F ⟶ G) : Cone F ⥤ Cone G where
@@ -418,7 +428,7 @@ attribute [to_dual existing precomposeId_hom_app_hom] postcomposeId_inv_app_hom
 /-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
 cones.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
 cocones.
 -/]
@@ -430,7 +440,7 @@ def postcomposeEquivalence {G : J ⥤ C} (α : F ≅ G) : Cone F ≌ Cone G wher
 
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cone F` to `Cone (E ⋙ F)`.
 -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Whiskering on the left by `E : K ⥤ J` gives a functor from `Cocone F` to `Cocone (E ⋙ F)`.
 -/]
 def whiskering (E : K ⥤ J) : Cone F ⥤ Cone (E ⋙ F) where
@@ -477,7 +487,7 @@ def forget : Cone F ⥤ C where
 variable (G : C ⥤ D)
 
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- A functor `G : C ⥤ D` sends cocones over `F` to cocones over `F ⋙ G` functorially. -/]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
   obj A :=
@@ -506,6 +516,7 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/
@@ -532,9 +543,9 @@ instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J
     (functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
-  haveI : IsIso (F.map f.hom) :=
+  have : IsIso (F.map f.hom) :=
     (forget (K ⋙ F)).map_isIso ((functoriality K F).map f)
-  haveI := ReflectsIsomorphisms.reflects F f.hom
+  have := ReflectsIsomorphisms.reflects F f.hom
   apply cone_iso_of_hom_iso
 
 end
@@ -609,7 +620,7 @@ variable (H : C ⥤ D) {F : J ⥤ C} {G : J ⥤ C}
 open CategoryTheory.Limits
 
 /-- The image of a cone in C under a functor G : C ⥤ D is a cone in D. -/
-@[to_dual (attr := simps!)
+@[to_dual (attr := implicit_reducible, simps!)
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/]
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cone.functoriality F H).obj c
@@ -735,20 +746,19 @@ section
 variable {F : J ⥤ C}
 
 /-- Change a `Cone F` into a `Cocone F.op`. -/
-@[to_dual (attr := simps) /-- Change a `Cocone F` into a `Cone F.op`. -/]
+@[to_dual (attr := implicit_reducible, simps) /-- Change a `Cocone F` into a `Cone F.op`. -/]
 def Cone.op (c : Cone F) : Cocone F.op where
   pt := Opposite.op c.pt
   ι := NatTrans.op c.π
 
 /-- Change a `Cone F.op` into a `Cocone F`. -/
-@[to_dual (attr := simps) /-- Change a `Cocone F.op` into a `Cone F`. -/]
+@[to_dual (attr := implicit_reducible, simps) /-- Change a `Cocone F.op` into a `Cone F`. -/]
 def Cone.unop (c : Cone F.op) : Cocone F where
   pt := Opposite.unop c.pt
   ι := NatTrans.removeOp c.π
 
 variable (F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The category of cocones on `F` is equivalent to the opposite category of
 the category of cones on the opposite of `F`.
 -/
@@ -795,14 +805,14 @@ section
 variable {F : J ⥤ Cᵒᵖ}
 
 /-- Change a cocone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/
-@[to_dual (attr := simps!)
+@[to_dual (attr := implicit_reducible, simps!)
 /-- Change a cone on `F.leftOp : Jᵒᵖ ⥤ C` to a cocone on `F : J ⥤ Cᵒᵖ`. -/]
 def coneOfCoconeLeftOp (c : Cocone F.leftOp) : Cone F where
   pt := op c.pt
   π := NatTrans.removeLeftOp c.ι
 
 /-- Change a cone on `F : J ⥤ Cᵒᵖ` to a cocone on `F.leftOp : Jᵒᵖ ⥤ C`. -/
-@[to_dual (attr := simps!)
+@[to_dual (attr := implicit_reducible, simps!)
 /-- Change a cocone on `F : J ⥤ Cᵒᵖ` to a cone on `F.leftOp : Jᵒᵖ ⥤ C`. -/]
 def coconeLeftOpOfCone (c : Cone F) : Cocone F.leftOp where
   pt := unop c.pt
@@ -826,14 +836,14 @@ section
 variable {F : Jᵒᵖ ⥤ C}
 
 /-- Change a cocone on `F.rightOp : J ⥤ Cᵒᵖ` to a cone on `F : Jᵒᵖ ⥤ C`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Change a cone on `F.rightOp : J ⥤ Cᵒᵖ` to a cocone on `F : Jᵒᵖ ⥤ C`. -/]
 def coneOfCoconeRightOp (c : Cocone F.rightOp) : Cone F where
   pt := unop c.pt
   π := NatTrans.removeRightOp c.ι
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ C` to a cocone on `F.rightOp : Jᵒᵖ ⥤ C`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Change a cocone on `F : Jᵒᵖ ⥤ C` to a cone on `F.rightOp : J ⥤ Cᵒᵖ`. -/]
 def coconeRightOpOfCone (c : Cone F) : Cocone F.rightOp where
   pt := op c.pt
@@ -857,14 +867,14 @@ section
 variable {F : Jᵒᵖ ⥤ Cᵒᵖ}
 
 /-- Change a cocone on `F.unop : J ⥤ C` into a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Change a cone on `F.unop : J ⥤ C` into a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/]
 def coneOfCoconeUnop (c : Cocone F.unop) : Cone F where
   pt := op c.pt
   π := NatTrans.removeUnop c.ι
 
 /-- Change a cone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cocone on `F.unop : J ⥤ C`. -/
-@[to_dual (attr := simps)
+@[to_dual (attr := implicit_reducible, simps)
 /-- Change a cocone on `F : Jᵒᵖ ⥤ Cᵒᵖ` into a cone on `F.unop : J ⥤ C`. -/]
 def coconeUnopOfCone (c : Cone F) : Cocone F.unop where
   pt := unop c.pt

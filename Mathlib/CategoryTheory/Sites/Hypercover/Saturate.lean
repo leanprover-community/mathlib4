@@ -68,6 +68,7 @@ lemma isLimit_saturate_type_iff {S : C} (E : PreZeroHypercover S) (F : Cᵒᵖ �
     ← Function.Bijective.of_comp_iff' (E.sectionsSaturateEquiv F).symm.bijective]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- If `E` has pairwise pullbacks, this is the canonical map from the minimal `1`-hypercover
 to the saturation. -/
@@ -94,6 +95,7 @@ def fromSaturateOfHasPullbacks {S : C} (E : PreZeroHypercover S)
 
 variable {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The identity of the minimal pre-`1`-hypercover when `E` has pairwise pullbacks
 is homotopic to itself. -/
@@ -108,6 +110,7 @@ def toPreOneHypercoverHomotopy {S : C} (E : PreZeroHypercover S)
 
 variable {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma toSaturateOfHasPullbacks_fromSaturateOfHasPullbacks :
