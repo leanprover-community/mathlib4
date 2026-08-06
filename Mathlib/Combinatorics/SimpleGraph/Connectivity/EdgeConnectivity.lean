@@ -182,7 +182,7 @@ theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnect
   exact ENat.iSup_natCast
 
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
-  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast] 
+  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast]
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp only [isEdgeReachable_comm,edgeReachability]
@@ -192,7 +192,7 @@ theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReac
   intro k
   apply iSup_le
   intro hk
-  unfold edgeReachability 
+  unfold edgeReachability
   apply le_iSup_of_le
   apply le_iSup_of_le
   exact le_rfl

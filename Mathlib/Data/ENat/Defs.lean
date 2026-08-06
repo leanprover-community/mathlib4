@@ -9,7 +9,7 @@ public import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
 
-/-! # Definition and notation for extended natural numbers 
+/-! # Definition and notation for extended natural numbers
 In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ`
 -/
 

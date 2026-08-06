@@ -318,7 +318,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
   isGLB_sInf _ := ⟨fun _ hG _ _ hab ↦ hab.1 hG, fun _ hG _ _ hab ↦ ⟨fun _ hH => hG hH hab, hab.ne⟩⟩
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
-/-- The complete graph on a type `V` is the simple graph in which every pair 
+/-- The complete graph on a type `V` is the simple graph in which every pair
 of distinct vertices is adjacent.
 -/
 @[wikidata Q45715]
