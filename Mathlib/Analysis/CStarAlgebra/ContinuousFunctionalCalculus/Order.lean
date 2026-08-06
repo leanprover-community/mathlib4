@@ -501,7 +501,7 @@ theorem _root_.IsSelfAdjoint.norm_le_max_of_le_of_le {a b c : A}
     (hab : a ≤ b) (hbc : b ≤ c) (hb : IsSelfAdjoint b := by cfc_tac) :
     ‖b‖ ≤ max ‖a‖ ‖c‖ := calc
   ‖b‖ = max ‖b⁻‖ ‖b⁺‖ := by rw [hb.norm_eq_max_norm_posPart_negPart b, max_comm]
-  _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_posPart_anti hab, norm_posPart_mono hbc]
+  _ ≤ max ‖a⁻‖ ‖c⁺‖ := by grw [norm_negPart_anti hab, norm_posPart_mono hbc]
   _ ≤ max ‖a‖ ‖c‖ := by gcongr <;> simp
 
 open scoped ComplexStarModule in
