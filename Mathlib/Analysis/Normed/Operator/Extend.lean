@@ -242,7 +242,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} {f : E →ₛₗ[σ₁₂] F} {e : E �
 
 /-- Extend a linear map `f : E →ₛₗ[σ₁₂] F` to a linear isometry `Eₗ →ₛₗᵢ[σ₁₂] F` between
 Banach spaces, using a dense linear map `e : E →ₗ[𝕜] Eₗ` together with the norm equality
-`‖f x‖ = ‖e₁ x‖` for all `x : E`. -/
+`‖f x‖ = ‖e x‖` for all `x : E`. -/
 def extendOfIsometry (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e x‖) :
     Eₗ →ₛₗᵢ[σ₁₂] F where
   toLinearMap := f.extendOfNorm e
