@@ -33,11 +33,6 @@ open Lean Meta Elab Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Build the matrix literal `!![…]` with the given rows of entries. -/
-def mkMatrixLit {u : Level} (R : Q(Type u)) (rows : Array (Array Expr)) : Expr :=
-  Matrix.mkLiteralQ (α := R) (m := rows.size) (n := (rows.getD 0 #[]).size)
-    (.of fun i j => show Q($R) from (rows[i.1]!)[j.1]!)
-
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
 def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
@@ -118,6 +113,8 @@ def mkBareissDecomposition (A : Expr) (m n : Nat) (R : Expr)
   let d ← (← producerFor R) entries
   let u ← getDecLevel R
   have R : Q(Type u) := R
-  elabCertificate A (mkMatrixLit R d.L) (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
+  let L := Matrix.mkLiteralQ (α := R) (m := m) (n := m)
+    (.of fun i j => show Q($R) from (d.L[i.1]!)[j.1]!)
+  elabCertificate A L (← mkPerm m d.swaps) (← mkPivotLit m n d.pivot)
 
 end Mathlib.Tactic.Echelon
