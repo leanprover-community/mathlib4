@@ -805,17 +805,10 @@ theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_t
     (htendsto : Tendsto f (comap im atTop) (𝓝 0)) :
     Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
       𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
-  have heventually : (fun (m : ℝ) ↦
-      (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) -
-      (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
-      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I))) =ᶠ[atTop]
-      (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) := by
-    filter_upwards [eventually_ge_atTop y] with m hm
-    rw [← sub_eq_zero, ← (hzero y hcont s hs hdiff m hm)]
-  rw [tendsto_congr' heventually.symm, ← sub_zero (∫ (t : ℝ) in x₁..x₂, f (↑t + ↑y * I))]
-  refine (Tendsto.sub ?_ ?_).add hC₂
-  · rw [sub_zero, tendsto_const_nhds_iff]
-  · exact tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero htendsto
+  refine .congr' ((eventually_ge_atTop y).mono fun m hm ↦
+    sub_eq_zero.mp (hzero y hcont s hs hdiff m hm)) ?_
+  simpa using (tendsto_const_nhds.sub
+    (tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero htendsto)).add hC₂
 
 /-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
