@@ -49,10 +49,10 @@ private def parallel.aux1 :
 
 /-- Parallel computation of an infinite stream of computations,
   taking the first result -/
-def parallel (S : WSeq (Computation α)) : Computation α :=
+@[no_expose] def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 
-theorem terminates_parallel.aux :
+private theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
       c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
   have lem1 :

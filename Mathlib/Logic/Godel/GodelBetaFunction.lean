@@ -67,7 +67,7 @@ private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
-lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
+private lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=
     Nat.lt_add_one_iff.mpr (le_max_of_le_right <| Finset.le_sup (by simp))
   have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
@@ -92,7 +92,7 @@ def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
-def unbeta (l : List ℕ) : ℕ :=
+@[no_expose] def unbeta (l : List ℕ) : ℕ :=
   (chineseRemainderOfFinset (ι := Fin l.length) (l[·]) (coprimes (l[·])) Finset.univ
     (by simp [coprimes])
     (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair

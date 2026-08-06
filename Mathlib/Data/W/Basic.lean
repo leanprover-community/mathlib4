@@ -166,7 +166,7 @@ private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (
 
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
-instance : Encodable (WType β) := by
+@[no_expose] instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
