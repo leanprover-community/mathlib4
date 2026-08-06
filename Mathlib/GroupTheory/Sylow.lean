@@ -778,8 +778,8 @@ theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
     · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
       by_cases hgt : g = t
       · exact ⟨Fin.last (n + 1), by simp [f, hgt]⟩
-      have hgs' : g ∈ Set.range f' := by grind
-      obtain ⟨x, hx⟩ := Set.mem_range.mp hgs'
+      have hgf' : g ∈ Set.range f' := by grind
+      obtain ⟨x, hx⟩ := Set.mem_range.mp hgf'
       exact ⟨x.castSucc, by simp [f, hx]⟩
     · simp only [OrderEmbedding.coe_ofStrictMono, f]
       split_ifs with hx
