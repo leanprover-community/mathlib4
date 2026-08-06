@@ -381,7 +381,8 @@ variable [PseudoMetricSpace R₂] [CompleteSpace F] [IsBoundedSMul R₂ F]
 
 /-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
 `UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F` between the completions of `E` and a complete space
-`F`, via the canonical completion embedding. -/
+`F`, via the canonical completion embedding. This is the linear isometric version of
+`UniformSpace.Completion.extension`. -/
 def fromCompletion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
   __ := f.toContinuousLinearMap.fromCompletion
   norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
@@ -411,7 +412,8 @@ variable [UniformContinuousConstSMul R₂ F]
 
 /-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
 `UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F` between the completions of `E` and
-`F`, via the canonical completion embeddings. -/
+`F`, via the canonical completion embeddings. This is the linear isometric version of
+`UniformSpace.Completion.map`. -/
 def completion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F where
   __ := f.toContinuousLinearMap.completion
   norm_map' e := Completion.induction_on e
