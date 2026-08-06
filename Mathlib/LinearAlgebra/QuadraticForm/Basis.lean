@@ -91,6 +91,7 @@ theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0 := by
   simp [toBilin]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm).toQuadraticMap = Q := by
   ext x
@@ -116,7 +117,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
     Function.Surjective (LinearMap.BilinMap.toQuadraticMap : LinearMap.BilinMap R M N → _) := by
   intro Q
   obtain ⟨ι, b⟩ := Module.Free.exists_basis (R := R) (M := M)
-  letI : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
+  let : LinearOrder ι := IsWellOrder.linearOrder WellOrderingRel
   exact ⟨_, toQuadraticMap_toBilin _ b⟩
 
 @[simp]

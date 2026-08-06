@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
@@ -86,6 +86,7 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
@@ -217,7 +218,7 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 
 @[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
-    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    (μ : Measure X) [IsOpenPosMeasure μ] [NullSingletonClass μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
   refine ⟨fun h ↦ ?_, measure_closedBall_pos μ x⟩
   contrapose! h

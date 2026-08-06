@@ -79,10 +79,10 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     choose H3 _ using H3
     rw [coe_insert, Set.insert_eq, Set.union_comm, Algebra.adjoin_union_eq_adjoin_adjoin]
     set Ks := Algebra.adjoin F (s : Set K)
-    haveI : FiniteDimensional F Ks := ((Submodule.fg_iff_finiteDimensional _).1
+    have : FiniteDimensional F Ks := ((Submodule.fg_iff_finiteDimensional _).1
       (fg_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
-    letI := fieldOfFiniteDimensional F Ks
-    letI := (f : Ks →+* L).toAlgebra
+    let := fieldOfFiniteDimensional F Ks
+    let := (f : Ks →+* L).toAlgebra
     have H5 : IsIntegral Ks a := H1.tower_top
     have H6 : ((minpoly Ks a).map (algebraMap Ks L)).Splits := by
       refine Splits.of_dvd H2 (map_ne_zero (minpoly.ne_zero H1)) ?_

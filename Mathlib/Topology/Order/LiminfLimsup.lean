@@ -437,7 +437,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
       filter_upwards [h_lt] with n hn using hn.le
   have A (n) : ∃ r, ∀ s ≥ r, u n s ≤ b'' := by
     suffices ∀ᶠ r in atTop, u n r ≤ b' by
-      simp only [eventually_atTop, ge_iff_le] at this
+      simp only [eventually_atTop] at this
       rcases this with ⟨r, hr⟩
       exact ⟨r, fun s hs ↦ (hr s hs).trans hb''b.1⟩
     simp only [b']
@@ -448,7 +448,7 @@ lemma tendsto_iSup_of_tendsto_limsup {α β : Type*} [ConditionallyCompleteLatti
       contrapose! h
       exact ⟨u n r, h, hr⟩
   choose rs hrs using A
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   refine ⟨r ⊔ ⨆ n : {n | b'' < u n r}, rs n, fun v hv ↦ ?_⟩
   -- `⊢ ⨆ i, u i v < b`
   apply lt_of_le_of_lt (iSup_le fun n ↦ ?_) hb''b.2

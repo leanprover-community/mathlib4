@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 public import Mathlib.LinearAlgebra.Matrix.Vec
+public import Mathlib.Analysis.CStarAlgebra.Matrix
 
 /-!
 # The partial order on matrices
@@ -168,7 +169,7 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
   · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
-      exists_exists_eq_and, Set.mem_setOf_eq, forall_exists_index]
+      exists_exists_eq_and, Set.mem_ofPred_eq, forall_exists_index]
     rintro i rfl
     exact_mod_cast h.eigenvalues_nonneg _
   · rw [h1.posSemidef_iff_eigenvalues_nonneg]
@@ -304,7 +305,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
@@ -313,7 +314,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (Matrix n n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
@@ -331,12 +332,33 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
 
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
-@[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
-  toMatrixNormedAddCommGroup
+open scoped Norms.L2Operator in
+set_option backward.isDefEq.respectTransparency false in
+/-- The isometric continuous functional calculus on `Matrix n n 𝕜` arising from the operator norm
+given by the identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
+instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
+    IsometricContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
+  isometric A hA := by
+    rw [← isHermitian_iff_isSelfAdjoint] at hA
+    rw [IsHermitian.cfcHom_eq_cfcAux hA, AddMonoidHomClass.isometry_iff_norm]
+    intro f
+    simp only [IsHermitian.cfcAux_apply, Unitary.conjStarAlgAut_apply, ← Unitary.coe_star,
+      CStarRing.norm_mul_coe_unitary, CStarRing.norm_coe_unitary_mul, l2_opNorm_diagonal]
+    rw [((algebraMap_isometry ℝ 𝕜).postcomp_pi).norm_map_of_map_zero (by ext; simp)]
+    let : Fintype (spectrum ℝ A) := .ofFinite _
+    rw [ContinuousMap.norm_eq_norm_coeFn]
+    refine Function.Surjective.pi_norm_comp ?_ _
+    rw [← Function.Surjective.of_comp_iff'
+      (Equiv.setCongr hA.spectrum_real_eq_range_eigenvalues).bijective]
+    exact Set.codRestrict_range_surjective hA.eigenvalues
+
+scoped[Matrix.Norms.L2Operator] attribute [instance]
+  Matrix.instIsometricContinuousFunctionalCalculus
+
 end Matrix

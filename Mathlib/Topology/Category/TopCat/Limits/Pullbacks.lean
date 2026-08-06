@@ -135,7 +135,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) 
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [← ConcreteCategory.comp_apply, Set.mem_setOf_eq]
+    simp only [← ConcreteCategory.comp_apply, Set.mem_ofPred_eq]
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩

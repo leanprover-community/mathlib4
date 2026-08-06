@@ -277,6 +277,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
@@ -374,6 +375,7 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   rw [DyckWord.ext_iff]; apply drop_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
+set_option backward.isDefEq.respectTransparency false in
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by
@@ -474,9 +476,9 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
 
 end Order
 
-section Tree
+section BinaryTree
 
-open Tree
+open BinaryTree
 
 /-- Convert a Dyck word to a binary rooted tree.
 
@@ -485,7 +487,7 @@ which has index `p.firstReturn`, then let `x` be everything strictly between sai
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
 subtrees to a new root node. -/
-def toTree (p : DyckWord) : Tree Unit :=
+def toTree (p : DyckWord) : BinaryTree Unit :=
   if p = 0 then nil else p.insidePart.toTree △ p.outsidePart.toTree
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_lt ‹_›]
@@ -494,9 +496,9 @@ decreasing_by exacts [semilength_insidePart_lt ‹_›, semilength_outsidePart_l
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
 is sent to `g(l).nest + g(r)`. -/
-def ofTree : Tree Unit → DyckWord
-  | Tree.nil => 0
-  | Tree.node _ l r => (ofTree l).nest + ofTree r
+def ofTree : BinaryTree Unit → DyckWord
+  | BinaryTree.nil => 0
+  | BinaryTree.node _ l r => (ofTree l).nest + ofTree r
 
 lemma ofTree_toTree (p) : ofTree p.toTree = p := by
   by_cases h : p = 0
@@ -509,11 +511,11 @@ termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
 lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
-  | Tree.nil => by simp [ofTree, toTree]
-  | Tree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
+  | BinaryTree.nil => by simp [ofTree, toTree]
+  | BinaryTree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-@[simps] def equivTree : DyckWord ≃ Tree Unit where
+@[simps] def equivTree : DyckWord ≃ BinaryTree Unit where
   toFun := toTree
   invFun := ofTree
   left_inv := ofTree_toTree
@@ -547,7 +549,7 @@ theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
   convert! Fintype.card_coe _
 
-end Tree
+end BinaryTree
 
 end DyckWord
 
@@ -557,11 +559,12 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]
-meta def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(DyckWord.firstReturn $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
     | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
