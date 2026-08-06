@@ -30,28 +30,34 @@ namespace KaroubiKaroubi
 
 variable (C : Type*) [Category* C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) : P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
   simpa only [hom_ext_iff, comp_f] using p_comm f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical functor `Karoubi (Karoubi C) ⥤ Karoubi C` -/
 @[simps]
 def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
   obj P := ⟨P.X.X, P.p.f, by simpa only [hom_ext_iff] using! P.idem⟩
   map f := ⟨f.f.f, by simpa only [hom_ext_iff] using! f.comm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [Preadditive C] : Functor.Additive (inverse C) where
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism of the equivalence -/
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
   eqToIso (Functor.ext (by cat_disch) (by simp))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
@@ -60,6 +66,7 @@ def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C
   hom := { app := fun P => { f := { f := P.p.1 } } }
   inv := { app := fun P => { f := { f := P.p.1 } } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/
 @[simps]
@@ -69,9 +76,11 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   unitIso := KaroubiKaroubi.unitIso C
   counitIso := KaroubiKaroubi.counitIso C
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance equivalence.additive_functor [Preadditive C] :
     Functor.Additive (equivalence C).functor where
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance equivalence.additive_inverse [Preadditive C] :
     Functor.Additive (equivalence C).inverse where
 

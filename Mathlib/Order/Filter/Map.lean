@@ -60,11 +60,7 @@ theorem mem_map' : t ∈ map m f ↔ { x | m x ∈ t } ∈ f :=
 theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 
--- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 
@@ -719,7 +715,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
-  haveI := nonempty_subtype.2 ne
+  have := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 

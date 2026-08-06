@@ -384,7 +384,7 @@ end SetToL1S
 
 end SimpleFunc
 
-open SimpleFunc
+open L1.SimpleFunc
 
 section SetToL1
 
@@ -624,7 +624,7 @@ section Function
 variable {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ} {f g : α → E}
 variable (μ T)
 
-open Classical in
+open scoped Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
 0 if the function is not integrable or if the target space is not complete. -/
 def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
@@ -843,6 +843,12 @@ theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ 
   rw [setToFun_congr_ae hT A, L1.setToFun_eq_setToL1 hT, L1.setToL1_eq_setToL1SCLM]
   apply (SimpleFunc.setToSimpleFunc_congr T (fun s ↦ hT.eq_zero_of_measure_zero) hT.1 hf _).symm
   grw [A, Lp.simpleFunc.toSimpleFunc_eq_toFun]
+
+theorem setToFun_simpleFunc_eq_setToSimpleFunc [CompleteSpace F]
+    (hT : DominatedFinMeasAdditive μ T C) (f : SimpleFunc α E) (hf : Integrable f μ) :
+    setToFun μ T hT f = f.setToSimpleFunc T := by
+  rw [setToFun_simpleFunc hT f hf]
+  rfl
 
 section Order
 
@@ -1383,6 +1389,66 @@ theorem tendsto_setToFun_filter_of_norm_le_const (hT : DominatedFinMeasAdditive 
   let C : α → ℝ := (fun _ => c)
   exact tendsto_setToFun_filter_of_dominated_convergence hT
     C h_meas h_boundc (integrable_const c) h_lim
+
+omit [NormedSpace ℝ E] in
+theorem _root_.measurableSet_integrable {β : Type*} {mβ : MeasurableSpace β} [SFinite μ]
+    ⦃f : β → α → E⦄ (hf : StronglyMeasurable (Function.uncurry f)) :
+    MeasurableSet {x | Integrable (f x) μ} := by
+  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
+  exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
+
+/-- The `setToFun` operation is measurable. This shows that the integrand of (the right-hand-side
+of) Fubini's theorem is measurable. This version has `f` in curried form. -/
+theorem StronglyMeasurable.setToFun_prod_right {β : Type*} {mβ : MeasurableSpace β} [SFinite μ]
+    (hT : DominatedFinMeasAdditive μ T C)
+    (h'T : ∀ (s : Set (β × α)), MeasurableSet s → StronglyMeasurable fun x => T (Prod.mk x ⁻¹' s))
+    ⦃f : β → α → E⦄ (hf : StronglyMeasurable (Function.uncurry f)) :
+    StronglyMeasurable fun x => setToFun μ T hT (f x) := by
+  classical
+  by_cases hF : CompleteSpace F; swap;
+  · simp [setToFun, hF, stronglyMeasurable_const]
+  borelize E
+  have : SeparableSpace (range (Function.uncurry f) ∪ {0} : Set E) :=
+    hf.separableSpace_range_union_singleton
+  let s : ℕ → SimpleFunc (β × α) E :=
+    SimpleFunc.approxOn _ hf.measurable (range (Function.uncurry f) ∪ {0}) 0 (by simp)
+  let s' : ℕ → β → SimpleFunc α E := fun n x => (s n).comp (Prod.mk x) measurable_prodMk_left
+  let f' : ℕ → β → F := fun n =>
+    {x | Integrable (f x) μ}.indicator fun x => (s' n x).setToSimpleFunc T
+  have hf' n : StronglyMeasurable (f' n) := by
+    refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
+    have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
+      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
+      simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
+    simp_rw [SimpleFunc.setToSimpleFunc_eq_sum_of_subset T hT.1.map_empty_eq_zero (this _)]
+    refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
+    simp only [s', SimpleFunc.coe_comp, preimage_comp]
+    apply StronglyMeasurable.apply_continuousLinearMap
+    apply h'T
+    exact (s n).measurableSet_fiber x
+  have h2f' : Tendsto f' atTop (𝓝 fun x : β => setToFun μ T hT (f x)) := by
+    apply tendsto_pi_nhds.2 fun x ↦ ?_
+    by_cases hfx : Integrable (f x) μ
+    · have (n : _) : Integrable (s' n x) μ := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
+        simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
+      simp only [mem_ofPred_eq, hfx, indicator_of_mem, this,
+        ← setToFun_simpleFunc_eq_setToSimpleFunc hT, f']
+      refine
+        tendsto_setToFun_of_dominated_convergence hT (fun y => ‖f x y‖ + ‖f x y‖)
+          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+      · refine fun n => Eventually.of_forall fun y =>
+          SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
+        · exact hf.measurable
+        · simp
+      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
+        · exact hf.measurable.of_uncurry_left
+        · simp
+        apply subset_closure
+        simp [-Function.uncurry_apply_pair]
+    · simp [f', hfx, setToFun_undef]
+  exact stronglyMeasurable_of_tendsto _ hf' h2f'
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 

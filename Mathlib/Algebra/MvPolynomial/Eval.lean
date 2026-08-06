@@ -195,6 +195,11 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
   rw [← comp_eval₂Hom]
   rfl
 
+theorem hom_eval₂ [CommSemiring S₂] (p : MvPolynomial σ R) (f : R →+* S₁)
+    (φ : S₁ →+* S₂) (g : σ → S₁) :
+    φ (p.eval₂ f g) = p.eval₂ (φ.comp f) (fun i => φ (g i)) :=
+  map_eval₂Hom f g φ p
+
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
   simp only [coe_eval₂Hom, eval₂_monomial]
@@ -218,6 +223,7 @@ theorem eval₂_eta (p : MvPolynomial σ R) : eval₂ C X p = p := by
   apply MvPolynomial.induction_on p <;>
     simp +contextual [eval₂_add, eval₂_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_congr (g₁ g₂ : σ → S₁)
     (h : ∀ {i : σ} {c : σ →₀ ℕ}, i ∈ c.support → coeff c p ≠ 0 → g₁ i = g₂ i) :
     p.eval₂ f g₁ = p.eval₂ f g₂ := by
@@ -473,8 +479,10 @@ theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
   simp only [coeff_map, coeff_zero, hr]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
-    map f (Finsupp.mapRange g hg φ) = φ ↔ ∀ d, f (g (coeff d φ)) = coeff d φ := by
+    map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
+      ∀ d, f (g (coeff d φ)) = coeff d φ := by
   simp_rw [MvPolynomial.ext_iff, coeff_map]; rfl
 
 lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
@@ -867,7 +875,7 @@ lemma algebraMap_def :
   rfl
 
 instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+  IsScalarTower.of_algebraMap_eq' (by ext; simp [C, monomial, map])
 
 instance [FaithfulSMul R S] : FaithfulSMul (MvPolynomial σ R) (MvPolynomial σ S) :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr

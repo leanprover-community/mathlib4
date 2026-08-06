@@ -54,7 +54,7 @@ variable {C}
 
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
   ⟨fun A B c hc => by
-    haveI : IsSplitMono c.inl :=
+    have : IsSplitMono c.inl :=
       IsSplitMono.mk' (SplitMono.mk (BinaryCofan.IsColimit.desc hc (𝟙 A) 0) (IsColimit.fac _ _ _))
     infer_instance⟩
 
@@ -63,7 +63,7 @@ namespace MonoCoprod
 set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
-  haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
+  have hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _
       (fun f₁ f₂ => BinaryCofan.IsColimit.desc (s := c) hc f₂ f₁)
       (by simp) (by simp)
@@ -76,6 +76,7 @@ instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inr : B ⟶ A ⨿ B) :=
   binaryCofan_inr _ (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
     Mono c₁.inl ↔ Mono c₂.inl := by
   suffices
@@ -214,6 +215,7 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
@@ -230,7 +232,7 @@ instance mono_ι [HasCoproduct X] (i : I)
 
 end
 
-open Functor
+open CategoryTheory.Functor
 
 section Preservation
 

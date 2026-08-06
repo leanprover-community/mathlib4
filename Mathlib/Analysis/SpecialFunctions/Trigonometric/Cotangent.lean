@@ -247,7 +247,7 @@ open scoped Nat
 variable (k : ℕ)
 
 private lemma contDiffOn_inv_linear (d : ℤ) : ContDiffOn ℂ k (fun z : ℂ ↦ 1 / (z + d)) ℂ_ℤ := by
-  simpa using ContDiffOn.inv (by fun_prop) (fun x hx ↦ integerComplement_add_ne_zero hx d)
+  simpa using ContDiffOn.fun_inv (by fun_prop) (fun x hx ↦ integerComplement_add_ne_zero hx d)
 
 lemma eqOn_iteratedDeriv_cotTerm (d : ℕ) :
     EqOn (iteratedDeriv k (fun z ↦ cotTerm z d))

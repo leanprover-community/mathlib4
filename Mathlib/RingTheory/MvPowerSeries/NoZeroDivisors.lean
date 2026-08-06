@@ -150,18 +150,18 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   · by_cases hg : g.weightedOrder w < ⊤
     · let p := (f.weightedOrder w).toNat
       have hp : p = f.weightedOrder w := by
-        simpa only [p, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+        simpa only [p, ENat.natCast_toNat_eq_self, ← lt_top_iff_ne_top]
       let q := (g.weightedOrder w).toNat
       have hq : q = g.weightedOrder w := by
-        simpa only [q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+        simpa only [q, ENat.natCast_toNat_eq_self, ← lt_top_iff_ne_top]
       have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
         simp only [ne_eq, mul_eq_zero]
         intro H
         rcases H with H | H <;>
         · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
-          simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
+          simp only [ENat.natCast_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
           rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
-          exact ENat.coe_toNat (ne_top_of_lt (by simpa))
+          exact ENat.natCast_toNat (ne_top_of_lt (by simpa))
       rw [← weightedHomogeneousComponent_mul_of_le_weightedOrder
           (le_of_eq hp) (le_of_eq hq)] at this
       rw [← hp, ← hq, ← Nat.cast_add, ← not_lt]
