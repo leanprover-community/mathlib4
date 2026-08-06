@@ -187,18 +187,16 @@ theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp only [isEdgeReachable_comm,edgeReachability]
 
-theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := by
-  apply iSup_le
-  intro k
-  apply iSup_le
-  intro hk
-  unfold edgeReachability
-  apply le_iSup_of_le
-  · apply le_iSup_of_le
-    · exact le_rfl
-    have := hk u v
-    assumption
---  exact le_iSup_of_le k <| le_iSup_of_le (hk u v) le_rfl
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := 
+  iSup_le
+  fun k ↦
+  iSup_le fun hk ↦
+    id
+      (le_iSup_of_le k
+        (le_iSup_of_le
+          (have this := hk u v;
+          this)
+          le_rfl))
 
 
 /-!
