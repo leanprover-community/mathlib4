@@ -8,7 +8,6 @@ module
 public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
-
 public import Mathlib.Tactic.Attr.Register
 
 /-!
@@ -47,7 +46,7 @@ simproc_decl eqComm (_ = _) := fun e => do
     -- These theorems would cause an infinite loop:
     ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
     `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
-    `vadd_eq_iff_eq_neg_vadd, `Equiv.apply_eq_iff_eq_symm_apply,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.eq_symm_apply,
     -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
     -- non-commutative way.)
     ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
@@ -481,7 +480,7 @@ theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
-  eqRec_heq_iff_heq.mpr h
+  eqRec_heq_iff.mpr h
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -765,15 +764,15 @@ noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
 
 /-- Any relation `p` is decidable classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_instance
 
 /-- Any type `α` has decidable equality classically. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value

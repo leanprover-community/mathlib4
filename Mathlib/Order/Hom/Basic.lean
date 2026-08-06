@@ -316,6 +316,7 @@ theorem mk_le_mk {f g : α → β} {hf hg} : mk f hf ≤ mk g hg ↔ f ≤ g :=
 theorem apply_mono {f g : α →o β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   (h₁ x).trans <| g.mono h₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Curry/uncurry as an order isomorphism between `α × β →o γ` and `α →o β →o γ`. -/
 def curry : (α × β →o γ) ≃o (α →o β →o γ) where
   toFun f := ⟨fun x ↦ ⟨Function.curry f x, fun _ _ h ↦ f.mono ⟨le_rfl, h⟩⟩, fun _ _ h _ =>
@@ -843,11 +844,15 @@ theorem symm_apply_apply (e : α ≃o β) (x : α) : e.symm (e x) = x :=
 theorem symm_refl (α : Type*) [LE α] : (refl α).symm = refl α :=
   rfl
 
-theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
-  e.toEquiv.apply_eq_iff_eq_symm_apply
-
 theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = e x :=
   e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply (e : α ≃o β) {x : α} {y : β} : x = e.symm y ↔ e x = y :=
+  e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+theorem apply_eq_iff_eq_symm_apply (e : α ≃o β) (x : α) (y : β) : e x = y ↔ x = e.symm y :=
+  e.eq_symm_apply.symm
 
 @[simp]
 theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
@@ -911,6 +916,7 @@ theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
     (f.trans g).trans h = f.trans (g.trans h) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -988,6 +994,7 @@ def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
 @[simps! (attr := grind =)]
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :

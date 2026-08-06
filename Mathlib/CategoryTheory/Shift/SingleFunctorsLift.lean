@@ -24,7 +24,7 @@ we lift `F` in `SingleFunctor C D A`.
 
 namespace CategoryTheory
 
-open Category Functor
+open Category CategoryTheory.Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
   {A : Type*} [AddMonoid A] [HasShift D A] [HasShift E A]
@@ -56,7 +56,6 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 end lift
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
 a fully faithful functor `G : D ⥤ A` which commutes with shifts.
@@ -89,7 +88,6 @@ lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
   lift.map_shiftIso_hom_app ..
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- After postcomposition with the fully faithful functor `G`,
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
 @[simps!]

@@ -190,6 +190,7 @@ end
 theorem types_π_surjective (D : GlueData Type*) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
@@ -327,6 +328,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   rintro (_ | _ | _)
   all_goals simp [e]; rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If there is a forgetful functor into `Type` that preserves enough (co)limits, then `D.ι` will
 be jointly surjective. -/
 theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]
