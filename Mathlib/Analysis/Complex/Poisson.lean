@@ -6,6 +6,7 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
 module
 
 public import Mathlib.Analysis.Complex.MeanValue
+public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-!
 # Poisson Integral Formula
@@ -17,7 +18,7 @@ integration and with the Poisson kernel, respectively.
 
 public section
 
-open Complex Metric Real Set
+open Complex MeasureTheory Metric Real Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
@@ -140,6 +141,38 @@ theorem le_re_herglotzRieszKernel {c z : ℂ} (hz : z ∈ sphere c R) (hw : w �
   simpa using le_re_herglotzRieszKernel_aux (z - c).arg (w - c).arg ‖w - c‖ ‖z - c‖
     (by simpa using h₁w) (mem_ball_iff_norm.1 hw)
 
+/--
+The Herglotz–Riesz kernel `herglotzRieszKernel c w` is continuous on the circle `sphere c |R|`
+whenever `w ∈ ball c R`.
+-/
+@[fun_prop] lemma continuousOn_herglotzRieszKernel_sphere (hw : w ∈ ball c R) :
+    ContinuousOn (herglotzRieszKernel c w) (sphere c |R|) := by
+  apply ContinuousOn.div (by fun_prop) (by fun_prop)
+  grind [mem_sphere, mem_ball, le_abs_self R]
+
+/--
+Taking real parts commutes with the Herglotz–Riesz kernel integral of a real-valued
+circle-integrable function.
+-/
+theorem re_circleAverage_herglotzRieszKernel_smul {g : ℂ → ℝ}
+    (hg : CircleIntegrable g 0 R) (hw : w ∈ ball 0 R) :
+    (circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R).re
+      = circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • g) 0 R := by
+  have h₁ : CircleIntegrable (fun ζ ↦ (g ζ : ℂ)) 0 R := by
+    simp only [CircleIntegrable, intervalIntegrable_iff] at hg ⊢
+    exact Complex.ofRealCLM.integrable_comp hg
+  have h₂ : CircleIntegrable (fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R :=
+    h₁.continuousOn_smul (continuousOn_herglotzRieszKernel_sphere hw)
+  calc (circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R).re
+      = circleAverage (Complex.reCLM ∘ fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R :=
+        (Complex.reCLM.circleAverage_comp_comm h₂).symm
+    _ = circleAverage ((Complex.re ∘ herglotzRieszKernel 0 w) • g) 0 R := by
+        simp [Function.comp_def, Complex.mul_re, Pi.mul_def]
+
+/-!
+## Integral Formulas
+-/
+
 -- Trigonometric identity used in the computation of
 -- `DiffContOnCl.circleAverage_re_smul_on_ball_zero`.
 private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
@@ -149,10 +182,6 @@ private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
   simp only [Complex.ext_iff, exp_ofReal_mul_I, add_re, sub_re, mul_re, div_re, ofReal_re,
     I_re, I_im, add_im, sub_im, mul_im, div_im, ofReal_im, normSq_apply]
   grind [Real.sin_sq]
-
-/-!
-## Integral Formulas
--/
 
 -- Version of `DiffContOnCl.circleAverage_re_smul` in case where the center of the ball is zero.
 private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
@@ -257,3 +286,97 @@ theorem DiffContOnCl.circleAverage_poissonKernel_smul' [CompleteSpace E] {c : �
     Real.circleAverage (fun z ↦ ((‖z - c‖ ^ 2 - ‖w - c‖ ^ 2) / ‖(z - c) - (w - c)‖ ^ 2) • f z) c R
       = f w := by
   apply hf.circleAverage_poissonKernel_smul hw
+
+/-!
+## Derivative of the Herglotz–Riesz Kernel Integral
+-/
+
+/-
+For `w ∈ ball c R`, there is a radius `d > 0` such that `ball w d ⊆ ball c R` and all points of
+`ball w d` keep distance at least `d` from the circle `sphere c R`.
+-/
+private lemma exists_ball_subset_forall_le_norm_circleMap_sub (hw : w ∈ ball c R) :
+    ∃ d > 0, ball w d ⊆ ball c R ∧ ∀ x ∈ ball w d, ∀ θ : ℝ, d ≤ ‖circleMap c R θ - x‖ := by
+  have : Disjoint {w} (ball c R)ᶜ := by simpa
+  obtain ⟨d, hd, h_disj⟩ := this.exists_thickenings isCompact_singleton isOpen_ball.isClosed_compl
+  refine ⟨d, hd, ?_, ?_⟩ <;> grw [thickening_singleton] at h_disj
+  · simpa using (h_disj.mono_right (self_subset_thickening hd _)).subset_compl_left
+  · intro x hx θ
+    have := h_disj.subset_compl_right hx
+    simp only [mem_compl_iff, mem_thickening_iff, mem_ball, not_lt, not_exists, not_and] at this
+    simpa [← dist_eq_norm'] using this (circleMap c R θ) (by simp [dist_eq_norm, le_abs_self])
+
+/--
+**Derivative of the Herglotz–Riesz kernel integral**: if `f` is circle integrable and `w` lies
+inside the circle, then `w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R` has
+derivative `circleAverage (fun ζ ↦ (2 * ζ / (ζ - w) ^ 2) • f ζ) 0 R` at `w`.
+-/
+theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable f 0 R)
+    (hw : w ∈ ball 0 R) :
+    HasDerivAt (fun w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R)
+      (circleAverage (fun ζ ↦ (2 * ζ / (ζ - w) ^ 2) • f ζ) 0 R) w := by
+  have hR : 0 < R := pos_of_mem_ball hw
+  obtain ⟨d, hd, hsub, hdist⟩ := exists_ball_subset_forall_le_norm_circleMap_sub hw
+  have hgm : AEStronglyMeasurable (fun θ ↦ f (circleMap 0 R θ))
+      (volume.restrict (uIoc 0 (2 * π))) := (intervalIntegrable_iff.1 hg).aestronglyMeasurable
+  simp only [circleAverage_def]
+  apply HasDerivAt.const_smul
+  refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
+    (F' := fun x θ ↦ (2 * circleMap 0 R θ / (circleMap 0 R θ - x) ^ 2) • f (circleMap 0 R θ))
+    (bound := fun θ ↦ 2 * R * (d ^ 2)⁻¹ * ‖f (circleMap 0 R θ)‖)
+    (ball_mem_nhds w hd) ?meas1 ?int ?meas2 ?bound ?int_bound ?diff).2
+  -- Measurability of the integrand, for `x` near `w`
+  case meas1 =>
+    filter_upwards with x
+    apply AEStronglyMeasurable.smul _ hgm
+    simp only [herglotzRieszKernel_def, sub_zero]
+    exact Measurable.aestronglyMeasurable (by fun_prop)
+  -- Integrability of the integrand at `w`
+  case int =>
+    have h₁ : CircleIntegrable (herglotzRieszKernel 0 w • f) 0 R :=
+      hg.continuousOn_smul (continuousOn_herglotzRieszKernel_sphere hw)
+    simpa only [CircleIntegrable, Pi.smul_apply'] using h₁
+  -- Measurability of the differentiated integrand
+  case meas2 =>
+    exact (Measurable.aestronglyMeasurable (by fun_prop)).smul hgm
+  -- Uniform bound for the differentiated integrand near `w`
+  case bound =>
+    filter_upwards with θ _ x hx
+    have h₁ : ‖(2 : ℂ)‖ = 2 := by norm_num
+    rw [norm_smul, norm_div, norm_mul, norm_circleMap_zero, abs_of_pos hR, norm_pow,
+      div_eq_mul_inv, h₁]
+    gcongr
+    exact hdist x hx θ
+  -- Integrability of the bound
+  case int_bound =>
+    exact (IntervalIntegrable.norm hg).const_mul _
+  -- Differentiability of the integrand in `x`, for `x` near `w`
+  case diff =>
+    filter_upwards with θ _ x hx
+    have h₁ : circleMap 0 R θ - x ≠ 0 := sub_ne_zero.2 (circleMap_ne_mem_ball (hsub hx) θ)
+    have h₂ : HasDerivAt (fun x ↦ herglotzRieszKernel 0 x (circleMap 0 R θ))
+        (2 * circleMap 0 R θ / (circleMap 0 R θ - x) ^ 2) x := by
+      have h₃ := ((hasDerivAt_id' x).const_add (circleMap 0 R θ)).div
+        ((hasDerivAt_id' x).const_sub (circleMap 0 R θ)) h₁
+      simpa [herglotzRieszKernel_def, sub_zero, sub_sub, ← two_mul, Pi.div_def] using h₃
+    exact h₂.smul_const (f (circleMap 0 R θ))
+
+/--
+The Herglotz–Riesz kernel integral of a circle-integrable function is differentiable in the pole
+parameter, throughout the open ball.
+-/
+theorem differentiableOn_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable f 0 R) :
+    DifferentiableOn ℂ
+      (fun w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R) (ball 0 R) :=
+  fun _ hw ↦ hasDerivAt_circleAverage_herglotzRieszKernel_smul hg hw
+    |>.differentiableAt.differentiableWithinAt
+
+/--
+The Herglotz–Riesz kernel integral of a circle-integrable function is analytic in the pole
+parameter, throughout the open ball.
+-/
+theorem analyticOnNhd_circleAverage_herglotzRieszKernel_smul [CompleteSpace E]
+    (hg : CircleIntegrable f 0 R) :
+    AnalyticOnNhd ℂ
+      (fun w ↦ circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • f ζ) 0 R) (ball 0 R) :=
+  (differentiableOn_circleAverage_herglotzRieszKernel_smul hg).analyticOnNhd isOpen_ball

@@ -1042,51 +1042,55 @@ section bilin
 
 open ContDiffMapSupportedIn
 
-variable {𝕜} {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
 
 open ContinuousLinearMap Finset
 
+variable {𝕜}
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on 𝓓^{n}_{K}(E, F₁),
-where `B` is a continuous `𝕜`-linear map and `g` is a C^n function. -/
+where `B` is a continuous `𝕜`-linear map and `g` is a C^n function.
+
+TODO: Introduce a type of bundled C^k functions. -/
 noncomputable def bilinLeftCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] 𝓓^{n}_{K}(E, F₃) :=
-  ContDiffMapSupportedIn.mkCLM 𝕜 (fun φ x ↦ B (φ x) (g x))
-    (fun φ ψ x ↦ by simp)
-    (fun c φ x ↦ by simp)
-    (fun φ ↦ (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      (φ.contDiff.prodMk hg))
-    (fun φ x hx ↦ by simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply])
-    (fun k hk ↦ by
-      have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
-          (fun i ↦ ‖iteratedFDeriv ℝ i g x‖) :=
-        Continuous.finset_sup'_apply Finset.nonempty_range_add_one fun i hi ↦
-          (hg.continuous_iteratedFDeriv (WithTop.coe_le_coe.2
-            (le_trans (WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)) hk))).norm
-      obtain ⟨C₀, hC₀⟩ := K.isCompact.exists_bound_of_continuousOn hcont.continuousOn
-      have hgC₀ : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ ‖C₀‖ := fun i hi x hx ↦
-        (Finset.le_sup' _ (Finset.mem_range_succ_iff.2 hi)).trans
-          ((Real.le_norm_self _).trans ((hC₀ x hx).trans (Real.le_norm_self C₀)))
-      refine ⟨Finset.Iic k, ‖B‖ * 2 ^ k * ‖C₀‖, by positivity, fun φ x hx ↦ ?_⟩
-      calc
-        ‖iteratedFDeriv ℝ k (fun y ↦ B (φ y) (g y)) x‖
-          ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) * ‖iteratedFDeriv ℝ i φ x‖ *
-              ‖iteratedFDeriv ℝ (k - i) g x‖ := by
-            simpa using (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear
-              φ.contDiff hg x (mod_cast hk)
-        _ ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) *
-              ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ * ‖C₀‖ := by
-            gcongr with i hi
-            · exact (norm_iteratedFDeriv_apply_le_seminorm 𝕜
-                ((WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)).trans hk)).trans
-                (Seminorm.le_finset_sup_apply (Finset.mem_Iic.2 (mem_range_succ_iff.mp hi)))
-            · exact hgC₀ (k - i) (Nat.sub_le k i) x hx
-        _ = ‖B‖ * 2 ^ k * ‖C₀‖ * ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ := by
-            simp_rw [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
-            push_cast
-            ring)
+  ContDiffMapSupportedIn.mkCLM 𝕜 (fun φ x ↦ B (φ x) (g x)) ?hadd ?hsmul (fun φ ↦ ?hsmooth)
+    (fun φ x hx ↦ ?hsupp) (fun k hk ↦ ?hbound)
+where finally
+  case hadd | hsmul => intros; simp
+  case hsmooth =>
+    exact (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp (φ.contDiff.prodMk hg)
+  case hsupp => simp only [φ.zero_on_compl hx, Pi.zero_apply, map_zero, zero_apply]
+  case hbound =>
+    have hcont : Continuous fun x ↦ (Finset.range (k + 1)).sup' Finset.nonempty_range_add_one
+        (fun i ↦ ‖iteratedFDeriv ℝ i g x‖) :=
+      Continuous.finset_sup'_apply Finset.nonempty_range_add_one fun i hi ↦
+        (hg.continuous_iteratedFDeriv (WithTop.coe_le_coe.2
+          (le_trans (WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)) hk))).norm
+    obtain ⟨C₀, hC₀⟩ := K.isCompact.exists_bound_of_continuousOn hcont.continuousOn
+    have hgC₀ : ∀ i ≤ k, ∀ x ∈ K, ‖iteratedFDeriv ℝ i g x‖ ≤ ‖C₀‖ := fun i hi x hx ↦
+      (Finset.le_sup' _ (Finset.mem_range_succ_iff.2 hi)).trans
+        ((Real.le_norm_self _).trans ((hC₀ x hx).trans (Real.le_norm_self C₀)))
+    refine ⟨Finset.Iic k, ‖B‖ * 2 ^ k * ‖C₀‖, by positivity, fun φ x hx ↦ ?_⟩
+    calc
+      ‖iteratedFDeriv ℝ k (fun y ↦ B (φ y) (g y)) x‖
+        ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) * ‖iteratedFDeriv ℝ i φ x‖ *
+            ‖iteratedFDeriv ℝ (k - i) g x‖ := by
+          simpa using (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear
+            φ.contDiff hg x (mod_cast hk)
+      _ ≤ ‖B‖ * ∑ i ∈ Finset.range (k + 1), (k.choose i : ℝ) *
+            ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ * ‖C₀‖ := by
+          gcongr with i hi
+          · exact (norm_iteratedFDeriv_apply_le_seminorm 𝕜
+              ((WithTop.coe_le_coe.2 (mem_range_succ_iff.mp hi)).trans hk)).trans
+              (Seminorm.le_finset_sup_apply (Finset.mem_Iic.2 (mem_range_succ_iff.mp hi)))
+          · exact hgC₀ (k - i) (Nat.sub_le k i) x hx
+      _ = ‖B‖ * 2 ^ k * ‖C₀‖ * ((Finset.Iic k).sup fun m ↦ N[𝕜]_{K, n, m}) φ := by
+          simp_rw [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
+          push_cast
+          ring
 
 @[simp]
 theorem bilinLeftCLM_apply (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {g : E → F₂} (hg : ContDiff ℝ n g)

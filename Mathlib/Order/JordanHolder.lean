@@ -116,7 +116,7 @@ theorem Iso.rel
     (h_rel : ∀ {x y}, IsMaximal x (x ⊔ y) → e (x, x ⊔ y) (x ⊓ y, y))
     {x y : X × X} (h_iso : Iso x y) : e x y := by
   have : IsEquiv (X × X) e := { refl _ := h_refl, symm _ _ := h_symm, trans _ _ _ := h_trans }
-  refine Relation.EqvGen.eqvGen_le ?_ h_iso
+  refine Relation.EqvGen.eqvGen_le ?_ _ _ h_iso
   rintro ⟨a, b⟩ ⟨c, d⟩ ⟨h, rfl : b = a ⊔ d, rfl : c = a ⊓ d⟩
   exact h_rel h
 
@@ -243,7 +243,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
-  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_ofPred_eq] at this
   convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 

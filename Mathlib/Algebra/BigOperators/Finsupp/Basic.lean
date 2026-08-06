@@ -409,7 +409,7 @@ theorem liftAddHom_symm_apply_apply [AddZeroClass M] [AddCommMonoid N] (F : (α 
 theorem liftAddHom_singleAddHom [AddCommMonoid M] :
     (liftAddHom (α := α) (M := M) (N := α →₀ M)) (singleAddHom : α → M →+ α →₀ M) =
       AddMonoidHom.id _ :=
-  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+  liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=

@@ -69,17 +69,18 @@ lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
 
 lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     (Ideal.span {x} : Set 𝒪[K]) = Metric.closedBall 0 ‖x‖ := by
-  simp [Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
+  simp [Valuation.integer.coe_span_singleton_eq_setOfPred_le_v_coe, Set.ext_iff,
+    ← NNReal.coe_le_coe]
 
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
-  simp [h.maximalIdeal_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
+  simp [h.maximalIdeal_eq_setOfPred_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
 lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
-  simp [h.maximalIdeal_pow_eq_setOf_le_v_coe_pow, Set.ext_iff, ← NNReal.coe_le_coe]
+  simp [h.maximalIdeal_pow_eq_setOfPred_le_v_coe_pow, Set.ext_iff, ← NNReal.coe_le_coe]
 
 variable (K) in
 lemma exists_norm_coe_lt_one : ∃ x : 𝒪[K], 0 < ‖(x : K)‖ ∧ ‖(x : K)‖ < 1 := by
@@ -152,7 +153,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
 
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
-      (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
+      (Valuation.integer.integers _).coe_span_singleton_eq_setOfPred_le_v_algebraMap]
     rw [dist_comm] at hy'
     simpa [dist_eq_norm] using! hy'.le
   · intro H
@@ -167,7 +168,8 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
     have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n) := by
       ext
       simp [← norm_pow]
-    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
+    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n),
+      hp.maximalIdeal_pow_eq_setOfPred_le_v_coe_pow,
       this, AddSubgroupClass.coe_norm, Set.image_univ, Set.mem_range, Set.iUnion_exists,
       Set.iUnion_iUnion_eq', Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
@@ -264,7 +266,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
-    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
+    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_ofPred_eq, and_imp]
     -- we get the `c` from the cover that covers our arbitrary `i` with its set
     obtain ⟨c, hc⟩ := i.val.prop
     intro hzi hi1
@@ -275,9 +277,9 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     -- and this `c` is either less than or greater than (or equal to) the threshold element
     simp only [MonoidWithZeroHom.coe_ofClass] at hc
     split_ifs at hj' with hcj
-    · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
+    · simp only [Set.mem_ofPred_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
       simp [hcj, le_antisymm hj' hzi]
-    · simp only [Set.mem_setOf_eq] at hj'
+    · simp only [Set.mem_ofPred_eq] at hj'
       rw [dif_neg hcj]
       simp [← hj', hc]
 
@@ -338,7 +340,7 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
 lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
-             toNormedField.setOf_mem_integer_eq_closedBall]
+             toNormedField.setOfPred_mem_integer_eq_closedBall]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
   · suffices LocallyCompactSpace K from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
@@ -350,7 +352,7 @@ lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_fini
     ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   simp only [properSpace_iff_compactSpace_integer,
       compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField,
-      toNormedField.setOf_mem_integer_eq_closedBall,
+      toNormedField.setOfPred_mem_integer_eq_closedBall,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
       NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
       Subtype.range_coe_subtype]

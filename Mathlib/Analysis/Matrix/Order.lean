@@ -169,7 +169,7 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
   · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
-      exists_exists_eq_and, Set.mem_setOf_eq, forall_exists_index]
+      exists_exists_eq_and, Set.mem_ofPred_eq, forall_exists_index]
     rintro i rfl
     exact_mod_cast h.eigenvalues_nonneg _
   · rw [h1.posSemidef_iff_eigenvalues_nonneg]
