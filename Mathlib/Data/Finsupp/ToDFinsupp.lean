@@ -251,6 +251,7 @@ variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
   toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
