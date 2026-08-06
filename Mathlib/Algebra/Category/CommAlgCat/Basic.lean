@@ -26,7 +26,6 @@ universe w v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
-set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure CommAlgCat where
   private mk ::
@@ -57,7 +56,6 @@ abbrev of (X : Type v) [CommRing X] [Algebra R X] : CommAlgCat.{v} R := ⟨X⟩
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Algebra R X] : (of R X : Type v) = X := rfl
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommAlgCat R`. -/
 @[ext]
 structure Hom (A B : CommAlgCat.{v} R) where

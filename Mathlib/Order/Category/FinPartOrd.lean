@@ -71,8 +71,6 @@ abbrev ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Finty
 @[simp]
 lemma hom_hom_id {X : FinPartOrd} : (𝟙 X : X ⟶ X).hom.hom = OrderHom.id := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_id := hom_hom_id
-
 /- Provided for rewriting. -/
 lemma id_apply (X : FinPartOrd) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
@@ -80,8 +78,6 @@ lemma id_apply (X : FinPartOrd) (x : X) :
 @[simp]
 lemma hom_hom_comp {X Y Z : FinPartOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom.hom = g.hom.hom.comp f.hom.hom := rfl
-
-@[deprecated (since := "2025-12-18")] alias hom_comp := hom_hom_comp
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : FinPartOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -96,13 +92,9 @@ lemma hom_hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y]
     (f : X →o Y) :
   (ofHom f).hom.hom = f := rfl
 
-@[deprecated (since := "2025-12-18")] alias hom_ofHom := hom_hom_ofHom
-
 @[simp]
 lemma ofHom_hom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :
     ofHom f.hom.hom = f := rfl
-
-@[deprecated (since := "2025-12-18")] alias ofHom_hom := ofHom_hom_hom
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]

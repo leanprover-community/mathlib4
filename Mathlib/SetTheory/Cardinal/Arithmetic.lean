@@ -40,6 +40,7 @@ namespace Cardinal
 /-! ### Properties of `mul` -/
 section mul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
@@ -543,6 +544,7 @@ end mul_strictMono
 /-! ### Properties about `power` -/
 section power
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
   H3.symm ▸
@@ -641,7 +643,7 @@ theorem mk_surjective_eq_zero_iff_lift :
   contrapose! +distrib
   rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
-    Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
+    Set.Nonempty, mem_ofPred, exists_surjective_iff, nonempty_fun]
 
 theorem mk_surjective_eq_zero_iff :
     #{f : α → β | Surjective f} = 0 ↔ #α < #β ∨ (#α ≠ 0 ∧ #β = 0) := by
@@ -840,7 +842,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     (h2 : lift.{v, u} #s = lift.{u, v} #t) :
     lift.{v} #(sᶜ : Set α) = lift.{u} #(tᶜ : Set β) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq'.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases lift_mk_eq'.1 h1 with ⟨e⟩; let : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
     lift s to Finset α using s.toFinite
@@ -886,7 +888,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · exact extend_function_finite f h
   · apply extend_function f
     obtain ⟨g⟩ := id h
-    haveI := Infinite.of_injective _ g.injective
+    have := Infinite.of_injective _ g.injective
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]

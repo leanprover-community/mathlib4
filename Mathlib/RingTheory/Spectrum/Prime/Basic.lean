@@ -85,8 +85,8 @@ variable (R S)
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
-    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
-      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_setOf.mp hJ⟩, rfl⟩⟩
+    ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_ofPred.mpr <| hj ▸ j.isPrime,
+      fun hJ ↦ Set.mem_range.mpr ⟨⟨J, Set.mem_ofPred.mp hJ⟩, rfl⟩⟩
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]
@@ -166,7 +166,7 @@ theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
 
 theorem mem_vanishingIdeal (t : Set (PrimeSpectrum R)) (f : R) :
     f ∈ vanishingIdeal t ↔ ∀ x ∈ t, f ∈ x.asIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : PrimeSpectrum R) :
@@ -187,6 +187,7 @@ theorem gc :
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
@@ -454,9 +455,9 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   rw [Multiset.map_add, Multiset.prod_add]
   apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
-  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
+  apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_left)
   rw [mul_add]
-  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
+  apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_right)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
 /-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
@@ -491,9 +492,9 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   rw [Multiset.map_add, Multiset.prod_add]
   refine ⟨le_trans (mul_le_mul' h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
-    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
+    apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_left)
     rw [mul_add]
-    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_left)
+    apply sup_le (show span A {x} * M ≤ M from Ideal.mul_le_right)
     rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
   · rintro (hx | hy) <;> contradiction
 

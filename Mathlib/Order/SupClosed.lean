@@ -359,6 +359,7 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
   · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
     exact ⟨a ⊓ b, isSublattice_latticeClosure.infClosed ha hb, map_inf ..⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
   ext
@@ -400,7 +401,7 @@ end DistribLattice
 
 /-- A join-semilattice where every sup-closed set has a least upper bound is automatically complete.
 -/
-@[to_dual (attr := implicit_reducible) /--
+@[to_dual (attr := instance_reducible) /--
 A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/]
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
