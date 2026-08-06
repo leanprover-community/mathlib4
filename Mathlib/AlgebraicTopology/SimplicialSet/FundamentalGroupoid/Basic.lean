@@ -39,8 +39,9 @@ def homMk {x y : X _⦋0⦌₂} (e : Edge x y) : mk x ⟶ mk y :=
   FreeGroupoid.homMk (HomotopyCategory.homMk e)
 
 @[simp]
-lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) := by
-  sorry
+lemma homMk_id (x : X _⦋0⦌₂) : homMk (Edge.id x) = 𝟙 (mk x) :=
+  ((FreeGroupoid.of X.HomotopyCategory).congr_map (by simp)).trans
+    ((FreeGroupoid.of X.HomotopyCategory).map_id _)
 
 @[reassoc]
 lemma homMk_comp {x₀ x₁ x₂ : X _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
