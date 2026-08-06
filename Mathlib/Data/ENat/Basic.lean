@@ -17,10 +17,8 @@ public import Mathlib.Data.Nat.SuccPred
 /-!
 # Definition and basic properties of extended natural numbers
 
-In this file, we prove some basic lemmas
-about `ENat` (notation: `ℕ∞`).
-
-Refer to `ENat/Defs.lean` for the definition and notation
+In this file we define `ENat` (notation: `ℕ∞`) to be `WithTop ℕ` and prove some basic lemmas
+about this type.
 
 ## Implementation details
 
