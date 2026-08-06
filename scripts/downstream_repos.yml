@@ -92,6 +92,15 @@
     build: push.yml
     docs: push.yml
     release-tag: lean-release-tag.yml
+- github: https://github.com/LeanMachineLearning/LML
+  default_branch: main
+  name: Lean Machine Learning
+  zulip-contact: Rémy Degenne
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
 - github: https://github.com/RemyDegenne/brownian-motion
   default_branch: master
   name: Brownian motion project

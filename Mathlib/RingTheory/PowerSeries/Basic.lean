@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
@@ -55,6 +56,7 @@ noncomputable section
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
+@[wikidata Q1003025]
 abbrev PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 
@@ -85,6 +87,10 @@ def monomial (n : ℕ) : R →ₗ[R] R⟦X⟧ :=
 theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
     coeff (R := R) n = MvPowerSeries.coeff s := by
   rw [coeff, ← h, ← Finsupp.unique_single s]
+
+@[simp]
+lemma coeff_coeToMvPowerSeries {f : R⟦X⟧} (n : ℕ) :
+    MvPowerSeries.coeff (Finsupp.single () n) f = f.coeff n := rfl
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
@@ -226,12 +232,12 @@ theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
 
+@[simp, grind =]
 theorem coeff_X_pow (m n : ℕ) : coeff m ((X : R⟦X⟧) ^ n) = if m = n then 1 else 0 := by
   rw [X_pow_eq, coeff_monomial]
 
-@[simp]
 theorem coeff_X_pow_self (n : ℕ) : coeff n ((X : R⟦X⟧) ^ n) = 1 := by
-  rw [coeff_X_pow, if_pos rfl]
+  simp
 
 @[simp]
 theorem coeff_one (n : ℕ) : coeff n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=

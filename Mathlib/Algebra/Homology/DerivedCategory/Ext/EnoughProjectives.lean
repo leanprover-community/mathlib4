@@ -99,7 +99,7 @@ open DerivedCategory
 set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
     (by lia)).hom.app _), zero_hom, Limits.zero_comp]
@@ -124,7 +124,7 @@ instances, we would have to specify the universe explicitly almost
 everywhere, which would be an inconvenience. Then, we must be
 very selective regarding `HasExt` instances. -/
 lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] : HasExt.{w} C := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   have := hasExt_of_hasDerivedCategory C
   rw [hasExt_iff_small_ext.{w}]
   intro X Y n

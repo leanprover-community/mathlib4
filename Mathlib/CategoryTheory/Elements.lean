@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 /-!
 # The category of elements
@@ -50,6 +51,7 @@ def Functor.Elements (F : C ⥤ Type w) :=
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
 abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -197,6 +199,7 @@ theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
       ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm PUnit.unit]; rfl⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between the category of elements `F.Elements`
 and the comma category `(*, F)`. -/
 @[simps]
@@ -208,6 +211,7 @@ def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
 
 open Opposite
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
@@ -234,6 +238,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
@@ -251,6 +256,7 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
     simpa only [Functor.map_id, Category.id_comp] using!
       (yonedaEquiv.symm_apply_apply X.hom).symm))
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
@@ -353,6 +359,26 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 -/
 def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
   isInitialOfRepresentableBy (.yoneda A)
+
+/-- The functor `(F ⋙ G).Elements ⥤ G.Elements`. -/
+@[simps]
+def Elements.precomp {D : Type*} [Category D] (F : C ⥤ D) (G : D ⥤ Type w) :
+    (F ⋙ G).Elements ⥤ G.Elements where
+  obj x := G.elementsMk (F.obj x.fst) x.snd
+  map f := ⟨F.map f.1, f.2⟩
+
+instance Elements.essentiallySmall {C : Type u} [Category.{v} C]
+    (F : C ⥤ Type w) [EssentiallySmall.{w} C] :
+    EssentiallySmall.{w} F.Elements := by
+  rw [essentiallySmall_iff_objectPropertyEssentiallySmall_top]
+  obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_small_le' (⊤ : ObjectProperty C)
+  refine ⟨fun x ↦ P x.1, ?_, fun y _ ↦ ?_⟩
+  · exact small_of_surjective.{w} (α := Σ (Z : Subtype P), F.obj Z.1)
+      (f := fun x ↦ ⟨F.elementsMk _ x.2, x.1.2⟩)
+      (fun ⟨x, hx⟩ ↦ ⟨⟨⟨x.1, hx⟩, x.2⟩, rfl⟩)
+  · obtain ⟨Z, hZ, ⟨e⟩⟩ := hP y.fst (by simp)
+    exact ⟨F.elementsMk Z (F.map e.hom y.snd), hZ,
+      ⟨CategoryOfElements.isoMk _ _ e rfl⟩⟩
 
 end Functor
 

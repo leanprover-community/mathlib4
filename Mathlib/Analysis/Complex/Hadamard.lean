@@ -147,6 +147,7 @@ lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
 
 variable [NormedSpace ℂ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When the function `f` is bounded above on a vertical strip, then so is `F`. -/
 lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :

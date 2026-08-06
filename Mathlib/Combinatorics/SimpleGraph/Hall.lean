@@ -49,8 +49,8 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
     split_ifs at h
     · exact h ▸ h₂ ⟨v, by assumption⟩
     · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
-  edge_vert {v w} := by grind
-  symm {x y} := by grind
+  edge_vert := by grind
+  symm.symm := by grind
 
 variable [G.LocallyFinite] {p₁ p₂ : Set V}
 

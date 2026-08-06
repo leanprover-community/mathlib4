@@ -85,7 +85,7 @@ variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -229,7 +229,7 @@ variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -280,7 +280,7 @@ variable [NonAssocRing R]
 
 instance funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr
@@ -331,7 +331,7 @@ variable [NonAssocRing R]
 
 instance funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
-  coe_injective' f g h := by
+  coe_injective f g h := by
     cases f
     cases g
     congr

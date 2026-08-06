@@ -144,7 +144,7 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
-    haveI : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
+    have : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
@@ -194,7 +194,7 @@ lemma quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G �
 
 lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
+  rw [← eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
 set_option backward.isDefEq.respectTransparency false in

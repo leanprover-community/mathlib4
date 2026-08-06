@@ -38,7 +38,7 @@ variable {n : ℕ}
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
   The theorem `Nat.prime_def` witnesses this description of a prime number. -/
-@[pp_nodot]
+@[pp_nodot, wikidata Q49008]
 def Prime (p : ℕ) :=
   Irreducible p
 
@@ -162,6 +162,12 @@ much faster.
 instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
+/-!
+### Specific small primes
+
+It is recommended not to add further lemmas to this list; instead, import
+`Mathlib.Tactic.NormNum.Prime` in downstream files and use `norm_num` for primality proofs.
+-/
 theorem prime_two : Prime 2 := by decide
 
 theorem prime_three : Prime 3 := by decide

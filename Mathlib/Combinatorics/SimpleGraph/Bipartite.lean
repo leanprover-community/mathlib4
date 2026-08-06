@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -106,7 +106,7 @@ theorem IsBipartiteWith.mem_of_mem_adj
 theorem isBipartiteWith_neighborSet (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborSet v = { w ∈ t | G.Adj v w } := by
   ext w
-  rw [mem_neighborSet, Set.mem_setOf_eq, iff_and_self]
+  rw [mem_neighborSet, Set.mem_ofPred_eq, iff_and_self]
   exact h.mem_of_mem_adj hv
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor set of `v` is a subset of `t`. -/
@@ -132,7 +132,7 @@ theorem IsBipartiteWith.mem_of_mem_adj'
 theorem isBipartiteWith_neighborSet' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     G.neighborSet w = { v ∈ s | G.Adj v w } := by
   ext v
-  rw [mem_neighborSet, adj_comm, Set.mem_setOf_eq, iff_and_self]
+  rw [mem_neighborSet, adj_comm, Set.mem_ofPred_eq, iff_and_self]
   exact h.mem_of_mem_adj' hw
 
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor set of `w` is a subset of `s`. -/
@@ -292,7 +292,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
   refine ⟨{v | c v = 0}, {v | c v = 1}, by aesop (add simp [Set.disjoint_left]), ?_⟩
   rintro v w hvw
   apply hc at hvw
-  simp [Set.mem_setOf_eq] at hvw ⊢
+  simp [Set.mem_ofPred_eq] at hvw ⊢
   lia
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/
@@ -322,6 +322,7 @@ section Copy
 
 variable {α β : Type*} [Fintype α] [Fintype β]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
 vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
 of a complete bipartite graph. -/
@@ -390,7 +391,7 @@ section Between
 set `t`. -/
 def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
   Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
-  symm v w := by tauto
+  symm.symm v w := by tauto
 
 lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
 
@@ -416,7 +417,7 @@ in `G`. -/
 lemma neighborSet_subset_between_union (hv : v ∈ s) :
     G.neighborSet v ⊆ (G.between s sᶜ).neighborSet v ∪ s := by
   intro w hadj
-  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  rw [neighborSet, Set.mem_union, Set.mem_ofPred, between_adj]
   by_cases hw : w ∈ s
   · exact Or.inr hw
   · exact Or.inl ⟨hadj, Or.inl ⟨hv, hw⟩⟩
@@ -426,7 +427,7 @@ in `G`. -/
 lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
     G.neighborSet w ⊆ (G.between s sᶜ).neighborSet w ∪ sᶜ := by
   intro v hadj
-  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  rw [neighborSet, Set.mem_union, Set.mem_ofPred, between_adj]
   by_cases hv : v ∈ s
   · exact Or.inl ⟨hadj, Or.inr ⟨hw, hv⟩⟩
   · exact Or.inr hv
@@ -487,13 +488,13 @@ theorem encard_edgeSet_completeBipartiteGraph :
 def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
     (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
   toFun := fun ⟨e, he⟩ ↦
-    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+    e.fromRelNdrec he (sym := G.symm) (fun u v h ↦ hG.mem_of_adj h |>.by_cases
       (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
       (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
-    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+    ) <| by grind [Or.by_cases, hG.disjoint]
   inj' := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    change (dite ..) = (dite ..) → _
     grind
 
 end completeBipartiteGraph
@@ -528,7 +529,7 @@ such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent
   Adj
   | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
   | _, _ => False
-  symm _ _ := by grind [adj_symm]
+  symm.symm _ _ := by grind [adj_symm]
 
 instance [h : DecidableRel G.Adj] : DecidableRel G.bipartiteDoubleCover.Adj
   | .inl _, .inr _ | .inr _, .inl _ => h _ _
@@ -541,6 +542,7 @@ theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGr
   | .inl _, .inr _ | .inr _, .inl _ => by simp
   | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
 theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
     #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by

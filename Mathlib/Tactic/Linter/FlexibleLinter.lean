@@ -9,6 +9,8 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Server.InfoUtils
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Term
 
@@ -520,8 +522,12 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let suggestion? ← liftCoreM <| generateSimpSuggestion stainData stainStx
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
-      | ``Lean.Parser.Tactic.simp =>
-        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+      | ``Lean.Parser.Tactic.simp => match d with
+        | .wildcard => m!"`{stainStr}` is a flexible tactic that potentially modifies all \
+          hypotheses and the current goal with a wildcard `*`. \
+          Try `simp?` and use the suggested `simp only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+        | _ => m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | ``Lean.Parser.Tactic.simpAll =>
@@ -537,7 +543,18 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    logInfoAt s m!"`{s}` uses `{d}`!"
+    let fm ← getFileMap
+    let stainLine? := stainStx.getPos?.map (Position.line ∘ fm.toPosition)
+    let lineStr := if let some line := stainLine? then s!" on line {line}" else ""
+    let atomStr := match stainStx[0] with
+      | .atom _ val => "the flexible tactic " ++ m!"`{val}`"
+      | _ => "a flexible tactic"
+    logInfoAt s <| match d with
+    | .name _ => m!"`{.group s}`\nuses `{d}`, which was modified by {atomStr}{lineStr}!"
+    | .goal =>
+      m!"`{.group s}`\nmodifies the current goal, which was modified by {atomStr}{lineStr}!"
+    | .wildcard => m!"`{.group s}`\nuses a rigid tactic. Previously, {atomStr}, which \
+        potentially modified all hypotheses and the goal with a wildcard `*`, was used{lineStr}."
 
 initialize addLinter flexibleLinter
 
