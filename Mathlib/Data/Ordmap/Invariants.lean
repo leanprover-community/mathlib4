@@ -553,6 +553,7 @@ theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α
 /-! ### `balance` properties -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l)
     (sr : Sized r) : @balance α l x r = balance' l x r := by
   obtain - | ⟨ls, ll, lx, lr⟩ := l

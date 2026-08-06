@@ -140,7 +140,7 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : HopfAlgebra R X}
   inv := ofHom (e.symm : Y →ₐc[R] X)
 
 /-- Build a `BialgEquiv` from an isomorphism in the category `CommHopfAlgCat R`. -/
--- TODO: Make simp once `BialgEquiv.toCoalgEquiv_eq_coe` is gone.
+-- TODO: Make `BialgEquiv.toCoalgEquiv` the simp normal form so that this can be simp
 @[expose, simps -isSimp]
 def ofIso (i : A ≅ B) : A ≃ₐc[R] B where
   __ := i.hom.hom

@@ -107,6 +107,7 @@ lemma σ_num (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (num h z) = num h (σ g z) 
 lemma σ_denom (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (denom h z) = denom h (σ g z) := by
   simp [denom]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma σ_neg (g : GL (Fin 2) ℝ) : σ (-g) = σ g := by
   simp [σ, det_neg]
@@ -205,6 +206,7 @@ lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
 section GLAction
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem re_smul : (g • z).re = (num g z / denom g z).re := by
   change (smulAux' g z).re = _
   simp +contextual [smulAux', σ, DFunLike.ite_apply, apply_ite, Complex.div_re]
@@ -314,6 +316,7 @@ theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 0 = 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
@@ -322,6 +325,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 
   suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
       (g • · : ℍ → ℍ) =
@@ -472,6 +476,7 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
 
 end SLModularAction
