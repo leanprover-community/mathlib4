@@ -57,7 +57,7 @@ theorem integrableOn_exp_neg_smul_of_isBigO_exp {E : Type*} [NormedAddCommGroup 
   refine integrableOn_Ici_iff_integrableOn_Ioi (by finiteness) |>.mp ?_
   have hloc : LocallyIntegrableOn (fun x : ℝ => exp (-b * x) • f x) (Ici c) :=
     hfc.continuousOn_smul isClosed_Ici.isLocallyClosed (by fun_prop)
-  refine hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
+  exact hloc.integrableOn_of_isBigO_atTop (g := fun x : ℝ => exp ((a - b) * x))
     (((isBigO_refl _ atTop).smul hf).congr_right fun x => by
       simp only [smul_eq_mul, ← exp_add]; ring_nf)
     ⟨Ioi c, Ioi_mem_atTop c, by
