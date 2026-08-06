@@ -50,8 +50,8 @@ private lemma euclidean_row_norm_sq_le_card
     [Fintype n] {A : Matrix n n ℝ}
     (hA : ∀ i j, |A i j| ≤ 1) (i : n) :
     ‖(WithLp.toLp 2 (A i) : EuclideanSpace ℝ n)‖ ^ 2 ≤ (Fintype.card n : ℝ) := by
-  simpa [EuclideanSpace.real_norm_sq_eq] using Finset.sum_le_card_nsmul Finset.univ
-    (fun j => (A i j) ^ 2) 1 fun j _ => (sq_le_one_iff_abs_le_one (A i j)).2 (hA i j)
+  simpa [EuclideanSpace.real_norm_sq_eq] using Finset.univ.sum_le_card_nsmul
+    _ 1 fun j _ => (sq_le_one_iff_abs_le_one (A i j)).2 (hA i j)
 
 /-- Hadamard's maximal determinant inequality for real matrices with entries bounded by one:
 `|A.det| ≤ √((Fintype.card n : ℝ) ^ Fintype.card n)`. -/
