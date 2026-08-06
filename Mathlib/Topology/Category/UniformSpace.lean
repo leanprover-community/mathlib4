@@ -164,19 +164,23 @@ instance instFunLike (X Y : CpltSepUniformSpace) :
   coe := Subtype.val
   coe_injective _ _ h := Subtype.ext h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace
     ({ f : · → · // UniformContinuous f }) :=
   inferInstanceAs <| ConcreteCategory (InducedCategory _ toUniformSpace) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
   inferInstanceAs <| HasForget₂ (InducedCategory _ toUniformSpace) _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem hom_comp {X Y Z : CpltSepUniformSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ConcreteCategory.hom (f ≫ g) = ⟨g ∘ f, g.hom.hom.prop.comp f.hom.hom.prop⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem hom_id (X : CpltSepUniformSpace) :
     ConcreteCategory.hom (𝟙 X : X ⟶ X) = ⟨id, uniformContinuous_id⟩ :=
@@ -195,6 +199,7 @@ open UniformSpace
 
 open CpltSepUniformSpace
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor turning uniform spaces into complete separated uniform spaces. -/
 @[simps map]
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
@@ -231,8 +236,6 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (extensionHom (completionHom X ≫ f)).hom = f := by
   ext x
   exact congr_fun (Completion.extension_comp_coe f.hom.property) x
-
-@[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/

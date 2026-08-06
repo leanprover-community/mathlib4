@@ -49,7 +49,7 @@ variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
-@[implicit_reducible]
+@[instance_reducible]
 def OrderType.instSetoid : Setoid LinOrd where
   r := fun lin_ord₁ lin_ord₂ ↦ Nonempty (lin_ord₁ ≃o lin_ord₂)
   iseqv := ⟨fun _ ↦ ⟨.refl _⟩, fun ⟨e⟩ ↦ ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ ↦ ⟨e₁.trans e₂⟩⟩
@@ -270,10 +270,10 @@ theorem lift_type_eq_iff : lift (type α) = lift (type β) ↔ Nonempty (α ≃o
   exact ⟨(ULift.orderIso.symm.trans h.some).trans ULift.orderIso⟩
 
 theorem lift_type_le_iff : lift (type α) ≤ lift (type β) ↔ Nonempty (α ↪o β) := by
- refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
-   ULift.orderIso.symm.toOrderEmbedding⟩
- rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
- exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ type_le_type <| (ULift.orderIso.toOrderEmbedding.trans h).trans
+    ULift.orderIso.symm.toOrderEmbedding⟩
+  rw [← type_ulift, ← type_ulift, type_le_type_iff] at h
+  exact ⟨(ULift.orderIso.symm.toOrderEmbedding.trans h.some).trans ULift.orderIso.toOrderEmbedding⟩
 
 /-- `ω` is the first infinite order type, defined as the order type of `ℕ`. -/
 @[expose]
