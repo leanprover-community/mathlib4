@@ -34,12 +34,12 @@ namespace Mathlib.Tactic.Echelon
 entries. -/
 def matchMatrixLit? (A : Expr) : MetaM (Option (Nat × Nat × Expr × Array (Array Expr))) := do
   let_expr Matrix finM finN R := ← inferType A | return none
-  let_expr Fin mE := finM.cleanupAnnotations | return none
-  let_expr Fin nE := finN.cleanupAnnotations | return none
+  let_expr Fin mE := finM | return none
+  let_expr Fin nE := finN | return none
   let some m ← getNatValue? mE | return none
   let some n ← getNatValue? nE | return none
-  let_expr DFunLike.coe _ _ _ _ f v := A.cleanupAnnotations | return none
-  let_expr Matrix.of _ _ _ := f.cleanupAnnotations | return none
+  let_expr DFunLike.coe _ _ _ _ f v := A | return none
+  let_expr Matrix.of _ _ _ := f | return none
   let (rows, _, _) ← Matrix.matchVecConsPrefix mE v
   unless rows.length == m do return none
   let entries ← rows.toArray.mapM fun row => do

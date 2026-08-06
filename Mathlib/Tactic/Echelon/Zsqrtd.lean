@@ -37,7 +37,7 @@ def evalInt (e : Expr) : MetaM Int := do
 /-- Evaluate a `ℤ√d` entry to its pair of integer components: a `⟨a, b⟩` literal, `√d`
 itself, or an entry without `√d` content evaluating through `norm_num`. -/
 def evalZsqrtdEntry (e : Expr) : MetaM (Int × Int) := do
-  match_expr e.cleanupAnnotations with
+  match_expr e with
   | Zsqrtd.mk _ a b => return (← evalInt a, ← evalInt b)
   | Zsqrtd.sqrtd _ => return (0, 1)
   | _ => return (← evalInt e, 0)

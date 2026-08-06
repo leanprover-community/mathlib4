@@ -38,10 +38,10 @@ Fraction values are accepted only in characteristic zero, where the rational rea
 faithful. -/
 def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   unless charZero do
-    let stripped := match_expr e.cleanupAnnotations with
+    let stripped := match_expr e with
       | Neg.neg _ _ a => a
       | _ => e
-    if stripped.cleanupAnnotations.isAppOf ``HDiv.hDiv then
+    if stripped.isAppOf ``HDiv.hDiv then
       throwError "division entries are supported only in characteristic zero{indentExpr e}"
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
   let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
