@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
 # Localization with respect to a Serre class
@@ -29,7 +28,7 @@ universe v'' v' v u'' u' u
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits
 
 namespace ObjectProperty
 
@@ -138,9 +137,6 @@ lemma isZero_obj_iff (X : C) :
   refine ⟨?_, fun _ ↦ ⟨X, by simpa⟩⟩
   rintro ⟨Y, h⟩
   simpa using h.2
-
-lemma hasZeroObject : HasZeroObject D :=
-  ⟨L.obj 0, by simpa [isZero_obj_iff L P] using P.prop_zero⟩
 
 lemma map_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     L.map f = 0 ↔ P (Abelian.image f) := by
@@ -381,17 +377,9 @@ lemma hasCoequalizers : HasCoequalizers D :=
     Preadditive.hasCoequalizer_of_hasCokernel _ _
   hasCoequalizers_of_hasColimit_parallelPair _
 
-lemma hasBinaryProducts : HasBinaryProducts D :=
-  have := Localization.essSurj L P.isoModSerre
-  have (X Y : D) : HasBinaryProduct X Y :=
-    hasLimit_of_iso (show Limits.pair _ _ ≅ _ from
-      mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
-  hasBinaryProducts_of_hasLimit_pair D
-
 lemma hasFiniteProducts : HasFiniteProducts D :=
-  have := hasZeroObject L P
-  have := hasBinaryProducts L P
-  hasFiniteProducts_of_has_binary_and_terminal
+  have := Localization.essSurj L P.isoModSerre
+  L.hasFiniteProducts_of_additive_of_essSurj
 
 lemma isNormalMonoCategory : IsNormalMonoCategory D where
   normalMonoOfMono f hf := by
@@ -429,7 +417,7 @@ Note that we assume that `D` has already been equipped with a preadditive struct
 and that `L` is additive. Otherwise, see the results in the file
 `Mathlib/CategoryTheory/Localization/CalculusOfFractions/Preadditive.lean`
 which applies because `P.isoModSerre` has a calculus of left and right fractions. -/
-@[stacks 02MS, implicit_reducible]
+@[stacks 02MS, instance_reducible]
 def abelian : Abelian D := by
   have := hasFiniteProducts L P
   have := hasKernels L P
@@ -438,21 +426,25 @@ def abelian : Abelian D := by
   have := isNormalEpiCategory L P
   constructor
 
+lemma hasZeroObject : HasZeroObject D :=
+  have := abelian L P
+  Abelian.hasZeroObject
+
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
-  letI := abelian L P
+  let := abelian L P
   rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
-  letI := abelian L P
+  let := abelian L P
   rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
 lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
     IsIso (L.map f) ↔ P.isoModSerre f := by
-  letI := abelian L P
+  let := abelian L P
   rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
 
 lemma inverseImage_isomorphisms :
@@ -465,7 +457,7 @@ variable (G : D ⥤ E)
 set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteLimits_comp_iff :
     PreservesFiniteLimits (L ⋙ G) ↔ PreservesFiniteLimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteLimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteLimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr
@@ -487,7 +479,7 @@ lemma preservesFiniteLimits_comp_iff :
 set_option backward.isDefEq.respectTransparency false in
 lemma preservesFiniteColimits_comp_iff :
     PreservesFiniteColimits (L ⋙ G) ↔ PreservesFiniteColimits G := by
-  letI := abelian L P
+  let := abelian L P
   have := preservesFiniteColimits L P
   refine ⟨fun _ ↦ ?_, fun _ ↦ comp_preservesFiniteColimits _ _⟩
   have := (Localization.functor_additive_iff L P.isoModSerre G).mpr (by

@@ -23,8 +23,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 ## Results
 * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
   on the size of the sifted set in terms of `mainSum` and `errSum`
- * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
- * `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
+* `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
+* `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
 
 ## References
 
@@ -244,7 +244,7 @@ private theorem sum_divisors_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → �
   congr! 1 with d hd
   rw [mem_divisors] at hd
   suffices ∀ d1 d2, (d1 ∣ d ∧ d2 ∣ d ∧ d = d1.lcm d2) = (d = d1.lcm d2) by
-    simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and, this]
+    simp_rw [← Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and, this]
   simp +contextual [← and_assoc, Nat.dvd_lcm_left, Nat.dvd_lcm_right]
 
 theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
@@ -306,13 +306,12 @@ theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l
   congr! 1 with ⟨d, e⟩ hd
   obtain ⟨rfl, -⟩ : d * e = l ∧ _ := by simpa using hd
   obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
-  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
-    by simp_all [s.nu_mult.map_mul_of_coprime hde]
+  obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 := by simp_all [s.nu_mult.map_mul_of_coprime hde]
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_inv_eq_sum_divisors_inv_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
-  rw [eq_comm, ←sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
+  rw [eq_comm, ← sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
   apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ ↦ Nat.dvd_trans)).mpr

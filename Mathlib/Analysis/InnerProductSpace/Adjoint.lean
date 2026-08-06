@@ -68,8 +68,6 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace G]
 
--- Note: made noncomputable to stop excess compilation
--- https://github.com/leanprover-community/mathlib4/issues/7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
@@ -170,7 +168,10 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
     A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
+
+set_option backward.isDefEq.respectTransparency.types false in
 lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
@@ -197,6 +198,23 @@ theorem orthogonal_ker (T : E →L[𝕜] F) :
 
 theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
   rw [← T†.ker.orthogonal_orthogonal, T†.orthogonal_ker]
+  simp
+
+/-- The fitted value `A x` minimizes the distance to `y` among points in `A.range`
+if and only if the adjoint of `A` sends the residual `y - A x` to zero. -/
+theorem norm_eq_iInf_range_iff_adjoint_apply_eq_zero (A : E →L[𝕜] F) (y : F) (x : E) :
+    (‖y - A x‖ = ⨅ z : A.range, ‖y - z‖) ↔ (A†) (y - A x) = 0 := by
+  rw [A.range.norm_eq_iInf_iff_inner_eq_zero (by simp),
+    ← Submodule.mem_orthogonal', A.orthogonal_range, LinearMap.mem_ker, coe_coe]
+
+/-- The residual norm at `x` is minimal among all points of `E` if and only if
+the adjoint of `A` sends the residual `y - A x` to zero. -/
+theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
+    (A : E →L[𝕜] F) (y : F) (x : E) :
+    (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
+  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) := ⟨0, by rintro - ⟨_, rfl⟩; positivity⟩
+  rw [← A.norm_eq_iInf_range_iff_adjoint_apply_eq_zero y x, le_antisymm_iff,
+    and_iff_left (ciInf_le hb ⟨A x, x, rfl⟩), le_ciInf_iff hb]
   simp
 
 omit [CompleteSpace E] in
@@ -416,6 +434,7 @@ but with stronger type class assumptions (i.e., `CompleteSpace`). -/
 theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) : T.rangeᗮ = T.ker :=
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
+set_option backward.isDefEq.respectTransparency false in
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
 (see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
@@ -605,21 +624,21 @@ lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
 /-- 7.6(b) from [axler2024].
 See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
 lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_ker
 
 /-- 7.6(a) from [axler2024].
 See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
 lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_range
 
 /-- 7.64(b) in [axler2024] -/
 lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   simpa using! A.toContinuousLinearMap.ker_adjoint_comp_self
 
 lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
@@ -900,6 +919,7 @@ theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductS
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearEquiv ContinuousLinearMap in
 theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
     f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by
@@ -965,16 +985,10 @@ lemma coe_linearIsometryEquiv_apply (u : unitary (H →L[𝕜] H)) :
     linearIsometryEquiv u = (u : H →L[𝕜] H) :=
   rfl
 
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_apply :=
-  coe_linearIsometryEquiv_apply
-
 @[simp]
 lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
     linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
   rfl
-
-@[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
-  coe_symm_linearIsometryEquiv_apply
 
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
@@ -1055,7 +1069,7 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
     f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 E'
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 E'
   ext x
   exact congr($(f.adjoint_comp_self) x)

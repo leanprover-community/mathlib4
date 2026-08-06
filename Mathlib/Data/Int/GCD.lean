@@ -250,8 +250,8 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
-  · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
+  · simpa [and_true, dvd_refl, Set.mem_ofPred_eq] using gcd_pos_of_ne_zero_left b ha
+  · simp only [lowerBounds, and_imp, Set.mem_ofPred_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 
 end Int

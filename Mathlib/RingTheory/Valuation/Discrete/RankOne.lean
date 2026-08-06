@@ -53,10 +53,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_apply_zero :
 
 lemma valueGroup₀_equiv_withZeroMulInt_apply_zpow (k : ℤ) :
     valueGroup₀_equiv_withZeroMulInt v (hv.generator' ^ k) = WithZero.exp (- k) := by
-  simp only [map_zpow₀, valueGroup₀_equiv_withZeroMulInt_apply, WithZero.map'_coe,
-    MonoidHom.coe_coe]
-  rw [← WithZero.coe_zpow, WithZero.exp, WithZero.coe_inj, ← map_zpow]
-  simp [← mulintEquivOfZPowersEqTop_symm_apply_zpow
+  simp [WithZero.exp, ← mulintEquivOfZPowersEqTop_symm_apply_zpow
     (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top)]
 
 lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
@@ -67,7 +64,7 @@ lemma valueGroup₀_equiv_withZeroMulInt_strictMono :
     (Left.one_lt_inv_iff.mpr hv.generator'_lt_one)))).lt_iff_lt]
 
 /-- A discrete valuation has rank one. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def rankOne {e : ℝ≥0} (he : 1 < e) : v.RankOne where
   hom' := (toNNReal (ne_of_gt (lt_trans zero_lt_one he))).comp
       (.ofClass (valueGroup₀_equiv_withZeroMulInt v))
@@ -80,6 +77,7 @@ section WithZeroMulInt
 
 variable {v : Valuation R ℤᵐ⁰} [hv : v.IsRankOneDiscrete]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : Function.Surjective v)
     (x : R) : (valueGroup₀_equiv_withZeroMulInt v) (v.restrict x) = v x := by
   simp only [Valuation.restrict_def, ValueGroup₀.restrict₀_apply,
@@ -87,22 +85,12 @@ lemma valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective (hsurj : F
   split_ifs with h0 <;>
   simp only [MonoidWithZeroHom.coe_ofClass] at h0
   · simp [h0]
-  · simp only [WithZero.map'_coe, MonoidHom.coe_coe]
-    conv_rhs => rw [← coe_unzero h0]
-    rw [WithZero.coe_inj, ← (MulEquiv.injective (intEquivOfZPowersEqTop _
-      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff,
-      MulEquiv.apply_symm_apply]
+  · rw [WithZero.map'_coe, ← coe_unzero h0, WithZero.coe_inj,
+    ← (MulEquiv.injective (intEquivOfZPowersEqTop _
+    (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff]
     ext
-    simp only [Units.val_mk0, intEquivOfZPowersEqTop_apply, inv_zpow', generator',
-      SubgroupClass.coe_zpow]
-    have hg : hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
-      generator_eq_exp_neg_one_of_surjective hsurj
-    rw [hg]
-    conv_lhs => rw [MonoidWithZeroHom.coe_ofClass, ← coe_unzero h0]
-    simp only [coe_unzero, Int.reduceNeg, exp_neg, zpow_neg, Units.val_inv_eq_inv_val,
-      Units.val_zpow_eq_zpow_val, Units.val_mk0, inv_zpow', ← exp_zsmul, Int.zsmul_eq_mul, mul_one,
-      inv_inv]
-    simp [WithZero.exp]
+    simp [generator', generator_eq_exp_neg_one_of_surjective hsurj, toAdd_unzero_eq_log h0,
+      exp_log h0]
 
 end WithZeroMulInt
 
