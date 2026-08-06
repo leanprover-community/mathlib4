@@ -476,7 +476,6 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
     rfl
   | succ n ih =>
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
     specialize ih (by grind)
     simp only [taylorWithinEval_succ, mul_inv_rev]
     rw [sub_add_eq_sub_sub, ih]
@@ -522,9 +521,8 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
     fun_prop
   · rcases hk.eq_or_lt with rfl | hk
     · exact hf₂
-    have : UniqueDiffOn ℝ [[x₀, x]] := uniqueDiffOn_uIcc this
     replace hf₁ := hf₁.of_le (m := k.succ) (by norm_cast)
-    grind [ContDiffOn.absolutelyContinuousOnInterval,
+    grind [ContDiffOn.absolutelyContinuousOnInterval, uniqueDiffOn_uIcc,
       contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
 
 /-- **Taylor's theorem** with the Integral form of the remainder.
