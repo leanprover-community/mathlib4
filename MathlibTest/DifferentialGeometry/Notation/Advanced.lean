@@ -849,7 +849,7 @@ info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersEuclidea
 #guard_msgs in
 #check MDiff f
 
--- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, not model finding. Why?
+-- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, but not the elaborators
 variable [ChartedSpace ℂ X] [ChartedSpace (UpperHalfPlane) Y] [ChartedSpace ℂ Y] in
 /--
 info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) f : Prop
@@ -857,58 +857,19 @@ info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSe
 #guard_msgs in
 #check MDiff f
 
-set_option trace.Elab.DiffGeo.MDiff true
--- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, not model finding. Why?
+-- TODO: the `[ChartedSpace ℂ Y]` is necessary for TC synthesis, but not the elaborators
 variable [ChartedSpace ℂ X] [ChartedSpace (Complex.UnitDisc) Y] [ChartedSpace ℂ Y] in
 /--
 info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) f : Prop
----
-trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `X`
-[Elab.DiffGeo.MDiff] 💥️ TotalSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `X` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] 💥️ TangentBundle
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `X` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] 💥️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `X` among local instances.
-[Elab.DiffGeo.MDiff] ✅️ Manifold
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace Complex X`
-  [Elab.DiffGeo.MDiff] `X` is a charted space over `Complex` via `inst✝²`
-  [Elab.DiffGeo.MDiff] Couldn't find a `ModelWithCorners` with model space `Complex` in the local context.
-  [Elab.DiffGeo.MDiff] `Complex` is not a Euclidean space, half-space or quadrant
-  [Elab.DiffGeo.MDiff] Couldn't find a normed space structure on Complex` either: assuming it is a non-trivially normed field
-  [Elab.DiffGeo.MDiff] Found model: `modelWithCornersSelf Complex Complex`
-[Elab.DiffGeo.MDiff] Finding a model with corners for: `Y`
-[Elab.DiffGeo.MDiff] 💥️ TotalSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `Y` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] 💥️ TangentBundle
-  [Elab.DiffGeo.MDiff] Failed with error:
-      `Y` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] 💥️ NormedSpace
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `NormedSpace` structure on `Y` among local instances.
-[Elab.DiffGeo.MDiff] ✅️ Manifold
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace Complex X`
-  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace Complex.UnitDisc Y`
-  [Elab.DiffGeo.MDiff] `Y` is a charted space over `Complex.UnitDisc` via `inst✝¹`
-  [Elab.DiffGeo.MDiff] Couldn't find a `ModelWithCorners` with model space `Complex.UnitDisc` in the local context.
-  [Elab.DiffGeo.MDiff] Found model: `modelWithCornersSelf Complex Complex`
 -/
 #guard_msgs in
 #check MDiff f
 
-variable [ChartedSpace ℂ X] [ChartedSpace Circle Y] /-[ChartedSpace ℂ Y]-/ in
-/--
-info: MDifferentiable (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) f : Prop
--/
-#guard_msgs in
+-- TODO: the last `ChartedSpace` hypothesis is necessary for TC synthesis (but not the elaborators)
+set_option trace.Elab.DiffGeo.MDiff true in
+variable [ChartedSpace ℝ X] [ChartedSpace Circle Y] [ChartedSpace (EuclideanSpace Real (Fin 1)) Y] in
+/-- `Circle` is the complex unit circle -/
+#guard_msgs (substring := true) in
 #check MDiff f
 
 end
