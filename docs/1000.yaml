@@ -1360,6 +1360,10 @@ Q1131601:
 
 Q1132952:
   title: Euler's theorem on homogeneous functions
+  decls:
+    - HasFDerivAt.apply_self_eq_smul_of_eventuallyEq
+    - HasFDerivAt.apply_self_eq_smul_of_homogeneous
+  authors: Yi Yuan
 
 Q1134296:
   title: Supporting hyperplane theorem
