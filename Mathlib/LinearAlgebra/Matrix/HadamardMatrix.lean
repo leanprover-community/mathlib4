@@ -262,9 +262,9 @@ variable [TrivialStar R] [CharZero R] [NoZeroDivisors R]
 
 /-- A matrix over a commutative ring with trivial star, characteristic zero, and no zero divisors
 whose entries square to one and whose distinct rows have dot product zero is Hadamard. -/
-theorem IsHadamard.of_entry_sq_of_pairwise_rows
-    (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
-    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * A k j = 0) : A.IsHadamard := by
+theorem IsHadamard.of_entry_sq_of_pairwise_rows (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
+    (horth : Pairwise (A · ⬝ᵥ A · = 0)) :
+    A.IsHadamard := by
   by_cases hempty : IsEmpty n
   · letI := hempty
     refine ⟨isEmptyElim, ?_, ?_⟩ <;> ext i <;> exact isEmptyElim i
