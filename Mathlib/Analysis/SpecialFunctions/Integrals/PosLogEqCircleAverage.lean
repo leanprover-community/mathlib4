@@ -31,6 +31,7 @@ variable {a c : ℂ} {R : ℝ}
 /--
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
+@[fun_prop]
 lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
   MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
@@ -127,7 +128,7 @@ theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
   _ = ∫ x in 0..(2 * π), log (4 * sin (x / 2) ^ 2) / 2 := by
     apply integral_congr
     intro x hx
-    simp only []
+    simp only
     rw [Complex.norm_def, log_sqrt (circleMap 0 1 x - 1).normSq_nonneg]
     congr
     calc Complex.normSq (circleMap 0 1 x - 1)

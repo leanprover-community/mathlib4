@@ -629,6 +629,8 @@ instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := ⟨refl R E⟩
 theorem coe_refl : ⇑(refl R E) = id :=
   rfl
 
+@[simp] theorem toLinearEquiv_refl : (refl R E).toLinearEquiv = .refl R E := rfl
+
 @[simp] theorem toContinuousLinearEquiv_refl : (refl R E).toContinuousLinearEquiv = .refl R E := rfl
 
 /-- The inverse `LinearIsometryEquiv`. -/
@@ -643,6 +645,12 @@ theorem apply_symm_apply (x : E₂) : e (e.symm x) = x :=
 @[simp]
 theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
+
+theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+theorem eq_symm_apply {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
 
 theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
@@ -954,7 +962,7 @@ theorem coe_ofSurjective (f : F →ₛₗᵢ[σ₁₂] E₂) (hfr : Function.Sur
 def ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
     (h₁ : f.toLinearMap.comp g = LinearMap.id) (h₂ : g.comp f.toLinearMap = LinearMap.id) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
-  { toLinearEquiv := LinearEquiv.ofLinear f.toLinearMap g h₁ h₂
+  { toLinearEquiv := LinearEquiv.ofLinearMap f.toLinearMap g h₁ h₂
     norm_map' := fun x => f.norm_map x }
 
 @[simp]

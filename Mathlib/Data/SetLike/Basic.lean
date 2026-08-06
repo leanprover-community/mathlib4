@@ -224,9 +224,16 @@ section default
 
 variable (A B : Type*) [SetLike A B]
 
-/-- The order induced from a `SetLike` instance by inclusion. -/
+/-- The order induced from a `SetLike` instance by inclusion.
+
+An order defined as `.ofSetLike` will automatically make available an instance
+of `IsConcreteLE`.
+-/
 @[reducible] def LE.ofSetLike : LE A where
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+
+instance : letI := LE.ofSetLike A B; IsConcreteLE A B :=
+  letI := LE.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 /-- The partial order induced from a `SetLike` instance by inclusion.
 
@@ -237,9 +244,6 @@ of `IsConcreteLE`.
   __ := LE.ofSetLike A B
   lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
-
-instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=
-  letI := PartialOrder.ofSetLike A B; { coe_subset_coe' := Iff.rfl }
 
 end default
 
