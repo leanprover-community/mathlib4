@@ -29,11 +29,16 @@
 #     requests here (open/close the stub PR, post the bors comment) and
 #     the copy-splicebot app pushes branches to mathlib4_copy only —
 #     nothing can push a branch to this repository;
-#   * the mathlib-splicebot app user must have member standing in bors (a
-#     manual add on the bors project settings page), otherwise the
-#     `bors stack` comment is ignored. Note: bors's "synchronize members
-#     with collaborators" option replaces the member list on every sync;
-#     it must stay off, or the manually added app user is removed again.
+#   * the `bors stack` comment should be posted by a dedicated
+#     single-purpose app (see the commented-out "Mint stack token" step);
+#     its app user needs member standing in bors (a manual add on the
+#     bors project settings page), otherwise the comment is ignored.
+#     Keeping that identity separate from splicebot means no other
+#     automation can ever issue bors commands. Until the app exists, the
+#     comment falls back to the splicebot identity. Note: bors's
+#     "synchronize members with collaborators" option replaces the member
+#     list on every sync; it must stay off, or the manually added app
+#     user is removed again.
 
 name: Auto-stack module deprecation stubs
 
@@ -139,6 +144,21 @@ jobs:
         azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
         owner: leanprover-community
 
+    # TODO(provisioning): a dedicated app for the bors-privileged comment,
+    # so bors member standing never attaches to the splicebot identity.
+    # Uncomment once the app pair exists in the key vault.
+    # - name: Mint stack token (posts the bors stack comment)
+    #   id: stack-token
+    #   if: steps.precheck.outputs.proceed == 'true' && inputs.dry_run != true
+    #   uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+    #   with:
+    #     app-id: ${{ secrets.MATHLIB_STACKER_APP_ID }}
+    #     key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+    #     key-name: mathlib-stacker-app-pk
+    #     azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
+    #     azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+    #     owner: leanprover-community
+
     # This token is masked by the token minting action and will not be
     # logged accidentally.
     - name: Maintain the stub PR
@@ -147,6 +167,9 @@ jobs:
         GH_TOKEN: ${{ steps.pr-token.outputs.token || secrets.GITHUB_TOKEN }}
         BRANCH_TOKEN: ${{ steps.branch-token.outputs.token }}
         ADM_BRANCH_TOKEN: ${{ steps.branch-token.outputs.token }}
+        # Empty until the dedicated stack app exists; the driver then
+        # falls back to GH_TOKEN for the bors stack comment.
+        ADM_STACK_TOKEN: ${{ steps.stack-token.outputs.token }}
         DRY_RUN: ${{ toJson(inputs.dry_run) }}
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         ADM_GIT_NAME: 'mathlib-splicebot[bot]'

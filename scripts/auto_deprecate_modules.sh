@@ -70,6 +70,10 @@
 #   ADM_BRANCH_TOKEN    optional token for REST calls against --push-repo
 #                       (branch deletion); needed when GH_TOKEN has no
 #                       contents:write there. Defaults to gh's normal auth.
+#   ADM_STACK_TOKEN     optional token used only to post the `bors stack`
+#                       comment. Lets the bors-privileged identity be a
+#                       separate, single-purpose app instead of the PR
+#                       token's identity. Defaults to gh's normal auth.
 #   ADM_GIT_NAME/EMAIL  git identity for the stub commit
 #                       (default: mathlib-splicebot[bot])
 
@@ -147,6 +151,16 @@ cleanup() {
 trap cleanup EXIT
 
 log() { printf '%s\n' "$*" >&2; }
+
+# post_stack_comment PR_NUMBER: post `bors stack #<parent>` on the stub PR,
+# as the dedicated bors-privileged identity when one is provided.
+post_stack_comment() {
+  if [ -n "${ADM_STACK_TOKEN:-}" ]; then
+    GH_TOKEN="$ADM_STACK_TOKEN" gh pr comment "$1" --repo "$REPO" --body "bors stack #${PR}"
+  else
+    gh pr comment "$1" --repo "$REPO" --body "bors stack #${PR}"
+  fi
+}
 
 # delete_stub_branch: delete the stub branch from the push repository,
 # using the branch-scoped token when one is provided.
@@ -526,7 +540,7 @@ if [ -z "$EXISTING_PR" ]; then
       --jq '.number')"
   fi
   log "opened stub PR #${EXISTING_PR}"
-  gh pr comment "$EXISTING_PR" --repo "$REPO" --body "bors stack #${PR}"
+  post_stack_comment "$EXISTING_PR"
   log "posted 'bors stack #${PR}' on #${EXISTING_PR}"
 else
   gh pr edit "$EXISTING_PR" --repo "$REPO" --body-file "$BODY"
@@ -537,7 +551,7 @@ else
   n_stack="$(gh api "repos/${REPO}/issues/${EXISTING_PR}/comments?per_page=100" \
     --jq '[.[] | select(.body | startswith("bors stack"))] | length')"
   if [ "$n_stack" = "0" ]; then
-    gh pr comment "$EXISTING_PR" --repo "$REPO" --body "bors stack #${PR}"
+    post_stack_comment "$EXISTING_PR"
     log "posted missing 'bors stack #${PR}' on #${EXISTING_PR}"
   fi
   log "refreshed stub PR #${EXISTING_PR}"
