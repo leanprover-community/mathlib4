@@ -238,7 +238,7 @@ theorem isHadamard_iff_mul_conjTranspose
 Hadamard, provided the order is regular in the ring. -/
 theorem IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
     (hentry : ∀ i j, A i j ∈ unitary R)
-    (horth : ∀ ⦃i k : n⦄, i ≠ k → ∑ j, A i j * star (A k j) = 0)
+    (horth : Pairwise fun i k ↦ A i ⬝ᵥ star (A k) = 0)
     (hcard : IsRegular (Fintype.card n : R)) : A.IsHadamard := by
   refine IsHadamard.of_mul_conjTranspose hentry ?_ hcard
   ext i k
