@@ -352,14 +352,13 @@ variable [RKHS 𝕜 H' X V]
 
 variable (H) in
 /-- Helper function that maps the kernel functions of `H` into the RKHS `H'` isometrically. -/
-private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H' := {
-  Finsupp.linearCombination 𝕜 (fun (xv : X × V) => RKHS.kerFun H' xv.1 xv.2) with
+private def toH' (h : kernel H = kernel H') : H₀ (kernel H) →ₗᵢ[𝕜] H' where
+  toLinearMap := Finsupp.linearCombination 𝕜 fun (xv : X × V) => RKHS.kerFun H' xv.1 xv.2
   norm_map' f := by
     simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜), inner_H₀_def, Finsupp.linearCombination_apply,
       Finsupp.sum, sum_inner, inner_sum, h, inner_smul_left, inner_smul_right, kernel_inner,
       mul_assoc]
     simp
-}
 
 private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[𝕜] H' :=
   let h_lin := (toH' H h).toContinuousLinearMap.fromCompletion
@@ -374,13 +373,10 @@ private def equivAux (h : kernel H = kernel H') : OfKernel (kernel H) ≃ₗᵢ[
       exact ⟨f, UniformSpace.Completion.extension_coe (toH' H h).isometry.uniformContinuous f⟩
     have h_dense : Dense (Set.range (toH' H h)) := by
       convert dense_iff_topologicalClosure_eq_top.mpr (kerFun_dense H')
-      simp only [LinearIsometry.coe_mk, toH']
-      rw [← LinearMap.coe_range, Finsupp.range_linearCombination, SetLike.coe_set_eq]
-      congr 1 with _
-      refine ⟨
-        fun ⟨⟨x, v⟩, h⟩ ↦ ⟨x, v, h⟩,
-        fun ⟨x, v, h⟩ ↦ ⟨⟨x, v⟩, h⟩
-      ⟩
+      simp only [LinearIsometry.coe_mk, toH', ← LinearMap.coe_range,
+        Finsupp.range_linearCombination, SetLike.coe_set_eq]
+      congr! 1
+      aesop
     rw [← Set.range_eq_univ, ← ofOfKernel.isometry.isClosedEmbedding.isClosed_range.closure_eq,
       (h_dense.mono h_sub).closure_eq]
   LinearIsometryEquiv.ofSurjective ofOfKernel h_surj
