@@ -583,7 +583,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
   rcases i with ⟨n, c⟩
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
-  · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
+  · simp only [compPartialSumTargetSet, Set.mem_ofPred_eq] at hi
     simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and, and_true]
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
