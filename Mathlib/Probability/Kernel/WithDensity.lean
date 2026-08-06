@@ -121,8 +121,7 @@ theorem withDensity_add_left (κ η : Kernel α β) [IsSFiniteKernel κ] [IsSFin
     (f : α → β → ℝ≥0∞) : withDensity (κ + η) f = withDensity κ f + withDensity η f := by
   by_cases hf : Measurable (Function.uncurry f)
   · ext a s
-    simp only [Kernel.withDensity_apply _ hf, coe_add, Pi.add_apply, withDensity_add_measure,
-      Measure.add_apply]
+    simp only [Kernel.withDensity_apply _ hf, add_apply, withDensity_add_measure]
   · simp_rw [withDensity_of_not_measurable _ hf]
     rw [zero_add]
 
@@ -140,7 +139,7 @@ lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞
     (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
     withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
   ext a
-  rw [coe_add, Pi.add_apply, Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg,
+  rw [add_apply, Kernel.withDensity_apply _ hf, Kernel.withDensity_apply _ hg,
     Kernel.withDensity_apply, Pi.add_apply, MeasureTheory.withDensity_add_right]
   · fun_prop
   · exact hf.add hg

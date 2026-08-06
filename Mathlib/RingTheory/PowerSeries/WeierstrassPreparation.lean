@@ -778,7 +778,8 @@ theorem IsWeierstrassFactorization.isWeierstrassDivision
       (Polynomial.X ^ (g.map (IsLocalRing.residue A)).order.toNat - f) := by
   set n := (g.map (IsLocalRing.residue A)).order.toNat with hn
   constructor
-  · refine (Polynomial.degree_sub_lt ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq (by simpa)
+  · refine (Polynomial.degree_sub_lt_left ?_ (Polynomial.monic_X_pow n).ne_zero ?_).trans_eq
+      (by simpa)
     · simp_rw [H.degree_eq_coe_lift_order_map, Polynomial.degree_X_pow, n,
         ENat.lift_eq_toNat_of_lt_top]
     · rw [(Polynomial.monic_X_pow n).leadingCoeff, H.isDistinguishedAt.monic.leadingCoeff]

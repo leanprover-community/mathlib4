@@ -624,7 +624,7 @@ theorem forall_of_forall_mem_ball (p : α → Prop) (x : α)
 
 theorem isBounded_iff {s : Set α} :
     IsBounded s ↔ ∃ C : ℝ, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C := by
-  rw [isBounded_def, ← Filter.mem_sets, @PseudoMetricSpace.cobounded_sets α, mem_setOf_eq,
+  rw [isBounded_def, ← Filter.mem_sets, @PseudoMetricSpace.cobounded_sets α, mem_ofPred_eq,
     compl_compl]
 
 lemma boundedSpace_iff : BoundedSpace α ↔ ∃ C, ∀ a b : α, dist a b ≤ C := by
@@ -722,7 +722,7 @@ protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β 
     rcases exists_between ε₀ with ⟨ε', hε'⟩
     rcases hf ε' hε'.1 with ⟨i, hi, H⟩
     exact ⟨i, hi, fun x (hx : _ ≤ _) => hε <| lt_of_le_of_lt (le_trans hx H) hε'.2⟩
-  · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_setOf.2 hx.le)⟩
+  · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, fun x (hx : _ < _) => H (mem_ofPred.2 hx.le)⟩
 
 /-- Constant size closed neighborhoods of the diagonal form a basis
 of the uniformity filter. -/
@@ -939,7 +939,7 @@ iff the distances between distinct points are uniformly bounded away from zero. 
 protected lemma uniformSpace_eq_bot :
     ‹PseudoMetricSpace α›.toUniformSpace = ⊥ ↔
       ∃ r : ℝ, 0 < r ∧ Pairwise (r ≤ dist · · : α → α → Prop) := by
-  simp only [uniformity_basis_dist.uniformSpace_eq_bot, mem_setOf_eq, not_lt]
+  simp only [uniformity_basis_dist.uniformSpace_eq_bot, mem_ofPred_eq, not_lt]
 
 end Metric
 
@@ -1105,7 +1105,7 @@ abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMet
   { m with
     toBornology := B
     cobounded_sets := Set.ext <| compl_surjective.forall.2 fun s =>
-        (H s).trans <| by rw [isBounded_iff, mem_setOf_eq, compl_compl] }
+        (H s).trans <| by rw [isBounded_iff, mem_ofPred_eq, compl_compl] }
 
 theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B : Bornology α]
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :

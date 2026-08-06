@@ -93,7 +93,7 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
   add_mem' {f g} hf hg := by
     simp [eLpNorm_congr_ae (AEEqFun.coeFn_add f g),
       eLpNorm_add_lt_top ⟨f.aestronglyMeasurable, hf⟩ ⟨g.aestronglyMeasurable, hg⟩]
-  neg_mem' {f} hf := by rwa [Set.mem_setOf_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
+  neg_mem' {f} hf := by rwa [Set.mem_ofPred_eq, eLpNorm_congr_ae (AEEqFun.coeFn_neg f), eLpNorm_neg]
 
 /-- `α →₁[μ] E` is the type of `L¹` or integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ

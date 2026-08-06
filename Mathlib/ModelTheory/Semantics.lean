@@ -614,10 +614,14 @@ theorem LHom.realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansi
   φ.realize_onBoundedFormula ψ
 
 @[simp]
-theorem LHom.setOf_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
-    (ψ : L.Formula α) : (setOf (φ.onFormula ψ).Realize : Set (α → M)) = setOf ψ.Realize := by
+theorem LHom.setOfPred_realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M]
+    (ψ : L.Formula α) :
+    (Set.ofPred (φ.onFormula ψ).Realize : Set (α → M)) = Set.ofPred ψ.Realize := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")]
+alias LHom.setOf_realize_onFormula := LHom.setOfPred_realize_onFormula
 
 variable (M)
 
@@ -719,7 +723,7 @@ theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M �
   Iff.rfl
 
 theorem elementarilyEquivalent_iff : M ≅[L] N ↔ ∀ φ : L.Sentence, M ⊨ φ ↔ N ⊨ φ := by
-  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_setOf_eq]
+  simp only [ElementarilyEquivalent, Set.ext_iff, completeTheory, Set.mem_ofPred_eq]
 
 variable (M)
 

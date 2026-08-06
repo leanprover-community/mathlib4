@@ -188,7 +188,7 @@ theorem residual_of_dense_Gδ {s : Set X} (ho : IsGδ s) (hd : Dense s) : s ∈ 
 theorem mem_residual_iff {s : Set X} :
     s ∈ residual X ↔
       ∃ S : Set (Set X), (∀ t ∈ S, IsOpen t) ∧ (∀ t ∈ S, Dense t) ∧ S.Countable ∧ ⋂₀ S ⊆ s :=
-  mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_setOf, forall_and, and_assoc]
+  mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_ofPred, forall_and, and_assoc]
 
 end residual
 

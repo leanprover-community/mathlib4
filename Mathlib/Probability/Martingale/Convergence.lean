@@ -381,7 +381,7 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     (fun s _ _ => hlimint.integrableOn) (fun s hs _ => ?_) hgmeas.aestronglyMeasurable
     stronglyMeasurable_limitProcess.aestronglyMeasurable
   have hpi : IsPiSystem {s | ∃ n, MeasurableSet[ℱ n] s} := by
-    rw [Set.setOf_exists]
+    rw [Set.ofPred_exists]
     exact isPiSystem_iUnion_of_monotone _ (fun n ↦ (ℱ n).isPiSystem_measurableSet) fun _ _ ↦ ℱ.mono
   induction s, hs
     using MeasurableSpace.induction_on_inter (MeasurableSpace.measurableSpace_iSup_eq ℱ) hpi with

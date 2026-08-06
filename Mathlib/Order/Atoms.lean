@@ -692,7 +692,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
 instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
-lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
+lemma eq_setOfPred_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
   refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
@@ -700,6 +700,9 @@ lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Se
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
   assumption
+
+@[deprecated (since := "2026-07-09")]
+alias eq_setOf_le_sSup_and_isAtom := eq_setOfPred_le_sSup_and_isAtom
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -715,7 +718,7 @@ def toSetOfIsAtom {α} [CompleteAtomicBooleanAlgebra α] : α ≃o (Set {a : α 
     have h : ∀ a ∈ Subtype.val '' S, IsAtom a := by
       rintro a ⟨a', ha', rfl⟩
       exact a'.prop
-    rw [← Subtype.val_injective.image_injective.eq_iff, eq_setOf_le_sSup_and_isAtom h]
+    rw [← Subtype.val_injective.image_injective.eq_iff, eq_setOfPred_le_sSup_and_isAtom h]
     ext a
     simp
   map_rel_iff' {a b} := by

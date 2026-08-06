@@ -325,7 +325,6 @@ def glueData : Scheme.GlueData where
   f_open i j := inferInstance
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
 /-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
 noncomputable
 def gluedTo : I.glueData.glued ⟶ X :=

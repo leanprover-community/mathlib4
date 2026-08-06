@@ -255,7 +255,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     refine (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => ?_
-    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
+    simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_ofPred_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
     simp [hf', hg']
@@ -343,9 +343,12 @@ the same ambient group, which permits lemma statements like `lp.monotone` (below
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
-deriving AddCommGroup
 
 namespace PreLp
+
+-- The `SMul` instance exists to avoid a zsmul diamond.
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] in
+deriving instance SMul 𝕜, AddCommGroup for PreLp E
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
@@ -508,7 +511,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using! h
-    have : (¬f i = 0) = False := congr_fun this i
+    have : ¬¬f i = 0 := Set.eq_empty_iff_forall_notMem.mp this i
     tauto
   · rcases isEmpty_or_nonempty α with _i | _i
     · simp [eq_iff_true_of_subsingleton]
@@ -1010,7 +1013,7 @@ protected def single (p) (i : α) (a : E i) : lp E p :=
     refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [Set.mem_singleton_iff, Ne,
-      Set.mem_setOf_eq]
+      Set.mem_ofPred_eq]
     rw [not_imp_comm]
     intro h
     exact Pi.single_eq_of_ne h _⟩

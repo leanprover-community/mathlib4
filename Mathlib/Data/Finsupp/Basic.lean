@@ -173,7 +173,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+    simp only [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -675,7 +675,7 @@ theorem filter_eq_zero_iff : f.filter p = 0 ↔ ∀ x, p x → f x = 0 := by
   simp [DFunLike.ext_iff, filter_eq_indicator]
 
 theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
-  simp only [DFunLike.ext_iff, filter_eq_indicator, Set.indicator_apply_eq_self, Set.mem_setOf_eq,
+  simp only [DFunLike.ext_iff, filter_eq_indicator, Set.indicator_apply_eq_self, Set.mem_ofPred_eq,
     not_imp_comm]
 
 @[simp]
