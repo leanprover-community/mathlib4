@@ -5,7 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Galois.Equivalence
+public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Limits.Over
@@ -21,12 +25,18 @@ public section
 
 universe w v u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Opposite
 open scoped FintypeCatDiscrete
 
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
+
+lemma Aut.one_def (X : C) : (1 : Aut X) = Iso.refl _ := rfl
+
+@[simp]
+lemma ObjectProperty.homMk_id {P : ObjectProperty C} (X : P.FullSubcategory) :
+    (homMk (𝟙 _) : X ⟶ X) = 𝟙 _ := rfl
 
 noncomputable def Over.isInitialEquiv {S : C} {X : Over S}
     [PreservesColimit (Functor.empty (Over S)) (Over.forget S)] :
@@ -76,8 +86,9 @@ instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
     PreservesFiniteColimits F := by
   change (PreservesFiniteColimits
     (functorToContAction F ⋙ ObjectProperty.ι _ ⋙ Action.forget _ _))
-  apply +allowSynthFailures comp_preservesFiniteColimits
-  apply +allowSynthFailures comp_preservesFiniteColimits
+  infer_instance
+  /-apply +allowSynthFailures comp_preservesFiniteColimits
+  apply +allowSynthFailures comp_preservesFiniteColimits-/
 
 open PreGaloisCategory
 
@@ -201,17 +212,139 @@ instance (S : C)
 section
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] (S : C)
-  [PreGaloisCategory.IsConnected S] (s : F.obj S)
+  [PreGaloisCategory.IsConnected S]
 
-@[implicit_reducible]
-def fiberFunctorOver : Over S ⥤ FintypeCat.{w} where
+variable {S} in
+lemma exists_aut_of_isConnected
+    {X : C} (f : X ⟶ S) (x : F.obj X) (s : F.obj S) :
+    ∃ (g : Aut F), F.map f (g.hom.app _ x) = s := by
+  obtain ⟨g, hg⟩ :=
+    (FiberFunctor.isPretransitive_of_isConnected F S).exists_smul_eq (F.map f x) s
+  refine ⟨g, ?_⟩
+  rwa [← ConcreteCategory.comp_apply, ← NatTrans.naturality,
+    ConcreteCategory.comp_apply]
+
+set_option backward.privateInPublic true in
+@[implicit_reducible, simps]
+def fiberFunctorOver (s : F.obj S) : Over S ⥤ FintypeCat.{w} where
   obj X := .of ((F.map X.hom) ⁻¹' {s})
   map f := FintypeCat.homMk (fun x ↦⟨F.map f.left x, by
     simpa only [← ConcreteCategory.comp_apply, ← F.map_comp, f.w,
       Set.mem_preimage, Set.mem_singleton_iff] using x.prop⟩)
 
+instance : PreGaloisCategory (Over S) where
+  monoInducesIsoOnDirectSummand {X Y} i _ := by
+    have : PreGaloisCategory.IsConnected S := inferInstance
+    obtain ⟨Z, u, ⟨h⟩⟩ := monoInducesIsoOnDirectSummand i.left
+    exact ⟨Over.mk (u ≫ Y.hom), Over.homMk u,
+      ⟨isColimitOfReflects (Over.forget _)
+        ((isColimitMapCoconeBinaryCofanEquiv ..).2 h)⟩⟩
+
+instance (s : F.obj S) : PreservesFiniteColimits (fiberFunctorOver F S s) := sorry
+
+instance (s : F.obj S) : PreservesFiniteLimits (fiberFunctorOver F S s) := sorry
+
+set_option backward.isDefEq.respectTransparency false in
+instance (s : F.obj S) : FiberFunctor (fiberFunctorOver F S s) where
+  preservesQuotientsByFiniteGroups G _ _ := by
+    obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv.{_, 0} G
+    exact preservesColimitsOfShape_of_equiv e.toSingleObjEquiv.symm _
+  reflectsIsos := ⟨fun {X Y} f hf ↦ by
+    rw [← isIso_iff_of_reflects_iso _ (Over.forget S),
+      ← isIso_iff_of_reflects_iso _ F, ConcreteCategory.isIso_iff_bijective]
+    rw [ConcreteCategory.isIso_iff_bijective] at hf
+    refine ⟨fun x₁ x₂ h ↦ ?_, fun y ↦ ?_⟩
+    · dsimp at h
+      obtain ⟨g, hg⟩ := exists_aut_of_isConnected F X.hom x₁ s
+      refine ConcreteCategory.injective_of_mono_of_preservesPullback (g.hom.app _)
+        (Subtype.ext_iff.1 (hf.injective (a₁ := ⟨_, hg⟩) (a₂ := ⟨_, ?_⟩) ?_))
+      · simp only [Over.forget_obj, Set.mem_preimage, Set.mem_singleton_iff]
+        rwa [← ConcreteCategory.comp_apply, ← NatTrans.naturality,
+          ConcreteCategory.comp_apply, ← f.w, Functor.map_comp,
+          ConcreteCategory.comp_apply, ← h,
+          ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+          ← Functor.map_comp_assoc, f.w, NatTrans.naturality, ConcreteCategory.comp_apply]
+      · dsimp
+        ext
+        change F.map f.left (g.hom.app _ x₁) = F.map f.left (g.hom.app _ x₂)
+        rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+          ← NatTrans.naturality, ConcreteCategory.comp_apply,
+          ConcreteCategory.comp_apply, h]
+    · dsimp at y
+      obtain ⟨g, hg⟩ := exists_aut_of_isConnected F Y.hom y s
+      obtain ⟨x, hx⟩ := hf.surjective ⟨_, hg⟩
+      replace hx : F.map f.left x.val = g.hom.app _ y := by
+        simpa [Subtype.ext_iff] using! hx
+      refine ⟨g.inv.app _ x.val,
+        (ConcreteCategory.injective_of_mono_of_preservesPullback (g.hom.app _) ?_)⟩
+      dsimp
+      simp only [← hx, ← ConcreteCategory.comp_apply, Category.assoc,
+        NatTrans.naturality, Iso.inv_hom_id_app_assoc]⟩
+
 end
 
+instance [GaloisCategory C] (S : C) [PreGaloisCategory.IsConnected S] :
+    GaloisCategory (Over S) :=
+  ⟨fiberFunctorOver (GaloisCategory.getFiberFunctor C) S
+    (Classical.arbitrary _), inferInstance⟩
+
+abbrev IsGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
+    [PreGaloisCategory.IsConnected X] : Prop :=
+  IsGalois (Over.mk f)
+
+lemma isConnected_of_isGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
+    [PreGaloisCategory.IsConnected X] [IsGaloisCover f] :
+    PreGaloisCategory.IsConnected Y := by
+  rw [← dsimp% isConnected_over_iff (Over.mk f)]
+  infer_instance
+
 end GaloisCategory
+
+open GaloisCategory
+
+variable (C) in
+structure Formation [GaloisCategory C] [EssentiallySmall.{v} C] where
+  sheaf : Sheaf (regularTopology (isConnected C).FullSubcategory) Ab.{v}
+
+namespace Formation
+
+variable [GaloisCategory C] [EssentiallySmall.{v} C] (Φ : Formation C)
+
+section
+
+variable {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
+  [PreGaloisCategory.IsConnected Y]
+  [IsGaloisCover f]
+
+def representation : Representation (ULift.{v} ℤ) (Aut (Over.mk f))
+  (Φ.sheaf.obj.obj (op ⟨Y, inferInstance⟩)) where
+  toFun g :=
+    { toFun := (Φ.sheaf.obj.map (ObjectProperty.homMk g.inv.left).op).hom.toFun
+      map_add' := by simp
+      map_smul' := by simp }
+  map_one' := by
+    ext : 1
+    dsimp [Aut.one_def]
+    rw [ObjectProperty.homMk_id]
+    simp
+  map_mul' g h := by
+    ext : 1
+    dsimp
+    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp]
+    rfl
+
+abbrev rep : Rep.{v} (ULift.{v} ℤ) (Aut (Over.mk f)) := Rep.of (Φ.representation f)
+
+end
+
+end Formation
+
+variable [GaloisCategory C] [EssentiallySmall.{v} C]
+
+variable (C) in
+structure FieldFormation extends Formation C where
+  isZeroGroupCohomology {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
+    [PreGaloisCategory.IsConnected Y] [IsGaloisCover f] :
+      IsZero (groupCohomology (toFormation.rep f) 1)
 
 end CategoryTheory

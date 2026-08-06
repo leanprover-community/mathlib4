@@ -72,7 +72,7 @@ class PreGaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop where
   hasFiniteCoproducts : HasFiniteCoproducts C := by infer_instance
   /-- `C` has quotients by finite groups (G2). -/
   hasQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
-    HasColimitsOfShape (SingleObj G) C := by infer_instance
+    HasColimitsOfShape (SingleObj G) C := by intros; infer_instance
   /-- Every monomorphism in `C` induces an isomorphism on a direct summand (G3). -/
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y),
     Nonempty (IsColimit (BinaryCofan.mk i u))
