@@ -965,12 +965,12 @@ namespace Edge
 variable {X : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
 
 @[reassoc (attr := simp)]
-lemma δ_zero_yonedeEquiv_symm (e : Edge x₀ x₁) :
+lemma δ_zero_yonedaEquiv_symm (e : Edge x₀ x₁) :
     stdSimplex.δ 0 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₁ := by
   simp [stdSimplex.δ_comp_yonedaEquiv_symm]
 
 @[reassoc (attr := simp)]
-lemma δ_one_yonedeEquiv_symm (e : Edge x₀ x₁) :
+lemma δ_one_yonedaEquiv_symm (e : Edge x₀ x₁) :
     stdSimplex.δ 1 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₀ := by
   simp [stdSimplex.δ_comp_yonedaEquiv_symm]
 
