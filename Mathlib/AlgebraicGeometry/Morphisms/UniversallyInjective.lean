@@ -55,6 +55,7 @@ theorem universallyInjective_eq :
     @UniversallyInjective = universally (topologically (Injective ·)) := by
   ext X Y f; rw [universallyInjective_iff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem universallyInjective_eq_diagonal :
     @UniversallyInjective = diagonal @Surjective := by
   apply le_antisymm
@@ -79,9 +80,11 @@ instance (priority := 900) [Mono f] : UniversallyInjective f :=
   have := (pullback.isIso_diagonal_iff f).mpr inferInstance
   (UniversallyInjective.iff_diagonal f).mpr inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem UniversallyInjective.respectsIso : RespectsIso @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance UniversallyInjective.isStableUnderBaseChange :
     IsStableUnderBaseChange @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
@@ -93,10 +96,12 @@ instance universallyInjective_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @UniversallyInjective where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance universallyInjective_isZariskiLocalAtTarget :
     IsZariskiLocalAtTarget @UniversallyInjective :=
   universallyInjective_eq_diagonal.symm ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[stacks 01S4]
 theorem tfae_universallyInjective :

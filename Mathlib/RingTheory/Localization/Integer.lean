@@ -86,7 +86,7 @@ theorem exists_integer_multiple (a : S) : ∃ b : M, IsInteger R ((b : R) • a)
 /-- We can clear the denominators of a `Finset`-indexed family of fractions. -/
 theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
     ∃ b : M, ∀ i ∈ s, IsLocalization.IsInteger R ((b : R) • f i) := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   refine ⟨∏ i ∈ s, (sec M (f i)).2, fun i hi => ⟨?_, ?_⟩⟩
   · exact (∏ j ∈ s.erase i, (sec M (f j)).2) * (sec M (f i)).1
   rw [map_mul, sec_spec', ← mul_assoc, ← (algebraMap R S).map_mul, ← Algebra.smul_def]
@@ -124,6 +124,16 @@ theorem map_integerMultiple {ι : Type*} (s : Finset ι) (f : ι → S) (i : s) 
     algebraMap R S (integerMultiple M s f i) = commonDenom M s f • f i :=
   ((exist_integer_multiples M s f).choose_spec _ i.prop).choose_spec
 
+theorem integerMultiple_injective {ι : Type*} (s : Finset ι) (f : ι → S)
+    (hf : Function.Injective f) : Function.Injective (integerMultiple M s f) := by
+  intro i j h
+  rw [← SetLike.coe_eq_coe, ← hf.eq_iff,
+    ← (IsLocalization.smul_bijective S (commonDenom M s f)).injective.eq_iff,
+    ← map_integerMultiple M s f i, ← map_integerMultiple M s f j, h]
+
+@[deprecated (since := "2026-07-18")] alias integerMultipleMultiple_injective :=
+  integerMultiple_injective
+
 /-- A choice of a common multiple of the denominators of a finite set of fractions. -/
 noncomputable def commonDenomOfFinset (s : Finset S) : M :=
   commonDenom M s id
@@ -145,5 +155,11 @@ theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
     exact Set.mem_image_of_mem _ x.prop
   · rintro ⟨x, hx, rfl⟩
     exact ⟨_, ⟨⟨x, hx⟩, s.mem_attach _, rfl⟩, map_integerMultiple M s id _⟩
+
+@[simp]
+theorem card_finsetIntegerMultiple [DecidableEq R] (s : Finset S) :
+    (finsetIntegerMultiple M s).card = s.card :=
+  (Finset.card_image_of_injective _ (integerMultiple_injective M s id injective_id)).trans
+    Finset.card_attach
 
 end IsLocalization
