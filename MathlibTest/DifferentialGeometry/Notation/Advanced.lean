@@ -366,6 +366,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap id' E'' E'''` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap id' E'' E'''` is not a set of units, in particular not of a complete normed algebra
@@ -468,6 +471,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `ContinuousLinearMap σ E'' E''''` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `ContinuousLinearMap σ E'' E''''` is not a set of units, in particular not of a complete normed algebra
@@ -672,6 +678,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] 💥️ ComplexUnitDisc
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the complex unit disc
 [Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a set of units, in particular not of a complete normed algebra
@@ -877,6 +886,40 @@ info: MDifferentiableAt (modelWithCornersSelf Complex Complex) (modelWithCorners
 #check MDiffAt k y
 
 end UpperHalfPlane
+
+section ComplexUnitDisc
+
+-- Make a new complex manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+open Complex
+
+variable {g : UnitDisc → N} {h : E'' → UnitDisc} {k : UnitDisc → ℂ} {y : UnitDisc}
+
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
+#guard_msgs in
+variable {g : UnitDisc → M} in
+#check CMDiff 2 g
+
+/-- info: ContMDiff (modelWithCornersSelf Complex Complex) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex E'') (modelWithCornersSelf Complex Complex) h : E'' → Prop
+-/
+#guard_msgs in
+#check MDiffAt h
+
+/--
+info: MDifferentiableAt (modelWithCornersSelf Complex Complex) (modelWithCornersSelf Complex Complex) k y : Prop
+-/
+#guard_msgs in
+#check MDiffAt k y
+
+end ComplexUnitDisc
 
 section units
 
