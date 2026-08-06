@@ -92,7 +92,7 @@ components, with the kernel checking the certificate conditions. -/
 def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
   let stx ← `((⟨$(← Term.exprToSyntax L), $(← Term.exprToSyntax σ),
                 $(← Term.exprToSyntax pivotE),
-                -- TODO: switch to an efficient decision of matrix mult once implemented
+                -- TODO: switch to a better decision of matrix mult once implemented
                 by bareiss_certify "the echelon-pivot condition",
                 by bareiss_certify "lower triangularity of the transform",
                 by bareiss_certify "the nonzero diagonal of the transform"⟩ :
