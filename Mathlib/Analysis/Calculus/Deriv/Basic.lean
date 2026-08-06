@@ -659,31 +659,31 @@ theorem Filter.EventuallyEq.nhdsNE_deriv (h : f₁ =ᶠ[𝓝[≠] x] f) : deriv 
   apply Filter.EventuallyEq.deriv hy
 
 /--
-If two functions agree on a codiscrete subset of `U`, then so do their derivatives within any
-subset `t` of `U`.
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within any
+subset `t` of `s`.
 -/
-theorem Filter.EventuallyEq.codiscreteWithin_derivWithin' {U : Set 𝕜}
-    (h : f₁ =ᶠ[codiscreteWithin U] f) (ht : t ⊆ U) :
-    derivWithin f₁ t =ᶠ[codiscreteWithin U] derivWithin f t := by
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin'
+    (h : f₁ =ᶠ[codiscreteWithin s] f) (ht : t ⊆ s) :
+    derivWithin f₁ t =ᶠ[codiscreteWithin s] derivWithin f t := by
   filter_upwards [h.codiscreteWithin_fderivWithin' (𝕜 := 𝕜) ht] with y hy
   unfold derivWithin
   rw [hy]
 
 /--
-If two functions agree on a codiscrete subset of `U`, then so do their derivatives within `U`.
+If two functions agree on a codiscrete subset of `s`, then so do their derivatives within `s`.
 -/
-theorem Filter.EventuallyEq.codiscreteWithin_derivWithin {U : Set 𝕜}
-    (h : f₁ =ᶠ[codiscreteWithin U] f) :
-    derivWithin f₁ U =ᶠ[codiscreteWithin U] derivWithin f U :=
+theorem Filter.EventuallyEq.codiscreteWithin_derivWithin
+    (h : f₁ =ᶠ[codiscreteWithin s] f) :
+    derivWithin f₁ s =ᶠ[codiscreteWithin s] derivWithin f s :=
   h.codiscreteWithin_derivWithin' Subset.rfl
 
 /--
-If two functions agree on a codiscrete subset of an open set `U`, then so do their derivatives.
+If two functions agree on a codiscrete subset of an open set `s`, then so do their derivatives.
 -/
-theorem Filter.EventuallyEq.codiscreteWithin_deriv {U : Set 𝕜} (h : f₁ =ᶠ[codiscreteWithin U] f)
-    (hU : IsOpen U) :
-    deriv f₁ =ᶠ[codiscreteWithin U] deriv f := by
-  filter_upwards [h.codiscreteWithin_fderiv (𝕜 := 𝕜) hU] with y hy
+theorem Filter.EventuallyEq.codiscreteWithin_deriv (h : f₁ =ᶠ[codiscreteWithin s] f)
+    (hs : IsOpen s) :
+    deriv f₁ =ᶠ[codiscreteWithin s] deriv f := by
+  filter_upwards [h.codiscreteWithin_fderiv (𝕜 := 𝕜) hs] with y hy
   unfold deriv
   rw [hy]
 

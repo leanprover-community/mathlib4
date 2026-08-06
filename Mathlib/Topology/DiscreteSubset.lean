@@ -44,7 +44,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f f₁ f₂ : X → Y} {s : Set X}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
     DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
@@ -252,7 +252,7 @@ theorem mem_nhdsNE_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteW
 omit [TopologicalSpace Y] in
 /-- Two functions agree along `codiscreteWithin U` iff, near every point of `U`, they agree at
 every point of `U`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsNE {U : Set X} {f₁ f₂ : X → Y} :
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsNE {U : Set X} :
     f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → f₁ y = f₂ y := by
   have h : {y | f₁ y = f₂ y} ∪ Uᶜ = {y | y ∈ U → f₁ y = f₂ y} := by
     ext y
@@ -275,8 +275,7 @@ theorem mem_nhdsWithin_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscr
 omit [TopologicalSpace Y] in
 /-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
 along the punctured neighborhood within `U` of `x`. -/
-theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X}
-    {f₁ f₂ : X → Y} :
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X} :
     f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ := by
   simp [codiscreteWithin, EventuallyEq]
 
@@ -438,12 +437,12 @@ lemma Disjoint.nhdsWithin_eq_of_cofinite
 
 /-- A set is codiscrete iff it is a punctured neighborhood of every point. -/
 @[simp]
-lemma mem_codiscrete_iff_forall_mem_nhdsNE {s : Set X} :
+lemma mem_codiscrete_iff_forall_mem_nhdsNE :
     s ∈ Filter.codiscrete X ↔ ∀ x, s ∈ 𝓝[≠] x := by
   simp [Filter.codiscrete, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
 
 /-- Codiscrete sets are punctured neighborhoods of every point. -/
-lemma mem_nhdsNE_of_mem_codiscrete {s : Set X} (hs : s ∈ Filter.codiscrete X) (x : X) :
+lemma mem_nhdsNE_of_mem_codiscrete (hs : s ∈ Filter.codiscrete X) (x : X) :
     s ∈ 𝓝[≠] x :=
   mem_codiscrete_iff_forall_mem_nhdsNE.1 hs x
 
@@ -452,7 +451,7 @@ omit [TopologicalSpace Y] in
 Two functions agree along the codiscrete filter iff they agree along the punctured neighborhood of
 every point. -/
 @[simp]
-lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE {f₁ f₂ : X → Y} :
+lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE :
     f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ := by
   simp [EventuallyEq, Filter.Eventually, mem_codiscrete_iff_forall_mem_nhdsNE]
 
