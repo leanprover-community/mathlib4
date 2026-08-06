@@ -96,13 +96,6 @@ example : Matrix.rank (R := ℚ) !![1/2 * 4, 2; 1, 1] = 1 := by eval_rank
 
 instance : Fact (Nat.Prime 7) := ⟨by decide⟩
 
-instance : Zsqrtd.Nonsquare 5 :=
-  ⟨fun n h => by have := (Nat.exists_mul_self 5).mp ⟨n, h.symm⟩; norm_num at this⟩
-
--- mathlib states the `Nonsquare`-based instance for `ℕ`-coerced `d` only
-instance : IsDomain (Zsqrtd 5) :=
-  inferInstanceAs (IsDomain (Zsqrtd ((5 : ℕ) : ℤ)))
-
 example : Matrix.rank (R := ZMod 7) !![3, 5; 2, 4] = 2 := by eval_rank
 
 -- det = -7 ≡ 0 (mod 7): full rank over ℚ, but rank 1 over ZMod 7
@@ -131,6 +124,13 @@ example : Matrix.rank (R := ℤ) CartanMatrix.E₇ = 7 := by
   eval_rank
 
 section Binet
+
+instance : Zsqrtd.Nonsquare 5 :=
+  ⟨fun n h => by have := (Nat.exists_mul_self 5).mp ⟨n, h.symm⟩; norm_num at this⟩
+
+-- mathlib states the `Nonsquare`-based instance for `ℕ`-coerced `d` only
+instance : IsDomain (Zsqrtd 5) :=
+  inferInstanceAs (IsDomain (Zsqrtd ((5 : ℕ) : ℤ)))
 
 local notation "Φ" => (⟨1, 1⟩ : Zsqrtd 5)
 local notation "Ψ" => (⟨1, -1⟩ : Zsqrtd 5)
@@ -248,4 +248,3 @@ example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by eval_rank
 #guard_msgs in
 example : Matrix.rank (R := ZMod 7) !![2/3, 0; 0, 1] = 2 := by
   simp only [norm_rank]
-
