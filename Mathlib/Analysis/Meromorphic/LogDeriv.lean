@@ -34,6 +34,7 @@ The logarithmic derivative converts products into sums: away from a codiscrete s
 logarithmic derivative of a product of two meromorphic functions is the sum of the logarithmic
 derivatives.
 -/
+@[to_fun MeromorphicOn.logDeriv_fun_mul_eventuallyEq]
 theorem MeromorphicOn.logDeriv_mul_eventuallyEq (hf : MeromorphicOn f U) (hg : MeromorphicOn g U)
     (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) (h'g : ∀ x ∈ U, meromorphicOrderAt g x ≠ ⊤) :
     logDeriv (f * g) =ᶠ[codiscreteWithin U] logDeriv f + logDeriv g := by
@@ -49,6 +50,7 @@ The logarithmic derivative converts products into sums: away from a codiscrete s
 logarithmic derivative of a product of two meromorphic functions is the sum of the logarithmic
 derivatives.
 -/
+@[to_fun Meromorphic.logDeriv_fun_mul_eventuallyEq]
 theorem Meromorphic.logDeriv_mul_eventuallyEq (hf : Meromorphic f) (hg : Meromorphic g)
     (h'f : ∀ x, meromorphicOrderAt f x ≠ ⊤) (h'g : ∀ x, meromorphicOrderAt g x ≠ ⊤) :
     logDeriv (f * g) =ᶠ[codiscrete 𝕜] logDeriv f + logDeriv g :=
@@ -117,6 +119,7 @@ theorem Meromorphic.logDeriv_finprod_eventuallyEq {ι : Type*} {F : ι → 𝕜 
 Away from a codiscrete subset of `U`, the logarithmic derivative of the `n`-th power of a
 meromorphic function is `n` times the logarithmic derivative.
 -/
+@[to_fun MeromorphicOn.logDeriv_fun_zpow_eventuallyEq]
 theorem MeromorphicOn.logDeriv_zpow_eventuallyEq (hf : MeromorphicOn f U) (n : ℤ) :
     logDeriv (f ^ n) =ᶠ[codiscreteWithin U] n • logDeriv f := by
   filter_upwards [hf.analyticAt_mem_codiscreteWithin] with y hy
@@ -127,6 +130,7 @@ theorem MeromorphicOn.logDeriv_zpow_eventuallyEq (hf : MeromorphicOn f U) (n : �
 Away from a codiscrete subset of `𝕜`, the logarithmic derivative of the `n`-th power of a
 meromorphic function is `n` times the logarithmic derivative.
 -/
+@[to_fun Meromorphic.logDeriv_fun_zpow_eventuallyEq]
 theorem Meromorphic.logDeriv_zpow_eventuallyEq (hf : Meromorphic f) (n : ℤ) :
     logDeriv (f ^ n) =ᶠ[codiscrete 𝕜] n • logDeriv f := by
   apply MeromorphicOn.logDeriv_zpow_eventuallyEq (meromorphicOn_univ.mpr hf)
