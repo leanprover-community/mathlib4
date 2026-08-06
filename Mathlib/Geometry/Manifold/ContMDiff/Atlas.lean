@@ -185,8 +185,8 @@ lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
     ϕ.symm.trans (f.trans ϕ') ∈ maximalAtlas I n H := by
   refine (ϕ.symm.trans (f.trans ϕ')).mem_maximalAtlas_of_contMDiffOn ?_ ?_
   · exact (contMDiffOn_of_mem_maximalAtlas hϕ').comp
-      (hf.comp ((contMDiffOn_symm_of_mem_maximalAtlas hϕ).mono (by simp)) (fun z hz ↦ hz.2.1))
-      (fun z hz ↦ hz.2.2)
+      (hf.comp ((contMDiffOn_symm_of_mem_maximalAtlas hϕ).mono fun z hz ↦ hz.1) fun z hz ↦ hz.2.1)
+      fun z hz ↦ hz.2.2
   · exact (contMDiffOn_of_mem_maximalAtlas hϕ).comp
       (hf'.comp ((contMDiffOn_symm_of_mem_maximalAtlas hϕ').mono fun z hz ↦ hz.1.1)
         fun z hz ↦ hz.1.2)
