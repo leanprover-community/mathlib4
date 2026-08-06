@@ -896,6 +896,24 @@ section ComplexUnitDisc
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
 open Complex
+open scoped Complex.UnitDisc
+
+-- TODO: upstream the next four declarations! added just so the test is more meaningful
+lemma Complex.UnitDisc.range_coe : Set.range UnitDisc.coe = Metric.ball (0 : ℂ) 1 := by
+  ext x
+  sorry
+
+theorem isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : 𝔻 → ℂ) := by
+  refine ⟨UnitDisc.isEmbedding_coe, ?_⟩
+  rw [Complex.UnitDisc.range_coe]
+  exact Metric.isOpen_ball
+
+noncomputable instance : ChartedSpace ℂ UnitDisc :=
+  isOpenEmbedding_coe.singletonChartedSpace
+
+open scoped ContDiff
+instance : IsManifold 𝓘(ℝ, ℂ) ω 𝔻 :=
+  isOpenEmbedding_coe.isManifold_singleton
 
 variable {g : UnitDisc → N} {h : E'' → UnitDisc} {k : UnitDisc → ℂ} {y : UnitDisc}
 
