@@ -194,7 +194,7 @@ noncomputable instance n_nonempty {n : Type*} [Fintype n]
     [nezero_n : NeZero (Fintype.card n)]
     [h : Fact (Fintype.card n = Fintype.card α)] :
     Nonempty (LatinSquare n α) := by
-  haveI := Fin.addCommGroup (Fintype.card n)
+  have := Fin.addCommGroup (Fintype.card n)
   let a := addGroupToCayleyTable (Fin (Fintype.card n))
   have f :=  Fintype.equivFin n
   have h' := Fintype.equivFinOfCardEq h.out.symm
@@ -227,23 +227,16 @@ lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type
     Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
     ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
   intro s
-  set l := s.card with hl
-  have h₁ : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card n - Fintype.card k) := by
-    simp [h₂,hl]
-  by_contra hc
-  simp only [ge_iff_le, not_le] at hc
-  have _ : NeZero ((Fintype.card n) - (Fintype.card k) ) := {out := by lia}
-  set k := Fintype.card n - Fintype.card k
-  have hcount : ∃ x ∈ s.biUnion B, k < (Finset.card {j | j ∈ s ∧ x ∈ B j}) := by
-    have hk : s.inf' (by grind [Finset.one_le_card]) (fun j ↦ Finset.card (B j)) = k := by
-      simp_rw [h₂, Finset.inf'_const]
-    have h := Finset.exists_mem_exists_mem_inf'_card_lt (s := s) (f := B)
-      (by grind [Finset.one_le_card]) (by grind) (by grind)
-    simp only [Finset.mem_biUnion]
-    grind
-  obtain ⟨ x, hx ⟩ := hcount
-  specialize h₃ x s
-  lia
+  have h := Finset.card_le_card_biUnion_of_card_le_card B s (by lia)
+    (n := Fintype.card n - Fintype.card k)
+  apply h
+  · grind
+  · intro x _
+    have ht : Finset.card {j | j ∈ s ∧ x ∈ B j} = Finset.card {j ∈ s | x ∈ B j} := by
+      congr 1
+      grind
+    rw [<-ht]
+    exact (h₃ x s)
 
 /-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
 lemma col_card {k n : Type*} [Fintype k] [Fintype n] (A : LatinRectangle k n α) :
@@ -523,7 +516,7 @@ theorem LatinRectangle.exists_LatinSquare_of_LatinRectangle {k n : Type*} [Finty
       use A'
       exact IsSubrect.refl f hA'
     · set k' := Option k with hk'
-      letI : Fintype k' := (inferInstance : Fintype (Option k))
+      let : Fintype k' := (inferInstance : Fintype (Option k))
       have hk'_card := Fintype.card_option (α := k)
       replace hk' := hk'.symm
       simp only [hk'] at hk'_card
