@@ -31,21 +31,20 @@ variable {n : Type*}
 private lemma abs_det_eq_prod_abs_inner_gramSchmidt_rows
     [Fintype n] [DecidableEq n] [LinearOrder n]
     [LocallyFiniteOrderBot n] [WellFoundedLT n] (A : Matrix n n ℝ) :
-    |A.det| = ∏ i,
-      |inner ℝ
-        ((InnerProductSpace.gramSchmidtOrthonormalBasis finrank_euclideanSpace
-          (fun i => WithLp.toLp 2 (A i) : n → EuclideanSpace ℝ n)) i)
-        (WithLp.toLp 2 (A i) : EuclideanSpace ℝ n)| := by
-  let v : n → EuclideanSpace ℝ n := fun i => WithLp.toLp 2 (A i)
-  let b : OrthonormalBasis n ℝ (EuclideanSpace ℝ n) :=
-    InnerProductSpace.gramSchmidtOrthonormalBasis finrank_euclideanSpace v
-  rw [show |A.det| = |b.toBasis.det v| by
-    rw [show b.toBasis.det v = b.toBasis.det (EuclideanSpace.basisFun n ℝ) * A.det by
-      nth_rewrite 1 [(b.toBasis.det).eq_smul_basis_det (EuclideanSpace.basisFun n ℝ).toBasis]
-      simp [v, EuclideanSpace.basisFun_toBasis_det_toLp n ℝ A]]
-    rcases OrthonormalBasis.det_to_matrix_orthonormalBasis_real b (EuclideanSpace.basisFun n ℝ)
-      with h | h <;> simp [h],
-    InnerProductSpace.gramSchmidtOrthonormalBasis_det, Finset.abs_prod]
+    letI v : n → EuclideanSpace ℝ n := fun i ↦ WithLp.toLp 2 (A i)
+    |A.det| = ∏ i, |⟪gramSchmidtOrthonormalBasis finrank_euclideanSpace v i, v i⟫_ℝ| := by
+  set v : n → EuclideanSpace ℝ n := fun i ↦ WithLp.toLp 2 (A i)
+  set b : OrthonormalBasis n ℝ (EuclideanSpace ℝ n) :=
+    gramSchmidtOrthonormalBasis finrank_euclideanSpace v
+  calc
+    |A.det| = |b.toBasis.det (EuclideanSpace.basisFun n ℝ) * A.det| := by
+      obtain (h | h) := b.det_to_matrix_orthonormalBasis_real (EuclideanSpace.basisFun n ℝ)
+      all_goals simp [h]
+    _ = |b.toBasis.det v| := by
+      nth_rewrite 2 [(b.toBasis.det).eq_smul_basis_det (EuclideanSpace.basisFun n ℝ).toBasis]
+      simp [v, EuclideanSpace.basisFun_toBasis_det_toLp]
+    _ = ∏ i, |inner ℝ (b i) (WithLp.toLp 2 (A i))| := by
+      rw [gramSchmidtOrthonormalBasis_det, Finset.abs_prod]
 
 private lemma euclidean_row_norm_sq_le_card
     [Fintype n] {A : Matrix n n ℝ}
