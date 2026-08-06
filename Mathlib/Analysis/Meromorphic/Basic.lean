@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
@@ -396,6 +397,10 @@ Iterated derivatives of meromorphic functions are meromorphic.
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
+/-- If `f` is meromorphic at a point, then so is its logarithmic derivative. -/
+@[fun_prop] theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) :
+    MeromorphicAt (logDeriv f) x := hf.deriv.div hf
+
 end MeromorphicAt
 
 section smul_iff
@@ -624,6 +629,9 @@ include hf in
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
 
+/-- If `f` is meromorphic on a set, then so is its logarithmic derivative. -/
+protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} {hf : MeromorphicOn f U} :
+    MeromorphicOn (logDeriv f) U := hf.deriv.div hf
 /-- `MeromorphicOn` is invariant under translation. -/
 @[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
 theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
@@ -770,6 +778,10 @@ protected lemma deriv [CompleteSpace E] (hf : Meromorphic f) : Meromorphic (deri
 @[fun_prop]
 lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
+
+/-- If `f` is meromorphic, then so is its logarithmic derivative. -/
+@[fun_prop] protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : Meromorphic f) :
+    Meromorphic (logDeriv f) := hf.deriv.div hf
 
 /--
 If `f` is meromorphic, if `g` agrees with `f` on a codiscrete set, then `g` is also meromorphic.
