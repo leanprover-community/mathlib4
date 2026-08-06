@@ -245,7 +245,7 @@ theorem IsHadamard.of_unitary_of_pairwise_rows_of_isRegular
   by_cases hik : i = k
   · subst k
     simp [mul_apply, fun j => (Unitary.mem_iff.mp (hentry i j)).2]
-  · simp [mul_apply, hik, horth hik]
+  · simpa [mul_apply, hik, dotProduct] using horth hik
 
 /-- A matrix over a commutative ring with trivial star whose entries square to one and whose
 distinct rows have dot product zero is Hadamard, provided the order is regular in the ring. -/
