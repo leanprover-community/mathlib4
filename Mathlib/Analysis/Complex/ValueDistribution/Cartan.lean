@@ -12,8 +12,8 @@ public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPrese
 /-!
 # Cartan's Formula
 
-This file will, in the future, establish Cartan's classic formula, describing the characteristic
-function `characteristic f ⊤ r` as a sum of two circle averages,
+This file establishes Cartan's classic formula, describing the characteristic function
+`characteristic f ⊤ r` as a sum of two circle averages,
 
 - `circleAverage (logCounting f · r) 0 1` and
 - `circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1`.
