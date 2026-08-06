@@ -85,25 +85,25 @@ private irreducible_def mul : ℝ → ℝ → ℝ
 private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
-instance : Zero ℝ :=
+@[no_expose] instance : Zero ℝ :=
   ⟨zero⟩
 
-instance : One ℝ :=
+@[no_expose] instance : One ℝ :=
   ⟨one⟩
 
-instance : Add ℝ :=
+@[no_expose] instance : Add ℝ :=
   ⟨add⟩
 
-instance : Neg ℝ :=
+@[no_expose] instance : Neg ℝ :=
   ⟨neg⟩
 
-instance : Mul ℝ :=
+@[no_expose] instance : Mul ℝ :=
   ⟨mul⟩
 
 instance : Sub ℝ :=
   ⟨fun a b => a + -b⟩
 
-noncomputable instance : Inv ℝ :=
+@[no_expose] noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
 theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
@@ -255,7 +255,7 @@ private irreducible_def lt : ℝ → ℝ → Prop
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
-instance : LT ℝ :=
+@[no_expose] instance : LT ℝ :=
   ⟨lt⟩
 
 theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
@@ -285,7 +285,7 @@ lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
-instance : LE ℝ :=
+@[no_expose] instance : LE ℝ :=
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
@@ -362,7 +362,7 @@ instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : Max ℝ :=
+@[no_expose] instance : Max ℝ :=
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -377,7 +377,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : Min ℝ :=
+@[no_expose] instance : Min ℝ :=
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
