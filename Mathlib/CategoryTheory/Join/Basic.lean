@@ -303,6 +303,10 @@ def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
 
 section
 
+-- TODO: This is necessary only for the `by cat_disch` autoParam.
+-- Remove after https://github.com/leanprover/lean4/issues/14708 is fixed.
+set_option backward.privateInPublic true
+
 variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F') (αᵣ : inclRight C D ⋙ F ⟶ inclRight C D ⋙ F')
     (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
