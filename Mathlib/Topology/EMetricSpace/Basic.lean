@@ -218,6 +218,9 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
   rwa [mem_closedEBall, edist_comm] at hy
 
+@[deprecated TopologicalSpace.subset_countable_closure_of_compact (since := "2026-08-06")]
+alias subset_countable_closure_of_compact :=
+  TopologicalSpace.subset_countable_closure_of_compact
 
 end Compact
 
@@ -231,7 +234,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
     SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
-    subset_countable_closure_of_compact (isCompact_compactCovering α n)
+    TopologicalSpace.subset_countable_closure_of_compact (isCompact_compactCovering α n)
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
@@ -282,7 +285,7 @@ namespace EMetric
 /-- A compact set in an emetric space is separable, i.e., it is the closure of a countable set. -/
 theorem countable_closure_of_compact {s : Set γ} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s = closure t := by
-  rcases subset_countable_closure_of_compact hs with ⟨t, hts, htc, hsub⟩
+  rcases TopologicalSpace.subset_countable_closure_of_compact hs with ⟨t, hts, htc, hsub⟩
   exact ⟨t, hts, htc, hsub.antisymm (closure_minimal hts hs.isClosed)⟩
 
 end EMetric

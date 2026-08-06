@@ -209,7 +209,7 @@ instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X]
 
 /-- A compact set in a pseudo metrizable space is separable, i.e., it is a subset of the closure of
 a countable set. -/
-theorem EMetric.Emsubset_countable_closure_of_compact {X : Type*} [TopologicalSpace X]
+theorem subset_countable_closure_of_compact {X : Type*} [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] {s : Set X} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   let := TopologicalSpace.pseudoMetrizableSpaceUniformity X
