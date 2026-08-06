@@ -255,11 +255,11 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
     min_def := fun a b => untrop_injective (by
       simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
 
-@[deprecated (since := "2026-08-06")] alias untrop_sup := untrop_max
-
 @[simp]
 theorem untrop_max (x y : Tropical R) : untrop (max x y) = max (untrop x) (untrop y) :=
   rfl
+
+@[deprecated (since := "2026-08-06")] alias untrop_sup := untrop_max
 
 @[simp]
 theorem min_eq_add : (min : Tropical R → Tropical R → Tropical R) = (· + ·) :=
