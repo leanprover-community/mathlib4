@@ -32,9 +32,8 @@ Moreover, we can extend a linear equivalence:
   and `f` preserves the norm.
 
 Finally, we can extend a linear isometry:
-* `LinearIsometry.extendOfIsometry`: Extend a linear isometry `f : E ≃ₗᵢ[𝕜] F` between normed spaces
-  to a linear isometry `Eₗ →ₗᵢ[𝕜] Fₗ` between Banach spaces with a dense map `e₁ : E →ₗ[𝕜] Eₗ`, a
-  linear map `e₂ : F →ₗ[𝕜] Fₗ` and the corresponding norm estimates.
+* `LinearIsometry.completion`: The linear isometric version of `UniformSpace.Completion.extension`.
+* `LinearIsometry.fromCompletion`: The linear isometric version of `UniformSpace.Completion.map`.
 -/
 
 @[expose] public section
