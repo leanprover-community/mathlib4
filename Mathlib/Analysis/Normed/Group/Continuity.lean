@@ -402,7 +402,7 @@ theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
 
 variable (E)
 
-/-- In a normed group, the pullback under the norm of `𝓝[>] 0` is the punctured neighborhood of `1`.-/
+/-- In a normed group, the pullback under the norm of `𝓝[>] 0` is the punctured neighborhood of `1`. -/
 @[to_additive comap_norm_nhdsGT_zero
 /-- In a normed additive group, the pullback under the norm of `𝓝[>] 0` is the punctured
 neighborhood of `0`. -/]
