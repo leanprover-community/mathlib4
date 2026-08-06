@@ -545,8 +545,7 @@ lemma Subalgebra.frontier_subset_frontier :
     (spectrum.isClosed (x : A)).closure_eq]
   apply subset_inter (frontier_spectrum S x)
   rw [frontier_eq_closure_inter_closure]
-  exact inter_subset_right |>.trans <|
-    closure_mono <| compl_subset_compl.mpr <| spectrum.subset_subalgebra x
+  grw [inter_subset_right, spectrum.subset_subalgebra]
 
 open Set Notation
 
@@ -568,12 +567,8 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   suffices h_frontier : frontier (σ 𝕜 x \ σ 𝕜 (x : A)) ⊆ frontier (σ 𝕜 (x : A)) from
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
-  rw [sdiff_eq_compl_inter]
-  apply (frontier_inter_subset _ _).trans
-  rw [frontier_compl]
-  apply union_subset <| inter_subset_left
-  refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
-  exact frontier_subset_frontier S x
+  grw [sdiff_eq_compl_inter, frontier_inter_subset, inter_subset_left, inter_subset_right,
+    frontier_compl, frontier_subset_frontier, union_self]
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
