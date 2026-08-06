@@ -229,14 +229,14 @@ lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : A) (i j : ι) :
 -- See note [reducible non-instances]
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : Injective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism. -/
 -- See note [reducible non-instances]
 protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : Surjective f)
     (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 
 variable (A)
@@ -244,7 +244,7 @@ variable (A)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 @[instance_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { __ := SMulWithZero.compHom A f.toZeroHom
     mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
     one_smul m := by change f 1 • m = m; simp }
@@ -286,7 +286,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { hf.smulZeroClass f.toZeroHom smul with
     smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
 
@@ -295,7 +295,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { f.toZeroHom.smulZeroClass smul with
     smul_add := fun c x y => by
       rcases hf x with ⟨x, rfl⟩
@@ -317,7 +317,7 @@ variable (A)
 /-- Compose a `DistribSMul` with a function, with scalar multiplication `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { SMulZeroClass.compFun A f with
     smul_add := fun x => smul_add (f x) }
 
@@ -375,7 +375,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribMulAction [AddMonoid B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
 /-- Pushforward a distributive multiplicative action along a surjective additive monoid
@@ -383,7 +383,7 @@ homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribMulAction M B :=
-  reduceProj% zeta% unfoldReducible%
+  reduceProj% zeta% unfoldInstances%
   { hf.distribSMul f smul, hf.mulAction f smul with }
 
 variable (A)
