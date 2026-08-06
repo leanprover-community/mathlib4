@@ -265,11 +265,9 @@ whose entries square to one and whose distinct rows have dot product zero is Had
 theorem IsHadamard.of_entry_sq_of_pairwise_rows (hentry_sq : ∀ i j, (A i j) ^ 2 = 1)
     (horth : Pairwise (A · ⬝ᵥ A · = 0)) :
     A.IsHadamard := by
-  by_cases hempty : IsEmpty n
-  · letI := hempty
-    refine ⟨isEmptyElim, ?_, ?_⟩ <;> ext i <;> exact isEmptyElim i
-  · haveI := not_isEmpty_iff.mp hempty
-    exact IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular hentry_sq horth <|
+  obtain _ | _ := isEmpty_or_nonempty n
+  · refine ⟨isEmptyElim, ?_, ?_⟩ <;> ext i <;> exact isEmptyElim i
+  · exact IsHadamard.of_entry_sq_of_pairwise_rows_of_isRegular hentry_sq horth <|
       IsRegular.of_ne_zero <| by exact_mod_cast Fintype.card_ne_zero
 
 end CharZeroNoZeroDivisors
