@@ -33,28 +33,25 @@ open Lean Meta Elab Qq
 
 namespace Mathlib.Tactic.Echelon
 
+/-- Build the numeral of `i` in `Fin $n`. -/
+def mkFinNumeral (n : ℕ) (i : ℕ) : MetaM Q(Fin $n) :=
+  mkNumeral q(Fin $n) i
+
 /-- Build the pivot literal `![↑c₀, …, ⊤, …] : Fin m → WithTop (Fin n)`, sending the
 first rows to their pivot columns and the remaining rows to `⊤`. -/
 def mkPivotLit (m n : Nat) (pivots : Array Nat) : MetaM Expr := do
   let entries : Array Q(WithTop (Fin $n)) ← (Array.range m).mapM fun i => do
     if hi : i < pivots.size then
-      let c ← mkNumeral q(Fin $n) pivots[i]
-      have c : Q(Fin $n) := c
-      return q(WithTop.some $c)
+      return q(WithTop.some $(← mkFinNumeral n pivots[i]))
     else
       return q((⊤ : WithTop (Fin $n)))
   return PiFin.mkLiteralQ (α := q(WithTop (Fin $n))) (n := m) fun i => entries[i.1]!
 
 /-- Build the permutation `σ = swap a₀ b₀ * swap a₁ b₁ * ⋯` from the recorded swaps. -/
 def mkPerm (m : Nat) (swaps : Array (Nat × Nat)) : MetaM Expr := do
-  have mE : Q(ℕ) := mkNatLitQ m
-  let mut acc : Q(Equiv.Perm (Fin $mE)) := q(Equiv.refl (Fin $mE))
+  let mut acc : Q(Equiv.Perm (Fin $m)) := q(Equiv.refl (Fin $m))
   for (a, b) in swaps do
-    let aE ← mkNumeral q(Fin $mE) a
-    let bE ← mkNumeral q(Fin $mE) b
-    have aE : Q(Fin $mE) := aE
-    have bE : Q(Fin $mE) := bE
-    acc := q($acc * Equiv.swap $aE $bE)
+    acc := q($acc * Equiv.swap $(← mkFinNumeral m a) $(← mkFinNumeral m b))
   return acc
 
 /-- The applicability check of the Bareiss method, which requires a commutative domain
