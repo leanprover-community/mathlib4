@@ -301,7 +301,7 @@ theorem leftInverse_iff_rightInverse :
 a left inverse of `g`, then in fact `f` is also the right inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
+  .ofLinearMap f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
 
 @[simp] lemma linearEquivOfLeftInverse_apply (hfg : Function.LeftInverse f g) (x : M) :
     linearEquivOfLeftInverse hfg x = f x := rfl
@@ -313,7 +313,7 @@ def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
 a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
+  .ofLinearMap f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
 
 @[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
     linearEquivOfRightInverse hfg x = f x := rfl
@@ -475,7 +475,7 @@ variable {R M N}
 
 theorem mk_eq_iff {N : Pic R} : Pic.mk R M = N ↔ Nonempty (M ≃ₗ[R] N) where
   mp := (· ▸ ⟨(mk.linearEquiv R M).symm⟩)
-  mpr := fun ⟨e⟩ ↦ ((equivShrink _).apply_eq_iff_eq_symm_apply).mpr <|
+  mpr := fun ⟨e⟩ ↦ ((equivShrink _).eq_symm_apply).mp <|
     Units.ext <| Quotient.mk_eq_iff_out.mpr ⟨(Finite.reprEquivₛ R M ≪≫ₗ e).toModuleIsoₛ⟩
 
 theorem mk_eq_self {M : Pic R} : Pic.mk R M = M := mk_eq_iff.mpr ⟨.refl ..⟩
@@ -930,6 +930,6 @@ theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     convert! Subtype.val_injective.comp e.injective using 2
     rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one, Function.comp_apply]
   constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
-  exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]
+  exacts [mul_le_left (e 1).2, mul_le_right (e 1).2]
 
 end Ideal
