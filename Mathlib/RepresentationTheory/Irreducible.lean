@@ -57,6 +57,10 @@ theorem injective_or_eq_zero : Injective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.injective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
+theorem surjective_or_eq_zero (g : IntertwiningMap σ ρ) : Surjective g ∨ g = 0 := by
+  rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule σ ρ)]
+  exact LinearMap.surjective_or_eq_zero (equivLinearMapAsModule σ ρ g)
+
 theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)

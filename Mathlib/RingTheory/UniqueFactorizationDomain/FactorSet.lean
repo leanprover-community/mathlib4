@@ -226,9 +226,8 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
-  classical
-    apply dif_neg
-    apply mt mk_eq_zero.1 h
+  apply dif_neg
+  apply mt mk_eq_zero.1 h
 
 @[simp]
 theorem factors_prod (a : Associates α) : a.factors.prod = a := by
@@ -313,15 +312,15 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
   have : a.prod.factors ≤ b.prod.factors := factors_mono h
   rwa [prod_factors, prod_factors] at this
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Max (Associates α) :=
   ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Min (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Lattice (Associates α) :=
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
@@ -336,7 +335,7 @@ noncomputable instance : Lattice (Associates α) :=
     inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
     inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
-open Classical in
+open scoped Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
   show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b by
     nontriviality α
@@ -356,7 +355,7 @@ theorem dvd_of_mem_factors {a p : Associates α} (hm : p ∈ factors a) :
 
 theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p} {hz : a ≠ 0}
     (h_mem : Subtype.mk p hp ∈ factors' a) : p ∣ Associates.mk a := by
-  haveI := Classical.decEq (Associates α)
+  have := Classical.decEq (Associates α)
   apply dvd_of_mem_factors
   rw [factors_mk _ hz]
   apply mem_factorSet_some.2 h_mem
@@ -387,9 +386,9 @@ theorem mem_factors_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     apply dvd_of_mem_factors
   · apply mem_factors_of_dvd ha0 hp
 
-open Classical in
 theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : Associates.mk a ⊓ Associates.mk b ≠ 1) : ∃ p : α, Prime p ∧ p ∣ a ∧ p ∣ b := by
+  classical
   have hz : factors (Associates.mk a) ⊓ factors (Associates.mk b) ≠ 0 := by
     contrapose h with hf
     change (factors (Associates.mk a) ⊓ factors (Associates.mk b)).prod = 1
@@ -413,7 +412,7 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     Associates.mk a ⊓ Associates.mk b = 1 ↔ ∀ {d : α}, d ∣ a → d ∣ b → ¬Prime d := by
   constructor
   · intro hg p ha hb hp
-    refine (Associates.prime_mk.mpr hp).not_unit (isUnit_of_dvd_one ?_)
+    refine (Associates.prime_mk.mpr hp).not_isUnit (isUnit_of_dvd_one ?_)
     rw [← hg]
     exact le_inf (mk_le_mk_of_dvd ha) (mk_le_mk_of_dvd hb)
   · contrapose

@@ -49,7 +49,6 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
   carrier := α
   isBoundedOrder := Fintype.toBoundedOrder α
 
-set_option backward.privateInPublic true in
 /-- The type of morphisms in `FinBddDistLat R`. -/
 @[ext]
 structure Hom (X Y : FinBddDistLat.{u}) where

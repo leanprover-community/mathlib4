@@ -31,23 +31,6 @@ open scoped NNReal
 
 variable {A₁ A₂ B₁ B₂ : Type*}
 
-section CFC
-
-variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [IsScalarTower ℝ A₁ A₁]
-  [StarRing A₁] [TopologicalSpace A₁] [NonUnitalContinuousFunctionalCalculus ℝ A₁ IsSelfAdjoint]
-  [PartialOrder A₁] [StarOrderedRing A₁]
-
-variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
-
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : A₁ →ₚ[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
-    IsSelfAdjoint (f a) := by
-  rw [← CFC.posPart_sub_negPart a ha]
-  cfc_tac
-
-end CFC
-
-
 section CStarAlgebra
 
 namespace PositiveLinearMap
@@ -133,16 +116,6 @@ instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [Ord
       obtain ⟨C, h⟩ := exists_norm_apply_le (.ofClass f)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
-
-instance {F : Type*} [FunLike F A₁ A₂] [LinearMapClass F ℂ A₁ A₂] [OrderHomClass F A₁ A₂] :
-    StarHomClass F A₁ A₂ where
-  map_star f a := by
-    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
-    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
-      rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
-    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
-      rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
-    simp [hy, hy', hy'']
 
 end PositiveLinearMap
 
