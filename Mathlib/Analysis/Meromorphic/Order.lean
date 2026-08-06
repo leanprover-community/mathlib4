@@ -153,7 +153,7 @@ codiscrete subset of `U`.
 -/
 theorem MeromorphicOn.ne_zero_mem_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E} (hf : MeromorphicOn f U)
     (h'f : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
-    {x | f x ≠ 0} ∈ codiscreteWithin U := by
+    ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right]
   intro x hx
   filter_upwards [(meromorphicOrderAt_ne_top_iff_eventually_ne_zero (hf x hx)).1 (h'f x hx)]
