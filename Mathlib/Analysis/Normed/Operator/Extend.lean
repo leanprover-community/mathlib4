@@ -375,8 +375,6 @@ variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E
 
 section fromCompletion
 
-open ContinuousLinearMap
-
 variable [PseudoMetricSpace R₂] [CompleteSpace F] [IsBoundedSMul R₂ F]
 
 /-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
