@@ -214,6 +214,7 @@ private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
 
 /-- To define a binary function from the direct limit, it suffices to provide one binary function
 from each component subject to a compatibility condition. -/
+@[no_expose]
 protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
   z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
     fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
@@ -495,7 +496,7 @@ private noncomputable def globalEquivAux (i : ι) :
     fun i hi e ↦ pEquivOnLim hi (fun j ↦ e j j.2) (equivLim i hi).1 (equivLim i hi).2
 
 /-- Over a well-ordered type, construct a family of bijections by transfinite recursion. -/
-noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
+@[no_expose] noncomputable def globalEquiv (i : ι) : F i ≃ piLT X i :=
   (globalEquivAux equivSucc equivLim i).equiv ⟨i, le_rfl⟩
 
 theorem globalEquiv_naturality ⦃i j⦄ (h : i ≤ j) (x : F j) :

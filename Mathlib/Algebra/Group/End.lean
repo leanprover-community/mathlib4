@@ -390,13 +390,13 @@ private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p
 
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
-    f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
+    f⁻¹.subtypePerm hf = (f.subtypePerm <| by exact inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
 /-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
-    (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
+    (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (by exact inv_aux.1 hf) :=
   rfl
 
 private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
@@ -406,7 +406,7 @@ private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
-    (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
+    (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (by exact pow_aux hf) := by
   induction n with
   | zero => simp
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
@@ -419,7 +419,7 @@ private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((
 
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
-    (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by
+    (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (by exact zpow_aux hf) := by
   cases n with
   | ofNat n => exact subtypePerm_pow _ _ _
   | negSucc n => simp only [zpow_negSucc, subtypePerm_pow, subtypePerm_inv]

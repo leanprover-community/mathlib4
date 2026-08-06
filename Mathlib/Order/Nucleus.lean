@@ -245,7 +245,7 @@ private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subty
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 
-instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
+@[no_expose] instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
 instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
   inf_sSup_le_iSup_inf a s := by
@@ -266,7 +266,7 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 
 /-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
 the range to the original frame. -/
-def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
+@[no_expose] def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
 lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
   mpr h := funext_iff.mpr <| fun _ ↦ le_antisymm (le_trans (h (m _)) (m.idempotent' _)) le_apply

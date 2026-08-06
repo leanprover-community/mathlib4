@@ -293,7 +293,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
-@[instance_reducible]
+@[instance_reducible, no_expose]
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=
   Denumerable.ofEquiv ℕ
     { toFun := toFunAux

@@ -545,7 +545,7 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rw [h, natEmbeddingAux]
 
 /-- Embedding of `ℕ` into an infinite type. -/
-noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
+@[no_expose] noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 
 /-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,

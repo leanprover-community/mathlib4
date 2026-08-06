@@ -30,7 +30,7 @@ private local instance enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
 
 /-- Explicit encoding function for `Multiset α` -/
-def encodeMultiset (s : Multiset α) : ℕ :=
+@[no_expose] def encodeMultiset (s : Multiset α) : ℕ :=
   encode (s.sort enle)
 
 /-- Explicit decoding function for `Multiset α` -/

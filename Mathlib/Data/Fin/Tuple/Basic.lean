@@ -1117,6 +1117,7 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
 
 /-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
   given that it is satisfied for some `k`. -/
+@[no_expose]
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
   (Fin.findX p h).1
 

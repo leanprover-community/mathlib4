@@ -497,7 +497,7 @@ open Encodable
 variable {p}
 
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
-def chooseX (h : ∃ x, p x) : { a : α // p a } :=
+private def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
     let ⟨w, pw⟩ := h
     ⟨encode w, by simp [good, encodek, pw]⟩
@@ -505,7 +505,7 @@ def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   | some a, h => ⟨a, h⟩
 
 /-- Constructive choice function for a decidable predicate over an encodable type. -/
-def choose (h : ∃ x, p x) : α :=
+@[no_expose] def choose (h : ∃ x, p x) : α :=
   (chooseX h).1
 
 theorem choose_spec (h : ∃ x, p x) : p (choose h) :=
