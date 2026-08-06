@@ -47,7 +47,7 @@ runs on integer pairs. -/
 def zsqrtdExt : BareissExt := fun R => do
   let R ← whnf R
   let_expr Zsqrtd dE := R | return none
-  let some d := (← whnf dE).int? | return none
+  let some d ← getIntValue? dE | return none
   have dQ : Q(ℤ) := dE
   let ops : RingOps (Int × Int) := {
     zero := (0, 0)
@@ -63,10 +63,8 @@ def zsqrtdExt : BareissExt := fun R => do
       MetaM (Array (Array (Int × Int)) × (BareissData (Int × Int) → BareissData (Int × Int))) := do
     let values ← entries.mapM (·.mapM evalZsqrtdEntry)
     return (values, id)
-  let render := fun ((a, b) : Int × Int) => do
-    let aQ ← mkIntNumeral q(ℤ) a
-    let bQ ← mkIntNumeral q(ℤ) b
-    return q((⟨$aQ, $bQ⟩ : Zsqrtd $dQ))
+  let render := fun ((a, b) : Int × Int) =>
+    return q((⟨$(mkIntLitQ a), $(mkIntLitQ b)⟩ : Zsqrtd $dQ))
   return some (mkProducer ops prepare render)
 
 end Mathlib.Tactic.Echelon
