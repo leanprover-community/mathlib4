@@ -802,10 +802,7 @@ theorem PiLp.basisFun_det_toLp {ι R : Type*} {p : ENNReal}
     [Fintype ι] [DecidableEq ι] [CommRing R]
     (A : Matrix ι ι R) :
     (PiLp.basisFun p R ι).det (fun i => WithLp.toLp p (A i)) = A.det := by
-  rw [PiLp.basisFun_eq_pi_basisFun, Module.Basis.det_map']
-  rw [AlternatingMap.compLinearMap_apply]
-  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_symm, WithLp.coe_linearEquiv]
-  exact Pi.basisFun_det_apply A
+  simpa [PiLp.basisFun_eq_pi_basisFun] using! Pi.basisFun_det_apply A
 
 namespace EuclideanSpace
 
