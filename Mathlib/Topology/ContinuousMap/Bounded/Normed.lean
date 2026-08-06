@@ -290,7 +290,11 @@ end compLeftContinuousBounded
 
 section compContinuousCLM
 
-variable {𝕜 : Type*} [TopologicalSpace γ] [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable {𝕜 : Type*}
+
+section NormedField
+
+variable [TopologicalSpace γ] [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 variable (β 𝕜) in
 /-- Precomposition with a continuous map is a continuous linear map from bounded continuous
@@ -305,6 +309,18 @@ def compContinuousCLM (g : C(γ, α)) : (α →ᵇ β) →L[𝕜] γ →ᵇ β :
 @[simp]
 theorem compContinuousCLM_apply (f : α →ᵇ β) (g : C(γ, α)) :
   f.compContinuousCLM β 𝕜 g = f.compContinuous g := rfl
+
+end NormedField
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β] [SeminormedAddCommGroup γ]
+
+theorem norm_compContinuousCLM_le_one (g : C(γ, α)) : ‖compContinuousCLM β 𝕜 g‖ ≤ 1 := by
+  refine (compContinuousCLM β 𝕜 g).opNorm_le_bound zero_le_one (fun x ↦ ?_)
+  simpa using norm_compContinuous_le x g
+
+end NontriviallyNormedField
 
 end compContinuousCLM
 
