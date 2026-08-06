@@ -104,10 +104,10 @@ Turing degrees are the equivalence classes of partial functions under Turing equ
 abbrev TuringDegree :=
   Antisymmetrization _ TuringReducible
 
-private instance : Preorder (ℕ →. ℕ) where
+local instance : Preorder (ℕ →. ℕ) where
   le := TuringReducible
   le_refl := .refl
   le_trans _ _ _ := TuringReducible.trans
 
 instance TuringDegree.instPartialOrder : PartialOrder TuringDegree :=
-  instPartialOrderAntisymmetrization
+  inferInstanceAs (PartialOrder (Antisymmetrization (ℕ →. ℕ) (· ≤ ·)))
