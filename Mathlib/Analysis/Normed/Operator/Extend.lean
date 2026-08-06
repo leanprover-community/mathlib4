@@ -6,8 +6,8 @@ Authors: Moritz Doll, Zhouhang Zhou
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
