@@ -5135,6 +5135,8 @@ public import Mathlib.LinearAlgebra.Matrix.Diagonal
 public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.DualNumber
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
@@ -6481,6 +6483,7 @@ public import Mathlib.RingTheory.AlgebraTower
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.Algebraic.Cardinality
 public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.Algebraic.Denominator
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Algebraic.LinearIndependent
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
