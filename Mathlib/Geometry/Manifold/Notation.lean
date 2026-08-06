@@ -518,9 +518,11 @@ where
           mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
         | _ =>
         if H.isConstOf `UpperHalfPlane || H.isConstOf `Complex.UnitDisc then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex upper half plane or the unit disc"
           return ← mkAppOptM ``modelWithCornersSelf
             #[mkConst `Complex, none, mkConst `Complex, none, none]
         else if H.isConstOf `Circle then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex unit circle"
           return ← mkAppOptM ``modelWithCornersSelf
             #[mkConst `Real, none, ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)], none, none]
         trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
