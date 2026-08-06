@@ -965,13 +965,17 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
+@[deprecated isRadical_bot (since := "2026-08-03")]
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
-    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => eq_zero_of_pow_eq_zero hn
+    (⊥ : Ideal R).IsRadical := isRadical_bot
 
 @[simp]
-theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivisors R] :
+theorem radical_bot_of_isReduced {R : Type u} [CommSemiring R] [IsReduced R] :
     radical (⊥ : Ideal R) = ⊥ :=
-  eq_bot_iff.2 isRadical_bot_of_noZeroDivisors
+  eq_bot_iff.2 isRadical_bot
+
+@[deprecated (since := "2026-08-03")]
+alias radical_bot_of_noZeroDivisors := radical_bot_of_isReduced
 
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
