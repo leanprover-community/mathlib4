@@ -276,6 +276,30 @@ lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
   rw [← hasLineDerivWithinAt_univ]
   exact hf.hasFDerivWithinAt.hasLineDerivWithinAt v
 
+/-- A local, vector-valued version of Euler's theorem on homogeneous functions.
+
+If `f (t • x) = w t • f x` for `t` in a neighborhood of `1`, then the derivative of `f` at
+`x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
+-/
+theorem HasFDerivAt.apply_self_eq_smul_of_eventuallyEq {w : 𝕜 → 𝕜} {w' : 𝕜}
+    (hf : HasFDerivAt f L x) (hw : HasDerivAt w w' 1)
+    (hhom : (fun t ↦ f (t • x)) =ᶠ[𝓝 1] fun t ↦ w t • f x) : L x = w' • f x := by
+  have hfx : HasDerivAt (fun t : 𝕜 ↦ f (t • x)) (L x) 1 := by
+    have : HasDerivAt (f ∘ fun y ↦ y • x) (L ((1 : 𝕜) • x)) (1 : 𝕜) :=
+      hf.comp_hasDerivAt_of_eq (1 : 𝕜) ((hasDerivAt_id' (1 : 𝕜)).smul_const x) (by simp)
+    simpa
+  exact (hfx.congr_of_eventuallyEq hhom.symm).unique (hw.smul_const (f x))
+
+/-- A vector-valued version of Euler's theorem for a homogeneous function.
+
+If `f (t • y) = w t • f y` for all scalars `t` and points `y`, then the derivative of `f` at
+`x`, applied to `x`, is `w' • f x`, where `w'` is the derivative of `w` at `1`.
+-/
+theorem HasFDerivAt.apply_self_eq_smul_of_homogeneous {w : 𝕜 → 𝕜} {w' : 𝕜}
+    (hf : HasFDerivAt f L x) (hw : HasDerivAt w w' 1)
+    (hhom : ∀ t y, f (t • y) = w t • f y) : L x = w' • f x :=
+  hf.apply_self_eq_smul_of_eventuallyEq hw <| .of_forall fun t ↦ hhom t x
+
 theorem DifferentiableAt.lineDifferentiableAt (hf : DifferentiableAt 𝕜 f x) :
     LineDifferentiableAt 𝕜 f x v :=
   hf.hasFDerivAt.hasLineDerivAt _ |>.lineDifferentiableAt
