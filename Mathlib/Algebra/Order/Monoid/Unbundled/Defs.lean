@@ -101,7 +101,8 @@ obtained from `(n₁, n₂)` by acting upon it by `m`.
 
 If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) (μ m n₂)`.
 -/
-class CovariantClass : Prop where
+@[deprecated "Use `Covariant` or custom typeclasses instead" (since := "2026-08-01")]
+structure CovariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the pair
   `(n₁, n₂)`, then, the relation `r` also holds for the pair `(μ m n₁, μ m n₂)` -/
   protected elim : Covariant M N μ r
@@ -118,7 +119,8 @@ pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by 
 
 If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `ContravariantClass.elim m h : r n₁ n₂`.
 -/
-class ContravariantClass : Prop where
+@[deprecated "Use `Contravariant` or custom typeclasses instead" (since := "2026-08-01")]
+structure ContravariantClass : Prop where
   /-- For all `m ∈ M` and all elements `n₁, n₂ ∈ N`, if the relation `r` holds for the
   pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by `m`, then, the relation
   `r` also holds for the pair `(n₁, n₂)`. -/
@@ -129,32 +131,36 @@ namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftMono [Mul M] [LE M] : Prop :=
-  CovariantClass M M (· * ·) (· ≤ ·)
+class MulLeftMono [Mul M] [LE M] : Prop where
+  /-- Do not use this. Use `mul_le_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a * b₁ ≤ a * b₂
 
 /-- Typeclass for monotonicity of multiplication on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightMono [Mul M] [LE M] : Prop :=
-  CovariantClass M M (swap (· * ·)) (· ≤ ·)
+class MulRightMono [Mul M] [LE M] : Prop where
+  /-- Do not use this. Use `mul_le_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ * b ≤ a₂ * b
 
 /-- Typeclass for monotonicity of addition on the left,
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftMono [Add M] [LE M] : Prop :=
-  CovariantClass M M (· + ·) (· ≤ ·)
+class AddLeftMono [Add M] [LE M] : Prop where
+  /-- Do not use this. Use `add_le_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ ≤ b₂) : a + b₁ ≤ a + b₂
 
 /-- Typeclass for monotonicity of addition on the right,
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightMono [Add M] [LE M] : Prop :=
-  CovariantClass M M (swap (· + ·)) (· ≤ ·)
+class AddRightMono [Add M] [LE M] : Prop where
+  /-- Do not use this. Use `add_le_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ ≤ a₂) : a₁ + b ≤ a₂ + b
 
 attribute [to_additive existing] MulLeftMono MulRightMono
 
@@ -163,32 +169,36 @@ namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
-  CovariantClass M M (· * ·) (· < ·)
+class MulLeftStrictMono [Mul M] [LT M] : Prop where
+  /-- Do not use this. Use `mul_lt_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a * b₁ < a * b₂
 
 /-- Typeclass for monotonicity of multiplication on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
-  CovariantClass M M (swap (· * ·)) (· < ·)
+class MulRightStrictMono [Mul M] [LT M] : Prop where
+  /-- Do not use this. Use `mul_lt_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ * b < a₂ * b
 
 /-- Typeclass for monotonicity of addition on the left,
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
-  CovariantClass M M (· + ·) (· < ·)
+class AddLeftStrictMono [Add M] [LT M] : Prop where
+  /-- Do not use this. Use `add_lt_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (hb : b₁ < b₂) : a + b₁ < a + b₂
 
 /-- Typeclass for monotonicity of addition on the right,
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
-  CovariantClass M M (swap (· + ·)) (· < ·)
+class AddRightStrictMono [Add M] [LT M] : Prop where
+  /-- Do not use this. Use `add_lt_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (ha : a₁ < a₂) : a₁ + b < a₂ + b
 
 attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 
@@ -197,32 +207,36 @@ namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
-  ContravariantClass M M (· * ·) (· < ·)
+class MulLeftReflectLT [Mul M] [LT M] : Prop where
+  /-- Do not use this. Use `lt_of_mul_lt_mul_left'` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a * b₁ < a * b₂) : b₁ < b₂
 
 /-- Typeclass for strict reverse monotonicity of multiplication on the right,
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedMonoid`. -/
-abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
-  ContravariantClass M M (swap (· * ·)) (· < ·)
+class MulRightReflectLT [Mul M] [LT M] : Prop where
+  /-- Do not use this. Use `lt_of_mul_lt_mul_right'` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ * b < a₂ * b) : a₁ < a₂
 
 /-- Typeclass for strict reverse monotonicity of addition on the left,
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
-  ContravariantClass M M (· + ·) (· < ·)
+class AddLeftReflectLT [Add M] [LT M] : Prop where
+  /-- Do not use this. Use `lt_of_add_lt_add_left` instead. -/
+  protected elim (a : M) ⦃b₁ b₂ : M⦄ (h : a + b₁ < a + b₂) : b₁ < b₂
 
 /-- Typeclass for strict reverse monotonicity of addition on the right,
-namely `a₁ * b < a₂ * b → a₁ < a₂`.
+namely `a₁ + b < a₂ + b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `IsOrderedAddMonoid`. -/
-abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
-  ContravariantClass M M (swap (· + ·)) (· < ·)
+class AddRightReflectLT [Add M] [LT M] : Prop where
+  /-- Do not use this. Use `lt_of_add_lt_add_right` instead. -/
+  protected elim (b : M) ⦃a₁ a₂ : M⦄ (h : a₁ + b < a₂ + b) : a₁ < a₂
 
 attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
 
@@ -264,18 +278,93 @@ class AddRightReflectLE [Add M] [LE M] : Prop where
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
-variable {M N μ r} in
-theorem rel_iff_cov' (hcov : Covariant M N μ r) (hcontra : Contravariant M N μ r) {m : M}
-    {a b : N} : r (μ m a) (μ m b) ↔ r a b :=
-  ⟨hcontra m, hcov m⟩
+/-- Typeclass for monotonicity of scalar multiplication on the left,
+namely `b₁ ≤ b₂ → a • b₁ ≤ a • b₂`. -/
+class IsLeftOrderedSMul [SMul M N] [LE N] : Prop where
+  /-- Do not use this. Use `smul_le_smul_left` instead. -/
+  protected smul_le_smul_left : ∀ b₁ b₂ : N, b₁ ≤ b₂ → ∀ a : M, a • b₁ ≤ a • b₂
 
-theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
-    r (μ m a) (μ m b) ↔ r a b :=
-  rel_iff_cov' CovariantClass.elim ContravariantClass.elim
+/-- Typeclass for strict monotonicity of scalar multiplication on the left,
+namely `b₁ < b₂ → a • b₁ < a • b₂`. -/
+class IsLeftStrictOrderedSMul [SMul M N] [LT N] : Prop where
+  /-- Do not use this. Use `smul_lt_smul_left` instead. -/
+  protected smul_lt_smul_left : ∀ b₁ b₂ : N, b₁ < b₂ → ∀ a : M, a • b₁ < a • b₂
 
-section flip
+/-- Typeclass for monotonicity of vector addition on the left,
+namely `b₁ ≤ b₂ → a +ᵥ b₁ ≤ a +ᵥ b₂`. -/
+class IsLeftOrderedVAdd [VAdd M N] [LE N] : Prop where
+  /-- Do not use this. Use `vadd_le_vadd_left` instead. -/
+  protected vadd_le_vadd_left : ∀ b₁ b₂ : N, b₁ ≤ b₂ → ∀ a : M, a +ᵥ b₁ ≤ a +ᵥ b₂
+
+/-- Typeclass for strict monotonicity of vector addition on the left,
+namely `b₁ < b₂ → a +ᵥ b₁ < a +ᵥ b₂`. -/
+class IsLeftStrictOrderedVAdd [VAdd M N] [LT N] : Prop where
+  /-- Do not use this. Use `vadd_lt_vadd_left` instead. -/
+  protected vadd_lt_vadd_left : ∀ b₁ b₂ : N, b₁ < b₂ → ∀ a : M, a +ᵥ b₁ < a +ᵥ b₂
+
+attribute [to_additive existing] IsLeftOrderedSMul IsLeftStrictOrderedSMul
 
 variable {M N μ r}
+
+@[to_additive]
+theorem covariant_mul_le [Mul M] [LE M] [MulLeftMono M] :
+    Covariant M M (· * ·) (· ≤ ·) :=
+  MulLeftMono.elim
+
+@[to_additive]
+theorem covariant_swap_mul_le [Mul M] [LE M] [MulRightMono M] :
+    Covariant M M (swap (· * ·)) (· ≤ ·) :=
+  MulRightMono.elim
+
+@[to_additive]
+theorem covariant_mul_lt [Mul M] [LT M] [MulLeftStrictMono M] :
+    Covariant M M (· * ·) (· < ·) :=
+  MulLeftStrictMono.elim
+
+@[to_additive]
+theorem covariant_swap_mul_lt [Mul M] [LT M] [MulRightStrictMono M] :
+    Covariant M M (swap (· * ·)) (· < ·) :=
+  MulRightStrictMono.elim
+
+@[to_additive]
+theorem contravariant_mul_lt [Mul M] [LT M] [MulLeftReflectLT M] :
+    Contravariant M M (· * ·) (· < ·) :=
+  MulLeftReflectLT.elim
+
+@[to_additive]
+theorem contravariant_swap_mul_lt [Mul M] [LT M] [MulRightReflectLT M] :
+    Contravariant M M (swap (· * ·)) (· < ·) :=
+  MulRightReflectLT.elim
+
+@[to_additive]
+theorem contravariant_mul_le [Mul M] [LE M] [MulLeftReflectLE M] :
+    Contravariant M M (· * ·) (· ≤ ·) :=
+  fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
+
+@[to_additive]
+theorem contravariant_swap_mul_le [Mul M] [LE M] [MulRightReflectLE M] :
+    Contravariant M M (swap (· * ·)) (· ≤ ·) :=
+  fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
+
+@[to_additive]
+theorem covariant_smul_le [SMul M N] [LE N] [IsLeftOrderedSMul M N] :
+    Covariant M N (· • ·) (· ≤ ·) :=
+  fun m _ _ h ↦ IsLeftOrderedSMul.smul_le_smul_left _ _ h m
+
+@[to_additive]
+theorem covariant_smul_lt [SMul M N] [LT N] [IsLeftStrictOrderedSMul M N] :
+    Covariant M N (· • ·) (· < ·) :=
+  fun m _ _ h ↦ IsLeftStrictOrderedSMul.smul_lt_smul_left _ _ h m
+
+theorem rel_iff_cov (co : Covariant M N μ r) (contra : Contravariant M N μ r)
+    (m : M) {a b : N} :
+    r (μ m a) (μ m b) ↔ r a b :=
+  ⟨contra _, co _⟩
+
+@[deprecated rel_iff_cov (since := "2026-08-01")]
+alias rel_iff_cov' := rel_iff_cov
+
+section flip
 
 theorem Covariant.flip (h : Covariant M N μ r) : Covariant M N μ (flip r) :=
   fun a _ _ ↦ h a
@@ -287,10 +376,12 @@ end flip
 
 section Covariant
 
-variable {M N μ r} [CovariantClass M N μ r]
+theorem Covariant.act_rel_act_of_rel (co : Covariant M N μ r) (m : M) {a b : N} (ab : r a b) :
+    r (μ m a) (μ m b) :=
+  co _ ab
 
-theorem act_rel_act_of_rel (m : M) {a b : N} (ab : r a b) : r (μ m a) (μ m b) :=
-  CovariantClass.elim _ ab
+@[deprecated Covariant.act_rel_act_of_rel (since := "2026-08-01")]
+alias act_rel_act_of_rel := Covariant.act_rel_act_of_rel
 
 @[to_additive]
 theorem Group.covariant_iff_contravariant [Group N] :
@@ -301,20 +392,24 @@ theorem Group.covariant_iff_contravariant [Group N] :
   · rw [← inv_mul_cancel_left a b, ← inv_mul_cancel_left a c] at bc
     exact h a⁻¹ bc
 
+set_option linter.deprecated false in
 @[to_additive]
-instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
+theorem Group.covconv [Group N] (h : CovariantClass N N (· * ·) r) :
     ContravariantClass N N (· * ·) r :=
-  ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
+  ⟨Group.covariant_iff_contravariant.mp h.elim⟩
+
+attribute [deprecated Group.covariant_iff_contravariant (since := "2026-08-01")] Group.covconv
+attribute [deprecated AddGroup.covariant_iff_contravariant (since := "2026-08-01")] AddGroup.covconv
 
 @[to_additive]
 instance Group.mulLeftReflectLE_of_mulLeftMono [Group N] [LE N] [MulLeftMono N] :
     MulLeftReflectLE N where
-  le_of_mul_le_mul_left' := Group.covariant_iff_contravariant.mp CovariantClass.elim _
+  le_of_mul_le_mul_left' := Group.covariant_iff_contravariant.mp covariant_mul_le _
 
 @[to_additive]
-theorem Group.mulLeftReflectLT_of_mulLeftStrictMono [Group N] [LT N]
+instance (priority := 100) Group.mulLeftReflectLT_of_mulLeftStrictMono [Group N] [LT N]
     [MulLeftStrictMono N] : MulLeftReflectLT N :=
-  inferInstance
+  ⟨Group.covariant_iff_contravariant.mp covariant_mul_lt⟩
 
 @[to_additive]
 theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
@@ -325,33 +420,45 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
   · rw [← mul_inv_cancel_right b a, ← mul_inv_cancel_right c a] at bc
     exact h a⁻¹ bc
 
-
+set_option linter.deprecated false in
 @[to_additive]
-instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
+theorem Group.covconv_swap [Group N] (h : CovariantClass N N (swap (· * ·)) r) :
     ContravariantClass N N (swap (· * ·)) r :=
-  ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
+  ⟨Group.covariant_swap_iff_contravariant_swap.mp h.elim⟩
+
+attribute [deprecated Group.covariant_swap_iff_contravariant_swap (since := "2026-08-01")]
+  Group.covconv_swap
+attribute [deprecated AddGroup.covariant_swap_iff_contravariant_swap (since := "2026-08-01")]
+  AddGroup.covconv_swap
 
 @[to_additive]
 instance Group.mulRightReflectLE_of_mulRightMono [Group N] [LE N] [MulRightMono N] :
     MulRightReflectLE N where
-  le_of_mul_le_mul_right' := Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim _
+  le_of_mul_le_mul_right' := Group.covariant_swap_iff_contravariant_swap.mp covariant_swap_mul_le _
 
 @[to_additive]
-theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N] [MulRightStrictMono N] :
-    MulRightReflectLT N :=
-  inferInstance
-
+instance (priority := 100) Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
+    [MulRightStrictMono N] : MulRightReflectLT N :=
+  ⟨Group.covariant_swap_iff_contravariant_swap.mp covariant_swap_mul_lt⟩
 
 section Trans
 
 variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
-  _root_.trans (act_rel_act_of_rel m ab) rl
+theorem Covariant.act_rel_of_rel_of_act_rel (co : Covariant M N μ r)
+    (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
+  _root_.trans (co.act_rel_act_of_rel m ab) rl
 
-theorem rel_act_of_rel_of_rel_act (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
-  _root_.trans rr (act_rel_act_of_rel _ ab)
+@[deprecated Covariant.act_rel_of_rel_of_act_rel (since := "2026-08-01")]
+alias act_rel_of_rel_of_act_rel := Covariant.act_rel_of_rel_of_act_rel
+
+theorem Covariant.rel_act_of_rel_of_rel_act (co : Covariant M N μ r)
+    (ab : r a b) (rr : r c (μ m a)) : r c (μ m b) :=
+  _root_.trans rr (co.act_rel_act_of_rel _ ab)
+
+@[deprecated Covariant.rel_act_of_rel_of_rel_act (since := "2026-08-01")]
+alias rel_act_of_rel_of_rel_act := Covariant.rel_act_of_rel_of_rel_act
 
 end Trans
 
@@ -360,68 +467,82 @@ end Covariant
 --  Lemma with 4 elements.
 section MEqN
 
-variable {M N μ r} {mu : N → N → N} [IsTrans N r] [i : CovariantClass N N mu r]
-  [i' : CovariantClass N N (swap mu) r] {a b c d : N}
+variable {mu : N → N → N} [IsTrans N r]
 
-theorem act_rel_act_of_rel_of_rel (ab : r a b) (cd : r c d) : r (mu a c) (mu b d) :=
-  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r _ c _ _ ab) (act_rel_act_of_rel b cd)
+theorem Covariant.act_rel_act_of_rel_of_rel (co : Covariant N N mu r)
+    (co' : Covariant N N (swap mu) r) {a b c d : N} (ab : r a b) (cd : r c d) :
+    r (mu a c) (mu b d) :=
+  _root_.trans (@act_rel_act_of_rel _ _ (swap mu) r co' c _ _ ab) (act_rel_act_of_rel co b cd)
+
+@[deprecated Covariant.act_rel_act_of_rel_of_rel (since := "2026-08-01")]
+alias act_rel_act_of_rel_of_rel := Covariant.act_rel_act_of_rel_of_rel
 
 end MEqN
 
-section Contravariant
+namespace Contravariant
 
-variable {M N μ r} [ContravariantClass M N μ r]
-
-theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
-  ContravariantClass.elim _ ab
+theorem rel_of_act_rel_act (contra : Contravariant M N μ r)
+    (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b :=
+  contra _ ab
 
 section Trans
 
 variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
-theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
+theorem act_rel_of_act_rel_of_rel_act_rel (contra : Contravariant M N μ r)
+    (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
     r (μ m a) c :=
-  _root_.trans ab (rel_of_act_rel_act m rl)
+  _root_.trans ab (contra.rel_of_act_rel_act m rl)
 
-theorem rel_act_of_act_rel_act_of_rel_act (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
+theorem rel_act_of_act_rel_act_of_rel_act (contra : Contravariant M N μ r)
+    (ab : r (μ m a) (μ m b)) (rr : r b (μ m c)) :
     r a (μ m c) :=
-  _root_.trans (rel_of_act_rel_act m ab) rr
+  _root_.trans (contra.rel_of_act_rel_act m ab) rr
 
 end Trans
 
 end Contravariant
 
+@[deprecated Contravariant.rel_of_act_rel_act (since := "2026-08-01")]
+alias rel_of_act_rel_act := Contravariant.rel_of_act_rel_act
+
+@[deprecated Contravariant.act_rel_of_act_rel_of_rel_act_rel (since := "2026-08-01")]
+alias act_rel_of_act_rel_of_rel_act_rel := Contravariant.act_rel_of_act_rel_of_rel_act_rel
+
+@[deprecated Contravariant.rel_act_of_act_rel_act_of_rel_act (since := "2026-08-01")]
+alias rel_act_of_act_rel_act_of_rel_act := Contravariant.rel_act_of_act_rel_act_of_rel_act
+
 section Monotone
 
-variable {α : Type*} {M N μ} [Preorder α] [Preorder N]
+variable {α : Type*} [Preorder α] [Preorder N]
 variable {f : N → α}
 
 /-- The partial application of a constant to a covariant operator is monotone. -/
-theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) : Monotone (μ m) :=
-  fun _ _ ↦ CovariantClass.elim m
+theorem Covariant.monotone_of_const (co : Covariant M N μ (· ≤ ·)) (m : M) : Monotone (μ m) :=
+  fun _ _ ↦ co m
 
 /-- A monotone function remains monotone when composed with the partial application
 of a covariant operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (m + n))`. -/
-theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Monotone f) (m : M) :
+theorem Monotone.covariant_of_const (co : Covariant M N μ (· ≤ ·)) (hf : Monotone f) (m : M) :
     Monotone (f <| μ m ·) :=
-  hf.comp (Covariant.monotone_of_const m)
+  hf.comp (co.monotone_of_const m)
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
 the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
-theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Monotone.covariant_of_const' {μ : N → N → N} (co : Covariant N N (swap μ) (· ≤ ·))
     (hf : Monotone f) (m : N) : Monotone (f <| μ · m) :=
-  Monotone.covariant_of_const (μ := swap μ) hf m
+  Monotone.covariant_of_const co hf m
 
 /-- Dual of `Monotone.covariant_of_const` -/
-theorem Antitone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Antitone f) (m : M) :
+theorem Antitone.covariant_of_const (co : Covariant M N μ (· ≤ ·)) (hf : Antitone f) (m : M) :
     Antitone (f <| μ m ·) :=
-  hf.comp_monotone <| Covariant.monotone_of_const m
+  hf.comp_monotone <| co.monotone_of_const m
 
 /-- Dual of `Monotone.covariant_of_const'` -/
-theorem Antitone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
+theorem Antitone.covariant_of_const' {μ : N → N → N} (co : Covariant N N (swap μ) (· ≤ ·))
     (hf : Antitone f) (m : N) : Antitone (f <| μ · m) :=
-  Antitone.covariant_of_const (μ := swap μ) hf m
+  Antitone.covariant_of_const co hf m
 
 end Monotone
 
@@ -432,16 +553,19 @@ theorem covariant_le_of_covariant_lt [PartialOrder N] :
   · exact le_rfl
   · exact (h _ bc).le
 
-theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·)] :
-    CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
+set_option linter.deprecated false in
+@[deprecated covariant_le_of_covariant_lt (since := "2026-08-01")]
+theorem covariantClass_le_of_lt [PartialOrder N] (h : CovariantClass M N μ (· < ·)) :
+    CovariantClass M N μ (· ≤ ·) :=
+  ⟨covariant_le_of_covariant_lt h.elim⟩
 
 @[to_additive]
 theorem mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M] [MulLeftStrictMono M] :
-    MulLeftMono M := covariantClass_le_of_lt _ _ _
+    MulLeftMono M := ⟨covariant_le_of_covariant_lt covariant_mul_lt⟩
 
 @[to_additive]
 theorem mulRightMono_of_mulRightStrictMono (M) [Mul M] [PartialOrder M] [MulRightStrictMono M] :
-    MulRightMono M := covariantClass_le_of_lt _ _ _
+    MulRightMono M := ⟨covariant_le_of_covariant_lt covariant_swap_mul_lt⟩
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) ∧ Contravariant M N μ (· = ·) := by
@@ -452,7 +576,7 @@ theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
 
 theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
     Contravariant M N μ (· ≤ ·) → Contravariant M N μ (· < ·) :=
-  And.left ∘ (contravariant_le_iff_contravariant_lt_and_eq M N μ).mp
+  And.left ∘ contravariant_le_iff_contravariant_lt_and_eq.mp
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
@@ -464,7 +588,7 @@ theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
   ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k),
    fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k)⟩
 
-variable (mu : N → N → N)
+variable {mu : N → N → N}
 
 theorem covariant_flip_iff [h : Std.Commutative mu] :
     Covariant N N (flip mu) r ↔ Covariant N N mu r := by unfold flip; simp_rw [h.comm]
@@ -472,76 +596,93 @@ theorem covariant_flip_iff [h : Std.Commutative mu] :
 theorem contravariant_flip_iff [h : Std.Commutative mu] :
     Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by unfold flip; simp_rw [h.comm]
 
-instance contravariant_lt_of_covariant_le [LinearOrder N]
-    [CovariantClass N N mu (· ≤ ·)] : ContravariantClass N N mu (· < ·) where
-  elim := (covariant_le_iff_contravariant_lt N N mu).mp CovariantClass.elim
+@[deprecated covariant_le_iff_contravariant_lt (since := "2026-08-01")]
+theorem contravariant_lt_of_covariant_le [LinearOrder N]
+    (h : CovariantClass N N mu (· ≤ ·)) : ContravariantClass N N mu (· < ·) :=
+  ⟨covariant_le_iff_contravariant_lt.mp h.elim⟩
 
 @[to_additive]
-theorem mulLeftReflectLT_of_mulLeftMono [Mul N] [LinearOrder N] [MulLeftMono N] :
-    MulLeftReflectLT N :=
-  inferInstance
+instance mulLeftReflectLT_of_mulLeftMono [Mul N] [LinearOrder N] [MulLeftMono N] :
+    MulLeftReflectLT N where
+  elim := covariant_le_iff_contravariant_lt.mp covariant_mul_le
 
 @[to_additive]
-theorem mulRightReflectLT_of_mulRightMono [Mul N] [LinearOrder N] [MulRightMono N] :
-    MulRightReflectLT N :=
-  inferInstance
+instance mulRightReflectLT_of_mulRightMono [Mul N] [LinearOrder N] [MulRightMono N] :
+    MulRightReflectLT N where
+  elim := covariant_le_iff_contravariant_lt.mp covariant_swap_mul_le
 
-instance covariant_lt_of_contravariant_le [LinearOrder N]
-    [ContravariantClass N N mu (· ≤ ·)] : CovariantClass N N mu (· < ·) where
-  elim := (covariant_lt_iff_contravariant_le N N mu).mpr ContravariantClass.elim
+@[deprecated covariant_lt_iff_contravariant_le (since := "2026-08-01")]
+theorem covariant_lt_of_contravariant_le [LinearOrder N]
+    (h : ContravariantClass N N mu (· ≤ ·)) : CovariantClass N N mu (· < ·) :=
+  ⟨covariant_lt_iff_contravariant_le.mpr h.elim⟩
+
+@[to_additive]
+theorem mulLeftMono_of_mulLeftReflectLT [Mul N] [LinearOrder N] [MulLeftReflectLT N] :
+    MulLeftMono N where
+  elim := covariant_le_iff_contravariant_lt.mpr contravariant_mul_lt
+
+@[to_additive]
+theorem mulRightMono_of_mulRightReflectLT [Mul N] [LinearOrder N] [MulRightReflectLT N] :
+    MulRightMono N where
+  elim := covariant_le_iff_contravariant_lt.mpr contravariant_swap_mul_lt
 
 @[to_additive]
 instance mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
     MulLeftStrictMono N where
-  elim :=
-    covariant_lt_iff_contravariant_le .. |>.mpr fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
+  elim := covariant_lt_iff_contravariant_le.mpr contravariant_mul_le
 
 @[to_additive]
 instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
     MulRightStrictMono N where
-  elim :=
-    covariant_lt_iff_contravariant_le .. |>.mpr fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
+  elim := covariant_lt_iff_contravariant_le.mpr contravariant_swap_mul_le
+
+set_option linter.deprecated false in
+@[to_additive]
+theorem covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+    (h : CovariantClass N N (· * ·) r) : CovariantClass N N (swap (· * ·)) r :=
+  ⟨covariant_flip_iff.mpr h.elim⟩
+
+attribute [deprecated covariant_flip_iff (since := "2026-08-01")]
+  covariant_swap_mul_of_covariant_mul covariant_swap_add_of_covariant_add
 
 @[to_additive]
-instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
-    [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
-  elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
+instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
+    MulRightMono N where
+  elim := covariant_flip_iff.mpr covariant_mul_le
 
 @[to_additive]
-theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
-    MulRightMono N :=
-  inferInstance
+instance mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLeftStrictMono N] :
+    MulRightStrictMono N where
+  elim := covariant_flip_iff.mpr covariant_mul_lt
 
+set_option linter.deprecated false in
 @[to_additive]
-theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLeftStrictMono N] :
-    MulRightStrictMono N :=
-  inferInstance
+theorem contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+    (h : ContravariantClass N N (· * ·) r) :
+    ContravariantClass N N (swap (· * ·)) r :=
+  ⟨contravariant_flip_iff.mpr h.elim⟩
 
-@[to_additive]
-instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
-    [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
-  elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
+attribute [deprecated contravariant_flip_iff (since := "2026-08-01")]
+  contravariant_swap_mul_of_contravariant_mul contravariant_swap_add_of_contravariant_add
 
 @[to_additive]
 instance mulRightReflectLE_of_mulLeftReflectLE [CommSemigroup N] [LE N] [MulLeftReflectLE N] :
     MulRightReflectLE N where
-  le_of_mul_le_mul_right' := contravariant_flip_iff .. |>.mpr
-    (fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left' : Contravariant N N (· * ·) _) _
+  le_of_mul_le_mul_right' := contravariant_flip_iff.mpr contravariant_mul_le _
 
 @[to_additive]
-theorem mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
-    MulRightReflectLT N :=
-  inferInstance
+instance mulRightReflectLT_of_mulLeftReflectLT [CommSemigroup N] [LT N] [MulLeftReflectLT N] :
+    MulRightReflectLT N where
+  elim := contravariant_flip_iff.mpr contravariant_mul_lt
 
-theorem covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ (· = ·)]
-    [PartialOrder N] [CovariantClass M N μ (· ≤ ·)] : CovariantClass M N μ (· < ·) where
-  elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne (bc.ne ∘ ContravariantClass.elim _)
+theorem covariant_lt_of_covariant_le_of_contravariant_eq (contra : Contravariant M N μ (· = ·))
+    [PartialOrder N] (co : Covariant M N μ (· ≤ ·)) : Covariant M N μ (· < ·) :=
+  fun a _ _ bc ↦ (co a bc.le).lt_of_ne (bc.ne ∘ contra _)
 
 theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
-    [ContravariantClass M N μ (· = ·)] [ContravariantClass M N μ (· < ·)] :
-    ContravariantClass M N μ (· ≤ ·) where
-  elim := (contravariant_le_iff_contravariant_lt_and_eq M N μ).mpr
-    ⟨ContravariantClass.elim, ContravariantClass.elim⟩
+    (contra_eq : Contravariant M N μ (· = ·)) (contra_lt : Contravariant M N μ (· < ·)) :
+    Contravariant M N μ (· ≤ ·) :=
+  contravariant_le_iff_contravariant_lt_and_eq.mpr ⟨contra_lt, contra_eq⟩
 
 /- TODO:
   redefine `IsLeftCancel N mu` as abbrev of `ContravariantClass N N mu (· = ·)`,
@@ -553,26 +694,26 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
 instance IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftMono N] :
     MulLeftStrictMono N where
-  elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
+  elim a _ _ bc := (covariant_mul_le a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
 instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightMono N] :
     MulRightStrictMono N where
-  elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
+  elim a _ _ bc := (covariant_swap_mul_le a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
 instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftReflectLT N] :
     MulLeftReflectLE N where
-  le_of_mul_le_mul_left' := contravariant_le_iff_contravariant_lt_and_eq N N _ |>.mpr
-    ⟨‹MulLeftReflectLT N›.elim, fun _ ↦ mul_left_cancel⟩ _
+  le_of_mul_le_mul_left' := contravariant_le_iff_contravariant_lt_and_eq.mpr
+    ⟨contravariant_mul_lt, fun _ ↦ mul_left_cancel⟩ _
 
 @[to_additive]
 instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
     MulRightReflectLE N where
-  le_of_mul_le_mul_right' := contravariant_le_iff_contravariant_lt_and_eq N N _ |>.mpr
-    ⟨‹MulRightReflectLT N›.elim, fun _ ↦ mul_right_cancel⟩ _
+  le_of_mul_le_mul_right' := contravariant_le_iff_contravariant_lt_and_eq.mpr
+    ⟨contravariant_swap_mul_lt, fun _ ↦ mul_right_cancel⟩ _
 
 end Variants

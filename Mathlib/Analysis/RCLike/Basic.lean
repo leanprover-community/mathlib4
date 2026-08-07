@@ -967,8 +967,7 @@ scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 lemma toPosMulReflectLT : PosMulReflectLT K where
   elim := by
-    rintro ⟨x, hx⟩ y z hyz
-    dsimp at *
+    intro x hx y z hyz
     rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
     obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 3 1).1 hx.2
     simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
@@ -1003,11 +1002,9 @@ theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
   simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
 
 lemma instPosMulReflectLE : PosMulReflectLE K where
-  elim a b c h := by
-    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
+  elim a ha b c h := by
+    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp ha
     rw [← sub_nonneg]
-    #adaptation_note /-- 2025-03-29 need beta reduce for https://github.com/leanprover/lean4/issues/7717 -/
-    beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
     · rw [ofReal_mul_pos_iff] at h

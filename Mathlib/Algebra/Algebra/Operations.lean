@@ -149,8 +149,8 @@ theorem smul_mono (hij : I ≤ J) (hnp : N ≤ P) : I • N ≤ J • P :=
 theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
   smul_mono h le_rfl
 
-instance : CovariantClass (Submodule R A) (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => smul_mono le_rfl⟩
+instance : IsLeftOrderedSMul (Submodule R A) (Submodule R M) where
+  smul_le_smul_left _ _ h _ := smul_mono le_rfl h
 
 variable (I J N P)
 

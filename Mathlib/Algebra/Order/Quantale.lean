@@ -167,13 +167,13 @@ theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
 @[to_additive]
 instance : MulLeftMono α where
   elim := by
-    intro _ _ _; simp only; intro
+    intros
     rwa [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
 
 @[to_additive]
 instance : MulRightMono α where
   elim := by
-    intro _ _ _; simp only; intro
+    intros
     rwa [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
 
 @[to_additive]

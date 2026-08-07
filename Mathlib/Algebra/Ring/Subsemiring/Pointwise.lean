@@ -64,8 +64,8 @@ theorem pointwise_smul_toAddSubmonoid (m : M) (S : Subsemiring R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
-instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_mono⟩
+instance : IsLeftOrderedSMul M (Subsemiring R) where
+  smul_le_smul_left _ _ h _ := image_mono h
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=

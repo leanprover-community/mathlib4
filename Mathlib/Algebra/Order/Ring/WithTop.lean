@@ -429,8 +429,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only at h
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp at h
     lift x to α
@@ -447,8 +446,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only at h
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp at h
     lift x to α
@@ -465,8 +463,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only at h
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     cases a
     · exact bot_le
@@ -479,8 +476,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only at h
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     cases a
     · exact bot_le
