@@ -57,7 +57,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
-    pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
+    dsimp% pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
   simp
 
 /-- The cocone associated to a colimit presentation. -/
@@ -140,7 +140,7 @@ initialize_simps_projections LimitPresentation (-isLimit)
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma w (pres : LimitPresentation J X) {i j : J} (f : i ⟶ j) :
-    pres.π.app i ≫ pres.diag.map f = pres.π.app j := by
+    dsimp% pres.π.app i ≫ pres.diag.map f = pres.π.app j := by
   simpa using (pres.π.naturality f).symm
 
 /-- The cone associated to a limit presentation. -/
