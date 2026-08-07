@@ -104,7 +104,10 @@ instance (priority := 50) smul : SMul R s :=
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-@[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
+@[to_additive
+/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
+this to manually derive `VAddMemClass` on specific types. -/]
+theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
     [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
@@ -409,7 +412,8 @@ variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
-@[to_additive]
+@[to_additive
+/-- If the vector addition forms an `AddAction`, then the subset inherits this action -/]
 instance mulAction' : MulAction S p where
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
@@ -421,7 +425,7 @@ instance mulAction : MulAction R p :=
 end
 
 /-- Orbits in a `SubMulAction` coincide with orbits in the ambient space. -/
-@[to_additive]
+@[to_additive /-- Orbits in a `SubAddAction` coincide with orbits in the ambient space. -/]
 theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
@@ -437,7 +441,8 @@ lemma mem_orbit_subMul_iff {p : SubMulAction R M} {x m : p} :
   rw [← val_preimage_orbit, Set.mem_preimage]
 
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
-@[to_additive]
+@[to_additive /-- Stabilizers in additive monoid SubAddAction coincide with stabilizers in the
+ambient space -/]
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
     MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
   ext
@@ -457,7 +462,8 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
   exact mem_orbit_subMul_iff
 
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
-@[to_additive]
+@[to_additive /-- Stabilizers in additive group SubAddAction coincide with stabilizers in the
+ambient space -/]
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_inj]
