@@ -52,10 +52,10 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   · constructor
     · apply mul_nonneg <;> grind
     · rw [mul_assoc]
-      apply mul_le_one₀ <;> grind
+      apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
   · constructor
     · apply mul_nonneg <;> grind
-    · apply mul_le_one₀ <;> grind
+    · apply (mul_le_of_le_one_left ?_ ?_).trans ?_ <;> grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
