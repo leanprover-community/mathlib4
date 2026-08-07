@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Zichen Wang
 -/
 module
 
+public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
@@ -221,18 +222,46 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
 
--- Commented out since `intrinsicInterior` is not imported (but should be once these are proved)
--- proof_wanted ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     LocallyLipschitzOn (intrinsicInterior ℝ C) f
+/-- If `f` is locally Lipschitz on `s` after precomposition with an isometry `g`, then `f` is
+locally Lipschitz on `g '' s`. -/
+lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {g : α → β} {h : β → γ} {s : Set α} (hg : Isometry g)
+    (hL : LocallyLipschitzOn s (h ∘ g)) : LocallyLipschitzOn (g '' s) h := by
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨K, t, ht, hK⟩ := hL hx
+  refine ⟨K, g '' t, ?_, ?_⟩
+  · rw [← hg.isEmbedding.map_nhdsWithin_eq]
+    exact Filter.image_mem_map ht
+  · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+    simpa [hg.edist_eq] using hK ha hb
 
--- proof_wanted ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     LocallyLipschitzOn (intrinsicInterior ℝ C) f
+lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  obtain rfl | ⟨p, hp⟩ := C.eq_empty_or_nonempty
+  · simp
+  have : Nonempty (affineSpan ℝ C) := ⟨⟨p, subset_affineSpan ℝ C hp⟩⟩
+  set ψ := (AffineIsometryEquiv.constVSub ℝ (⟨p, subset_affineSpan ℝ C hp⟩ : affineSpan ℝ C)).symm
+  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtype_coe.comp ψ.isometry
+  have hL := (hf.comp_affineMap
+    ((affineSpan ℝ C).subtype.comp ψ.toAffineEquiv.toAffineMap)).locallyLipschitzOn_interior
+  refine (hiso.locallyLipschitzOn_image (by simpa using hL)).mono ?_
+  rw [Set.preimage_comp]
+  rintro x hx
+  obtain ⟨w, hw, rfl⟩ := mem_intrinsicInterior.1 hx
+  exact ⟨ψ.symm w, preimage_interior_subset_interior_preimage ψ.continuous (by simpa using hw),
+    by simp⟩
 
--- proof_wanted ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+lemma ConcaveOn.locallyLipschitzOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    LocallyLipschitzOn (intrinsicInterior ℝ C) f := by
+  simpa using hf.neg.locallyLipschitzOn_intrinsicInterior
 
--- proof_wanted ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
---     ContinuousOn f (intrinsicInterior ℝ C)
+lemma ConvexOn.continuousOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
+
+lemma ConcaveOn.continuousOn_intrinsicInterior (hf : ConcaveOn ℝ C f) :
+    ContinuousOn f (intrinsicInterior ℝ C) :=
+  hf.locallyLipschitzOn_intrinsicInterior.continuousOn
 
 section Intervals
 
