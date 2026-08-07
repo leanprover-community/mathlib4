@@ -390,7 +390,7 @@ theorem single_zpow (n : ℤ) :
   match n with
   | (n : ℕ) => apply single_one_eq_pow
   | -(n + 1 : ℕ) =>
-    rw [← Nat.cast_one, ← inv_one, ← HahnSeries.inv_single, zpow_neg,
+    rw [← Nat.cast_one, ← inv_one (G := F), ← HahnSeries.inv_single, zpow_neg,
       ← Nat.cast_one, Nat.cast_one,
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 

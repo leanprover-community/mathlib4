@@ -485,7 +485,7 @@ instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) 
     mul_neg := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_neg .. }
 
 @[to_additive]
-instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
+instance instInvOneClass [One G] [Inv G] [InvOneClass G] : InvOneClass (Germ l G) :=
   ⟨congr_arg ofFun inv_one⟩
 
 @[to_additive subNegMonoid]

@@ -217,8 +217,7 @@ theorem norm_eq_of_two_zsmul_oangle_sub_eq {x y : V}
     rw [ne_eq, ← o.oangle_eq_pi_iff_angle_eq_pi]
     exact hpi
   · rw [h, Real.Angle.sign_add_pi, SignType.neg_eq_self_iff, oangle_sign_sub_left_swap,
-      o.oangle_rev, Real.Angle.sign_neg, SignType.neg_eq_zero_iff,
-      Real.Angle.sign_eq_zero_iff] at hs
+      o.oangle_rev, Real.Angle.sign_neg, neg_eq_zero, Real.Angle.sign_eq_zero_iff] at hs
     simp [h0, hpi] at hs
 
 end Orientation

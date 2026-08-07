@@ -193,7 +193,8 @@ instance : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [-coe_inv, (coe_inv _).symm]
 
-@[simp] protected lemma inv_eq_one : a⁻¹ = 1 ↔ a = 1 := by rw [← inv_inj, inv_inv, inv_one]
+@[deprecated _root_.inv_eq_one (since := "2026-07-19")]
+protected lemma inv_eq_one : a⁻¹ = 1 ↔ a = 1 := inv_eq_one
 
 @[simp] theorem inv_eq_top : a⁻¹ = ∞ ↔ a = 0 := inv_zero ▸ inv_inj
 

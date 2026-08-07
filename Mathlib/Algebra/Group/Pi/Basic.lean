@@ -65,7 +65,8 @@ instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
   mul_one := by intros; ext; exact mul_one _
 
 @[to_additive]
-instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
+instance invOneClass [∀ i, One (f i)] [∀ i, Inv (f i)] [∀ i, InvOneClass (f i)] :
+    InvOneClass (∀ i, f i) where
   inv_one := by ext; exact inv_one
 
 @[to_additive]

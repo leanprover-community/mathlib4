@@ -77,7 +77,7 @@ theorem cardSupp_smul_le (s : S) (x : R⟦Γ⟧) [SMulZeroClass S R] : (s • x)
 
 end Zero
 
-theorem cardSupp_neg_le [NegZeroClass R] (x : R⟦Γ⟧) : (-x).cardSupp ≤ x.cardSupp :=
+theorem cardSupp_neg_le [Zero R] [Neg R] [NegZeroClass R] (x : R⟦Γ⟧) : (-x).cardSupp ≤ x.cardSupp :=
   cardSupp_mono <| support_neg_subset ..
 
 theorem cardSupp_add_le [AddMonoid R] (x y : R⟦Γ⟧) : (x + y).cardSupp ≤ x.cardSupp + y.cardSupp :=

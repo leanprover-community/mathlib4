@@ -205,8 +205,8 @@ preserves `1` and `⁻¹` to a `InvOneClass`.  See note [reducible non-instances
 @[to_additive
 /-- A type endowed with `0` and unary `-` is an `NegZeroClass`, if it admits an
 injective map that preserves `0` and unary `-` to an `NegZeroClass`. -/]
-protected abbrev invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
-    (inv : ∀ x, f (x⁻¹) = (f x)⁻¹) : InvOneClass M₁ where
+protected abbrev invOneClass [One M₂] [Inv M₂] [InvOneClass M₂] (f : M₁ → M₂) (hf : Injective f)
+    (one : f 1 = 1) (inv : ∀ x, f (x⁻¹) = (f x)⁻¹) : InvOneClass M₁ where
   inv_one := hf <| by rw [inv, one, inv_one]
 
 variable [Div M₁] [Pow M₁ ℤ]

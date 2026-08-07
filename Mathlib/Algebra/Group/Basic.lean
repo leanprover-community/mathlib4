@@ -336,6 +336,24 @@ theorem div_eq_mul_one_div (a b : G) : a / b = a * (1 / b) := by rw [div_eq_mul_
 
 end DivInvMonoid
 
+section InvOneClass
+
+variable [InvolutiveInv α] [One α] [InvOneClass α] {a : α}
+
+@[to_additive (attr := simp)]
+theorem inv_eq_one : a⁻¹ = 1 ↔ a = 1 :=
+  inv_injective.eq_iff' inv_one
+
+@[to_additive (attr := simp)]
+theorem one_eq_inv : 1 = a⁻¹ ↔ a = 1 :=
+  eq_comm.trans inv_eq_one
+
+@[to_additive]
+theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
+  inv_eq_one.not
+
+end InvOneClass
+
 section DivInvOneMonoid
 
 variable [DivInvOneMonoid G]
@@ -445,18 +463,6 @@ lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [
 lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
 
 variable {a b c}
-
-@[to_additive (attr := simp)]
-theorem inv_eq_one : a⁻¹ = 1 ↔ a = 1 :=
-  inv_injective.eq_iff' inv_one
-
-@[to_additive (attr := simp)]
-theorem one_eq_inv : 1 = a⁻¹ ↔ a = 1 :=
-  eq_comm.trans inv_eq_one
-
-@[to_additive]
-theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
-  inv_eq_one.not
 
 @[to_additive]
 theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by

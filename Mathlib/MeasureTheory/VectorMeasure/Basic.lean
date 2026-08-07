@@ -1413,13 +1413,13 @@ theorem toMeasureOfZeroLE_real_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i)
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
 def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :
     Measure α :=
-  toMeasureOfZeroLE (-s) i hi₁ <| @neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi₂
+  toMeasureOfZeroLE (-s) i hi₁ <| neg_zero (G := VectorMeasure α ℝ) ▸ neg_le_neg _ _ hi₁ hi₂
 
 theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
     s.toMeasureOfLEZero i hi₁ hi j =
     ((↑) : ℝ≥0 → ℝ≥0∞) (NNReal.mk (-s (i ∩ j)) (neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
-      (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi)))) := by
+      (neg_zero (G := VectorMeasure α ℝ) ▸ neg_le_neg _ _ hi₁ hi)))) := by
   simp [toMeasureOfLEZero, toMeasureOfZeroLE_apply _ _ _ hj₁]
 
 theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)

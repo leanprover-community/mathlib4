@@ -543,6 +543,11 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
   let K := FractionRing A
   let L := FractionRing B
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
+  #adaptation_note /--
+  The `rw` was previously unnecessary but removing it causes failures due to
+  https://github.com/leanprover/lean4/issues/14447
+  -/
+  rw [FractionalIdeal.coeIdeal_bot, inv_eq_zero]
   simp
 
 lemma differentialIdeal_le_fractionalIdeal_iff

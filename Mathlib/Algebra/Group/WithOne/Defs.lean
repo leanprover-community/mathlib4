@@ -75,7 +75,7 @@ instance instInv [Inv α] : Inv (WithOne α) :=
 
 @[to_additive]
 instance instInvOneClass [Inv α] : InvOneClass (WithOne α) :=
-  { WithOne.instOne, WithOne.instInv with inv_one := rfl }
+  { inv_one := rfl }
 
 @[to_additive]
 instance inhabited : Inhabited (WithOne α) :=

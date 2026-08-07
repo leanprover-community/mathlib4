@@ -101,20 +101,21 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 `f⁻¹` is the one-preserving morphism sending `x` to `(f x)⁻¹`. -/
 @[to_additive /-- Given a zero-preserving morphism `f`,
 `-f` is the zero-preserving morphism sending `x` to `-f x`. -/]
-instance [One M] [InvOneClass N] : Inv (OneHom M N) where
+instance [One M] [One N] [Inv N] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
       map_one' := by simp }
 
 @[to_additive (attr := norm_cast)]
-theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
+theorem coe_inv {M N} [One M] [One N] [Inv N] [InvOneClass N] (f : OneHom M N) :
+    ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
+theorem inv_apply {M N} [One M] [One N] [Inv N] [InvOneClass N] (f : OneHom M N) (x : M) :
     f⁻¹ x = (f x)⁻¹ := rfl
 
 @[to_additive]
-theorem inv_comp [One M] [One N] [InvOneClass P] (g : OneHom N P) (f : OneHom M N) :
+theorem inv_comp [One M] [One N] [One P] [Inv P] [InvOneClass P] (g : OneHom N P) (f : OneHom M N) :
     (g⁻¹).comp f = (g.comp f)⁻¹ := rfl
 
 /-- Given two one-preserving morphisms `f`, `g`,
