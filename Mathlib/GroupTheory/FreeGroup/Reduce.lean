@@ -341,6 +341,64 @@ theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
 theorem isReduced_toWord {x : FreeGroup α} : IsReduced x.toWord := by
   simp [isReduced_iff_reduce_eq]
 
+@[to_additive]
+theorem toWord_of_mul_eq (a : α) (x : FreeGroup α) :
+    (of a * x).toWord =
+      if x.toWord.head? = some ⟨a, false⟩ then x.toWord.tail else ⟨a, true⟩ :: x.toWord := by
+  simp [toWord_mul]
+  cases x.toWord
+  · simp
+  · grind
+
+@[to_additive]
+theorem toWord_inv_of_mul_eq (a : α) (x : FreeGroup α) :
+    ((of a)⁻¹ * x).toWord =
+      if x.toWord.head? = some ⟨a, true⟩ then x.toWord.tail else ⟨a, false⟩ :: x.toWord := by
+  simp [toWord_mul, invRev]
+  cases x.toWord
+  · simp
+  · grind [invRev]
+
+@[to_additive]
+theorem toWord_mul_of_eq (a : α) (x : FreeGroup α) :
+    (x * of a).toWord =
+      if x.toWord.getLast? = some ⟨a, false⟩ then x.toWord.dropLast
+      else x.toWord.concat ⟨a, true⟩ := by
+  rw [show x * of a = ((of a)⁻¹ * x⁻¹)⁻¹ by simp, toWord_inv, toWord_inv_of_mul_eq]
+  ext
+  simp [invRev]
+  split_ifs <;> simp <;> grind
+
+@[to_additive]
+theorem toWord_mul_of_inv_eq (a : α) (x : FreeGroup α) :
+    (x * (of a)⁻¹).toWord =
+      if x.toWord.getLast? = some ⟨a, true⟩ then x.toWord.dropLast
+      else x.toWord.concat ⟨a, false⟩ := by
+  rw [show x * (of a)⁻¹ = (of a * x⁻¹)⁻¹ by simp, toWord_inv, toWord_of_mul_eq]
+  ext
+  simp [invRev]
+  split_ifs <;> simp <;> grind
+
+@[to_additive]
+theorem idxOf_toWord_of_mul_eq {a : α} (x : FreeGroup α) {b : α × Bool} (hb₁ : b.1 ≠ a) :
+    (of a * x).toWord.idxOf b =
+      if x.toWord.head? = some (a, false) then x.toWord.idxOf b - 1 else x.toWord.idxOf b + 1 := by
+  rw [toWord_of_mul_eq]
+  split_ifs with h
+  · have : x.toWord ≠ [] := by grind
+    rw [List.head?_eq_some_head this, Option.some.injEq] at h
+    exact List.idxOf_tail_of_head_ne this (by simp [h, Prod.eq_iff_fst_eq_snd_eq, hb₁.symm])
+  · grind
+
+@[to_additive]
+theorem idxOf_toWord_mul_of_eq {a : α} (x : FreeGroup α) {b : α × Bool} (hb₁ : b.1 ≠ a)
+    (hb₂ : b ∈ x.toWord) : (x * of a).toWord.idxOf b = x.toWord.idxOf b := by
+  rw [toWord_mul_of_eq]
+  split_ifs
+  · refine List.IsPrefix.idxOf_eq_of_mem (List.dropLast_prefix _) ?_
+    exact List.mem_dropLast_of_mem_of_ne_getLast? hb₂ (by grind)
+  · grind
+
 end Reduce
 
 @[to_additive (attr := simp)]
