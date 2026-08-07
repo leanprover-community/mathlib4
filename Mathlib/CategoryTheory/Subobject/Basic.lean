@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 /-!
 # Subobjects
@@ -633,6 +634,10 @@ theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
     IsPullback (pullbackπ f y) ((pullback f).obj y).arrow y.arrow f :=
   (isPullback_aux f y).choose_spec
 
+lemma le_pullback_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : X' ≤ (pullback f).obj Y' :=
+  le_of_comm ((isPullback f Y').lift u X'.arrow h) ((isPullback f Y').lift_snd u X'.arrow h)
+
 end Pullback
 
 section Map
@@ -741,11 +746,43 @@ def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
 theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
   lower_iso _ _ (MonoOver.existsIsoMap f)
 
+lemma exists_eq_mk_of_mono (f : X ⟶ Y) [Mono f] (X' : Subobject X) :
+    («exists» f).obj X' = mk (X'.arrow ≫ f) := by
+  slice_lhs 0 1 => rw [exists_iso_map, ← mk_arrow X']
+  rw [map_mk]
+
+theorem exists_le_exists_iff_of_mono (f : X ⟶ Y) [Mono f] (X₁ X₂ : Subobject X) :
+    («exists» f).obj X₁ ≤ («exists» f).obj X₂ ↔ X₁ ≤ X₂ := by
+  constructor
+  · intro h
+    simp only [exists_eq_mk_of_mono] at h
+    exact le_of_comm (ofMkLEMk _ _ h) (by rw [← cancel_mono f, Category.assoc, ofMkLEMk_comp])
+  · intro h
+    exact («exists» f).monotone h
+
 /-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
+
+theorem le_pullback_exists (f : X ⟶ Y) [HasPullbacks C] (X' : Subobject X) :
+    X' ≤ (pullback f).obj ((«exists» f).obj X') :=
+  (existsPullbackAdj f).gc.le_u_l X'
+
+theorem exists_pullback_le (f : X ⟶ Y) [HasPullbacks C] (Y' : Subobject Y) :
+    («exists» f).obj ((pullback f).obj Y') ≤ Y' :=
+  (existsPullbackAdj f).gc.l_u_le Y'
+
+@[simp]
+theorem pullback_exists_eq_self_of_mono (f : X ⟶ Y) [Mono f] [HasPullbacks C]
+    (X' : Subobject X) : (pullback f).obj ((«exists» f).obj X') = X' := by
+  rw [exists_iso_map, pullback_map_self]
+
+theorem exists_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject X) [HasPullbacks C] :
+    («exists» (f ≫ g)).obj x = («exists» g).obj ((«exists» f).obj x) :=
+  (existsPullbackAdj (f ≫ g)).gc.l_unique
+    ((existsPullbackAdj f).gc.compose (existsPullbackAdj g).gc) (pullback_comp f g)
 
 /--
 Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
@@ -773,6 +810,11 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
       (existsIsoImage f x).symm
   ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
     simpa [this, -Over.w] using! (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
+
+lemma exists_le_of_comm (f : X ⟶ Y) {X' : Subobject X} {Y' : Subobject Y}
+    (u : (X' : C) ⟶ Y') (h : u ≫ Y'.arrow = X'.arrow ≫ f) : («exists» f).obj X' ≤ Y' :=
+  le_of_comm ((imageFactorisation f X').isImage.lift ⟨Y', Y'.arrow, u, h⟩)
+    ((imageFactorisation f X').isImage.lift_fac _)
 
 end Exists
 
