@@ -173,6 +173,8 @@ Q193878:
 
 Q193882:
   title: Menelaus's theorem
+  decl: Affine.Triangle.prod_eq_neg_prod_one_sub_iff_collinear_iff_of_lineMap
+  authors: Chu Zheng
 
 Q193910:
   title: Euler's theorem
