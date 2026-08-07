@@ -43,6 +43,7 @@ theorem Order.cof_int : cof ℤ = ℵ₀ := by simp
 namespace Ordinal
 
 /-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
+This is the same as `Order.cofWithin`, but without the universe bump.
 
 In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
@@ -61,6 +62,12 @@ theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
   conv_rhs => rw [← type_toType o, cof_type]
 
+@[simp]
+theorem cof_typein [LinearOrder α] [WellFoundedLT α] (x : α) :
+    cof (typein (α := α) (· < ·) x) = cofWithin x := by
+  rw [← cof_Iio]
+  exact cof_type _
+
 @[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_toType
 @[deprecated (since := "2026-02-18")] alias le_cof_type := le_cof_iff
 @[deprecated (since := "2026-02-18")] alias cof_type_le := cof_le
@@ -73,13 +80,14 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
-theorem _root_.Order.cof_Iio [LinearOrder α] [WellFoundedLT α] (x : α) :
-    Order.cof (Iio x) = cof (typein (α := α) (· < ·) x) :=
-  (cof_type _).symm
-
 @[simp]
-theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) := by
-  rw [Order.cof_Iio, typein_ordinal]
+theorem _root_.Order.cofWithin_ordinal (o : Ordinal.{u}) : cofWithin o = cof (lift.{u + 1} o) := by
+  rw [← cof_typein, typein_ordinal]
+
+@[deprecated cofWithin_ordinal (since := "2026-05-22")]
+protected theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) := by
+  rw [cof_Iio]
+  exact cofWithin_ordinal o
 
 theorem cof_le_card (o : Ordinal) : cof o ≤ card o := by
   simpa using cof_le_cardinalMk o.ToType
@@ -267,7 +275,7 @@ theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
   · simp [hs]
   · rintro rfl
     rw [← lift_cof, ← Cardinal.lift_lt.{_, u + 2}, Cardinal.lift_lift,
-      lift_cof_iSup_add_one fun _ ↦ by simp, cof_Iio, ← lift_cof, cof_type,
+      lift_cof_iSup_add_one fun _ ↦ by simp, cof_Iio, cofWithin_ordinal, ← lift_cof, cof_type,
       Cardinal.lift_lift, Cardinal.lift_lt] at ha
     exact ha.not_ge (cof_le_cardinalMk _)
 
