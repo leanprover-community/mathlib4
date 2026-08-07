@@ -374,7 +374,7 @@ theorem toDistribution_zero {μ : Measure E} : toDistribution Ω (0 : E → F) �
     simp [toDistribution_apply h0]
   · exact toDistribution_eq_zero h0
 
-theorem toDistribution_eq_of_ae {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+theorem toDistribution_eq_of_aeEq {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
     toDistribution Ω f μ n = toDistribution Ω f' μ n := by
   by_cases hf : LocallyIntegrableOn f Ω μ
   · have hf' : LocallyIntegrableOn f' Ω μ := hf.congr h
