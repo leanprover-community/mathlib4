@@ -236,6 +236,11 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
     simp only [push_cast]
   · norm_cast
 
+theorem riemannZeta_six : riemannZeta 6 = (π : ℂ) ^ 6 / 945 := by
+  linear_combination
+    (norm := (norm_num [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_six, Nat.factorial]; ring1))
+    riemannZeta_two_mul_nat (k := 3) three_ne_zero
+
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/
 theorem riemannZeta_neg_nat_eq_bernoulli' (k : ℕ) :
     riemannZeta (-k) = -bernoulli' (k + 1) / (k + 1) := by
