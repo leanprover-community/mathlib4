@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
@@ -339,6 +340,44 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
     Submodule.restrictScalars_span]
   · simp
   · exact Ideal.Quotient.mk_surjective
+
+/--
+In a local ring with its maximal ideal finitely generated,
+the dimension of the cotangent space is equal to the span rank of the maximal ideal.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (fg : (maximalIdeal R).FG) :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank := by
+  rw [Submodule.rank_eq_spanRank_of_free, ← Submodule.spanRank_top (maximalIdeal R)]
+  apply le_antisymm
+  · obtain ⟨s, hs_card, hs_span⟩ :=
+      (⊤ : Submodule R (maximalIdeal R)).exists_span_set_card_eq_spanRank
+    have hs_span' : Submodule.span (ResidueField R) ((maximalIdeal R).toCotangent '' s) = ⊤ := by
+      rw [← Submodule.restrictScalars_eq_top_iff R,
+        Submodule.restrictScalars_span R (ResidueField R) Ideal.Quotient.mk_surjective,
+        ← Submodule.map_span, hs_span, Submodule.map_top, Ideal.toCotangent_range]
+    rw [← hs_card, ← hs_span']
+    grw [Submodule.spanRank_span_le_card, Cardinal.mk_image_le]
+  · obtain ⟨s, hs_card, hs_span⟩ :=
+      (⊤ : Submodule (ResidueField R) (CotangentSpace R)).exists_span_set_card_eq_spanRank
+    obtain ⟨t, ht_inj, ht_image, ht_span⟩ :=
+      Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s
+        ((Submodule.fg_top (maximalIdeal R)).mpr fg)
+        (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+        (by rw [Submodule.map_top, Submodule.range_mkQ]
+            change Submodule.span R s = ⊤
+            rw [← Submodule.restrictScalars_span R (ResidueField R)
+              Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top])
+    rw [← hs_card, ← ht_span, ← ht_image]
+    exact le_of_le_of_eq (Submodule.spanRank_span_le_card t)
+      (Cardinal.mk_image_eq_of_injOn _ _ ht_inj).symm
+
+/--
+In a Noetherian local ring,
+the dimension of the cotangent space is equal to the span rank of the maximal ideal.
+-/
+theorem rank_cotangentSpace_eq_spanrank_maximalIdeal [IsNoetherianRing R] :
+    Module.rank (ResidueField R) (CotangentSpace R) = (maximalIdeal R).spanRank :=
+  rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
 open Module
 
