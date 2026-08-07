@@ -275,7 +275,7 @@ theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
   rfl
 
 @[simp]
-theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Function.map fun i ↦ f i :=
   rfl
 
 end PiMap

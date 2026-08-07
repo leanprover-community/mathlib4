@@ -94,8 +94,8 @@ theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
-    Isometry (Pi.map f) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
+    Isometry (Function.map f) := fun x y => by
+  simp only [edist_pi_def, (hf _).edist_eq, Function.map_apply]
 
 protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
     [∀ i, Zero (E i)] (i : ι) :

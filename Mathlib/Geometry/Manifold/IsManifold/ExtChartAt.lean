@@ -238,7 +238,7 @@ theorem map_extend_nhdsWithin {y : M} (hy : y ∈ f.source) :
 
 theorem map_extend_symm_nhdsWithin {y : M} (hy : y ∈ f.source) :
     map (f.extend I).symm (𝓝[(f.extend I).symm ⁻¹' s ∩ range I] f.extend I y) = 𝓝[s] y := by
-  rw [← map_extend_nhdsWithin f hy, map_map, Filter.map_congr, map_id]
+  rw [← map_extend_nhdsWithin f hy, map_map, Filter.map_congr, Filter.map_id]
   exact (f.extend I).leftInvOn.eqOn.eventuallyEq_of_mem (extend_source_mem_nhdsWithin _ hy)
 
 theorem map_extend_symm_nhdsWithin_range {y : M} (hy : y ∈ f.source) :
