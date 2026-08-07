@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.Normed.Lp.WithLp
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -342,4 +347,177 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
-end RKHS.OfKernel
+end OfKernel
+
+section Mercer
+
+open MeasureTheory
+
+omit [CompleteSpace V]
+
+/-- ToDo: Move to right spot in other file. -/
+lemma enorm_inner_le_enorm (f g : V) : ‖⟪f, g⟫_𝕜‖ₑ ≤  ‖f‖ₑ * ‖g‖ₑ := by
+  grw [← ofReal_norm, norm_inner_le_norm]
+  simp [ENNReal.ofReal_mul, ofReal_norm]
+
+variable [MeasurableSpace X] (μ : Measure X)
+variable [MeasurableSpace V] [BorelSpace V]
+
+/-- This expression appears multiple times in the proofs below. Hence, this was introduced to
+shorten the proofs a little. -/
+private lemma meas_fst (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.1 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_fst
+
+/-- This expression appears multiple times in the proofs below. Hence, this was introduced to
+shorten the proofs a little. -/
+private lemma meas_snd (f : Lp V 2 μ) : Measurable fun (x : X×X) ↦ f x.2 :=
+  (f : X →ₘ[μ] V).measurable.comp measurable_snd
+
+variable [MeasurableSpace (V →L[𝕜] V)] [BorelSpace (V →L[𝕜] V)]
+variable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+
+private lemma lintegral_norm_inner_le (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+    (f g : Lp V 2 μ) : ∫⁻  (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
+      (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
+  calc
+    ∫⁻ (p : X × X), ‖⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜‖ₑ ∂μ.prod μ ≤
+        ∫⁻ (p : X × X), ‖K p.1 p.2‖ₑ * (‖f p.2‖ₑ * ‖g p.1‖ₑ) ∂μ.prod μ := by
+      grw [enorm_inner_le_enorm, ContinuousLinearMap.le_opENorm]
+      simp [mul_assoc]
+    _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ *
+          (∫⁻ (a : X × X), ‖f a.2‖ₑ ^ 2 * ‖g a.1‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ := by
+      have := ENNReal.lintegral_mul_le_Lp_mul_Lq (μ.prod μ) Real.HolderConjugate.two_two
+        hK.aemeasurable.enorm ((meas_snd μ f).enorm.mul (meas_fst μ g).enorm).aemeasurable
+      simp only [Pi.mul_apply, ENNReal.rpow_ofNat, one_div] at this
+      grw [this]
+      simp [mul_pow]
+    _ ≤ (∫⁻ (a : X × X), ‖K a.1 a.2‖ₑ ^ 2 ∂μ.prod μ) ^ (2:ℝ)⁻¹ * ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) *
+          ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) ^ (2:ℝ)⁻¹ := by
+      have h : (∫⁻ (x : X), ∫⁻ (y : X), ‖f y‖ₑ ^ 2 * ‖g x‖ₑ ^ 2 ∂μ ∂μ)
+          = ((∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) * ∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ) := by
+        rw [← lintegral_const_mul _ ((g : X →ₘ[μ] V).measurable.enorm.pow_const 2)]
+        congr 1
+        ext x
+        exact lintegral_mul_const _ ((f : X →ₘ[μ] V).measurable.enorm.pow_const 2)
+      grw [lintegral_prod_le (fun (p:X× X)↦ ‖f p.2‖ₑ ^ 2 * ‖g p.1‖ₑ ^ 2)]
+      simp [h]
+    _ ≤ (eLpNorm (fun p ↦ K p.1 p.2) 2 (μ.prod μ)) * ‖f‖ₑ * ‖g‖ₑ := by
+      rw [ENNReal.mul_rpow_of_nonneg (∫⁻ (x : X), ‖f x‖ₑ ^ 2 ∂μ) (∫⁻ (y : X), ‖g y‖ₑ ^ 2 ∂μ)
+        (by simp)]
+      simp [Lp.enorm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal (Ne.symm (NeZero.ne' 2))
+        (ENNReal.ofNat_ne_top), mul_assoc]
+
+private lemma mercerForm_integrable (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ))
+    (f g : Lp V 2 μ) : Integrable (fun p ↦ ⟪(K p.1 p.2) (f p.2), g p.1⟫_𝕜) (μ.prod μ) := by
+  constructor
+  · have h1 : AEStronglyMeasurable (fun p : X × X ↦ (K p.1 p.2) (f p.2 : V)) (μ.prod μ) :=
+      isBoundedBilinearMap_apply.continuous.comp_aestronglyMeasurable
+        (hK.aestronglyMeasurable.prodMk ((Lp.aestronglyMeasurable f).comp_snd (μ := μ)))
+    have h2 : AEStronglyMeasurable (fun p : X × X ↦ (g p.1 : V)) (μ.prod μ) :=
+      (Lp.aestronglyMeasurable g).comp_fst (μ := μ)
+    exact continuous_inner.comp_aestronglyMeasurable (h1.prodMk h2)
+  · grw [hasFiniteIntegral_def, lintegral_norm_inner_le μ hK f g]
+    refine ENNReal.mul_lt_top ?_ enorm_lt_top
+    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
+
+/-- The bilinear map `(f,g) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ)`. -/
+def mercerForm (hK : MemLp (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)) :
+    Lp V 2 μ →L⋆[𝕜] Lp V 2 μ →L[𝕜] 𝕜 := LinearMap.mkContinuous₂
+  (LinearMap.mk₂'ₛₗ (starRingEnd 𝕜) (RingHom.id 𝕜)
+    (fun (f : Lp V 2 μ) (g : Lp V 2 μ) ↦ ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ))
+    (fun f₁ f₂ g ↦ by
+      simp_rw [← integral_add (mercerForm_integrable μ hK f₁ g)
+        (mercerForm_integrable μ hK f₂ g), ← inner_add_left, ← map_add]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (f₁ + f₂) p.2 = f₁ p.2 + f₂ p.2 :=
+        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_add f₁ f₂)
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
+    (fun c f g ↦ by
+      simp_rw [← integral_smul, ← inner_smul_left_eq_star_smul, ← map_smul]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • f) p.2 = c • f p.2 :=
+        Measure.quasiMeasurePreserving_snd.ae (Lp.coeFn_smul c f)
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
+    (fun f g₁ g₂ ↦ by
+      simp_rw [← integral_add (mercerForm_integrable μ hK f g₁) (mercerForm_integrable μ hK f g₂),
+        ← inner_add_right]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (g₁ + g₂) p.1 = g₁ p.1 + g₂ p.1 :=
+        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_add g₁ g₂)
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
+    (fun c f g ↦ by
+      simp_rw [← integral_smul, ← inner_smul_right_eq_smul, RingHom.id_apply]
+      have hf : ∀ᵐ p ∂(μ.prod μ), (c • g) p.1 = c • g p.1 :=
+        Measure.quasiMeasurePreserving_fst.ae (Lp.coeFn_smul c g)
+      apply integral_congr_ae
+      filter_upwards [hf] with p hf
+      rw [hf]
+    )
+  )
+  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
+  (fun f g ↦ by
+    grw [LinearMap.mk₂'ₛₗ_apply, norm_integral_le_lintegral_norm]
+    simp_rw [ofReal_norm]
+    grw [lintegral_norm_inner_le μ hK f g]
+    · simp
+    rw [← lt_top_iff_ne_top]
+    refine ENNReal.mul_lt_top ?_ enorm_lt_top
+    refine ENNReal.mul_lt_top hK.eLpNorm_lt_top enorm_lt_top
+    )
+
+@[simp]
+lemma mercerForm_apply (f g : Lp V 2 μ) :
+    mercerForm μ hK f g = ∫ p : X × X, ⟪K p.1 p.2 (f p.2), (g p.1)⟫_𝕜 ∂ (μ.prod μ) := by
+  rfl
+
+theorem mercerForm_conj_symm [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ]
+    (f g : Lp V 2 μ) : starRingEnd 𝕜 (mercerForm μ hK f g) = mercerForm μ hK g f := by
+  simp_rw [mercerForm_apply]
+  rw [← integral_conj, ← integral_prod_swap]
+  congr with _
+  rw [← ContinuousLinearMap.adjoint_inner_right, ← conj_inner_symm, ← star_eq_adjoint,
+    Matrix.IsHermitian.ext_iff.mp (Fact.out : K.PosSemidef).1]
+  simp
+
+/-- The integral operator `f ↦ ∫ (y : X), K · y (f y) ∂μ` defined through the Riesz representer
+associated to the bilinear form `mercerForm`. -/
+def integralOperator : Lp V 2 μ →L[𝕜] Lp V 2 μ := LinearMap.mkContinuous
+  {
+    toFun := fun (f : Lp V 2 μ) ↦ (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f)
+    map_add' f g := by ext; simp
+    map_smul' c f := by simp [ContinuousLinearMap.map_smulₛₗ, LinearIsometryEquiv.map_smulₛₗ]
+  }
+  (eLpNorm (fun p : X × X => K p.1 p.2) 2 (μ.prod μ)).toReal
+  (fun f ↦ by
+    grw [LinearMap.coe_mk, AddHom.coe_mk, norm_map, mercerForm, le_opNorm,
+      LinearMap.mkContinuous₂_norm_le]
+    exact ENNReal.toReal_nonneg
+  )
+
+@[simp]
+lemma integralOperator_apply [CompleteSpace V] (f : Lp V 2 μ) :
+    integralOperator μ hK f = (InnerProductSpace.toDual 𝕜 (Lp V 2 μ)).symm (mercerForm μ hK f) := by
+  rfl
+
+theorem integralOperator_inner_right_eq_mercerForm [CompleteSpace V] (f g : Lp V 2 μ) :
+    ⟪integralOperator μ hK f, g⟫_𝕜 = mercerForm μ hK f g := by
+  simp [mercerForm, integralOperator]
+
+theorem isSelfAdjoint_integralOperator [CompleteSpace V] [Fact K.PosSemidef] [IsFiniteMeasure μ] :
+    IsSelfAdjoint (integralOperator μ hK) := by
+  ext f
+  apply Lp.ext_iff.mp
+  refine ext_inner_left 𝕜 fun g ↦ ?_
+  rw [star_eq_adjoint, adjoint_inner_right, ← inner_conj_symm g ((integralOperator μ hK) f)]
+  simp_rw [integralOperator_inner_right_eq_mercerForm]
+  exact Eq.symm (mercerForm_conj_symm μ hK f g)
+
+end Mercer
+
+end RKHS
