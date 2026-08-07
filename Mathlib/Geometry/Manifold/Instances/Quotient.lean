@@ -150,15 +150,6 @@ section quotientTransitionMap
 
 variable (x y : orbitRel.Quotient G M)
 
-/-- Locally, the comparison of two local sections is the action of a single group element. -/
-lemma locally_smul (m : M) (hm : m ∈ ((πinv x).symm.trans (πinv y)).source) :
-    ∃ g : G, m ∈ (g • ·) ⁻¹' (πinv y).target ∧
-      ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·)  := by
-  rw [OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
-    quotient_IsLocalHomeomorph.localInverseAt_symm] at hm
-  obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target m hm.2
-  exact ⟨g, hg, smul_eqOn x y g⟩
-
 /-- The transition map between the charts of the quotient associated to `x` and `y`. -/
 def quotientTransitionMap : OpenPartialHomeomorph H H :=
   (chartAt H x.out).symm.trans (((πinv x).symm.trans (πinv y)).trans (chartAt H y.out))
