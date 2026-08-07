@@ -196,7 +196,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
       Subset.rfl ?_
     simpa only [lineMap_apply_zero, mul_one, coe_nndist] using ball_subset_ball hw
   exact norm_max_aux₃ hr (hd.comp hde.diffContOnCl hball)
-      (hz.comp_mapsTo hball (lineMap_apply_zero z w))
+      (hz.comp_of_mapsTo hball (lineMap_apply_zero z w))
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a set `s`, the norm
 of `f` takes it maximum on `s` at `z`, and `w` is a point such that the closed ball with center `z`
@@ -204,7 +204,7 @@ and radius `dist w z` is included in `s`, then `‖f w‖ = ‖f z‖`. -/
 theorem norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E}
     (hd : DiffContOnCl ℂ f s) (hz : IsMaxOn (norm ∘ f) s z) (hsub : ball z (dist w z) ⊆ s) :
     ‖f w‖ = ‖f z‖ :=
-  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.on_subset hsub) (mem_closedBall.2 le_rfl)
+  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.of_subset hsub) (mem_closedBall.2 le_rfl)
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
@@ -395,7 +395,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
-  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
+  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.of_subset subset_closure) ?_).symm
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 
