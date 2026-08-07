@@ -382,35 +382,66 @@ theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.l
     rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
   exact h.take n
 
+variable (G) in
+/-- In a graph with finitely-many edges, for a satisfiable property of trails there exists a longest
+trail satisfying that property. -/
+theorem _root_.SimpleGraph.exists_isTrail_forall_length_le_of_pred [Finite G.edgeSet]
+    (P : ∀ ⦃u v⦄ ⦃p : G.Walk u v⦄, p.IsTrail → Prop)
+    (h : ∃ (u v : V) (p : G.Walk u v) (hp : p.IsTrail), P hp) :
+    ∃ (u v : V) (p : G.Walk u v) (hp : p.IsTrail), P hp ∧
+      ∀ u' v' (p' : G.Walk u' v') (hp' : p'.IsTrail), P hp' → p'.length ≤ p.length := by
+  have := Fintype.ofFinite G.edgeSet
+  let s := {(p.length) | (u : V) (v : V) (p : G.Walk u v) (hp : p.IsTrail) (hp' : P hp)}
+  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
+    fun n ⟨u, v, p, hp, hp', hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
+  have ⟨u₀, v₀, p₀, hp₀, hp₀'⟩ := h
+  have ⟨n, hmax⟩ := this.exists_maximal ⟨_, ⟨u₀, v₀, p₀, hp₀, hp₀', rfl⟩⟩
+  obtain ⟨u, v, p, hp, hp', rfl⟩ := hmax.prop
+  exact ⟨u, v, p, hp, hp', (hmax.le ⟨·, ·, ·, ·, ·, rfl⟩)⟩
+
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Finite G.edgeSet] :
+lemma _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V)
+    [Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
-  let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
-  refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
-  lia
+  have v₀ := Classical.arbitrary V
+  grind [G.exists_isTrail_forall_length_le_of_pred (fun u v p hp ↦ True)
+    ⟨v₀, v₀, nil, .nil, trivial⟩]
+
+@[deprecated (since := "2026-07-08")]
+alias exists_isTrail_forall_isTrail_length_le_length :=
+  exists_isTrail_forall_isTrail_length_le_length
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
-lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Finite G.edgeSet] :
+lemma _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V)
+    [Nonempty V] [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
-  have := Fintype.ofFinite G.edgeSet
-  let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
-  have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
-    fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
-  obtain ⟨x⟩ := N
-  obtain ⟨_, ⟨⟨u, v, p, hp, _⟩, hn⟩⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
-  refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
-  have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
-  lia
+  have v₀ := Classical.arbitrary V
+  grind [IsPath.isTrail, G.exists_isTrail_forall_length_le_of_pred (fun u v p hp ↦ p.IsPath)
+    ⟨v₀, v₀, nil, .nil, .nil⟩]
+
+@[deprecated (since := "2026-07-08")]
+alias exists_isPath_forall_isPath_length_le_length := exists_isPath_forall_isPath_length_le_length
+
+variable (G) in
+/-- In a graph with finitely-many edges, from any start vertex there exists a longest trail among
+trails from that vertex. -/
+theorem _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length' [Finite G.edgeSet]
+    (u : V) :
+    ∃ (v : V) (p : G.Walk u v), p.IsTrail ∧
+      ∀ v' (p' : G.Walk u v'), p'.IsTrail → p'.length ≤ p.length := by
+  grind [G.exists_isTrail_forall_length_le_of_pred (fun u' v p hp ↦ u' = u) ⟨u, u, nil, .nil, rfl⟩]
+
+variable (G) in
+/-- In a graph with finitely-many edges, from any start vertex there exists a longest path among
+paths from that vertex. -/
+theorem _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length' [Finite G.edgeSet]
+    (u : V) :
+    ∃ (v : V) (p : G.Walk u v), p.IsPath ∧
+      ∀ v' (p' : G.Walk u v'), p'.IsPath → p'.length ≤ p.length := by
+  grind [IsPath.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u' v p hp ↦ u' = u ∧ p.IsPath) ⟨u, u, nil, .nil, rfl, .nil⟩]
 
 /-! ### About paths -/
 
@@ -985,6 +1016,29 @@ lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.Is
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
 end Walk
+
+variable {G} in
+/-- In a graph with finitely-many edges and a circuit containing a vertex, there exists a longest
+circuit among circuits containing that vertex. -/
+theorem exists_isCircuit_forall_isCircuit_length_le_length' [Finite G.edgeSet] {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCircuit ∧ ∀ p' : G.Walk v v, p'.IsCircuit → p'.length ≤ p.length := by
+  have ⟨p₀, hp₀⟩ := h
+  grind [Walk.IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u' v' p hp ↦ u' = v ∧ v' = v ∧ ∃ h : u' = v', (h ▸ p).IsCircuit)
+    ⟨v, v, p₀, hp₀.isTrail, rfl, rfl, rfl, hp₀⟩]
+
+variable {G} in
+/-- In a graph with finitely-many edges and a circuit containing a vertex, there exists a longest
+cycle among cycles containing that vertex. -/
+theorem exists_isCycle_forall_isCycle_length_le_length' [Finite G.edgeSet] {v : V}
+    (h : ∃ p : G.Walk v v, p.IsCircuit) :
+    ∃ p : G.Walk v v, p.IsCycle ∧ ∀ p' : G.Walk v v, p'.IsCycle → p'.length ≤ p.length := by
+  have ⟨p₀, hp₀⟩ := h
+  classical
+  grind [Walk.IsCycle.isCircuit, Walk.IsCircuit.isTrail, G.exists_isTrail_forall_length_le_of_pred
+    (fun u' v' p hp ↦ u' = v ∧ v' = v ∧ ∃ h : u' = v', (h ▸ p).IsCycle)
+    ⟨v, v, _, hp₀.isCycle_cycleBypass.isTrail, rfl, rfl, rfl, hp₀.isCycle_cycleBypass⟩]
 
 /-! ### Mapping paths -/
 
