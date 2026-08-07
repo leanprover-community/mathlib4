@@ -230,14 +230,15 @@ is the behavior we desire.
 variable [FunLike F M N]
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =)]
+@[to_additive (attr := simp mid, grind =) /-- See note [hom simp lemma priority] -/]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
 @[to_additive] lemma map_comp_one [OneHomClass F M N] (f : F) : f ∘ (1 : ι → M) = 1 := by simp
 
 /-- In principle this could be an instance, but in practice it causes performance issues. -/
-@[to_additive]
+@[to_additive
+  /-- In principle this could be an instance, but in practice it causes performance issues. -/]
 theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
     Subsingleton F where
   allEq f g := DFunLike.ext _ _ fun x ↦ by simp [Subsingleton.elim x 1]
@@ -322,7 +323,7 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 variable [FunLike F M N]
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =)]
+@[to_additive (attr := simp mid, grind =) /-- See note [hom simp lemma priority] -/]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
@@ -466,7 +467,8 @@ lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := a n)]
+@[to_additive (attr := simp mid, grind =) (reorder := a n)
+  /-- See note [hom simp lemma priority] -/]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
