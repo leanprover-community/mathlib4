@@ -301,7 +301,7 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     ext g g'
     by_cases h : g' = g <;>
       simp [Preadditive.sum_comp, biproduct.lift_desc, biproduct.ι_π, comp_dite,
-        Equiv.apply_eq_iff_eq_symm_apply, h]
+        ← Equiv.eq_symm_apply, h]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
