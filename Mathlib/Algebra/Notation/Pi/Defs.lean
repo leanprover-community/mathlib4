@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Logic.Function.Defs
 public import Batteries.Tactic.Alias
 
@@ -48,7 +49,7 @@ instance instOne : One (∀ i, M i) where one _ := 1
 @[to_additive (attr := simp high)]
 lemma one_apply (i : ι) : (1 : ∀ i, M i) i = 1 := rfl
 
-@[to_additive (attr := push ← high)]
+@[to_additive (attr := push ← high, fun_cast)]
 lemma one_def : (1 : ∀ i, M i) = fun _ ↦ 1 := rfl
 
 variable {M : Type*} [One M]
@@ -69,7 +70,7 @@ instance instMul : Mul (∀ i, M i) where mul f g i := f i * g i
 @[to_additive (attr := simp)]
 lemma mul_apply (f g : ∀ i, M i) (i : ι) : (f * g) i = f i * g i := rfl
 
-@[to_additive (attr := push ←)]
+@[to_additive (attr := push ←, fun_cast)]
 lemma mul_def (f g : ∀ i, M i) : f * g = fun i ↦ f i * g i := rfl
 
 variable {M : Type*} [Mul M]
@@ -91,7 +92,7 @@ instance instInv : Inv (∀ i, G i) where inv f i := (f i)⁻¹
 @[to_additive (attr := simp)]
 lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
 
-@[to_additive (attr := push ←)]
+@[to_additive (attr := push ←, fun_cast)]
 lemma inv_def (f : ∀ i, G i) : f⁻¹ = fun i ↦ (f i)⁻¹ := rfl
 
 variable {G : Type*} [Inv G]
@@ -112,7 +113,7 @@ instance instDiv : Div (∀ i, G i) where div f g i := f i / g i
 @[to_additive (attr := simp)]
 lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
 
-@[to_additive (attr := push ←)]
+@[to_additive (attr := push ←, fun_cast)]
 lemma div_def (f g : ∀ i, G i) : f / g = fun i ↦ f i / g i := rfl
 
 variable {G : Type*} [Div G]
@@ -135,7 +136,7 @@ instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
 lemma pow_apply (f : ∀ i, M i) (a : α) (i : ι) : (f ^ a) i = f i ^ a := rfl
 
-@[to_additive (attr := push ←, to_additive) (reorder := 5 6) smul_def]
+@[to_additive (attr := push ←, fun_cast, to_additive) (reorder := 5 6) smul_def]
 lemma pow_def (f : ∀ i, M i) (a : α) : f ^ a = fun i ↦ f i ^ a := rfl
 
 variable {M : Type*} [Pow M α]
@@ -157,7 +158,7 @@ instance : Star (∀ i, R i) where star x i := star (x i)
 @[simp]
 theorem star_apply (x : ∀ i, R i) (i : ι) : star x i = star (x i) := rfl
 
-@[push ←]
+@[push ←, fun_cast]
 theorem star_def (x : ∀ i, R i) : star x = fun i => star (x i) := rfl
 
 end Star

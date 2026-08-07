@@ -94,6 +94,16 @@ register_simp_attr typevec
 /-- Simplification rules for ghost equations. -/
 register_simp_attr ghost_simps
 
+/-- The `@[fun_cast]` simp set is used as preprocessor by `fun_prop` to turn functions into a
+normal form so that not all defeq spellings have to be tagged with `@[fun_prop]`.
+
+For example `Continuous (f + g)` can be proved by `fun_prop` because `f + g` first gets expanded
+by `simp only [fun_cast]` into `fun x ↦ f x + g x` and `Continuous (fun x ↦ f x + g x)` is a
+`@[fun_prop]` lemma.
+
+Todo: add a linter for `fun_cast` normal forms in `@[fun_prop]` tagged lemmas. -/
+register_simp_attr fun_cast
+
 /-- The `@[nontriviality]` simp set is used by the `nontriviality` tactic to automatically
 discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
 in e.g. groups are trivially true). -/
