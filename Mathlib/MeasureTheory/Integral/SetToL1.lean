@@ -880,7 +880,7 @@ theorem setToFun_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''
   · simp [setToFun, hG'']
   by_cases hfi : Integrable f μ
   · simp_rw [setToFun_eq _ hfi]
-    exact L1.setToL1_nonneg hT hT_nonneg hf
+    exact L1.setToL1_nonneg hT hT_nonneg ((AEEqFun.mk_le_mk _ _).2 hf)
   · simp_rw [setToFun_undef _ hfi, le_rfl]
 
 theorem setToFun_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
