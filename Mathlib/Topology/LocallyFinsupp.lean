@@ -143,6 +143,11 @@ lemma supportWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
 lemma supportLocallyFiniteWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
     ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
 
+lemma _root_.Function.locallyFinsupp.finite_support
+    [Zero Y] [CompactSpace X] (f : locallyFinsupp X Y) : f.support.Finite := by
+  simpa using LocallyFiniteSupport.finite_inter_support_of_isCompact f.locallyFiniteSupport
+      CompactSpace.isCompact_univ
+
 @[ext]
 lemma ext [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :
     D₁ = D₂ := DFunLike.ext _ _ h
