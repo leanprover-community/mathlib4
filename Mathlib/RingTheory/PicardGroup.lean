@@ -510,7 +510,7 @@ theorem mk_tensor : Pic.mk R (M ⊗[R] N) = Pic.mk R M * Pic.mk R N :=
 
 theorem mk_dual : Pic.mk R (Dual R M) = (Pic.mk R M)⁻¹ :=
   congr_arg (equivShrink _) <| Units.ext <| by
-    rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
+    simp_rw [Pic.mk, Equiv.toFun_as_coe, Equiv.symm_apply_apply]
     exact Quotient.sound ⟨(Finite.reprEquivₛ R _ ≪≫ₗ (Finite.reprEquivₛ R _).dualMap).toModuleIsoₛ⟩
 
 theorem inv_eq_dual (M : Pic R) : M⁻¹ = Pic.mk R (Dual R M) := by
