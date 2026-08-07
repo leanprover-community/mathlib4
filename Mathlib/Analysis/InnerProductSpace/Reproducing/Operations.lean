@@ -66,6 +66,21 @@ lemma kerFun_mem_orthogonal (x : X) (v : V) :
   rw [LinearMap.mem_ker, funext_iff] at hp
   simp_all [generator, ← inner_add_left]
 
+/-- The orthogonal complement of the span of the kernel‑vector pairs is exactly the kernel of the
+    generator map `(f,g) ↦ ↑f + ↑g`. -/
+lemma generator_ker : (generator K K').ker = (Submodule.span 𝕜 {p : WithLp 2
+    ((OfKernel K) × (OfKernel K')) | ∃ x v, p = WithLp.toLp 2
+      (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)})ᗮ := by
+  refine le_antisymm
+    ((Submodule.le_orthogonal_orthogonal (generator K K').ker).trans <| Submodule.orthogonal_le <|
+      Submodule.span_le.mpr fun p ⟨x, v, hp⟩ ↦ hp ▸ kerFun_mem_orthogonal K K' x v)
+    (fun q hq ↦ ?_)
+  obtain ⟨f, g⟩ := q
+  funext x
+  refine ext_inner_left 𝕜 fun v ↦ ?_
+  simp [inner_add_right, ← kerFun_inner, WithLp.prod_inner_apply,
+    ← hq _ (Submodule.subset_span ⟨x, v, rfl⟩)]
+
 /-- Helper function for `linearIsometryAux`. -/
 private def toKerOrthogonal :
     H₀ (K + K') →ₗᵢ[𝕜] (generator K K').kerᗮ where
@@ -120,33 +135,15 @@ private lemma linearIsometry_surjective : Function.Surjective (linearIsometry K 
   set L : Submodule 𝕜 W := (generator K K').ker
   set T : Submodule 𝕜 W := Submodule.span 𝕜
     {p : W | ∃ x v, p = WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)}
-  -- `T` and `L` are exact orthogonal complements of one another.
-  have hTL : Tᗮ = L := by
-    refine le_antisymm (fun q hq ↦ ?_)
-      ((Submodule.le_orthogonal_orthogonal L).trans <| Submodule.orthogonal_le <|
-        Submodule.span_le.mpr fun p ⟨x, v, hp⟩ ↦ hp ▸ kerFun_mem_orthogonal K K' x v)
-    obtain ⟨f, g⟩ := q
-    funext x
-    refine ext_inner_left 𝕜 fun v ↦ ?_
-    have := hq _ (Submodule.subset_span ⟨x, v, rfl⟩)
-    rw [WithLp.prod_inner_apply] at this
-    simp only [kerFun_inner] at this
-    simp [inner_add_right, this]
-  -- Hence the image of `T` in the quotient is dense.
-  have hdense : Dense ((Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W)) := by
-    have hLperp : closure (T : Set W) = (Lᗮ : Set W) := by
-      rw [← Submodule.topologicalClosure_coe, ← orthogonal_orthogonal_eq_closure, hTL]
-    have hsurj : (Submodule.Quotient.mk : W → W ⧸ L) '' (Lᗮ : Set W) = Set.univ :=
-      Set.eq_univ_of_forall fun y ↦
-        ⟨L.quotientEquivOrthogonal y, (L.quotientEquivOrthogonal y).2, by simp⟩
-    have hsub : (Submodule.Quotient.mk : W → W ⧸ L) '' (closure (T : Set W)) ⊆
-        closure ((Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W)) :=
-      image_closure_subset_closure_image continuous_quotient_mk'
-    rw [hLperp, hsurj] at hsub
-    exact dense_iff_closure_eq.mpr (Set.univ_subset_iff.mp hsub)
-  -- That image lies in the range of `linearIsometry K K'`.
-  have hMapRange : (Submodule.Quotient.mk : W → W ⧸ L) '' (T : Set W) ⊆
-      Set.range (linearIsometry K K') := by
+  have hdense : Dense ((Submodule.Quotient.mk : W → W ⧸ L) '' T) := by
+    refine dense_iff_closure_eq.mpr (Set.univ_subset_iff.mp ?_)
+    apply subset_trans ?_ (image_closure_subset_closure_image continuous_quotient_mk')
+    rw [← topologicalClosure_coe, ← orthogonal_orthogonal_eq_closure, ← generator_ker K K']
+    exact Set.univ_subset_iff.mpr (Set.eq_univ_of_forall fun y ↦ ⟨
+      (generator K K').ker.quotientEquivOrthogonal y,
+      ((generator K K').ker.quotientEquivOrthogonal y).2, by
+        rw [Quotient.mk'_eq_mk', coe_quotientEquivOrthogonal, mk_quotientEquivOfIsCompl_apply]⟩)
+  have hMapRange : (Submodule.Quotient.mk : W → W ⧸ L) '' T ⊆ (linearIsometry K K').range := by
     rintro _ ⟨t, ht, rfl⟩
     induction ht using Submodule.span_induction with
     | mem p hp =>
@@ -155,12 +152,10 @@ private lemma linearIsometry_surjective : Function.Surjective (linearIsometry K 
     | zero => exact ⟨0, by simp⟩
     | add p q _ _ ihp ihq =>
       obtain ⟨a, ha⟩ := ihp; obtain ⟨b, hb⟩ := ihq
-      exact ⟨a + b, by simp [ha, hb]⟩
+      exact ⟨a + b, by simp [-LinearIsometry.coe_toLinearMap, ha, hb]⟩
     | smul c p _ ih =>
       obtain ⟨a, ha⟩ := ih
       exact ⟨c • a, by simp [ha]⟩
-  -- The range is closed (isometric image of a complete space); a dense subset of a closed
-  -- set fills it.
   rw [← Set.range_eq_univ]
   refine le_antisymm (Set.subset_univ _) ?_
   rw [← hdense.closure_eq,
