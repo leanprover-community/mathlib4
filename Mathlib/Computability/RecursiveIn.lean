@@ -221,7 +221,7 @@ theorem partrec_of_oracle
 /-- If a function is recursive in a constant partial function, then it is partial recursive. -/
 lemma partrec_of_const {s} (hf : RecursiveIn {fun _ => s} f) : Partrec f :=
   hf.partrec_of_oracle
-    (fun g hg => by rw [mem_singleton exact .const' s)
+    (fun g hg => by rw [Set.mem_singleton.mp hg]; exact .const' s)
 
 end RecursiveIn
 
