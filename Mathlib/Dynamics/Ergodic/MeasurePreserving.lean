@@ -235,6 +235,25 @@ theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ
   rcases hf.exists_mem_iterate_mem_of_measure_univ_lt_mul_measure hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩
 
+theorem ae_mem_exists_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
+    (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ, x ∈ s → ∃ m ≠ 0, f^[m] x ∈ s := by
+  by_contra h
+  simp only [Filter.not_eventually, Classical.not_imp, not_and, not_exists] at h
+  let t := s ∩ ⋂ n ≠ 0, f^[n]⁻¹' sᶜ
+  /- We apply `exists_mem_iterate_mem` to `t` to get a contradiciton. -/
+  have ht : NullMeasurableSet t μ := by
+    apply hs.inter
+    refine NullMeasurableSet.iInter fun n ↦ NullMeasurableSet.iInter fun _ ↦ ?_
+    exact hs.compl.preimage ((hf.iterate n).quasiMeasurePreserving)
+  have ht' : μ t ≠ 0 := by
+    apply frequently_ae_mem_iff.1
+    apply h.mono
+    simp [t]
+  obtain ⟨x, x_t, n, n_0, x_nt⟩ := exists_mem_iterate_mem hf ht ht'
+  replace x_t := x_t.2
+  simp only [preimage_compl, mem_iInter, mem_compl_iff, mem_preimage] at x_t
+  exact x_t n n_0 x_nt.1
+
 end MeasurePreserving
 
 lemma measurePreserving_subtype_coe {s : Set α} (hs : MeasurableSet s) :
