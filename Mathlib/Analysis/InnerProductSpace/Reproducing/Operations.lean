@@ -90,8 +90,8 @@ private def toKerOrthogonal :
   norm_map' f := by
     simp_rw [← Submodule.norm_coe, norm_eq_sqrt_re_inner (𝕜 := 𝕜)]
     congr 2
-    simp_rw [inner_H₀_def, Finsupp.linearCombination_apply,
-      Finsupp.sum, ← coe_inner, sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
+    simp_rw [inner_H₀_def, Finsupp.linearCombination_apply, Finsupp.sum, ← coe_inner, sum_inner,
+      inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
     simp [kerFun_apply, ← OfKernel.kernel_ofKernel, inner_add_left]
 
 -- The map whose extention with `.complL` yields `linearIsometry`. -/
@@ -123,7 +123,7 @@ def linearIsometry :
 private lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
     linearIsometry K K' (kerFun (OfKernel (K + K')) x v) =
     Submodule.Quotient.mk (WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)) := by
-  simp only [linearIsometry, linearIsometry, LinearIsometry.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+  simp only [linearIsometry, LinearIsometry.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
   rw [OfKernel.kerFun_OfKernel_apply, ← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜),
     ContinuousLinearMap.extend_eq _
       (by simp [UniformSpace.Completion.denseRange_coe])
@@ -170,29 +170,28 @@ def linearIsometryEquiv :
 /-- The map taking every function in `OfKernel (K + K')` to the elements from
 `WithLp 2 ((OfKernel K) × (OfKernel K'))` that minimizes the quotient norm. -/
 def projection : OfKernel (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) :=
-  ((generator K K').kerᗮ).subtypeₗᵢ.comp (((linearIsometryEquiv K K').trans
-    (generator K K').ker.quotientEquivOrthogonal).toLinearIsometry)
+  (generator K K').kerᗮ.subtypeₗᵢ.comp
+    ((generator K K').ker.quotientEquivOrthogonal.toLinearIsometry.comp
+      (linearIsometryEquiv K K').toLinearIsometry)
 
 @[simp low]
 lemma coe_orthogonalProjection :
     ⇑(projection K K') = (((generator K K').kerᗮ).subtype
-      ∘ (generator K K').ker.quotientEquivOrthogonal ∘ (linearIsometry K K')) := by
+      ∘ (generator K K').ker.quotientEquivOrthogonal ∘ (linearIsometryEquiv K K')) := by
   rfl
 
 theorem projection_kerFun (x : X) (v : V) :
     projection K K' (kerFun (OfKernel (K + K')) x v) =
       .toLp 2 ⟨kerFun (OfKernel K) x v, kerFun (OfKernel K') x v⟩ := by
-  simp [projection, linearIsometryEquiv, linearIsometry_kerFun_apply_eq_mk,
-    kerFun_mem_orthogonal K K' x v]
+  simp [projection, linearIsometryEquiv, linearIsometry_kerFun_apply_eq_mk, kerFun_mem_orthogonal]
 
 theorem range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
-  simp [projection, -coe_orthogonalProjection, Set.range_comp, Set.range_comp]
+  simp [projection, Set.range_comp, Set.range_comp]
 
 theorem norm_sq_kerFun_add (x : X) (v : V) :
     ‖kerFun (OfKernel (K + K')) x v‖ ^ 2 =
       ‖kerFun (OfKernel K) x v‖ ^ 2 + ‖kerFun (OfKernel K') x v‖ ^ 2 := by
-  simp [← (projection K K').norm_map (kerFun (OfKernel (K + K')) x v), projection_kerFun,
-    WithLp.prod_norm_sq_eq_of_L2]
+  simp [← (projection K K').norm_map, projection_kerFun, WithLp.prod_norm_sq_eq_of_L2]
 
 end Add
 
