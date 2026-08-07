@@ -663,7 +663,6 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
@@ -881,7 +880,6 @@ namespace Homeomorph
 
 variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
@@ -931,7 +929,6 @@ def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
 @[simp]
 lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
