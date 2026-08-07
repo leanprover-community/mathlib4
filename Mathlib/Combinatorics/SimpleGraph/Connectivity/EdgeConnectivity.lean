@@ -186,15 +186,10 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
   simp only [isEdgeReachable_comm,edgeReachability]
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
-  iSup_le
-  fun k ↦
-  iSup_le fun hk ↦
-    id
-      (le_iSup_of_le k
-        (le_iSup_of_le
-          (have this := hk u v;
-          this)
-          le_rfl))
+ iSup₂_le (
+  fun i hi ↦
+    le_iSup₂_of_le i (hi u v) le_rfl
+  )
 
 
 /-!
