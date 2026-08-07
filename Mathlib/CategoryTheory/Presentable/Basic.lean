@@ -5,12 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -22,7 +18,7 @@ a regular cardinal `κ` such that `Functor.IsCardinalAccessible`.
 
 An object `X` of a category is `κ`-presentable (`IsCardinalPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
-Similarly as for accessible functors, we define a type class `IsAccessible`.
+Similarly as for accessible functors, we define a type class `IsPresentable`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -236,6 +232,33 @@ lemma isCardinalPresentable_iff_of_isEquivalence
       (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
+
+variable {X κ} in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+open IsFiltered in
+lemma IsCardinalPresentable.mk
+    (hX : ∀ (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ]
+      (F : J ⥤ C) (c : Cocone F) (_ : IsColimit c),
+      (∀ (g : X ⟶ c.pt), ∃ (j : J) (f : X ⟶ F.obj j), f ≫ c.ι.app j = g) ∧
+      (∀ (j : J) (f₁ f₂ : X ⟶ F.obj j) (_ : f₁ ≫ c.ι.app j = f₂ ≫ c.ι.app j),
+        ∃ (j' : J) (a : j ⟶ j'), f₁ ≫ F.map a = f₂ ≫ F.map a)) :
+    IsCardinalPresentable X κ where
+  preservesColimitOfShape J _ _ :=
+    ⟨fun {F} ↦ ⟨fun {c} hc ↦ by
+      have := isFiltered_of_isCardinalFiltered J κ
+      rw [Types.isColimit_iff_coconeTypesIsColimit]
+      refine ⟨fun f₁ f₂ hf ↦ ?_, fun g ↦ ?_⟩
+      · obtain ⟨j₁, f₁, rfl⟩ := Functor.ιColimitType_jointly_surjective _ f₁
+        obtain ⟨j₂, f₂, rfl⟩ := Functor.ιColimitType_jointly_surjective _ f₂
+        dsimp at f₁ f₂ hf
+        obtain ⟨j', a, ha⟩ := (hX J F c hc).2 _ (f₁ ≫ F.map (leftToMax j₁ j₂))
+          (f₂ ≫ F.map (rightToMax j₁ j₂)) (by simpa)
+        simp only [Category.assoc] at ha
+        exact Functor.ιColimitType_eq_of_map_eq_map _ _ _
+          (leftToMax j₁ j₂ ≫ a) (rightToMax j₁ j₂ ≫ a) (by simpa)
+      · obtain ⟨j, f, rfl⟩ := (hX J F c hc).1 g
+        exact ⟨Functor.ιColimitType _ j f, rfl⟩⟩⟩
 
 section
 
