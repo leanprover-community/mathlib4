@@ -38,7 +38,7 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem TFAE.subset {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
-theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
+theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
 
 theorem tfae_append {l₁ l₂ : List Prop} :
@@ -65,7 +65,7 @@ theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔
 
 theorem tfae_append_singleton_of_mem {a b} {l : List Prop} (h : b ∈ l) :
     TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
-  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (a := b) (b := a) h (by simp), iff_comm]
+  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
