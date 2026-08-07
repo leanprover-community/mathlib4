@@ -385,9 +385,8 @@ def fromCompletion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
   norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
     f.toContinuousLinearMap.fromCompletion.map_zero
 
-theorem fromCompletion_eq (x : E) : f.fromCompletion x = f x := by
-  have := ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
-  exact ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
+theorem fromCompletion_eq (x : E) : f.fromCompletion x = f x :=
+  ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
 
 @[simp low]
 theorem coe_fromCompletion : f.fromCompletion = Completion.extension f := by
@@ -417,8 +416,8 @@ def completion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.C
       (isClosed_eq (f.toContinuousLinearMap.completion.continuous.norm) continuous_norm) <| by
     simp [UniformSpace.Completion.norm_coe]
 
-theorem completion_eq (x : E) : f.completion x = f x := by
-  exact ContinuousLinearMap.completion_apply_coe f.toContinuousLinearMap x
+theorem completion_eq (x : E) : f.completion x = f x :=
+  ContinuousLinearMap.completion_apply_coe f.toContinuousLinearMap x
 
 @[simp low]
 theorem coe_completion : f.completion = Completion.map f := by
