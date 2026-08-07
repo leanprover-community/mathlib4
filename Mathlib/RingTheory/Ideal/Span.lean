@@ -168,7 +168,7 @@ lemma span_range_eq_span_range_support (x : ι → α) :
   rw [← span_sdiff_singleton_zero (s := range x), Function.support]
   congr
   ext1 a
-  simp only [mem_sdiff, mem_range, mem_singleton
+  simp only [mem_sdiff, mem_range, mem_singleton]
   exact ⟨fun ⟨⟨i, hi⟩, ha⟩ ↦ ⟨⟨i, mem_ofPred.mpr (hi ▸ ha)⟩, hi⟩,
     fun ⟨j, hj⟩ ↦ ⟨⟨j.val, hj⟩, by grind⟩⟩
 

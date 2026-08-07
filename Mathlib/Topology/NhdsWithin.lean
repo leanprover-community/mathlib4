@@ -288,7 +288,7 @@ theorem insert_mem_nhdsWithin_insert {a : α} {s t : Set α} (h : t ∈ 𝓝[s] 
     insert a t ∈ 𝓝[insert a s] a := by simp [mem_of_superset h]
 
 theorem insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s ∈ 𝓝[≠] a := by
-  simp only [nhdsWithin, mem_inf_principal, mem_compl_iff, mem_singleton_not_imp_left,
+  simp only [nhdsWithin, mem_inf_principal, mem_compl_iff, mem_singleton, or_iff_not_imp_left,
     insert_def]
 
 @[simp]

@@ -533,7 +533,7 @@ noncomputable def coarserPartition (hs : IndexedPartition s) {κ : Type*} (g : �
   some k := hs.some ((singleton_nonempty k).preimage hg).some
   some_mem k := by
     refine mem_iUnion_of_mem ((singleton_nonempty k).preimage hg).some ?_
-    simp only [mem_preimage, mem_singletonm_iUnion, exists_prop]
+    simp only [mem_preimage, mem_singleton, mem_iUnion, exists_prop]
     constructor
     · simpa using ((singleton_nonempty k).preimage hg).some_mem
     · exact hs.some_mem ((singleton_nonempty k).preimage hg).some

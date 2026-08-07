@@ -119,8 +119,8 @@ variable [ZeroLEOneClass 𝕜] [Module 𝕜 E] {s : Set E} {x y z : E}
 theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
-      simpa only [(add_smul _ _ _).symm, mem_singletonb, one_smul, eq_comm] using hz,
-      fun h => mem_singleton ▸ left_mem_segment 𝕜 z z⟩
+      simpa only [(add_smul _ _ _).symm, mem_singleton, hab, one_smul, eq_comm] using hz,
+      fun h => mem_singleton.1 h ▸ left_mem_segment 𝕜 z z⟩
 
 theorem insert_endpoints_openSegment (x y : E) :
     insert x (insert y (openSegment 𝕜 x y)) = [x -[𝕜] y] := by
@@ -182,7 +182,7 @@ variable [ZeroLEOneClass 𝕜] [Nontrivial 𝕜] [DenselyOrdered 𝕜]
 theorem openSegment_same (x : E) : openSegment 𝕜 x x = {x} :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
-      simpa only [← add_smul, mem_singletonb, one_smul, eq_comm] using hz,
+      simpa only [← add_smul, mem_singleton, hab, one_smul, eq_comm] using hz,
     fun h : z = x => by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
       refine ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, ?_⟩

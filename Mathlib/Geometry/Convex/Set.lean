@@ -199,7 +199,7 @@ lemma IsConvexSet.of_convexCombPair_mem
     obtain ⟨y, hy⟩ := ht
     exact ⟨y, ne_of_mem_of_not_mem hy hx, by simpa [hy] using congr(y ∈ $hsw)⟩
   rw [← w.convexCombPair_restrict_restrict_compl {x} (by simpa) hwx']
-  simp only [mem_singletondSimplex.restrict_singleton, sConvexComb_convexCombPair,
+  simp only [mem_singleton, StdSimplex.restrict_singleton, sConvexComb_convexCombPair,
     sConvexComb_single]
   exact hs _ _ _ _ _ _ (hw <| by simp) _ <| ih (by grw [← hw, ← Finset.subset_cons])
     (by simp [← hsw]; grind)

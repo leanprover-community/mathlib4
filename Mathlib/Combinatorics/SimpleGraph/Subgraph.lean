@@ -626,7 +626,7 @@ lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
   · intro hdisj S h₀ h₁ v hvS
     let M' : Subgraph G := { verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp }
     have hle {M : Subgraph G} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
-    exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| mem_singleton_self v
+    exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton_self v
 
 section map
 variable {G' : SimpleGraph W} {f : G →g G'}
@@ -893,7 +893,7 @@ instance (v : V) : Unique (G.singletonSubgraph v).verts :=
 @[simp]
 theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
     G.singletonSubgraph v ≤ H ↔ v ∈ H.verts := by
-  refine ⟨fun h ↦ h.1 (mem_singleton_self v), ?_⟩
+  refine ⟨fun h ↦ h.1 (Set.mem_singleton_self v), ?_⟩
   intro h
   constructor
   · rwa [singletonSubgraph_verts, Set.singleton_subset_iff]
@@ -924,7 +924,7 @@ theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     intro ha
     have ha1 := ha.fst_mem
     have ha2 := ha.snd_mem
-    rw [h, mem_singleton ha2
+    rw [h, Set.mem_singleton] at ha1 ha2
     subst_vars
     exact ha.ne rfl
 
@@ -940,7 +940,7 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
   refine e.ind ?_
-  simp only [eq_comm, mem_singletonph.mem_edgeSet, subgraphOfAdj_adj,
+  simp only [eq_comm, Set.mem_singleton, Subgraph.mem_edgeSet, subgraphOfAdj_adj,
     forall₂_true_iff]
 
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
@@ -1266,7 +1266,7 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff] at h
       obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h <;> simp [hvw, hvw.symm]
     · intro h
-      simp only [induce_adj, Set.mem_insert_iff, mem_singletonj] at h
+      simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton, top_adj] at h
       obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first | exact (ha.ne rfl).elim | simp
 
 instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [DecidableRel G'.Adj] :
