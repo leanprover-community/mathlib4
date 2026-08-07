@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gareth Ma
+Authors: Gareth Ma, Jack McKoen
 -/
 module
 
@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
-# Deriving `RigidCategory` instance for braided and left/right rigid categories.
+# Rigid pairings and rigidity in braided monoidal categories
 -/
 
 @[expose] public section
@@ -83,6 +83,46 @@ def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   evaluation' := (β_ X Y).hom ≫ ε_ X Y
   coevaluation_evaluation' := coevaluation_evaluation_braided'
   evaluation_coevaluation' := evaluation_coevaluation_braided'
+
+lemma exactPairingSwap_coevaluation {X Y : C} (p : ExactPairing X Y) :
+    letI := exactPairing_swap X Y
+    η_ Y X = η_ X Y ≫ (β_ Y X).inv := rfl
+
+lemma exactPairingSwap_evaluation {X Y : C} (p : ExactPairing X Y) :
+    letI := exactPairing_swap X Y
+    ε_ Y X = (β_ X Y).hom ≫ ε_ X Y := rfl
+
+end CategoryTheory.BraidedCategory
+
+namespace CategoryTheory.ExactPairing
+
+lemma rightAdjointMate_swap_rightAdjointMate {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') (f : X ⟶ Y) :
+    letI := pX.hasRightDual
+    letI := pY.hasRightDual
+    letI := (exactPairing_swap Y Y').hasRightDual
+    letI := (exactPairing_swap X X').hasRightDual
+    rightAdjointMate (rightAdjointMate f) = f := by
+  letI := pX.hasRightDual
+  letI := pY.hasRightDual
+  letI := (exactPairing_swap Y Y').hasRightDual
+  letI := (exactPairing_swap X X').hasRightDual
+  apply (exactPairing_swap Y Y').rightHom_ext
+  have h_outer := @CategoryTheory.rightAdjointMate_comp_evaluation C _ _ Y' X'
+    (exactPairing_swap Y Y').hasRightDual (exactPairing_swap X X').hasRightDual
+    (@rightAdjointMate C _ _ X Y pX.hasRightDual pY.hasRightDual f)
+  have h_inner := @CategoryTheory.rightAdjointMate_comp_evaluation C _ _ X Y
+    pX.hasRightDual pY.hasRightDual f
+  dsimp only [ExactPairing.hasRightDual, HasRightDual.exact,
+    HasRightDual.rightDual] at h_outer h_inner
+  rw [h_outer]
+  simp only [exactPairingSwap_evaluation, braiding_naturality_right_assoc]
+  rw [h_inner]
+  simp only [← braiding_naturality_left_assoc]
+
+end CategoryTheory.ExactPairing
+
+namespace CategoryTheory.BraidedCategory
 
 /-- If `X` has a right dual in a braided category, then it has a left dual. -/
 @[instance_reducible]
