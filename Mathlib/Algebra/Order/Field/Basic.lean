@@ -319,12 +319,13 @@ is more general than the other. This one applies, for instance, to `ℂ`. -/
 theorem inv_lt_zero' : a⁻¹ < 0 ↔ a < 0 := by
   rw [← neg_pos, ← inv_neg, inv_pos, neg_pos]
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- A version of `inv_nonpos` which holds with different assumptions. In particular, the type
 must be a field, not just a `GroupWithZero`, but the order assumptions replace `LinearOrder` and
 `PosMulMono` with `PartialOrder`, `IsStrictOrderedRing` and `PosMulReflectLT`. Thus neither version
 is more general than the other. This one applies, for instance, to `ℂ`. -/
 theorem inv_nonpos' : a⁻¹ ≤ 0 ↔ a ≤ 0 := by
-  grind [inv_lt_zero', le_iff_eq_or_lt]
+  grind only [inv_lt_zero', le_iff_eq_or_lt]
 
 theorem div_nonneg_of_nonpos (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a / b :=
   div_eq_mul_inv a b ▸ mul_nonneg_of_nonpos_of_nonpos ha (inv_nonpos'.2 hb)

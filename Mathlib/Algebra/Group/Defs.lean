@@ -209,9 +209,10 @@ class IsMulCommutative (M : Type*) [Mul M] : Prop where
 attribute [instance] IsAddCommutative.is_comm
 attribute [instance] IsMulCommutative.is_comm
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 @[to_additive]
 lemma isMulCommutative_iff {M : Type*} [Mul M] : IsMulCommutative M ↔ ∀ a b : M, a * b = b * a := by
-  grind [IsMulCommutative, Std.Commutative]
+  grind only [IsMulCommutative, Std.Commutative]
 
 @[to_additive]
 alias ⟨_, IsMulCommutative.of_comm⟩ := isMulCommutative_iff

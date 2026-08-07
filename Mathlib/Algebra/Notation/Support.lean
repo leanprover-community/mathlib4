@@ -126,7 +126,9 @@ lemma range_eq_image_or_of_mulSupport_subset {k : Set ι} (h : mulSupport f ⊆ 
     range f = f '' k ∨ range f = insert 1 (f '' k) := by
   have : range f ⊆ insert 1 (f '' k) :=
     (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_mono h))
-  grind
+  by_cases h1 : 1 ∈ range f
+  · exact Or.inr (subset_antisymm this (insert_subset h1 (image_subset_range _ _)))
+  · grind
 
 @[to_additive (attr := simp)]
 lemma mulSupport_one : mulSupport (1 : ι → M) = ∅ := mulSupport_eq_empty_iff.2 rfl

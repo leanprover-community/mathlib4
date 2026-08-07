@@ -360,7 +360,8 @@ theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R]
   intro r₁
   obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h
   have (x y : R) := mul_left_cancel₀ hr₂ (b := x) (c := y)
-  grind [IsRoot, eval_add, eval_mul_X, eval_C]
+  simp only [IsRoot.def]
+  grind [eval_add, eval_mul_X, eval_C]
 
 variable [NoZeroDivisors R]
 
