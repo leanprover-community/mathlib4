@@ -179,7 +179,7 @@ theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   · simp [(isOpen_Ioo.union isOpen_Ioo).interior_eq, this]
   all_goals
   · simp [k_Icc_4_5_inter_rat, -union_singleton, closure_union, disjoint_iff_inter_eq_empty,
-      union_inter_distrib_right, Icc_inter_Icc]
+    Icc_inter_Icc]
     norm_num
 
 theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
@@ -193,7 +193,7 @@ theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
     interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   all_goals
-     simp [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
+     simp [-union_singleton, disjoint_iff_inter_eq_empty, Icc_inter_Icc]
   all_goals norm_num
 
 theorem kckc_fourteenSet : k (k fourteenSetᶜ)ᶜ = Icc 0 2 := by

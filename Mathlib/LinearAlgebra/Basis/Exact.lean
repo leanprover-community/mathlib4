@@ -83,7 +83,7 @@ lemma Submodule.top_le_span_of_exact_of_retraction (hg : Function.Surjective g)
     (hsp : ⊤ ≤ Submodule.span R (Set.range v)) :
     ⊤ ≤ Submodule.span R (Set.range <| g ∘ v ∘ a) := by
   apply top_le_span_of_aux hs hfg (Sum.elim (v ∘ a) (v ∘ b)) hg hsa hlib
-  simp only [codisjoint_iff, Set.sup_eq_union, Set.top_eq_univ] at hab
+  simp only [codisjoint_iff, Set.top_eq_univ] at hab
   rwa [Set.Sum.elim_range, Set.range_comp, Set.range_comp, ← Set.image_union, hab, Set.image_univ]
 
 /-- Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a

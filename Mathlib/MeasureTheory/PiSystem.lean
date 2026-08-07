@@ -420,9 +420,8 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   use p1 ∪ p2, hp_union_ss, g
   have h_inter_eq : t1 ∩ t2 = ⋂ i ∈ p1 ∪ p2, g i := by
     rw [ht1_eq, ht2_eq]
-    simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [inf_eq_inter, mem_inter_iff, mem_iInter]
+    simp only [mem_inter_iff, mem_iInter]
     grind
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]

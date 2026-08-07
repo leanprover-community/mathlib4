@@ -164,7 +164,7 @@ theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.sourc
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
+theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp
 
 lemma interior_extend_target_subset_interior_range :
     interior (f.extend I).target ⊆ interior (range I) := by
@@ -578,7 +578,7 @@ theorem extChartAt_target_mem_nhds' [I.Boundaryless] {x : M} {y : E}
   (isOpen_extChartAt_target x).mem_nhds m
 
 theorem extChartAt_target_subset_range (x : M) : (extChartAt I x).target ⊆ range I := by
-  simp only [mfld_simps]
+  simp
 
 /-- Around the image of a point in the source, the neighborhoods are the same
 within `(extChartAt I x).target` and within `range I`. -/

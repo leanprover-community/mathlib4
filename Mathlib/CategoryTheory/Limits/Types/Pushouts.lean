@@ -360,7 +360,7 @@ lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
     rw [isIso_iff_bijective]
     refine ⟨(mono_iff_injective _).1 (mono_of_mono φ k), fun x₄ ↦ ?_⟩
     have hx₄ := Set.mem_univ x₄
-    simp only [← h₂, Set.sup_eq_union, Set.mem_union, Set.mem_range] at hx₄
+    simp only [← h₂, Set.mem_union, Set.mem_range] at hx₄
     obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl⟩) := hx₄
     · exact ⟨_, ConcreteCategory.congr_hom hφ₁ x₂⟩
     · exact ⟨_, ConcreteCategory.congr_hom hφ₂ x₃⟩

@@ -156,7 +156,7 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
   · rw [mk_range_eq]
     exact .of_comp (f := Subtype.val) (by convert! hv; ext; simp [Module.Basis.span_apply])
   · apply map_injective_of_injective (f := (span R _).subtype) (injective_subtype _)
-    simp [map_span, Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left, ← x.2]
+    simp [map_span, Set.image_preimage_eq_inter_range, ← x.2]
 
 lemma spanRank_span_of_linearIndepOn [RankCondition R] (s : Set M) (hs : LinearIndepOn R id s) :
     (span R s).spanRank = #s := by

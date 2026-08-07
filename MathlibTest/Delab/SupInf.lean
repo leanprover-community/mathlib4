@@ -1,5 +1,6 @@
 module
 import Mathlib.Algebra.Order.Archimedean.Real.Basic
+import Mathlib.Data.Multiset.UnionInter
 
 /-- info: max 1 2 : ℕ -/
 #guard_msgs in
@@ -9,7 +10,11 @@ import Mathlib.Algebra.Order.Archimedean.Real.Basic
 #guard_msgs in
 #check max (1 : ℝ) 2
 
-/-- info: ({0} ⊔ {1} ⊔ ({2} ⊔ {3})) ⊓ ({4} ⊔ {5}) ⊔ {6} ⊓ {7} ⊓ ({8} ⊓ {9}) : Set ℕ -/
+/-- info: ({0} ⊔ {1} ⊔ ({2} ⊔ {3})) ⊓ ({4} ⊔ {5}) ⊔ {6} ⊓ {7} ⊓ ({8} ⊓ {9}) : Multiset ℕ -/
+#guard_msgs in
+#check (max (min (max (max {0} {1}) (max {2} {3})) (max {4} {5})) (min (min {6} {7}) (min {8} {9})) : Multiset ℕ)
+
+/-- info: ({0} ∪ {1} ∪ ({2} ∪ {3})) ∩ ({4} ∪ {5}) ∪ {6} ∩ {7} ∩ ({8} ∩ {9}) : Set ℕ -/
 #guard_msgs in
 #check (max (min (max (max {0} {1}) (max {2} {3})) (max {4} {5})) (min (min {6} {7}) (min {8} {9})) : Set ℕ)
 

@@ -268,7 +268,7 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {u v : Finset α} {r : ℕ
 theorem card_compress (huv : #u = #v) (a : Finset α) : #(compress u v a) = #a := by
   unfold compress
   split_ifs with h
-  · rw [card_sdiff_of_subset (h.2.trans le_sup_left), sup_eq_union,
+  · rw [card_sdiff_of_subset (h.2.trans le_sup_left),
       card_union_of_disjoint h.1.symm, huv, add_tsub_cancel_right]
   · rfl
 
@@ -315,12 +315,12 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       have hsb :=
         sup_sdiff_mem_of_mem_compression ht ((erase_subset _ _).trans hvt)
           (disjoint_erase_comm.2 huvs.1)
-      rwa [sup_eq_union, sdiff_erase (mem_union_left _ <| hvt hbv), union_erase_of_mem hat, ←
+      rwa [sdiff_erase (mem_union_left _ <| hvt hbv), union_erase_of_mem hat, ←
         erase_union_of_mem hau] at hsb
     · refine mem_shadow_iff.2
         ⟨(t ⊔ u) \ v,
           sup_sdiff_mem_of_mem_compression Ht hvt <| disjoint_of_erase_right hau huvs.1, a, ?_, ?_⟩
-      · rw [sup_eq_union, mem_sdiff, mem_union]
+      · rw [mem_sdiff, mem_union]
         exact ⟨Or.inl hat, hav⟩
       · simp [← erase_sdiff_comm, erase_union_distrib, erase_eq_of_notMem hau]
   intro s hs𝒜' hs𝒜

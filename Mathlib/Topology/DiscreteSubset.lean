@@ -88,9 +88,11 @@ theorem isDiscrete_iff_forall_mem_exists_isClosed {S : Set X} :
   rw [isDiscrete_iff_forall_subset_exists_isOpen]
   constructor <;> intro h s sS
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
-    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by
+      rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff, -inf_of_le_left]⟩
   · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
-    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+    exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by
+      rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff, -inf_of_le_left]⟩
 
 theorem isClosed_of_subset_discrete_closed {s t : Set X} (sd : s ⊆ t)
     (ht : IsDiscrete t) (tc : IsClosed t) : IsClosed s := by
@@ -267,7 +269,7 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
     IsDiscrete (s ∩ U) := by
   rw [(by simp : ((s ∩ U) : Set X) = ((sᶜ ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [← Filter.mem_iff_inf_principal_compl]
-  simp_all [← Set.compl_sdiff, mem_codiscreteWithin]
+  simp_all [Set.union_comm, mem_codiscreteWithin]
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect

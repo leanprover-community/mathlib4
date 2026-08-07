@@ -255,7 +255,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
   · simp
   · intro a b ha hb hc hd
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
-    rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
+    rw [Finset.coe_union, Set.union_subset_iff]
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 
