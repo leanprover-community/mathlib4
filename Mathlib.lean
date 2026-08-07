@@ -5645,6 +5645,8 @@ public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Measure.TightNormed
 public import Mathlib.MeasureTheory.Measure.Tilted
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Basic
+public import Mathlib.MeasureTheory.Measure.TotalVariation.Defs
 public import Mathlib.MeasureTheory.Measure.Trim
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
@@ -5685,6 +5687,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.VectorMeasure.Integral
 public import Mathlib.MeasureTheory.VectorMeasure.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
+public import Mathlib.MeasureTheory.VectorMeasure.TotalVariation
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
