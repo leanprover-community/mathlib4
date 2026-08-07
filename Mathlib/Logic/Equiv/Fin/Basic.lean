@@ -92,11 +92,11 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
 @[simp]
 theorem finSuccEquiv'_eq_some {i j : Fin (n + 1)} {k : Fin n} :
     finSuccEquiv' i j = k ↔ j = i.succAbove k :=
-  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv' i).eq_symm_apply.symm
 
 @[simp]
 theorem finSuccEquiv'_eq_none {i j : Fin (n + 1)} : finSuccEquiv' i j = none ↔ i = j :=
-  (finSuccEquiv' i).apply_eq_iff_eq_symm_apply.trans eq_comm
+  (finSuccEquiv' i).eq_symm_apply.symm.trans eq_comm
 
 theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
@@ -142,11 +142,11 @@ theorem finSuccEquiv_symm_some (m : Fin n) : (finSuccEquiv n).symm (some m) = m.
 @[simp]
 theorem finSuccEquiv_eq_some {i : Fin (n + 1)} {j : Fin n} :
     finSuccEquiv n i = j ↔ i = j.succ :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv n).eq_symm_apply.symm
 
 @[simp]
 theorem finSuccEquiv_eq_none {i : Fin (n + 1)} : finSuccEquiv n i = none ↔ i = 0 :=
-  (finSuccEquiv n).apply_eq_iff_eq_symm_apply
+  (finSuccEquiv n).eq_symm_apply.symm
 
 /-- The equiv version of `Fin.predAbove_zero`. -/
 theorem finSuccEquiv'_zero : finSuccEquiv' (0 : Fin (n + 1)) = finSuccEquiv n :=

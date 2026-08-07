@@ -256,8 +256,8 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
   split_ifs
   exacts [Finset.prod_induction _ _ hp₁ hp₀ fun i _ => hp₂ _, hp₀]
 
-theorem finprod_nonneg {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
-    {f : α → R} (hf : ∀ x, 0 ≤ f x) :
+theorem finprod_nonneg {R : Type*} [CommMonoidWithZero R] [Preorder R] [ZeroLEOneClass R]
+    [PosMulMono R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 
