@@ -74,7 +74,9 @@ def getFileImports (content : String) (fileName : String := "") :
   let sp := (← read).srcSearchPath
   let res ← Lean.parseImports' content fileName
   res.imports
-    |>.filter (isPartOfMathlibCache ·.module)
+    -- Lean core files can never be modified and therefore we do not need to process these
+    -- moreover, it seems that `Lean.findLean` fails on these.
+    |>.filter (! isInLeanCore ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
@@ -147,21 +149,25 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
     let rootHash := (← get).rootHash
     let pathHash := hash filePath.components -- TODO: change to `hash mod`
     let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
-    modifyGet fun stt =>
-      (some fileHash, { stt with
-        hashMap := stt.hashMap.insert mod fileHash
-        cache   := stt.cache.insert   mod (some fileHash)
-        depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
-
-/-- Files to start hashing from. -/
-def roots : CacheM <| Array <| Name × FilePath := do
-  let mathlibDepPath := (← read).mathlibDepPath
-  return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
+    if isPartOfMathlibCache mod then
+      -- mathlib/upstream: add hash to `hashMap`
+      modifyGet fun stt =>
+        (some fileHash, { stt with
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
+          cache   := stt.cache.insert   mod (some fileHash)
+          hashMap := stt.hashMap.insert mod fileHash })
+    else
+      -- downstream: add `none` to `cache` and do not add hash to `hashMap`
+      modifyGet fun stt =>
+        (none, { stt with
+          depsMap := stt.depsMap.insert mod (fileImports.map (·.1))
+          cache   := stt.cache.insert mod none
+          hashMap := stt.hashMap })
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
+def getHashMemo (roots : Std.HashMap Name FilePath) : CacheM HashMemo := do
   -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
-  return (← StateT.run ((extraRoots.insertMany (← roots)).toArray.mapM fun
-    ⟨key, val⟩ => getHash key val) { rootHash := ← getRootHash }).2
+  return (← StateT.run (roots.toArray.mapM fun
+    ⟨key, val⟩ => getHash key val) {rootHash := ← getRootHash}).2
 
 end Cache.Hashing
