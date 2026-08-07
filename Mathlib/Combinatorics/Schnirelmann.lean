@@ -37,8 +37,8 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## TODO
 * Give other calculations of the density, for example powers and their sumsets.
-* Define other densities like the lower and upper asymptotic density, and the natural density,
-  and show how these relate to the Schnirelmann density.
+* Define the lower and upper asymptotic densities, and show how these and the natural density
+  relate to the Schnirelmann density.
 * Prove Schnirelmann's theorem and Mann's theorem on the subadditivity of this density.
 
 ## References
