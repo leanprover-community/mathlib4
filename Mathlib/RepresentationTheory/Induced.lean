@@ -102,7 +102,7 @@ lemma IndV.mk_map_inv_mul (g : G) (h : H) (a : A) :
   simp [← map_inv]
 
 @[simp]
-lemma IndV.mk_map_mem_eq (g : G) (a : A) :
+lemma IndV.mk_map_eq (g : G) (a : A) :
     IndV.mk φ ρ (φ g) a = IndV.mk φ ρ 1 (ρ g⁻¹ a) := by
   simpa using IndV.mk_map_mul φ ρ g 1 a
 
@@ -120,7 +120,7 @@ noncomputable def IndV.lift (f : H → A →ₗ[k] B)
     (MonoidAlgebra.coeffLinearEquiv k).toLinearMap) fun g => by ext; simp [hf]
 
 @[simp]
-lemma IndV.lift_apply_IndVMk (f : H → A →ₗ[k] B) (h : H) (a : A)
+lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
     (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
     IndV.lift φ ρ f hf (IndV.mk φ ρ h a) = f h a := by
   simp [IndV.lift, IndV.mk]
