@@ -209,7 +209,7 @@ variable {C D : Type*} [Category* C] (e : D ≃ C)
 def isoCat : IsoCat (InducedCategory C e) C where
   functor := inducedFunctor e
   inverse.obj X := e.symm X
-  inverse.map f :=  { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
+  inverse.map f := { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
   unit_eq := Functor.ext (by simp) (by cat_disch)
   counit_eq := Functor.ext (by simp) (by cat_disch)
 
