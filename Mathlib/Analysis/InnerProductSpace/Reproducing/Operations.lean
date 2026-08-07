@@ -67,27 +67,23 @@ lemma kerFun_mem_orthogonal (x : X) (v : V) :
   simp_all [generator, ← inner_add_left]
 
 /-- Helper function for `linearIsometryAux`. -/
-private def toKerOrthogonal : H₀ (K + K') →ₗ[𝕜] (generator K K').kerᗮ :=
-  Finsupp.linearCombination 𝕜 (fun xv =>
+private def toKerOrthogonal :
+    H₀ (K + K') →ₗᵢ[𝕜] (generator K K').kerᗮ where
+  toLinearMap := Finsupp.linearCombination 𝕜 (fun xv =>
     (⟨WithLp.toLp 2 (kerFun (OfKernel K) xv.1 xv.2, kerFun (OfKernel K') xv.1 xv.2),
       kerFun_mem_orthogonal K K' xv.1 xv.2⟩ : (generator K K').kerᗮ))
-
-/-- The map whose extention with `.complL` yields `linearIsometry`. -/
-private def linearIsometryAux :
-    H₀ (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker where
-  toFun f := Submodule.Quotient.mk (toKerOrthogonal K K' f)
-  map_add' := by simp [map_add]
-  map_smul' := by simp [map_smul]
-  norm_map' := by
-    simp only [LinearMap.coe_mk, AddHom.coe_mk]
-    simp_rw [(Submodule.quotientEquivOrthogonal_symm_eq_mk _ _ (toKerOrthogonal K K' _).2).symm,
-      LinearIsometryEquiv.norm_map]
-    intro f
-    simp_rw [norm_eq_sqrt_re_inner (𝕜 := 𝕜)]
+  norm_map' f := by
+    simp_rw [← Submodule.norm_coe, norm_eq_sqrt_re_inner (𝕜 := 𝕜)]
     congr 2
-    simp_rw [SetLike.eta, toKerOrthogonal, inner_H₀_def, Finsupp.linearCombination_apply,
-      Finsupp.sum, sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
+    simp_rw [inner_H₀_def, Finsupp.linearCombination_apply,
+      Finsupp.sum, ← coe_inner, sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
     simp [kerFun_apply, ← OfKernel.kernel_ofKernel, inner_add_left]
+
+-- The map whose extention with `.complL` yields `linearIsometry`. -/
+private def linearIsometryAux :
+    H₀ (K + K') →ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker :=
+  (Submodule.quotientEquivOrthogonal (generator K K').ker).symm.toLinearIsometry.comp
+    (toKerOrthogonal K K')
 
 /-- The RKHS made from a sum of kernels is linearly isometrically isomorphic to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
