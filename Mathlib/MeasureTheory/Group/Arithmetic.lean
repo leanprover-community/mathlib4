@@ -438,6 +438,9 @@ class MeasurableConstVAdd (M α : Type*) [VAdd M α] [MeasurableSpace α] : Prop
 class MeasurableConstSMul (M α : Type*) [SMul M α] [MeasurableSpace α] : Prop where
   measurable_const_smul : ∀ c : M, Measurable (c • · : α → α) := by measurability
 
+attribute [fun_prop] MeasurableConstVAdd.measurable_const_vadd
+  MeasurableConstSMul.measurable_const_smul
+
 /-- We say that the action of `M` on `α` has `MeasurableVAdd` if for each `c` the map `x ↦ c +ᵥ x`
 is a measurable function and for each `x` the map `c ↦ c +ᵥ x` is a measurable function. -/
 class MeasurableVAdd (M α : Type*) [VAdd M α] [MeasurableSpace M] [MeasurableSpace α]
