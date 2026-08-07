@@ -174,7 +174,7 @@ noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
   ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
 
 noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
-    ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
 
 theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
   simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
