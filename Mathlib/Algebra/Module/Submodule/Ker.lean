@@ -127,6 +127,15 @@ theorem ker_restrict {p : Submodule R M} {q : Submodule R₂ M₂} {f : M →ₛ
     ker (f.restrict hf) = (ker f).comap p.subtype := by
   rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict, ker_domRestrict]
 
+theorem ker_submoduleComap (f : M →ₛₗ[τ₁₂] M₂) (q : Submodule R₂ M₂) :
+    ker (submoduleComap f q) = (ker f).submoduleOf (q.comap f) := by
+  simp [submoduleComap, ker_restrict, submoduleOf]
+
+@[simp]
+theorem ker_submoduleMap [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
+    ker (submoduleMap f p) = (ker f).submoduleOf p := by
+  simp [submoduleMap, ker_restrict, submoduleOf]
+
 @[simp]
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
   eq_top_iff'.2 fun x => by simp
@@ -163,11 +172,6 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
     rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
-
-lemma ker_submoduleMap {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁]
-    (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :
-    (f.submoduleMap p).ker = f.ker.comap p.subtype := by
-  ext; simp [Subtype.ext_iff]
 
 end AddCommMonoid
 
