@@ -47,6 +47,13 @@ variable {G} in
 @[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
 def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
+variable {G} in
+/-- A group isomorphism maps the center onto the center. -/
+@[to_additive /-- An additive group isomorphism maps the center onto the center. -/]
+theorem _root_.MulEquiv.map_center {H : Type*} [Group H] (e : G ≃* H) :
+    (center G).map (e : G →* H) = center H :=
+  SetLike.ext fun _ ↦ mem_map_equiv.trans (MulEquivClass.apply_mem_center_iff e.symm)
+
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
 /-- The center of an additive group is isomorphic to the center of its opposite. -/]

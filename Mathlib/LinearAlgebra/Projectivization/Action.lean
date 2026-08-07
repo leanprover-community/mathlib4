@@ -223,6 +223,13 @@ instance : MulAction (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K
 lemma _root_.Matrix.ProjectiveSpecialLinearGroup.smul_proj_mk (g : Matrix.SpecialLinearGroup ι K)
     (p : ℙ K (ι → K)) : (g : Matrix.ProjectiveSpecialLinearGroup ι K) • p = g • p := rfl
 
+/-- The action of `SL ι K` on `ℙ K (ι → K)` is `2`-transitive, hence `PSL ι K` acts
+`2`-transitively too. -/
+instance : IsMultiplyPretransitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) 2 :=
+  let φ := QuotientGroup.mk' (Subgroup.center (Matrix.SpecialLinearGroup ι K))
+  let f : ℙ K (ι → K) →ₑ[φ] ℙ K (ι → K) := ⟨id, fun _ _ ↦ rfl⟩
+  IsPretransitive.of_embedding (f := f) Function.surjective_id
+
 theorem _root_.Matrix.ProjectiveSpecialLinearGroup.toPermHom_injective :
     Function.Injective (PSLAction.toPermHom (K := K) (ι := ι)) := by
   rw [injective_iff_map_eq_one]
@@ -237,9 +244,7 @@ instance : FaithfulSMul (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι �
       simpa using! hg x
 
 instance : IsPreprimitive (Matrix.ProjectiveSpecialLinearGroup ι K) (ℙ K (ι → K)) :=
-  @MulAction.IsPreprimitive.of_surjective _ _ _ _ _ _ _ _ (QuotientGroup.mk' _)
-    {toFun := id, map_smul' := by intros; simp; rfl} (prePrimitive_SL (ι := ι) (K := K))
-    Function.surjective_id
+  isPreprimitive_of_is_two_pretransitive inferInstance
 
 open MatrixGroups Matrix.ProjGenLinGroup
 
