@@ -253,6 +253,44 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
       m!"Try this: rw {new.2}"
     else none }
 
+/-- Suggest merging two adjacent `refine` + `exact` tactics if that also solves the goal. -/
+register_option linter.tacticAnalysis.refineExactMerge : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.refineExactMerge,
+  inherit_doc linter.tacticAnalysis.refineExactMerge]
+def Mathlib.TacticAnalysis.refineExactMerge : TacticAnalysis.Config := .ofComplex {
+  out := Option Syntax.Tactic
+  ctx := Syntax × Option Syntax
+  trigger ctx stx := Id.run do
+    match stx with
+    | `(tactic| refine $refineArg) => .continue (refineArg, none)
+    | `(tactic| exact $exactArg) =>
+      let some (refineArg, _) := ctx | return .skip
+      return .accept (refineArg, exactArg)
+    | _ => .skip
+  test ctxI i ctx goal := do
+    let (refineArg, some exactArg) := ctx | return none
+    let newExactArg ← refineArg.replaceM fun stx ↦ do
+      unless stx.isOfKind ``Lean.Parser.Term.syntheticHole do return none
+      return exactArg
+    let oldMessages := (← get).messages
+    let tac ← `(tactic| exact $(.mk newExactArg))
+    -- TODO: if `tac` is longer than `linter.style.longLine.maxLineLength` (including indentation)
+    --       then we should leave `refine` + `exact` alone
+    try
+      let [] ← ctxI.runTacticCode i goal tac | throwError ""
+      return some tac
+    catch _e =>
+      return none
+    finally
+      modify fun s => { s with messages := oldMessages }
+  tell stx _old _oldHeartbeats new _newHeartbeats := do
+    let some tac := new | return none
+    let msg ← Elab.Command.liftCoreM <| Meta.Hint.mkSuggestionsMessage #[tac] stx none false
+    return msg }
+
 /-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
   defValue := false
