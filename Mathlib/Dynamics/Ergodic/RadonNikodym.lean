@@ -75,7 +75,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   wlog hμν : μ ≪ ν generalizing μ
   · specialize this (hfμ.withDensity_rnDeriv hfν) (withDensity_absolutelyContinuous _ _)
     refine .trans (.trans ?_ this) (rnDeriv_withDensity ν (measurable_rnDeriv μ ν))
-    apply hfν.quasiMeasurePreserving.ae_eq_comp
+    apply hfν.quasiMeasurePreserving.ae_eq
     exact (rnDeriv_withDensity ν (measurable_rnDeriv μ ν)).symm
   refine .of_forall_eventually_lt_iff fun c ↦ ?_
   set s := {a | μ.rnDeriv ν a < c}

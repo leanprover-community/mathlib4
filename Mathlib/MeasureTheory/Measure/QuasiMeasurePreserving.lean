@@ -114,6 +114,8 @@ theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg
     g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
   h.ae hg
 
+@[deprecated (since := "2026-08-01")] alias ae_eq_comp := ae_eq
+
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
   preimage_null_of_map_null h.aemeasurable (h.2 hs)
@@ -224,21 +226,6 @@ open Measure
 theorem NullMeasurable.comp_quasiMeasurePreserving {ν : Measure β}
     {f : α → β} {g : β → γ} (hg : NullMeasurable g ν) (hf : QuasiMeasurePreserving f μ ν) :
     NullMeasurable (g ∘ f) μ := fun _s hs ↦ (hg hs).preimage hf
-
-theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
-    NullMeasurableSet s ν :=
-  h.preimage <| (QuasiMeasurePreserving.id μ).mono_left hle
-
-theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : NullMeasurableSet s ν :=
-  h.mono_ac hle.absolutelyContinuous
-
-lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
-    NullMeasurableSet s (c • μ) :=
-  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
-
-lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
-    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
-  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc), fun h ↦ h.smul_measure c⟩
 
 theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=

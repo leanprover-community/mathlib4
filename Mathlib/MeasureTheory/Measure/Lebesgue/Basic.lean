@@ -543,8 +543,8 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     apply measure_congr
     apply EventuallyEq.rfl.inter
     exact
-      ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
-        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
+      ((quasiMeasurePreserving_fst.ae_eq hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
+        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq hg.ae_eq_mk)
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert! h₂ using 1
