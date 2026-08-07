@@ -138,7 +138,11 @@ lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ 
 Given a Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a right inverse
 to `f` on `B`, then `g` is a Freiman isomorphism from `B` to `A`.
 -/
-@[to_additive]
+@[to_additive
+/--
+Given an additive Freiman isomorphism `f` from `A` to `B`, if `g` maps `B` into `A`, and is a
+right inverse to `f` on `B`, then `g` is an additive Freiman isomorphism from `B` to `A`.
+-/]
 lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : RightInvOn g f B)
     (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A g where
@@ -152,7 +156,11 @@ lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : Right
 If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
 isomorphism.
 -/
-@[to_additive]
+@[to_additive
+/--
+If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then it is a Freiman
+isomorphism.
+-/]
 lemma IsMulFreimanHom.to_isMulFreimanIso {g : β → α} (h : InvOn g f A B)
     (hf : IsMulFreimanHom n A B f) (hg : IsMulFreimanHom n B A g) :
     IsMulFreimanIso n A B f where
