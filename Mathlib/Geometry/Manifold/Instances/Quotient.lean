@@ -101,6 +101,7 @@ lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHo
 end PR42502
 
 -- TODO: if we're going to use this, it should move to a right file
+-- then we could use it for the charted space instance also
 lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap.isLocalHomeomorph
 
