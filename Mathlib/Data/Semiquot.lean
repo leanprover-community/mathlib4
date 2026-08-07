@@ -63,11 +63,11 @@ theorem nonempty (q : Semiquot α) : q.s.Nonempty :=
 
 /-- `pure a` is `a` reinterpreted as an unspecified element of `{a}`. -/
 protected def pure (a : α) : Semiquot α :=
-  mk (mem_singleton_self a)
+  mk (Set.mem_singleton_self a)
 
 @[simp]
 theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
-  mem_singleton
+  Set.mem_singleton
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
@@ -132,10 +132,10 @@ theorem bind_def {β} : ((· >>= ·) : Semiquot α → (α → Semiquot β) → 
 
 @[simp]
 theorem mem_pure {a b : α} : a ∈ (pure b : Semiquot α) ↔ a = b :=
-  mem_singleton
+  Set.mem_singleton
 
 theorem mem_pure_self (a : α) : a ∈ (pure a : Semiquot α) :=
-  mem_singleton_self a
+  Set.mem_singleton_self a
 
 @[simp]
 theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=

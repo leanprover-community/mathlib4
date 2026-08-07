@@ -683,7 +683,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
     simp only [hs, not_true_eq_false, or_false]
     split_ifs with h
     · intro a ha
-      exact top_le_iff.2 (mem_singleton))
+      exact top_le_iff.2 (Set.mem_singleton.1 (h ha))
     · rintro (⟨⟩ | a) ha
       · exact le_top
       refine coe_le_coe.2 (csInf_le ?_ ha)
@@ -691,7 +691,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       · exfalso
         apply h
         intro c hc
-        rw [mem_singletontop_le_iff]
+        rw [mem_singleton, ← top_le_iff]
         exact hb hc
       use b
       intro c hc
@@ -705,7 +705,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       · exfalso
         apply h
         intro b hb
-        exact mem_singletonle_iff.1 (ha hb))
+        exact Set.mem_singleton.2 (top_le_iff.1 (ha hb))
       · refine coe_le_coe.2 (le_csInf ?_ ?_)
         · classical
             contrapose! h

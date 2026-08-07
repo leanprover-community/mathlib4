@@ -241,7 +241,7 @@ theorem coe_pure (a : α) : (pure a : Set α) = {a} :=
 
 @[simp]
 theorem mem_pure : b ∈ pure a ↔ b = a := by
-  rw [← SetLike.mem_coe, coe_pure, mem_singleton
+  rw [← SetLike.mem_coe, coe_pure, mem_singleton]
 
 @[simp, norm_cast]
 theorem coe_top [BoundedOrder α] : ((⊤ : NonemptyInterval α) : Set α) = univ :=
@@ -458,7 +458,7 @@ theorem subset_coe_map (f : α →o β) : ∀ s : Interval α, f '' s ⊆ s.map 
   | (s : NonemptyInterval α) => s.subset_coe_map _
 
 @[simp]
-theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton
+theorem mem_pure : b ∈ pure a ↔ b = a := by rw [← SetLike.mem_coe, coe_pure, mem_singleton]
 
 theorem mem_pure_self (a : α) : a ∈ pure a :=
   mem_pure.2 rfl
