@@ -106,4 +106,10 @@ lemma one_add_mul_sub_le_pow (H : -1 ≤ a) (n : ℕ) : 1 + n * (a - 1) ≤ a ^ 
     rwa [← one_add_one_eq_two, neg_add, ← sub_eq_add_neg, sub_le_sub_iff_right]
   simpa only [add_sub_cancel] using one_add_mul_le_pow this n
 
+/-- **Bernoulli's inequality** for a subtracted term: the mirror of
+`one_add_mul_le_pow`, stated for `1 - a` rather than `1 + a`. -/
+lemma one_sub_mul_le_pow (H : a ≤ 2) (n : ℕ) : 1 - n * a ≤ (1 - a) ^ n := by
+  have h : (-2 : R) ≤ -a := neg_le_neg H
+  simpa [sub_eq_add_neg, mul_neg] using one_add_mul_le_pow h n
+
 end LinearOrderedRing
