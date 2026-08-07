@@ -20,61 +20,12 @@ by a Hopf ideal inherits a Hopf algebra structure.
 
 ## Main results
 
-* `HopfAlgebra.ofSurjective` : the Hopf algebra axioms transfer along a surjective bialgebra
-  homomorphism intertwining the antipodes.
 * `HopfAlgebra R (A ⧸ I)` instance when `[I.IsTwoSided]` and `[I.IsHopfIdeal R]`.
 -/
 
 public section
 
-open Bialgebra Bialgebra.Quotient Coalgebra HopfAlgebra Ideal.Quotient LinearMap
-  TensorProduct WithConv
-
-namespace HopfAlgebra
-
-section ofSurjective
-
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [HopfAlgebra R A] [HopfAlgebraStruct R B]
-
-/-- Post-composition by an algebra homomorphism preserves the convolution unit. -/
-lemma _root_.LinearMap.algHom_comp_convOne (g : A →ₐ[R] B) :
-    g.toLinearMap ∘ₗ (1 : WithConv (A →ₗ[R] A)).ofConv = (1 : WithConv (A →ₗ[R] B)).ofConv := by
-  ext a; simp
-
-/-- Pre-composition by a coalgebra homomorphism preserves the convolution unit. -/
-lemma _root_.LinearMap.convOne_comp_coalgHom (g : A →ₗc[R] B) :
-    (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ g.toLinearMap = (1 : WithConv (A →ₗ[R] B)).ofConv := by
-  ext a; simp
-
-/-- Transfer the Hopf algebra axioms along a surjective bialgebra homomorphism intertwining
-the antipodes. -/
-noncomputable abbrev ofSurjective (f : A →ₐc[R] B) (hf : Function.Surjective f)
-    (hS : antipode R ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ antipode R) : HopfAlgebra R B := by
-  refine .ofConvInverse (antipode R) (ofConv_injective ?_) (ofConv_injective ?_) <;>
-    rw [← LinearMap.cancel_right (show Function.Surjective f.toLinearMap from hf)]
-  · calc (toConv (antipode R) * toConv .id : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
-          f.toCoalgHom.toLinearMap
-        = (toConv (f.toLinearMap ∘ₗ antipode R) * toConv f.toLinearMap).ofConv := by
-          rw [convMul_comp_coalgHom_distrib, hS]; rfl
-      _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
-            (toConv (antipode R) * toConv .id : WithConv (A →ₗ[R] A)).ofConv := by
-          rw [algHom_comp_convMul_distrib]; rfl
-      _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
-          rw [antipode_mul_id, algHom_comp_convOne, ← convOne_comp_coalgHom f.toCoalgHom]
-  · calc (toConv .id * toConv (antipode R) : WithConv (B →ₗ[R] B)).ofConv ∘ₗ
-          f.toCoalgHom.toLinearMap
-        = (toConv f.toLinearMap * toConv (f.toLinearMap ∘ₗ antipode R)).ofConv := by
-          rw [convMul_comp_coalgHom_distrib, hS]; rfl
-      _ = (AlgHomClass.toAlgHom f).toLinearMap ∘ₗ
-            (toConv .id * toConv (antipode R) : WithConv (A →ₗ[R] A)).ofConv := by
-          rw [algHom_comp_convMul_distrib]; rfl
-      _ = (1 : WithConv (B →ₗ[R] B)).ofConv ∘ₗ f.toLinearMap := by
-          rw [id_mul_antipode, algHom_comp_convOne, ← convOne_comp_coalgHom f.toCoalgHom]
-
-end ofSurjective
-
-end HopfAlgebra
+open Bialgebra.Quotient Coalgebra HopfAlgebra Ideal.Quotient LinearMap
 
 variable {R A : Type*} [CommRing R] [Ring A]
 
