@@ -37,9 +37,10 @@ def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
       map := fun _ => 𝟙 X }
-  map f := { app := fun _ => f }
+  map {X Y} f := { app := fun _ => f }
 
 attribute [to_dual self] const_obj_map
+attribute [to_dual self (reorder := X Y)] const_map_app
 
 namespace const
 
