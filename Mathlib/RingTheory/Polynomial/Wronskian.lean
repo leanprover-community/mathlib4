@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jineon Baek, Seewoo Lee
+Authors: Jineon Baek, Seewoo Lee, LegaSage
 -/
 module
 
@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Tactic.Ring
 
 /-!
 # Wronskian of a pair of polynomial
@@ -23,6 +25,10 @@ We also prove basic properties of it.
   the sum of degrees of `a` and `b`
 - `Polynomial.natDegree_wronskian_lt_add`: `natDegree` version of the above theorem.
   We need to assume that the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
+- `Polynomial.exists_smul_add_eq_zero_of_wronskian_eq_zero`: over a characteristic-zero field,
+  two polynomials with vanishing Wronskian satisfy a nontrivial scalar relation.
+- `Polynomial.eq_smul_pow_of_weighted_derivative_eq_zero`: solutions of the weighted derivative
+  equation `a * f' - n * a' * f = 0` are scalar multiples of `a ^ n` when `a` is nonzero.
 
 ## TODO
 
@@ -138,5 +144,94 @@ theorem _root_.IsCoprime.wronskian_eq_zero_iff
     obtain ⟨hda, hdb⟩ := hdab
     rw [wronskian]
     rw [hda, hdb]; simp only [mul_zero, zero_mul, sub_self]
+
+private theorem wronskian_mul_left (g r s : R[X]) :
+    wronskian (g * r) (g * s) = g ^ 2 * wronskian r s := by
+  simp only [wronskian, derivative_mul]
+  ring
+
+/-- If two polynomials over a characteristic-zero field have zero Wronskian, then they satisfy
+a nontrivial linear relation over the coefficient field. This includes the cases in which one or
+both polynomials vanish. -/
+theorem exists_smul_add_eq_zero_of_wronskian_eq_zero
+    {K : Type*} [Field K] [CharZero K] (r s : K[X]) (hw : wronskian r s = 0) :
+    ∃ c d : K, (c ≠ 0 ∨ d ≠ 0) ∧ c • r + d • s = 0 := by
+  classical
+  by_cases hs : s = 0
+  · exact ⟨0, 1, Or.inr one_ne_zero, by simp [hs]⟩
+  letI := EuclideanDomain.gcdMonoid K[X]
+  let g : K[X] := gcd r s
+  let r' : K[X] := r / g
+  let s' : K[X] := s / g
+  have hg : g ≠ 0 := gcd_ne_zero_of_right hs
+  have hr_factor : g * r' = r :=
+    EuclideanDomain.mul_div_cancel' hg (gcd_dvd_left r s)
+  have hs_factor : g * s' = s :=
+    EuclideanDomain.mul_div_cancel' hg (gcd_dvd_right r s)
+  have hcop : IsCoprime r' s' := isCoprime_div_gcd_div_gcd hs
+  have hw' : wronskian r' s' = 0 := by
+    have hscaled : g ^ 2 * wronskian r' s' = 0 := by
+      rw [← wronskian_mul_left, hr_factor, hs_factor, hw]
+    exact (mul_eq_zero.mp hscaled).resolve_left (pow_ne_zero 2 hg)
+  have hderiv := hcop.wronskian_eq_zero_iff.mp hw'
+  have hr_const : r' = C (r'.coeff 0) := eq_C_of_derivative_eq_zero hderiv.1
+  have hs_const : s' = C (s'.coeff 0) := eq_C_of_derivative_eq_zero hderiv.2
+  have hs' : s' ≠ 0 := right_div_gcd_ne_zero hs
+  have hs_coeff : s'.coeff 0 ≠ 0 := by
+    intro h
+    apply hs'
+    rw [hs_const, h, map_zero]
+  refine ⟨s'.coeff 0, -r'.coeff 0, Or.inl hs_coeff, ?_⟩
+  rw [← hr_factor, ← hs_factor, hr_const, hs_const]
+  simp only [smul_eq_C_mul, coeff_C_zero, map_neg]
+  ring
+
+/-- If the right-hand polynomial is nonzero, vanishing Wronskian says that the left-hand
+polynomial is a scalar multiple of it. -/
+theorem eq_smul_of_wronskian_eq_zero_right
+    {K : Type*} [Field K] [CharZero K] (r s : K[X]) (hs : s ≠ 0)
+    (hw : wronskian r s = 0) : ∃ c : K, r = c • s := by
+  obtain ⟨c, d, hcd, hrel⟩ := exists_smul_add_eq_zero_of_wronskian_eq_zero r s hw
+  have hc : c ≠ 0 := by
+    intro hc
+    have hd : d ≠ 0 := hcd.resolve_left (fun h ↦ h hc)
+    exact (smul_ne_zero hd hs) (by simpa [hc] using hrel)
+  refine ⟨-(c⁻¹ * d), ?_⟩
+  calc
+    r = c⁻¹ • (c • r) := by simp [smul_smul, hc]
+    _ = c⁻¹ • (-(d • s)) := by rw [eq_neg_of_add_eq_zero_left hrel]
+    _ = -(c⁻¹ * d) • s := by simp [smul_smul]
+
+/-- If the left-hand polynomial is nonzero, vanishing Wronskian says that the right-hand
+polynomial is a scalar multiple of it. -/
+theorem eq_smul_of_wronskian_eq_zero_left
+    {K : Type*} [Field K] [CharZero K] (r s : K[X]) (hr : r ≠ 0)
+    (hw : wronskian r s = 0) : ∃ c : K, s = c • r := by
+  apply eq_smul_of_wronskian_eq_zero_right s r hr
+  rw [← wronskian_neg_eq, hw, neg_zero]
+
+/-- If `a * derivative f - n * derivative a * f = 0` and `a` is nonzero, then `f` is a scalar
+multiple of `a ^ n`. -/
+theorem eq_smul_pow_of_weighted_derivative_eq_zero
+    {K : Type*} [Field K] [CharZero K] (a f : K[X]) (n : ℕ) (ha : a ≠ 0)
+    (hweighted : a * derivative f - C (n : K) * derivative a * f = 0) :
+    ∃ c : K, f = c • a ^ n := by
+  have hw : wronskian (a ^ n) f = 0 := by
+    cases n with
+    | zero =>
+        have hdf : derivative f = 0 := by
+          apply (mul_eq_zero.mp ?_).resolve_left ha
+          simpa using hweighted
+        simp [wronskian, hdf]
+    | succ n =>
+        have hweighted' :
+            a * derivative f - C ((n : K) + 1) * derivative a * f = 0 := by
+          simpa only [Nat.cast_add, Nat.cast_one] using hweighted
+        rw [wronskian, derivative_pow_succ, pow_succ]
+        calc
+          a ^ n * a * derivative f - (C (n + 1 : K) * a ^ n * derivative a) * f =
+              a ^ n * (a * derivative f - C (n + 1 : K) * derivative a * f) := by ring
+          _ = 0 := by rw [hweighted', mul_zero]
+  exact eq_smul_of_wronskian_eq_zero_left (a ^ n) f (pow_ne_zero n ha) hw
 
 end Polynomial
