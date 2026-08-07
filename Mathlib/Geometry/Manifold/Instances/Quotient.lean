@@ -50,17 +50,16 @@ instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpace Quotient.mk_surjective
 
--- maybe we should change the ChartedSpace instance to this
---(so we can use x.out and delete the right inverse choice)
+/-
+TODO: decide which of this instances to keep
+benefit of this second option: we can use x.out and delete the right inverse choice
+-/
 instance instChartedSpaceQuotient' : ChartedSpace H (orbitRel.Quotient G M) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
     |>.isLocalHomeomorph.chartedSpaceOfRightInverse Quotient.out_eq
 
-
-/-
-TO-DO:
-* Move new results into the right places
--/
+section PR42502
+-- TODO: delete this whole section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -99,14 +98,22 @@ lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn {e e' : OpenPartialHo
     compatible_of_mem_maximalAtlas (subset_maximalAtlas (chartedSpaceSelf_atlas.mpr rfl))
     (symm_trans_trans_mem_maximalAtlas_of_contMDiffOn he he' hh hhsymm)
 
-open Set
+end PR42502
 
+-- TODO: if we're going to use this, it should move to a right file
 lemma quotient_IsLocalHomeomorph : IsLocalHomeomorph (Quotient.mk (orbitRel G M)) :=
   isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap.isLocalHomeomorph
 
-variable (x y : orbitRel.Quotient G M)
 
--- should this be deleted??
+section πinv
+/-
+TODO:
+* πinv is not a great name.
+* do we need πinv at all?
+-/
+
+variable (x : orbitRel.Quotient G M)
+
 /-- A choice of local section of the quotient map `M → orbitRel.Quotient G M` around `x`. -/
 abbrev πinv : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   quotient_IsLocalHomeomorph.localInverseAt (Y := orbitRel.Quotient G M) x.out
@@ -120,7 +127,7 @@ lemma πinv_mk_eq_smul {g : G} {m : M} (hm : g • m ∈ (πinv x).target) :
 
 /-- On the open set `(g • ·) ⁻¹' (πinv y).target`, the section comparison
 `(πinv x).symm.trans (πinv y)` is the action of `g`. -/
-lemma smul_eqOn (g : G) :
+lemma smul_eqOn (y : orbitRel.Quotient G M) (g : G) :
     ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·) := by
   intro m hm
   simpa only [OpenPartialHomeomorph.coe_trans, Function.comp_apply,
@@ -136,11 +143,18 @@ lemma exists_smul_mem_πinv_target (m : M) (hm : (⟦m⟧ : orbitRel.Quotient G 
     (Quotient.exact (quotient_IsLocalHomeomorph.apply_localInverseAt_of_mem hm))
   exact ⟨g, by simpa [hg] using (πinv x).map_source hm⟩
 
+end πinv
+
+
+section quotientTransitionMap
+
+variable (x y : orbitRel.Quotient G M)
+
 /-- Locally, the comparison of two local sections is the action of a single group element. -/
 lemma locally_smul (m : M) (hm : m ∈ ((πinv x).symm.trans (πinv y)).source) :
     ∃ g : G, m ∈ (g • ·) ⁻¹' (πinv y).target ∧
       ((g • ·) ⁻¹' (πinv y).target).EqOn ((πinv x).symm.trans (πinv y)) (g • ·)  := by
-  rw [OpenPartialHomeomorph.trans_source, mem_inter_iff, mem_preimage,
+  rw [OpenPartialHomeomorph.trans_source, Set.mem_inter_iff, Set.mem_preimage,
     quotient_IsLocalHomeomorph.localInverseAt_symm] at hm
   obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target m hm.2
   exact ⟨g, hg, smul_eqOn x y g⟩
@@ -168,15 +182,21 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
         (quotientTransitionMap x y)
         ((chartAt H x.out).symm.trans (((Homeomorph.smul g).toOpenPartialHomeomorph).trans
           (chartAt H y.out))) := by
-  simp only [quotientTransitionMap, OpenPartialHomeomorph.trans_source, mem_inter_iff,
-    mem_preimage] at hh
+  simp only [quotientTransitionMap, OpenPartialHomeomorph.trans_source, Set.mem_inter_iff,
+    Set.mem_preimage] at hh
   obtain ⟨_, ⟨_, hmid⟩, _⟩ := hh
   obtain ⟨g, hg⟩ := exists_smul_mem_πinv_target ((chartAt H x.out).symm h)
     (by rwa [quotient_IsLocalHomeomorph.localInverseAt_symm] at hmid)
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
 
--- the action is smooth
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+end quotientTransitionMap
+
+
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  (I : ModelWithCorners 𝕜 E H) {n : ℕ∞} [IsManifold I n M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
   [TopologicalSpace H'] (J : ModelWithCorners 𝕜 E' H') [TopologicalSpace G] [ChartedSpace H' G]
 
 theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
@@ -195,13 +215,13 @@ theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
-      hto (hg0'.mono inter_subset_right).symm ?_
+      hto (hg0'.mono Set.inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
       exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
       exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0⁻¹).contMDiffOn
     · rintro h' ⟨⟨hQ1, _, hQ4⟩, _, hcert⟩
-      exact ⟨hQ1, mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
+      exact ⟨hQ1, Set.mem_univ _, by simpa [← smul_eqOn x y g0 hcert] using hQ4⟩
 
 open scoped Manifold
 
