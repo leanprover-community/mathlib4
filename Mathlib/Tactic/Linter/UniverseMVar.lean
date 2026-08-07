@@ -17,7 +17,7 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
-/-- Lint on `variable (foo : Bar)`, and emits a warning if Bar has
+/-- Lint on `variable (foo : Bar)`, and emits a warning if `Bar` has
 universe metavariables in its type. -/
 public register_option linter.universeMVarInVariable : Bool :=
   { defValue := true
@@ -25,12 +25,12 @@ public register_option linter.universeMVarInVariable : Bool :=
 
 namespace universeMVarInVariableLinter
 
-open Meta Term Linter in
+open Meta Term in
 def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do
   match stx with
   | `(variable $[$x:bracketedBinder]*)
   | `(variable $[$x:bracketedBinder]* in $t) =>
-    runTermElabM <| fun fvars ↦ elabBinders x fun s => do
+    runTermElabM <| fun _ ↦ elabBinders x fun s => do
       for x in s do
         let v ← instantiateMVars <| ← inferType x
         if v.hasLevelMVar then
