@@ -99,6 +99,19 @@ theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
 
+/-- Combined with `MvPolynomial.pUnitAlgEquiv_symm_apply`, we get a coefficient comparison result of
+the form `((pUnitAlgEquiv R).symm p).coeff d = p.coeff (d ())`. -/
+@[simp]
+theorem coeff_eval₂_pUnit (p : R[X]) (d : PUnit →₀ ℕ) :
+    (Polynomial.eval₂ C (X PUnit.unit) p).coeff d = p.coeff (d ()) := by
+  rw [eval₂_eq_sum_range, coeff_sum, Finset.sum_eq_single (d ())]
+  · simp [coeff_X_pow, (unique_single d).symm]
+  · intro j _ hj
+    have : ¬ Finsupp.single PUnit.unit j = d := fun h ↦ by simp [← h] at hj
+    simp [coeff_X_pow, this]
+  · intro hd
+    simp [coeff_eq_zero_of_natDegree_lt (by simpa [Finset.mem_range, not_lt] using hd)]
+
 /-- The coefficient of `X ^ n` in `uniqueAlgEquiv R σ P` is the coefficient of the unique
 monomial of degree `n` in `P`. -/
 theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
