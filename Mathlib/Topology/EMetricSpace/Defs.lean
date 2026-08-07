@@ -615,6 +615,8 @@ theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
 
+theorem isClopen_eball_top : IsClopen (eball x ⊤) := ⟨isClosed_eball_top, isOpen_eball⟩
+
 theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε ∈ 𝓝 x :=
   isOpen_eball.mem_nhds (mem_eball_self ε0)
 
