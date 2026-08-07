@@ -246,6 +246,11 @@ lemma Hom.toAlgHom_ofAlgHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTowe
     (Hom.ofAlgHom f H).toAlgHom = f :=
   rfl
 
+@[simp]
+lemma Hom.ofAlgHom_toAlgHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    (f : P.Hom P') : ofAlgHom f.toAlgHom (by ext; simp) = f :=
+  rfl
+
 variable (P P')
 
 /-- The identity hom. -/
@@ -291,11 +296,16 @@ noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
   toRingHom_algebraMap x := by simp [baseChange]
   algebraMap_toRingHom x := rfl
 
-end
-
-instance {P P' : Extension R S} : FunLike (P.Hom P') P.Ring P'.Ring where
+instance : FunLike (P.Hom P') P.Ring P'.Ring where
   coe f := f.toRingHom
   coe_injective _ _ h := Extension.Hom.ext (DFunLike.coe_fn_eq.mp h)
+
+instance : Unique (P.Hom (self R S)) where
+  default := ⟨algebraMap P.Ring S, fun r ↦ (IsScalarTower.algebraMap_apply R P.Ring S r).symm,
+    fun _ ↦ rfl⟩
+  uniq f := by ext x; exact f.algebraMap_toRingHom x
+
+end
 
 end Hom
 
@@ -502,6 +512,10 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
 
+lemma Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.Cotangent) :
+    Cotangent.map (g.comp f) x = (map g) (map f x) :=
+  DFunLike.congr_fun (Cotangent.map_comp P'' f g) x
+
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
   refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
@@ -509,15 +523,15 @@ lemma Cotangent.finite (hP : P.ker.FG) :
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _
 
-lemma Cotangent.map_surjective_of_comap_eq {P P' : Extension R S} {f : P.Hom P'}
-    (h : Function.Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+lemma Cotangent.map_surjective_of_comap_eq {f : P.Hom P'} (h : Function.Surjective f)
+    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
     Function.Surjective (Cotangent.map f) := fun x ↦ by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
   obtain ⟨y, y_in, hy⟩ := Ideal.exists_of_comap_eq_ker_sup _ h eq x.prop
   exact ⟨Cotangent.mk ⟨y, y_in⟩, by simp [hy]⟩
 
-lemma Cotangent.map_ker_of_surjective {P P' : Extension R S} {f : P.Hom P'}
-    (h : Function.Surjective f) (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
+lemma Cotangent.map_ker_of_surjective {f : P.Hom P'} (h : Function.Surjective f)
+    (eq : P'.ker.comap f.toRingHom = RingHom.ker f.toRingHom ⊔ P.ker) :
     (Cotangent.map f).ker.restrictScalars P.Ring =
       (Submodule.comap P.ker.subtype (RingHom.ker f.toRingHom ⊓ P.ker)).map Cotangent.mk := by
   have eq_map := Ideal.eq_map_of_comap_eq_ker_sup _ h eq
