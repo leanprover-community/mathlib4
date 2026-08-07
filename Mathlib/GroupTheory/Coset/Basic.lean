@@ -474,7 +474,7 @@ variable [Group α] {H : Type*} [Group H]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
   .trans
     (Equiv.setCongr <| Set.ext fun _ => by
-      rw [mem_preimage, mem_singletonm_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
+      rw [mem_preimage, mem_singleton, mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
         smul_eq_mul, map_mul, map_inv, inv_mul_eq_one, eq_comm])
     (Subgroup.leftCosetEquivSubgroup a)
 
