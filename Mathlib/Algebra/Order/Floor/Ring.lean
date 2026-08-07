@@ -393,6 +393,31 @@ lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
 theorem fract_lt_one (a : R) : fract a < 1 :=
   sub_lt_comm.1 <| sub_one_lt_floor _
 
+/-- Decomposition of the floor of a sum: `⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + ⌊fract a + fract b⌋`. -/
+theorem floor_add_eq (a b : R) : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + ⌊fract a + fract b⌋ := by
+  conv_lhs => rw [← floor_add_fract a, ← floor_add_fract b]
+  rw [add_add_add_comm, ← Int.cast_add, floor_intCast_add]
+
+/-- The floors add exactly when the fractional parts sum to less than one. -/
+theorem floor_add_eq_add_iff : ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ↔ fract a + fract b < 1 := by
+  rw [floor_add_eq, add_eq_left, floor_eq_zero_iff, mem_Ico, and_iff_right_iff_imp]
+  intro _
+  exact add_nonneg (fract_nonneg a) (fract_nonneg b)
+
+/-- The floor of a sum overshoots by one exactly when the fractional parts sum to at least one. -/
+theorem floor_add_eq_add_add_one_iff :
+    ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 ↔ 1 ≤ fract a + fract b := by
+  rw [floor_add_eq, add_right_inj, floor_eq_iff, cast_one, and_iff_left_iff_imp]
+  intro _
+  exact add_lt_add_of_lt_of_lt (fract_lt_one a) (fract_lt_one b)
+
+/-- **Floor-additivity dichotomy**: `⌊a + b⌋` is either `⌊a⌋ + ⌊b⌋` or `⌊a⌋ + ⌊b⌋ + 1`. -/
+theorem floor_add_eq_or (a b : R) :
+    ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ ∨ ⌊a + b⌋ = ⌊a⌋ + ⌊b⌋ + 1 := by
+  by_cases h : fract a + fract b < 1
+  · grind [floor_add_eq_add_iff]
+  · grind [floor_add_eq_add_add_one_iff]
+
 @[simp]
 theorem fract_zero : fract (0 : R) = 0 := by rw [fract, floor_zero, cast_zero, sub_self]
 
