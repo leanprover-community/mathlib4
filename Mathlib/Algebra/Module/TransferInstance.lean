@@ -64,10 +64,8 @@ def linearEquiv :
   { e with
     map_smul' := fun r x => by
       apply e.symm.injective
-      simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-      exact Iff.mpr e.apply_eq_iff_eq_symm_apply rfl }
-
-@[deprecated (since := "2026-07-30")] alias _root_.Equiv.linearEquiv := AddEquiv.linearEquiv
+      simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
+      exact Iff.mp e.eq_symm_apply rfl }
 
 @[simp]
 lemma linearEquiv_apply (a : α) : e.linearEquiv R a = e a := rfl
