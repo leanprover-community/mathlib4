@@ -851,9 +851,9 @@ lemma lt_log_of_pow_lt (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
 lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
   lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
 
-@[deprecated (since := "2026-08-06")] alias rpow_lt_of_lt_log := lt_rpow_of_log_lt
-@[deprecated (since := "2026-08-06")] alias pow_lt_of_lt_log := lt_pow_of_log_lt
-@[deprecated (since := "2026-08-06")] alias zpow_lt_of_lt_log := lt_zpow_of_log_lt
+@[deprecated (since := "2026-08-07")] alias rpow_lt_of_lt_log := lt_rpow_of_log_lt
+@[deprecated (since := "2026-08-07")] alias pow_lt_of_lt_log := lt_pow_of_log_lt
+@[deprecated (since := "2026-08-07")] alias zpow_lt_of_lt_log := lt_zpow_of_log_lt
 
 theorem rpow_le_one_iff_of_pos (hx : 0 < x) : x ^ y ≤ 1 ↔ 1 ≤ x ∧ y ≤ 0 ∨ x ≤ 1 ∧ 0 ≤ y := by
   rw [rpow_def_of_pos hx, exp_le_one_iff, mul_nonpos_iff, log_nonneg_iff hx, log_nonpos_iff hx.le]
