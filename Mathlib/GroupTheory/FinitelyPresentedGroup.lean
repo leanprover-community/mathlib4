@@ -177,3 +177,10 @@ instance [Finite G] : IsFinitelyPresented G :=
   of_surjective FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
+
+open Group
+
+/-- Direct products of finitely presented groups are finitely presented. -/
+instance [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
+    IsFinitelyPresented (G × H) := by
+  sorry
