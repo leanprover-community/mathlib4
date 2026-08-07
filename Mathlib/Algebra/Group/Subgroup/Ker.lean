@@ -326,19 +326,22 @@ theorem ker_eq_bot (f : G →* M) (hf : Function.Injective f) : f.ker = ⊥ :=
 
 /-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
 the homomorphism mapped by the inverse isomorphism. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The kernel of a homomorphism composed with an isomorphism is equal
+to the kernel of the homomorphism mapped by the inverse isomorphism. -/]
 lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃* N) :
     (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
 
 /-- Composing with an injective homomorphism on the codomain does not change the kernel. -/
-@[to_additive]
+@[to_additive /-- Composing with an injective homomorphism on the codomain does not change the
+kernel. -/]
 lemma ker_comp_of_injective {P : Type*} [MulOneClass P] (f : G →* N) (g : N →* P)
     (hg : Function.Injective g) : (g.comp f).ker = f.ker := by
   rw [← comap_ker, g.ker_eq_bot hg, comap_bot]
 
 /-- Composing with an isomorphism on the codomain does not change the kernel. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- Composing with an isomorphism on the codomain does not change the
+kernel. -/]
 lemma ker_mulEquiv_comp {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃* P) :
     ((iso : N →* P).comp f).ker = f.ker :=
   ker_comp_of_injective f iso.toMonoidHom iso.injective

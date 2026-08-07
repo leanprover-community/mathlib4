@@ -80,7 +80,9 @@ theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 
 /-- The supremum of a directed family of commutative subsemigroups is commutative. -/
-@[to_additive]
+@[to_additive
+  /-- The supremum of a directed family of additively commutative additive subsemigroups is
+  additively commutative. -/]
 theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
     [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
     IsMulCommutative (⨆ i, S i : Subsemigroup M) := by
@@ -92,7 +94,9 @@ theorem isMulCommutative_iSup {S : ι → Subsemigroup M}
   exact setLike_mul_comm (hik ha) (hjk hb)
 
 /-- The supremum of a directed family of commutative subsemigroups is commutative. -/
-@[to_additive]
+@[to_additive
+  /-- The supremum of a directed family of additively commutative additive subsemigroups is
+  additively commutative. -/]
 instance instIsMulCommutative_iSup {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     (S : ι →o Subsemigroup M) [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : Subsemigroup M) :=

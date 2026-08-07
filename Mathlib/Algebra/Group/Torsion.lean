@@ -52,7 +52,8 @@ lemma pow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
 /-- See `sq_eq_one_iff` for a version that holds in rings. -/
-@[to_additive two_nsmul_eq_zero]
+@[to_additive two_nsmul_eq_zero
+  /-- See `sq_eq_one_iff` for a version that holds in rings. -/]
 lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
 end Monoid
