@@ -184,13 +184,18 @@ $\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y$. -/
 def denselyOrderedSentence : L.Sentence :=
   ∀' ∀' ((&0).lt &1 ⟹ ∃' ((&0).lt &2 ⊓ (&2).lt &1))
 
-/-- The theory of dense linear orders without endpoints. -/
+/-- The theory of nonempty dense linear orders without endpoints. -/
 def dlo : L.Theory :=
+  nonemptyTheory L ∪
   L.linearOrderTheory ∪ {L.noTopOrderSentence, L.noBotOrderSentence, L.denselyOrderedSentence}
+
+instance : IsNonemptyTheory L.dlo :=
+  IsNonemptyTheory.mono (Set.subset_union_left.trans Set.subset_union_left)
 
 variable [L.Structure M]
 
-instance [h : M ⊨ L.dlo] : M ⊨ L.linearOrderTheory := h.mono Set.subset_union_left
+instance [h : M ⊨ L.dlo] : M ⊨ L.linearOrderTheory :=
+  h.mono (Set.subset_union_right.trans Set.subset_union_left)
 
 instance [h : M ⊨ L.linearOrderTheory] : M ⊨ L.partialOrderTheory := h.mono (Set.subset_insert _ _)
 
@@ -342,9 +347,9 @@ instance model_linearOrder : M ⊨ L.linearOrderTheory := by
     and_true]
   infer_instance
 
-instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
+instance model_dlo [Nonempty M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ L.dlo := by
-  simp [dlo, model_linearOrder, Theory.model_insert_iff]
+  simp [dlo, model_linearOrder, Theory.model_insert_iff, ‹Nonempty M›]
 
 end LinearOrder
 
@@ -470,7 +475,7 @@ variable (M)
 
 lemma dlo_isExtensionPair
     (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.linearOrderTheory]
-    (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] [Nonempty N] :
+    (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] :
     Language.order.IsExtensionPair M N := by
   classical
   rw [isExtensionPair_iff_exists_embedding_closure_singleton_sup]
@@ -482,6 +487,7 @@ lemma dlo_isExtensionPair
   have := Language.order.noTopOrder_of_dlo N
   have := NoBotOrder.to_noMinOrder N
   have := NoTopOrder.to_noMaxOrder N
+  have := IsNonemptyTheory.nonempty N Language.order.dlo
   have hS : Set.Finite (S : Set M) := (S.fg_iff_structure_fg.1 S_fg).finite
   obtain ⟨g, hg⟩ := Order.exists_orderEmbedding_insert hS.toFinset
     ((OrderIso.setCongr hS.toFinset (S : Set M) hS.coe_toFinset).toOrderEmbedding.trans
@@ -501,13 +507,13 @@ lemma dlo_isExtensionPair
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 set_option backward.isDefEq.respectTransparency false in
-instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
+instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] :
     Infinite M := by
   let := orderStructure ℚ
   obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
   exact Infinite.of_injective f f.injective
 
-lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Nonempty M] :
+lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] :
     Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   classical
@@ -522,7 +528,7 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
 class of finite models of the theory of linear orders. -/
 theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
-    [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
+    [Language.order.Structure M] [Countable M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
