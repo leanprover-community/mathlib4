@@ -140,7 +140,6 @@ noncomputable def asIsomorphism : IsoCat C D where
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories underlying an `IsoCat`, with the unit and counit
 isomorphisms induced by the defining equalities. -/
 def IsoCat.toEquivalence (e : IsoCat C D) : C ≌ D where

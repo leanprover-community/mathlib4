@@ -365,7 +365,6 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_sdiff] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence `e₀` between sets `s : Set α` and `t : Set β`, the set of equivalences
 `e : α ≃ β` such that `e ↑x = ↑(e₀ x)` for each `x : s` is equivalent to the set of equivalences
 between `sᶜ` and `tᶜ`. -/

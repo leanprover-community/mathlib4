@@ -97,7 +97,6 @@ theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _⦋n + 1
     simp only [P_succ]
     exact (of_P q n).induction
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     φ ≫ (P q).f (n + 1) = φ := by
@@ -150,7 +149,6 @@ theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
   ext n
   exact Q_f_idem q n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `P q` is a natural transformation. -/
 @[simps]
 def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
@@ -172,7 +170,6 @@ theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
   HomologicalComplex.congr_hom ((natTransP q).naturality f) n
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (Q q).f n = (Q q).f n ≫ f.app (op ⦋n⦌) := by
@@ -181,7 +178,6 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
   dsimp
   simp only [comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For each `q`, `Q q` is a natural transformation. -/
 @[simps]
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where

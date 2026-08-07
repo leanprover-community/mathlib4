@@ -975,13 +975,11 @@ noncomputable def ringEquivOfRingEquiv :
       convert! Submodule.map_id _
       ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_apply (f : R ≃+* S) (I : FractionalIdeal (nonZeroDivisors R) K) :
     ringEquivOfRingEquiv K L f I =
       ⟨Submodule.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
         IsFractional.mapEquiv K L f I.prop⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_apply_val (f : R ≃+* S) (I : FractionalIdeal R⁰ K) :
     (ringEquivOfRingEquiv K L f I).val =
       I.val.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap  := rfl
@@ -1031,7 +1029,6 @@ lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
       IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
       FractionalIdeal.ringEquivOfRingEquiv L K f.symm := by

@@ -248,7 +248,6 @@ theorem LinearIndependent.affineIndependent
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If we single out one member of an affine-independent family of points and affinely transport
 all others along the line joining them to this member, the resulting new family of points is affine-
 independent.
@@ -706,7 +705,6 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
   · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an affinely independent family of points, an affine combination (with sum of weights 1)
 equals the line map of two affine combination points if and only if its weights are given pointwise
 by the line map of the corresponding weights. -/
@@ -925,7 +923,6 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_pair {p : ι → P} (h : Aff
   rcases hs with ⟨r, hr⟩
   rw [hr i hi, hr j hj, hi0, hj0, add_zero, add_zero, sub_zero, sub_zero, sign_mul, sign_mul, hij]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an affinely independent family of points, suppose that an affine combination lies in
 the span of one point of that family and a combination of another two points of that family given
 by `lineMap` with coefficient between 0 and 1. Then the coefficients of those two points in the

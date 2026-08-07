@@ -457,7 +457,6 @@ def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a �
   _ ≃ γ a b := Equiv.cast <| by rw [← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmaSigmaSubtype_symm_apply {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
     (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}]
@@ -476,7 +475,6 @@ def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b :
   sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) ⟨rfl, rfl⟩
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmaSigmaSubtypeEq_apply {α β : Type*} {γ : α → β → Type*} {a : α} {b : β}
     (s : {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b}) :
@@ -816,7 +814,6 @@ LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For 
 we have to explicitly substitute along `e.symm (e a) = a` in the statement of this lemma. -/
 add_decl_doc Equiv.piCongrLeft'_symm_apply
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- This lemma is impractical to state in the dependent case. -/
 @[simp]
 theorem piCongrLeft'_symm (P : Sort*) (e : α ≃ β) :

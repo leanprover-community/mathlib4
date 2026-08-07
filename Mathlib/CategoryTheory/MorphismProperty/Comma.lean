@@ -411,7 +411,6 @@ def mapLeftEq [Q.RespectsIso] [W.RespectsIso] (l l' : L₁ ⟶ L₂) (h : l = l'
     mapLeft R l hl ≅ mapLeft R l' (h ▸ hl) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R) in
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `P.Comma L₁ R Q W ≌ P.Comma L₂ R Q W`. -/
@@ -477,7 +476,6 @@ def mapRightEq [Q.RespectsIso] [W.RespectsIso] (r r' : R₁ ⟶ R₂) (h : r = r
     mapRight L r hr ≅ mapRight L r' (h ▸ hr) :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (L) in
 /-- A natural isomorphism `R₁ ≅ R₂` induces an equivalence of categories
 `P.Comma L R₁ Q W ≌ P.Comma L R₂ Q W`. -/
@@ -659,7 +657,6 @@ protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.le
     (w : f.hom ≫ B.hom = A.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk f (Discrete.eqToIso' rfl)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f = g := by
   ext
@@ -747,7 +744,6 @@ protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B
     (w : A.hom ≫ f.hom = B.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk (Discrete.eqToIso' rfl) f
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[ext]
 lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) : f = g := by
   ext
@@ -795,7 +791,6 @@ def CostructuredArrow.homMk {A B : P.CostructuredArrow Q F X} (f : A.left ⟶ B.
   prop_hom_left := hf
   prop_hom_right := trivial
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {P Q F X} in
 @[ext]
 lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
@@ -840,7 +835,6 @@ instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
 
 end CostructuredArrow
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance HasFactorization.over
     {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :

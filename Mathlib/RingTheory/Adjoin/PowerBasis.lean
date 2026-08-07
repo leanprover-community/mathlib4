@@ -67,12 +67,10 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : PowerBasis K S :=
   (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : K[x] = ⊤) :

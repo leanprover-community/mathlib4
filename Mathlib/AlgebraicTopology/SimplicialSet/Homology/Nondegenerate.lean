@@ -190,7 +190,6 @@ section
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma chainComplexMap_PInfty :
     chainComplexMap f R ≫ PInfty = PInfty ≫ chainComplexMap f R :=
@@ -202,7 +201,6 @@ noncomputable def normalizedChainComplexMap :
     X.normalizedChainComplex R ⟶ Y.normalizedChainComplex R :=
   X.fromNormalizedChainComplex R ≫ chainComplexMap f R ≫ Y.toNormalizedChainComplex R
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalizedChainComplex_normalizedChainComplexMap :
     X.toNormalizedChainComplex R ≫ normalizedChainComplexMap f R =
