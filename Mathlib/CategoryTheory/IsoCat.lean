@@ -199,9 +199,11 @@ instance [F.IsIso] : F.strictInv.IsIso := F.asIsomorphism.symm.isIso_functor
 instance [F.IsIso] [G.IsIso] : (F ⋙ G).IsIso :=
   (F.asIsomorphism.trans G.asIsomorphism).isIso_functor
 
-namespace InducedCategory
+section
 
 variable {C D : Type*} [Category* C] (e : D ≃ C)
+
+namespace InducedCategory
 
 /-- The isomorphism of categories between `InducedCategory C e` and `C` when
 `e : D ≃ C` is a bijection. -/
@@ -218,10 +220,12 @@ def isoCat : IsoCat (InducedCategory C e) C where
 abbrev equivalence : (InducedCategory C e) ≌ C :=
   (isoCat e).toEquivalence
 
+end InducedCategory
+
 lemma isIso_inducedFunctor_of_bijective (f : D → C) (hf : Function.Bijective f) :
     (inducedFunctor f).IsIso :=
-  inferInstanceAs (isoCat (.ofBijective f hf)).functor.IsIso
+  inferInstanceAs (InducedCategory.isoCat (.ofBijective f hf)).functor.IsIso
 
-end InducedCategory
+end
 
 end CategoryTheory
