@@ -392,6 +392,16 @@ lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [edgeSet_bot]
   exact Set.notMem_empty (h.choose.map f)
 
+theorem Free.mono {G : SimpleGraph α} {H : SimpleGraph β} {H' : SimpleGraph γ} (h : H.Free G)
+    (hle : H ⊑ H') : H'.Free G := by
+  contrapose! h
+  exact hle.trans h
+
+theorem Free.anti {G : SimpleGraph α} {G' : SimpleGraph β} {H : SimpleGraph γ} (h : H.Free G)
+    (hle : G' ⊑ G) : H.Free G' := by
+  contrapose! h
+  exact h.trans hle
+
 end Free
 
 /-!
