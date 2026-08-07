@@ -83,6 +83,12 @@ theorem inertiaDeg_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_eq := inertiaDeg_eq
 
+theorem inertiaDeg_bot_eq_finrank [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
+    (⊥ : Ideal S).inertiaDeg R = Module.finrank R S := by
+  let := Localization.AtPrime.algebraOfLiesOver (⊥ : Ideal R) (⊥ : Ideal S)
+  rw [inertiaDeg_eq (⊥ : Ideal R)]
+  exact IsFractionRing.finrank_eq R (⊥ : Ideal R).ResidueField S (⊥ : Ideal S).ResidueField
+
 theorem inertiaDeg_eq_of_isFractionRing [q.LiesOver p] [p.IsPrime] [q.IsPrime]
     (K L : Type*) [Field K] [Field L]
     [Algebra (R ⧸ p) K] [IsFractionRing (R ⧸ p) K]

@@ -88,6 +88,11 @@ instance : CovariantClass M (Ideal R) HSMul.hSMul LE.le :=
 theorem smul_bot (a : M) : a • (⊥ : Ideal R) = ⊥ :=
   map_bot
 
+@[simp]
+theorem stabilizer_bot {G : Type*} [Group G] [MulSemiringAction G R] :
+    MulAction.stabilizer G (⊥ : Ideal R) = ⊤ :=
+  eq_top_iff.mpr fun g _ ↦ MulAction.mem_stabilizer_iff.mpr (smul_bot g)
+
 theorem smul_sup (a : M) (S T : Ideal R) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
 
@@ -155,6 +160,14 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
+
+@[simp]
+theorem inertia_bot {R : Type*} [Ring R] [MulSemiringAction M R] [FaithfulSMul M R] :
+    inertia M (⊥ : Ideal R) = ⊥ := by
+  refine eq_bot_iff.mpr fun σ hσ ↦ Subgroup.mem_bot.mpr <| eq_of_smul_eq_smul (α := R) fun x ↦ ?_
+  rw [one_smul]
+  have := (AddSubgroup.mem_inertia).mp hσ x
+  rwa [Submodule.mem_toAddSubgroup, Ideal.mem_bot, sub_eq_zero] at this
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
     inertia M P ≤ MulAction.stabilizer M P := by
