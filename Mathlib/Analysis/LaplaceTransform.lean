@@ -294,7 +294,8 @@ theorem laplaceConvergent_of_isBigO_exp {a : ℝ} {f : ℝ → E} {s : ℂ}
     LaplaceConvergent f s := by
   exact laplaceConvergent_of_integrable_norm
     (AEStronglyMeasurable.mono_set Ioi_subset_Ici_self hfc.aestronglyMeasurable)
-    (integrableOn_exp_neg_mul_of_isBigO_exp hfc.norm hf_top.norm_left hs)
+    ((integrableOn_exp_neg_mul_of_isBigO_exp hfc.norm hf_top.norm_left hs).mono_set
+      Ioi_subset_Ici_self)
 
 end Norm
 
