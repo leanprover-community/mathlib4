@@ -118,9 +118,9 @@ theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
     reduceOption_length_eq_iff]
-  induction l
-  · simp
-  · grind [cases Option]
+  induction l with
+  | nil => grind
+  | cons hd => cases hd with grind
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
 

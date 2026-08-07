@@ -93,6 +93,7 @@ theorem smulAntidiagonal_mono_right {s : Set G}
 theorem support_smulAntidiagonal_subset_smul {s : Set G}
     {t : Set P} (hst : ∀ a, (s.smulAntidiagonal t a).Finite) :
     { a | (SMulAntidiagonal a (hst a)).Nonempty } ⊆ (s • t) := by
+  rintro _ ⟨_, _⟩
   grind [mem_smul, mem_smulAntidiagonal]
 
 variable [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P] {s : Set G}

@@ -56,7 +56,8 @@ alias ⟨_, Nonempty.not_disjoint⟩ := not_disjoint_iff_nonempty_inter
 lemma disjoint_or_nonempty_inter (s t : Set α) : Disjoint s t ∨ (s ∩ t).Nonempty :=
   (em _).imp_right not_disjoint_iff_nonempty_inter.1
 
-lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b := by grind
+lemma disjoint_iff_forall_ne : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ t → a ≠ b :=
+  ⟨by grind, by grind⟩
 
 alias ⟨_root_.Disjoint.ne_of_mem, _⟩ := disjoint_iff_forall_ne
 
