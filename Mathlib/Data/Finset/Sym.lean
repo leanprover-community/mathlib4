@@ -5,10 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Sym
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Symmetric powers of a finset
@@ -298,6 +299,21 @@ theorem val_prod_eq_prod_count_pow [CommMonoid α] {n : ℕ} {k : Sym α n}
   simp only [Sym.val_eq_coe, Multiset.mem_toFinset, Sym.mem_coe] at hx
   simp only [Finset.mem_sym_iff] at hk
   exact hk x hx
+
+theorem sum_count_sym_eq_val_sum {ι : Type*} [DecidableEq ι] {n : ℕ} {k : Sym (ι →₀ ℕ) n}
+    {s : Finset (ι →₀ ℕ)} (hk : k ∈ s.sym n) :
+    ∑ d ∈ s, Multiset.count d k • d = k.val.sum := by
+  induction n with
+  | zero =>
+    have : k = 0 := Sym.uniqueZero.eq_default k
+    simp [this]
+  | succ n hrec =>
+    simp only [sym_succ, Nat.succ_eq_add_one, mem_sup, mem_image] at hk
+    obtain ⟨a, hat, k, hk, rfl⟩ := hk
+    simp only [Sym.coe_cons, Multiset.count_cons, add_smul, ite_smul, one_smul, zero_nsmul,
+      Sym.val_eq_coe, Nat.succ_eq_add_one, Multiset.sum_cons, sum_add_distrib]
+    nth_rewrite 2 [sum_eq_single a (fun _ _ hab ↦ by rw [if_neg hab]) (fun has ↦ (has hat).elim)]
+    rw [if_pos rfl, add_comm, hrec hk, Sym.val_eq_coe]
 
 end Sym
 
