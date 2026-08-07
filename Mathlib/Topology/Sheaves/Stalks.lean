@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
 
 /-!
 # Stalks
@@ -690,5 +691,37 @@ theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
    fun _ => isIso_of_stalkFunctor_map_iso f⟩
 
 end Concrete
+
+/-- Taking stalks on an indiscrete topological space is isomorphic to taking global sections. -/
+def stalkFunctorIsoOfIndiscreteTopology (X : TopCat) [IndiscreteTopology X] (x : X) :
+    TopCat.Presheaf.stalkFunctor C x ≅ (evaluation _ _).obj (.op ⊤) :=
+  Functor.isoWhiskerLeft _
+    (Functor.Final.colimIso <| (orderDualEquivalence _).functor ⋙
+      (OpenNhds.orderIsoOfIndiscreteTopology.{0} X x).equivalence.inverse.op).symm ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight (Functor.whiskeringLeftObjCompIso _ _).symm _ ≪≫
+    Functor.isoWhiskerLeft _ (colimIsoEvaluation (X := ⟨⟩) _ isTerminalTop) ≪≫
+    (whiskeringLeftCompEvaluation _ _)
+
+variable {C} in
+/-- The stalk of a presheaf `F` on an indiscrete topological space is isomorphic to the global
+sections of `F`. -/
+abbrev stalkIsoOfIndiscreteTopology [IndiscreteTopology X] (F : TopCat.Presheaf C X) (x : X) :
+    F.stalk x ≅ F.obj (.op ⊤) :=
+  (TopCat.Presheaf.stalkFunctorIsoOfIndiscreteTopology _ _ _).app F
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma germ_stalkIsoOfIndiscreteTopology_hom [IndiscreteTopology X] (F : TopCat.Presheaf C X)
+    (x : X) :
+    F.germ ⊤ _ (by simp) ≫ (F.stalkIsoOfIndiscreteTopology x).hom = 𝟙 _ := by
+  let G := (orderDualEquivalence PUnit.{1}).functor ⋙
+    (OpenNhds.orderIsoOfIndiscreteTopology X x).equivalence.inverse.op
+  change colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (G.obj PUnit.unit) ≫ _ ≫ _ = _
+  have := Functor.Final.ι_colimitIso_inv G ((OpenNhds.inclusion _).op ⋙ F) ⟨⟩
+  dsimp [G] at this
+  simp [Functor.Final.colimIso, G, reassoc_of% this]
+  rfl
 
 end TopCat.Presheaf

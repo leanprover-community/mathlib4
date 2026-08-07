@@ -259,6 +259,60 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
     e.toOrderIso.symm y = e.inverse.obj y :=
   rfl
 
+section Bool
+
+variable {C : Type*} [Category* C]
+
+/-- The functor out of `Bool` given by sending `false` to `X`, `true` to `Y` and
+`false ⟶ true` to `f`. -/
+def Functor.fromBool {X Y : C} (f : X ⟶ Y) : Bool ⥤ C where
+  obj
+    | .false => X
+    | .true => Y
+  map {X Y} u :=
+    match X, Y, u with
+    | .true, .true, _ => 𝟙 _
+    | .false, .true, _ => f
+    | .true, .false, u => False.elim (by have := leOfHom u; contradiction)
+    | .false, .false, _ => 𝟙 _
+  map_comp := by grind
+
+@[simp]
+lemma Functor.fromBool_obj_true {X Y : C} (f : X ⟶ Y) : (fromBool f).obj .true = Y :=
+  rfl
+
+@[simp]
+lemma Functor.fromBool_obj_false {X Y : C} (f : X ⟶ Y) : (fromBool f).obj .false = X :=
+  rfl
+
+@[simp]
+lemma Functor.fromBool_map_false_true {X Y : C} (f : X ⟶ Y) (u : false ⟶ true) :
+    (fromBool f).map u = f :=
+  rfl
+
+/-- The functor out of `Boolᵒᵖ` given by sending `true` to `X`, `false` to `Y` and
+`true ⟶ false` to `f`. -/
+def Functor.fromBoolOp {X Y : C} (f : X ⟶ Y) : Boolᵒᵖ ⥤ C where
+  obj b := (Functor.fromBool f).obj b.unop.not
+  map {b b'} u := (Functor.fromBool f).map (homOfLE <| Bool.antitone_not (leOfHom u.unop))
+  map_comp := by simp [← Functor.map_comp]
+
+@[simp]
+lemma Functor.fromBoolOp_obj_true {X Y : C} (f : X ⟶ Y) : (fromBoolOp f).obj (.op .true) = X :=
+  rfl
+
+@[simp]
+lemma Functor.fromBoolOp_obj_false {X Y : C} (f : X ⟶ Y) : (fromBoolOp f).obj (.op .false) = Y :=
+  rfl
+
+@[simp]
+lemma Functor.fromBool_map_true_false {X Y : C} (f : X ⟶ Y)
+    (u : Opposite.op true ⟶ Opposite.op false) :
+    (fromBoolOp f).map u = f :=
+  rfl
+
+end Bool
+
 end CategoryTheory
 
 end PartialOrder
