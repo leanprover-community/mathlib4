@@ -21,6 +21,8 @@ positive semidefinite matrices.
 - `RKHS.kernel`: the kernel of a RKHS as a matrix.
 - `RKHS.kerFun`: the kernel functions of a RKHS.
 - `RKHS.kerFun_dense`: the kernel functions are dense in the Hilbert space.
+- `RKHS.mem_topologicalClosure_span_kerFun`: the representer theorem -- a regularized minimizer
+    lies in the closed span of the kernel sections at the data points.
 - `RKHS.posSemidef_kernel`: The kernel is positive semidefinite.
 - `RKHS.OfKernel`: RKHS constructed from a positive semidefinite matrix.
 - `RKHS.kernel_ofKernel`: The kernel of the constructed RKHS is equal to the matrix, this is
@@ -183,6 +185,55 @@ theorem kerFun_dense : topologicalClosure (span 𝕜 {kerFun H x v | (x) (v)}) =
   simp only [← kerFun_inner, coe_zero, Pi.zero_apply, inner_zero_right]
   refine inner_right_of_mem_orthogonal (subset_closure ?_) fin
   simp [mem_span_of_mem]
+
+variable {H} in
+/-- An element of `H` orthogonal to the kernel sections `kerFun H (x i) v` at the data points
+`x i` vanishes at every data point. -/
+lemma apply_eq_zero_of_mem_orthogonal_span_kerFun {n : ℕ} {x : Fin n → X} {f : H}
+    (hf : f ∈ (span 𝕜 (Set.range fun iv : Fin n × V ↦ kerFun H (x iv.1) iv.2))ᗮ) (i : Fin n) :
+    f (x i) = 0 :=
+  inner_self_eq_zero.mp <| by
+    rw [← kerFun_inner (x i) _ f]
+    exact inner_right_of_mem_orthogonal (subset_span (Set.mem_range_self (i, f (x i)))) hf
+
+variable {H} in
+/-- **Representer theorem** (generalized / Schölkopf–Herbrich–Smola, vector-valued form).
+For data points `x₁, …, xₙ`, an objective `L` that sees `f` only through its values
+`(f x₁, …, f xₙ)`, and a regularizer `Ω` that is strictly increasing on `[0, ∞)`, every
+minimizer of `f ↦ L (f x·) + Ω ‖f‖` over the reproducing kernel Hilbert space `H` lies in the
+closed span of the kernel sections `kerFun H xᵢ`. -/
+theorem mem_topologicalClosure_span_kerFun {n : ℕ} (x : Fin n → X) (L : (Fin n → V) → ℝ)
+    (Ω : ℝ → ℝ) (hΩ : StrictMonoOn Ω (Set.Ici 0)) (f : H)
+    (hf : ∀ p : H, L (fun i ↦ f (x i)) + Ω ‖f‖ ≤ L (fun i ↦ p (x i)) + Ω ‖p‖) :
+    f ∈ (span 𝕜 (Set.range fun iv : Fin n × V ↦ kerFun H (x iv.1) iv.2)).topologicalClosure := by
+  set S : Set H := Set.range fun iv : Fin n × V ↦ kerFun H (x iv.1) iv.2
+  set M : Submodule 𝕜 H := (span 𝕜 S).topologicalClosure
+  haveI : CompleteSpace M := (span 𝕜 S).isClosed_topologicalClosure.completeSpace_coe
+  set g : H := M.starProjection f
+  have hgM : g ∈ M := M.starProjection_apply_mem f
+  have hsub : f - g ∈ Mᗮ := M.sub_starProjection_mem_orthogonal f
+  -- (i) the projection agrees with `f` on the data points
+  have heval : (fun i ↦ g (x i)) = (fun i ↦ f (x i)) := by
+    funext i
+    have h0 : (f - g) (x i) = 0 :=
+      apply_eq_zero_of_mem_orthogonal_span_kerFun
+        (orthogonal_le (span 𝕜 S).le_topologicalClosure hsub) i
+    rw [coe_sub, Pi.sub_apply, sub_eq_zero] at h0; exact h0.symm
+  -- (ii) Pythagoras
+  have hgperp : ⟪g, f - g⟫_𝕜 = 0 := inner_right_of_mem_orthogonal hgM hsub
+  have hpyth : ‖f‖ ^ 2 = ‖g‖ ^ 2 + ‖f - g‖ ^ 2 := by
+    have h := norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero g (f - g) hgperp
+    rw [show g + (f - g) = f by abel] at h; simpa [pow_two] using h
+  -- (iii) off `M`, the projection strictly improves the objective ⇒ contradiction
+  by_contra hfM
+  have hne : f - g ≠ 0 := sub_ne_zero.mpr fun h => hfM (by rw [h]; exact hgM)
+  have hlt : ‖g‖ < ‖f‖ := by
+    apply lt_of_pow_lt_pow_left₀ 2 (norm_nonneg f)
+    rw [hpyth]; exact lt_add_of_pos_right _ (pow_pos (norm_pos_iff.mpr hne) 2)
+  have hmin := hf g
+  rw [heval] at hmin
+  exact absurd (le_of_add_le_add_left hmin)
+    (not_le.mpr (hΩ (norm_nonneg g) (norm_nonneg f) hlt))
 
 lemma isHermitian_kernel : (kernel H).IsHermitian := by
   ext
