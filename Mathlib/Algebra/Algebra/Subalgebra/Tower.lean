@@ -117,6 +117,57 @@ This is a special case of `AlgHom.restrictScalars` that can be helpful in elabor
 def ofRestrictScalars (U : Subalgebra S A) (f : U →ₐ[S] B) : U.restrictScalars R →ₐ[R] B :=
   f.restrictScalars R
 
+instance restrictScalars.sMul {U : Subalgebra S A} : SMul S (U.restrictScalars R) where
+  smul s := fun u ↦
+    ⟨s • u.val, by
+      have hu := u.property
+      simp only [mem_restrictScalars] at hu ⊢
+      exact smul_mem _ hu _⟩
+
+example {U : Subalgebra S A} : restrictScalars.sMul S =
+    (Subalgebra.module' (U.restrictScalars S) |>.toSMul) := by
+  with_reducible_and_instances rfl
+
+instance restrictScalars.origAlgebra {U : Subalgebra S A} : Algebra S (U.restrictScalars R) where
+  algebraMap := RingHom.codRestrict (algebraMap S A) (U.restrictScalars R) (by simp)
+  commutes' s x := by
+    ext
+    exact Algebra.commutes s x.val
+  smul_def' s x := by
+    ext
+    exact Algebra.smul_def s x.val
+
+@[simp, norm_cast]
+lemma restrictScalars.coe_smul {U : Subalgebra S A} (s : S) (u : U.restrictScalars R) :
+    (↑(s • u) : A) = s • (u : A) := by
+  rfl
+
+@[simp, norm_cast]
+lemma restrictScalars.coe_algebraMap {U : Subalgebra S A} (s : S) :
+    (algebraMap S (U.restrictScalars R) s : A) = algebraMap S A s := by
+  rfl
+
+instance restrictScalars.isScalarTower {U : Subalgebra S A} :
+    IsScalarTower R S (U.restrictScalars R) :=
+  ⟨fun _ _ _ ↦ by ext; simp⟩
+
+instance restrictScalars.isScalarTower' {U : Subalgebra S A} :
+    IsScalarTower S (U.restrictScalars R) A :=
+  ⟨by simp [smul_def]⟩
+
+/-- Turning `p : Subalgebra S A` into an `R`-subalgebra gives the same algebra structure. -/
+def restrictScalarsEquiv (p : Subalgebra S A) : p.restrictScalars R ≃ₐ[S] p :=
+  { RingEquiv.refl p with
+    commutes' := fun _ => rfl }
+
+@[simp]
+theorem restrictScalarsEquiv_apply (p : Subalgebra S A) (a : p.restrictScalars R) :
+    ((restrictScalarsEquiv R p) a : A) = a := rfl
+
+@[simp]
+theorem restrictScalarsEquiv_symm_apply (p : Subalgebra S A) (a : p) :
+    ((restrictScalarsEquiv R p).symm a : A) = a := rfl
+
 end Semiring
 
 section CommSemiring
