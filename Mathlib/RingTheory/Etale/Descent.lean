@@ -51,14 +51,6 @@ lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
     (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
   exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
 
-/-- Formally smooth algebras descend along faithfully flat base change. See the TODO
-in the module docstring. -/
-proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
-    [FormallySmooth T (T ⊗[R] S)] :
-    FormallySmooth R S
-
 lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
     Smooth R S := by
   have : Algebra.FinitePresentation R S := .of_finitePresentation_tensorProduct_of_faithfullyFlat T
