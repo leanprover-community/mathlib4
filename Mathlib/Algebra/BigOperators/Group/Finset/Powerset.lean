@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Powerset
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+
 /-!
 # Big operators
 
@@ -62,5 +64,53 @@ lemma prod_powerset (s : Finset α) (f : Finset α → β) :
 lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
     ∏ t ∈ powersetCard n s, f #t = f n ^ (#s).choose n := by
   rw [prod_eq_pow_card, card_powersetCard]; rintro a ha; rw [(mem_powersetCard.1 ha).2]
+
+/-- Multiply `f u` over all `r`-element subsets `u` of every `k`-element subset of `s`. If
+`r ≤ k`, this equals the product over all `r`-element subsets of `s`, raised to
+`Nat.choose (#s - r) (k - r)`. Indeed, each fixed `r`-element subset is contained in exactly that
+many `k`-element subsets of `s`. -/
+@[to_additive
+/-- Sum `f u` over all `r`-element subsets `u` of every `k`-element subset of `s`. If `r ≤ k`,
+this equals `Nat.choose (#s - r) (k - r)` times the sum over all `r`-element subsets of `s`.
+Indeed, each fixed `r`-element subset is contained in exactly that many `k`-element subsets of
+`s`. -/]
+lemma prod_powersetCard_prod_powersetCard (r k : ℕ) (s : Finset α) (f : Finset α → β)
+    (hrk : r ≤ k) :
+    ∏ t ∈ s.powersetCard k, ∏ u ∈ t.powersetCard r, f u =
+      (∏ u ∈ s.powersetCard r, f u) ^ ((s.card - r).choose (k - r)) := by
+  classical
+  calc
+    ∏ t ∈ s.powersetCard k, ∏ u ∈ t.powersetCard r, f u =
+        ∏ u ∈ s.powersetCard r,
+          ∏ _t ∈ (s.powersetCard k).filter (u ⊆ ·), f u := by
+      apply prod_comm'
+      intro t u
+      simp only [mem_powersetCard, mem_filter]
+      constructor
+      · rintro ⟨hts, hut⟩
+        exact ⟨⟨hts, hut.1⟩, ⟨hut.1.trans hts.1, hut.2⟩⟩
+      · rintro ⟨⟨hts, hut⟩, hus⟩
+        exact ⟨hts, hut, hus.2⟩
+    _ = ∏ u ∈ s.powersetCard r, f u ^ ((s.card - r).choose (k - r)) := by
+      apply prod_congr rfl
+      intro u hu
+      obtain ⟨hus, rfl⟩ := mem_powersetCard.mp hu
+      rw [prod_const, card_filter_powersetCard_subset u s k hus hrk]
+    _ = (∏ u ∈ s.powersetCard r, f u) ^ ((s.card - r).choose (k - r)) := by
+      exact prod_pow _ _ _
+
+/-- Multiply `f x` over every element `x` of every `k`-element subset of `s`. If `0 < k`, this
+equals the product over all elements of `s`, raised to `Nat.choose (#s - 1) (k - 1)`. Indeed, each
+element of `s` is contained in exactly that many `k`-element subsets. -/
+@[to_additive
+/-- Sum `f x` over every element `x` of every `k`-element subset of `s`. If `0 < k`, this equals
+`Nat.choose (#s - 1) (k - 1)` times the sum over all elements of `s`. Indeed, each element of `s`
+is contained in exactly that many `k`-element subsets. -/]
+lemma prod_powersetCard_prod (k : ℕ) (s : Finset α) (f : α → β) (hk : 0 < k) :
+    ∏ t ∈ s.powersetCard k, ∏ x ∈ t, f x =
+      (∏ x ∈ s, f x) ^ ((s.card - 1).choose (k - 1)) := by
+  classical
+  simpa only [powersetCard_one, prod_map, Function.Embedding.coeFn_mk, prod_singleton] using
+    prod_powersetCard_prod_powersetCard 1 k s (fun u ↦ ∏ x ∈ u, f x) hk
 
 end Finset
