@@ -143,6 +143,11 @@ theorem _root_.ExistsUnique.setSubsingleton {α : Type*} {p : α → Prop} (h : 
     {x | p x}.Subsingleton :=
   fun _ hx _ hy => h.unique hx hy
 
+theorem _root_.Function.Injective.subsingleton_fiber
+    {α β : Type*} {f : α → β} (h : f.Injective) (b : β) :
+    {a | f a = b}.Subsingleton :=
+  fun _ hx _ hy => h <| hx.trans hy.symm
+
 end Subsingleton
 
 /-! ### Nontrivial -/
