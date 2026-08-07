@@ -447,3 +447,11 @@ to_dual_name_hint Left Right, Epi Mono
 /-- info: "right_epi" -/
 #guard_msgs in
 #eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "left_mono"
+
+-- A structure with a universe not appearing in its type
+structure HasLimitsOfSize where
+  foo : ∀ _ : Type u, True
+
+@[to_dual]
+structure HasColimitsOfSize where
+  cofoo : ∀ _ : Type u, True
