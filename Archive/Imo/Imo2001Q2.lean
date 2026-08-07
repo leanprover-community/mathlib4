@@ -3,7 +3,7 @@ Copyright (c) 2021 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # IMO 2001 Q2

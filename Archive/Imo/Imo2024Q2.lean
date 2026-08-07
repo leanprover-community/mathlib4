@@ -3,7 +3,7 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # IMO 2024 Q2

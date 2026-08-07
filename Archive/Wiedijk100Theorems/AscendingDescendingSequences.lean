@@ -3,11 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Erdős–Szekeres theorem
