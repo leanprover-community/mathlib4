@@ -81,44 +81,62 @@ theorem IsLocalExtr.elim {p : Prop} :
 
 /-! ### Restriction to (sub)sets -/
 
-theorem IsLocalMin.on (h : IsLocalMin f a) (s) : IsLocalMinOn f s a :=
+theorem IsLocalMin.isLocalMinOn (h : IsLocalMin f a) (s) : IsLocalMinOn f s a :=
   h.filter_inf _
 
-theorem IsLocalMax.on (h : IsLocalMax f a) (s) : IsLocalMaxOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsLocalMin.on := IsLocalMin.isLocalMinOn
+
+theorem IsLocalMax.isLocalMaxOn (h : IsLocalMax f a) (s) : IsLocalMaxOn f s a :=
   h.filter_inf _
 
-theorem IsLocalExtr.on (h : IsLocalExtr f a) (s) : IsLocalExtrOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsLocalMax.on := IsLocalMax.isLocalMaxOn
+
+theorem IsLocalExtr.isLocalExtrOn (h : IsLocalExtr f a) (s) : IsLocalExtrOn f s a :=
   h.filter_inf _
 
-theorem IsLocalMinOn.on_subset {t : Set α} (hf : IsLocalMinOn f t a) (h : s ⊆ t) :
+@[deprecated (since := "2026-07-17")] alias IsLocalExtr.on := IsLocalExtr.isLocalExtrOn
+
+theorem IsLocalMinOn.of_subset {t : Set α} (hf : IsLocalMinOn f t a) (h : s ⊆ t) :
     IsLocalMinOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
-theorem IsLocalMaxOn.on_subset {t : Set α} (hf : IsLocalMaxOn f t a) (h : s ⊆ t) :
+@[deprecated (since := "2026-07-17")] alias IsLocalMinOn.on_subset := IsLocalMinOn.of_subset
+
+theorem IsLocalMaxOn.of_subset {t : Set α} (hf : IsLocalMaxOn f t a) (h : s ⊆ t) :
     IsLocalMaxOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
-theorem IsLocalExtrOn.on_subset {t : Set α} (hf : IsLocalExtrOn f t a) (h : s ⊆ t) :
+@[deprecated (since := "2026-07-17")] alias IsLocalMaxOn.on_subset := IsLocalMaxOn.of_subset
+
+theorem IsLocalExtrOn.of_subset {t : Set α} (hf : IsLocalExtrOn f t a) (h : s ⊆ t) :
     IsLocalExtrOn f s a :=
   hf.filter_mono <| nhdsWithin_mono a h
 
+@[deprecated (since := "2026-07-17")] alias IsLocalExtrOn.on_subset := IsLocalExtrOn.of_subset
+
 theorem IsLocalMinOn.inter (hf : IsLocalMinOn f s a) (t) : IsLocalMinOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
 theorem IsLocalMaxOn.inter (hf : IsLocalMaxOn f s a) (t) : IsLocalMaxOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
 theorem IsLocalExtrOn.inter (hf : IsLocalExtrOn f s a) (t) : IsLocalExtrOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
-theorem IsMinOn.localize (hf : IsMinOn f s a) : IsLocalMinOn f s a :=
+theorem IsMinOn.isLocalMinOn (hf : IsMinOn f s a) : IsLocalMinOn f s a :=
   hf.filter_mono <| inf_le_right
 
-theorem IsMaxOn.localize (hf : IsMaxOn f s a) : IsLocalMaxOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsMinOn.localize := IsMinOn.isLocalMinOn
+
+theorem IsMaxOn.isLocalMaxOn (hf : IsMaxOn f s a) : IsLocalMaxOn f s a :=
   hf.filter_mono <| inf_le_right
 
-theorem IsExtrOn.localize (hf : IsExtrOn f s a) : IsLocalExtrOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsMaxOn.localize := IsMaxOn.isLocalMaxOn
+
+theorem IsExtrOn.isLocalExtrOn (hf : IsExtrOn f s a) : IsLocalExtrOn f s a :=
   hf.filter_mono <| inf_le_right
+
+@[deprecated (since := "2026-07-17")] alias IsExtrOn.localize := IsExtrOn.isLocalExtrOn
 
 theorem IsLocalMinOn.isLocalMin (hf : IsLocalMinOn f s a) (hs : s ∈ 𝓝 a) : IsLocalMin f a :=
   have : 𝓝 a ≤ 𝓟 s := le_principal_iff.2 hs
@@ -141,13 +159,13 @@ lemma isLocalExtrOn_univ_iff : IsLocalExtrOn f univ a ↔ IsLocalExtr f a :=
   isLocalMinOn_univ_iff.or isLocalMaxOn_univ_iff
 
 theorem IsMinOn.isLocalMin (hf : IsMinOn f s a) (hs : s ∈ 𝓝 a) : IsLocalMin f a :=
-  hf.localize.isLocalMin hs
+  hf.isLocalMinOn.isLocalMin hs
 
 theorem IsMaxOn.isLocalMax (hf : IsMaxOn f s a) (hs : s ∈ 𝓝 a) : IsLocalMax f a :=
-  hf.localize.isLocalMax hs
+  hf.isLocalMaxOn.isLocalMax hs
 
 theorem IsExtrOn.isLocalExtr (hf : IsExtrOn f s a) (hs : s ∈ 𝓝 a) : IsLocalExtr f a :=
-  hf.localize.isLocalExtr hs
+  hf.isLocalExtrOn.isLocalExtr hs
 
 theorem IsLocalMinOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMinOn f s a)
     [NeBot (𝓝[<] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) := fun hle =>
