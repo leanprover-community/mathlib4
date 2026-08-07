@@ -5,7 +5,7 @@ Authors: Ali Ramsey
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-!
@@ -22,6 +22,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 * `HopfAlgebra.ofConvInverse` : construct a Hopf algebra from a two-sided convolution inverse
   of the identity.
 * `HopfAlgebra.ofAlgHom` : the same for commutative `A`, with `AlgHom` hypotheses.
+* `BialgEquiv.hopfAlgebra` : transfer a Hopf algebra structure along a bialgebra isomorphism.
 
 ## Main results
 
@@ -132,6 +133,29 @@ set_option backward.isDefEq.respectTransparency false in
   ext; exact counit_antipode _
 
 end HopfAlgebra
+
+namespace BialgEquiv
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Bialgebra R A]
+  [HopfAlgebra R B]
+
+open Coalgebra HopfAlgebra
+
+/-- Transfer a Hopf algebra structure along an isomorphism of bialgebras. -/
+@[instance_reducible]
+def hopfAlgebra (e : A ≃ₐc[R] B) : HopfAlgebra R A where
+  antipode := (e.symm : B ≃ₗ[R] A).toLinearMap ∘ₗ antipode R ∘ₗ (e : A ≃ₗ[R] B).toLinearMap
+  mul_antipode_rTensor_comul := by
+    ext a
+    refine EquivLike.injective e ?_
+    simpa [← (ℛ R a).eq, map_sum, AlgHomClass.commutes, CoalgHomClass.counit_comp_apply] using
+      sum_antipode_mul_eq_algebraMap_counit ((ℛ R a).induced e)
+  mul_antipode_lTensor_comul := by
+    ext a
+    refine EquivLike.injective e ?_
+    simpa [← (ℛ R a).eq, map_sum, AlgHomClass.commutes, CoalgHomClass.counit_comp_apply] using
+      sum_mul_antipode_eq_algebraMap_counit ((ℛ R a).induced e)
+
+end BialgEquiv
 
 namespace CommSemiring
 
