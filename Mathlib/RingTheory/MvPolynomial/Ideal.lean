@@ -59,6 +59,13 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
 
+@[simp]
+theorem X_mem_ideal_span_X_image_iff [Nontrivial R] {x : σ} {s : Set σ} :
+    X x ∈ Ideal.span (X '' s : Set (MvPolynomial σ R)) ↔ x ∈ s := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Submodule.mem_span_of_mem (by grind)⟩
+  have := mem_ideal_span_X_image.mp h (Finsupp.single x 1)
+  grind [coeff_X_same, one_ne_zero, Finsupp.single_apply_eq_zero]
+
 section idealOfVars
 
 open Finset Finsupp
