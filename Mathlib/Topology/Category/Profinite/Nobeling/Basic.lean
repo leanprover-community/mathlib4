@@ -439,7 +439,7 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
   rw [span_le]
   rintro f ⟨l, rfl⟩
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
-  suffices L l by assumption
+  suffices L l from this
   apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
   intro l h
   by_cases hl : l.isGood C

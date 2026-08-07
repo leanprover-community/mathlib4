@@ -310,7 +310,7 @@ variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {t : Set F}
 
 theorem Filter.EventuallyEq.hasGradientAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : f₀' = f₁') : HasGradientAtFilter f₀ f₀' x L ↔ HasGradientAtFilter f₁ f₁' x L :=
-  (h₀.prodMap <| by assumption).hasFDerivAtFilter_iff <| by simp [h₁]
+  (h₀.prodMap <| by exact hx).hasFDerivAtFilter_iff <| by simp [h₁]
 
 theorem HasGradientAtFilter.congr_of_eventuallyEq (h : HasGradientAtFilter f f' x L)
     (hL : f₁ =ᶠ[L] f) (hx : f₁ x = f x) : HasGradientAtFilter f₁ f' x L := by
