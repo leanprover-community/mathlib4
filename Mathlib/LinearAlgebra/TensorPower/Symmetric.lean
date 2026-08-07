@@ -78,7 +78,7 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
         convert!
           AddConGen.Rel.of _ _ <|
             SymmetricPower.Rel.perm (R := R) (ι := ι) e <| Function.update f i (r • f i)
-        · rw [MultilinearMap.map_update_smul, Function.update_eq_self]
+        · rw [MultilinearMap.map_update_smul, Function.update_eq_self, RingHom.id_apply]
         · simp_rw [Function.update_apply_equiv_apply, MultilinearMap.map_update_smul,
               ← Function.update_comp_equiv, Function.update_eq_self]; rfl
   | refl => exact AddCon.refl _ _
@@ -112,7 +112,7 @@ def mk : (⨂[R] (_ : ι), M) →ₗ[R] Sym[R] ι M where
 variable {M ι} in
 /-- The multilinear map that takes `ι`-indexed elements of `M` and
 returns their symmetric tensor power. Denoted `⨂ₛ[R] i, f i`. -/
-def tprod : MultilinearMap R (fun _ : ι ↦ M) Sym[R] ι M :=
+def tprod : MultilinearMap (.id R) (fun _ : ι ↦ M) Sym[R] ι M :=
   (mk R ι M).compMultilinearMap (PiTensorProduct.tprod R)
 
 unsuppress_compilation in
