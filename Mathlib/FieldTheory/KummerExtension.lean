@@ -483,7 +483,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
   -- `σ` has an eigenvector `v` with eigenvalue `ζ`.
   have : IsRoot (minpoly K σ.toLinearMap) ζ := by
     rw [IsGalois.card_aut_eq_finrank] at hσ'
-    simpa [minpoly_algEquiv_toLinearMap σ (isOfFinOrder_of_finite σ), hσ',
+    simpa [minpoly_algEquiv_toLinearMap σ, hσ',
       sub_eq_zero] using hζ.pow_eq_one
   obtain ⟨v, hv⟩ := (Module.End.hasEigenvalue_of_isRoot this).exists_hasEigenvector
   have hv' := hv.pow_apply
