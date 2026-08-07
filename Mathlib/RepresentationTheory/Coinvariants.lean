@@ -348,7 +348,7 @@ variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
 /-- The functor sending a representation to its coinvariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
-noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
+noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat.{w} k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
   map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
   map_id _ := by simp
@@ -357,7 +357,8 @@ noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
 /-- The quotient map from a representation to its coinvariants induces a natural transformation
 from the forgetful functor `Rep k G ⥤ ModuleCat k` to the coinvariants functor. -/
 @[simps! app_hom]
-noncomputable def coinvariantsMk : forget₂ (Rep k G) (ModuleCat k) ⟶ coinvariantsFunctor k G where
+noncomputable def coinvariantsMk :
+    forget₂ (Rep k G) (ModuleCat.{w} k) ⟶ coinvariantsFunctor k G where
   app (X : Rep k G) := ModuleCat.ofHom <| Representation.Coinvariants.mk X.ρ
 
 instance (X : Rep k G) : Epi ((coinvariantsMk k G).app X) :=
@@ -366,7 +367,7 @@ instance (X : Rep k G) : Epi ((coinvariantsMk k G).app X) :=
 variable {k G A B}
 
 @[ext]
-lemma coinvariantsFunctor_hom_ext {M : ModuleCat k} {f g : (coinvariantsFunctor k G).obj A ⟶ M}
+lemma coinvariantsFunctor_hom_ext {M : ModuleCat.{w} k} {f g : (coinvariantsFunctor k G).obj A ⟶ M}
     (hfg : (coinvariantsMk k G).app A ≫ f = (coinvariantsMk k G).app A ≫ g) :
     f = g := (cancel_epi _).1 hfg
 
@@ -390,7 +391,7 @@ noncomputable def coinvariantsAdjunction : coinvariantsFunctor.{w} k G ⊣ trivi
   counit := { app X := desc (B := trivial k G X) (𝟙 _) }
 
 @[simp]
-theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
+theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleCat.{w} k}
     (f : (coinvariantsFunctor k G).obj X ⟶ Y) :
     ((coinvariantsAdjunction k G).homEquiv X Y f).hom.toLinearMap =
     ((coinvariantsMk k G).app X ≫ f).hom := by
@@ -398,7 +399,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
 
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
-theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
+theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat.{w} k}
     (f : X ⟶ (trivialFunctor k G).obj Y) :
     ((coinvariantsAdjunction k G).homEquiv X Y).symm f = desc f := by
   ext
@@ -410,7 +411,7 @@ instance : (coinvariantsFunctor k G).IsLeftAdjoint := (coinvariantsAdjunction k 
 /-- The functor sending `A, B` to `(A ⊗[k] B)_G`. This is naturally isomorphic to the functor
 sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the `k[G]ᵐᵒᵖ`-module structure defined by
 `g • a := A.ρ g⁻¹ a`. -/
-noncomputable abbrev coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
+noncomputable abbrev coinvariantsTensor : Rep k G ⥤ Rep k G ⥤ ModuleCat.{u} k :=
   (Functor.postcompose₂.obj (coinvariantsFunctor k G)).obj (MonoidalCategory.curriedTensor _)
 
 variable {k G} (A B)
@@ -426,7 +427,7 @@ lemma coinvariantsTensorMk_apply {A B : Rep.{u} k G} (a : A) (b : B) :
     coinvariantsTensorMk A B a b = Coinvariants.mk _ (a ⊗ₜ[k] b) := rfl
 
 @[ext]
-lemma coinvariantsTensor_hom_ext {A B : Rep.{u} k G} {M : ModuleCat k}
+lemma coinvariantsTensor_hom_ext {A B : Rep.{u} k G} {M : ModuleCat.{u} k}
     {f g : ((coinvariantsTensor k G).obj A).obj B ⟶ M}
     (hfg : (coinvariantsTensorMk A B).compr₂ f.hom = (coinvariantsTensorMk A B).compr₂ g.hom) :
     f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext <| hfg

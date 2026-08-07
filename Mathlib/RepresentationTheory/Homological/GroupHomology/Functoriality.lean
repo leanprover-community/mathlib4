@@ -443,7 +443,7 @@ short complex `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A)`. (This is a simpl
 degree 1 corestriction-coinflation sequence when `A` is `S`-trivial.) -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinfOfTrivial :
-    ShortComplex (ModuleCat k) where
+    ShortComplex (ModuleCat.{u} k) where
   X₁ := H1 (res S.subtype A)
   X₂ := H1 A
   X₃ := H1 (ofQuotient A S)
@@ -544,7 +544,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 second map is the "coinflation" map induced by the quotient maps `G →* G ⧸ S` and `A →ₗ A_S`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1CoresCoinf :
-    ShortComplex (ModuleCat k) where
+    ShortComplex (ModuleCat.{u} k) where
   X₁ := H1 (res S.subtype A)
   X₂ := H1 A
   X₃ := H1 (quotientToCoinvariants A S)
@@ -818,7 +818,7 @@ variable (k G)
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/
 @[simps]
 noncomputable def chainsFunctor :
-    Rep k G ⥤ ChainComplex (ModuleCat k) ℕ where
+    Rep k G ⥤ ChainComplex (ModuleCat.{u} k) ℕ where
   obj A := inhomogeneousChains A
   map f := chainsMap (MonoidHom.id _) f
   map_id _ := chainsMap_id
@@ -830,7 +830,7 @@ instance : (chainsFunctor k G).PreservesZeroMorphisms where
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
 @[simps]
-noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
+noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat.{u} k where
   obj A := groupHomology A n
   map {A B} φ := map (MonoidHom.id _) φ n
   map_id A := by simp [map, groupHomology]

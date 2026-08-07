@@ -103,19 +103,19 @@ lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoa
     Hom.toCoalgHom (𝟙 M) = CoalgHom.id _ _ :=
   rfl
 
-instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat R) where
+instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgCat R) :
-    (forget₂ (CoalgCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
+    (forget₂ (CoalgCat R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
   rfl
 
 @[simp]
 theorem forget₂_map (X Y : CoalgCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgCat R) (ModuleCat R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
+    (forget₂ (CoalgCat R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
   rfl
 
 end CoalgCat

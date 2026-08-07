@@ -285,7 +285,7 @@ variable (R)
 /-- Evaluation on an object `X` gives a functor
 `PresheafOfModules R ⥤ ModuleCat (R.obj X)`. -/
 @[simps]
-def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
+def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat.{v} (R.obj X) where
   obj M := M.obj X
   map f := f.app X
 
@@ -393,7 +393,7 @@ section
 variable (M : PresheafOfModules.{v} R)
 
 /-- Auxiliary definition for `forgetToPresheafModuleCatObj`. -/
-noncomputable abbrev forgetToPresheafModuleCatObjObj (Y : Cᵒᵖ) : ModuleCat (R.obj X) :=
+noncomputable abbrev forgetToPresheafModuleCatObjObj (Y : Cᵒᵖ) : ModuleCat.{v} (R.obj X) :=
   (ModuleCat.restrictScalars (R.map (hX.to Y)).hom).obj (M.obj Y)
 
 -- This should not be a `simp` lemma because `M.obj Y` is missing the `Module (R.obj X)` instance,
@@ -432,7 +432,7 @@ morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 @[simps]
 noncomputable def forgetToPresheafModuleCatObj
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (M : PresheafOfModules.{v} R) :
-    Cᵒᵖ ⥤ ModuleCat (R.obj X) where
+    Cᵒᵖ ⥤ ModuleCat.{v} (R.obj X) where
   obj Y := forgetToPresheafModuleCatObjObj X hX M Y
   map f := forgetToPresheafModuleCatObjMap X hX M f
 
@@ -471,7 +471,7 @@ morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 -/
 @[simps]
 noncomputable def forgetToPresheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
-    PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X) where
+    PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ ModuleCat.{v} (R.obj X) where
   obj M := forgetToPresheafModuleCatObj X hX M
   map f := forgetToPresheafModuleCatMap X hX f
 

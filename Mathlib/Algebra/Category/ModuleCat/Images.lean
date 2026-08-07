@@ -32,7 +32,7 @@ section
 
 -- implementation details of `HasImage` for ModuleCat; use the API, not these
 /-- The image of a morphism in `ModuleCat R` is just the bundling of `LinearMap.range f` -/
-def image : ModuleCat R :=
+def image : ModuleCat.{v} R :=
   ModuleCat.of R (LinearMap.range f.hom)
 
 /-- The inclusion of `image f` into the target -/

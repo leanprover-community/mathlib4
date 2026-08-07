@@ -94,7 +94,7 @@ def tateComplexConnectData :
   d₀_comp := Rep.tateNorm_comp_d _
 
 /-- The Tate complex defined by connecting inhomogeneous chains and cochains with the Tate norm. -/
-abbrev tateComplex : CochainComplex (ModuleCat R) ℤ :=
+abbrev tateComplex : CochainComplex (ModuleCat.{u} R) ℤ :=
   CochainComplex.ConnectData.cochainComplex (tateComplexConnectData M)
 
 lemma tateComplex_d_neg_one : (tateComplex M).d (-1) 0 = M.tateNorm := rfl
@@ -129,7 +129,7 @@ lemma tateComplex.map_add (f g : X ⟶ Y) : tateComplex.map (f + g) =
 variable (R G) in
 /-- The functor taking a representation of `G` to its Tate complex. -/
 @[simps]
-def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
+def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat.{u} R) ℤ where
   obj M := tateComplex M
   map := tateComplex.map
   map_comp f g := by
@@ -137,12 +137,12 @@ def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
     rfl
 
 /-- The functor taking a representation of `G` to its `n`-th Tate cohomology group. -/
-def tateCohomologyFunctor (n : ℤ) : Rep R G ⥤ ModuleCat R :=
+def tateCohomologyFunctor (n : ℤ) : Rep R G ⥤ ModuleCat.{u} R :=
   tateComplexFunctor R G ⋙ HomologicalComplex.homologyFunctor _ _ n
 
 /-- The shortcut path of taking Tate cohomology which aligns with
 `groupCohomology` and `groupHomology`. -/
-abbrev tateCohomology (n : ℤ) : ModuleCat R := (tateCohomologyFunctor n).obj M
+abbrev tateCohomology (n : ℤ) : ModuleCat.{u} R := (tateCohomologyFunctor n).obj M
 
 namespace TateCohomology
 
@@ -155,15 +155,15 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
   `n`-cochains for `0 ≤ n`. -/
 def tateComplex.evalNonneg (n : ℕ) :
-    tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℤ) n ≅
-    cochainsFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℕ) n :=
+    tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat.{u} R) (ComplexShape.up ℤ) n ≅
+    cochainsFunctor R G ⋙ HomologicalComplex.eval (ModuleCat.{u} R) (ComplexShape.up ℕ) n :=
   .refl _
 
 /-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
   `n`-chains for `n < 0`. -/
-def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R)
+def tateComplex.evalNeg (n : ℕ) : tateComplexFunctor R G ⋙ HomologicalComplex.eval (ModuleCat.{u} R)
     (ComplexShape.up ℤ) (.negSucc n) ≅ chainsFunctor R G ⋙
-    HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
+    HomologicalComplex.eval (ModuleCat.{u} R) (ComplexShape.down ℕ) n :=
   .refl _
 
 instance : (tateComplexFunctor R G).PreservesZeroMorphisms where

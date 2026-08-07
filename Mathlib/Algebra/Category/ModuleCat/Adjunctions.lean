@@ -37,7 +37,7 @@ variable [Ring R]
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
-def free : Type u ⥤ ModuleCat R where
+def free : Type u ⥤ ModuleCat.{u} R where
   obj X := ModuleCat.of R (X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
 
@@ -118,7 +118,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism `𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u))`.
 (This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
-def εIso : 𝟙_ (ModuleCat R) ≅ (free R).obj (𝟙_ (Type u)) where
+def εIso : 𝟙_ (ModuleCat.{u} R) ≅ (free R).obj (𝟙_ (Type u)) where
   hom := ofHom <| Finsupp.lsingle PUnit.unit
   inv := ofHom <| Finsupp.lapply PUnit.unit
   hom_inv_id := by

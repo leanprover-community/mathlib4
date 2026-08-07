@@ -89,14 +89,14 @@ variable {k G} in
 `n`th object is `(A ⊗ Pₙ)_G`. -/
 abbrev HomologicalComplex.coinvariantsTensorObj {α : Type*} [AddRightCancelSemigroup α] [One α]
     (A : Rep k G) (P : ChainComplex (Rep k G) α) :
-    ChainComplex (ModuleCat k) α :=
+    ChainComplex (ModuleCat.{u} k) α :=
   (((Rep.coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj P
 
 namespace Rep
 
 /-- The left-derived functors given by deriving the second argument of `A, B ↦ (A ⊗[k] B)_G`. -/
 @[simps]
-def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
+def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat.{u} k where
   obj X := Functor.leftDerived ((coinvariantsTensor k G).obj X) n
   map f := NatTrans.leftDerived ((coinvariantsTensor k G).map f) n
 
@@ -155,7 +155,7 @@ set_option backward.isDefEq.respectTransparency false in
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
 noncomputable abbrev inhomogeneousChains :
-    ChainComplex (ModuleCat k) ℕ :=
+    ChainComplex (ModuleCat.{u} k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
     classical
@@ -168,7 +168,7 @@ open inhomogeneousChains
 
 variable {A n} in
 @[ext]
-theorem inhomogeneousChains.ext {M : ModuleCat k} {x y : (inhomogeneousChains A).X n ⟶ M}
+theorem inhomogeneousChains.ext {M : ModuleCat.{u} k} {x y : (inhomogeneousChains A).X n ⟶ M}
     (h : ∀ g, ModuleCat.ofHom (lsingle g) ≫ x = ModuleCat.ofHom (lsingle g) ≫ y) :
     x = y := ModuleCat.hom_ext <| lhom_ext' fun g => ModuleCat.hom_ext_iff.1 (h g)
 
@@ -194,7 +194,7 @@ def inhomogeneousChainsIso [DecidableEq G] :
 
 /-- The `n`-cycles `Zₙ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 differential `Cₙ(G, A) ⟶ Cₙ₋₁(G, A)` in the complex of inhomogeneous chains. -/
-abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
+abbrev cycles (n : ℕ) : ModuleCat.{u} k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
@@ -229,7 +229,7 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/
-def groupHomology (n : ℕ) : ModuleCat k :=
+def groupHomology (n : ℕ) : ModuleCat.{u} k :=
   (inhomogeneousChains A).homology n
 
 /-- The natural map from `n`-cycles to `n`th group homology for a `k`-linear

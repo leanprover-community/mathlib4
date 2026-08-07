@@ -32,7 +32,7 @@ instance : BraidedCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
     fun X Y ↦ (Algebra.TensorProduct.comm R X Y).toAlgebraIso
 
-instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
+instance : (forget₂ (AlgCat R) (ModuleCat.{u} R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))

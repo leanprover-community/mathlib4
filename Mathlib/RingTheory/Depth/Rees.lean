@@ -160,7 +160,7 @@ lemma exists_isRegular_tfae [Small.{v} R] [IsNoetherianRing R] (I : Ideal R) (n 
     [∀ N : ModuleCat.{v} R, Nontrivial N → Module.Finite R N →
       Module.support R N ⊆ PrimeSpectrum.zeroLocus I → ∀ i < n, Subsingleton (Ext N M i),
       ∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i),
-      ∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
+      ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
       Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i),
       ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
       ].TFAE := by

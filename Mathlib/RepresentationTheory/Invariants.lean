@@ -249,7 +249,7 @@ variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
-noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
+noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat.{w} k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
@@ -279,13 +279,13 @@ noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFuncto
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom
-    {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
+    {X : ModuleCat.{w} k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
     ((invariantsAdjunction k G).homEquiv _ _ f).hom =
       f.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_symm_apply_hom
-    {X : ModuleCat k} {Y : Rep k G} (f : X ⟶ (invariantsFunctor k G).obj Y) :
+    {X : ModuleCat.{w} k} {Y : Rep k G} (f : X ⟶ (invariantsFunctor k G).obj Y) :
     (((invariantsAdjunction k G).homEquiv _ _).symm f).hom.toLinearMap =
       Submodule.subtype _ ∘ₗ f.hom := rfl
 

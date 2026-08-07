@@ -378,7 +378,7 @@ theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.
 
 @[simp]
 theorem leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :
-    ((λ_ M).hom : 𝟙_ (ModuleCat R) ⊗ M ⟶ M) (r ⊗ₜ[R] m) = r • m :=
+    ((λ_ M).hom : 𝟙_ (ModuleCat.{u} R) ⊗ M ⟶ M) (r ⊗ₜ[R] m) = r • m :=
   TensorProduct.lid_tmul m r
 
 @[simp]
@@ -388,7 +388,7 @@ theorem leftUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
 
 @[simp]
 theorem rightUnitor_hom_apply {M : ModuleCat.{u} R} (m : M) (r : R) :
-    ((ρ_ M).hom : M ⊗ 𝟙_ (ModuleCat R) ⟶ M) (m ⊗ₜ r) = r • m :=
+    ((ρ_ M).hom : M ⊗ 𝟙_ (ModuleCat.{u} R) ⟶ M) (m ⊗ₜ r) = r • m :=
   TensorProduct.rid_tmul m r
 
 @[simp]

@@ -364,7 +364,7 @@ variable (A : Rep k G) (S : Subgroup G) [S.Normal]
 /-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
 noncomputable def H1InfRes :
-    ShortComplex (ModuleCat k) where
+    ShortComplex (ModuleCat.{u} k) where
   X₁ := groupCohomology (A.quotientToInvariants S) 1
   X₂ := groupCohomology A 1
   X₃ := groupCohomology (res S.subtype A) 1
@@ -511,7 +511,7 @@ variable (k G)
 
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
 @[simps]
-noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat k) ℕ where
+noncomputable def cochainsFunctor : Rep k G ⥤ CochainComplex (ModuleCat.{u} k) ℕ where
   obj A := inhomogeneousCochains A
   map f := cochainsMap (MonoidHom.id _) f
   map_id _ := cochainsMap_id
@@ -523,7 +523,7 @@ instance : (cochainsFunctor k G).Additive where
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
 @[simps]
-noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
+noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat.{u} k where
   obj A := groupCohomology A n
   map φ := map (MonoidHom.id _) φ n
   map_id _ := HomologicalComplex.homologyMap_id _ _

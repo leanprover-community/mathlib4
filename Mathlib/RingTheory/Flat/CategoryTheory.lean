@@ -38,19 +38,19 @@ namespace Module.Flat
 
 variable {R : Type u} [CommRing R] (M : ModuleCat.{u} R)
 
-lemma lTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat R) (hC : C.Exact) :
+lemma lTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat.{u} R) (hC : C.Exact) :
     C.map (tensorLeft M) |>.Exact := by
   rw [moduleCat_exact_iff_function_exact] at hC ⊢
   exact lTensor_exact M hC
 
-lemma rTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat R) (hC : C.Exact) :
+lemma rTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat.{u} R) (hC : C.Exact) :
     C.map (tensorRight M) |>.Exact := by
   rw [moduleCat_exact_iff_function_exact] at hC ⊢
   exact rTensor_exact M hC
 
 lemma iff_lTensor_preserves_shortComplex_exact :
     Flat R M ↔
-    ∀ (C : ShortComplex <| ModuleCat R) (_ : C.Exact), (C.map (tensorLeft M) |>.Exact) :=
+    ∀ (C : ShortComplex <| ModuleCat.{u} R) (_ : C.Exact), (C.map (tensorLeft M) |>.Exact) :=
   ⟨fun _ _ ↦ lTensor_shortComplex_exact _ _, fun H ↦ iff_lTensor_exact.2
     fun _ _ _ _ _ _ _ _ _ f g h ↦
       moduleCat_exact_iff_function_exact _ |>.1 <|
@@ -60,7 +60,7 @@ lemma iff_lTensor_preserves_shortComplex_exact :
 
 lemma iff_rTensor_preserves_shortComplex_exact :
     Flat R M ↔
-    ∀ (C : ShortComplex <| ModuleCat R) (_ : C.Exact), (C.map (tensorRight M) |>.Exact) :=
+    ∀ (C : ShortComplex <| ModuleCat.{u} R) (_ : C.Exact), (C.map (tensorRight M) |>.Exact) :=
   ⟨fun _ _ ↦ rTensor_shortComplex_exact _ _, fun H ↦ iff_rTensor_exact.2
     fun _ _ _ _ _ _ _ _ _ f g h ↦
       moduleCat_exact_iff_function_exact _ |>.1 <|
