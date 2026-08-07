@@ -101,7 +101,7 @@ open Qq
 ### `norm_num` extension for `Nat.floor`
 -/
 
-theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌊r⌋₊) m := by
   rintro ⟨⟨⟩⟩
   exact ⟨by simp⟩
@@ -134,7 +134,6 @@ meta def evalNatFloor : NormNumExt where eval {u αZ} e := do
     | .isBool .. => failure
     | .isNat sα nb pb => do
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natFloor $x _ $pb)
     | .isNegNat sα nb pb => do
