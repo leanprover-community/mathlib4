@@ -193,6 +193,23 @@ theorem norm_sq_kerFun_add (x : X) (v : V) :
       ‖kerFun (OfKernel K) x v‖ ^ 2 + ‖kerFun (OfKernel K') x v‖ ^ 2 := by
   simp [← (projection K K').norm_map, projection_kerFun, WithLp.prod_norm_sq_eq_of_L2]
 
+section sumSpace
+
+variable (H H' : Type*) [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [RKHS 𝕜 H X V]
+  [CompleteSpace H] [NormedAddCommGroup H'] [InnerProductSpace 𝕜 H'] [RKHS 𝕜 H' X V]
+  [CompleteSpace H']
+
+instance : Fact (kernel H + kernel H').PosSemidef := by
+  simp [fact_iff, Matrix.PosSemidef.add (posSemidef_kernel H) (posSemidef_kernel H')]
+
+/-- The sum of two RKHS embedding in the same space of functions `X → V`. -/
+abbrev sumSpace := OfKernel (kernel H + kernel H')
+
+/-- `H + H₁` is shorthand for the RKHS `sumSpace H H₁`, which is the sum of the two RKHS. -/
+scoped infix:50 " + " => sumSpace
+
+end sumSpace
+
 end Add
 
 end RKHS
