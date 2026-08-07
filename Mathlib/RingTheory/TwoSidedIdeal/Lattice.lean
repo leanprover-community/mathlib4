@@ -134,6 +134,15 @@ instance : CompleteLattice (TwoSidedIdeal R) where
 @[simp]
 lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
 
+protected lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 0 := by
+  simp [← SetLike.coe_injective.eq_iff, coe_bot, Set.ext_iff]
+  grind [zero_mem]
+
+protected theorem ne_bot_iff (I : TwoSidedIdeal R) : I ≠ ⊥ ↔ ∃ x ∈ I, x ≠ 0 := by
+  simp [TwoSidedIdeal.eq_bot_iff R I]
+
+alias ⟨exists_mem_ne_zero_of_ne_bot, _⟩ := TwoSidedIdeal.ne_bot_iff
+
 @[simp]
 lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
 
@@ -142,5 +151,9 @@ lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
   ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
 
 alias ⟨eq_top, one_mem⟩ := one_mem_iff
+
+theorem eq_top_of_isUnit_mem {R : Type*} [Ring R] (I : TwoSidedIdeal R) {x : R}
+    (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
+  I.eq_top (h.mul_val_inv ▸ I.mul_mem_right _ _ hx)
 
 end TwoSidedIdeal
