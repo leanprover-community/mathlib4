@@ -377,9 +377,6 @@ section Order
 
 variable {f g : MvPowerSeries σ R}
 
-@[deprecated (since := "2026-01-06")]
-alias eq_zero_iff_forall_coeff_eq_zero_and := eq_zero_iff_forall_coeff_zero
-
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ degree d = n) := by
   simp_rw [degree_eq_weight_one]

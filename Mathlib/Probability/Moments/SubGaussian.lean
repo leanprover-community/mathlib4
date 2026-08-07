@@ -895,10 +895,6 @@ lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
   ext
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
 
-@[deprecated (since := "2026-01-27")]
-alias HasSubgaussianMGF_add_of_HasCondSubgaussianMGF :=
-  HasSubgaussianMGF.add_of_hasCondSubgaussianMGF
-
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
 /-- Let `Y` be a random process strongly adapted to a filtration `ℱ`, such that for all `i : ℕ`,
@@ -924,10 +920,6 @@ lemma HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
       simp only [Finset.mem_range] at hm
       lia
 
-@[deprecated (since := "2026-01-27")]
-alias HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF :=
-  HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF
-
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
@@ -936,9 +928,6 @@ lemma measure_sum_ge_le_of_hasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}
       ≤ exp (-ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
   (HasSubgaussianMGF.sum_of_hasCondSubgaussianMGF h_adapted h0 n h_subG).measure_ge_le hε
-
-@[deprecated (since := "2026-01-27")]
-alias measure_sum_ge_le_of_HasCondSubgaussianMGF := measure_sum_ge_le_of_hasCondSubgaussianMGF
 
 end Martingale
 

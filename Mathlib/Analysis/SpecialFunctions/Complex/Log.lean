@@ -312,7 +312,4 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
 
-@[deprecated (since := "2026-01-13")]
-alias expPartialHomeomorph := expOpenPartialHomeomorph
-
 end Complex
