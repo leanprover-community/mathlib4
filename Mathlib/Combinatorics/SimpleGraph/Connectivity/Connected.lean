@@ -305,6 +305,44 @@ theorem Preconnected.exists_isPath {G : SimpleGraph V} (h : G.Preconnected) (u v
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
+variable {G} in
+theorem Preconnected.finite_dart_iff_finite (h : G.Preconnected) : Finite G.Dart ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ inferInstance⟩
+  nontriviality V
+  exact finite_dart_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
+
+variable {G} in
+theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact h.finite_dart_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
+    G.support.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  nontriviality V
+  rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
+
+variable {G} in
+theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
+    G.support.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_support_iff_finite
+
+variable {G} in
+theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
+    G.edgeSet.Finite ↔ Finite V := by
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  nontriviality V
+  exact finite_edgeSet_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
+
+variable {G} in
+theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
+    G.edgeSet.Infinite ↔ Infinite V := by
+  contrapose!
+  exact h.finite_edgeSet_iff_finite
+
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
 exactly one connected component.

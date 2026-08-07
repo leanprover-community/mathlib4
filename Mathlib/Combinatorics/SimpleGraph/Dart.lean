@@ -57,6 +57,21 @@ instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.adj⟩ }
 
+instance [Finite V] : Finite G.Dart :=
+  .of_injective Dart.toProd Dart.toProd_injective
+
+theorem finite_dart_iff_finite_of_support_eq_univ (h : G.support = .univ) :
+    Finite G.Dart ↔ Finite V := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have (v : V) : ∃ u, G.Adj v u := by simp [← mem_support, h]
+  let f (v : V) : G.Dart := { fst := v, snd := (this v).choose, adj := (this v).choose_spec }
+  exact .of_injective f fun u v huv ↦ congrArg (·.fst) huv
+
+theorem infinite_dart_iff_infinite_of_support_eq_univ (h : G.support = .univ) :
+    Infinite G.Dart ↔ Infinite V := by
+  contrapose!
+  exact finite_dart_iff_finite_of_support_eq_univ h
+
 /-- The edge associated to the dart. -/
 def Dart.edge (d : G.Dart) : Sym2 V := s(d.fst, d.snd)
 
