@@ -720,6 +720,27 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some _ _ h₁ + some _ _ h₂ = -some _ _ (nonsingular_negAdd h₁ h₂ fun hxy => hx hxy.left) :=
   add_of_X_ne hx
 
+/-- `x` is a root of the `2`-torsion polynomial of a Weierstrass curve of characteristic
+different from `2` with nonzero discriminant if and only if it is the `X`-coordinate of a nonzero
+affine `2`-torsion point. -/
+theorem isRoot_twoTorsionPolynomial_iff (h2 : NeZero (2 : F)) (hΔ : W.Δ ≠ 0) (x : F) :
+    W.twoTorsionPolynomial.toPoly.IsRoot x ↔
+      ∃ y, ∃ h : W.Nonsingular x y, some x y h + some x y h = 0 := by
+  rw [IsRoot.def, eval_twoTorsionPolynomial_toPoly, b₂, b₄, b₆]
+  constructor
+  · intro hroot
+    set y := (-W.a₁ * x - W.a₃) / 2
+    have heq : W.Equation x y := by grind [NeZero.out, equation_iff]
+    refine ⟨y, (equation_iff_nonsingular_of_Δ_ne_zero hΔ).mp heq, add_self_of_Y_eq ?_⟩
+    grind [negY]
+  · rintro ⟨y, hns, hP⟩
+    have hy : y = W.negY x y := by
+      by_contra! hne
+      rw [add_self_of_Y_ne hne] at hP
+      exact some_ne_zero _ hP
+    have heq := hns.left
+    grind [negY, equation_iff]
+
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
 the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
