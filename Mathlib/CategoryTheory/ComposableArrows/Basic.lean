@@ -955,18 +955,22 @@ set_option backward.privateInPublic true in
 lemma homMk₅_app_five :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by valid⟩ = app₅ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_two' :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 2 = app₂ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_three' :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 3 = app₃ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_four' :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 4 = app₄ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma homMk₅_app_five' :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 5 = app₅ := rfl
