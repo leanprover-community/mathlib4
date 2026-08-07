@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.ContDiffMulAction
 
 /-!
 # Infinitely smooth "bump" functions
