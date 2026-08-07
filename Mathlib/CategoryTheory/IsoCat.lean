@@ -203,15 +203,19 @@ namespace InducedCategory
 
 variable {C D : Type*} [Category* C] (e : D ≃ C)
 
+/-- The isomorphism of categories between `InducedCategory C e` and `C` when
+`e : D ≃ C` is a bijection. -/
 @[simps, implicit_reducible]
-def isoCat : IsoCat (InducedCategory _ e) C where
+def isoCat : IsoCat (InducedCategory C e) C where
   functor := inducedFunctor e
   inverse.obj X := e.symm X
   inverse.map f :=  { hom := eqToHom (by simp) ≫ f ≫ eqToHom (by simp) }
   unit_eq := Functor.ext (by simp) (by cat_disch)
   counit_eq := Functor.ext (by simp) (by cat_disch)
 
-abbrev equivalence : (InducedCategory _ e) ≌ C :=
+/-- The equivalence of categories between `InducedCategory C e` and `C` when
+`e : D ≃ C` is a bijection. -/
+abbrev equivalence : (InducedCategory C e) ≌ C :=
   (isoCat e).toEquivalence
 
 end InducedCategory

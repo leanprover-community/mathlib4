@@ -12,6 +12,23 @@ public import Mathlib.CategoryTheory.IsoCat
 /-!
 # The fundamental groupoid of a simplicial set
 
+In this file, we define the fundamental groupoid
+`SSet.Truncated.FundamentalGroupoid X` of a `2`-truncated simplicial set `X`.
+We also define the fundamental groupoid `SSet..FundamentalGroupoid X` of
+a simplicial set `X`.
+
+## Implementation notes
+
+In order to get good definitional properties at implicit transparency,
+we do not define `FundamentalGroupoid X` as `FreeGroupoid X.HomotopyCategory`,
+but only as an induced category via a bijection
+`FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory`.
+If `f : X ⟶ Y` is a morphism of simplicial sets and `x : X _⦋0⦌`,
+this allows to obtain the equality
+`(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
+by `with_implicit rfl`.
+
+
 -/
 
 @[expose] public section
@@ -25,14 +42,19 @@ namespace SSet.Truncated
 variable {X Y Z : SSet.Truncated.{u} 2}
 
 variable (X) in
+/-- The fundamental groupoid of a `2`-truncated simplicial set. -/
 structure FundamentalGroupoid : Type u where
-  mk :: pt : X _⦋0⦌₂
+  /-- The underlying vertex. -/
+  pt : X _⦋0⦌₂
 
 namespace FundamentalGroupoid
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   fun x ↦ ⟨x.pt, rfl⟩
 
+/-- The bijection `FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory` that is
+used to define the category structure on `FundamentalGroupoid X`
+when `X` is a`2`-truncated simplicial set. -/
 def equivFreeGroupoid : FundamentalGroupoid X ≃ FreeGroupoid X.HomotopyCategory where
   toFun x := FreeGroupoid.mk (HomotopyCategory.mk x.pt)
   invFun x := mk x.as.as.as.as
@@ -41,19 +63,23 @@ instance : Category (FundamentalGroupoid X) :=
   inferInstanceAs (Category (InducedCategory _ equivFreeGroupoid))
 
 variable (X) in
-private def isoCatFreeGroupoid :
+/-- The isomorphism of categories between `FundamentalGroupoid X` and
+`FreeGroupoid X.HomotopyCategory` when `X` is a`2`-truncated simplicial set. -/
+def isoCatFreeGroupoid :
     IsoCat (FundamentalGroupoid X) (FreeGroupoid X.HomotopyCategory) :=
   InducedCategory.isoCat (equivFreeGroupoid (X := X))
 
 variable (X) in
-private abbrev equivalenceFreeGroupoid : FundamentalGroupoid X ≌ FreeGroupoid X.HomotopyCategory :=
+/-- The equivalence of categories between `FundamentalGroupoid X` and
+`FreeGroupoid X.HomotopyCategory` when `X` is a`2`-truncated simplicial set. -/
+abbrev equivalenceFreeGroupoid :
+    FundamentalGroupoid X ≌ FreeGroupoid X.HomotopyCategory :=
   (isoCatFreeGroupoid X).toEquivalence
 
-instance : IsGroupoid (FundamentalGroupoid X) where
-  all_isIso _ := isIso_of_reflects_iso _ (equivalenceFreeGroupoid X).functor
+instance : Groupoid (FundamentalGroupoid X) :=
+  .ofFullyFaithfulToGroupoid _ (equivalenceFreeGroupoid X).fullyFaithfulFunctor
 
-noncomputable instance : Groupoid (FundamentalGroupoid X) := .ofIsGroupoid
-
+/-- Constructor for morphisms in the fundamental groupoid of a `2`-truncated simplicial set. -/
 @[no_expose]
 def homMk {x y : X _⦋0⦌₂} (e : Edge x y) : mk x ⟶ mk y where
   hom := FreeGroupoid.homMk (HomotopyCategory.homMk e)
@@ -90,11 +116,13 @@ variable {D : Type*} [Groupoid D]
   (map_comp : ∀ {x₀ x₁ x₂ : X _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
     (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
 
+/-- Auxiliary definition for `desc`. -/
 @[no_expose]
 private def desc' : FreeGroupoid (X.HomotopyCategory) ⥤ D :=
   FreeGroupoid.lift (HomotopyCategory.lift obj map (fun X ↦ by
     rw [← cancel_epi (map (.id X)), Category.comp_id, map_comp (.idCompId X)]) map_comp)
 
+/-- Auxiliary definition for `desc`. -/
 @[no_expose]
 def descMap {x y : FundamentalGroupoid X} (f : x ⟶ y) : obj x.pt ⟶ obj y.pt :=
   (desc' obj map map_comp).map f.hom
@@ -104,6 +132,7 @@ lemma descMap_homMk {x y : X _⦋0⦌₂} (e : Edge x y) :
     (descMap obj map map_comp) (homMk e) = map e :=
   (FreeGroupoid.lift_map_homMk ..).trans (HomotopyCategory.lift_map_homMk ..)
 
+/-- Constructor for functors from the fundamental groupoid of a `2`-truncated simplicial set. -/
 @[implicit_reducible]
 def desc : FundamentalGroupoid X ⥤ D where
   obj x := obj x.pt
@@ -144,8 +173,10 @@ lemma Edge.CompStruct.homMk_comp {x₀ x₁ x₂ : X _⦋0⦌₂} {e₀₁ : Edg
     (by simpa using! ((FreeGroupoid.of X.HomotopyCategory).congr_map
       (HomotopyCategory.homMk_comp_homMk h)))
 
+/-- The functor `FundamentalGroupoid X ⥤ FundamentalGroupoid Y` that is induced
+by a morphism of `2`-truncated simplicial sets. -/
 @[implicit_reducible]
-noncomputable def mapFundamentalGroupoid (f : X ⟶ Y) :
+def mapFundamentalGroupoid (f : X ⟶ Y) :
     FundamentalGroupoid X ⥤ FundamentalGroupoid Y :=
   desc (fun x ↦ mk (f.app _ x)) (fun e ↦ homMk (e.map f))
     (fun h ↦ (h.map f).homMk_comp)
@@ -171,7 +202,9 @@ lemma mapFundamentalGroupoid_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     mapFundamentalGroupoid (f ≫ g) = mapFundamentalGroupoid f ⋙ mapFundamentalGroupoid g :=
   FundamentalGroupoid.functor_ext (fun _ ↦ rfl) (by cat_disch)
 
-noncomputable def mapIsoFundamentalGroupoid {X Y : SSet.Truncated.{u} 2} (e : X ≅ Y) :
+/-- The isomorphism of fundamental groupoids that is induced
+by an isomorphism of `2`-truncated simplicial sets. -/
+def mapIsoFundamentalGroupoid {X Y : SSet.Truncated.{u} 2} (e : X ≅ Y) :
     IsoCat (FundamentalGroupoid X) (FundamentalGroupoid Y) where
   functor := mapFundamentalGroupoid e.hom
   inverse := mapFundamentalGroupoid e.inv
@@ -189,22 +222,26 @@ namespace SSet
 variable {X Y : SSet.{u}}
 
 variable (X) in
+/-- The fundamental groupoid of a simplicial set `X`. -/
 abbrev FundamentalGroupoid : Type u :=
   ((truncation 2).obj X).FundamentalGroupoid
 
 namespace FundamentalGroupoid
 
+/-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
 abbrev mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
 
+/-- Induction principle for the objects of the fundamental groupoid of a simplicial set. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : FundamentalGroupoid X → Sort*}
     (mk : ∀ (x : X _⦋0⦌), motive (mk x)) (x : FundamentalGroupoid X) :
     motive x :=
   mk _
 
+/-- Constructor for morphisms in the fundamental groupoid of a simplicial set `X`. -/
 def homMk {x y : X _⦋0⦌} (e : Edge x y) : mk x ⟶ mk y :=
   Truncated.FundamentalGroupoid.homMk e
 
@@ -230,6 +267,7 @@ variable {D : Type*} [Groupoid D]
   (map_comp : ∀ {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
     (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
 
+/-- Constructor for functors from the fundamental groupoid of a simplicial set. -/
 @[implicit_reducible]
 def desc : FundamentalGroupoid X ⥤ D :=
   Truncated.FundamentalGroupoid.desc obj map map_comp
@@ -263,8 +301,10 @@ lemma Edge.CompStruct.homMk_comp {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ :=
   Truncated.Edge.CompStruct.homMk_comp h
 
+/-- The functor `FundamentalGroupoid X ⥤ FundamentalGroupoid Y` that is induced
+by a morphism of simplicial sets. -/
 @[implicit_reducible]
-noncomputable def mapFundamentalGroupoid (f : X ⟶ Y) :
+def mapFundamentalGroupoid (f : X ⟶ Y) :
     FundamentalGroupoid X ⥤ FundamentalGroupoid Y :=
   SSet.Truncated.mapFundamentalGroupoid ((truncation 2).map f)
 
@@ -280,6 +320,9 @@ example (f : X ⟶ Y) (x : X _⦋0⦌) :
     (mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x) := by
   with_implicit rfl
 
+/-- The isomorphism of fundamental groupoids that is induced
+by a morphism of simplicial sets which induces an isomorphism
+on the `2`-truncations. -/
 noncomputable def isoCatMapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
     IsoCat (FundamentalGroupoid X) (FundamentalGroupoid Y) :=
