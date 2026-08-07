@@ -852,10 +852,10 @@ See `ENNReal.iInf_mul_of_ne` for the special case assuming `a ≠ 0` and `a ≠ 
 lemma iInf_mul' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = 0 → Nonempty ι) :
     (⨅ i, f i) * a = ⨅ i, f i * a := by simpa only [mul_comm a] using mul_iInf' hinfty h₀
 
-/-- If `a ≠ 0` and `a ≠ ∞`, then right multiplication by `a` maps infimum to infimum.
+/-- If `a ≠ 0` and `a ≠ ∞`, then left multiplication by `a` maps infimum to infimum.
 
-See `ENNReal.mul_iInf'` for the general case, and `ENNReal.iInf_mul` for another special case that
-assumes `Nonempty ι` but does not require `a ≠ 0`, and `ENNReal`. -/
+See `ENNReal.mul_iInf'` for the general case, and `ENNReal.mul_iInf` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ 0`. -/
 lemma mul_iInf_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * ⨅ i, f i = ⨅ i, a * f i :=
   mul_iInf' (by simp [ha]) (by simp [ha₀])
 
