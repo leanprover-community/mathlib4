@@ -56,6 +56,11 @@ theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
     l[n] :: l.eraseIdx n ~ l := by
   simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
 
+theorem insertIdx_eraseIdx_getElem_perm {m n : ℕ} (hm : m < l.length)
+    (hn : n ≤ (l.eraseIdx m).length) :
+    (l.eraseIdx m).insertIdx n l[m] ~ l :=
+  (perm_insertIdx _ _ hn).trans (getElem_cons_eraseIdx_perm hm)
+
 theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
     (hn : n ≤ l₂.length) (a : α) : l₁.insertIdx m a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   rw [rel_congr_left (perm_insertIdx _ _ hm), rel_congr_right (perm_insertIdx _ _ hn), perm_cons]
