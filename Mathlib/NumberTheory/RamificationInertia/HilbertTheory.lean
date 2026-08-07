@@ -331,7 +331,7 @@ theorem ramificationIdx_eq (hp : p ≠ ⊥) :
   have := ramificationIdx_tower (R := A) 𝓟D P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟D P (stabilizer Gal(L/K) P),
     ramificationIdxIn_eq A K L P D 𝓞D 𝓟D hp, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
-    right_eq_mul₀ <| (ramificationIdx_pos P A).ne'] at this
+    right_eq_mul₀ <| (P.ramificationIdx_pos A).ne'] at this
 
 include K L D P in
 /--
