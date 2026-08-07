@@ -367,7 +367,7 @@ instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
         simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
         obtain ⟨t, rfl⟩ := Nat.le.dest (Nat.add_one_le_of_lt this)
         exact hpq _ ⟨t, by lia⟩ rfl (by simp; lia)
-      simp_all
+      simp
       lia
     have := isIso_homOfLE this
     apply E.isZero_H_map_mk₁_of_isIso

@@ -616,7 +616,7 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
   refine (List.prod_set v.toList i a).trans ?_
-  simp_all
+  simp
 
 /-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive

@@ -108,7 +108,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     · rw [mem_gammaSet_one, Int.isCoprime_iff_gcd_eq_one] at hx
       exact ⟨Subsingleton.eq_zero _, by simp [Int.gcd_mul_left, hx]⟩
     · ext i
-      simp_all [NeZero.ne r]
+      simp [NeZero.ne r]
 
 lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSet 1 r 0) :
     v = r • (divIntMap r v) := by

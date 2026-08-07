@@ -368,7 +368,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
         rw [head?_eq_some_head hnil]
-        simp_all
+        simp
       · push Not at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]

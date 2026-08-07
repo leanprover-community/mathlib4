@@ -102,7 +102,7 @@ lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
   obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
   rw [ord_mul, ord_pow, ord_of_irreducible hϖ]
   · simp [IsDiscreteValuationRing.addVal_uniformizer hϖ]
-  all_goals simp_all [Irreducible.ne_zero hϖ]
+  all_goals simp [Irreducible.ne_zero hϖ]
 
 open IsDiscreteValuationRing
 

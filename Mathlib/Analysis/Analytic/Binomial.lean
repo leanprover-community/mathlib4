@@ -239,7 +239,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext; simp [Function.comp_def]
   · simp
-  · intro x hx; simp_all; norm_cast
+  · intro x hx; simp; norm_cast
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=

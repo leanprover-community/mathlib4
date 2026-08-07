@@ -118,7 +118,7 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   by_cases hx : |x| ≤ 1
   · simp_all [pow_le_one₀, (posLog_eq_zero_iff _).2]
   rw [not_le] at hx
-  have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
+  have : 1 ≤ |x ^ n| := by simp [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
 
 /-- The function `log⁺` is continuous. -/

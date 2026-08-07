@@ -78,7 +78,7 @@ lemma dissipate_zero_nat (s : ℕ → Set β) : dissipate s 0 = s 0 := by
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
   dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1) := by
   ext x
-  simp_all only [dissipate_def, mem_iInter, mem_inter_iff]
+  simp only [dissipate_def, mem_iInter, mem_inter_iff]
   grind
 
 /-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe

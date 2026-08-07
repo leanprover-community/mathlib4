@@ -859,7 +859,7 @@ theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s 
 /-- An independent set in the complement graph is a clique and vice versa. -/
 @[simp] theorem isIndepSet_compl : Gᶜ.IsIndepSet s ↔ G.IsClique s := by
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
-  simp_all [compl_adj]
+  simp [compl_adj]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsIndepSet s) :=
   decidable_of_iff' _ G.isIndepSet_iff

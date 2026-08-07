@@ -286,8 +286,7 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [support_subset_iff, ne_eq, mem_ofPred_eq,
-        mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
+      simp only [ne_eq, mem_inter_iff, mem_support, mem_union]
       by_contra! hCon
       simp_all
 
@@ -369,7 +368,7 @@ instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
     (↑(∑ n ∈ s, F n) : X → Y) = ∑ n ∈ s, (F n : X → Y) := by
   classical
   induction s using Finset.induction with
-  | empty => simp_all
+  | empty => simp
   | insert => simp_all
 
 @[simp] lemma coe_finsum {ι : Type*} {F : ι → locallyFinsuppWithin U ℤ} :
@@ -441,7 +440,7 @@ instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      simp only [mem_inter_iff, mem_support, ne_eq, mem_union]
       by_contra! hCon
       simp_all }
 
@@ -465,7 +464,7 @@ instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
       apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
       intro a ha
-      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      simp only [mem_inter_iff, mem_support, ne_eq, mem_union]
       by_contra! hCon
       simp_all }
 

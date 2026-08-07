@@ -102,7 +102,7 @@ def fromOverFunctorElementsEquivalence :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
   -- `cat_disch` can fill in this proof, but is unfortunately quite slow.
-  functor_unitIso_comp X := by simp_all; rfl
+  functor_unitIso_comp X := by simp; rfl
 
 instance [IsCofiltered F.Elements] : IsCofiltered (fromOverFunctor F x).Elements :=
   .of_equivalence (fromOverFunctorElementsEquivalence F x).symm

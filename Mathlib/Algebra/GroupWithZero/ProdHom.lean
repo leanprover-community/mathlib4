@@ -114,7 +114,7 @@ theorem snd_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
     (snd ..).comp (inl G₀ H₀) = 1 := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
-  simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
+  simp [WithZero.withZeroUnitsEquiv, snd, inl]
 
 theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : G₀ ↦ x = 0] {x : G₀} (hx : x ≠ 0) :
     snd _ _ (inl _ H₀ x) = 1 := by
@@ -126,7 +126,7 @@ theorem fst_comp_inr [DecidablePred fun x : H₀ ↦ x = 0] :
     (fst ..).comp (inr G₀ H₀) = 1 := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
-  simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
+  simp [WithZero.withZeroUnitsEquiv, fst, inr]
 
 theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : H₀ ↦ x = 0] {x : H₀} (hx : x ≠ 0) :
     fst _ _ (inr G₀ _ x) = 1 := by

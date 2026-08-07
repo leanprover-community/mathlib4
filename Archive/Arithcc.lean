@@ -328,7 +328,7 @@ theorem compiler_correctness
       _  = { ζ₃ with ac := ν } := by simp_all
       _  ≃[t + 1] { { write t ν₁ η with ac := ν₂ } with ac := ν } := by
         simp [StateEq] at hζ₃ ⊢; cases hζ₃; assumption
-      _  ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
+      _  ≃[t + 1] { write t ν₁ η with ac := ν } := by simp; rfl
     apply write_eq_implies_stateEq <;> assumption
 
 end Correctness

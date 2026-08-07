@@ -1082,7 +1082,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ (.ofClass 
       Submonoid.coe_mul, Subtype.forall, posSubmonoid_def]
     intro x y z hz w hw
     split_ifs
-    all_goals simp_all
+    all_goals simp
     simp [field, ← WithZero.coe_mul, ← Units.val_inj]
 
 /-- The element `.mk x s` in `ValueGroupWithZero R` is sent to `v x / v s` in the

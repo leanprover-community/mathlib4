@@ -45,7 +45,7 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
     intro hy
     induction hy using Submodule.span_induction with
     | mem m hm => obtain ⟨i, rfl⟩ := hm; apply hsa
-    | zero => simp_all
+    | zero => simp
     | add => simp_all
     | smul => simp_all
   replace hs := DFunLike.congr_fun hs y

@@ -458,7 +458,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem prod_fst_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.fst i (prod.mk i a b) = a := by
   induction i with
-  | fz => simp_all only [prod.fst, prod.mk]
+  | fz => simp only [prod.fst, prod.mk]
   | fs _ i_ih => apply i_ih
 
 set_option backward.isDefEq.respectTransparency false in
@@ -466,7 +466,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem prod_snd_mk {α β : TypeVec n} (i : Fin2 n) (a : α i) (b : β i) :
     TypeVec.prod.snd i (prod.mk i a b) = b := by
   induction i with
-  | fz => simp_all [prod.snd, prod.mk]
+  | fz => simp [prod.snd, prod.mk]
   | fs _ i_ih => apply i_ih
 
 /-- `prod` is functorial -/

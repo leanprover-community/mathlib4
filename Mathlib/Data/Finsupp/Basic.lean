@@ -620,7 +620,7 @@ theorem mapDomain_comapDomain_nat_add_one (l : ℕ →₀ M) :
     mapDomain (· + 1) (comapDomain.addMonoidHom (add_left_injective 1) l) = l.erase 0 := by
   refine .trans ?_ (mapDomain_comapDomain _ (add_left_injective 1) _ fun _ ↦ ?_)
   · congr; ext; simp
-  · simp_all [Nat.pos_iff_ne_zero]
+  · simp [Nat.pos_iff_ne_zero]
 
 theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
     comapDomain f (mapDomain f l) hf.injOn = l := by

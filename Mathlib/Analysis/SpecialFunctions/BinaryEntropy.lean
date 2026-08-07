@@ -405,7 +405,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     · simp only [sub_neg, gt_iff_lt]
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
-      · simp_all only [mem_Ioi]
+      · simp only [mem_Ioi]
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
