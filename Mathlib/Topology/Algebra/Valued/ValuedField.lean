@@ -5,10 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 
 /-!
 # Valued fields and their completions
@@ -43,48 +44,11 @@ variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWit
 
 section ValuationTopologicalDivisionRing
 
-section InversionEstimate
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-variable (v : Valuation K Γ₀)
+section Valued
 
--- The following is the main technical lemma ensuring that inversion is continuous
--- in the topology induced by a valuation on a division ring (i.e. the next instance)
--- and the fact that a valued field is completable
--- [BouAC, VI.5.1 Lemme 1]
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
-    (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
-  have hyp1 : v (x - y) < γ * (v y * v y) := lt_of_lt_of_le h (min_le_left _ _)
-  have hyp1' : v (x - y) * (v y * v y)⁻¹ < γ := mul_inv_lt_of_lt_mul₀ hyp1
-  have hyp2 : v (x - y) < v y := lt_of_lt_of_le h (min_le_right _ _)
-  have key : v x = v y := Valuation.map_eq_of_sub_lt v hyp2
-  have x_ne : x ≠ 0 := by
-    intro h
-    apply y_ne
-    rw [h, v.map_zero] at key
-    exact v.zero_iff.1 key.symm
-  have decomp : x⁻¹ - y⁻¹ = x⁻¹ * (y - x) * y⁻¹ := by
-    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel₀ y_ne,
-      show x⁻¹ * x = 1 from inv_mul_cancel₀ x_ne, mul_one, one_mul]
-  calc
-    v (x⁻¹ - y⁻¹) = v (x⁻¹ * (y - x) * y⁻¹) := by rw [decomp]
-    _ = v x⁻¹ * (v <| y - x) * v y⁻¹ := by repeat' rw [Valuation.map_mul]
-    _ = (v x)⁻¹ * (v <| y - x) * (v y)⁻¹ := by rw [map_inv₀, map_inv₀]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := by rw [mul_assoc, mul_comm, key, mul_assoc, mul_inv_rev]
-    _ = (v <| y - x) * (v y * v y)⁻¹ := rfl
-    _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
-    _ < γ := hyp1'
-
-theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
-    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
-  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
-  calc
-    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
-    _ = v s := div_mul_cancel₀ _ (by simpa)
-
-end InversionEstimate
-
-open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀ Valued
+open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
 [BouAC, VI.5.1 middle of Proposition 1] -/
@@ -154,6 +118,8 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     exact Valued.locally_const (by simpa using h0)
 
 end
+
+end Valued
 
 end ValuationTopologicalDivisionRing
 

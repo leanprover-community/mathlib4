@@ -96,6 +96,7 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 section TopologicalSpace
 
 variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+
 namespace IsValuativeTopology
 
 /-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
