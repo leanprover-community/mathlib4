@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 module
 
+public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
@@ -20,6 +21,11 @@ the usual way this is considered.
   have the same argument.
 * `Complex.abs_add_eq/Complex.abs_sub_eq`: If two nonzero complex numbers have the same argument,
   then the triangle inequality is an equality.
+* `Complex.div_ofReal_eq_inv_smul`, `Complex.div_norm_eq_inv_norm_smul`: division by a real
+  scalar agrees with inverse scalar multiplication.
+* `Complex.sameRay_of_mul_of_real_pos`, `Complex.inv_norm_smul_eq_of_mul_of_real_pos`,
+  `Complex.aligned_of_mul_of_real_pos`: positive real scaling preserves `SameRay` and unit phase.
+  See also `SameRay.inv_norm_smul_eq` in `Mathlib/Analysis/Normed/Module/Ray.lean`.
 
 -/
 
@@ -60,5 +66,31 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
+
+variable {z w : ℂ} {c lam : ℝ}
+
+/-- Division by a real scalar agrees with inverse real scalar multiplication. -/
+lemma div_ofReal_eq_inv_smul (r : ℝ) (z : ℂ) : z / (r : ℂ) = r⁻¹ • z := by
+  simp [div_eq_inv_mul, ofReal_inv, real_smul, mul_comm]
+
+/-- `z / ‖z‖` agrees with the real scalar action of `‖z‖⁻¹`. -/
+lemma div_norm_eq_inv_norm_smul : z / (‖z‖ : ℂ) = (‖z‖)⁻¹ • z :=
+  div_ofReal_eq_inv_smul (‖z‖) z
+
+/-- If `z = c * w` with `c > 0`, then `z` and `w` lie on the same closed ray. -/
+lemma sameRay_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) : SameRay ℝ z w := by
+  rw [h]
+  exact SameRay.sameRay_pos_smul_left w hc_pos
+
+/-- If `z = c * w` with `c > 0` and both are nonzero, their unit vectors agree. -/
+lemma inv_norm_smul_eq_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) (hz : z ≠ 0)
+    (hw : w ≠ 0) : (‖z‖)⁻¹ • z = (‖w‖)⁻¹ • w :=
+  SameRay.inv_norm_smul_eq hz hw (sameRay_of_mul_of_real_pos hc_pos h)
+
+/-- If `z = c * w` with `c > 0` and both are nonzero, they have the same normalized phase. -/
+lemma aligned_of_mul_of_real_pos (hc_pos : 0 < c) (h : z = (c : ℂ) * w) (hz : z ≠ 0)
+    (hw : w ≠ 0) : z / (‖z‖ : ℂ) = w / (‖w‖ : ℂ) := by
+  rw [div_norm_eq_inv_norm_smul, div_norm_eq_inv_norm_smul,
+    inv_norm_smul_eq_of_mul_of_real_pos hc_pos h hz hw]
 
 end Complex
