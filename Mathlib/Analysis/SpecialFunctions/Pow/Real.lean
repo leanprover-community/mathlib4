@@ -892,6 +892,12 @@ with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε
 
+/-- `log x` is bounded below by minus a multiple of every power of `x` with negative exponent. -/
+lemma neg_rpow_div_le_log {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : -x ^ (-ε) / ε ≤ log x := by
+  rw [neg_div, neg_le, ← log_inv]
+  have := log_le_rpow_div (inv_nonneg.mpr hx) hε
+  rwa [inv_rpow hx, ← rpow_neg hx] at this
+
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
     StrictMono (b ^ · : ℝ → ℝ) := by
   simp_rw [Real.rpow_def_of_pos (zero_lt_one.trans hb)]
