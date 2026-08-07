@@ -180,6 +180,10 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x �
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 
+@[to_dual]
+theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici a :=
+  h.isGLB.biUnion_Ici_eq_Ici h.left
+
 end Preorder
 
 section LinearOrder
