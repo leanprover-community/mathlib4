@@ -71,6 +71,7 @@ Q172298:
 
 Q174955:
   title: Mihăilescu's theorem
+  comment: "Previously known as the Catalan conjecture. The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/Catalan.lean#L34"
 
 Q179208:
   title: Cayley's theorem
@@ -667,7 +668,8 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
-  comment: "https://imperialcollegelondon.github.io/FLT is proving a special case"
+  comment: "Variously known as the Taniyama–Shimura conjecture, Taniyama–Shimura–Weil conjecture, or modularity conjecture for elliptic curves prior to its proof. https://imperialcollegelondon.github.io/FLT is proving a special case. The statement of this theorem is also formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/448f15c51a9e89aced922f36259dd8ddc0c1bd20/FormalConjectures/Wikipedia/ModularityConjecture.lean#L85-L87"
+
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -747,6 +749,7 @@ Q679800:
 
 Q681406:
   title: Euler's rotation theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/Mathematics/SO3/Basic.lean#L161
 
 Q685437:
   title: Titchmarsh theorem
@@ -798,7 +801,8 @@ Q733081:
 
 Q737851:
   title: Banach–Tarski theorem
-  # WIP formalisation at https://github.com/Bergschaf/banach-tarski
+  url: https://github.com/aetilley/banach-tarski/blob/a920deea0a3f3207049f8201fc1e7a0bb8cf4c93/BanachTarski/Basic.lean#L2577
+  comment: "Note that this statement of the paradox allows reflections in the set of isometries"
 
 Q737892:
   title: Bendixson–Dulac theorem
@@ -957,6 +961,7 @@ Q848810:
 
 Q850495:
   title: Wick's theorem
+  url: https://github.com/leanprover-community/physlib/blob/e5a3161e42a2a93aff3de88987bb2adc9efc95cb/Physlib/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean#L82
 
 Q851166:
   title: Pappus's hexagon theorem
@@ -1014,6 +1019,8 @@ Q869647:
 
 Q872088:
   title: Boolean prime ideal theorem
+  decl: DistribLattice.prime_ideal_of_disjoint_filter_ideal
+  comment: "This is the prime ideal separation theorem for (bounded) distributive lattices, of which the Boolean prime ideal theorem is a special case."
 
 Q877489:
   title: Apollonius's theorem
@@ -1073,6 +1080,7 @@ Q922012:
 
 Q922367:
   title: Master theorem (analysis of algorithms)
+  comment: "Generalized by the Akra–Bazzi theorem `AkraBazziRecurrence.isTheta_asympBound`"
 
 Q925224:
   title: Sonnenschein–Mantel–Debreu Theorem
@@ -1308,6 +1316,7 @@ Q1068976:
 
 Q1075398:
   title: Jung's theorem
+  url: https://github.com/michelsol/bounding-sphere-math/blob/ba35028924776ad7e175b424c3ba681ac9736567/BoundingSphere/Jung.lean#L381
 
 Q1076274:
   title: Choquet–Bishop–de Leeuw theorem
@@ -1512,6 +1521,8 @@ Q1196538:
 
 Q1196729:
   title: Mertens's theorems
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/58e860034029b94547abe9bd2065f5b3e3f82ebb/PrimeNumberTheoremAnd/RosserSchoenfeldPrime.lean#L788
+  comment: "This link is to a proof of Mertens' second theorem"
 
 Q1202608:
   title: De Gua's theorem
@@ -2011,6 +2022,7 @@ Q2190744:
 
 Q2197859:
   title: Nicomachus's theorem
+  comment: "Nicomachus's theorem states that the sum of the first n cubes is the square of the nth triangular number. This follows from Faulhaber's formula, formalized in mathlib as `sum_Ico_pow`, which provides a geeneral formula for sums of powers using Bernoulli numbers."
 
 Q2222575:
   title: Shell theorem
@@ -2269,6 +2281,7 @@ Q2734084:
 
 Q2793600:
   title: Stark–Heegner theorem
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/ClassNumberProblem.lean#L46"
 
 Q2799491:
   title: Ringel–Youngs theorem
@@ -2443,6 +2456,7 @@ Q3527088:
 
 Q3527091:
   title: Gromov's theorem on groups of polynomial growth
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/GromovPolynomialGrowth.lean#L58"
 
 Q3527093:
   title: Hilbert–Speiser theorem
@@ -3912,6 +3926,7 @@ Q7849521:
 
 Q7853325:
   title: Tunnell's theorem
+  comment: "The statement of this theorem is formalised without proof in the formal-conjectures repo: https://github.com/google-deepmind/formal-conjectures/blob/71c4d02865a4b34c00912ece730b717612fff002/FormalConjectures/Wikipedia/CongruentNumber.lean#L89-L109"
 
 Q7856599:
   title: Turán–Kubilius theorem
