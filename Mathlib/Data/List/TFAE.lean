@@ -65,7 +65,7 @@ theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔
 
 theorem tfae_append_singleton_of_mem {a b} {l : List Prop} (h : b ∈ l) :
     TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
-  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
+  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (a := b) (b := a) h, iff_comm]
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
