@@ -6,8 +6,10 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 public import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -533,4 +535,50 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
       rcases hne.lt_or_gt with hne | hne <;>
       linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
+/-- The height of a triangle is equal to the side times sine of the angle on the same side.
+
+See also `Affine.Triangle.height_eq_dist_mul_sin` for the version using `Affine.Simplex.height`. -/
+theorem dist_orthogonalProjection_eq_dist_mul_sin (p₁ : P) {p₂ p₃ : P} (h₂₃ : p₂ ≠ p₃) :
+    dist p₁ (orthogonalProjection line[ℝ, p₂, p₃] p₁) = dist p₁ p₂ * Real.sin (∠ p₁ p₂ p₃) := by
+  by_cases! h₁₂ : orthogonalProjection (line[ℝ, p₂, p₃]) p₁ = p₂
+  · -- Case 1: the altitude foot is right at p₂
+    suffices ∠ p₁ p₂ p₃ = π / 2 by simp [h₁₂, this]
+    rw [← h₁₂, angle_comm]
+    exact angle_orthogonalProjection_self p₁ <| right_mem_affineSpan_pair ℝ p₂ p₃
+  have hproj : ∠ p₁ (↑((orthogonalProjection line[ℝ, p₂, p₃]) p₁)) p₂ = π / 2 := by
+    rw [angle_comm]
+    exact angle_orthogonalProjection_self p₁ <| left_mem_affineSpan_pair ℝ p₂ p₃
+  rcases (collinear_insert_of_mem_affineSpan_pair (orthogonalProjection line[ℝ, p₂, p₃] p₁).prop)
+    |>.wbtw_or_wbtw_or_wbtw with h | h
+  · -- Case 2: the altitude foot and p₃ are on the opposite direction from p₂
+    have h : Sbtw ℝ (orthogonalProjection line[ℝ, p₂, p₃] p₁).val p₂ p₃ := ⟨h, h₁₂.symm, h₂₃⟩
+    have hangle : ∠ p₁ p₂ p₃ = π - ∠ p₁ p₂ (orthogonalProjection line[ℝ, p₂, p₃] p₁) := by
+      rw [eq_sub_iff_add_eq]
+      exact angle_add_angle_eq_pi_of_angle_eq_pi _ h.angle₃₂₁_eq_pi
+    rw [hangle, Real.sin_pi_sub, angle_comm, mul_comm,
+      sin_angle_mul_dist_of_angle_eq_pi_div_two hproj]
+  · -- Case 3: the altitude foot and p₃ are on the same direction from p₂
+    have hangle : ∠ p₁ p₂ p₃ = ∠ p₁ p₂ (orthogonalProjection line[ℝ, p₂, p₃] p₁) := by
+      rcases h with h | h
+      · exact h.angle_eq_right _ h₂₃.symm
+      · exact (h.symm.angle_eq_right _ h₁₂).symm
+    rw [hangle, angle_comm, mul_comm, sin_angle_mul_dist_of_angle_eq_pi_div_two hproj]
+
 end EuclideanGeometry
+
+namespace Affine.Triangle
+open Simplex EuclideanGeometry
+
+variable {V P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+
+/-- The height of a triangle is equal to the side times sine of the angle on the same side. -/
+theorem height_eq_dist_mul_sin (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    t.height i₁ = dist (t.points i₁) (t.points i₂) *
+      Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) := by
+  unfold height altitudeFoot orthogonalProjectionSpan
+  convert! dist_orthogonalProjection_eq_dist_mul_sin (t.points i₁) (t.independent.injective.ne h₂₃)
+  grind [range_faceOpposite_points]
+
+end Affine.Triangle
