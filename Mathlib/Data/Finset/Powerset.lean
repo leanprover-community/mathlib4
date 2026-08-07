@@ -269,6 +269,15 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
 
+lemma Disjoint.powersetCard_powersetCard {s t : Finset α}
+    (h : Disjoint s t) {n : ℕ} (hn : 0 < n) :
+    Disjoint (powersetCard n s) (powersetCard n t) := by
+  rw [disjoint_left]
+  intro u hu hv
+  rw [mem_powersetCard] at hu hv
+  obtain ⟨x, hx⟩ := card_pos.mp (hu.2.symm ▸ hn)
+  exact disjoint_left.1 h (hu.1 hx) (hv.1 hx)
+
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
   ext
@@ -296,10 +305,16 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
   · rintro rfl
     simp
 
+lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
+    Disjoint (powersetCard m s) (powersetCard n t) := by
+  rw [disjoint_left]
+  intro x hx hy
+  rw [mem_powersetCard] at hx hy
+  exact h (hx.2.symm.trans hy.2)
+
 theorem pairwise_disjoint_powersetCard (s : Finset α) :
-    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) := fun _i _j hij =>
-  Finset.disjoint_left.mpr fun _x hi hj =>
-    hij <| (mem_powersetCard.mp hi).2.symm.trans (mem_powersetCard.mp hj).2
+    Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _i _j hij => disjoint_powersetCard_of_ne hij s s
 
 set_option backward.isDefEq.respectTransparency false in
 theorem powerset_card_disjiUnion (s : Finset α) :
