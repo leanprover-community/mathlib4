@@ -866,7 +866,7 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
         apply List.Perm.swap'
         rfl)
   invFun :=
-    Quot.map fromVector
+    private Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
         rcases x with - | ⟨_, x⟩; · simp at hx
