@@ -45,7 +45,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]
   conv_lhs =>
-    enter [1, 2, k, 2, k']
+    enter [1, 1, 2, k, 2, k']
     rw [← mul_assoc, mul_right_comm _ _ (X ^ (p * k')), ← pow_add, mul_assoc, ← cast_mul]
   have h_iff : ∀ x ∈ range (n % p + 1) ×ˢ range (n / p + 1),
       k = x.1 + p * x.2 ↔ (k % p, k / p) = x := by

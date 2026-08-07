@@ -46,8 +46,7 @@ theorem zero_scaleRoots (s : R) : scaleRoots 0 s = 0 := by
 theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
   intro h
   have : p.coeff p.natDegree ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  have : (scaleRoots p s).coeff p.natDegree = 0 :=
-    congr_fun (congr_arg (coeff : R[X] → ℕ → R) h) p.natDegree
+  have : (scaleRoots p s).coeff p.natDegree = 0 := by rw [h]; simp
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 

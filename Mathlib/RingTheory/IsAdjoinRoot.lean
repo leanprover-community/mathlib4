@@ -501,7 +501,7 @@ def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T)
 -/
 def coeff : S →ₗ[R] ℕ → R :=
   h.liftPolyₗ
-    { toFun := Polynomial.coeff
+    { toFun p := ⇑p.coeff
       map_add' p q := funext (Polynomial.coeff_add p q)
       map_smul' c p := funext (Polynomial.coeff_smul c p) }
 

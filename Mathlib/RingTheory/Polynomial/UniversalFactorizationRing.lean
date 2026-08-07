@@ -165,7 +165,7 @@ lemma universalFactorizationMap_comp_map :
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
-    congr 2 <;> ext <;> simp
+    congr 3 <;> ext <;> simp
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
