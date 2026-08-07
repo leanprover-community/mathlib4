@@ -397,7 +397,7 @@ that have edge density at least `δ`. -/
 @[simps] def regularityReduced (ε δ : 𝕜) : SimpleGraph α where
   Adj a b := G.Adj a b ∧
     ∃ U ∈ P.parts, ∃ V ∈ P.parts, a ∈ U ∧ b ∈ V ∧ U ≠ V ∧ G.IsUniform ε U V ∧ δ ≤ G.edgeDensity U V
-  symm.symm a b := by
+  symm a b := by
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
     refine ⟨ab.symm, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]

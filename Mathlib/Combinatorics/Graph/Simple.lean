@@ -99,7 +99,7 @@ section toSimpleGraph
 @[expose, simps (attr := grind =)]
 def toSimpleGraph (G : Graph α β) : SimpleGraph V(G) where
   Adj u v := u ≠ v ∧ G.Adj u v
-  symm := ⟨fun u v ↦ by grind [adj_comm]⟩
+  symm u v := by grind [adj_comm]
 
 lemma toSimpleGraph_adj_iff [G.Loopless] (u v : V(G)) : G.toSimpleGraph.Adj u v ↔ G.Adj u v := by
   grind [Adj.ne]

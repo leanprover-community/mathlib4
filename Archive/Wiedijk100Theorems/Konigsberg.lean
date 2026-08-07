@@ -50,8 +50,8 @@ Eulerian property or switch this file to use multigraphs. -/
 @[simps]
 def graph : SimpleGraph Verts where
   Adj v w := adj v w
-  symm.symm := by decide
-  loopless.irrefl := by decide
+  symm := by dsimp [adj]; decide
+  loopless := by decide
 
 instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 

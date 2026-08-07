@@ -68,7 +68,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
   induce_eq_top.symm
 
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
-  simp [IsChain, G.symm.iff]
+  simp [IsChain, G.adj_comm]
 
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
