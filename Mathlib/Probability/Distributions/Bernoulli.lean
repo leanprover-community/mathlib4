@@ -6,6 +6,7 @@ Authors: Etienne Marion, David Ledvinka
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.HasLaw
 public import Mathlib.Topology.UnitInterval
 
 /-!
@@ -161,6 +162,15 @@ theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
   simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
 
+lemma eq_bernoulliMeasure {μ : Measure X}
+    (h1 : ∀ s, MeasurableSet s → x ∈ s → y ∈ s → μ s = 1)
+    (h2 : ∀ s, MeasurableSet s → x ∈ s → y ∉ s → μ s = toNNReal p)
+    (h3 : ∀ s, MeasurableSet s → x ∉ s → y ∈ s → μ s = toNNReal (σ p))
+    (h4 : ∀ s, MeasurableSet s → x ∉ s → y ∉ s → μ s = 0) :
+    μ = Ber(x, y, p) := by
+  ext s hs
+  by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp_all
+
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -179,5 +189,35 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
   all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
 
 end Integral
+
+section HasLaw
+
+/-! ### Bernoulli random variables -/
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
+theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M]
+    [MeasurableSpace M] (c : M) {s : Set Ω}
+    (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (fun _ ↦ c)) Ber(c, 0, ⟨P.real s, by simp⟩) P where
+  aemeasurable := aemeasurable_const.indicator₀ hs
+  map_eq := by
+    classical
+    have := (aemeasurable_const (b := c)).indicator₀ hs
+    apply eq_bernoulliMeasure
+    all_goals
+      intro t ht h1 h2
+      rw [map_apply_of_aemeasurable this ht]
+      simp_all [Set.indicator_const_preimage_eq_union, measure_compl₀ hs, ENNReal.coe_nnreal_eq,
+        ENNReal.ofReal_sub]
+
+/-- The constant indicator of a set follows a Bernoulli distribution. -/
+theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]
+    [MeasurableSpace M] {s : Set Ω} (hs : NullMeasurableSet s P) :
+    HasLaw (s.indicator (1 : Ω → M)) Ber(1, 0, ⟨P.real s, by simp⟩) P :=
+  hasLaw_indicator_bernoulliMeasure 1 hs
+
+end HasLaw
 
 end ProbabilityTheory
