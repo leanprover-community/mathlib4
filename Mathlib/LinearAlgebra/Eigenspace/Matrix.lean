@@ -137,6 +137,20 @@ theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
 theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
   AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
 
+theorem mem_spectrum_of_mulVec_eq_smul {A : Matrix n n R} {v : n → R} {a : R} (h0 : v ≠ 0)
+    (h : A *ᵥ v = a • v) : a ∈ spectrum R A := by
+  rw [← spectrum_toLin']
+  exact mem_spectrum_of_map_eq_smul h0 h
+
+theorem mem_spectrum_iff_exists_mulVec_eq_smul {K : Type*} [Field K] {A : Matrix n n K} {a : K} :
+    a ∈ spectrum K A ↔ ∃ v ≠ 0, A *ᵥ v = a • v := by
+  simp_rw [← spectrum_toLin', ← hasEigenvalue_iff_mem_spectrum,
+    hasEigenvalue_iff_exists_map_eq_smul, toLin'_apply]
+
+theorem isUnit_iff_forall_mulVec_eq_zero {K : Type*} [Field K] {A : Matrix n n K} :
+    IsUnit A ↔ ∀ v, A *ᵥ v = 0 → v = 0 := by
+  simp_rw [← isUnit_toLin'_iff, A.toLin'.isUnit_iff_ker_eq_bot, A.toLin'.ker_eq_bot', toLin'_apply]
+
 end Matrix
 
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
