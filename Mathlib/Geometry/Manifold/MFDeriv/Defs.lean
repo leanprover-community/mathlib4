@@ -298,7 +298,8 @@ this would not mean anything relevant. -/
 def HasMFDerivWithinAt (f : M → M') (s : Set M) (x : M)
     (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousWithinAt f s x ∧
-    HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f'
+    HasFDerivWithinAt (writtenInExtChartAt I I' x f)
+      ((tangentSpaceCastModel I' (f x)) ∘L f' ∘L (tangentSpaceCastModel I x).symm)
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x)
 
 variable (I I') in
@@ -312,7 +313,9 @@ and in particular by coincidence `writtenInExtChartAt I I' x f` could be differe
 this would not mean anything relevant. -/
 def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)) :=
   ContinuousAt f x ∧
-    HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f' (range I) ((extChartAt I x) x)
+    HasFDerivWithinAt (writtenInExtChartAt I I' x f)
+    ((tangentSpaceCastModel I' (f x)) ∘L f' ∘L (tangentSpaceCastModel I x).symm)
+    (range I) ((extChartAt I x) x)
 
 open scoped Classical in
 variable (I I') in
@@ -321,9 +324,9 @@ is the derivative of `f` at `x` within `s`,
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableWithinAt I I' f s x then
+    ((tangentSpaceCastModel I' (f x)).symm) ∘L
     (fderivWithin 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-        ((extChartAt I x) x) :
-      _)
+        ((extChartAt I x) x)) ∘L (tangentSpaceCastModel I x)
   else 0
 
 open scoped Classical in
@@ -332,19 +335,21 @@ variable (I I') in
 as a continuous linear map from the tangent space at `x` to the tangent space at `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
-    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
+    ((tangentSpaceCastModel I' (f x)).symm) ∘L
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x)) ∘L
+    (tangentSpaceCastModel I x)
   else 0
 
 variable (I I') in
 /-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
 as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, (mfderivWithin I I' f s p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
+  ⟨f p.1, mfderivWithin I I' f s p.1 p.2⟩
 
 variable (I I') in
 /-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
 `TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
+  ⟨f p.1, mfderiv I I' f p.1 p.2⟩
 
 end DerivativesDefinitions
