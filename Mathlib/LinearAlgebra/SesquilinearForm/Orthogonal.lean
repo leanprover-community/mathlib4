@@ -191,8 +191,8 @@ section
 variable {I₁ : R₁ →+* R₂} {B : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
 
 variable (B) [RingHomSurjective I₁] in
-theorem orthogonalBilin_eq_map_dualCoannihilator (S) :
-    orthogonalBilin B S = (map B S).dualCoannihilator := by ext x; simp
+theorem dualCoannihilator_map_eq_orthogonalBilin (S) :
+    (map B S).dualCoannihilator = orthogonalBilin B S := by ext x; simp
 
 end
 
