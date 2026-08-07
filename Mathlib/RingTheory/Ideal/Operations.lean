@@ -141,7 +141,7 @@ theorem mem_smul_span_singleton [I.IsTwoSided] {m : M} {x : M} :
         ⟨r * s, I.mul_mem_right _ hri, hs ▸ mul_smul r s m⟩)
       fun m1 m2 ⟨y1, hyi1, hy1⟩ ⟨y2, hyi2, hy2⟩ =>
       ⟨y1 + y2, I.add_mem hyi1 hyi2, by rw [add_smul, hy1, hy2]⟩,
-    fun ⟨_, hyi, hy⟩ => hy ▸ smul_mem_smul hyi (subset_span <| mem_singleton_self m)⟩
+    fun ⟨_, hyi, hy⟩ => hy ▸ smul_mem_smul hyi (subset_span <| Set.mem_singleton_self m)⟩
 
 variable (S : Set R) (T : Set M)
 

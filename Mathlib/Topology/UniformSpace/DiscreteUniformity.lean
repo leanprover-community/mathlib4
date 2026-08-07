@@ -60,7 +60,7 @@ instance {Y : Type*} [Finite Y] [UniformSpace Y] [DiscreteTopology Y] :
     ext x
     simp [SetRel.id]
   simp_rw [discreteUniformity_iff_setRelId_mem_uniformity, h, Filter.iInter_mem,
-    ← mem_nhds_uniformity_iff_left, nhds_discrete, Filter.mem_pure, mem_singleton
+    ← mem_nhds_uniformity_iff_left, nhds_discrete, Filter.mem_pure, Set.mem_singleton,
     implies_true]
 
 variable {X} in

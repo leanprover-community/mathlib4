@@ -425,7 +425,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
     refine forall_comm.trans ?_
-    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton
+    simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton]
   tfae_have 5 ↔ 6 := by
     simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
   tfae_have 5 ↔ 7 := by
@@ -446,7 +446,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     exact (Set.Finite.isClosed <| by simp) |>.preimage h
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
-      mem_singleton_comm]
+      mem_singleton, eq_comm]
   tfae_have 10 ↔ 11 :=
     ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩⟩,
       fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
@@ -763,7 +763,7 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
 theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
     (ht : ∀ y ∈ s, f y = c) : f x = c := by
-  rw [← mem_singletonure_singleton]
+  rw [← Set.mem_singleton, ← closure_singleton]
   exact h.mem_closure hx ht
 
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
