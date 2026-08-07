@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Chain
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
@@ -89,6 +90,11 @@ lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
 lemma chainLength_smul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     (chainLength α β : K) • x = ⁅coroot α, x⁆ := by
   rw [Nat.cast_smul_eq_nsmul, chainLength_nsmul _ _ hx]
+
+-- TODO Rename and think about right API [probably just drop this lemma]
+lemma chainLength_smul' {x} (hx : x ∈ rootSpace H (chainBot α β)) :
+    (chainLength (-α) β : K) • x = -⁅coroot α, x⁆ := by
+  simp [chainLength_smul (-α) β (x := x) (by simpa only [Weight.coe_neg, chainTop_neg])]
 
 lemma apply_coroot_eq_cast' :
     β (coroot α) = ↑(chainLength α β - 2 * chainTopCoeff α β : ℤ) := by
@@ -228,6 +234,33 @@ lemma rootSpace_zsmul_add_ne_bot_iff (hα : α.IsNonZero) (n : ℤ) :
 lemma rootSpace_zsmul_add_ne_bot_iff_mem (hα : α.IsNonZero) (n : ℤ) :
     rootSpace H (n • α + β) ≠ ⊥ ↔ n ∈ Finset.Icc (-chainBotCoeff α β : ℤ) (chainTopCoeff α β) := by
   rw [rootSpace_zsmul_add_ne_bot_iff α β hα n, Finset.mem_Icc, and_comm, neg_le]
+
+lemma exists_mem_rootSpace_lie_ne_zero
+    {α β : Weight K H L} (hα : α.IsNonZero) (h_ne_bot : rootSpace H (α + β) ≠ ⊥) :
+    ∃ a ∈ rootSpace H α, ∃ b ∈ rootSpace H β, ⁅a, b⁆ ≠ 0 := by
+  obtain ⟨_, e, f, ef_sl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
+  obtain rfl := ef_sl2.h_eq_coroot hα he hf
+  obtain ⟨x, hx, hx₀⟩ := (chainTop α β).exists_ne_zero
+  refine ⟨e, he, (toEnd K L L f ^ chainTopCoeff α β) x, ?_, ?_⟩
+  · have : chainTopCoeff α β • (-⇑α) + chainTop α β = β := by rw [coe_chainTop', smul_neg]; abel
+    rw [← this]
+    exact toEnd_pow_apply_mem hf hx (chainTopCoeff α β)
+  · have hq₀ : 0 < chainTopCoeff α β := by
+      have := (rootSpace_zsmul_add_ne_bot_iff α β hα 1).mp <| by rwa [one_smul]
+      exact_mod_cast this.1
+    obtain ⟨n, hn⟩ : ∃ n, chainTopCoeff α β = n + 1 := ⟨chainTopCoeff α β - 1, by lia⟩
+    have h_prim : ef_sl2.HasPrimitiveVectorWith x (chainLength α β : K) :=
+      { ne_zero := hx₀
+        lie_h := (chainLength_smul α β hx).symm
+        lie_e := by
+          have hmem := lie_mem_genWeightSpace_of_mem_genWeightSpace he hx
+          rwa [genWeightSpace_add_chainTop α β hα] at hmem }
+    rw [hn, h_prim.lie_e_pow_succ_toEnd_f n]
+    have : chainTopCoeff α β ≤ chainLength α β := chainTopCoeff_le_chainLength α β
+    refine smul_ne_zero (mul_ne_zero (by exact_mod_cast n.succ_ne_zero) ?_)
+      (h_prim.pow_toEnd_f_ne_zero_of_eq_nat rfl (by lia))
+    rw [sub_ne_zero, Nat.cast_injective.ne_iff]
+    lia
 
 lemma chainTopCoeff_of_eq_zsmul_add
     (hα : α.IsNonZero) (β' : Weight K H L) (n : ℤ) (hβ' : (β' : H → K) = n • α + β) :
@@ -448,5 +481,51 @@ instance : (rootSystem H).IsReduced where
       (by ext x; exact DFunLike.congr_fun hu.symm x)
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
+
+variable {H}
+
+lemma neg_root_eq_reflection (i : H.root) :
+    -i = (rootSystem H).reflectionPerm i i := by
+  apply (rootSystem H).root.injective
+  rw [RootPairing.root_reflectionPerm, RootPairing.reflection_apply_self]
+  simp
+
+lemma mem_range_rootSystem_iff_rootSpace_ne_bot (χ : Dual K H) (hχ : χ ≠ 0) :
+    χ ∈ Set.range (rootSystem H).root ↔ rootSpace H χ ≠ ⊥ := by
+  suffices (∃ α : Weight K H L, α.IsNonZero ∧ α.toLinear = χ) ↔ rootSpace H χ ≠ ⊥ by simpa
+  refine ⟨fun ⟨α, hα, hα'⟩ ↦ ?_, fun h ↦ ⟨⟨χ, h⟩, Weight.coe_toLinear_ne_zero_iff.mp hχ, rfl⟩⟩
+  simpa [← hα'] using α.genWeightSpace_ne_bot
+
+lemma chainTopCoeff_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
+    chainTopCoeff i.val j.val = (rootSystem H).chainTopCoeff i j := by
+  replace hij : LinearIndependent K ![(rootSystem H).root i, (rootSystem H).root j] := by
+    rw [RootPairing.IsReduced.linearIndependent_iff]
+    refine ⟨hij.1, ?_⟩
+    convert (rootSystem H).root.injective.ne_iff.mpr hij.2
+    simp
+  suffices ∀ n, n ≤ chainTopCoeff i.val j.val ↔ n ≤ (rootSystem H).chainTopCoeff i j from
+    le_antisymm (by rw [← this]) (by rw [this])
+  intro n
+  have aux : rootSpace H (n • i + j) ≠ ⊥ ↔ n ≤ chainTopCoeff i.val j.val := by
+    have hi : i.val.IsNonZero := by aesop
+    simpa using rootSpace_zsmul_add_ne_bot_iff_mem i.val j.val hi n
+  have hij' : (rootSystem H).root j + n • (rootSystem H).root i ≠ 0 := fun contra ↦ by
+    have := LinearIndependent.pair_iff.mp hij n 1 (by norm_cast; grind)
+    grind
+  rw [← (rootSystem H).root_add_nsmul_mem_range_iff_le_chainTopCoeff hij, ← aux,
+    mem_range_rootSystem_iff_rootSpace_ne_bot _ hij', add_comm]
+  rfl
+
+lemma chainBotCoeff_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
+    chainBotCoeff i.val j.val = (rootSystem H).chainBotCoeff i j := by
+  replace hij : -i ≠ j ∧ -i ≠ -j := by aesop (add simp neg_eq_iff_eq_neg)
+  have := chainTopCoeff_eq hij
+  rw [val_neg_root, Weight.coe_neg, chainTopCoeff_neg] at this
+  rw [this, neg_root_eq_reflection, RootPairing.chainTopCoeff_reflectionPerm_left]
+
+lemma chainLength_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
+    chainLength i.val j.val =
+      (rootSystem H).chainBotCoeff i j + (rootSystem H).chainTopCoeff i j := by
+  rw [← chainBotCoeff_add_chainTopCoeff, chainBotCoeff_eq hij, chainTopCoeff_eq hij]
 
 end LieAlgebra.IsKilling
