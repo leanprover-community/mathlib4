@@ -40,6 +40,36 @@ lemma logDeriv_eq_zero_of_not_differentiableAt (f : 𝕜 → 𝕜') (x : 𝕜) (
     logDeriv f x = 0 := by
   simp only [logDeriv_apply, deriv_zero_of_not_differentiableAt h, zero_div]
 
+/-- If two functions agree in a neighborhood of `x`, then so do their logarithmic derivatives. -/
+lemma logDeriv_congr_nhds {f g : 𝕜 → 𝕜'} {x : 𝕜} (h : f =ᶠ[𝓝 x] g) :
+    logDeriv f =ᶠ[𝓝 x] logDeriv g := h.deriv.div h
+
+/--
+If two functions agree in a punctured neighborhood of `x`, then so do their logarithmic derivatives.
+-/
+lemma logDeriv_congr_nhdsNE {f g : 𝕜 → 𝕜'} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    logDeriv f =ᶠ[𝓝[≠] x] logDeriv g := h.nhdsNE_deriv.div h
+
+/--
+If two functions agree on a codiscrete subset of an open set `U`, then so do their logarithmic
+derivatives.
+-/
+theorem logDeriv_congr_codiscreteWithin {f g : 𝕜 → 𝕜'} {U : Set 𝕜} (hU : IsOpen U)
+    (h : f =ᶠ[codiscreteWithin U] g) :
+    logDeriv f =ᶠ[codiscreteWithin U] logDeriv g := by
+  refine mem_codiscreteWithin_iff_forall_mem_nhdsNE.2 fun x hx ↦ ?_
+  refine mem_of_superset (logDeriv_congr_nhdsNE ?_) Set.subset_union_left
+  filter_upwards [mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 h x hx,
+    nhdsWithin_le_nhds (hU.mem_nhds hx)] with z hz hzU
+  exact hz.resolve_right (not_not_intro hzU)
+
+/--
+If two functions agree on a codiscrete subset of `𝕜`, then so do their logarithmic derivatives.
+-/
+theorem logDeriv_congr_codiscrete {f g : 𝕜 → 𝕜'} (h : f =ᶠ[codiscrete 𝕜] g) :
+    logDeriv f =ᶠ[codiscrete 𝕜] logDeriv g :=
+  logDeriv_congr_codiscreteWithin isOpen_univ h
+
 @[simp]
 theorem logDeriv_id (x : 𝕜) : logDeriv id x = 1 / x := by
   simp [logDeriv_apply]
@@ -133,7 +163,7 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
         simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
           Pi.zero_apply]
         grind [logDeriv_apply, Pi.div_apply]
-      letI := IsRCLikeNormedField.rclike 𝕜
+      let := IsRCLikeNormedField.rclike 𝕜
       obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
       grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
     · rintro ⟨z, hz0, hz⟩ x hx

@@ -38,8 +38,6 @@ class IsPredArchimedean (α : Type*) [Preorder α] [PredOrder α] : Prop where
 export IsSuccArchimedean (exists_succ_iterate_of_le)
 export IsPredArchimedean (exists_pred_iterate_of_le)
 
-attribute [to_dual existing] exists_succ_iterate_of_le
-
 section Preorder
 
 variable [Preorder α]

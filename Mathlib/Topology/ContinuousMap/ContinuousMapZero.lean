@@ -185,19 +185,20 @@ lemma mkD_apply_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} {x : X}
 
 lemma mkD_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g = ⟨⟨s.restrict f, hf.restrict⟩, hf₀⟩ :=
-  mkD_of_continuous hf.restrict hf₀
+    mkD (s.domRestrict f) g = ⟨⟨s.domRestrict f, hf.domRestrict⟩, hf₀⟩ :=
+  mkD_of_continuous hf.domRestrict hf₀
 
 lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ¬ ContinuousOn f s) :
-    mkD (s.restrict f) g = g := by
-  rw [continuousOn_iff_continuous_restrict] at hf
+    mkD (s.domRestrict f) g = g := by
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
-    mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, restrict_apply]
+    mkD (s.domRestrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, domRestrict_apply]
 
 open ContinuousMap in
 /-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
@@ -410,7 +411,7 @@ lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)
 sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
-  toFun g := g.comp ⟨f.symm, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
+  toFun g := g.comp ⟨f.symm, (f.eq_symm_apply.eq ▸ hf).symm⟩
   invFun g := g.comp ⟨f, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
@@ -443,6 +444,7 @@ def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(
   map_star' _ := rfl
   map_smul' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- The functor `C(X, ·)₀` from non-unital topological star algebras (with non-unital continuous
 star homomorphisms) to non-unital star algebras. -/

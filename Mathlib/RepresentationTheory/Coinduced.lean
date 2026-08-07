@@ -69,6 +69,7 @@ def coindV : Submodule k (H → A) where
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
 coinduced by `ρ` along `φ`, defined as the following action of `H` on the submodule `coindV φ ρ`
@@ -84,6 +85,7 @@ def coind : Representation k H (coindV φ ρ) where
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {σ ρ} in
 /-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
@@ -128,17 +130,15 @@ noncomputable abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coi
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind φ A`, with action on maps given by postcomposition. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
   preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
-    letI := QuotientGroup.rightRel S
+    let := QuotientGroup.rightRel S
     choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
     let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
@@ -156,6 +156,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
 end Coind
 section Coind'
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant
@@ -166,7 +167,7 @@ noncomputable def _root_.Representation.coind' :
     Representation k H (res φ (leftRegular k H) ⟶ A) where
   toFun h :=
   { toFun f := (resFunctor φ).map ((leftRegularHomEquiv (leftRegular k H)).symm.toLinearMap
-      (Finsupp.single h 1)) ≫ f
+      (.single h 1)) ≫ f
     map_add' _ _ := rfl
     map_smul' _ _ := rfl }
   map_one' := by
@@ -199,7 +200,7 @@ noncomputable def coindMap' {A B : Rep k G} (f : A ⟶ B) : coind' φ A ⟶ coin
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind' φ A`, with action on maps given by postcomposition. -/
-@[simps obj map]
+@[implicit_reducible, simps obj map]
 noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
   obj A := coind' φ A
   map f := coindMap' φ f
@@ -213,7 +214,8 @@ to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
 noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
-  toFun f := Rep.ofHom ⟨linearCombination _ f.1, fun g ↦ by dsimp; ext; simp [f.2 g]⟩
+  toFun f := Rep.ofHom ⟨linearCombination _ f.1 ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).toLinearMap,
+    fun g ↦ by dsimp; ext; simp [f.2 g]⟩
   map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
   map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
   invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by
@@ -223,13 +225,12 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
   Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
 `coindFunctor k φ` and `coindFunctor' k φ` are naturally isomorphic, with isomorphism on objects
 given by `coindIso φ`. -/
@@ -243,6 +244,7 @@ end CoindIso
 
 noncomputable section Adjunction
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
   `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
   `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
@@ -269,6 +271,7 @@ info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ 
 
 attribute [pp_with_univ] Rep coind
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
 the `H`-representation morphisms `B ⟶ coind φ A`.

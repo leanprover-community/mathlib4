@@ -76,6 +76,6 @@ lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
 /-- `ℂ` and `ℝ` are isomorphic as vector spaces over `ℚ`, or equivalently,
 as additive groups. -/
 theorem Complex.nonempty_linearEquiv_real : Nonempty (ℂ ≃ₗ[ℚ] ℝ) :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mpr <| by simp
+  Module.nonempty_linearEquiv_iff_rank_eq.mpr <| by simp
 
 end Rational

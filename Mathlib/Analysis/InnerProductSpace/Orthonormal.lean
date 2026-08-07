@@ -237,7 +237,6 @@ adapted from the corresponding development of the theory of linearly independent
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
-  classical
   simp
 
 variable {𝕜 E}
@@ -329,7 +328,7 @@ theorem Orthonormal.mapLinearIsometryEquiv {v : Basis ι 𝕜 E} (hv : Orthonorm
 def LinearMap.isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E →ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       Finsupp.apply_linearCombination, Finsupp.apply_linearCombination,
       hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
@@ -350,7 +349,7 @@ def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
     rw [← LinearEquiv.coe_coe] at hf
-    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
       Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
@@ -374,7 +373,7 @@ def Orthonormal.equiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basi
         ext i
         simp
       rw [h]
-      classical exact hv'.comp _ e.injective)
+      exact hv'.comp _ e.injective)
 
 @[simp]
 theorem Orthonormal.equiv_toLinearEquiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
@@ -437,7 +436,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
     (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) := by
-    classical exact hv.inner_left_right_finset
+    exact hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]
