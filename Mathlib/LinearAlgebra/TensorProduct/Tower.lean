@@ -798,8 +798,8 @@ end Semiring
 
 section Ring
 
-variable {R A B M N : Type*} [CommRing R]
-variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {R A M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A]
 variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (f g : M →ₗ[R] N)
 

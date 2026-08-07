@@ -43,7 +43,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 open Nat Finset List Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
 mapping each prime factor of `n` to its multiplicity in `n`. -/

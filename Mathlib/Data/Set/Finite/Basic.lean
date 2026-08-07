@@ -49,7 +49,7 @@ open scoped symmDiff
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
+variable {α : Type u} {β : Type v} {γ : Type x}
 
 namespace Set
 

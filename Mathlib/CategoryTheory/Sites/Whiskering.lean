@@ -36,7 +36,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {A : Type u₂} [Category.{v₂} A]
 variable {B : Type u₃} [Category.{v₃} B]
 variable (J : GrothendieckTopology C)
-variable {U : C} (R : Presieve U)
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 /-- Describes the property of a functor to "preserve sheaves". -/

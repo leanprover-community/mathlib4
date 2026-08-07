@@ -21,7 +21,7 @@ public section
 open Cardinal Fintype
 
 universe u v
-variable {R : Type u} {M : Type v} [Semiring R]
+variable {R : Type u} [Semiring R]
 
 namespace Polynomial
 

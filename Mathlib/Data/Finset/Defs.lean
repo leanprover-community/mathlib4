@@ -67,7 +67,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 /-- `Finset α` is the type of finite sets of elements of `α`. It is implemented
   as a multiset (a list up to permutation) which has no duplicate elements. -/
@@ -357,7 +357,7 @@ end Finset
 
 namespace List
 
-variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))

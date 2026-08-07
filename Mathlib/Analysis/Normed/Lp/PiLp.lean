@@ -849,7 +849,7 @@ instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 
 variable {𝕜 p α}
 variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (β i)]
-variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
+variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)]
 
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/

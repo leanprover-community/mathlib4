@@ -123,7 +123,7 @@ theorem rename_surjective (f : σ → τ) (hf : Function.Surjective f) :
 
 section
 
-variable {f : σ → τ} (hf : Function.Injective f) {p q : MvPolynomial τ R}
+variable {f : σ → τ} (hf : Function.Injective f) {p : MvPolynomial τ R}
 
 open scoped Classical in
 /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,

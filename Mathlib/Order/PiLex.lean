@@ -248,7 +248,7 @@ end Colex
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} {a : β i} [∀ i, LinearOrder (β i)]
+variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} [∀ i, LinearOrder (β i)]
 
 section Lex
 

@@ -163,7 +163,7 @@ theorem mul_rightDvd_mul_iff_left : b * a ∣ᵣ c * a ↔ b ∣ᵣ c :=
 end RightCancelSemigroup
 
 section Monoid
-variable [Monoid α] {a b c : α} {m n : ℕ}
+variable [Monoid α] {a b : α} {m n : ℕ}
 
 @[refl, simp]
 theorem dvd_refl (a : α) : a ∣ a :=

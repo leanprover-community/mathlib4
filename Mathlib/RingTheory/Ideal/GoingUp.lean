@@ -34,7 +34,7 @@ namespace Ideal
 section
 
 variable {R : Type*} [CommRing R]
-variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
+variable {S : Type*} [CommRing S] {f : R →+* S} {I : Ideal S}
 
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by

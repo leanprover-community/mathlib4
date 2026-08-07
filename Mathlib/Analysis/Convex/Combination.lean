@@ -520,7 +520,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx
     exact hx
 
-variable {s t t₁ t₂ : Finset E}
+variable {s t₁ t₂ : Finset E}
 
 /-- Two simplices glue nicely if the union of their vertices is affine independent. -/
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))

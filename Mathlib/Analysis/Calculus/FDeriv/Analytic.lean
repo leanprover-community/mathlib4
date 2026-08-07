@@ -560,8 +560,7 @@ end fderiv
 
 section deriv
 
-variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+variable {f : 𝕜 → F} {s : Set 𝕜}
 
 /-- If a function is polynomial on a set `s`, so is its derivative. -/
 protected theorem CPolynomialOn.deriv (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (deriv f) s :=

@@ -250,7 +250,7 @@ open MeasureTheory
 
 namespace MeasurableEquiv
 
-variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
+variable {_ : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α}
 
 theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
     Measure.QuasiMeasurePreserving e.symm (μ.map e) μ :=

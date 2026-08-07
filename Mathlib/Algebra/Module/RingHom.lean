@@ -30,7 +30,7 @@ open Function Set
 
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 

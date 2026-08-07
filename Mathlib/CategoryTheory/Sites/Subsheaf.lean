@@ -43,7 +43,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' : Cᵒᵖ ⥤ Type w} (G G' : Subfunctor F)
 
 /-- Every subpresheaf of a separated presheaf is itself separated. -/
 theorem Subfunctor.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :

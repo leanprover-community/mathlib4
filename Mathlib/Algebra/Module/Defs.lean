@@ -43,7 +43,7 @@ open Function Set
 
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R M M₂ : Type*}
 
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,

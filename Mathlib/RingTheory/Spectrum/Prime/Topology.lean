@@ -329,8 +329,6 @@ theorem discreteTopology_of_toLocalization_surjective
 
 section Comap
 
-variable {S' : Type*} [CommSemiring S']
-
 @[fun_prop]
 lemma continuous_comap (f : R →+* S) : Continuous (comap f) := by
   simp only [continuous_iff_isClosed, isClosed_iff_zeroLocus]

@@ -33,7 +33,7 @@ public section
 
 open AffineMap
 
-variable {k E PE : Type*}
+variable {k E : Type*}
 
 /-!
 ### Monotonicity of `lineMap`

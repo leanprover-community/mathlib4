@@ -253,7 +253,7 @@ end IsDomain
 
 section DivisionRing
 
-variable [DivisionRing R] {p q : R[X]}
+variable [DivisionRing R] {p : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
   lt_of_not_ge fun h => by
@@ -264,7 +264,7 @@ end DivisionRing
 
 section SimpleRing
 
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p : R[X]}
 
 @[simp]
 protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=

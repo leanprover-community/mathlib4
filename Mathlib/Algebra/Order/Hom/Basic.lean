@@ -75,7 +75,7 @@ There are two workarounds:
 
 open Function
 
-variable {ι F α β γ δ : Type*}
+variable {F α β : Type*}
 
 /-! ### Basics -/
 

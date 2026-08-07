@@ -46,7 +46,7 @@ identification. See `Finset.finAntidiag` for the details.
 
 open Function
 
-variable {ι μ μ' : Type*}
+variable {ι μ : Type*}
 
 namespace Finset
 section AddCommMonoid

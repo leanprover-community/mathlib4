@@ -34,7 +34,7 @@ open scoped Polynomial
 
 section ScaleRoots
 
-variable {A K R S : Type*} [CommRing A] [Field K] [CommRing R] [CommRing S]
+variable {A K S : Type*} [CommRing A] [Field K] [CommRing S]
 variable {M : Submonoid A} [Algebra A S] [IsLocalization M S] [Algebra A K] [IsFractionRing A K]
 
 open Finsupp IsFractionRing IsLocalization Polynomial

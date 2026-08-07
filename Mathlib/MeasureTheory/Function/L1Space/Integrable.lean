@@ -44,9 +44,9 @@ open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 open scoped Topology
 
-variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
+variable {α β γ δ ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
-  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε'] [ENorm ε'']
+  [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
 
 namespace MeasureTheory
 
@@ -1147,7 +1147,7 @@ end Trim
 
 section SigmaFinite
 
-variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
+variable {m0 : MeasurableSpace α}
   {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]

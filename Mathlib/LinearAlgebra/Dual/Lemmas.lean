@@ -81,7 +81,7 @@ noncomputable section
 
 namespace Module
 
-variable (R A M : Type*)
+variable (R M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section Prod
@@ -720,8 +720,8 @@ section VectorSpace
 
 section
 
-variable {K V₁ V₂ : Type*} [DivisionRing K]
-variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
+variable {K V₁ : Type*} [DivisionRing K]
+variable [AddCommGroup V₁] [Module K V₁]
 
 namespace Module.Dual
 
@@ -1069,9 +1069,6 @@ lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddComm
 namespace TensorProduct
 
 variable (R A : Type*) (M : Type*) (N : Type*)
-variable {ι κ : Type*}
-variable [DecidableEq ι] [DecidableEq κ]
-variable [Fintype ι] [Fintype κ]
 
 open TensorProduct
 

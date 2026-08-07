@@ -19,11 +19,11 @@ public section
 
 open Set
 
-variable {ι α β γ : Type*}
+variable {ι α β : Type*}
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [ConditionallyCompleteLinearOrder α] {s : Set α} {a b : α}
 
 theorem Finset.Nonempty.csSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
   eq_of_forall_ge_iff fun _ => (csSup_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm

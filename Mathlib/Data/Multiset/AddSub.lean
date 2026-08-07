@@ -35,7 +35,7 @@ universe v
 
 open List Subtype Nat Function
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 namespace Multiset
 
@@ -367,7 +367,7 @@ end sub
 
 section Rel
 
-variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {r : α → β → Prop}
 
 theorem Rel.add {s t u v} (hst : Rel r s t) (huv : Rel r u v) : Rel r (s + u) (t + v) := by
   induction hst with

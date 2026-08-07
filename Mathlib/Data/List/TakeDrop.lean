@@ -31,7 +31,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u} {l₁ l₂ : List α}
 
 /-! ### take, drop -/
 

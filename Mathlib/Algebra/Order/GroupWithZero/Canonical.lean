@@ -112,7 +112,7 @@ lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
-variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
+variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {n : ℕ}
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -614,7 +614,7 @@ end LE
 
 section LT
 
-variable [LT α] {x y : WithZero α} {a b : α}
+variable [LT α] {x : WithZero α} {a b : α}
 
 lemma lt_unzeroD_iff (hx : x ≠ 0) : b < x.unzeroD a ↔ b < x := by
   lift x to α using hx; simp
@@ -626,7 +626,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {x y : WithZero α} {a b : α}
+variable [Preorder α] {x : WithZero α} {b : α}
 
 theorem le_coe_unzeroD (x : WithZero α) (b : α) : x ≤ x.unzeroD b := by cases x <;> simp
 
@@ -634,7 +634,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {x y : WithZero α} {a b : α}
+variable [PartialOrder α] {y : WithZero α} {a b : α}
 
 lemma le_unzeroD (hy : b ≤ y) : b ≤ y.unzeroD a := by
   have hne : y ≠ 0 := ne_bot_of_le_ne_bot WithZero.coe_ne_zero hy

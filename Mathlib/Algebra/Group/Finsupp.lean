@@ -438,7 +438,7 @@ lemma mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf :
   ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 
 section AddGroup
-variable [AddGroup G] {p : ι → Prop} {v v' : ι →₀ G}
+variable [AddGroup G] {v : ι →₀ G}
 
 lemma mapRange_neg' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G H]
     {f : F} (v : ι →₀ G) :

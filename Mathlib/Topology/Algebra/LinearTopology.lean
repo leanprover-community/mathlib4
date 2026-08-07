@@ -345,7 +345,7 @@ end Ring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [TopologicalSpace R]
+variable {R : Type*} [CommRing R] [TopologicalSpace R]
 
 /-- If `R` is commutative and left-linearly topologized, it is also right-linearly topologized. -/
 instance (priority := 100) [IsLinearTopology R R] :

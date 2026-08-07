@@ -34,7 +34,7 @@ open Nat Function
 
 namespace List
 
-variable {α β : Type*} {R : α → α → Prop} {l : List α} {a : α}
+variable {α : Type*} {R : α → α → Prop} {l : List α} {a : α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 

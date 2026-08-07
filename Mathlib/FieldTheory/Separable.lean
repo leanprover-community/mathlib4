@@ -760,8 +760,8 @@ end AlgEquiv
 
 section CardAlgHom
 
-variable {R S T : Type*} [CommRing S]
-variable {K L F : Type*} [Field K] [Field L] [Field F]
+variable {S : Type*} [CommRing S]
+variable {K L : Type*} [Field K] [Field L]
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)

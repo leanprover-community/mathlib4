@@ -30,7 +30,7 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, 
 
 assert_not_exists MulAction IsOrderedMonoid
 
-variable {F ι α β : Type*}
+variable {F α β : Type*}
 
 namespace NNRat
 variable [DivisionSemiring α] {q r : ℚ≥0}

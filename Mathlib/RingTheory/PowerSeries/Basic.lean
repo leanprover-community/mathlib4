@@ -860,7 +860,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) =

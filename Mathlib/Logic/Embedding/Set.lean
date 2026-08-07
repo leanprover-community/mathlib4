@@ -26,7 +26,7 @@ open Set Set.Notation
 
 section Equiv
 
-variable {α : Sort u} {β : Sort v} (f : α ≃ β)
+variable {α : Sort u} {β : Sort v}
 
 @[simp]
 theorem Equiv.asEmbedding_range {α β : Sort _} {p : β → Prop} (e : α ≃ Subtype p) :

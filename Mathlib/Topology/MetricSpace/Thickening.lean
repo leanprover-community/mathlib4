@@ -674,7 +674,7 @@ end Cthickening
 
 section PseudoMetricSpace
 
-variable {α β E : Type*} [PseudoMetricSpace α] {l : Filter β} {s : Set α}
+variable {α β : Type*} [PseudoMetricSpace α] {l : Filter β} {s : Set α}
 
 theorem thickening_ball (x : α) (ε δ : ℝ) :
     thickening ε (ball x δ) ⊆ ball x (ε + δ) := by

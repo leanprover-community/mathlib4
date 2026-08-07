@@ -841,7 +841,7 @@ end RingEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+variable {G : Type*} (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 section
 

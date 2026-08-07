@@ -259,7 +259,7 @@ end MulZeroClass
 
 section MulOneClass
 
-variable [MulOneClass α] [Zero α] {a b c d : α}
+variable [MulOneClass α] [Zero α] {a b : α}
 
 section Preorder
 
@@ -478,7 +478,7 @@ lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
 
-variable [Preorder α] {f g : α → M₀}
+variable [Preorder α] {f : α → M₀}
 
 lemma monotone_mul_left_of_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : Monotone fun x ↦ a * x :=
   fun _ _ h ↦ mul_le_mul_of_nonneg_left h ha
@@ -819,7 +819,7 @@ lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
 end Preorder
 
 section Preorder
-variable [Preorder G₀] [ZeroLEOneClass G₀] {a b c : G₀}
+variable [Preorder G₀] [ZeroLEOneClass G₀] {a : G₀}
 
 /-- See `div_self` for the version with equality when `a ≠ 0`. -/
 lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
@@ -1303,7 +1303,7 @@ end Both
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder G₀] {a b c d : G₀}
+variable [LinearOrder G₀] {a b : G₀}
 
 section PosMulMono
 variable [PosMulMono G₀]

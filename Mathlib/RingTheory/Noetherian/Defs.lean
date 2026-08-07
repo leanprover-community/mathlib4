@@ -66,9 +66,9 @@ attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
 
 section
 
-variable {R : Type*} {M : Type*} {P : Type*}
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P]
-variable [Module R M] [Module R P]
+variable {R : Type*} {M : Type*}
+variable [Semiring R] [AddCommMonoid M]
+variable [Module R M]
 
 open IsNoetherian
 
@@ -108,8 +108,8 @@ section
 
 universe w
 
-variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-  [Module R N] [AddCommMonoid P] [Module R P]
+variable {R M : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+  [Module R N]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
   refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm

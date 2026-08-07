@@ -36,7 +36,7 @@ namespace ENNReal
 
 section Real
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
+variable {a b c : ℝ≥0∞} {r p q : ℝ≥0}
 
 theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal + b.toReal := by
   lift a to ℝ≥0 using ha

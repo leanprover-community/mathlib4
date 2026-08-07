@@ -247,7 +247,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-variable {ι : Type*} {G : ι → Type*}
+variable {ι : Type*}
 
 /-- An orthogonal family forms an independent family of subspaces; that is, any collection of
 elements each from a different subspace in the family is linearly independent. In particular, the

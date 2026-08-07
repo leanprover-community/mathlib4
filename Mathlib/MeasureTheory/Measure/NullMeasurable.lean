@@ -423,7 +423,7 @@ section IsComplete
 class Measure.IsComplete {_ : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∀ s, μ s = 0 → MeasurableSet s
 
-variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
+variable {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
 
 theorem Measure.isComplete_iff : μ.IsComplete ↔ ∀ s, μ s = 0 → MeasurableSet s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩

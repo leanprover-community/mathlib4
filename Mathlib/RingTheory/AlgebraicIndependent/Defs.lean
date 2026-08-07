@@ -45,7 +45,7 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-variable {ι ι' : Type*} (R : Type*) {K A A' : Type*} (x : ι → A)
+variable {ι ι' : Type*} (R : Type*) {A A' : Type*} (x : ι → A)
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`

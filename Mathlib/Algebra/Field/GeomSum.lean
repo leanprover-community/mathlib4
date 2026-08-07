@@ -28,7 +28,7 @@ public section
 
 assert_not_exists IsOrderedRing
 
-variable {R K : Type*}
+variable {K : Type*}
 
 open Finset MulOpposite
 

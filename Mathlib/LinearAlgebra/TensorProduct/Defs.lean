@@ -37,21 +37,13 @@ bilinear, tensor, tensor product
 
 section Semiring
 
-variable {R R₂ R₃ R' R'' : Type*}
-variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {A M N P Q S : Type*}
-variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [AddCommMonoid P'] [AddCommMonoid Q']
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
-variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
+variable {R R' R'' : Type*}
+variable [CommSemiring R] [Monoid R'] [Semiring R'']
+variable {A M N P S : Type*}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid S]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable [Module R M] [Module R N] [Module R S]
-variable [Module R P'] [Module R Q']
-variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
-variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
 
 variable (M N)
 

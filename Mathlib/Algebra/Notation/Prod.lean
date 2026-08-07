@@ -22,7 +22,7 @@ included.
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G H M N P R S : Type*}
+variable {G H M N R S : Type*}
 
 namespace Prod
 

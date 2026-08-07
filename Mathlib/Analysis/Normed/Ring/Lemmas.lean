@@ -20,7 +20,7 @@ In this file we continue building the theory of (semi)normed rings.
 
 @[expose] public section
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α : Type*} {ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise

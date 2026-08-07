@@ -27,7 +27,7 @@ assert_not_exists MulAction MonoidWithZero
 
 open Function MulOpposite
 
-variable {F α β γ : Type*}
+variable {α β : Type*}
 
 namespace Set
 
@@ -60,7 +60,7 @@ end Inv
 /-! ### Set addition/multiplication -/
 section Mul
 
-variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s t : Set α} {a b : α}
 
 @[to_additive]
 theorem iUnion_mul_left_image : ⋃ a ∈ s, (a * ·) '' t = s * t :=
@@ -129,7 +129,7 @@ end Mul
 
 section Div
 
-variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
+variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem iUnion_div_left_image : ⋃ a ∈ s, (a / ·) '' t = s / t :=
@@ -197,8 +197,7 @@ end Div
 
 section SMul
 
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
-  {b : β}
+variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s : Set α} {t : Set β} {a : α}
 
 @[to_additive] lemma iUnion_smul_left_image : ⋃ a ∈ s, a • t = s • t := iUnion_image_left _
 
@@ -259,7 +258,7 @@ lemma iUnion_smul_set (s : Set α) (t : Set β) : ⋃ a ∈ s, a • t = s • t
 end SMul
 
 section SMulSet
-variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s t t₁ t₂ : Set β} {a : α} {b : β} {x y : β}
+variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s t : Set β} {a : α}
 
 @[to_additive]
 lemma smul_set_iUnion (a : α) (s : ι → Set β) : a • ⋃ i, s i = ⋃ i, a • s i :=
@@ -286,11 +285,10 @@ lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
     a • ⋂ i, ⋂ j, t i j ⊆ ⋂ i, ⋂ j, a • t i j := image_iInter₂_subset ..
 
 end SMulSet
-variable {s : Set α} {t : Set β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {a : α}
 
 section VSub
-variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
-  {b c : β}
+variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s t : Set β} {a : α}
 
 lemma iUnion_vsub_left_image : ⋃ a ∈ s, (a -ᵥ ·) '' t = s -ᵥ t := iUnion_image_left _
 lemma iUnion_vsub_right_image : ⋃ a ∈ t, (· -ᵥ a) '' s = s -ᵥ t := iUnion_image_right _

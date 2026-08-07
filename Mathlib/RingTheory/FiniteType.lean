@@ -32,7 +32,7 @@ open Polynomial
 section ModuleAndAlgebra
 
 universe uR uS uA uB uM uN
-variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB) (M : Type uM) (N : Type uN)
+variable (R : Type uR) (S : Type uS) (A : Type uA) (B : Type uB)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/
@@ -41,7 +41,7 @@ class Algebra.FiniteType [CommSemiring R] [Semiring A] [Algebra R A] : Prop wher
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [Semiring R]
 
 namespace Finite
 
@@ -66,8 +66,6 @@ namespace Algebra
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B]
-variable [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 

@@ -155,7 +155,7 @@ end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -196,7 +196,7 @@ end
 
 section
 
-variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
+variable [TopologicalSpace α] {f : α → E} {a : α}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
 theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
@@ -301,7 +301,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :

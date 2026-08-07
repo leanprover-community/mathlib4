@@ -25,7 +25,7 @@ public section
 open Nat
 
 namespace Int
-variable {a b c d m n : ℤ}
+variable {a b c m n : ℤ}
 
 attribute [gcongr] ofNat_le
 

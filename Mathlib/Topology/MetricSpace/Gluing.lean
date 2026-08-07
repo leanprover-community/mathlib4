@@ -206,7 +206,7 @@ glues only along the basepoints, putting them at distance 1. We give a direct de
 the distance, without `iInf`, as it is easier to use in applications, and show that it is equal to
 the gluing distance defined above to take advantage of the lemmas we have already proved.
 -/
-variable {X : Type u} {Y : Type v} {Z : Type w}
+variable {X : Type u} {Y : Type v}
 variable [MetricSpace X] [MetricSpace Y]
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
@@ -462,7 +462,6 @@ section Gluing
 -- Exact gluing of two metric spaces along isometric subsets.
 variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [Nonempty Z] [MetricSpace Z] [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y}
-  {ε : ℝ}
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

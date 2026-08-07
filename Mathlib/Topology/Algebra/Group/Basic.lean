@@ -226,7 +226,7 @@ theorem continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 
-variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
+variable [TopologicalSpace α] {f : α → G} {x : α}
 
 @[to_additive]
 instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›

@@ -245,7 +245,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a b c : G}
+variable [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] {a : G}
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {H : Type*} [MulOneClass H] [LE H]

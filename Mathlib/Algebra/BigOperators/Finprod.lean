@@ -90,7 +90,7 @@ open Function Set
 
 section sort
 
-variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 section
 

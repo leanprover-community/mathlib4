@@ -446,7 +446,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 section
 
 variable {M : Type*} [AddCommGroup M] [Module A M] [Module R M]
-variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
+variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (a b : A)
 
 protected theorem map_neg : D (-a) = -D a :=
   map_neg D a

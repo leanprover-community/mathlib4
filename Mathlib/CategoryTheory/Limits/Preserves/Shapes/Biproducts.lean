@@ -86,7 +86,7 @@ namespace Limits
 
 section Bicone
 
-variable {J : Type w₁} {K : Type w₂}
+variable {J : Type w₁}
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/

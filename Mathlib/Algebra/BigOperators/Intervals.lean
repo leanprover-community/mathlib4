@@ -25,7 +25,7 @@ variable {α G M : Type*}
 namespace Finset
 
 section Generic
-variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
+variable [CommMonoid M] {s : Finset α} {a : α} {f : α → M}
 
 @[to_additive]
 theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
@@ -205,7 +205,7 @@ end Generic
 section Nat
 
 variable {M : Type*}
-variable (f g : ℕ → M) {m n : ℕ}
+variable (f : ℕ → M) {m n : ℕ}
 
 section Group
 

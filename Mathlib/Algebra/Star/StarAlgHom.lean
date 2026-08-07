@@ -223,7 +223,7 @@ end Basic
 section Zero
 
 -- the `zero` requires extra type class assumptions because we need `star_zero`
-variable {R A B C D : Type*} [Monoid R]
+variable {R A B : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
@@ -544,9 +544,8 @@ end Pi
 
 section InlInr
 
-variable (R A B C : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+variable (R A B : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
   [StarAddMonoid A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
-  [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [StarAddMonoid C]
 
 /-- The left injection into a product is a non-unital algebra homomorphism. -/
 def inl : A →⋆ₙₐ[R] A × B :=
@@ -1072,11 +1071,10 @@ end Unital
 
 section Bijective
 
-variable {F G R A B : Type*} [Monoid R]
+variable {F R A B : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
-variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [StarHomClass G B A]
 
 /-- Promote a bijective star algebra homomorphism to a star algebra equivalence. -/
 noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[R] B :=

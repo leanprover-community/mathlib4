@@ -25,8 +25,8 @@ open Polynomial Submodule
 
 section Ring
 
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable {R A : Type*}
+variable [CommRing R] [Ring A]
 
 variable [Algebra R A] (R)
 

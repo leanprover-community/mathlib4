@@ -31,7 +31,7 @@ namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {a b : R} {n : ℕ}
+variable {R : Type u} {S : Type v} {a b : R} {n : ℕ}
 
 section CommRing
 

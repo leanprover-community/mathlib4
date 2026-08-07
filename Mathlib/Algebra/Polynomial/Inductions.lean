@@ -29,7 +29,7 @@ namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {A : Type z} {a b : R} {n : ℕ}
 
 section Semiring
 

@@ -130,7 +130,7 @@ end
 
 section
 
-variable {P X Y Z : C} (f : X ⟶ P) (g : Y ⟶ P)
+variable {P X Y : C} (f : X ⟶ P) (g : Y ⟶ P)
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

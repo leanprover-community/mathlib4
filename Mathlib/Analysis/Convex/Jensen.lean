@@ -37,7 +37,7 @@ public section
 
 open Finset LinearMap Set Convex Pointwise
 
-variable {𝕜 E F β ι : Type*}
+variable {𝕜 E β ι : Type*}
 
 /-! ### Jensen's inequality -/
 

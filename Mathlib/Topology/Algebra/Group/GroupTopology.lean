@@ -27,7 +27,7 @@ open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
 
-variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v}
 
 /-- A group topology on a group `α` is a topology for which multiplication and inversion
 are continuous. -/

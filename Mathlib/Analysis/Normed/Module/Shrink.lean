@@ -18,7 +18,7 @@ noncomputable section
 namespace Shrink
 
 universe v
-variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormedField 𝕜]
+variable {𝕜 α : Type*} [Small.{v} α] [NormedField 𝕜]
 
 instance [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.seminormedAddCommGroup

@@ -50,7 +50,7 @@ end MeasureTheory
 
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ} {P : Measure Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure ℝ}
 
 /-- If a random variable is ae equal to `0` or `1`, then its conditional variance is the product of
 the conditional probabilities that it's equal to `0` and that it's equal to `1`. -/

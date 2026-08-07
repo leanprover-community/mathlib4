@@ -32,8 +32,8 @@ section
 
 universe w
 
-variable {R M P : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-  [Module R N] [AddCommGroup P] [Module R P] [IsNoetherian R M]
+variable {R M : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+  [Module R N] [IsNoetherian R M]
 
 /-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,

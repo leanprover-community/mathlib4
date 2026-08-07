@@ -31,8 +31,7 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
-  {b₁ b₂ : β}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,

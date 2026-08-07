@@ -1215,7 +1215,7 @@ theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
+variable {x y : α} {ε : ℝ} {s : Set α}
 
 /-- If `f` is a positive radius tending to zero, then the sets of pairs with distance less than
 `f i` form a basis of the uniformity. -/

@@ -49,7 +49,7 @@ open Function Set
 
 universe u
 
-variable {α β γ δ : Type*} {ι ι' ι₂ : Sort*} {κ κ₁ κ₂ : ι → Sort*} {κ' : ι' → Sort*}
+variable {α β γ : Type*} {ι ι' ι₂ : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 namespace Set
 

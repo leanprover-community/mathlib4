@@ -105,9 +105,7 @@ end Complex
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
 variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A linear isometry preserves the inner product. -/

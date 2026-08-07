@@ -66,7 +66,7 @@ open Function OrderDual
 
 universe u v
 
-variable {α : Type u} {β : Type*} {x y z : α}
+variable {α : Type u} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras

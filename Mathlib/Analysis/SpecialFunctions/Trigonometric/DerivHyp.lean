@@ -300,7 +300,7 @@ end
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x y : ℝ}
 
 theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
   (Complex.hasStrictDerivAt_sinh x).real_of_complex
