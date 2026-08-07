@@ -708,6 +708,13 @@ variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
 
 namespace IsAdjoinRoot
 
+theorem isField_iff_irreducible {E : Type*} [Ring E] [Algebra F E] (h : IsAdjoinRoot E f) :
+    IsField E ↔ Irreducible f := by
+  rw [← MulEquiv.isField_congr h.adjoinRootAlgEquiv.toMulEquiv, AdjoinRoot.isField_iff_irreducible]
+
+protected theorem irreducible (h : IsAdjoinRoot E f) : Irreducible f :=
+  (isField_iff_irreducible h).mp (Field.toIsField E)
+
 theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
   IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
 

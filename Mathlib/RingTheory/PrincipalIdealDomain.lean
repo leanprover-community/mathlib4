@@ -330,6 +330,11 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
       rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
+theorem _root_.Ideal.irreducible_iff_isMaximal_span_singleton
+    [CommSemiring R] [IsPrincipalIdealRing R] [IsDomain R] {p : R} (hp : p ≠ 0) :
+    Irreducible p ↔ Ideal.IsMaximal (span R ({p} : Set R)) :=
+  ⟨isMaximal_of_irreducible, Ideal.irreducible_of_isMaximal_span_singleton hp⟩
+
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
