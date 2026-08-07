@@ -569,6 +569,29 @@ theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
   (Homeomorph.ofDiscrete f).isHomeomorph
 
+/-- A bijection between indiscrete topological spaces induces a homeomorphism. -/
+def Homeomorph.ofIndiscrete [IndiscreteTopology X] [IndiscreteTopology Y] (f : X ≃ Y) :
+    X ≃ₜ Y where
+  toEquiv := f
+  continuous_toFun := continuous_of_indiscreteTopology
+  continuous_invFun := continuous_of_indiscreteTopology
+
+theorem Equiv.isHomeomorph_of_indiscrete [IndiscreteTopology X] [IndiscreteTopology Y]
+    (f : X ≃ Y) : IsHomeomorph f :=
+  (Homeomorph.ofIndiscrete f).isHomeomorph
+
+/-- A bijection between cofinite topological spaces induces a homeomorphism. -/
+def Homeomorph.ofCofinite (f : CofiniteTopology X ≃ CofiniteTopology Y) :
+    CofiniteTopology X ≃ₜ CofiniteTopology Y where
+  toEquiv := f
+  continuous_toFun := CofiniteTopology.continuous_of_injective f.injective
+  continuous_invFun := CofiniteTopology.continuous_of_injective f.symm.injective
+
+omit [TopologicalSpace X] [TopologicalSpace Y] in
+theorem Equiv.isHomeomorph_of_cofinite (f : CofiniteTopology X ≃ CofiniteTopology Y) :
+    IsHomeomorph f :=
+  (Homeomorph.ofCofinite f).isHomeomorph
+
 section
 
 /-- If `f : X → Y` is coinducing and has connected fibers, it induces a homeomorphism on `π₀`. -/
