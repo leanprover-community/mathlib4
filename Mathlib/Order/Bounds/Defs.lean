@@ -23,6 +23,10 @@ In this file we define:
 * `IsCofinalFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `a ≤ b`
 * `IsCoinitial s`: for every `a`, there exists a member of `s` less than or equal to it.
 * `IsCoinitialFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
+* `SupSet α`, `InfSet α`: typeclasses introducing the operation `SupSet.sSup` and `InfSet.sInf`
+  (exported to the root namespace).
+* `OrderSupSet α`, `OrderInfSet α`: typeclasses expressing that `sSup` (resp., `sInf`) returns
+  the least upper bound (resp., the greatest lower bound) of a set whenever one exists.
 -/
 
 @[expose] public section
@@ -61,3 +65,29 @@ def IsCofinalFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
 @[to_dual /-- A set is coinitial when for every `x : α` there exists `y ∈ s` with `y ≤ x`. -/]
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
+
+/-- Class for the `sSup` operator -/
+class SupSet (α : Type*) where
+  /-- Supremum of a set -/
+  sSup : Set α → α
+
+/-- Class for the `sInf` operator -/
+@[to_dual existing]
+class InfSet (α : Type*) where
+  /-- Infimum of a set -/
+  sInf : Set α → α
+
+export SupSet (sSup)
+
+export InfSet (sInf)
+
+/-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
+the least upper bound of a set whenever one exists. -/
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
+  protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
+
+/-- `OrderInfSet α` expresses that `α` is equipped with the operation `sInf` that returns
+the greatest lower bound of a set whenever one exists. -/
+@[to_dual existing]
+class OrderInfSet (α : Type*) [LE α] extends InfSet α where
+  protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)

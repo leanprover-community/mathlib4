@@ -109,5 +109,5 @@ def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ]
       · enter [1, i, 1, hi]
         rw [(not_specializes_iff_exists_open.1 (mt Specializes.inseparable hi)).elim
           fun S hS => comap_const_of_notMem (hS.1.mem_nhds hS.2.1) hS.2.2]
-    rw [iSup_subtype', @iSup_const _ _ _ _ ⟨⟨x, .rfl⟩⟩]
+    rw [iSup_subtype', @iSup_const _ _ _ _ _ ⟨⟨x, .rfl⟩⟩]
     simp
