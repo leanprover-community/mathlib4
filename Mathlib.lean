@@ -1404,7 +1404,10 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.IrreducibleComponent
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.LimitsOver
+public import Mathlib.AlgebraicGeometry.Modules.AffineVanishing
+public import Mathlib.AlgebraicGeometry.Modules.KempfProp1
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
+public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.AlgebraicGeometry.Modules.Tilde
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
@@ -8223,7 +8226,6 @@ public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Sheafify
 public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.ZeroOutside
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
 public import Mathlib.Topology.SmallInductiveDimension
