@@ -5953,6 +5953,9 @@ public import Mathlib.NumberTheory.SmoothNumbers
 public import Mathlib.NumberTheory.SumFourSquares
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.SumTwoSquares
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlg
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainAlgSetup
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.MainOrder
 public import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
@@ -6490,6 +6493,7 @@ public import Mathlib.RingTheory.Algebraic.Denominator
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Algebraic.LinearIndependent
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.Algebraic.NatDenominator
 public import Mathlib.RingTheory.Algebraic.Pi
 public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
 public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
