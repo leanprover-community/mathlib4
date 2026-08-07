@@ -17,6 +17,13 @@ measurable. Indeed, if `X` is not almost-everywhere measurable then `P.map X` is
 so that `HasLaw X 0 P` would be true. The measurability hypothesis ensures nice interactions with
 operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
+
+Note the existence of the analog concept `MeasureTheory.MeasurePreserving` which requires
+measurability instead of a.e.-measurability. This is too strong in probability theory where
+we often use almost-everywhere equality and only need a.e.-measurability hypotheses.
+However, if one wants to state `HasLaw f μ P` for a certain explicit function `f` that is not
+only `AEMeasurable` but `Measurable`, then one should state `MeasureTheory.MeasurePreserving f P μ`
+instead and rely on lemmas in this file that link the two notions.
 -/
 
 public section
@@ -34,7 +41,14 @@ variable (X μ) in
 /-- The predicate `HasLaw X μ P` registers the fact that the random variable `X` has law `μ` under
 the measure `P`, in other words that `P.map X = μ`. We also require `X` to be `AEMeasurable`,
 to allow for nice interactions with operations on the codomain of `X`. See for instance
-`HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`. -/
+`HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
+
+Note the existence of the analog concept `MeasureTheory.MeasurePreserving` which requires
+measurability instead of a.e.-measurability. This is too strong in probability theory where
+we often use almost-everywhere equality and only need a.e.-measurability hypotheses.
+However, if one wants to state `HasLaw f μ P` for a certain explicit function `f` that is not
+only `AEMeasurable` but `Measurable`, then one should state `MeasureTheory.MeasurePreserving f P μ`
+instead and rely on lemmas in this file that link the two notions. -/
 @[fun_prop]
 structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
   protected aemeasurable : AEMeasurable X P := by fun_prop
