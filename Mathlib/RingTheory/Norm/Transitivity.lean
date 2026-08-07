@@ -219,7 +219,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
   rw [← norm_norm (S := F), ← coe_gen K x, ← IntermediateField.algebraMap_apply,
     norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
   apply IsIntegral.pow
-  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
+  rw [← isIntegral_algebraMap_iff (B := AlgebraicClosure K),
     norm_gen_eq_prod_roots _ (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
   suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa
