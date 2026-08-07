@@ -205,6 +205,8 @@ theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
 
 open scoped Manifold
 
+set_option warn.classDefReducibility false -- TODO: how to fix this?
+
 attribute [local instance] ChartedSpace.of_discreteTopology
 instance [DiscreteTopology G] [ContMDiffSMul 𝓘(𝕜, PUnit) I n G M] :
     IsManifold I n (orbitRel.Quotient G M) := isManifold_quotient_of_contMDiffSMul I 𝓘(𝕜, PUnit)
