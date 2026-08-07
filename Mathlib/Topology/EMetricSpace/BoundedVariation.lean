@@ -1011,7 +1011,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
 small closed intervals to the right of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α}
-    (hf : BoundedVariationOn f s) (x : α) (h : ContinuousWithinAt f (s ∩ Ici x) x) :
+    (hf : BoundedVariationOn f s) {x : α} (h : ContinuousWithinAt f (s ∩ Ici x) x) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s] x) (𝓝 0) := by
   have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Icc (toDual y) (toDual x))) := by
