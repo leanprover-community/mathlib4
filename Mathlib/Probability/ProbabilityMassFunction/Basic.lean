@@ -49,14 +49,16 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
+@[deprecated "" (since := "2026-08-01")]
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective _ _ h := Subtype.ext h
 
-@[ext]
+@[deprecated Measure.ext_of_singleton (since := "2026-08-01")]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
 
+@[deprecated  (since := "2026-08-01")]
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=
   p.2
 
