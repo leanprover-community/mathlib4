@@ -21,10 +21,14 @@ These tests cover the pure logic of the cache system, including:
 - CLI flag parsing (`--cache-from`, `--scope`, `--unsafe`, `--repo`, etc.)
 - `--unsafe` download-round expansion (`expandDownloadRounds`) and the
   non-default-scope security warning it triggers
+- Decompression-pipeline carry across download rounds (`DecompState`,
+  `finalizeDecomp`, `monitorCurl`)
 - Utility functions (URL extraction, filename hashing, etc.)
 
-Anything that touches `curl` or the network is left to CI, which exercises the
-`cache get`/`put` paths end-to-end on real containers.
+Anything that touches the network is left to CI, which exercises the
+`cache get`/`put` paths end-to-end on real containers. The unit tests spawn
+two local processes, `curl --version` and one leantar run on a nonexistent
+archive; neither makes a network request.
 
 ## Invariants these tests defend
 
@@ -40,6 +44,10 @@ Anything that touches `curl` or the network is left to CI, which exercises the
    collide.
 5. `legacy` stays readable with its mixed layout (flat for the canonical repo,
    prefixed for forks) so older clients keep working.
+6. Multi-round downloads decompress every file they fetch: the decompression
+   pipeline state is carried from each container round into the next and
+   drained after the last one, so a fork-PR `get` leaves no downloaded file
+   compressed on disk.
 
 ## Running the tests
 
@@ -974,6 +982,75 @@ def test_expandDownloadRounds : IO Unit := do
 
 end UnsafeRounds
 
+section DecompPipeline
+
+/-- Shared `DecompConfig` for the pipeline tests. `hashToMod` is unused here;
+`isMathlibRoot := true` makes `decompressBatch` treat pending paths as plain
+entries, so `mathlibDepPath` is unused too. -/
+private def testDecompConfig : DecompConfig :=
+  { hashToMod := ∅, force := false, isMathlibRoot := true, mathlibDepPath := "." }
+
+/-- `finalizeDecomp` drains the decompression pipeline after the last download
+round: it harvests the in-flight leantar batch, then decompresses the pending
+files. A pipeline dropped at a round boundary leaves downloaded files
+compressed on disk, forcing a rebuild. This test pins the harvest/counter
+logic and the pending-drain failure path; successful pending decompression
+needs real archives and is covered by CI. -/
+def test_finalizeDecomp : IO Unit := do
+  IO.println "finalizeDecomp:"
+  -- An empty pipeline passes the counters through unchanged.
+  let (d, f) ← withSuppressedOutput <|
+    finalizeDecomp { decompressed := 5, decompFailed := 2 } testDecompConfig
+  assert "empty pipeline passes counters through" (d == 5 && f == 2)
+
+  -- A finished successful batch is harvested into the success counter.
+  let okTask : Task (Except IO.Error Unit) := Task.pure (.ok ())
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { currentTask := some okTask, lastBatchSize := 3, decompressed := 5 } testDecompConfig
+  assert "successful in-flight batch adds its size to decompressed" (d == 8 && f == 0)
+
+  -- A failed batch is harvested into the failure counter, not the success one.
+  let errTask : Task (Except IO.Error Unit) := Task.pure (.error (IO.userError "boom"))
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { currentTask := some errTask, lastBatchSize := 4, decompressed := 5, decompFailed := 1 }
+    testDecompConfig
+  assert "failed in-flight batch adds its size to decompFailed" (d == 5 && f == 5)
+
+  -- Pending files are drained even with no in-flight task; a batch whose
+  -- leantar invocation fails lands in the failure counter.
+  let (d, f) ← withSuppressedOutput <| finalizeDecomp
+    { pending := #[(System.FilePath.mk "cache-test-missing-dir/bogus.ltar", `Mathlib.Bogus)]
+      decompressed := 5 } testDecompConfig
+  assert "failed pending drain adds its size to decompFailed" (d == 5 && f == 1)
+
+/-- A download round returns its decompression pipeline state in
+`TransferState.decomp` so `downloadFiles` can hand it to the next round and
+the final drain. A round in which curl transfers nothing, e.g. a container
+missing every requested file, must return the carried state intact; otherwise
+a prior round's queued files would be lost at the round boundary.
+`curl --version` drives `monitorCurl` through a real curl spawn with no
+downloads and no network. This pins `monitorCurl`'s half of the carry; the
+round loop's half is exercised by the CI integration tests. -/
+def test_monitorCurl_carries_decomp_state : IO Unit := do
+  IO.println "monitorCurl carries decompression state:"
+  let okTask : Task (Except IO.Error Unit) := Task.pure (.ok ())
+  let carried : DecompState := {
+    pending := #[(System.FilePath.mk "some/file.ltar", `Mathlib.SomeModule)]
+    currentTask := some okTask
+    lastBatchSize := 7
+    decompressed := 42
+    decompFailed := 1 }
+  let (s, served) ← withSuppressedOutput <|
+    monitorCurl #["--version"] 1 "Downloaded" "speed_download" (decompState := carried)
+  assert "no transfers → an empty served set" served.isEmpty
+  assert "pending files survive the round" (s.decomp.pending.size == 1)
+  assert "the in-flight task survives the round" s.decomp.currentTask.isSome
+  assert "the batch size survives the round" (s.decomp.lastBatchSize == 7)
+  assert "the decompressed counter survives the round" (s.decomp.decompressed == 42)
+  assert "the decompFailed counter survives the round" (s.decomp.decompFailed == 1)
+
+end DecompPipeline
+
 def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
@@ -1002,6 +1079,8 @@ def runAll : IO Unit := do
   test_isCacheMissStatus
   test_isAlreadyPresentStatus
   test_expandDownloadRounds
+  test_finalizeDecomp
+  test_monitorCurl_carries_decomp_state
 
 end Cache.Test
 

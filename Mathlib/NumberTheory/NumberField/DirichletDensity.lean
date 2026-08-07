@@ -5,6 +5,9 @@ Authors: Chris Birkbeck, Riccardo Brasca, Xavier Roblot
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.RamificationInertia.Basic
@@ -14,44 +17,54 @@ public import Mathlib.NumberTheory.NumberField.Ideal.Basic
 /-!
 # Dirichlet density of a set of prime ideals
 
-Let `K` be a number field. Given a set `S` of nonzero prime ideals of `𝓞 K`, its Dirichlet density
-is
-```
-  δ(S) = lim_{s → 1⁺} Σ_{𝔭 ∈ S} N𝔭 ^ (-s) / Σ_𝔭 N𝔭 ^ (-s),
-```
+Let `K` be a number field. Given a set `S` of nonzero prime ideals of `𝓞 K`, its Dirichlet
+density is
+$$
+\delta(S) = \lim_{s \to 1^+}
+  \frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}}
+    {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},
+$$
 when this limit exists. The sum in the denominator runs over all nonzero prime ideals of `𝓞 K`.
 
 This is captured by the predicate `HasDirichletDensity S δ`, stating that the ratio tends to `δ`,
-and by the def `dirichletDensity S`, the density as a real number, taking an unspecified junk value
-when the limit does not exist.
+and by the definition `dirichletDensity S`, the density as a real number (with junk value `0` when
+it does not exist).
 
 ## Main results
 
-* `NumberField.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is bounded
-  above by the number of elements of `S`.
-* `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
+* `NumberField.Set.primeIdealZetaSum_le_card_of_finite` — for a finite `S`, the partial sum is
+  bounded above by the number of elements of `S`.
+* `NumberField.Set.summable_primeIdealZetaSum` — the prime-ideal zeta sum converges for real
+  `s > 1`.
+* `NumberField.Set.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
+* `NumberField.Set.hasDirichletDensity_univ` — the set of all nonzero prime ideals has Dirichlet
+  density `1`.
+* `NumberField.Set.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
+* `NumberField.Set.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 open Filter IsDedekindDomain IsDedekindDomain.HeightOneSpectrum Topology Set
 
-namespace NumberField
+namespace NumberField.Set
+
+open NumberField
 
 variable {K : Type*} [Field K] [NumberField K] (S : Set (HeightOneSpectrum (𝓞 K)))
 
-/-- The partial Dirichlet series `∑_{𝔭 ∈ S} N𝔭 ^ (-s)`. -/
+/-- The partial Dirichlet series $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$. -/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
   ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
 
 theorem primeIdealZetaSum_def (s : ℝ) :
-    primeIdealZetaSum S s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := rfl
+    S.primeIdealZetaSum s = ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s) := by rfl
 
 theorem primeIdealZetaSum_nonneg (s : ℝ) :
-    0 ≤ primeIdealZetaSum S s :=
+    0 ≤ S.primeIdealZetaSum s :=
   tsum_nonneg fun _ ↦ by positivity
 
 private theorem sum_fiber_le {s : ℝ} (hs : 0 ≤ s) (v : HeightOneSpectrum ℤ) :
@@ -80,55 +93,55 @@ theorem summable_primeIdealZetaSum {s : ℝ} (hs : 1 < s) :
   simpa [Function.comp_def] using Nat.Primes.summable_rpow.mpr <| by rwa [neg_lt_neg_iff]
 
 variable {S} in
-/-- For `s > 1`, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` over a nonempty set `S` is positive. -/
-theorem primeIdealZetaSum_pos (hS : S.Nonempty) {s : ℝ} (hs : 1 < s) :
-    0 < primeIdealZetaSum S s := by
-  obtain ⟨v, hv⟩ := hS
-  refine Summable.tsum_pos ((summable_primeIdealZetaSum hs).comp_injective Subtype.coe_injective)
-    (fun _ ↦ by positivity) ⟨v, hv⟩ ?_
-  exact Real.rpow_pos_of_pos (by exact_mod_cast Nat.pos_of_ne_zero v.absNorm_ne_zero) _
-
-variable {S} in
-/-- For a finite set `S` of prime ideals, the partial sum `∑_{𝔭 ∈ S} N𝔭 ^ (-s)` is bounded above
-by the number of elements of `S`. -/
+/-- For a finite set `S` of prime ideals, the partial sum
+$\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$ is bounded above by the number of
+elements of `S`. -/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
-    primeIdealZetaSum S s ≤ S.ncard := by
+    S.primeIdealZetaSum s ≤ S.ncard := by
   replace hS := hS.to_subtype
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
   simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
     Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
 
-/-- `S` has Dirichlet density `δ` when the ratio `∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`, of the
-partial sum over `S` to the sum over all nonzero prime ideals, tends to `δ` as `s ↓ 1`. -/
+variable {S} in
+/-- For `s > 1`, the partial sum $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$ over a
+nonempty set `S` is positive. -/
+theorem primeIdealZetaSum_pos (hS : S.Nonempty) {s : ℝ} (hs : 1 < s) :
+    0 < S.primeIdealZetaSum s := by
+  obtain ⟨v, hv⟩ := hS
+  refine Summable.tsum_pos ((summable_primeIdealZetaSum hs).comp_injective Subtype.coe_injective)
+    (fun _ ↦ by positivity) ⟨v, hv⟩ ?_
+  exact Real.rpow_pos_of_pos (by exact_mod_cast Nat.pos_of_ne_zero v.absNorm_ne_zero) _
+
+/-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
+nonzero prime ideals,
+$$
+\frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}}
+  {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},
+$$
+tends to `δ` as $s \to 1^+$. -/
 def HasDirichletDensity (δ : ℝ) : Prop :=
-  Tendsto (fun s : ℝ ↦ primeIdealZetaSum S s /
+  Tendsto (fun s : ℝ ↦ S.primeIdealZetaSum s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)
 
-/-- The Dirichlet density of `S`, the limit as `s ↓ 1` of the ratio
-`∑_{𝔭 ∈ S} N𝔭 ^ (-s) / ∑_𝔭 N𝔭 ^ (-s)`. When this limit does not exist, the value is an
-unspecified junk value. -/
+open scoped Classical in
+/-- The Dirichlet density of `S` as a real number, taking the junk value `0` when `S` has no
+density. As with `tsum`, this value only has content when `S` has a density; the genuine statement
+that `S` has density `0` is `HasDirichletDensity S 0`. -/
 def dirichletDensity : ℝ :=
-  limUnder (𝓝[>] 1) fun s : ℝ ↦
-    primeIdealZetaSum S s / primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s
+  if h : ∃ δ, S.HasDirichletDensity δ then h.choose else 0
 
 variable {S}
 
-/-- The Dirichlet density is nonnegative. -/
-theorem HasDirichletDensity.nonneg {δ : ℝ} (h : HasDirichletDensity S δ) :
-    0 ≤ δ :=
-  ge_of_tendsto h <| Eventually.of_forall fun s ↦
-    div_nonneg (primeIdealZetaSum_nonneg S s) (primeIdealZetaSum_nonneg univ s)
+/-- If `S` has no Dirichlet density, then `dirichletDensity S = 0`. -/
+theorem dirichletDensity_eq_zero_of_not_hasDirichletDensity
+    (h : ∀ δ, ¬ S.HasDirichletDensity δ) : S.dirichletDensity = 0 := by
+  rw [dirichletDensity, dif_neg (not_exists.mpr h)]
 
 /-- If `S` has Dirichlet density `δ`, then `dirichletDensity S = δ`. -/
-theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : HasDirichletDensity S δ) :
-    dirichletDensity S = δ :=
-  Tendsto.limUnder_eq h
-
-/-- The Dirichlet density of `S`, when it exists, is unique. -/
-theorem HasDirichletDensity.unique {δ₁ δ₂ : ℝ} (h₁ : HasDirichletDensity S δ₁)
-    (h₂ : HasDirichletDensity S δ₂) :
-    δ₁ = δ₂ :=
-  tendsto_nhds_unique h₁ h₂
+theorem HasDirichletDensity.dirichletDensity_eq {δ : ℝ} (h : S.HasDirichletDensity δ) :
+    S.dirichletDensity = δ := by
+  rw [dirichletDensity, dif_pos ⟨δ, h⟩, tendsto_nhds_unique (Exists.choose_spec ⟨δ, h⟩) h]
 
 /-- The empty set has Dirichlet density `0`. -/
 theorem hasDirichletDensity_empty :
@@ -154,4 +167,37 @@ theorem dirichletDensity_univ :
     dirichletDensity (univ : Set (HeightOneSpectrum (𝓞 K))) = 1 :=
   hasDirichletDensity_univ.dirichletDensity_eq
 
-end NumberField
+/-- The Dirichlet density is nonnegative. -/
+theorem HasDirichletDensity.nonneg {δ : ℝ} (h : S.HasDirichletDensity δ) :
+    0 ≤ δ :=
+  ge_of_tendsto h <| Eventually.of_forall fun s ↦
+    div_nonneg (S.primeIdealZetaSum_nonneg s) (univ.primeIdealZetaSum_nonneg s)
+
+variable (S) in
+/-- The Dirichlet density of `S` is nonnegative. -/
+theorem dirichletDensity_nonneg : 0 ≤ S.dirichletDensity := by
+  rw [dirichletDensity]
+  split_ifs with h
+  · exact h.choose_spec.nonneg
+  · exact le_rfl
+
+/-- The Dirichlet density is at most `1`. -/
+theorem HasDirichletDensity.le_one {δ : ℝ} (h : S.HasDirichletDensity δ) :
+    δ ≤ 1 := by
+  refine le_of_tendsto h (Eventually.of_forall fun s ↦ ?_)
+  rw [primeIdealZetaSum_def, primeIdealZetaSum_def,
+    tsum_univ fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (𝔭.asIdeal.absNorm : ℝ) ^ (-s)]
+  by_cases hs : Summable fun 𝔭 : HeightOneSpectrum (𝓞 K) ↦ (𝔭.asIdeal.absNorm : ℝ) ^ (-s)
+  · exact div_le_one_of_le₀ (hs.tsum_subtype_le _ S (fun _ ↦ by positivity))
+      (tsum_nonneg fun _ ↦ by positivity)
+  · grw [tsum_eq_zero_of_not_summable hs, div_zero, zero_le_one]
+
+variable (S) in
+/-- The Dirichlet density of `S` is at most `1`. -/
+theorem dirichletDensity_le_one : S.dirichletDensity ≤ 1 := by
+  rw [dirichletDensity]
+  split_ifs with h
+  · exact h.choose_spec.le_one
+  · exact zero_le_one
+
+end NumberField.Set
