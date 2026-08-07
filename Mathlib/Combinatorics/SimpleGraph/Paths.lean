@@ -140,6 +140,13 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
+theorem IsTrail.length_ne_two {p : G.Walk v v} (hp : p.IsTrail) : p.length ≠ 2 := by
+  grind [cases Walk, length_nil, length_cons, isTrail_cons, edges_cons]
+
+theorem IsTrail.nil_of_length_le_two {p : G.Walk v v} (hp : p.IsTrail) (hlen : p.length ≤ 2) :
+    p.Nil := by
+  grind [length_eq_zero_iff, length_ne_one, hp.length_ne_two]
+
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
   simpa [isTrail_def] using h
 
@@ -314,10 +321,7 @@ lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
 lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
-  match p with
-  | .cons hadj .nil => simp at hadj
-  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
-  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
+  grind [hp.nil_of_length_le_two, hp.not_nil]
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
