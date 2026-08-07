@@ -43,18 +43,18 @@ of `A`.
 This version does not store the final echelon form itself as it can be computed
 by the data enclosed.
 -/
-structure Decomposition (A : Matrix (Fin m) (Fin n) R) where
+structure Decomposition (A : Matrix m n R) where
   /-- The transformation matrix. -/
-  L : Matrix (Fin m) (Fin m) R
+  L : Matrix m m R
   /-- The row permutation on the rows of `A`. -/
-  σ : Equiv.Perm (Fin m)
+  σ : Equiv.Perm m
   /-- The pivot of the resulting echelon form. -/
-  pivot : Fin m → WithTop (Fin n)
+  pivot : m → WithTop n
   isPivotedBy : (L * (A.submatrix σ id)).IsPivotedBy pivot
   L_lowerTriangular : L.IsLowerTriangular
-  L_diag_ne_zero (i : Fin m) : L.diag i ≠ 0
+  L_diag_ne_zero (i : m) : L.diag i ≠ 0
 
-theorem Decomposition.rank_eq (cert : Decomposition A) :
+theorem Decomposition.rank_eq {A : Matrix m n R} (cert : Decomposition A) :
     A.rank = #{i | cert.pivot i ≠ ⊤} := by
   rw [← cert.isPivotedBy.rank_eq,
     cert.L.rank_mul_eq_right_of_isLowerTriangular _ cert.L_lowerTriangular cert.L_diag_ne_zero]
