@@ -313,11 +313,11 @@ theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
   refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   rcases lt_or_gt_of_ne h with h | h
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
+  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
       preimage_const_mul_Ioo_of_neg _ _ h, abs_of_neg h, mul_sub, smul_eq_mul,
       mul_div_cancel₀ _ (ne_of_lt h)]
-  · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
+  · simp only [Real.volume_Ioo, smul_apply, ← ENNReal.ofReal_mul (le_of_lt h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, preimage_const_mul_Ioo₀ _ _ h,
       abs_of_pos h, mul_sub, mul_div_cancel₀ _ (ne_of_gt h), smul_eq_mul]
 
@@ -365,7 +365,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, smul_eq_mul, _root_.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :

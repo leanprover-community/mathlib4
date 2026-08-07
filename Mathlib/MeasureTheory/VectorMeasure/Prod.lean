@@ -60,7 +60,7 @@ lemma prod_eq_zero_of_not_hasProd (h : ¬HasProd μ ν B) :
   rcases eq_or_ne t ∅ with rfl | ht
   · simp
   by_cases h's : MeasurableSet s; swap
-  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero, _root_.zero_apply]
+  · simp only [h's, not_false_eq_true, not_measurable, _root_.map_zero, zero_apply]
     rw [not_measurable]
     simp [measurableSet_prod, hs, ht, h's]
   by_cases h't : MeasurableSet t; swap
@@ -183,7 +183,7 @@ lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinit
     (μ.prod ν B).variation ≤ ‖B‖ₑ • μ.variation.prod ν.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   rw [prod_apply_eq_integral hs]
-  simp only [Measure.smul_apply, smul_eq_mul, Measure.prod_apply hs]
+  simp only [smul_apply, smul_eq_mul, Measure.prod_apply hs]
   grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_flip,
     enorm_measure_le_variation]
 

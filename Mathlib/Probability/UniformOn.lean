@@ -164,8 +164,8 @@ theorem uniformOn_of_univ (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s Set.u
 theorem uniformOn_inter (hs : s.Finite) :
     uniformOn s (t ∩ u) = uniformOn (s ∩ t) u * uniformOn s t := by
   by_cases hst : s ∩ t = ∅
-  · rw [hst, uniformOn_empty_meas, Measure.coe_zero, Pi.zero_apply, zero_mul,
-      uniformOn_eq_zero_iff hs, ← Set.inter_assoc, hst, Set.empty_inter]
+  · rw [hst, uniformOn_empty_meas, zero_apply, zero_mul, uniformOn_eq_zero_iff hs,
+      ← Set.inter_assoc, hst, Set.empty_inter]
   rw [uniformOn, uniformOn, cond_apply hs.measurableSet, cond_apply hs.measurableSet,
     cond_apply (hs.inter_of_left _).measurableSet, mul_comm _ (Measure.count (s ∩ t)),
     ← mul_assoc, mul_comm _ (Measure.count (s ∩ t)), ← mul_assoc, ENNReal.mul_inv_cancel, one_mul,
