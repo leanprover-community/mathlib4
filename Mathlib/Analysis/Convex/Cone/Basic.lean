@@ -5,6 +5,7 @@ Authors: Apurva Nakade, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
@@ -52,7 +53,7 @@ variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
 variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
 variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
 
-local notation "R≥0" => {r : R // 0 ≤ r}
+local notation "R≥0" => Nonneg R
 
 variable (R E) in
 /-- A proper cone is a pointed cone `C` that is closed. Proper cones have the nice property that
