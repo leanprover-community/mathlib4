@@ -308,3 +308,39 @@ theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Su
   rw [Module.length_quotient, Module.length, WithBot.lt_unbot_iff, ← Order.coheight_bot_eq_krullDim,
     WithBot.coe_lt_coe]
   exact Order.coheight_strictAnti (bot_lt_iff_ne_bot.mpr h) (Order.coheight_lt_top p)
+
+/-- For an endomorphism `φ` of a module of finite length, the length of `ker φ` equals the
+length of `coker φ`. -/
+theorem length_ker_eq_length_coker
+    (φ : M →ₗ[R] M) (hlen : Module.length R M < ⊤) :
+    Module.length R (LinearMap.ker φ) = Module.length R (M ⧸ LinearMap.range φ) := by
+  have h1 : Module.length R M =
+      Module.length R (LinearMap.ker φ) + Module.length R (LinearMap.range φ) := by
+    convert Module.length_eq_add_of_exact (LinearMap.ker φ).subtype (LinearMap.rangeRestrict φ)
+      Subtype.coe_injective
+      (fun x => ⟨Classical.choose x.2, Subtype.ext (Classical.choose_spec x.2)⟩)
+      (by rw [LinearMap.exact_iff, Submodule.range_subtype, LinearMap.ker_rangeRestrict]) using 1
+  have h2 : Module.length R M =
+      Module.length R (LinearMap.range φ) + Module.length R (M ⧸ LinearMap.range φ) := by
+    convert Module.length_eq_add_of_exact (LinearMap.range φ).subtype
+      (Submodule.mkQ (LinearMap.range φ))
+      Subtype.coe_injective (Submodule.mkQ_surjective _)
+      (by rw [LinearMap.exact_iff, Submodule.range_subtype, Submodule.ker_mkQ]) using 1
+  obtain hr | hr := eq_or_ne (Module.length R (LinearMap.range φ)) ⊤
+  · exfalso; rw [hr] at h2; simp only [top_add] at h2; exact hlen.ne h2
+  · exact WithTop.add_right_cancel hr (h1.symm.trans (h2.trans (add_comm _ _)))
+
+lemma length_quotient_chain
+    (S T : Submodule R M) (hST : S ≤ T) :
+    Module.length R (M ⧸ S) =
+      Module.length R (M ⧸ T) + Module.length R (T ⧸ S.comap T.subtype) := by
+  have h_iso : (T ⧸ S.comap T.subtype) ≃ₗ[R] T.map S.mkQ :=
+    (Submodule.quotEquivOfEq _ _ (by rw [LinearMap.ker_comp, Submodule.ker_mkQ])).symm.trans <|
+      (LinearMap.quotKerEquivRange (S.mkQ.comp T.subtype)).trans <|
+      LinearEquiv.ofEq _ _ (by rw [LinearMap.range_comp, Submodule.range_subtype])
+  rw [Module.length_eq_add_of_exact (T.map S.mkQ).subtype (T.map S.mkQ).mkQ
+        (Submodule.subtype_injective _) (Submodule.mkQ_surjective _)
+        (LinearMap.exact_subtype_mkQ _),
+      (Submodule.quotientQuotientEquivQuotient S T hST).length_eq,
+      ← h_iso.length_eq,
+      add_comm]
