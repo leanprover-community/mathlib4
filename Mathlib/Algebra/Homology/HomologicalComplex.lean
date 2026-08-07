@@ -325,7 +325,7 @@ section
 variable (V c)
 
 /-- The functor picking out the `i`-th object of a complex. -/
-@[simps]
+@[simps, implicit_reducible]
 def eval (i : ι) : HomologicalComplex V c ⥤ V where
   obj C := C.X i
   map f := f.f i
@@ -333,7 +333,7 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C := C.X
   map f := f.f
