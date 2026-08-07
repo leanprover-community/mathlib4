@@ -236,7 +236,7 @@ protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring K :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { toSemiring := hf.semiring f zero one add mul nsmul npow natCast
     __ := hf.groupWithZero f zero one mul inv div npow zpow
     nnratCast_def q := hf <| by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
@@ -254,7 +254,7 @@ protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) : DivisionRing K :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
     __ := hf.groupWithZero f zero one mul inv div npow zpow
     __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
@@ -270,7 +270,7 @@ protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield K :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
     __ := hf.commGroupWithZero f zero one mul inv div npow zpow
     __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast }
@@ -287,7 +287,7 @@ protected abbrev field [Field L] (zero : f 0 = 0) (one : f 1 = 1)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) :
     Field K :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
     __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
       natCast intCast nnratCast ratCast }

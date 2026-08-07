@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Units
 
+import Mathlib.Tactic.FastInstance
+
 /-!
 # Group actions and (endo)morphisms
 -/
@@ -28,7 +30,7 @@ See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft
 abbrev Function.Surjective.distribMulActionLeft {R S M : Type*} [Monoid R] [AddMonoid M]
     [DistribMulAction R M] [Monoid S] [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : DistribMulAction S M :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { hf.distribSMulLeft f hsmul, hf.mulActionLeft f hsmul with }
 
 section AddMonoid
@@ -38,7 +40,7 @@ variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { DistribSMul.compFun A f, MulAction.compHom A f with }
 
 end AddMonoid
@@ -50,7 +52,7 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 /-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
-  reduceProj% zeta% unfoldInstances%
+  fast_instance%
   { MulAction.compHom A f with
     smul_one := fun x => smul_one (f x),
     smul_mul := fun x => smul_mul' (f x) }
