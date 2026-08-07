@@ -1933,6 +1933,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Truncated
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.ConstantSpeed
