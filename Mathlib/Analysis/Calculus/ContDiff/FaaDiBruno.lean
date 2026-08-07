@@ -288,9 +288,6 @@ These operations are inverse to each other, giving rise to an equivalence betwee
 called `OrderedFinPartition.extendEquiv`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 @[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
@@ -300,7 +297,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ c.emb m)
   emb_strictMono := by
     refine Fin.cases ?_ (fun i ↦ ?_)
-    · exact @Subsingleton.strictMono _ _ _ _ (by simp; infer_instance) _
+    · exact @Subsingleton.strictMono _ _ _ _ (by rw [cons_zero]; infer_instance) _
     · exact strictMono_succ.comp (c.emb_strictMono i)
   parts_strictMono i j hij := by
     induction j using Fin.induction with
@@ -336,15 +333,14 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
     · simp only [mem_range]
       exact ⟨0, ⟨0, by simp⟩, by simp⟩
     · simp only [mem_range]
-      exact ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), by simp⟩
+      refine ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), ?_⟩
+      simp [Fin.cast]
 
 set_option backward.isDefEq.respectTransparency false in
--- TODO: should infer_instance be considered normalising?
-set_option linter.flexible false in
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
   simp only [extendLeft, cases_zero]
-  apply @range_const _ _ (by simp; infer_instance)
+  apply @range_const _ _ (by rw [cons_zero]; infer_instance)
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
