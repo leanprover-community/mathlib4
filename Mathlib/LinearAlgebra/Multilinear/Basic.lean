@@ -940,7 +940,7 @@ def _root_.LinearEquiv.multilinearMapCongrRight [LinearMap.CompatibleSMul N₂ N
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
-variable (σ₁₂ M₁ N₂)
+variable (σ₁₂ M₁ N₁ N₂)
 
 section OfSubsingleton
 
