@@ -212,8 +212,8 @@ lemma continuous_convexCombPair_of_isBounded
   · exact ((isOpen_Ioo.preimage hf).isOpenEmbedding_subtypeVal.continuousAt_iff
       (x := ⟨t, ht⟩)).mp ((continuous_convexCombPair (X := X)).comp₃ (W := f ⁻¹' Set.Ioo 0 1)
       (e := fun i ↦ ⟨f i, Set.Ioo_subset_Icc_self i.prop⟩) (f := x ∘ (↑)) (k := y ∘ (↑))
-      (by fun_prop) (hx.comp_continuous continuous_subtype_val (by simp_all; grind))
-      (hy.comp_continuous continuous_subtype_val (by simp_all; grind))).continuousAt
+      (by fun_prop) (hx.comp_continuous continuous_subtype_val (by grind))
+      (hy.comp_continuous continuous_subtype_val (by grind))).continuousAt
   obtain ht | ht : f t = 0 ∨ f t = 1 := by
     simpa [le_antisymm_iff, hf0, hf1, -not_and, not_and_or] using ht
   · simp only [ContinuousAt, ht, sub_zero, convexCombPair_zero]

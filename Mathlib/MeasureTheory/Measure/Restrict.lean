@@ -938,7 +938,6 @@ lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : Measurabl
   ext s hs
   rw [map_apply hf hs, hg.comap_apply, ← measure_sdiff_null hμg]
   congr
-  simp
   grind
 
 section Subtype
