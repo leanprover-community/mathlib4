@@ -95,7 +95,7 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
   { normUnit a := if a = 0 then 1 else (assoc a).choose
     normUnit_zero := if_pos rfl
     normUnit_one := by
-      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec <;> simp [out_one]
+      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec; simp [out_one]
     normUnit_mul_units {a} u ha := by
       simp_rw [Units.mul_left_eq_zero, if_neg ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
       rw [Units.val_mul, ← (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha).eq_iff,

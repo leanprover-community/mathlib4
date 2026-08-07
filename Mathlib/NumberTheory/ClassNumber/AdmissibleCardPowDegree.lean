@@ -136,7 +136,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
   apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
-  · convert! deg_lt
+  · convert! (preTransparency := reducible) deg_lt
     rw [degree_eq_natDegree h']; rfl
   rw [← sub_neg_eq_add, ← neg_div, Nat.cast_sub le_b.le]
   grw [← Nat.le_ceil]
