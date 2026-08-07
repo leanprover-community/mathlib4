@@ -99,7 +99,7 @@ lemma toSSet_map_const (X : TopCat.{u}) {Y : TopCat.{u}} (y : Y) :
 lemma toSSetObjEquiv_symm_naturality {X : TopCat.{u}} {n m : SimplexCategory} (f : n ⟶ m)
     (g : C((stdSimplex ℝ (Fin (m.len + 1))), X)) :
     (toSSet.obj X).map f.op ((X.toSSetObjEquiv _).symm g) =
-      (X.toSSetObjEquiv _).symm (g.comp ⟨stdSimplex.map f, by continuity⟩) :=
+      (X.toSSetObjEquiv _).symm (g.comp ⟨stdSimplex.map f, by fun_prop⟩) :=
   rfl
 
 @[simp]

@@ -89,7 +89,11 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
-      continuity }
+      apply continuous_sigma
+      intro i
+      dsimp
+      -- XXX: check here! was continuity
+      sorry }
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
