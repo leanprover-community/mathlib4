@@ -28,6 +28,16 @@ expression.
 `V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
 inside each extension's closure.
 
+The elimination in `bareissDecomp` maintains the invariant `L * A_σ = W`, where
+`A_σ := A.submatrix σ id` is the input with its rows in the arrangement `σ` accumulated
+so far and `W` is the working matrix. When the pivot search swaps the rows at positions
+`r < p`, the invariant must be restored against the new `A_σ' = S * A_σ`, where `S` is
+the permutation matrix of the transposition `τ = (r, p)`:
+
+  `S * W = S * L * (S⁻¹ * S) * A_σ = (S * L * S⁻¹) * A_σ'`
+
+so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial pivoting.
+
 ## References
 
 * E. H. Bareiss, *Sylvester's identity and multistep integer-preserving Gaussian
@@ -76,29 +86,12 @@ the rendered decomposition. -/
 Extensions decline by returning `none`. -/
 @[expose] def BareissExt := Expr → MetaM (Option Producer)
 
--- TODO: might worth putting it under implementation notes at the headers
-/- Pivot swap mechanism
-Let `A_σ := A.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
-accumulated so far.
-
-When the pivot search swaps the rows at positions `r < p`, the invariant `L * A_σ = W` must be
-restored against the new `A_σ' = S * A_σ`, where `S` is the permutation matrix of the
-transposition `τ = (r, p)`:
-
-  `S * W = S * L * (S⁻¹ * S) * A_σ = (S * L * S⁻¹) * A_σ'`
-
-so `L` needs to be conjugated by the matrix corresponding to `τ`.
-
-This is similar to LU factorisation with partial pivoting. -/
-
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
 
-A single sweep accumulates the transform `L` alongside the working matrix `W`. The main
-invariant is `L * (A.submatrix σ id) = W` for the row arrangement `σ` so far: eliminations
-update both simultaneously, and a row interchange conjugates `L` by the swap.
-The divisions are exact by Sylvester's identity, although the data-only computation does
-not prove that. -/
+A single sweep accumulates the transform `L` alongside the working matrix `W`, maintaining
+`L * (A.submatrix σ id) = W` for the row arrangement `σ` so far. The divisions are exact
+by Sylvester's identity, although the data-only computation does not prove that. -/
 def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
