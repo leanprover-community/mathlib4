@@ -175,14 +175,13 @@ section Preorder
 variable [Preorder α] {s : Set α} {a : α}
 
 @[to_dual]
-theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a := by
-  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
-  · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
-  · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
+theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici a := by
+  refine (iUnion₂_subset fun x hx ↦ ?_).antisymm fun x hx ↦ mem_iUnion₂.mpr ⟨a, h.left, hx⟩
+  exact Ici_subset_Ici.mpr <| mem_lowerBounds.mp h.right x hx
 
 @[to_dual]
-theorem IsLeast.biUnion_Ici_eq_Ici (h : IsLeast s a) : ⋃ x ∈ s, Ici x = Ici a :=
-  h.isGLB.biUnion_Ici_eq_Ici h.left
+theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Ici x = Ici a :=
+  IsLeast.biUnion_Ici_eq_Ici ⟨a_mem, a_glb.left⟩
 
 end Preorder
 
