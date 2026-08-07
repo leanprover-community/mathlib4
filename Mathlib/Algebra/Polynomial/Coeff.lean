@@ -41,7 +41,7 @@ section Coeff
 theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  simp_rw [← ofFinsupp_add, coeff]
+  simp_rw [← AddMonoidAlgebra.ofCoeff_add, coeff]
   exact Finsupp.add_apply _ _ _
 
 @[simp]
@@ -57,12 +57,8 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   simp [hi]
 
 open scoped Pointwise in
-theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
-  calc #(p * q).support
-    _ = #(p.toFinsupp * q.toFinsupp).coeff.support := by rw [← support_toFinsupp, toFinsupp_mul]
-    _ ≤ #(p.toFinsupp.coeff.support + q.toFinsupp.coeff.support) := by
-      grw [AddMonoidAlgebra.support_coeff_mul_subset]
-    _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
+theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support :=
+  AddMonoidAlgebra.card_support_coeff_mul_le p q
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `Polynomial.sum` as a linear map. -/
@@ -110,10 +106,8 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 := by
-  rcases p with ⟨p⟩; rcases q with ⟨q⟩
-  simp_rw [← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.coeff_mul_antidiag p q n _ Finset.mem_antidiagonal
+    coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 :=
+  AddMonoidAlgebra.coeff_mul_antidiag p q n _ Finset.mem_antidiagonal
 
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
@@ -153,20 +147,16 @@ theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 th
   rw [← pow_one X, coeff_C_mul_X_pow]
 
 @[simp, grind =]
-theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
-  rcases p with ⟨p⟩
-  simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
-  exact p.coeff_single_zero_mul a n
+theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n :=
+  AddMonoidAlgebra.coeff_single_zero_mul p a n
 
 theorem C_mul' (a : R) (f : R[X]) : C a * f = a • f := by
   ext
   rw [coeff_C_mul, coeff_smul, smul_eq_mul]
 
 @[simp]
-theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a := by
-  rcases p with ⟨p⟩
-  simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
-  exact p.coeff_mul_single_zero a n
+theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n * a :=
+  AddMonoidAlgebra.coeff_mul_single_zero p a n
 
 @[simp] lemma coeff_mul_natCast {a k : ℕ} :
     coeff (p * (a : R[X])) k = coeff p k * (↑a : R) := coeff_mul_C _ _ _

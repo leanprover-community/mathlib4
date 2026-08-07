@@ -135,16 +135,14 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 @[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
 
-theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
-    eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
+theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
+    eval₂ f x p = liftNC (↑f) (powersHom S x) p := by
   simp only [eval₂_eq_sum, sum, support, coeff]
   rfl
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
     eval₂ f x (p * q) = eval₂ f x p * eval₂ f x q := by
-  rcases p with ⟨p⟩; rcases q with ⟨q⟩
-  simp only [coeff] at hf
-  simp only [← ofFinsupp_mul, eval₂_ofFinsupp]
+  simp only [eval₂_eq_liftNC]
   exact liftNC_mul _ _ p q fun {k n} _hn => (hf k).pow_right n
 
 @[simp]

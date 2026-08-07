@@ -36,7 +36,7 @@ section Semiring
 
 variable [Semiring R] [Semiring S] {p q r : R[X]}
 
-theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
+theorem supDegree_eq_degree (p : R[X]) : p.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
 
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=

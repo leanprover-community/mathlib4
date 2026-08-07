@@ -24,10 +24,8 @@ universe u
 variable {R : Type u} {a b : R} {m n : ℕ}
 variable [Semiring R] {p q r : R[X]}
 
-theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
-    (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by
-  simp_rw [← ofFinsupp_single, ofFinsupp.injEq]
-  exact AddMonoidAlgebra.of_injective.eq_iff
+lemma monomial_one_eq_iff [Nontrivial R] : (monomial m 1 : R[X]) = monomial n 1 ↔ m = n :=
+  monomial_left_inj one_ne_zero
 
 instance infinite [Nontrivial R] : Infinite R[X] :=
   Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
@@ -52,26 +50,15 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     exact support_monomial_subset _ _
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
-    (h₂ : f X = g X) : f = g := by
-  set f' := f.comp (toFinsuppIso R).symm.toRingHom with hf'
-  set g' := g.comp (toFinsuppIso R).symm.toRingHom with hg'
-  have A : f' = g' := by
-    ext
-    · simp [f', g', h₁, RingEquiv.toRingHom_eq_coe]
-    simpa using! h₂
-  have B : f = f'.comp (toFinsuppIso R) := by
-    rw [hf', RingHom.comp_assoc]
-    ext x
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_apply_apply, Function.comp_apply,
-      RingHom.coe_comp, RingEquiv.coe_toRingHom]
-  have C' : g = g'.comp (toFinsuppIso R) := by
-    rw [hg', RingHom.comp_assoc]
-    ext x
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_apply_apply, Function.comp_apply,
-      RingHom.coe_comp, RingEquiv.coe_toRingHom]
-  rw [B, C', A]
+    (h₂ : f X = g X) : f = g :=
+  AddMonoidAlgebra.ringHom_ext h₁ fun m ↦ by
+    have : (AddMonoidAlgebra.single m 1 : R[X]) = X ^ m := monomial_one_right_eq_X_pow m
+    rw [this, map_pow, map_pow, h₂]
 
-@[ext high]
+-- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`, `AddMonoidAlgebra.ringHom_ext'` also applies to
+-- ring homs out of `R[X]`. We give this a higher priority so that the goal is phrased via `C`/`X`
+-- rather than exposing `AddMonoidAlgebra.single`.
+@[ext high + 1]
 theorem ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.comp C)
     (h₂ : f X = g X) : f = g :=
   ringHom_ext (RingHom.congr_fun h₁) h₂

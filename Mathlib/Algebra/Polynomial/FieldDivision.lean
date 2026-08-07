@@ -354,17 +354,15 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-instance instEuclideanDomain : EuclideanDomain R[X] :=
-  { Polynomial.commRing,
-    Polynomial.nontrivial with
-    quotient := (· / ·)
-    quotient_zero := by simp [div_def]
-    remainder := (· % ·)
-    r := _
-    r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
-    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+instance instEuclideanDomain : EuclideanDomain R[X] where
+  quotient := (· / ·)
+  quotient_zero := by simp [div_def]
+  remainder := (· % ·)
+  r := _
+  r_wellFounded := degree_lt_wf
+  quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+  remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
+  mul_left_not_lt _ _ hq := not_lt_of_ge (degree_le_mul_left _ hq)
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by

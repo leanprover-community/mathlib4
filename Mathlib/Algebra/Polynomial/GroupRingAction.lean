@@ -37,12 +37,9 @@ theorem smul_eq_map [MulSemiringAction M R] (m : M) :
   ext
   simp
 
-noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
-  { Polynomial.distribMulAction with
-    smul_one := fun m ↦
-      smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
-    smul_mul := fun m _ _ ↦
-      smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
+noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] where
+  smul_one m := smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
+  smul_mul m _ _ := smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m)
 
 variable {M R}
 variable [MulSemiringAction M R]

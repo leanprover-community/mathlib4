@@ -96,18 +96,18 @@ theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p.coe
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurent [Semiring R] : R[X] →+* R[T;T⁻¹] :=
-  (mapDomainRingHom R Int.ofNatHom).comp (toFinsuppIso R).toRingHom
+  mapDomainRingHom R Int.ofNatHom
 
 /-- This is not a simp lemma, as it is usually preferable to use the lemmas about `C` and `X`
 instead. -/
 theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
-    toLaurent p = p.toFinsupp.mapDomain (↑) :=
+    toLaurent p = p.mapDomain ((↑) : ℕ → ℤ) :=
   rfl
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
-  (mapDomainAlgHom R R Int.ofNatHom).comp (toFinsuppIsoAlg R).toAlgHom
+  mapDomainAlgHom R R Int.ofNatHom
 
 @[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
     (toLaurentAlg : R[X] → R[T;T⁻¹]) = toLaurent :=
@@ -183,7 +183,7 @@ theorem single_eq_C_mul_T (r : R) (n : ℤ) : .single n r = C r * T n := by
 -- The actual `simp`-normal form of a Laurent monomial is `C a * T n`, whenever it can be reached.
 @[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_T (n : ℕ) (r : R) :
-    (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n := by simp [toLaurent]
+    (toLaurent (Polynomial.monomial n r) : R[T;T⁻¹]) = C r * T n := by simp [toLaurent, monomial]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_C (r : R) : toLaurent (Polynomial.C r) = C r := by
@@ -292,21 +292,18 @@ theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
 def trunc : R[T;T⁻¹] →+ R[X] :=
-  (toFinsuppIso R).symm.toAddMonoidHom.comp <| comapDomainAddMonoidHom (↑) Nat.cast_injective
+  comapDomainAddMonoidHom (↑) Nat.cast_injective
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
-  apply (toFinsuppIso R).injective
-  simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
-    AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
+  rw [← single_eq_C_mul_T,
+    show trunc (single n r) = comapDomain ((↑) : ℕ → ℤ) Nat.cast_injective (single n r) from rfl]
   split_ifs with hn
   · lift n to ℕ using hn
-    simp [toFinsupp_monomial, -single_eq_C_mul_T]
-  · ext a
-    have : a ≠ n := by lia
-    simp [-single_eq_C_mul_T, single_eq_of_ne this]
+    rw [comapDomain_single_map, Int.toNat_natCast]
+    rfl
+  · exact comapDomain_single_of_not_mem_range
+      (by rintro ⟨m, rfl⟩; exact hn (Int.natCast_nonneg m)) Nat.cast_injective
 
 @[simp]
 theorem leftInverse_trunc_toLaurent :
@@ -385,7 +382,7 @@ theorem support_coeff_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
 alias support_C_mul_T_of_ne_zero := support_coeff_C_mul_T_of_ne_zero
 
 @[simp] lemma coeff_toLaurent (f : R[X]) :
-    f.toLaurent.coeff = f.toFinsupp.coeff.mapDomain Nat.castEmbedding := rfl
+    f.toLaurent.coeff = (AddMonoidAlgebra.coeff f).mapDomain Nat.castEmbedding := rfl
 
 /-- The support of a polynomial `f` is a finset in `ℕ`.  The lemma `toLaurent_support f`
 shows that the support of `f.toLaurent` is the same finset, but viewed in `ℤ` under the natural

@@ -234,7 +234,7 @@ lemma isMonicOfDegree_X_sub_one (r : R) : IsMonicOfDegree (X - C r) 1 :=
   (isMonicOfDegree_X R).sub (by rw [natDegree_C]; exact zero_lt_one)
 
 lemma isMonicOfDegree_sub_add_two (a b : R) : IsMonicOfDegree (X ^ 2 - C a * X + C b) 2 := by
-  rw [sub_add]
+  rw [sub_add, sub_eq_add_neg]
   exact (isMonicOfDegree_X_pow R 2).add_right <| by
     rw [natDegree_neg]
     calc
@@ -267,7 +267,7 @@ lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha 
 lemma IsMonicOfDegree.of_dvd_sub {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)
     (hb : IsMonicOfDegree b n) (hr : r.natDegree < m) (h : b ∣ a - r) :
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b + r := by
-  convert ha.of_dvd_add hmn hb ?_ h with q
+  convert ha.of_dvd_add hmn hb ?_ (sub_eq_add_neg a r ▸ h) with q
   · rw [sub_neg_eq_add]
   · rwa [natDegree_neg]
 

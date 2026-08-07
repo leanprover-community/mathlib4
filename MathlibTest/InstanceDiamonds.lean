@@ -22,7 +22,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 section SMul
 
-open scoped Polynomial
+open scoped AddMonoidAlgebra
 
 example : (ZSMul.toSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
@@ -98,8 +98,8 @@ example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β 
     (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := by
   with_reducible_and_instances rfl
 
-example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := by
+example (R α M : Type*) [Monoid R] [Semiring α] [DistribMulAction R α] :
+    (Units.instDistribMulAction : DistribMulAction Rˣ α[M]) = AddMonoidAlgebra.distribMulAction := by
   with_reducible_and_instances rfl
 
 /-!
@@ -167,14 +167,12 @@ end Finsupp
 
 /-! ## `Polynomial` instances -/
 
-
 section Polynomial
 
-variable (R A : Type _)
-
-open scoped Polynomial
+variable (R A M : Type*)
 
 open Polynomial
+open scoped AddMonoidAlgebra
 
 /-- `Polynomial.hasSMulPi` forms a diamond with `Pi.instSMul`. -/
 example [Semiring R] [Nontrivial R] :
@@ -197,13 +195,13 @@ example [CommSemiring R] [Nontrivial R] :
   rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
-example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
+/-- `AddMonoidAlgebra.algebra` is consistent with `Semiring.toNatAlgebra`. -/
+example [Semiring R] [AddMonoid M] : (AddMonoidAlgebra.algebra : Algebra ℕ R[M]) = Semiring.toNatAlgebra :=
   rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
-example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
+/-- `AddMonoidAlgebra.algebra` is consistent with `Ring.toIntAlgebra`. -/
+example [Ring R] [AddMonoid M] : (AddMonoidAlgebra.algebra : Algebra ℤ R[M]) = Ring.toIntAlgebra _ :=
   rfl
 
 end Polynomial

@@ -205,18 +205,16 @@ namespace IsUnitTrinomial
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =
-      ⟨.ofCoeff <| (p * p.mirror).toFinsupp.coeff.filter (· ∈ Set.Ioo (k + n) (n + n))⟩ := by
+      ⟨(AddMonoidAlgebra.coeff (p * p.mirror)).filter (· ∈ Set.Ioo (k + n) (n + n))⟩ := by
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra.coeff_add, Finsupp.filter_add,
-    AddMonoidAlgebra.coeff_single]
+    AddMonoidAlgebra.coeff_add, coeff_monomial', Finsupp.filter_add]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, ofFinsupp_add,
-      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, C_mul_monomial, C_mul_monomial,
-      mul_comm (v : ℤ) w, add_comm (n - m + k) n]
+  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, AddMonoidAlgebra.ofCoeff_single,
+      single_eq_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · simp
   · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
@@ -232,7 +230,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
 theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w) (hq : q = trinomial k m' n (u : ℤ) v w)
     (h : p * p.mirror = q * q.mirror) : q = p ∨ q = p.mirror := by
-  let f (p : ℤ[X]) : ℤ[X] := ⟨.ofCoeff <| .filter (· ∈ Set.Ioo (k + n) (n + n)) p.toFinsupp.coeff⟩
+  let f (p : ℤ[X]) : ℤ[X] := ⟨.filter (· ∈ Set.Ioo (k + n) (n + n)) (AddMonoidAlgebra.coeff p)⟩
   replace h := congr_arg f h
   replace h := (irreducible_aux1 hkm hmn u v w hp).trans h
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm

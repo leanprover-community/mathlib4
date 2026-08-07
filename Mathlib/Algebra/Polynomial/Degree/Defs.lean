@@ -324,8 +324,7 @@ theorem nextCoeff_of_natDegree_pos (hp : 0 < p.natDegree) :
 variable {p q : R[X]} {ι : Type*}
 
 theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
-  simpa only [degree, ← support_toFinsupp, toFinsupp_add]
-    using! AddMonoidAlgebra.sup_support_coeff_add_le _ _ _
+  grw [degree, support_add, Finset.max_union, degree, degree]
 
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
     degree (p + q) ≤ n :=
@@ -393,7 +392,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa [degree, ← support_toFinsupp] using! AddMonoidAlgebra.sup_support_coeff_mul_le (by simp) ..
+  simpa [degree] using! AddMonoidAlgebra.sup_support_coeff_mul_le (by simp) ..
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p * q) ≤ a + b := by grw [degree_mul_le, hp, hq]
@@ -524,14 +523,14 @@ section Ring
 variable [Ring R] {p q : R[X]}
 
 theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q) := by
-  simpa only [degree_neg q] using! degree_add_le p (-q)
+  simpa [sub_eq_add_neg] using! degree_add_le p (-q)
 
 theorem degree_sub_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p - q) ≤ max a b :=
   (p.degree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_sub_le (p q : R[X]) : natDegree (p - q) ≤ max (natDegree p) (natDegree q) := by
-  simpa only [← natDegree_neg q] using! natDegree_add_le p (-q)
+  simpa [sub_eq_add_neg] using! natDegree_add_le p (-q)
 
 theorem natDegree_sub_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n) :
     natDegree (p - q) ≤ max m n :=

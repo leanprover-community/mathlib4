@@ -31,8 +31,8 @@ namespace Polynomial
 /-- Ring isomorphism between `R[X]ᵐᵒᵖ` and `Rᵐᵒᵖ[X]` sending each coefficient of a polynomial
 to the corresponding element of the opposite ring. -/
 def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
-  ((toFinsuppIso R).op.trans <| AddMonoidAlgebra.opRingEquiv.trans <|
-    AddMonoidAlgebra.mapDomainRingEquiv _ AddOpposite.opAddEquiv.symm).trans (toFinsuppIso _).symm
+  AddMonoidAlgebra.opRingEquiv.trans <|
+    AddMonoidAlgebra.mapDomainRingEquiv _ AddOpposite.opAddEquiv.symm
 
 /-!  Lemmas to get started, using `opRingEquiv R` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
@@ -42,7 +42,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
-  ext; simp [opRingEquiv, ← ofFinsupp_single]
+  ext; simp [opRingEquiv, ← Polynomial.single_eq_monomial]
 
 @[simp]
 theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=
@@ -82,7 +82,8 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
-    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by simp [opRingEquiv, coeff]
+    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
+  simp [opRingEquiv, coeff]
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
