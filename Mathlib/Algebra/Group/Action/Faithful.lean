@@ -113,13 +113,11 @@ theorem faithfulSMul_iff [Group G] [MulAction G α] :
     simpa only [mul_smul, inv_smul_eq_iff] using h'
 
 @[to_additive]
-lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [SMul R T] [MulAction S T]
-    [IsScalarTower R S S] [IsScalarTower R T T]
-    [IsScalarTower R S T] [FaithfulSMul R T] : FaithfulSMul R S := by
-  rw [faithfulSMul_iff_injective_smul_one]
-  refine .of_comp (f := (· • (1 : T))) ?_
-  simpa [Function.comp_def, one_smul, ← faithfulSMul_iff_injective_smul_one]
+lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S]
+    [SMul R S] [SMul R T] [MulAction S T] [IsScalarTower R S T]
+    [h : FaithfulSMul R T] : FaithfulSMul R S where
+  eq_of_smul_eq_smul {r₁ r₂} hr := h.eq_of_smul_eq_smul fun t => by
+    simpa using congrArg (· • t) (hr 1)
 
 @[to_additive]
 lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]
