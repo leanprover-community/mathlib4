@@ -126,6 +126,11 @@ omit [HasZeroMorphisms C] in
 @[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
     whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
 
+omit [HasZeroMorphisms C] [HasZeroMorphisms D] in
+@[simp]
+lemma whiskerLeft_zero (F : C ⥤ D) (G H : D ⥤ E) : whiskerLeft F (0 : G ⟶ H) = 0 :=
+  rfl
+
 omit [HasZeroMorphisms C] in
 lemma FullyFaithful.preservesZeroMorphisms (F : C ⥤ D) (hF : F.FullyFaithful) :
     letI : HasZeroMorphisms C := hF.hasZeroMorphisms
