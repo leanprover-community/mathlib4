@@ -239,6 +239,10 @@ lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) 
 
 end Sieve
 
+/-- The precoverage on `Over X` for any `X : C` that is induced by a precoverage on `C`. -/
+abbrev Precoverage.over (X : C) (J : Precoverage C) : Precoverage (Over X) :=
+  J.comap (Over.forget X)
+
 variable (J : GrothendieckTopology C)
 
 namespace GrothendieckTopology
