@@ -38,7 +38,7 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 theorem TFAE.subset {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
-theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
+theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
 
 theorem tfae_append {l₁ l₂ : List Prop} :
