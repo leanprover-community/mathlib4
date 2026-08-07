@@ -1,13 +1,12 @@
 /-
 Copyright (c) 2026 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fernando Chu, Andrew Yang
+Authors: Fernando Chu, Andrew Yang, Felix Pernegger
 -/
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Small inductive dimension
@@ -48,7 +47,7 @@ class inductive HasSmallInductiveDimensionLT.{u} :
       (h : ∀ U ∈ s, HasSmallInductiveDimensionLT (frontier U) n) :
       HasSmallInductiveDimensionLT X (n + 1)
 
-variable {X : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 variable (X) in
 /-- A topological space has dimension `≤ n` if it has dimension `< n + 1`. -/
@@ -161,3 +160,51 @@ variable (X) in
 @[simp]
 theorem smallInductiveDimension_of_isEmpty [IsEmpty X] : smallInductiveDimension X = ⊥ :=
   smallInductiveDimension_eq_bot.2 ‹_›
+
+theorem Topology.IsInducing.hasSmallInductiveDimensionLT {f : X → Y} (hf : IsInducing f)
+    {n : ℕ} (h : HasSmallInductiveDimensionLT Y n) : HasSmallInductiveDimensionLT X n := by
+  induction h generalizing X with
+  | zero =>
+    have := Function.isEmpty f
+    exact HasSmallInductiveDimensionLT.zero
+  | succ n s hs h ih =>
+    refine .succ n _ (hs.isInducing hf) ?_
+    rintro _ ⟨U, hU, rfl⟩
+    apply ih U hU
+    apply (hf.restrictPreimage <| frontier U).comp
+    exact (IsEmbedding.inclusion <| hf.continuous.frontier_preimage_subset U).isInducing
+
+theorem Topology.IsInducing.hasSmallInductiveDimensionLE {f : X → Y} (hf : IsInducing f)
+    {n : ℕ} (h : HasSmallInductiveDimensionLE Y n) : HasSmallInductiveDimensionLE X n :=
+  hf.hasSmallInductiveDimensionLT h
+
+/-- The small inductive dimension does not increase under inducing maps. -/
+theorem Topology.IsInducing.smallInductiveDimension_le {f : X → Y} (hf : IsInducing f) :
+    smallInductiveDimension X ≤ smallInductiveDimension Y := by
+  apply sInf_le_sInf
+  intro m hm i hi
+  exact hf.hasSmallInductiveDimensionLT (hm i hi)
+
+/-- The small inductive dimension is less or equal that of an ambient space. -/
+theorem smallInductiveDimension_subspace_le (s : Set X) :
+    smallInductiveDimension s ≤ smallInductiveDimension X :=
+  Topology.IsInducing.subtypeVal.smallInductiveDimension_le
+
+protected theorem Homeomorph.hasSmallInductiveDimensionLT (f : X ≃ₜ Y) (n : ℕ) :
+    HasSmallInductiveDimensionLT X n ↔ HasSmallInductiveDimensionLT Y n  :=
+  ⟨f.symm.isInducing.hasSmallInductiveDimensionLT, f.isInducing.hasSmallInductiveDimensionLT⟩
+
+protected theorem Homeomorph.hasSmallInductiveDimensionLE (f : X ≃ₜ Y) (n : ℕ) :
+    HasSmallInductiveDimensionLE X n ↔ HasSmallInductiveDimensionLE Y n :=
+  f.hasSmallInductiveDimensionLT (n + 1)
+
+instance {p : X → Prop} (n : ℕ) [h : HasSmallInductiveDimensionLT X n] :
+    HasSmallInductiveDimensionLT (Subtype p) n :=
+  Topology.IsInducing.subtypeVal.hasSmallInductiveDimensionLT h
+
+/-- The small inductive dimension is preserved by homeomorphisms. -/
+protected theorem Homeomorph.smallInductiveDimension_congr (f : X ≃ₜ Y) :
+    smallInductiveDimension X = smallInductiveDimension Y := by
+  unfold _root_.smallInductiveDimension
+  congr! 3
+  exact forall₂_congr <| fun i _ ↦ f.hasSmallInductiveDimensionLT i
