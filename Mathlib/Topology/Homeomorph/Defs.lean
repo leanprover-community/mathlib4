@@ -300,14 +300,29 @@ theorem isClosedEmbedding (h : X ≃ₜ Y) : IsClosedEmbedding h :=
 theorem preimage_closure (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
 
+omit [TopologicalSpace Z] in
+theorem mem_closure_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) {s : Set Z} (x : X) :
+    x ∈ closure ((f ∘ e) ⁻¹' s) ↔ e x ∈ closure (f ⁻¹' s) := by
+  rw [preimage_comp, ← e.preimage_closure, mem_preimage]
+
 theorem image_closure (h : X ≃ₜ Y) (s : Set X) : h '' closure s = closure (h '' s) := by
   rw [← preimage_symm, preimage_closure]
 
 theorem preimage_interior (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' interior s = interior (h ⁻¹' s) :=
   h.isOpenMap.preimage_interior_eq_interior_preimage h.continuous _
 
+omit [TopologicalSpace Z] in
+theorem mem_interior_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) {s : Set Z} (x : X) :
+    x ∈ interior ((f ∘ e) ⁻¹' s) ↔ e x ∈ interior (f ⁻¹' s) := by
+  rw [preimage_comp, ← e.preimage_interior, mem_preimage]
+
 theorem image_interior (h : X ≃ₜ Y) (s : Set X) : h '' interior s = interior (h '' s) := by
   rw [← preimage_symm, preimage_interior]
+
+omit [TopologicalSpace Z] in
+theorem image_interior_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
+  simp only [preimage_comp, image_comp, e.image_interior, image_preimage]
 
 theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = frontier (h ⁻¹' s) :=
   h.isOpenMap.preimage_frontier_eq_frontier_preimage h.continuous _
