@@ -11,7 +11,7 @@ public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
-import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Module.Equiv.Basic
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Module.UniformConvergence
 
