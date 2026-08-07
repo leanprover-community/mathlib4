@@ -64,6 +64,11 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
+/-- The union of an `ε`-cover of `s` and an `ε`-cover of `t` is an `ε`-cover of `s ∪ t`. -/
+nonrec lemma IsCover.union (hs : IsCover ε s N₁) (ht : IsCover ε t N₂) :
+    IsCover ε (s ∪ t) (N₁ ∪ N₂) :=
+  hs.union ht
+
 lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
     (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
   rintro _ ⟨x, hx, rfl⟩
