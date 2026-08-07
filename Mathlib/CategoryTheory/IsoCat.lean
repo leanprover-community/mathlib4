@@ -218,6 +218,10 @@ def isoCat : IsoCat (InducedCategory C e) C where
 abbrev equivalence : (InducedCategory C e) ≌ C :=
   (isoCat e).toEquivalence
 
+lemma isIso_inducedFunctor_of_bijective (f : D → C) (hf : Function.Bijective f) :
+    (inducedFunctor f).IsIso :=
+  inferInstanceAs (isoCat (.ofBijective f hf)).functor.IsIso
+
 end InducedCategory
 
 end CategoryTheory
