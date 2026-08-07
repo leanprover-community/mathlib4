@@ -36,7 +36,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    simpa [constantCoeff, coeff] using h 0 finZeroElim
+    simpa [constantCoeff] using h 0 finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]

@@ -368,8 +368,10 @@ private lemma compRelationAux_map (r : σ') :
   rw [AddMonoidAlgebra.ofCoeff_finsuppSum]
   congr
   ext u s m
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
-    single_eq_monomial]
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul]
+  change (eval₂ (algebraMap R (MvPolynomial ι' S)) (C ∘ P.val) (P.σ s) *
+      (Finsupp.mapDomain Sum.inl u).prod fun i k ↦ Sum.elim X (C ∘ P.val) i ^ k).coeff m =
+        (monomial u s).coeff m
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 

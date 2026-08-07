@@ -51,7 +51,7 @@ local infixl:70 " /ᵐᵒⁿᵒᵐⁱᵃˡ " => divMonomial
 
 @[simp]
 theorem coeff_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) (s' : σ →₀ ℕ) :
-    coeff s' (x /ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff (s + s') x :=
+    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = x.coeff (s + s') :=
   rfl
 
 @[simp]
@@ -97,12 +97,12 @@ local infixl:70 " %ᵐᵒⁿᵒᵐⁱᵃˡ " => modMonomial
 
 @[simp]
 theorem coeff_modMonomial_of_not_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : ¬s ≤ s') :
-    coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = coeff s' x :=
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = x.coeff s' :=
   x.coeff_modOf_of_not_exists_add s s' <| by rintro ⟨d, rfl⟩; exact h le_self_add
 
 @[simp]
 theorem coeff_modMonomial_of_le {s' s : σ →₀ ℕ} (x : MvPolynomial σ R) (h : s ≤ s') :
-    coeff s' (x %ᵐᵒⁿᵒᵐⁱᵃˡ s) = 0 :=
+    (x %ᵐᵒⁿᵒᵐⁱᵃˡ s).coeff s' = 0 :=
   x.coeff_modOf_of_exists_add _ _ <| exists_add_of_le h
 
 @[simp]
@@ -226,7 +226,8 @@ theorem eq_divMonomial_single [IsLeftCancelAdd R]
     (hr : ∀ n ∈ r.support, n i = 0) :
     q = p.divMonomial (Finsupp.single i 1) := by
   ext n
-  rw [coeff_divMonomial, h, coeff_add, coeff_X_mul, left_eq_add, ← notMem_support_iff]
+  rw [coeff_divMonomial, h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, coeff_X_mul, left_eq_add,
+    ← notMem_support_iff]
   intro hn
   simpa using hr _ hn
 
@@ -236,7 +237,7 @@ instance [IsLeftCancelAdd R] :
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
   refine { add_left_cancel := fun f g h H ↦ ?_ }
   ext d
-  simpa using congr_arg (coeff d) H
+  simpa using congr_arg ((·.coeff d)) H
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}
