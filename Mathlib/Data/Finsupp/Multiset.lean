@@ -166,7 +166,7 @@ theorem toFinsupp_toMultiset (s : Multiset α) : Finsupp.toMultiset (toFinsupp s
 
 theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
     toFinsupp s = f ↔ s = Finsupp.toMultiset f :=
-  Multiset.toFinsupp.apply_eq_iff_symm_apply
+  Multiset.toFinsupp.eq_symm_apply.symm
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext

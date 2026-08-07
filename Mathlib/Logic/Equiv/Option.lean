@@ -163,7 +163,7 @@ def optionSubtype [DecidableEq β] (x : β) :
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
-              ((apply_eq_iff_eq_symm_apply _).1 e.property).symm).2 b.property)),
+              ((eq_symm_apply _).2 e.property).symm).2 b.property)),
       left_inv := fun a => by
         rw [← some_inj, some_get]
         exact symm_apply_apply (e : Option α ≃ β) a,
