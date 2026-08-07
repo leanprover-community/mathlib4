@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Finset.Basic
@@ -138,5 +139,11 @@ theorem prod_smul
   induction s using Finset.cons_induction_on with
   | empty => simp
   | cons _ _ hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
+
+@[simp]
+theorem prod_ofFn_smul {R A : Type*} [CommMonoid R] [CommMonoid A] [MulAction R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] {m : ℕ} (g : Fin m → R) (f : Fin m → A) :
+    (List.ofFn (fun i ↦ g i • f i)).prod = (List.ofFn g).prod • (List.ofFn f).prod := by
+  simp [List.prod_ofFn, Finset.prod_smul]
 
 end Finset
