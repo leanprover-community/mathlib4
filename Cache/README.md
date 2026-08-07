@@ -21,6 +21,11 @@ lake exe cache get Mathlib/Algebra/Group/Basic.lean
 lake exe cache get Mathlib.Algebra.Group.Basic
 ```
 
+The `get` and `get!` commands also fetch any required platform-specific native
+dependency releases. Together with the ordinary Mathlib cache, this restores a
+checkout on which `lake build --no-build` succeeds without a local C/C++ build.
+The download-only `get-` command does not unpack either kind of artifact.
+
 ## Commands
 
 ### No Privilege Required

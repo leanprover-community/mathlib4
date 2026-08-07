@@ -7,6 +7,7 @@ Authors: Marcelo Lynch
 import Cache.Cli
 import Cache.Requests
 import Cache.Marker
+import Cache.Native
 import Cache.Query
 import Cache.Warning
 import Cache.Lean
@@ -426,6 +427,27 @@ def test_isRemoteURL : IO Unit := do
     (isRemoteURL "" == false)
 
 end IsRemoteURL
+
+section SosCacheDelivery
+
+/-- Mathlib caches the pure-Lean SOS dependencies, while CSDP's platform release
+owns its complete Lean and native build tree. -/
+def test_sosCacheDelivery : IO Unit := do
+  IO.println "SOS cache roots:"
+  assert "CSDP is owned by its platform release"
+    (!Cache.IO.isPartOfMathlibCache `CSDP)
+  for root in #[`HexBasic, `HexMvPoly, `HexPoly, `SOS] do
+    assert s!"{root} is part of the Mathlib cache" (Cache.IO.isPartOfMathlibCache root)
+  assert "cache get prefetches native releases"
+    (Cache.Native.shouldPrefetch ["get"])
+  assert "cache get! prefetches native releases"
+    (Cache.Native.shouldPrefetch ["get!", "Mathlib"])
+  assert "cache get- does not unpack native releases"
+    (!Cache.Native.shouldPrefetch ["get-"])
+  assert "non-read commands do not prefetch native releases"
+    (!Cache.Native.shouldPrefetch ["pack"])
+
+end SosCacheDelivery
 
 section UInt64Formatting
 
@@ -1063,6 +1085,7 @@ def runAll : IO Unit := do
   test_extractPRNumber
   test_hashFromFileName
   test_isRemoteURL
+  test_sosCacheDelivery
   test_UInt64_asLTar
   test_hash_roundtrip
   test_markerURL
