@@ -194,6 +194,11 @@ inductive DecompositionResult
   /-- The decomposition failed for some other reason. -/
   | failed
 
+/-- Returns `true` if `DecompositionResult` is `comp _ _`, otherwise returns `false`. -/
+def DecompositionResult.isComp : DecompositionResult → Bool
+  | comp _ _ => true
+  | _ => false
+
 /-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
 
 Returns `DecompositionResult.failed` if:
