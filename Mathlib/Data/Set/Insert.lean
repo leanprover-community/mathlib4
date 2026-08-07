@@ -163,7 +163,7 @@ theorem mem_singleton {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
 @[deprecated (since := "2026-08-07")]
 alias mem_singleton_iff := mem_singleton
 
-theorem notmem_singleton {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+theorem notMem_singleton {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
 
 @[simp]
