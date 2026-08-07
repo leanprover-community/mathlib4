@@ -900,6 +900,16 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
 
+/-- Two topological group topologies are comparable if they are comparable at one. -/
+@[to_additive le_of_nhds_zero_le_nhds_zero
+  /-- Two topological additive group topologies are comparable if they are comparable at zero. -/]
+lemma IsTopologicalGroup.le_of_nhds_one_le_nhds_one {E : Type*} [Group E]
+    {t₁ t₂ : TopologicalSpace E}
+    [h₁ : @IsTopologicalGroup E t₁ _] [h₂ : @IsTopologicalGroup E t₂ _]
+    (h : @nhds E t₁ 1 ≤ @nhds E t₂ 1) : t₁ ≤ t₂ := by
+  rw [← @continuous_id_iff_le E t₁ t₂]
+  exact @continuous_of_continuousAt_one E t₁ _ h₁ E _ _ t₂ _ _ _ (MonoidHom.id E) h
+
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
@@ -1496,3 +1506,5 @@ theorem topologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @IsTopolog
   cases b <;> assumption
 
 end LatticeOps
+
+set_option linter.style.longFile 1700
