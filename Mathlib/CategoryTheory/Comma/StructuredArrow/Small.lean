@@ -75,11 +75,20 @@ instance small_inverseImage_proj_of_locallySmall
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
-instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+variable (S T) in
+lemma essentiallySmall' [EssentiallySmall.{w} C] [∀ (Y : C), Small.{w} (S.obj Y ⟶ T)] :
     EssentiallySmall.{w} (CostructuredArrow S T) := by
   rw [← essentiallySmall_congr
     (CostructuredArrow.pre (equivSmallModel.{w} C).inverse S T).asEquivalence]
+  have : Small.{w} (CostructuredArrow ((equivSmallModel C).inverse ⋙ S) T) :=
+    small_of_surjective.{w}
+      (α := Σ (X : SmallModel.{w} C), S.obj ((equivSmallModel C).inverse.obj X) ⟶ T)
+      (f := fun ⟨X, f⟩ ↦ CostructuredArrow.mk (Y := X) f) (fun g ↦ ⟨⟨g.left, g.hom⟩, rfl⟩)
   exact essentiallySmall_of_small_of_locallySmall _
+
+instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+    EssentiallySmall.{w} (CostructuredArrow S T) :=
+  essentiallySmall' ..
 
 end CostructuredArrow
 

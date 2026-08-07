@@ -193,7 +193,7 @@ end Functor
 
 /-- `yoneda` is dense: Every `X : Cᵒᵖ ⥤ Type v₁` is the colimit over
 `CostructuredArrow.proj yoneda X ⋙ yoneda`. -/
-def denseAtYoneda (X : Cᵒᵖ ⥤ Type v₁) : yoneda.DenseAt X :=
+noncomputable def denseAtYoneda (X : Cᵒᵖ ⥤ Type v₁) : yoneda.DenseAt X :=
   Presheaf.isColimitTautologicalCocone X
 
 instance : (yoneda (C := C)).IsDense where
@@ -201,7 +201,7 @@ instance : (yoneda (C := C)).IsDense where
 
 /-- `uliftYoneda` is dense: Every `X : Cᵒᵖ ⥤ Type max w v₁` is the colimit over
 `CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda`. -/
-def denseAtUliftYoneda (X : Cᵒᵖ ⥤ Type max w v₁) : uliftYoneda.DenseAt X :=
+noncomputable def denseAtUliftYoneda (X : Cᵒᵖ ⥤ Type max w v₁) : uliftYoneda.DenseAt X :=
   Presheaf.isColimitTautologicalCocone' X
 
 instance : (uliftYoneda.{w} (C := C)).IsDense where
