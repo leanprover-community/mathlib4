@@ -15,7 +15,7 @@ of sheaves. We also show it is functorial. In practice, it is often best to work
 cohomology as a Type (the long sequence necessarily takes values in the category `AddCommGrpCat`,
 so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can use the lemmas
 `CategoryTheory.Sheaf.H.longSequence_exact₁`, `CategoryTheory.Sheaf.H.longSequence_exact₂` and
-`CategoryTheory.Sheaf.H.longSequence_exact₃`.
+`CategoryTheory.Sheaf.H.longSequence_exact₃`
 
 ## Main definitions
 
