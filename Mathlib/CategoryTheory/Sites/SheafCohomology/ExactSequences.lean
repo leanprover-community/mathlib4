@@ -121,30 +121,30 @@ lemma longSequence_exact₁' (h : n₀ + 1 = n₁ := by lia) :
       ((longSequence_exact hS n₀ n₁ h).zero 2)).Exact :=
   (longSequence_exact hS n₀ n₁ h).exact 2
 
-lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
-    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
-      ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
-  (longSequence_exact hS n₀ n₁ h).exact 1
-
 lemma longSequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (ofHom (map S.f n)) (ofHom (map S.g n))
       (((longSequence_exact hS n _ rfl).sc 0).zero)).Exact :=
   (longSequence_exact hS n _ rfl).exact 0
 
-include hS in
-lemma longSequence_exact₂ (n : ℕ) (x₂ : H S.X₂ n) (hx₂ : map S.g n x₂ = 0) :
-    ∃ x₁ : H S.X₁ n, map S.f n x₁ = x₂ :=
-  Ext.covariant_sequence_exact₂ _ hS _ hx₂
+lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
+    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (δ hS n₀ n₁ h))
+      ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
+  (longSequence_exact hS n₀ n₁ h).exact 1
 
-lemma longSequence_exact₃ (x₃ : H S.X₃ n₀)
+lemma longSequence_exact₁ {n₁ : ℕ} (x₁ : H S.X₁ n₁)
+    (hx₁ : map S.f n₁ x₁ = 0) {n₀ : ℕ} (h : n₀ + 1 = n₁) :
+    ∃ x₃ : H S.X₃ n₀, δ hS n₀ n₁ h x₃ = x₁ :=
+  Ext.covariant_sequence_exact₁ _ hS x₁ hx₁ h
+
+include hS in
+lemma longSequence_exact₂ {n : ℕ} (x₂ : H S.X₂ n) (hx₂ : map S.g n x₂ = 0) :
+    ∃ x₁ : H S.X₁ n, map S.f n x₁ = x₂ :=
+  Ext.covariant_sequence_exact₂ _ hS x₂ hx₂
+
+lemma longSequence_exact₃ {n₀ : ℕ} (x₃ : H S.X₃ n₀) {n₁ : ℕ} (h : n₀ + 1 = n₁)
     (hx₃ : δ hS n₀ n₁ h x₃ = 0) :
     ∃ x₂ : H S.X₂ n₀, map S.g n₀ x₂ = x₃ :=
-  Ext.covariant_sequence_exact₃ _ _ _ h hx₃
-
-lemma longSequence_exact₁ (x₁ : H S.X₁ n₁)
-    (hx₁ : map S.f n₁ x₁ = 0) :
-    ∃ x₃ : H S.X₃ n₀, δ hS n₀ n₁ h x₃ = x₁ :=
-  Ext.covariant_sequence_exact₁ _ _ _ hx₁ h
+  Ext.covariant_sequence_exact₃ _ hS x₃ h hx₃
 
 variable {T : C} (hT : Limits.IsTerminal T)
 
@@ -153,7 +153,7 @@ open Opposite
 lemma longSequence_equiv₀_exact₃ (x₃ : S.X₃.obj.obj (op T))
     (hx₃ : (δ hS 0 1 rfl) ((equiv₀ S.X₃ hT).symm x₃) = 0) :
     ∃ x₂ : S.X₂.obj.obj (op T), S.g.hom.app (op T) x₂ = x₃ := by
-  obtain ⟨x₂', hx₂'⟩ := longSequence_exact₃ hS 0 _ _ ((equiv₀ S.X₃ hT).symm x₃) hx₃
+  obtain ⟨x₂', hx₂'⟩ := longSequence_exact₃ hS ((equiv₀ S.X₃ hT).symm x₃) rfl hx₃
   use equiv₀ S.X₂ hT x₂'
   simp [equiv₀_naturality, hx₂']
 
