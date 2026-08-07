@@ -14,13 +14,13 @@ public import Mathlib.RingTheory.Trace.Basic
 
 This file relates the concrete construction `QuadraticAlgebra R a b` to the predicate
 `Algebra.IsQuadraticExtension`: a `QuadraticAlgebra` is a quadratic extension of `R`, and
-conversely every quadratic extension is isomorphic to a `QuadraticAlgebra`.
+conversely every commutative quadratic extension is isomorphic to a `QuadraticAlgebra`.
 
 ## Main results
 
 * `QuadraticAlgebra.instIsQuadraticExtension`: a `QuadraticAlgebra` is a quadratic extension;
-* `Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra`: every quadratic extension of a
-  commutative ring is isomorphic to some `QuadraticAlgebra R a b`.
+* `Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra`: every commutative quadratic
+  extension is isomorphic to some `QuadraticAlgebra R a b`.
 -/
 
 public section
@@ -38,6 +38,8 @@ end QuadraticAlgebra
 
 namespace Algebra
 
+open QuadraticAlgebra
+
 variable {R A : Type*} [CommRing R] [StrongRankCondition R] [CommRing A] [Algebra R A]
   [IsQuadraticExtension R A]
 
@@ -53,15 +55,10 @@ theorem IsQuadraticExtension.exists_algEquiv_quadraticAlgebra :
     ⟨(AlgEquiv.ofBijective (QuadraticAlgebra.lift ⟨(e 1), ?_⟩) ?_).symm⟩⟩
   · simpa [← sq, ← Algebra.algebraMap_eq_smul_one, neg_add_eq_sub]
       using IsQuadraticExtension.sq_eq_trace_smul_sub_norm R (e 1)
-  · refine ⟨?_, ?_⟩
-    · rw [QuadraticAlgebra.lift_injective_iff]
-      have : ![(1 : A), e 1] = ⇑e := by ext i; fin_cases i <;> simp [he]
-      rw [this]
+  · refine ⟨(lift_injective_iff _).mpr ?_, (lift_surjective_iff _).mpr ?_⟩
+    · rw [show ![1, e 1] = e by ext i; fin_cases i <;> simp [he]]
       exact e.linearIndependent
-    · rw [QuadraticAlgebra.lift_surjective_iff]
-      refine Algebra.eq_top_iff.mpr fun x ↦ ?_
-      rw [← e.sum_repr x, Fin.sum_univ_two, he]
-      exact add_mem (Subalgebra.smul_mem _ (one_mem _) _)
-        (Subalgebra.smul_mem _ (Algebra.self_mem_adjoin_singleton R (e 1)) _)
+    · rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, ← e.span_eq, Submodule.span_le]
+      simp [Set.range_subset_iff, he]
 
 end Algebra
