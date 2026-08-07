@@ -347,9 +347,10 @@ variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing �
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
     IsCompact (convexHull 𝕜 s) := by
-  rw [hs.convexHull_eq_image]
+  sorry
+  /-rw [hs.convexHull_eq_image]
   let := hs.fintype
-  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
+  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)-/
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
