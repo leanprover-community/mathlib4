@@ -81,6 +81,7 @@ def nerveEquiv {C : Type u} [Category.{v} C] : ComposableArrows C 0 ≃ C where
 
 namespace nerve
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Nerves of finite non-empty ordinals are representable functors. -/
 def representableBy {n : ℕ} (α : Type u) [Preorder α] (e : α ≃o Fin (n + 1)) :
     (nerve α).RepresentableBy ⦋n⦌ where
@@ -103,6 +104,7 @@ lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : ComposableArrows C n) (j : Fin (n 
 
 lemma δ₀_eq {x : ComposableArrows C (n + 1)} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
@@ -159,6 +161,7 @@ section
 
 attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
 @[simps -isSimp]
@@ -169,6 +172,7 @@ def homEquiv {x y : ComposableArrows C 0} :
   left_inv e := by cat_disch
   right_inv f := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mk₁_homEquiv_apply {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
     ComposableArrows.mk₁ (homEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
   simp [homEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]

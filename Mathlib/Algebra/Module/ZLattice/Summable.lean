@@ -155,10 +155,10 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
-  classical
   cases subsingleton_or_nontrivial L
   · refine ⟨1, zero_lt_one, fun r hr s ↦ ?_⟩
     have hr : r ≠ 0 := by linarith

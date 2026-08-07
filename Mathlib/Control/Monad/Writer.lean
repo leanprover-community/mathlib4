@@ -110,7 +110,7 @@ theorem run_bind (empty : ω) (append : ω → ω → ω)
   rfl
 
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
-@[inline, implicit_reducible]
+@[inline, instance_reducible]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 
