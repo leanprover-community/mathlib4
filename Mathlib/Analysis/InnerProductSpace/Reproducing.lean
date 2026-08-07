@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Reproducing Kernel Hilbert Spaces
@@ -274,7 +276,7 @@ instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
 
 instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _
 
-private lemma inner_H₀_def (f g : H₀ K) :
+lemma inner_H₀_def (f g : H₀ K) :
     ⟪f, g⟫_𝕜 = f.sum fun ⟨y, u⟩ z ↦ g.sum fun ⟨x, v⟩ w ↦ star z * w * ⟪K x y u, v⟫_𝕜 := rfl
 
 variable (K) in
@@ -342,4 +344,10 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
   simp [kernel, adjoint_inner_left, -inner_kerFun, -kerFun_inner,
     coeCLM, OfKernel.kerFun, inner_H₀_def, RKHS.kerFun]
 
-end RKHS.OfKernel
+lemma kerFun_OfKernel_apply (x : X) (v : V) :
+    kerFun (OfKernel K) x v = .coe' (.single (x, v) 1) := by
+  simp [RKHS.kerFun, coeCLM]
+
+end OfKernel
+
+end RKHS
