@@ -119,6 +119,27 @@ instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
 instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 
+instance Countable.countable_relations [h : Countable L.Symbols] : Countable (Σ l, L.Relations l) :=
+  @Function.Injective.countable _ _ h _ Sum.inr_injective
+
+/-- A language has countably many symbols exactly when it has countably many function symbols and
+countably many relation symbols. -/
+theorem countable_symbols_iff :
+    Countable L.Symbols ↔ Countable (Σ l, L.Functions l) ∧ Countable (Σ l, L.Relations l) :=
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => inferInstance⟩
+
+/-- A language has cardinality at most `ℵ₀` exactly when both of its types of symbols are
+countable. -/
+theorem card_le_aleph0_iff_countable :
+    L.card ≤ ℵ₀ ↔ Countable (Σ l, L.Functions l) ∧ Countable (Σ l, L.Relations l) := by
+  rw [card, mk_le_aleph0_iff, countable_symbols_iff]
+
+/-- The sum of two languages with countably many symbols has countably many symbols. -/
+instance Countable.countable_sum [Countable L.Symbols] [Countable L'.Symbols] :
+    Countable (L.sum L').Symbols := by
+  rw [countable_symbols_iff]
+  constructor <;> exact (Equiv.sigmaSumDistrib _ _).injective.countable
+
 @[simp]
 theorem card_functions_sum (i : ℕ) :
     #((L.sum L').Functions i)
