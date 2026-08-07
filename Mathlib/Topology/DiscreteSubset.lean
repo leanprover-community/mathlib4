@@ -44,7 +44,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f f₁ f₂ : X → Y} {s : Set X}
 
 theorem discreteTopology_subtype_iff {S : Set Y} :
     DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
@@ -243,6 +243,42 @@ theorem mem_codiscreteWithin_iff_forall_mem_nhdsNE {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∪ Tᶜ ∈ 𝓝[≠] x := by
   simp_rw [mem_codiscreteWithin, disjoint_principal_right, Set.compl_sdiff]
 
+/-- If `S` is codiscrete within `T`, then `S ∪ Tᶜ` is a punctured neighborhood of every point
+of `T`. -/
+theorem mem_nhdsNE_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteWithin T) {x : X}
+    (hx : x ∈ T) : S ∪ Tᶜ ∈ 𝓝[≠] x :=
+  mem_codiscreteWithin_iff_forall_mem_nhdsNE.1 hS x hx
+
+omit [TopologicalSpace Y] in
+/-- Two functions agree along `codiscreteWithin U` iff, near every point of `U`, they agree at
+every point of `U`. -/
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsNE {U : Set X} :
+    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, ∀ᶠ y in 𝓝[≠] x, y ∈ U → f₁ y = f₂ y := by
+  have h : {y | f₁ y = f₂ y} ∪ Uᶜ = {y | y ∈ U → f₁ y = f₂ y} := by
+    ext y
+    simp [imp_iff_or_not]
+  rw [EventuallyEq, eventually_iff, mem_codiscreteWithin_iff_forall_mem_nhdsNE, h]
+  rfl
+
+/-- A set `S` is codiscrete within `T` iff it is a punctured neighborhood within `T` of every
+point of `T`. -/
+theorem mem_codiscreteWithin_iff_forall_mem_nhdsWithin {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, S ∈ 𝓝[T \ {x}] x := by
+  simp [codiscreteWithin]
+
+/-- If `S` is codiscrete within `T`, then `S` is a punctured neighborhood within `T` of every
+point of `T`. -/
+theorem mem_nhdsWithin_of_mem_codiscreteWithin {S T : Set X} (hS : S ∈ codiscreteWithin T)
+    {x : X} (hx : x ∈ T) : S ∈ 𝓝[T \ {x}] x :=
+  mem_codiscreteWithin_iff_forall_mem_nhdsWithin.1 hS x hx
+
+omit [TopologicalSpace Y] in
+/-- Two functions agree along `codiscreteWithin U` iff, for every point `x` of `U`, they agree
+along the punctured neighborhood within `U` of `x`. -/
+theorem eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin {U : Set X} :
+    f₁ =ᶠ[codiscreteWithin U] f₂ ↔ ∀ x ∈ U, f₁ =ᶠ[𝓝[U \ {x}] x] f₂ := by
+  simp [codiscreteWithin, EventuallyEq]
+
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
@@ -399,6 +435,26 @@ lemma Disjoint.nhdsWithin_eq_of_cofinite
     rw [Filter.principal_le_iff]
     exact fun s hs x hx ↦ mem_of_mem_nhds (hx hs)
 
+/-- A set is codiscrete iff it is a punctured neighborhood of every point. -/
+@[simp]
+lemma mem_codiscrete_iff_forall_mem_nhdsNE :
+    s ∈ Filter.codiscrete X ↔ ∀ x, s ∈ 𝓝[≠] x := by
+  simp [Filter.codiscrete, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+
+/-- Codiscrete sets are punctured neighborhoods of every point. -/
+lemma mem_nhdsNE_of_mem_codiscrete (hs : s ∈ Filter.codiscrete X) (x : X) :
+    s ∈ 𝓝[≠] x :=
+  mem_codiscrete_iff_forall_mem_nhdsNE.1 hs x
+
+omit [TopologicalSpace Y] in
+/--
+Two functions agree along the codiscrete filter iff they agree along the punctured neighborhood of
+every point. -/
+@[simp]
+lemma eventuallyEq_codiscrete_iff_forall_eventuallyEq_nhdsNE :
+    f₁ =ᶠ[Filter.codiscrete X] f₂ ↔ ∀ x, f₁ =ᶠ[𝓝[≠] x] f₂ := by
+  simp [EventuallyEq, Filter.Eventually, mem_codiscrete_iff_forall_mem_nhdsNE]
+
 lemma mem_codiscrete_accPt {S : Set X} :
     S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
   simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
@@ -494,7 +550,7 @@ section discrete_union
 theorem IsDiscrete.iUnion {ι : Sort*} [Finite ι] {s : ι → Set X} (hs : ∀ i, IsDiscrete (s i))
     (hsc : ∀ i, IsClosed (s i)) : IsDiscrete (⋃ i, s i) := by
   suffices (⋃ i, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
-  simp [compl_mem_codiscrete_iff, *]
+  simp only [compl_iUnion, iInter_mem, compl_mem_codiscrete_iff, and_self, implies_true, hsc, hs]
 
 /-- The union of two discrete closed subsets is discrete. -/
 theorem IsDiscrete.union {s t : Set X} (hs : IsDiscrete s) (ht : IsDiscrete t)

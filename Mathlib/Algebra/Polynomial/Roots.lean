@@ -144,6 +144,11 @@ theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsR
 
 @[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
 
+/-- Nonzero polynomials are nonzero away from a cofinite set. -/
+lemma eventually_eval_ne_zero_cofinite {p : R[X]} (hp : p ≠ 0) :
+    ∀ᶠ x in Filter.cofinite, p.eval x ≠ 0 := by
+  simpa [Filter.eventually_cofinite] using finite_setOfPred_isRoot hp
+
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
   not_imp_comm.mp finite_setOfPred_isRoot h
 
