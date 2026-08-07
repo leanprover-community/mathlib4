@@ -95,6 +95,7 @@ def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
     pure e
   instantiateMVars e
 
+-- TODO: implement this in compiler using some method like a `norm_num` extension
 /-- Select the computation model for the ring expression `R`. -/
 def producerFor (R : Expr) : MetaM Producer := do
   -- ring-specific models match on the head of `R` here, before the fallback

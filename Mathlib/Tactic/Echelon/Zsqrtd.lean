@@ -37,6 +37,8 @@ def evalInt (e : Expr) : MetaM Int := do
 /-- Evaluate a `ℤ√d` entry to its pair of integer components: a `⟨a, b⟩` literal, `√d`
 itself, or an entry without `√d` content evaluating through `norm_num`. -/
 def evalZsqrtdEntry (e : Expr) : MetaM (Int × Int) := do
+  -- TODO: is there a way to parse only the constructor? whnf doesn't
+  -- handle negative ints well as it reduces to the neg instance of zsqrtd.
   match_expr e with
   | Zsqrtd.mk _ a b => return (← evalInt a, ← evalInt b)
   | Zsqrtd.sqrtd _ => return (0, 1)
