@@ -272,6 +272,31 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
+open Subgroup in
+/-- A group with at most one maximal subgroup is cyclic. -/
+@[to_additive /-- An additive group with at most one maximal subgroup is cyclic. -/]
+theorem isCyclic_of_isCoatom_subsingleton {G : Type*} [Group G] [IsCoatomic (Subgroup G)]
+    (h : ∀ M₁ M₂ : Subgroup G, IsCoatom M₁ → IsCoatom M₂ → M₁ = M₂) :
+    IsCyclic G := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  obtain hbot | ⟨M, hM, -⟩ := eq_top_or_exists_le_coatom (⊥ : Subgroup G)
+  · exact ⟨1, eq_top_of_bot_eq_top hbot _⟩
+  · refine SetLike.exists_of_lt hM.lt_top |>.imp fun g ⟨_, hg⟩ ↦ ?_
+    by_contra hne
+    obtain ⟨M', hM', hle⟩ := (eq_top_or_exists_le_coatom (zpowers g)).resolve_left hne
+    exact hg (h M' M hM' hM ▸ hle (mem_zpowers g))
+
+/-- A subgroup of a commutative group is maximal (a coatom in the subgroup lattice) iff the quotient
+by it is simple. Group analogue of `isSimpleModule_iff_isCoatom`. -/
+@[to_additive /-- A subgroup of an additive commutative group is maximal (a coatom in the subgroup
+lattice) iff the quotient by it is simple. Additive group analogue of
+`isSimpleModule_iff_isCoatom`. -/]
+theorem CommGroup.isSimpleGroup_iff_isCoatom {G : Type*} [CommGroup G] {M : Subgroup G} :
+    IsSimpleGroup (G ⧸ M) ↔ IsCoatom M := by
+  rw [← Set.isSimpleOrder_Ici_iff_isCoatom,
+    ← (QuotientGroup.comapMk'OrderIso M).isSimpleOrder_iff, isSimpleGroup_iff, isSimpleOrder_iff]
+  simp [Subgroup.normal_of_isMulCommutative]
+
 section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
