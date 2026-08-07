@@ -721,6 +721,21 @@ In this section, we will develop some API for `UniformIntegrable` and prove that
 
 variable {p : ℝ≥0∞} {f : ι → α → β}
 
+/-- The tail-control condition with the nonstrict inequality `C ≤ ‖f i x‖₊` is equivalent to the
+one with the strict inequality `C < ‖f i x‖₊`. -/
+private theorem forall_exists_eLpNorm_indicator_le_iff_lt {f : ι → α → β} :
+    (∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
+        ∀ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) ↔
+      ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
+        ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
+  refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ?_⟩
+  · obtain ⟨C, hC⟩ := h ε hε
+    refine ⟨C, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
+    exact norm_indicator_le_of_subset (by grind) _ _
+  · obtain ⟨C, hC⟩ := h ε hε
+    refine ⟨C + 1, fun i ↦ (eLpNorm_mono fun x ↦ ?_).trans (hC i)⟩
+    exact norm_indicator_le_of_subset (fun x hx ↦ (lt_add_one C).trans_le hx) _ _
+
 theorem uniformIntegrable_zero_meas [MeasurableSpace α] : UniformIntegrable f p (0 : Measure α) :=
   ⟨fun _ => aestronglyMeasurable_zero_measure _, unifIntegrable_zero_meas, 0,
     fun _ => eLpNorm_measure_zero.le⟩
@@ -802,6 +817,14 @@ theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
       rw [ENNReal.coe_toNNReal (by finiteness)]
 
+/-- A version of `uniformIntegrable_of'` with a strict inequality in the tail condition. -/
+theorem uniformIntegrable_of_lt' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    (hf : ∀ i, StronglyMeasurable (f i))
+    (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
+      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
+    UniformIntegrable f p μ :=
+  uniformIntegrable_of' hp hp' hf (forall_exists_eLpNorm_indicator_le_iff_lt.mpr h)
+
 /-- A sequence of functions `(fₙ)` is uniformly integrable in the probability sense if for all
 `ε > 0`, there exists some `C` such that `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
 theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -822,10 +845,20 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_ofPred, hx] at hfx
 
+/-- A version of `uniformIntegrable_of` with a strict inequality in the tail condition. -/
+theorem uniformIntegrable_of_lt [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
+    (hf : ∀ i, AEStronglyMeasurable (f i) μ)
+    (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
+      ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε) :
+    UniformIntegrable f p μ :=
+  uniformIntegrable_of hp hp' hf (forall_exists_eLpNorm_indicator_le_iff_lt.mpr h)
+
 /-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
-theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
+theorem UniformIntegrable.spec' (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · exact ⟨0, fun i => by simp [eLpNorm_exponent_zero]⟩
   obtain ⟨-, hfu, M, hM⟩ := hfu
   obtain ⟨δ, hδpos, hδ⟩ := hfu hε
   obtain ⟨C, hC⟩ : ∃ C : ℝ≥0, ∀ i, μ { x | C ≤ ‖f i x‖₊ } ≤ ENNReal.ofReal δ := by
@@ -858,13 +891,13 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
     exact lt_two_mul_self (lt_max_of_lt_right one_pos)
   exact ⟨C, fun i => hδ i _ (measurableSet_le measurable_const (hf i).nnnorm.measurable) (hC i)⟩
 
-theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
+theorem UniformIntegrable.spec (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
     (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
   set g : ι → α → β := fun i => (hfu.1 i).choose
   have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfu.1 i).1
   have hgunif : UniformIntegrable g p μ := hfu.ae_eq fun i => (Exists.choose_spec <| hfu.1 i).2
-  obtain ⟨C, hC⟩ := hgunif.spec' hp hp' hgmeas hε
+  obtain ⟨C, hC⟩ := hgunif.spec' hp' hgmeas hε
   refine ⟨C, fun i => le_trans (le_of_eq <| eLpNorm_congr_ae ?_) (hC i)⟩
   filter_upwards [(Exists.choose_spec <| hfu.1 i).2] with x hx
   by_cases hfx : x ∈ { x | C ≤ ‖f i x‖₊ }
@@ -873,6 +906,58 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
   · rw [Set.indicator_of_notMem hfx, Set.indicator_of_notMem]
     rwa [Set.mem_ofPred, hx] at hfx
 
+/-- A version of `UniformIntegrable.spec` with a strict inequality in the tail condition. -/
+theorem UniformIntegrable.spec_lt (hp' : p ≠ ∞) (hfu : UniformIntegrable f p μ) {ε : ℝ}
+    (hε : 0 < ε) :
+    ∃ C : ℝ≥0, ∀ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ ≤ ENNReal.ofReal ε :=
+  forall_exists_eLpNorm_indicator_le_iff_lt.1 (fun _ => hfu.spec hp') ε hε
+
+/-- For a uniformly integrable family `f`, the `eLpNorm` of the tail
+`{x | C ≤ ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i` as the level `C` tends to
+infinity. -/
+theorem UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop (hp' : p ≠ ∞)
+    (hfu : UniformIntegrable f p μ) :
+    Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) := by
+  refine ENNReal.tendsto_atTop_zero.2 fun ε hε ↦ ?_
+  obtain ⟨δ, hδ, hδε⟩ : ∃ δ : ℝ, 0 < δ ∧ ENNReal.ofReal δ ≤ ε := by
+    rcases eq_or_ne ε ∞ with rfl | hε'
+    · exact ⟨1, one_pos, le_top⟩
+    · exact ⟨ε.toReal, ENNReal.toReal_pos hε.ne' hε', (ENNReal.ofReal_toReal hε').le⟩
+  obtain ⟨C, hC⟩ := hfu.spec hp' hδ
+  refine ⟨C, fun M hM ↦ iSup_le fun i ↦ ?_⟩
+  refine le_trans (eLpNorm_mono fun x ↦ ?_) ((hC i).trans hδε)
+  exact norm_indicator_le_of_subset (fun y hy ↦ hM.trans hy) (f i) x
+
+/-- The tail `eLpNorm` of a family tends to `0` uniformly along the nonstrict thresholds
+`C ≤ ‖f i x‖₊` iff it does along the strict thresholds `C < ‖f i x‖₊`. -/
+private theorem tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt :
+    Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) ↔
+      Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ)
+        atTop (𝓝 0) where
+  mp hle := by
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hle
+      (fun _ ↦ zero_le) fun C ↦ iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
+    exact norm_indicator_le_of_subset (by grind) _ _
+  mpr hlt := by
+    have hsub : Tendsto (fun C : ℝ≥0 ↦ C - 1) atTop atTop :=
+      tendsto_atTop_atTop.2 fun b ↦ ⟨b + 1, fun C hC ↦ le_tsub_of_add_le_right hC⟩
+    have hupper : Tendsto
+        (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C - 1 < ‖f i x‖₊}.indicator (f i)) p μ) atTop (𝓝 0) :=
+      hlt.comp hsub
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hupper
+      (.of_forall fun _ ↦ zero_le) ?_
+    filter_upwards [eventually_gt_atTop 0] with C hC
+    refine iSup_mono fun i ↦ eLpNorm_mono fun x ↦ ?_
+    exact norm_indicator_le_of_subset (fun x hx ↦ (tsub_lt_self hC one_pos).trans_le hx) _ _
+
+/-- The strict-inequality analogue of `UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop`:
+the `eLpNorm` of the tail `{x | C < ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i`. -/
+theorem UniformIntegrable.tendsto_iSup_eLpNorm_indicator_atTop' (hp' : p ≠ ∞)
+    (hfu : UniformIntegrable f p μ) :
+    Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ)
+      atTop (𝓝 0) :=
+  tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt.mp (hfu.tendsto_iSup_eLpNorm_indicator_atTop hp')
+
 /-- The definition of uniform integrable in mathlib is equivalent to the definition commonly
 found in literature. -/
 theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞) :
@@ -880,8 +965,31 @@ theorem uniformIntegrable_iff [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       (∀ i, AEStronglyMeasurable (f i) μ) ∧
         ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0,
           ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε :=
-  ⟨fun h => ⟨h.1, fun _ => h.spec (lt_of_lt_of_le zero_lt_one hp).ne.symm hp'⟩,
-    fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
+  ⟨fun h => ⟨h.1, fun _ => h.spec hp'⟩, fun h => uniformIntegrable_of hp hp' h.1 h.2⟩
+
+/-- A family `f` is uniformly integrable iff it is `AEStronglyMeasurable` and the `eLpNorm` of its
+tail `{x | C ≤ ‖f i x‖₊}.indicator (f i)` tends to `0` uniformly in `i` as `C` tends to infinity. -/
+theorem uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop [IsFiniteMeasure μ]
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) :
+    UniformIntegrable f p μ ↔
+      (∀ i, AEStronglyMeasurable (f i) μ) ∧
+        Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C ≤ ‖f i x‖₊}.indicator (f i)) p μ)
+          atTop (𝓝 0) := by
+  refine ⟨fun h ↦ ⟨h.1, h.tendsto_iSup_eLpNorm_indicator_atTop hp'⟩, fun ⟨hf, htail⟩ ↦ ?_⟩
+  refine (uniformIntegrable_iff hp hp').mpr ⟨hf, fun ε hε ↦ ?_⟩
+  obtain ⟨C, hC⟩ := ENNReal.tendsto_atTop_zero.1 htail (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
+  exact ⟨C, fun i ↦ (le_iSup _ i).trans (hC C le_rfl)⟩
+
+/-- The strict-inequality analogue of
+`uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop`. -/
+theorem uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop' [IsFiniteMeasure μ]
+    (hp : 1 ≤ p) (hp' : p ≠ ∞) :
+    UniformIntegrable f p μ ↔
+      (∀ i, AEStronglyMeasurable (f i) μ) ∧
+        Tendsto (fun C : ℝ≥0 ↦ ⨆ i, eLpNorm ({x | C < ‖f i x‖₊}.indicator (f i)) p μ)
+          atTop (𝓝 0) := by
+  rw [uniformIntegrable_iff_tendsto_iSup_eLpNorm_indicator_atTop hp hp']
+  exact and_congr_right fun _ ↦ tendsto_iSup_eLpNorm_indicator_atTop_le_iff_lt
 
 /-- The averaging of a uniformly integrable sequence is also uniformly integrable. -/
 theorem uniformIntegrable_average
