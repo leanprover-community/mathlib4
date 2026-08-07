@@ -162,7 +162,6 @@ instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
     DecidableEq (stdSimplex.obj n ⟶ X) :=
   fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
-@[simp]
 lemma _root_.SSet.yonedaEquiv_symm_comp {X Y : SSet.{u}} {n : SimplexCategory} (x : X.obj (op n))
     (f : X ⟶ Y) :
     yonedaEquiv.symm x ≫ f = yonedaEquiv.symm (f.app _ x) :=
@@ -202,6 +201,14 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
     dsimp% (yonedaEquiv.symm x).app _ (stdSimplex.objEquiv.symm f) =
       X.map f.op x :=
   rfl
+
+lemma opObjEquiv_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X.op _⦋0⦌) :
+    opObjEquiv (n := op n) (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv x)) := rfl
+
+lemma opObjEquiv_symm_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X _⦋0⦌) :
+    (opObjEquiv (n := op n)).symm (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv.symm x)) := rfl
 
 namespace stdSimplex
 
@@ -320,6 +327,26 @@ lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
     (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
     stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
   rw [yonedaEquiv.eq_symm_apply, ← yonedaEquiv_naturality, yonedaEquiv.apply_symm_apply]
+
+lemma stdSimplex.δ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
+    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.σ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
+    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.yonedaEquiv_δ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
+
+lemma stdSimplex.yonedaEquiv_σ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
+    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
 
 namespace Subcomplex
 
@@ -844,5 +871,43 @@ lemma isIso_toOfSimplex_iff :
     apply isIso_of_mono_of_epi
 
 end Subcomplex
+
+namespace Edge
+
+variable {X : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
+
+@[reassoc (attr := simp)]
+lemma δ_zero_yonedaEquiv_symm (e : Edge x₀ x₁) :
+    stdSimplex.δ 0 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₁ := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_one_yonedaEquiv_symm (e : Edge x₀ x₁) :
+    stdSimplex.δ 1 ≫ yonedaEquiv.symm e.edge = yonedaEquiv.symm x₀ := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+namespace CompStruct
+
+variable {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+  (h : CompStruct e₀₁ e₁₂ e₀₂)
+
+@[reassoc (attr := simp)]
+lemma δ_zero_yonedaEquiv_symm :
+    stdSimplex.δ 0 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₁₂.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_one_yonedaEquiv_symm :
+    stdSimplex.δ 1 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₀₂.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+@[reassoc (attr := simp)]
+lemma δ_two_yonedaEquiv_symm :
+    stdSimplex.δ 2 ≫ yonedaEquiv.symm h.simplex = yonedaEquiv.symm e₀₁.edge := by
+  simp [stdSimplex.δ_comp_yonedaEquiv_symm]
+
+end CompStruct
+
+end Edge
 
 end SSet
