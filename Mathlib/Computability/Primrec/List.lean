@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Cameron Freer
 -/
 module
 
@@ -268,6 +268,26 @@ theorem list_findIdx {f : α → List β} {p : α → β → Bool}
   (list_foldr hf (const 0) <|
         to₂ <| cond (hp.comp fst <| fst.comp snd) (const 0) (succ.comp <| snd.comp snd)).of_eq
     fun a => by dsimp; induction f a <;> simp [List.findIdx_cons, *]
+
+/-- `List.all` of a primitive recursive predicate is primitive recursive. -/
+theorem list_all {f : α → List β} {p : α → β → Bool}
+    (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).all (p a) :=
+  (list_foldr hf (const true) <|
+        to₂ <| Primrec.and.comp (hp.comp fst <| fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
+
+/-- `List.any` of a primitive recursive predicate is primitive recursive. -/
+theorem list_any {f : α → List β} {p : α → β → Bool}
+    (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a => (f a).any (p a) :=
+  (list_foldr hf (const false) <|
+        to₂ <| Primrec.or.comp (hp.comp fst <| fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
+
+/-- Summing a list of natural numbers is primitive recursive. -/
+theorem list_sum {f : α → List ℕ} (hf : Primrec f) : Primrec fun a => (f a).sum :=
+  (list_foldr hf (const 0) <|
+        to₂ <| Primrec.nat_add.comp (fst.comp snd) (snd.comp snd)).of_eq
+    fun a => by dsimp; induction f a <;> simp [*]
 
 theorem list_idxOf [DecidableEq α] : Primrec₂ (@List.idxOf α _) :=
   to₂ <| list_findIdx snd <| Primrec.beq.comp₂ snd.to₂ (fst.comp fst).to₂
