@@ -525,6 +525,57 @@ theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [Op
   obtain rfl : s = u := hsu.antisymm (disjoint_compl_left_iff_subset.1 hdu)
   exact hmu
 
+section analyticSet_graph_iff_measurable
+
+variable {X Y : Type*}
+  [MeasurableSpace X] [TopologicalSpace X] [BorelSpace X] [PolishSpace X]
+  [MeasurableSpace Y] [TopologicalSpace Y] [BorelSpace Y] [PolishSpace Y]
+
+/-- Preimage of a Borel set is analytic when the function graph is analytic. -/
+lemma analyticSet_preimage_of_measurableSet_of_analyticSet_graph
+    {f : X → Y} (analytic_graph : MeasureTheory.AnalyticSet {(x, y) : X × Y | y = f x})
+    {A : Set Y} (MeasA : MeasurableSet A) :
+    MeasureTheory.AnalyticSet (f ⁻¹' A) := by
+  have h₁ : ∀ x : X, (x ∈ f⁻¹' A) ↔ (∃ y : Y, f x = y ∧ y ∈ A) := by grind
+  have h₂ : f⁻¹' A = Prod.fst '' (Prod.snd⁻¹' A ∩ { (x, y) : X × Y | y = f x }) :=
+    by ext; simp [h₁]
+  rw [h₂]
+  apply MeasureTheory.AnalyticSet.image_of_continuous
+  · rw [Set.inter_eq_iInter]
+    apply MeasureTheory.AnalyticSet.iInter
+    rintro (_ | _)
+    · exact analytic_graph
+    · apply MeasurableSet.analyticSet
+      apply MeasA.preimage
+      fun_prop
+  · fun_prop
+
+/-- A map between two standard Borel spaces is Borel if its graph is analytic. -/
+@[fun_prop]
+theorem measurable_of_analyticSet_graph
+    {f : X → Y} (analytic_graph : MeasureTheory.AnalyticSet {(x, y) : X × Y | y = f x}) :
+    Measurable f := by
+  /- We'll prove that preimage of measurable set is measurable. -/
+  intro A MeasA
+  apply MeasureTheory.AnalyticSet.measurableSet_of_compl
+  · apply analyticSet_preimage_of_measurableSet_of_analyticSet_graph analytic_graph MeasA
+  · rw [← Set.preimage_compl]
+    apply analyticSet_preimage_of_measurableSet_of_analyticSet_graph analytic_graph MeasA.compl
+
+/-- A function between standard Borel spaces is Borel
+iff its graph is analytic (iff its graph is Borel). -/
+theorem analyticSet_graph_iff_measurable (f : X → Y) :
+    Measurable f ↔ MeasureTheory.AnalyticSet { (x, y) : X × Y | y = f x } := by
+  constructor
+  · intro
+    apply MeasurableSet.analyticSet
+    simp only [measurableSet_setOfPred]
+    fun_prop (disch := measurability)
+  · intro a
+    fun_prop (disch := measurability)
+
+end analyticSet_graph_iff_measurable
+
 end MeasureTheory
 
 /-!

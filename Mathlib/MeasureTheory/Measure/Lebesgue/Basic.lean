@@ -503,10 +503,16 @@ theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
         (measurableSet_le measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
 
-/-- The graph of a measurable function is a measurable set. -/
-theorem measurableSet_graph (hf : Measurable f) :
+/-- The graph of a measurable function into ℝ is a measurable set. -/
+theorem measurableSet_graph_real (hf : Measurable f) :
     MeasurableSet { p : α × ℝ | p.snd = f p.fst } := by
   simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
+
+@[deprecated measurableSet_graph_real "See also Measurable.measurableSet_graph."
+  (since := "2026-07-19")]
+theorem measurableSet_graph (hf : Measurable f) :
+    MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
+  measurableSet_graph_real hf
 
 theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
