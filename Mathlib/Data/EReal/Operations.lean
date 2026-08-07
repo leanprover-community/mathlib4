@@ -77,6 +77,12 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   · exact top_add_coe _
   · exact top_add_top
 
+@[simp]
+lemma one_ne_bot : (1 : EReal) ≠ ⊥ := WithBot.coe_ne_bot
+
+@[simp]
+lemma ofNat_ne_bot {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : EReal) ≠ ⊥ := WithBot.coe_ne_bot
+
 /-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
 if and only if `x` is not `⊥`. -/
 theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
