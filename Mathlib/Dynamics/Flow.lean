@@ -42,32 +42,58 @@ variable {τ α : Type*}
 section Invariant
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t` in `τ`. -/
-def IsInvariant (ϕ : τ → α → α) (s : Set α) : Prop :=
+@[fun_prop]
+def Set.IsInvariant (s : Set α) (ϕ : τ → α → α) : Prop :=
   ∀ t, MapsTo (ϕ t) s s
 
-variable (ϕ : τ → α → α) (s : Set α)
+@[deprecated (since := "2026-07-16")] alias IsInvariant := Set.IsInvariant
 
-theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
+/-- A set `s` is invariant on `I` under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ∈ I`. -/
+@[fun_prop]
+def Set.IsInvariantOn (s : Set α) (I : Set τ) (ϕ : τ → α → α) : Prop :=
+  ∀ ⦃t⦄, t ∈ I → Set.MapsTo (ϕ t) s s
+
+variable (s : Set α) (I : Set τ) (ϕ : τ → α → α)
+
+theorem Set.isInvariant_iff_image : s.IsInvariant ϕ ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo_iff_image_subset]
 
+@[deprecated (since := "2026-07-16")] alias isInvariant_iff_image := Set.isInvariant_iff_image
+
+theorem Set.isInvariantOn_iff_image : s.IsInvariantOn I ϕ ↔ ∀ t ∈ I, ϕ t '' s ⊆ s := by
+  simp_rw [IsInvariantOn, mapsTo_iff_image_subset]
+
+variable {ϕ s I}
+
+@[fun_prop]
+theorem Set.IsInvariant.isInvariantOn (h : s.IsInvariant ϕ) : s.IsInvariantOn I ϕ :=
+  fun t _ _ hx ↦ h t hx
+
+@[simp]
+theorem Set.isInvariantOn_univ : s.IsInvariantOn Set.univ ϕ ↔ s.IsInvariant ϕ := by
+  simp [IsInvariant, IsInvariantOn]
+
 /-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
+@[deprecated "use `IsInvariantOn (Set.Ici 0)` instead" (since := "2026-07-16")]
 def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
-theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
-    (h : IsInvariant ϕ s) : IsForwardInvariant ϕ s := fun t _ht => h t
+@[deprecated (since := "2026-07-16")] alias IsInvariant.isForwardInvariant :=
+  IsInvariant.isInvariantOn
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
+@[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
 theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α}
-    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun _ => h zero_le
+    (h : IsForwardInvariant ϕ s) : s.IsInvariant ϕ := fun _ => h zero_le
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
+@[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
 theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α} :
-    IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
+    IsForwardInvariant ϕ s ↔ s.IsInvariant ϕ :=
   ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
 
 end Invariant
@@ -148,14 +174,14 @@ theorem fromIter_apply {g : α → α} (h : Continuous g) (n : ℕ) (x : α) :
     fromIter h n x = g^[n] x := rfl
 
 /-- Restriction of a flow onto an invariant set. -/
-def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ s where
+def restrict {s : Set α} (h : s.IsInvariant ϕ) : Flow τ s where
   toFun t := (h t).restrict _ _ _
   cont' := Continuous.subtype_mk (by fun_prop) _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 
 @[simp]
-theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) :
+theorem coe_restrict_apply {s : Set α} (h : s.IsInvariant ϕ) (t : τ) (x : s) :
     restrict ϕ h t x = ϕ t x := rfl
 
 end AddZero
@@ -201,10 +227,10 @@ theorem mem_orbit_of_mem_orbit {x₁ x₂ : α} (t : τ) (h : x₂ ∈ orbit ϕ 
   ϕ.toAddAction.mem_orbit_of_mem_orbit t h
 
 /-- The orbit of a point under a flow `ϕ` is invariant under `ϕ`. -/
-theorem isInvariant_orbit (x : α) : IsInvariant ϕ (orbit ϕ x) :=
+theorem isInvariant_orbit (x : α) : (orbit ϕ x).IsInvariant ϕ :=
   fun t _ => ϕ.toAddAction.mem_orbit_of_mem_orbit t
 
-theorem orbit_restrict (s : Set α) (hs : IsInvariant ϕ s) (x : s) :
+theorem orbit_restrict (s : Set α) (hs : s.IsInvariant ϕ) (x : s) :
     orbit (ϕ.restrict hs) x = Subtype.val ⁻¹' orbit ϕ x :=
   Set.ext (fun x => by simp [orbit_eq_range, Subtype.ext_iff])
 
@@ -213,6 +239,9 @@ variable [Preorder τ] [AddLeftMono τ]
 /-- Restrict a flow by `τ` to a flow by the additive submonoid of nonnegative elements of `τ`. -/
 def restrictNonneg : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (.nonneg τ)
 
+@[simp]
+theorem restrictNonneg_apply {t : AddSubmonoid.nonneg τ} : ϕ.restrictNonneg t = ϕ t := rfl
+
 /-- The forward orbit of a point under a flow. -/
 def forwardOrbit (x : α) : Set α := orbit ϕ.restrictNonneg x
 
@@ -220,8 +249,14 @@ theorem forwardOrbit_eq_range_nonneg (x : α) :
     forwardOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
 /-- The forward orbit of a point under a flow `ϕ` is forward-invariant under `ϕ`. -/
-theorem isForwardInvariant_forwardOrbit (x : α) : IsForwardInvariant ϕ (forwardOrbit ϕ x) :=
-  fun t h => IsInvariant.isForwardInvariant (isInvariant_orbit ϕ.restrictNonneg x) (t := ⟨t, h⟩) h
+theorem isInvariantOn_Ici_forwardOrbit (x : α) :
+    (forwardOrbit ϕ x).IsInvariantOn (Set.Ici 0) ϕ := by
+  intro t ht
+  rw [forwardOrbit, ← restrictNonneg_apply (t := ⟨t, ht⟩)]
+  apply isInvariant_orbit ϕ.restrictNonneg x
+
+@[deprecated (since := "2026-07-16")] alias isForwardInvariant_forwardOrbit :=
+  isInvariantOn_Ici_forwardOrbit
 
 /-- The forward orbit of a point `x` is contained in the orbit of `x`. -/
 theorem forwardOrbit_subset_orbit (x : α) : forwardOrbit ϕ x ⊆ orbit ϕ x :=
@@ -283,8 +318,8 @@ theorem toHomeomorph_apply (t : τ) (x : α) : ϕ.toHomeomorph t x = ϕ t x := r
 @[simp]
 theorem toHomeomorph_symm_apply (t : τ) (x : α) : (ϕ.toHomeomorph t).symm x = ϕ (-t) x := rfl
 
-theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
-  (isInvariant_iff_image _ _).trans
+theorem isInvariant_iff_image_eq (s : Set α) : s.IsInvariant ϕ ↔ ∀ t, ϕ t '' s = s :=
+  (Set.isInvariant_iff_image _ _).trans
     (Iff.intro
       (fun h t => Subset.antisymm (h t) fun _ hx => ⟨_, h (-t) ⟨_, hx, rfl⟩, by simp [← map_add]⟩)
       fun h t => by rw [h t])
