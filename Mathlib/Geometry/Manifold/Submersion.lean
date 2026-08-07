@@ -335,7 +335,6 @@ lemma _root_.isOpen_isSubmersionAtOfComplement :
     IsOpen {x | IsSubmersionAtOfComplement F I J n f x} := by
   exact IsOpen.liftSourceTargetPropertyAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f: M → N` and `g: M' → N'` are submersions at `x` and `x'`, respectively,
 then `f × g: M × M' → N × N'` is a submersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
