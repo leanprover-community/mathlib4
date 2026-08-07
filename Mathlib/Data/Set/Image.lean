@@ -671,7 +671,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
 @[simp]
 theorem range_eq_singleton_iff [Nonempty ι] {y} :
     Set.range f = {y} ↔ ∀ (x : ι), f x = y := by
-  simp_rw [Set.ext_iff, Set.mem_range, mem_singleton
+  simp_rw [Set.ext_iff, Set.mem_range, Set.mem_singleton]
   exact ⟨fun h _ => by simp_rw [← h, exists_apply_eq_apply],
       fun h _ => by simp_rw [h, exists_const, eq_comm]⟩
 
