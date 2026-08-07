@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Positivity.Auto
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -82,19 +82,6 @@ theorem doubleFactorial_eq_prod_odd :
 
 end Nat
 
-namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
-
-/-- Extension for `Nat.doubleFactorial`. -/
-@[positivity Nat.doubleFactorial _]
-meta def evalDoubleFactorial : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
-    assumeInstancesCommute
-    return .positive q(Nat.doubleFactorial_pos $n)
-  | _, _ => throwError "not Nat.doubleFactorial"
+attribute [auto_positivity] Nat.doubleFactorial_pos
 
 example (n : ℕ) : 0 < n‼ := by positivity
-
-end Mathlib.Meta.Positivity
