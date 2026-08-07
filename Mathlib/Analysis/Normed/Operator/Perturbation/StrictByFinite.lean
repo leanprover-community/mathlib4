@@ -5,11 +5,11 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
-public import Mathlib.Topology.Maps.Strict.Module
-public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Algebra.Module.LinearMap.FiniteRange
+public import Mathlib.RingTheory.Finiteness.Cofinite
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.Maps.Strict.Module
 
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation

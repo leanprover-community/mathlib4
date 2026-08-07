@@ -9,14 +9,14 @@ public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
-public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
-import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.Data.Nat.Prime.Int
 
 /-!

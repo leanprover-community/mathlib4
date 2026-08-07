@@ -6,8 +6,8 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 
 /-!
 # Additive subgroups of rings

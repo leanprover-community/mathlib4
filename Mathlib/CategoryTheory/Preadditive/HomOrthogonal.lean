@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # Hom orthogonal families.

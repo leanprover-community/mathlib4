@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 public import Mathlib.CategoryTheory.Subfunctor.Image
+public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 
 /-!
 

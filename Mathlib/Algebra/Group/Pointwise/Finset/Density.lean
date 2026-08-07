@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Finset.Density
 
 /-!

@@ -5,10 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.Bounds
+public import Mathlib.Analysis.PSeries
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.Analysis.PSeries
+public import Mathlib.NumberTheory.ModularForms.Bounds
 
 /-!
 # The `L`-function of a modular form

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Module.Presentation.DirectSum
 public import Mathlib.Algebra.Module.Presentation.Cokernel
+public import Mathlib.Algebra.Module.Presentation.DirectSum
 
 /-!
 # Presentation of the restriction of scalars of a module

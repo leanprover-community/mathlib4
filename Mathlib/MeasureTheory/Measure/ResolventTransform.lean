@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.MeasureTheory.Measure.Support
 
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 
 /-!
 # Resolvent Transform of a Measure

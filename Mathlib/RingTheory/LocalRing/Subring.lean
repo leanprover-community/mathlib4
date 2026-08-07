@@ -5,8 +5,8 @@ Authors: Michal Staromiejski
 -/
 module
 
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.LocalRing.Defs
 
 /-!

@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Local epimorphisms with respect to an object property

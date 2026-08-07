@@ -5,8 +5,8 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Topology.CWComplex.Classical.Finite
 public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Topology.CWComplex.Classical.Finite
 
 /-!
 # 1-skeletons of CW complexes as graphs

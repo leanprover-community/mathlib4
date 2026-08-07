@@ -5,9 +5,9 @@ Authors: Michail Karatarakis
 -/
 module
 
-public import Mathlib.NumberTheory.SiegelsLemma
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.EquivReindex
+public import Mathlib.NumberTheory.SiegelsLemma
 
 /-!
 # House of an algebraic number

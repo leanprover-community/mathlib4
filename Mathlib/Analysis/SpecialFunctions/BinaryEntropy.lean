@@ -5,8 +5,8 @@ Authors: Adomas Baliuka
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions

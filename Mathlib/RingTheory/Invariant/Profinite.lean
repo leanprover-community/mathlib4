@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.Topology.Algebra.ClopenNhdofOne
-public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
+public import Mathlib.Topology.Algebra.ClopenNhdofOne
 
 /-!
 # Invariant Extensions of Rings

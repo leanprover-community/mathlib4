@@ -5,9 +5,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
-public import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
 deprecated_module (since := "2026-01-19")
