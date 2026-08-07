@@ -373,18 +373,22 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 @[deprecated powerset_sups (since := "2026-08-07")]
 alias powerset_union := powerset_sups
 
-@[simp] lemma powerset_infs (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+lemma powerset_infs (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
   simp only [mem_infs, mem_powerset, inf_eq_inter]
   refine ⟨fun h ↦ ⟨u, h.trans inter_subset_left, u, h.trans inter_subset_right, inter_self u⟩, ?_⟩
   rintro ⟨v, hv, w, hw, rfl⟩
   exact inter_subset_inter hv hw
 
+@[simp] lemma powerset_infs_powerset (s t : Finset α) :
+    s.powerset ⊼ t.powerset = (s ∩ t).powerset :=
+  (powerset_infs s t).symm
+
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
     s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_sups]
 
 @[simp] lemma powerset_infs_powerset_self (s : Finset α) :
-    s.powerset ⊼ s.powerset = s.powerset := by simp [← powerset_infs]
+    s.powerset ⊼ s.powerset = s.powerset := by simp
 
 lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
 lemma inter_mem_infs : s ∈ 𝒜 → t ∈ ℬ → s ∩ t ∈ 𝒜 ⊼ ℬ := inf_mem_infs
