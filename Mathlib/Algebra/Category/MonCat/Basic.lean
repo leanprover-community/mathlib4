@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.TypeTags.Hom
 public import Mathlib.Algebra.Group.ULift
@@ -70,6 +71,9 @@ structure AddMonCat.Hom (A B : AddMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+-- @[no_expose, reducible] def AddMonCat.Hom.mk {A B : AddMonCat} (hom' : ↑A →+ ↑B) : A.Hom B :=
+--   AddMonCat.Hom.mkInternal hom'
+
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
@@ -77,18 +81,21 @@ structure MonCat.Hom (A B : MonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
+-- @[no_expose, reducible] def MonCat.Hom.mk {A B : MonCat} (hom' : ↑A →* ↑B) : A.Hom B :=
+--   MonCat.Hom.mkInternal hom'
+
 namespace MonCat
 
 @[to_additive]
 instance : Category MonCat.{u} where
   Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
+  id X := private .mk <| MonoidHom.id X
+  comp f g := private .mk <| g.hom'.comp f.hom'
 
 @[to_additive]
 instance : ConcreteCategory MonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := private Hom.mk
 
 /-- Turn a morphism in `MonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddMonCat` back into an `AddMonoidHom`. -/]
@@ -113,10 +120,10 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 -/
 
 @[to_additive (attr := simp)]
-lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
+lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := (rfl)
 
 @[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := (rfl)
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
@@ -131,7 +138,7 @@ lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 theorem coe_of (M : Type u) [Monoid M] : (MonCat.of M : Type u) = M := rfl
 
 @[to_additive (attr := simp)]
-lemma hom_id {M : MonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
+lemma hom_id {M : MonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := (rfl)
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -140,7 +147,7 @@ lemma id_apply (M : MonCat) (x : M) :
 
 @[to_additive (attr := simp)]
 lemma hom_comp {M N T : MonCat} (f : M ⟶ N) (g : N ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := (rfl)
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -152,24 +159,24 @@ lemma hom_ext {M N : MonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := (rfl)
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : MonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
+    ofHom (Hom.hom f) = f := (rfl)
 
 @[to_additive (attr := simp)]
-lemma ofHom_id {M : Type u} [Monoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
+lemma ofHom_id {M : Type u} [Monoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := (rfl)
 
 @[to_additive (attr := simp)]
 lemma ofHom_comp {M N P : Type u} [Monoid M] [Monoid N] [Monoid P]
     (f : M →* N) (g : N →* P) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
-  rfl
+  (rfl)
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
-    (ofHom f) x = f x := rfl
+    (ofHom f) x = f x := (rfl)
 
 @[to_additive]
 lemma inv_hom_apply {M N : MonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -189,10 +196,10 @@ instance : Inhabited MonCat :=
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
-lemma hom_one (X Y : MonCat.{u}) : (1 : X ⟶ Y).hom = 1 := rfl
+lemma hom_one (X Y : MonCat.{u}) : (1 : X ⟶ Y).hom = 1 := (rfl)
 
 @[to_additive]
-lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y).hom x = 1 := rfl
+lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y).hom x = 1 := (rfl)
 
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
@@ -252,6 +259,9 @@ structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+-- @[no_expose, reducible] def AddCommMonCat.Hom.mk {A B : AddCommMonCat} (hom' : ↑A →+ ↑B) : A.Hom B :=
+--   .mkInternal hom'
+
 /-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
@@ -259,18 +269,19 @@ structure CommMonCat.Hom (A B : CommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
+
 namespace CommMonCat
 
 @[to_additive]
 instance : Category CommMonCat.{u} where
   Hom X Y := Hom X Y
-  id X := ⟨MonoidHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
+  id X := private .mk <| MonoidHom.id X
+  comp f g := private .mk <| g.hom'.comp f.hom'
 
 @[to_additive]
 instance : ConcreteCategory CommMonCat (· →* ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := private Hom.mk
 
 /-- Turn a morphism in `CommMonCat` back into a `MonoidHom`. -/
 @[to_additive /-- Turn a morphism in `AddCommMonCat` back into an `AddMonoidHom`. -/]
@@ -295,10 +306,10 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 -/
 
 @[to_additive (attr := simp)]
-lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
+lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := (rfl)
 
 @[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := (rfl)
 
 @[deprecated (since := "2026-02-15")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
@@ -307,7 +318,7 @@ lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g 
   ConcreteCategory.hom_ext _ _ w
 
 @[to_additive (attr := simp)]
-lemma hom_id {M : CommMonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
+lemma hom_id {M : CommMonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := (rfl)
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -316,7 +327,7 @@ lemma id_apply (M : CommMonCat) (x : M) :
 
 @[to_additive (attr := simp)]
 lemma hom_comp {M N T : CommMonCat} (f : M ⟶ N) (g : N ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := (rfl)
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -328,24 +339,25 @@ lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f :=
+  (rfl)
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
+    ofHom (Hom.hom f) = f := (rfl)
 
 @[to_additive (attr := simp)]
-lemma ofHom_id {M : Type u} [CommMonoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
+lemma ofHom_id {M : Type u} [CommMonoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := (rfl)
 
 @[to_additive (attr := simp)]
 lemma ofHom_comp {M N P : Type u} [CommMonoid M] [CommMonoid N] [CommMonoid P]
     (f : M →* N) (g : N →* P) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
-  rfl
+  (rfl)
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
-    (ofHom f) x = f x := rfl
+    (ofHom f) x = f x := (rfl)
 
 @[to_additive]
 lemma inv_hom_apply {M N : CommMonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -375,11 +387,11 @@ instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat where
 
 @[to_additive (attr := simp)] lemma hom_forget₂_map {X Y : CommMonCat}
     (f : X ⟶ Y) :
-    ((forget₂ CommMonCat MonCat).map f).hom = f.hom := rfl
+    ((forget₂ CommMonCat MonCat).map f).hom = f.hom := (rfl)
 
 @[to_additive (attr := simp)] lemma forget₂_map_ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
     (f : X →* Y) :
-    (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
+    (forget₂ CommMonCat MonCat).map (ofHom f) = MonCat.ofHom f := (rfl)
 
 /-- The forgetful functor from `CommMonCat` to `MonCat` is fully faithful. -/
 @[to_additive fullyFaithfulForgetToAddMonCat
@@ -504,19 +516,22 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 /-!
 `@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
 -/
-
 /-- The equivalence between `AddMonCat` and `MonCat`. -/
 @[simps]
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where
   functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
   inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents
+    fun X => (AddEquiv.toAdditive_toMultiplicative (G := X)).symm.toAddMonCatIso
+  counitIso := NatIso.ofComponents
+    fun X => (MulEquiv.toMultiplicative_toAdditive (G := X)).toMonCatIso
 
 /-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
 @[simps]
 def AddCommMonCat.equivalence : AddCommMonCat ≌ CommMonCat where
   functor := { obj X := .of (Multiplicative X), map f := CommMonCat.ofHom f.hom.toMultiplicative }
   inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
+  unitIso := NatIso.ofComponents
+    fun X => (AddEquiv.toAdditive_toMultiplicative (G := X)).symm.toAddCommMonCatIso
+  counitIso := NatIso.ofComponents
+    fun X => (MulEquiv.toMultiplicative_toAdditive (G := X)).toCommMonCatIso
