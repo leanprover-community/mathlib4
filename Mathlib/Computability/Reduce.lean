@@ -277,6 +277,47 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
       OneOneReducible.disjoin_right.to_many_one.trans h⟩,
     fun ⟨h₁, h₂⟩ => disjoin_manyOneReducible h₁ h₂⟩
 
+/-! ### Many-one completeness of the halting problem
+
+The halting problem is complete for recursively enumerable predicates under many-one reducibility.
+See `ComputablePred.halting_problem_re` and `ComputablePred.halting_problem` for recursive
+enumerability and noncomputability, respectively.
+-/
+
+section HaltingProblem
+
+open Nat.Partrec (Code)
+
+/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the halting problem on any
+fixed input. -/
+theorem REPred.manyOneReducible_halting_problem {R : ℕ → Prop} (h : REPred R) (n : ℕ) :
+    R ≤₀ fun c : Code => (Code.eval c n).Dom := by
+  obtain ⟨c, hc⟩ := Code.exists_code.mp <| Partrec.nat_iff.mp <|
+    h.map (Computable.const (0 : ℕ)).to₂
+  refine ⟨fun a => c.comp (Code.const a),
+    (Code.primrec₂_comp.comp (Primrec.const c) Code.primrec_const).to_comp, fun a => ?_⟩
+  simp [Code.eval, hc, Part.assert]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The fixed-input and two-argument formulations of the halting problem are many-one
+equivalent. -/
+theorem halting_problem_manyOneEquiv_halting_problem₂ (n : ℕ) :
+    ManyOneEquiv (fun c : Code => (Code.eval c n).Dom)
+      (fun p : Code × ℕ => (Code.eval p.1 p.2).Dom) := by
+  refine ⟨⟨fun c => (c, n), Computable.id.pair (Computable.const n), fun _ => Iff.rfl⟩, ?_⟩
+  refine ⟨fun p => p.1.comp (Code.const p.2),
+    (Code.primrec₂_comp.comp Primrec.fst (Code.primrec_const.comp Primrec.snd)).to_comp,
+    fun p => ?_⟩
+  simp [Code.eval]
+
+/-- Every recursively enumerable predicate on `ℕ` many-one reduces to the two-argument halting
+problem. -/
+theorem REPred.manyOneReducible_halting_problem₂ {R : ℕ → Prop} (h : REPred R) :
+    R ≤₀ fun p : Code × ℕ => (Code.eval p.1 p.2).Dom :=
+  (h.manyOneReducible_halting_problem 0).trans (halting_problem_manyOneEquiv_halting_problem₂ 0).1
+
+end HaltingProblem
+
 variable {α : Type u} [Primcodable α] [Inhabited α] {β : Type v} [Primcodable β] [Inhabited β]
 
 /-- Computable and injective mapping of predicates to sets of natural numbers.
