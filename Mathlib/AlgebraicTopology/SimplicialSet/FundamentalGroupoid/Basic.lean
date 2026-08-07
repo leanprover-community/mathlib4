@@ -285,9 +285,9 @@ lemma desc_map_homMk {x y : X _⦋0⦌} (e : Edge x y) :
 end
 
 lemma functor_ext {D : Type*} [Groupoid D] {F G : FundamentalGroupoid X ⥤ D}
-    (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x))
+    (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x) := by cat_disch)
     (h₂ : ∀ {x y : X _⦋0⦌} (e : Edge x y), F.map (homMk e) =
-      eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm) :
+      eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm := by cat_disch) :
     F = G :=
   Truncated.FundamentalGroupoid.functor_ext h₁ h₂
 

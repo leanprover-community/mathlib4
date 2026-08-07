@@ -238,6 +238,8 @@ by taking its equivalence class.
 -/
 def homMk (f : Edge x y) : mk x ⟶ mk y := ⟦f⟧
 
+lemma homMk_eq_iff_homotopicL {f g : Edge x y} : homMk f = homMk g ↔ HomotopicL f g := sorry
+
 /--
 Every morphism in the homotopy category `HomotopyCategory₂ A` is the equivalence class of
 an edge of `A`.
@@ -308,6 +310,52 @@ instance : Category (HomotopyCategory₂ A) where
     rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩
     exact (Quasicategory₂.fill31 (compStruct f g) (compStruct g h)
       (compStruct _ _)).some.homotopyCategory₂_fac
+
+namespace HomotopyCategory₂
+
+variable {D : Type*} [Category D]
+
+section
+
+variable (obj : A _⦋0⦌₂ → D) (map : ∀ {x y : A _⦋0⦌₂}, Edge x y → (obj x ⟶ obj y))
+  (map_id : ∀ (x : A _⦋0⦌₂), map (.id x) = 𝟙 (obj x))
+  (map_comp : ∀ {x₀ x₁ x₂ : A _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂},
+    Edge.CompStruct e₀₁ e₁₂ e₀₂ → map e₀₁ ≫ map e₁₂ = map e₀₂)
+
+/-- Auxiliary definition for `SSet.Truncated.HomotopyCategory₂.desc`. -/
+@[no_expose]
+def descMap {x y : HomotopyCategory₂ A} (f : x ⟶ y) : obj x.pt ⟶ obj y.pt :=
+  Quot.lift map (fun _ _ ⟨h⟩ ↦ by simpa [map_id] using map_comp h) f
+
+@[simp]
+lemma descMap_homMk {x y : A _⦋0⦌₂} (e : Edge x y) :
+    descMap obj map map_id map_comp (homMk e) = map e := by rfl
+
+/-- Constructor for functors from `SSet.Truncated.HomotopyCategory₂`. -/
+@[implicit_reducible]
+def desc : HomotopyCategory₂ A ⥤ D where
+  obj x := obj x.pt
+  map := descMap obj map map_id map_comp
+  map_id x := by exact map_id x.pt
+  map_comp {x y z} f g := by
+    obtain ⟨f, rfl⟩ := homMk_surjective f
+    obtain ⟨g, rfl⟩ := homMk_surjective g
+    simp [(compStruct f g).homotopyCategory₂_fac, ← map_comp (compStruct f g)]
+
+@[simp]
+lemma desc_map_homMk {x y : A _⦋0⦌₂} (e : Edge x y) :
+    (desc obj map map_id map_comp).map (homMk e) = map e := by rfl
+
+end
+
+lemma functor_ext {F G : HomotopyCategory₂ A ⥤ D}
+    (h₁ : ∀ (x : A _⦋0⦌₂), F.obj (mk x) = G.obj (mk x) := by cat_disch)
+    (h₂ : ∀ {x y : A _⦋0⦌₂} (e : Edge x y),
+      F.map (homMk e) = eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm := by cat_disch) :
+    F = G := by
+  sorry
+
+end HomotopyCategory₂
 
 end homotopy_category
 

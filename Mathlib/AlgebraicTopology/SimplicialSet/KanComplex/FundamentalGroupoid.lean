@@ -8,13 +8,12 @@ module
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncatedQuasicategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex.MulStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
+public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 
 /-!
 # The fundamental groupoid of a Kan complex
 
-As a category, we define the fundamental groupoid of a Kan complex to be
-the homotopy cateogry of the corresponding `2`-truncated quasicategory.
-We show that it is a groupoid.
+...
 
 -/
 
@@ -26,8 +25,140 @@ open HomotopicalAlgebra CategoryTheory Simplicial
 
 namespace SSet
 
+variable {X : SSet.{u}}
+
+section
+-- this is for quasi-categories, should be developped first for `2`-truncated ones
+variable [Quasicategory X]
+
+variable {x₀ x₁ x₂ : X _⦋0⦌} (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂)
+
+@[no_expose]
+noncomputable def Edge.comp : Edge x₀ x₂ := Truncated.Edge.comp e₀₁ e₁₂
+
+
+abbrev Edge.HomotopyL (e e' : Edge x₀ x₁) := CompStruct e (.id x₁) e'
+abbrev Edge.HomotopyR (e e' : Edge x₀ x₁) := CompStruct (.id x₀) e e'
+
+@[no_expose]
+noncomputable def Edge.compStruct : CompStruct e₀₁ e₁₂ (e₀₁.comp e₁₂) :=
+  Truncated.Edge.compStruct e₀₁ e₁₂
+
+noncomputable def Edge.assoc
+    {x₀ x₁ x₂ x₃ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₂₃ : Edge x₂ x₃}
+    {e₀₂ : Edge x₀ x₂} {e₁₃ : Edge x₁ x₃} {e₀₃ : Edge x₀ x₃}
+    (h₀₂ : CompStruct e₀₁ e₁₂ e₀₂) (h₁₃ : CompStruct e₁₂ e₂₃ e₁₃)
+    (h : CompStruct e₀₁ e₁₃ e₀₃) :
+    CompStruct e₀₂ e₂₃ e₀₃ := by
+  sorry
+
+noncomputable def Edge.assoc'
+    {x₀ x₁ x₂ x₃ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₂₃ : Edge x₂ x₃}
+    {e₀₂ : Edge x₀ x₂} {e₁₃ : Edge x₁ x₃} {e₀₃ : Edge x₀ x₃}
+    (h₀₂ : CompStruct e₀₁ e₁₂ e₀₂) (h₁₃ : CompStruct e₁₂ e₂₃ e₁₃)
+    (h : CompStruct e₀₂ e₂₃ e₀₃) :
+    CompStruct e₀₁ e₁₃ e₀₃ := by
+  sorry
+
+def Edge.CompStruct.unique
+    {x₀ x₁ x₂ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂)
+    {e₀₁' : Edge x₀ x₁} {e₁₂' : Edge x₁ x₂} {e₀₂' : Edge x₀ x₂}
+    (h' : CompStruct e₀₁' e₁₂' e₀₂')
+    (h₀₁ : HomotopyL e₀₁ e₀₁') (h₁₂ : HomotopyL e₁₂ e₁₂') :
+    HomotopyL e₀₂ e₀₂' := sorry
+
+def Edge.CompStruct.unique'
+    {x₀ x₁ x₂ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (h : CompStruct e₀₁ e₁₂ e₀₂) {e₀₂' : Edge x₀ x₂}
+    (h' : HomotopyL e₀₂ e₀₂') :
+    CompStruct e₀₁ e₁₂ e₀₂' := sorry
+
+end
+
+variable [KanComplex X]
+
 namespace KanComplex
 
+instance : IsGroupoid (Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X)) := by
+  sorry
+
+noncomputable instance : Groupoid (Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X)) :=
+  .ofIsGroupoid
+
+set_option backward.isDefEq.respectTransparency.types false in
+variable (X) in
+open Truncated.HomotopyCategory₂ in
+@[implicit_reducible, simps]
+noncomputable def isoCatFundamentalGroupoid :
+    IsoCat (Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X))
+      (FundamentalGroupoid X) where
+  functor :=
+    Truncated.HomotopyCategory₂.desc
+      (fun x ↦ .mk x) (fun e ↦ FundamentalGroupoid.homMk (Edge.ofTruncated e))
+        FundamentalGroupoid.homMk_id Edge.CompStruct.homMk_comp
+  inverse := FundamentalGroupoid.desc (fun x ↦ .mk x) (fun e ↦ homMk e.toTruncated)
+    (fun h ↦ h.homotopyCategory₂_fac)
+  unit_eq := Truncated.HomotopyCategory₂.functor_ext
+  counit_eq := FundamentalGroupoid.functor_ext
+
+variable (X) in
+noncomputable abbrev equivalenceFundamentalGroupoid :
+    Truncated.HomotopyCategory₂ ((SSet.truncation 2).obj X) ≌
+      (FundamentalGroupoid X) :=
+  (isoCatFundamentalGroupoid X).toEquivalence
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+lemma isoCatFundamentalGroupoid_functor_map_homMk
+    {x y : X _⦋0⦌} (e : Edge x y) :
+    (isoCatFundamentalGroupoid X).functor.map (Truncated.HomotopyCategory₂.homMk e.toTruncated) =
+      FundamentalGroupoid.homMk e := by
+  simp
+
+
+end KanComplex
+
+namespace FundamentalGroupoid
+
+open KanComplex
+
+set_option backward.isDefEq.respectTransparency.types false in
+lemma homMk_surjective {x y : X _⦋0⦌} :
+    Function.Surjective (homMk : Edge x y → _) := by
+  intro f
+  obtain ⟨f, rfl⟩ := (isoCatFundamentalGroupoid X).functor.map_surjective f
+  obtain ⟨e, rfl⟩ := Truncated.HomotopyCategory₂.homMk_surjective f
+  exact ⟨Edge.ofTruncated e, by simp⟩
+
+lemma homMk_eq_iff_nonempty_homotopyL {x y : X _⦋0⦌} {e e' : Edge x y} :
+    homMk e = homMk e' ↔ Nonempty (Edge.HomotopyL e e') := by
+  change _ ↔ Truncated.HomotopicL e.toTruncated e'.toTruncated
+  simp only [← Truncated.HomotopyCategory₂.homMk_eq_iff_homotopicL,
+    ← (isoCatFundamentalGroupoid X).functor.map_injective_iff,
+    isoCatFundamentalGroupoid_functor_map_homMk]
+
+lemma homMk_eq_iff_nonempty_homotopyR {x y : X _⦋0⦌} {e e' : Edge x y} :
+    homMk e = homMk e' ↔ Nonempty (Edge.HomotopyR e e') := by
+  rw [homMk_eq_iff_nonempty_homotopyL]
+  apply Truncated.homotopicL_iff_homotopicR
+
+lemma homMk_comp_iff {x₀ x₁ x₂ : X _⦋0⦌} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂} :
+    homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ ↔ Nonempty (Edge.CompStruct e₀₁ e₁₂ e₀₂) := by
+  refine ⟨fun h ↦ ?_, fun ⟨h⟩ ↦ h.homMk_comp⟩
+  rw [(Edge.compStruct e₀₁ e₁₂).homMk_comp, homMk_eq_iff_nonempty_homotopyL] at h
+  obtain ⟨h⟩ := h
+  exact ⟨Edge.CompStruct.unique' (Edge.compStruct e₀₁ e₁₂) h⟩
+
+end FundamentalGroupoid
+
+end SSet
+
+#exit
 /-- The fundamental groupoid of a Kan complex. -/
 @[nolint unusedArguments]
 def FundamentalGroupoid (X : SSet.{u}) [KanComplex X] :=
