@@ -122,7 +122,7 @@ the vertex set cannot be incident to any edge.
 -/
 @[expose]
 def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
-  ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
+  x ≠ y ∧ ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
 
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
@@ -134,16 +134,16 @@ adjacent if there is some vertex `x ∈ V(H)` where `x` is incident to both `e` 
 -/
 @[expose]
 def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
-  e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x, x ∈ e ∧ x ∈ f
+  e ∈ E(H) ∧ f ∈ E(H) ∧ e ≠ f ∧ ∃ x, x ∈ e ∧ x ∈ f
 
 lemma EAdj.exists_vertex (h : H.EAdj e f) : ∃ x ∈ V(H), x ∈ e ∧ x ∈ f := by
   obtain ⟨x, hx⟩ := h.2.2
-  exact ⟨x, mem_vertexSet_of_mem_edgeSet h.1 hx.1, hx⟩
+  grind only [eq_def, mem_vertexSet_of_mem_edgeSet]
 
 lemma EAdj.symm (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
 
 lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty :=
-  Set.inter_nonempty.mpr hef.2.2
+  Set.inter_nonempty.mpr hef.2.2.2
 
 lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
