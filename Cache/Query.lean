@@ -77,8 +77,11 @@ Probe a single container for the per-SHA marker blob.
 
 Issues an anonymous HEAD against `{container}/m/{repo}/{sha}` and returns
 `true` iff the response is 200. The marker is uploaded by `put-staged`
-after a successful upload, so its existence is a reliable "this commit
-was fully cached" signal.
+after a successful upload, so its presence means CI published this commit's
+artifacts. Absence is a weaker signal: CI may not have built the commit yet,
+or its build staged no files — a commit with no cache-relevant changes is
+fully served by the master container, so CI uploads nothing for it, marker
+included.
 
 Cheaper than blob-listing: deterministic URL, headers-only response,
 billed as a Read op.
@@ -216,7 +219,10 @@ def cacheQuery (repo : String) (cap : Nat := 50) (cwd : FilePath := ".") : IO Un
     IO.println s!"`cache get` will print a security notice when --scope is set."
   | none =>
     IO.println s!"No cached CI build found for fork {repo} within the last {cap} commits on this branch."
-    IO.println s!"This usually means CI hasn't built any of these commits yet."
+    IO.println "Either CI hasn't built any of these commits yet, or their builds had nothing"
+    IO.println "fork-specific to upload: a branch that changes no Lean module is fully served"
+    IO.println "by mathlib's master cache, so CI publishes no per-commit cache for it and a"
+    IO.println "plain `lake exe cache get` already gets everything."
 
 /--
 Discover the SHA scopes `cache get --unsafe` should try, most recent first.

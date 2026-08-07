@@ -218,13 +218,13 @@ def main (args : List String) : IO Unit := do
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
-    -- read path, the non-default-scope warning, and the HEAD hint below.
+    -- read path, the non-default-scope warning, and the missing-files hint below.
     let cliOverride? ← cacheFromOverride.get
     let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
     -- Warn before reading if the scope is non-default (`--unsafe` always is).
     warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo unsafeWindow?
-    -- In `--unsafe` mode, walk history for recent cached fork commits to try as
-    -- scopes; otherwise point an uncached fork HEAD at the per-commit workflow.
+    -- In `--unsafe` mode, walk history for recent cached fork commits to try
+    -- as scopes.
     let unsafeScopes ← match unsafeWindow? with
       | some window =>
         let scopes ← discoverUnsafeScopes resolvedRepo window
@@ -236,10 +236,13 @@ def main (args : List String) : IO Unit := do
             {resolvedRepo} (most recent first):"
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
-      | none =>
-        informIfHeadNotBuilt resolvedRepo
-        pure []
-    getFiles resolvedRepo hashMap force force goodCurl decompress (unsafeScopes := unsafeScopes)
+      | none => pure []
+    let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
+      (unsafeScopes := unsafeScopes)
+    -- Explain any files no container served — keyed on the actual outcome, so
+    -- a read fully served by higher-trust containers stays silent even when
+    -- HEAD has no fork cache of its own.
+    warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
