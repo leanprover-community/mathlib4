@@ -102,7 +102,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
     {P : Ideal R} [P.IsPrime] {Q : Ideal S} [Q.IsPrime]
     [Q.LiesOver P] [IsUnramifiedAt R Q] (x : S) (p : R[X])
     [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
-    [Localization.AtPrime.IsLiesOverAlgebra P Q]
+    [IsScalarTower R (Localization.AtPrime P) (Localization.AtPrime Q)]
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =
       RingHom.ker (aeval ((1 : P.ResidueField) ⊗ₜ[R] x)).toRingHom)
     (hp₂ : R[x] = ⊤) :
@@ -209,7 +209,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [IsUnramifiedAt R Q]
     [Algebra (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)]
-    [Localization.AtPrime.IsLiesOverAlgebra (Q.under R) Q] :
+    [IsScalarTower R (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)] :
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
       adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
   let p := Q.under R
@@ -316,7 +316,8 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_finite
       Localization.localRingHom_surjective_of_primesOver_eq_singleton hQ' hQ'Q.2⟩
   obtain ⟨r, hrQ', H⟩ := Localization.exists_awayMap_bijective_of_residueField_surjective hQ' hQ'Q.2
   have : Module.Finite R S' := finite_adjoin_simple_of_isIntegral (IsIntegral.isIntegral _)
-  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective (IsScalarTower.toAlgHom _ _ _) hφ
+  have h : IsScalarTower R (Localization.AtPrime Q') (Localization.AtPrime Q) := inferInstance
+  have : IsUnramifiedAt R Q' := .of_equiv <| .symm <| .ofBijective h.toAlgHom hφ
   obtain ⟨f, hfQ', hf⟩ :=
     IsUnramifiedAt.exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_top
     (R := R) (S := S') ⟨⟨x, self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
