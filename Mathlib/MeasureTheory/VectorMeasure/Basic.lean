@@ -704,6 +704,10 @@ def mapRangeₗ {α : Type*} [MeasurableSpace α] (f : M →ₗ[R] N) (hf : Cont
   map_add' _ _ := mapRange_add hf
   map_smul' _ _ := mapRange_smul hf
 
+@[simp]
+lemma mapRangeₗ_apply {f : M →ₗ[R] N} (hf : Continuous f) {s : Set α} :
+    v.mapRangeₗ f hf s = f (v s) := rfl
+
 end Module
 
 end

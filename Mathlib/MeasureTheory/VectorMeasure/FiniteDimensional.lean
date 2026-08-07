@@ -1,0 +1,55 @@
+/-
+Copyright (c) 2026 Yoh Tanimoto. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Butterley, Yoh Tanimoto
+-/
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+/-!
+# Decomposition of a vector measure in a finite-dimensional `ℝ`-vector space with respect to a basis
+
+## Main results
+
+* `coeff` : for a `ℝ`-basis `b` in an `ℝ`-vector space `V` and a `V`-valued vector measure `μ`, one
+  has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficients `a i E` is
+  an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b`.
+* `sum_coeff_smul_eq` : the characterizing equality `∑ i, (μ.coeff b i E) • b i = μ E ` for `coeff`.
+* `sum_toSpanSingleton_coeff_eq` : `μ` as a linear combination of vector measures.
+
+-/
+
+public section
+
+open Module LinearMap
+open scoped ENNReal NNReal
+
+namespace MeasureTheory.VectorMeasure
+
+variable {X : Type*} {mX : MeasurableSpace X}
+  {V : Type*} [AddCommGroup V] [TopologicalSpace V] [T2Space V] [IsTopologicalAddGroup V]
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [FiniteDimensional 𝕜 V]
+  {ι : Type*}
+
+/-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
+`i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure X`. -/
+noncomputable def coeff (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) : ι → VectorMeasure X 𝕜 :=
+  fun i ↦ mapRangeₗ (b.coord i) (b.coord i).continuous_of_finiteDimensional μ
+
+@[simp]
+lemma coeff_apply (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
+    μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
+
+theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (E : Set X) :
+    ∑ i, (μ.coeff b i E) • b i = μ E := by simp
+
+@[simp]
+theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) :
+    ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
+      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
+  ext; simp
+
+end MeasureTheory.VectorMeasure
