@@ -168,6 +168,9 @@ theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K
     choose f hf using h
     exact ⟨⟨a, ha⟩, fun v => ⟨f v.1 v.2, Subtype.ext (hf v.1 v.2)⟩⟩
 
+theorem Ideal.isPrincipal_of_free {I : Ideal K} [Module.Free K I] : I.IsPrincipal :=
+  (Submodule.rank_le_one_iff_isPrincipal I).1 ((Submodule.rank_le I).trans_eq (Module.rank_self K))
+
 theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
     Module.rank K V ≤ 1 ↔ (⊤ : Submodule K V).IsPrincipal := by
   have := Module.Free.of_equiv (topEquiv (R := K) (M := V)).symm
