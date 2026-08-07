@@ -485,21 +485,24 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   .of_fg (ZLattice.FG K L)
 
-instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
-    Module.Finite ℤ L := by
-  let f := (span ℝ (L : Set E)).subtype
-  let L₀ := L.comap (f.restrictScalars ℤ)
-  have h_img : f '' L₀ = L := by
+instance instModuleFinite_of_discrete_submodule {E S : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] [SetLike S E] [AddSubgroupClass S E]
+    (L : S) [DiscreteTopology L] : Module.Finite ℤ L := by
+  let L' : Submodule ℤ E := .ofClass L
+  have : DiscreteTopology L' := ‹DiscreteTopology L›
+  suffices Module.Finite ℤ L' by convert! this
+  let f := (span ℝ (L' : Set E)).subtype
+  let L₀ := L'.comap (f.restrictScalars ℤ)
+  have h_img : f '' L₀ = L' := by
     rw [← LinearMap.coe_restrictScalars ℤ f, ← Submodule.map_coe (f.restrictScalars ℤ),
       Submodule.map_comap_eq_self]
     exact fun x hx ↦ LinearMap.mem_range.mpr ⟨⟨x, Submodule.subset_span hx⟩, rfl⟩
   suffices Module.Finite ℤ L₀ by
-    have : L₀.map (f.restrictScalars ℤ) = L :=
+    have : L₀.map (f.restrictScalars ℤ) = L' :=
       SetLike.ext'_iff.mpr h_img
     convert! this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
   have : DiscreteTopology L₀ := by
-    refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ (injective_subtype _)
+    refine DiscreteTopology.preimage_of_continuous_injective (L' : Set E) ?_ (injective_subtype _)
     exact LinearMap.continuous_of_finiteDimensional f
   have : IsZLattice ℝ L₀ := ⟨by
     rw [← (Submodule.map_injective_of_injective (injective_subtype _)).eq_iff, Submodule.map_span,
@@ -512,11 +515,14 @@ theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
-instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
-    Module.Free ℤ L := by
+instance instModuleFree_of_discrete_submodule {E S : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] [SetLike S E] [AddSubgroupClass S E]
+    (L : S) [DiscreteTopology L] : Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
   have : IsAddTorsionFree E := .of_module_rat _
+  let L' : Submodule ℤ E := .ofClass L
+  have : DiscreteTopology L' := ‹DiscreteTopology L›
+  suffices Module.Free ℤ L' by convert! this
   infer_instance
 
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
