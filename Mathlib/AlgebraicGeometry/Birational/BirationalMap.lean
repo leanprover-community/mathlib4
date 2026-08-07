@@ -100,11 +100,11 @@ theorem trans_symm (f : X.BirationalMap Y) (g : Y.BirationalMap Z) :
   ext; simp
 
 @[simp]
-theorem symm_trans_self_id (f : X.BirationalMap Y) : f.symm.trans f = refl Y := by
+theorem symm_trans_self (f : X.BirationalMap Y) : f.symm.trans f = refl Y := by
   ext; simp
 
 @[simp]
-theorem self_trans_symm_id (f : X.BirationalMap Y) : f.trans f.symm = refl X := by
+theorem self_trans_symm (f : X.BirationalMap Y) : f.trans f.symm = refl X := by
   ext; simp
 
 @[simp, grind _=_]
@@ -120,7 +120,7 @@ noncomputable instance : Group (X.BirationalMap X) where
   mul_assoc := trans_assoc
   one_mul := refl_trans
   mul_one := trans_refl
-  inv_mul_cancel := symm_trans_self_id
+  inv_mul_cancel := symm_trans_self
 
 /-- A birational map between irreducible schemes `X` and `Y` over a base scheme `S`, via structure
 maps `sX : X ⟶ S` and `sY : Y ⟶ S`: a `BirationalMap` whose underlying forward rational map is an
