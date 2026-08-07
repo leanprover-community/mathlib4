@@ -160,7 +160,10 @@ predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
 def subtype {p : X → Prop} {q : Y → Prop} (h : X ≃ₜ Y) (h_iff : ∀ x, p x ↔ q (h x)) :
     {x // p x} ≃ₜ {y // q y} where
-  __ := h.subtypeEquiv h_iff
+    toFun := fun ⟨x, hx⟩ ↦ ⟨⇑h x, (h_iff x).mp hx⟩
+    invFun := fun ⟨x, hx⟩ ↦ ⟨⇑h.symm x, (h_iff (h.symm x)).mpr (by simp [hx])⟩
+    left_inv _ := by simp
+    right_inv _ := by simp
 
 @[simp]
 lemma subtype_toEquiv {p : X → Prop} {q : Y → Prop} (h : X ≃ₜ Y) (h_iff : ∀ x, p x ↔ q (h x)) :
@@ -253,7 +256,10 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps! apply toEquiv]
 def piCongrRight {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) : (∀ i, Y₁ i) ≃ₜ ∀ i, Y₂ i where
-  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+  toFun := Pi.map fun (i : ι) => ⇑(F i)
+  invFun := Pi.map fun (i : ι) => ⇑(F i).symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
@@ -291,7 +297,8 @@ private theorem _root_.Fin.appendEquiv_eq_homeomorph (m n : ℕ) : Fin.appendEqu
     (sumArrowHomeomorphProdArrow.symm.trans
     (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
   apply Equiv.symm_bijective.injective
-  ext x i <;> simp
+  ext x i <;> simp <;>
+  sorry
 
 @[fun_prop]
 theorem _root_.Fin.continuous_append (m n : ℕ) :
@@ -485,6 +492,35 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
+
+variable (f) in
+/-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
+@[simps! toEquiv apply symm_apply]
+noncomputable def homeomorph : X ≃ₜ Y where
+  continuous_toFun := hf.1
+  continuous_invFun := by
+    rw [← continuousOn_univ, ← hf.bijective.2.range_eq]
+    exact hf.isOpenMap.continuousOn_range_of_leftInverse
+      (Equiv.ofBijective f hf.bijective).left_inv
+  toEquiv := Equiv.ofBijective f hf.bijective
+
+@[simp]
+theorem _root_.Homeomorph.symm_toEquiv (h : X ≃ₜ Y) : h.toEquiv.symm = h.symm.toEquiv :=
+  by rfl
+
+lemma coe_homeomorph {g : X → Y} (hg : IsHomeomorph g) : ⇑hg.homeomorph = g := rfl
+
+-- I think we should have this equality at the level of `Equiv`s
+@[simp]
+lemma toEquiv_symm_homeomorph {g : X ≃ Y} (hg : IsHomeomorph g) :
+    hg.homeomorph.symm.toEquiv = g.symm :=
+  Equiv.symm_bijective.injective <| by simp
+
+@[simp]
+lemma coe_symm_homeomorph {g : X ≃ Y} (hg : IsHomeomorph g) :
+    ⇑hg.homeomorph.symm = g.symm :=
+  congr(⇑$hg.toEquiv_symm_homeomorph)
+
 include hf
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
