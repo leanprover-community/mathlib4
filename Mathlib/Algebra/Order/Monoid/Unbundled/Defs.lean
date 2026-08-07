@@ -436,11 +436,11 @@ theorem covariantClass_le_of_lt [PartialOrder N] [CovariantClass M N μ (· < ·
     CovariantClass M N μ (· ≤ ·) := ⟨covariant_le_of_covariant_lt _ _ _ CovariantClass.elim⟩
 
 @[to_additive]
-theorem mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M] [MulLeftStrictMono M] :
+instance mulLeftMono_of_mulLeftStrictMono (M) [Mul M] [PartialOrder M] [MulLeftStrictMono M] :
     MulLeftMono M := covariantClass_le_of_lt _ _ _
 
 @[to_additive]
-theorem mulRightMono_of_mulRightStrictMono (M) [Mul M] [PartialOrder M] [MulRightStrictMono M] :
+instance mulRightMono_of_mulRightStrictMono (M) [Mul M] [PartialOrder M] [MulRightStrictMono M] :
     MulRightMono M := covariantClass_le_of_lt _ _ _
 
 theorem contravariant_le_iff_contravariant_lt_and_eq [PartialOrder N] :
