@@ -134,7 +134,13 @@ def CalcPanel : Component CalcParams :=
 namespace Lean.Elab.Tactic
 
 open Lean Meta Tactic TryThis in
-/-- Create a `calc` proof. -/
+/--
+Create a skeleton `calc` proof for the current goal.
+
+This tactic works when the target is a relation accepted by the `calc` elaborator, such as
+an equality, inequality, or order relation. It suggests a `calc` block starting from the current
+target and leaves the justification as `by sorry`.
+-/
 elab stx:"calc?" : tactic => withMainContext do
   let goalType ← whnfR (← getMainTarget)
   unless (← Lean.Elab.Term.getCalcRelation? goalType).isSome do
