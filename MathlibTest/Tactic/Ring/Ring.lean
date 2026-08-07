@@ -297,7 +297,7 @@ trace: a b c d : ℝ
 ⊢ a - b - c - d = 0
 -/
 #guard_msgs in
-example (a b c d : ℝ) : a - b - c - d = 0 := by
+example (a b c d : ℝ) : a + -b + -c + -d = 0 := by
   ring_nf
   trace_state
   exact test_sorry
