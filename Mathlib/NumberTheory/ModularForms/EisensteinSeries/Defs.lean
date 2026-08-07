@@ -139,6 +139,48 @@ def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) 
 lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
     (gammaSetDivGcdSigmaEquiv.symm v) = v.2 := rfl
 
+variable {N} in
+/-- The equivalence between the index set of `eisensteinSeriesG` and the disjoint union of
+the `gammaSet N r a` over `r` coprime to `N`. -/
+def gammaSetCoprimeSigmaEquiv : {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (finGcdMap v).gcd N = 1} ≃
+    Σ r : {r : ℕ // r.Coprime N}, gammaSet N r a where
+  toFun v := ⟨⟨finGcdMap v.1, v.2.2⟩, v.1, v.2.1, rfl⟩
+  invFun p := ⟨p.2.1, p.2.2.1, by simp [p.2.2.2, p.1.2]⟩
+  left_inv v := rfl
+  right_inv p := Sigma.subtype_ext (Subtype.ext p.2.2.2) rfl
+
+/-- For `r ≠ 0` coprime to `N`, dividing by `r` maps `gammaSet N r a` bijectively onto the set
+of coprime vectors congruent to `r⁻¹ • a` mod `N`. -/
+lemma bijOn_divIntMap_gammaSet [NeZero r] (a) (h : r.Coprime N) :
+    Set.BijOn (divIntMap r) (gammaSet N r a)
+      (gammaSet N 1 ((ZMod.unitOfCoprime r h)⁻¹ • a)) := by
+  refine ⟨fun v hv ↦ ⟨?_, Int.isCoprime_iff_gcd_eq_one.mp (finGcdMap_div v hv.2)⟩, ?_, ?_⟩
+  · funext i
+    have h1 : (r : ZMod N) * ((divIntMap r v) i : ℤ) = a i := by
+      have h2 : (((r • divIntMap r v) i : ℤ) : ZMod N) = a i := by
+        rw [← gammaSet_eq_gcd_mul_divIntMap ((gammaSet_one_mem_iff r v).mpr hv.2)]
+        exact congr_fun hv.1 i
+      rw [← h2, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast]
+    simp only [Function.comp_apply, Pi.smul_apply, Units.smul_def, smul_eq_mul]
+    rw [Units.eq_inv_mul_iff_mul_eq, ZMod.coe_unitOfCoprime]
+    exact h1
+  · intro x hx y hy hxy
+    ext i
+    exact (Int.ediv_left_inj (gammaSet_div_gcd ((gammaSet_one_mem_iff r x).mpr hx.2) i)
+      (gammaSet_div_gcd ((gammaSet_one_mem_iff r y).mpr hy.2) i)).mp (congr_fun hxy i)
+  · intro w hw
+    use r • w
+    constructor
+    · constructor
+      · funext i
+        have := congr_fun hw.1 i
+        simp only [Function.comp_apply, Pi.smul_apply, Units.smul_def, smul_eq_mul] at this ⊢
+        rw [Int.nsmul_eq_mul, Int.cast_mul,Int.cast_natCast, this, ← ZMod.coe_unitOfCoprime r h,
+          ← mul_assoc, Units.mul_inv, one_mul]
+      · simpa [finGcdMap] using finGcdMap_smul r hw.2
+    · ext i
+      simpa using Int.mul_ediv_cancel_left _ (mod_cast NeZero.ne r)
+
 end gammaSet_def
 
 variable {N a r} [NeZero r]
@@ -185,6 +227,12 @@ section eisSummand
 /-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
 def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z + v 1) ^ (-k)
 
+/-- How the `eisSummand` function changes under scalar multiplication of the vector. -/
+lemma eisSummand_smul (k c : ℤ) (v : Fin 2 → ℤ) (z : ℍ) :
+    eisSummand k (c • v) z = (c : ℂ) ^ (-k) * eisSummand k v z := by
+  simp only [eisSummand, Pi.smul_apply, smul_eq_mul, Int.cast_mul, ← mul_zpow]
+  ring_nf
+
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
     eisSummand k i (A • z) = (denom A z) ^ k * eisSummand k (i ᵥ* A) z := by
@@ -228,5 +276,9 @@ lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
 
 @[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
+
+/-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
+def _root_.eisensteinSeriesG (k : ℤ) (z : ℍ) : ℂ :=
+  ∑' x : {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (finGcdMap v).gcd N = 1}, eisSummand k x z
 
 end EisensteinSeries
