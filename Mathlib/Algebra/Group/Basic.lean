@@ -894,6 +894,14 @@ lemma zpow_induction_right {g : G} {P : G → Prop} (h_one : P (1 : G))
     rw [zpow_sub_one]
     exact h_inv _ ih
 
+@[to_additive]
+instance IsCyclic.isMulCommutative [IsCyclic G] : IsMulCommutative G where
+  is_comm.comm x y :=
+    let ⟨_, hg⟩ := exists_zpow_surjective _
+    let ⟨_, hx⟩ := hg x
+    let ⟨_, hy⟩ := hg y
+    hy ▸ hx ▸ zpow_mul_comm ..
+
 end Group
 
 section CommGroup

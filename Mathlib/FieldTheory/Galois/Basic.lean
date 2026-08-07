@@ -720,7 +720,8 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   rw [← Nat.card_eq_fintype_card] at this
   interval_cases h : Nat.card Gal(K/F)
   · simp_all
-  · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
+  · have := Finite.card_le_one_iff_subsingleton.mp h.le
+    exact isCyclic_of_subsingleton
   · exact isCyclic_of_prime_card h
 
 @[deprecated inferInstance (since := "2026-04-09")]
