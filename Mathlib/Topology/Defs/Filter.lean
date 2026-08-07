@@ -240,6 +240,14 @@ def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}
 
+/--
+A set `s` is locally closed at a point `x` if there is a neighborhood `U` of `x` and a closed set
+`Z` such that `U ∩ s = U ∩ Z`.
+Also see `isLocallyClosedAt_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
+-/
+def IsLocallyClosedAt (s : Set X) (x : X) : Prop :=
+  ∃ U ∈ 𝓝 x, ∃ Z, IsClosed Z ∧ U ∩ s = U ∩ Z
+
 section Lim
 
 
