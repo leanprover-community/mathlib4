@@ -28,7 +28,7 @@ variable (M) [Monoid M] in
 /-- Transfer `MulAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α :=
-  reduceProj% zeta% unfoldInstances%
+  reduceProj% zeta% unfoldReducible%
   { __ := e.smul M
     one_smul := by simp [smul_def]
     mul_smul := by simp [smul_def, mul_smul] }
@@ -70,7 +70,7 @@ variable (M) [Monoid M] [Monoid O] in
 /-- Transfer `MulDistribMulAction` across an `Equiv` -/
 protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
     letI := e.monoid
-    MulDistribMulAction M N := reduceProj% zeta% unfoldInstances%
+    MulDistribMulAction M N := reduceProj% zeta% unfoldReducible%
   letI := e.monoid
   { e.mulAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
