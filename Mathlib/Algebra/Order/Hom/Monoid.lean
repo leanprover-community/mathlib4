@@ -647,7 +647,7 @@ initialize_simps_projections OrderMonoidIso (toFun → apply, invFun → symm_ap
 theorem invFun_eq_symm {f : α ≃*o β} : f.invFun = f.symm := rfl
 
 /-- `simp`-normal form of `invFun_eq_symm`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- `simp`-normal form of `invFun_eq_symm`. -/]
 theorem coe_toEquiv_symm (f : α ≃*o β) : ((f : α ≃ β).symm : β → α) = f.symm := rfl
 
 @[to_additive (attr := simp)]

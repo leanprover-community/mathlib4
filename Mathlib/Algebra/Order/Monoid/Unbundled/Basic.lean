@@ -373,12 +373,14 @@ lemma min_mul [MulRightMono α] (a b c : α) :
   Left.min_le_max_of_mul_le_mul h
 
 /-- Not an instance, to avoid loops with `IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono`. -/
-@[to_additive]
+@[to_additive /-- Not an instance, to avoid loops with
+`IsLeftCancelAdd.addLeftStrictMono_of_addLeftMono`. -/]
 theorem MulLeftStrictMono.toIsLeftCancelMul [MulLeftStrictMono α] : IsLeftCancelMul α where
   mul_left_cancel _ _ _ h := mul_right_strictMono.injective h
 
 /-- Not an instance, to avoid loops with `IsRightCancelMul.mulRightStrictMono_of_mulRightMono`. -/
-@[to_additive]
+@[to_additive /-- Not an instance, to avoid loops with
+`IsRightCancelAdd.addRightStrictMono_of_addRightMono`. -/]
 theorem MulRightStrictMono.toIsRightCancelMul [MulRightStrictMono α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := mul_left_strictMono.injective h
 

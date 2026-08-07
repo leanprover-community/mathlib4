@@ -39,7 +39,7 @@ theorem prod_cons (h : a ∉ s) : ∏ x ∈ cons a s h, f x = f a * ∏ x ∈ s,
   fold_cons h
 
 /-- Variant of `prod_cons` not applied to a function. -/
-@[to_additive (attr := grind =)]
+@[to_additive (attr := grind =) /-- Variant of `sum_cons` not applied to a function. -/]
 theorem prod_cons' (h : a ∉ s) :
     Finset.prod (cons a s h) = fun (f : ι → M) => f a * ∏ x ∈ s, f x := by
   funext f
@@ -50,7 +50,7 @@ theorem prod_insert [DecidableEq ι] : a ∉ s → ∏ x ∈ insert a s, f x = f
   fold_insert
 
 /-- Variant of `prod_insert` not applied to a function. -/
-@[to_additive (attr := grind =)]
+@[to_additive (attr := grind =) /-- Variant of `sum_insert` not applied to a function. -/]
 theorem prod_insert' [DecidableEq ι] (h : a ∉ s) :
     Finset.prod (insert a s) = fun (f : ι → M) => f a * ∏ x ∈ s, f x := by
   funext f
@@ -76,7 +76,7 @@ theorem prod_singleton (f : ι → M) (a : ι) : ∏ x ∈ singleton a, f x = f 
   Eq.trans fold_singleton <| mul_one _
 
 /-- Variant of `prod_singleton` not applied to a function. -/
-@[to_additive (attr := grind =)]
+@[to_additive (attr := grind =) /-- Variant of `sum_singleton` not applied to a function. -/]
 theorem prod_singleton' (a : ι) :
     Finset.prod (singleton a) = fun (f : ι → M) => f a := by
   funext f

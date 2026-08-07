@@ -67,7 +67,8 @@ theorem Tendsto.atBot_mul_le_one (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ 1
 
 Earlier, this name was used for a similar lemma about semirings,
 which is now called `Filter.Tendsto.atTop_mul_atTop₀`. -/
-@[to_additive]
+@[to_additive
+/-- In an ordered additive monoid, if `f` and `g` tend to `+∞`, then so does `f + g`. -/]
 theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop :=
   hf.atTop_mul_one_eventuallyLE <| hg.eventually_ge_atTop 1
@@ -76,7 +77,8 @@ theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop
 
 Earlier, this name was used for a similar lemma about rings (with conclusion `f * g → +∞`),
 which is now called `Filter.Tendsto.atBot_mul_atBot₀`. -/
-@[to_additive]
+@[to_additive
+/-- In an ordered additive monoid, if `f` and `g` tend to `-∞`, then so does `f + g`. -/]
 theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
   hf.atTop_mul_atTop (M := Mᵒᵈ) hg
@@ -102,7 +104,8 @@ variable [CommMonoid M] [Preorder M] [IsOrderedCancelMonoid M] {l : Filter α} {
 
 Earlier, this name was used for a similar lemma about ordered rings,
 which is now called `Filter.Tendsto.atTop_of_const_mul₀`. -/
-@[to_additive]
+@[to_additive
+/-- In an ordered cancellative additive monoid, if `C + f x → +∞`, then `f x → +∞`. -/]
 theorem Tendsto.atTop_of_const_mul (C : M) (hf : Tendsto (C * f ·) l atTop) : Tendsto f l atTop :=
   tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (C * b)).mono fun _ ↦ le_of_mul_le_mul_left'
 
@@ -114,7 +117,8 @@ theorem Tendsto.atBot_of_const_mul (C : M) (hf : Tendsto (C * f ·) l atBot) : T
 
 Earlier, this name was used for a similar lemma about ordered rings,
 which is now called `Filter.Tendsto.atTop_of_mul_const₀`. -/
-@[to_additive]
+@[to_additive
+/-- In an ordered cancellative additive monoid, if `f x + C → +∞`, then `f x → +∞`. -/]
 theorem Tendsto.atTop_of_mul_const (C : M) (hf : Tendsto (f · * C) l atTop) : Tendsto f l atTop :=
   tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (b * C)).mono fun _ => le_of_mul_le_mul_right'
 

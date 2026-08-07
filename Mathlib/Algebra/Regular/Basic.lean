@@ -193,34 +193,41 @@ theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
   exact Units.isRegular a
 
 /-- Any power of a left-regular element is left-regular. -/
-@[to_additive]
+@[to_additive /-- Any natural scalar multiple of an add-left-regular element is
+add-left-regular. -/]
 lemma IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
   simp only [IsLeftRegular, ← mul_left_iterate, rla.iterate n]
 
 /-- Any power of a right-regular element is right-regular. -/
-@[to_additive]
+@[to_additive /-- Any natural scalar multiple of an add-right-regular element is
+add-right-regular. -/]
 lemma IsRightRegular.pow (n : ℕ) (rra : IsRightRegular a) : IsRightRegular (a ^ n) := by
   rw [IsRightRegular, ← mul_right_iterate]
   exact rra.iterate n
 
 /-- Any power of a regular element is regular. -/
-@[to_additive] lemma IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
+@[to_additive /-- Any natural scalar multiple of an add-regular element is add-regular. -/]
+lemma IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
   ⟨IsLeftRegular.pow n ra.left, IsRightRegular.pow n ra.right⟩
 
 /-- An element `a` is left-regular if and only if a positive power of `a` is left-regular. -/
-@[to_additive]
+@[to_additive /-- An element `a` is add-left-regular if and only if a positive natural scalar
+multiple of `a` is add-left-regular. -/]
 lemma IsLeftRegular.pow_iff (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔ IsLeftRegular a where
   mp := by rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]; exact .of_mul
   mpr := .pow n
 
 /-- An element `a` is right-regular if and only if a positive power of `a` is right-regular. -/
-@[to_additive]
+@[to_additive /-- An element `a` is add-right-regular if and only if a positive natural scalar
+multiple of `a` is add-right-regular. -/]
 lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRegular a where
   mp := by rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']; exact .of_mul
   mpr := .pow n
 
 /-- An element `a` is regular if and only if a positive power of `a` is regular. -/
-@[to_additive] lemma IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegular a where
+@[to_additive /-- An element `a` is add-regular if and only if a positive natural scalar
+multiple of `a` is add-regular. -/]
+lemma IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegular a where
   mp h := ⟨(IsLeftRegular.pow_iff n0).mp h.left, (IsRightRegular.pow_iff n0).mp h.right⟩
   mpr h := ⟨.pow n h.left, .pow n h.right⟩
 

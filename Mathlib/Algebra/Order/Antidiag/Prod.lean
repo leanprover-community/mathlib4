@@ -22,7 +22,7 @@ Analogously, the type class `Finset.HasMulAntidiagonal A` contains a function
 is the finset of all pairs multiplying to `n`, as witnessed by `mem_mulAntidiagonal`.
 
 When `A` is a canonically ordered additive monoid with locally finite order
-this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
+this typeclass can be instantiated with `Finset.HasAntidiagonal.antidiagonalOfLocallyFinite`.
 This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
 or even `ι →₀ A`  under the additional assumption `OrderedSub A`
 that make it a canonically ordered additive monoid.
@@ -34,7 +34,8 @@ For computational reasons it is better to manually provide instances for `ℕ`
 and `σ →₀ ℕ`, to avoid quadratic runtime performance.
 These instances are provided as `Finset.Nat.instHasAntidiagonal` and
 `Finsupp.instHasAntidiagonal`.
-This is why `Finset.mulAntidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
+This is why `Finset.HasMulAntidiagonal.mulAntidiagonalOfLocallyFinite` is an `abbrev`
+and not an `instance`.
 
 This definition does not exactly match with that of `Multiset.antidiagonal`
 defined in `Mathlib/Data/Multiset/Antidiagonal.lean`, because of the multiplicities.
@@ -121,8 +122,8 @@ theorem map_prodComm_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : 
     (mulAntidiagonal n).map (Equiv.prodComm A A) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
-/-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
-@[to_additive (attr := simp)]
+/-- See also `Finset.HasMulAntidiagonal.map_prodComm_mulAntidiagonal`. -/
+@[to_additive (attr := simp) /-- See also `Finset.HasAntidiagonal.map_prodComm_antidiagonal`. -/]
 theorem map_swap_mulAntidiagonal [CommMonoid A] [HasMulAntidiagonal A] {n : A} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm_mulAntidiagonal
@@ -133,11 +134,11 @@ variable [CancelMonoid A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
 
 /-- A point in the mulAntidiagonal is determined by its first coordinate.
 
-See also `Finset.mulAntidiagonal_congr'`. -/
+See also `Finset.HasMulAntidiagonal.mulAntidiagonal_congr'`. -/
 @[to_additive
 /-- A point in the antidiagonal is determined by its first coordinate.
 
-See also `Finset.antidiagonal_congr'`. -/]
+See also `Finset.HasAntidiagonal.antidiagonal_congr'`. -/]
 theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
     p = q ↔ p.1 = q.1 := by
   refine ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((mul_right_inj q.fst).mp ?_)⟩
@@ -145,10 +146,10 @@ theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAnti
   rw [hq, ← h, hp]
 
 /-- A point in the mulAntidiagonal is determined by its first co-ordinate (subtype version of
-`Finset.mulAntidiagonal_congr`). This lemma is used by the `ext` tactic. -/
+`Finset.HasMulAntidiagonal.mulAntidiagonal_congr`). This lemma is used by the `ext` tactic. -/
 @[to_additive (attr := ext)
 /-- A point in the antidiagonal is determined by its first co-ordinate (subtype version of
-`Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/]
+`Finset.HasAntidiagonal.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/]
 theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
   Subtype.ext ((mulAntidiagonal_congr p.prop q.prop).mpr h)
 
@@ -159,10 +160,10 @@ variable [CancelCommMonoid A] [HasMulAntidiagonal A] {p q : A × A} {n : A}
 
 /-- A point in the mulAntidiagonal is determined by its second coordinate.
 
-See also `Finset.mulAntidiagonal_congr`. -/
+See also `Finset.HasMulAntidiagonal.mulAntidiagonal_congr`. -/
 @[to_additive /-- A point in the antidiagonal is determined by its second coordinate.
 
-See also `Finset.antidiagonal_congr`. -/]
+See also `Finset.HasAntidiagonal.antidiagonal_congr`. -/]
 lemma mulAntidiagonal_congr' (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
     p = q ↔ p.2 = q.2 := by
   rw [← Prod.swap_inj]

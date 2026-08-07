@@ -68,9 +68,10 @@ theorem sdiv_right_cancel {p₁ p₂ p : P} (h : p /ₛ p₁ = p /ₛ p₂) : p�
   refine smul_left_cancel (p /ₛ p₂) ?_
   rw [sdiv_smul, ← h, sdiv_smul]
 
-/-- Subtracting two points from the same point produces equal results
+/-- Dividing the same point by two points produces equal results
 if and only if those points are equal. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- Subtracting two points from the same point produces equal results
+if and only if those points are equal. -/]
 theorem sdiv_right_cancel_iff {p₁ p₂ p : P} : p /ₛ p₁ = p /ₛ p₂ ↔ p₁ = p₂ :=
   ⟨sdiv_right_cancel, fun h => h ▸ rfl⟩
 
