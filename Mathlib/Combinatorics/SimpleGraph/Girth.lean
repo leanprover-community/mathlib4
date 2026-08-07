@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 public import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -90,6 +91,25 @@ theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 
   grw [egirth_le_length this]
   simp [hw]
 
+lemma Walk.not_nil_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    ¬ w.Nil := by
+  intro hnil
+  simp only [length_eq_zero_iff.mpr hnil, ENat.natCast_zero] at hwg
+  have := hwg ▸ G.three_le_egirth
+  simp at this
+
+lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTrail)
+    (hwg : w.length = G.egirth) : w.IsCycle := by
+  classical
+  by_contra h
+  have hn : ¬w.Nil := w.not_nil_of_length_eq_egirth hwg
+  let w' := w.cycleBypass
+  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (eq_nil_iff_nil.not.mpr hn)
+  have hw' : w'.length < w.length :=
+    hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil.mpr ⟨h, hn⟩
+  have hwg' : w'.length < G.egirth := hwg ▸ ENat.natCast_lt_natCast.mpr hw'
+  exact not_le_of_gt hwg' (egirth_le_length hw'c)
+
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
   by_cases hacyc : G.IsAcyclic
@@ -144,6 +164,13 @@ lemma exists_girth_eq_length :
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length = G.girth) : w.IsCycle :=
+  have hwg' : w.length = G.egirth := by
+    refine ((ENat.toNat_eq_iff (?_)).mp hwg.symm).symm
+    exact length_eq_zero_iff.not.mpr hw.not_nil
+  hw.isTrail.isCycle_of_length_eq_egirth hwg'
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
