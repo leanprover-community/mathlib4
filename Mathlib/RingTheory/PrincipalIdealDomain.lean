@@ -33,7 +33,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 ## Main results
 
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
+- `EuclideanDomain.isPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
@@ -284,34 +284,29 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
+instance (priority := 100) EuclideanDomain.isPrincipalIdealRing : IsPrincipalIdealRing R where
   principal S := by
-    constructor
     by_cases h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty
-    · let ⟨m, ⟨hms, hm0⟩, hl⟩ := EuclideanDomain.r_wellFounded.has_min { x : R | x ∈ S ∧ x ≠ 0 } h
+    · let ⟨m, ⟨hms, hm0⟩, hl⟩ := EuclideanDomain.r_wellFounded.has_min _ h
       use m
       ext x
       refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-      · rw [← div_add_mod x m, ← Ideal.span, Ideal.mem_span_singleton]
-        apply dvd_add (dvd_mul_right _ _)
-        have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := fun h₁ => hl _ h₁ (mod_lt x hm0)
-        have : x % m = 0 := by
-          simp only [not_and_or, Set.mem_ofPred, not_ne_iff] at this
-          exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
-        simp [*]
-      · let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
-        exact hy.symm ▸ S.mul_mem_right _ hms
+      · rw [← Ideal.span, Ideal.mem_span_singleton, ← mod_eq_zero]
+        have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
+        rw [Set.mem_ofPred_eq, not_and_or, not_not] at this
+        exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
+      · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
+        exact S.mul_mem_right _ hms
     · use 0
-      ext a
-      rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
-      exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
-        fun h₁ => h₁.symm ▸ S.zero_mem⟩
+      rw [span_zero_singleton, Submodule.eq_bot_iff]
+      exact fun a haS ↦ by_contra (h ⟨a, ⟨haS, ·⟩⟩)
 
 end
 
 theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
-  @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
+  let := h.toField
+  inferInstance
 
 namespace PrincipalIdealRing
 
