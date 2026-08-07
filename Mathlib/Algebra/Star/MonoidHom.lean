@@ -144,12 +144,21 @@ theorem id_comp (f : A →⋆* B) : (StarMonoidHom.id B).comp f = f :=
 theorem comp_id (f : A →⋆* B) : f.comp (.id _) = f :=
   ext fun _ => rfl
 
+instance : One (A →⋆* A) where one := .id A
+instance : Mul (A →⋆* A) where mul := comp
+instance : Pow (A →⋆* A) Nat where
+  pow f n :=
+    { toFun := f^[n]
+      map_one' := by simp
+      map_mul' := by simp
+      map_star' := Nat.rec (fun a => rfl)
+        (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n }
+
 instance : Monoid (A →⋆* A) where
-  mul := comp
   mul_assoc := comp_assoc
-  one := .id A
   one_mul := id_comp
   mul_one := comp_id
+  npow n f := f ^ n
 
 @[simp]
 theorem coe_one : ((1 : A →⋆* A) : A → A) = id :=
