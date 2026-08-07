@@ -6,6 +6,7 @@ Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 module
 
 public import Mathlib.Computability.NFA
+public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Data.List.ReduceOption
 
 /-!
@@ -260,6 +261,372 @@ theorem mem_accepts_iff_exists_path {x : List α} :
     have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
     exact ⟨s₂, hs₂, this⟩
 
+section concat
+
+variable {σ₁ σ₂ : Type v}
+variable {M₁ : εNFA α σ₁} {M₂ : εNFA α σ₂}
+variable [DecidablePred (· ∈ M₁.accept)]
+
+/-- εNFA which accepts the concatenation of the languages of `M₁` and `M₂`. -/
+@[simps]
+def concat (M₁ : εNFA α σ₁) (M₂ : εNFA α σ₂) [DecidablePred (· ∈ M₁.accept)] :
+    εNFA α (σ₁ ⊕ σ₂) where
+  step q oa := match q, oa with
+    | Sum.inl q₁, some _ => (M₁.step q₁ oa).image Sum.inl
+    | Sum.inl q₁, none   =>
+      (M₁.step q₁ none).image Sum.inl ∪
+      (if q₁ ∈ M₁.accept then (M₂.start.image Sum.inr) else ∅)
+    | Sum.inr q₂, _      => (M₂.step q₂ oa).image Sum.inr
+  start := M₁.start.image Sum.inl
+  accept := M₂.accept.image Sum.inr
+
+lemma IsPath.concat_lift_inl {s t : σ₁} {x : List (Option α)} (h : M₁.IsPath s t x) :
+    (concat M₁ M₂).IsPath (Sum.inl s) (Sum.inl t) x := by
+  induction h with
+  | nil _ => exact (isPath_nil (concat M₁ M₂)).mpr rfl
+  | cons t' s' u oa x' h_step h_path ih =>
+    apply IsPath.cons (Sum.inl t') (Sum.inl s') (Sum.inl u)
+    · cases oa <;> simpa
+    · exact ih
+
+lemma IsPath.concat_lift_inr {s t : σ₂} {x : List (Option α)} (h : M₂.IsPath s t x) :
+    (concat M₁ M₂).IsPath (Sum.inr s) (Sum.inr t) x := by
+  induction h with
+  | nil _ => exact (isPath_nil (concat M₁ M₂)).mpr rfl
+  | cons t' s' u _ _ h_step _ ih =>
+    apply IsPath.cons (Sum.inr t') (Sum.inr s') (Sum.inr u)
+    · simpa
+    · exact ih
+
+lemma IsPath.concat_proj_inr {s t : σ₂} {x : List (Option α)}
+    (h : (concat M₁ M₂).IsPath (Sum.inr s) (Sum.inr t) x) : M₂.IsPath s t x := by
+  generalize hs' : Sum.inr s = s' at h
+  generalize ht' : Sum.inr t = t' at h
+  induction h generalizing s with
+  | nil u =>
+    subst hs'
+    simp_all
+  | cons _ s'' t'' _ _ h_step _ ih =>
+    subst hs' ht'
+    simp only [concat, mem_image] at h_step
+    rcases h_step with ⟨q, hq, rfl⟩
+    apply IsPath.cons q s t
+    · exact hq
+    · simp [ih]
+
+lemma IsPath.concat_split_inl_inr {s : σ₁} {t : σ₂} {x : List (Option α)}
+    (h : (concat M₁ M₂).IsPath (Sum.inl s) (Sum.inr t) x) :
+    ∃ u v s_acc s_start,
+      x = u ++ [none] ++ v ∧
+      M₁.IsPath s s_acc u ∧
+      s_acc ∈ M₁.accept ∧
+      s_start ∈ M₂.start ∧
+      M₂.IsPath s_start t v := by
+  generalize hs' : Sum.inl s = s' at h
+  generalize ht' : Sum.inr t = t' at h
+  induction h generalizing s with
+  | nil u =>
+    cases ht'
+    cases hs'
+  | cons _ _ _ oa x' h_step h_path ih =>
+    subst hs' ht'
+    cases oa with
+    | some a =>
+      simp only [concat_step, mem_image] at h_step
+      rcases h_step with ⟨q, hq, rfl⟩
+      rcases ih rfl rfl with ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩
+      use some a :: u, v, s_acc, s_start
+      and_intros
+      · simp [hx']
+      · exact cons q s s_acc (some a) u hq h_path_rest
+      · exact h_acc
+      · exact h_bridge
+      · exact h_path_M₂
+    | none =>
+      simp only [concat_step, mem_union, mem_image, mem_ite_empty_right] at h_step
+      rcases h_step with ⟨q, hq, rfl⟩ | ⟨hs, q, hq, rfl⟩
+      · rcases ih rfl rfl with ⟨u, v, s_acc, s_start, hx', h_path_rest, h_acc, h_bridge, h_path_M₂⟩
+        use none :: u, v, s_acc, s_start
+        and_intros
+        · simp [hx']
+        · exact cons q s s_acc none u hq h_path_rest
+        · exact h_acc
+        · exact h_bridge
+        · exact h_path_M₂
+      · use [], x', s, q
+        and_intros
+        · simp
+        · exact (isPath_nil M₁).mpr rfl
+        · exact hs
+        · exact hq
+        · exact concat_proj_inr h_path
+
+@[simp]
+theorem accepts_concat : (concat M₁ M₂).accepts = M₁.accepts * M₂.accepts := by
+  ext x
+  simp only [Language.mem_mul]
+  constructor
+  · intro h
+    rcases (mem_accepts_iff_exists_path (concat M₁ M₂)).mp h with ⟨q₁, q₂, x', hq₁, hq₂, hx', hM⟩
+    simp only [concat, mem_image] at hq₁ hq₂
+    rcases hq₁ with ⟨s, hs, rfl⟩
+    rcases hq₂ with ⟨t, ht, rfl⟩
+    rcases IsPath.concat_split_inl_inr hM with
+      ⟨u', v', s_acc, s_start, hx, h_path_M₁, h_acc_M₁, h_start_M₂, h_path_M₂⟩
+    apply Language.mem_mul.mpr
+    refine ⟨u'.reduceOption, ?_, v'.reduceOption, ?_, ?_⟩
+    · apply (mem_accepts_iff_exists_path M₁).mpr
+      use s, s_acc, u'
+    · apply (mem_accepts_iff_exists_path M₂).mpr
+      use s_start, t, v'
+    · subst hx' hx
+      simp [List.reduceOption_append, List.reduceOption_cons_of_none]
+  · intro ⟨u, hu, v, hv, hx⟩
+    rcases (mem_accepts_iff_exists_path M₁).mp hu with ⟨uq₁, uq₂, u', huq₁, huq₂, hu', hM₁⟩
+    rcases (mem_accepts_iff_exists_path M₂).mp hv with ⟨vq₁, vq₂, v', hvq₁, hvq₂, hv', hM₂⟩
+    apply (mem_accepts_iff_exists_path (concat M₁ M₂)).mpr
+    use Sum.inl uq₁, Sum.inr vq₂, u' ++ [none] ++ v'
+    and_intros
+    · simpa
+    · simpa
+    · simp [List.reduceOption_append, hx, hu', hv']
+    · simp only [isPath_append]
+      use Sum.inr vq₁
+      constructor
+      · exact ⟨Sum.inl uq₂, IsPath.concat_lift_inl hM₁, by simp [huq₂, hvq₁]⟩
+      · exact IsPath.concat_lift_inr hM₂
+
+end concat
+
+section kstar
+
+variable {M : εNFA α σ}
+variable [DecidablePred (· ∈ M.accept)]
+
+/-- DFA which accepts the Kleene star of the language of `M`. -/
+@[simps]
+def kstar (M : εNFA α σ) [DecidablePred (· ∈ M.accept)] : εNFA α (Option σ) where
+  step oq oa := match oq, oa with
+    | none,   some _ => ∅
+    | none,   none   => M.start.image some
+    | some q, some a => (M.step q (some a)).image some
+    | some q, none   =>
+      (M.step q none).image some ∪
+      (if q ∈ M.accept then M.start.image some else ∅)
+  start := { none }
+  accept := { none } ∪ M.accept.image some
+
+lemma kstar_step_some (q : σ) (a : Option α) :
+    (kstar M).step (some q) a =
+    (M.step q a).image some ∪
+    (if a = none ∧ q ∈ M.accept then M.start.image some else ∅) := by
+  cases a <;> simp
+
+lemma IsPath.kstar_lift_some {s t : σ} {x : List (Option α)} (h : M.IsPath s t x) :
+    M.kstar.IsPath (some s) (some t) x := by
+  induction h with
+  | nil _ => exact (isPath_nil M.kstar).mpr rfl
+  | cons t' s' u oa x' h_step h_path ih =>
+    apply cons (some t') (some s') (some u)
+    · cases oa <;> simp [h_step]
+    · exact ih
+
+lemma kstar_exists_path_some
+    (L : List (List α)) (h_nonempty : L ≠ []) (h_all : ∀ y ∈ L, y ∈ M.accepts) :
+    ∃ (s : σ) (q : Option σ) (x : List (Option α)),
+      s ∈ M.start ∧
+      q ∈ M.kstar.accept ∧
+      x.reduceOption = L.flatten ∧
+      M.kstar.IsPath (some s) q x := by
+  induction L with
+  | nil => contradiction
+  | cons y L' ih =>
+    have hy := h_all y List.mem_cons_self
+    have ⟨s, t, x, hs, ht, hy', hx⟩ := (mem_accepts_iff_exists_path M).mp hy
+    subst hy'
+    cases L' with
+    | nil => exact ⟨s, some t, x, hs, by simpa, by simp, IsPath.kstar_lift_some hx⟩
+    | cons z L'' =>
+      have h_nonempty' : z :: L'' ≠ [] := by simp
+      have h_all' : ∀ y ∈ z :: L'', y ∈ M.accepts := by aesop
+      rcases ih h_nonempty' h_all' with ⟨s', q, x', hs', hq, hL'', hx'⟩
+      refine ⟨s, q, x ++ [none] ++ x', hs, hq, ?_, ?_⟩
+      · simp [hL'', List.reduceOption_append]
+      · rw [List.append_assoc, isPath_append]
+        use some t
+        constructor
+        · exact IsPath.kstar_lift_some hx
+        · apply IsPath.cons (some s')
+          · simp [ht, hs']
+          · simpa
+
+lemma IsPath.kstar_path_from_none {t : Option σ} {x : List (Option α)}
+    (h : (kstar M).IsPath none t x) :
+    t = none ∧ x = [] ∨
+    ∃ s_start x',
+      x = none :: x' ∧
+      s_start ∈ M.start ∧
+      (kstar M).IsPath (some s_start) t x' := by
+  cases h with
+  | nil _ => simp
+  | cons _ _ _ oa _ h_step h_path =>
+    cases oa with
+    | some a => simpa
+    | none =>
+      simp only [kstar_step, mem_image] at h_step
+      rcases h_step with ⟨s_start, hs_start, rfl⟩
+      aesop
+
+lemma IsPath.kstar_split_some {s t : σ} {x : List (Option α)}
+    (h : (kstar M).IsPath (some s) (some t) x) :
+    (∃ x', x'.reduceOption = x.reduceOption ∧ M.IsPath s t x') ∨
+    (∃ (u v : List (Option α)) (s_acc s_next : σ),
+      x = u ++ [none] ++ v ∧
+      M.IsPath s s_acc u ∧
+      s_acc ∈ M.accept ∧
+      s_next ∈ M.start ∧
+      (kstar M).IsPath (some s_next) (some t) v ∧
+      v.length < x.length) := by
+    generalize hs : some s = os at h
+    generalize ht : some t = ot at h
+    induction h generalizing s with
+    | nil _ =>
+      left
+      subst hs
+      exact ⟨[], by simp_all⟩
+    | cons _ _ _ oa x' h_step h_path ih =>
+      subst hs ht
+      simp only [kstar_step_some, mem_union, mem_image, mem_ite_empty_right] at h_step
+      rcases h_step with
+        ⟨s_next, h_step_M, rfl⟩ |
+        ⟨⟨rfl, hs_acc⟩, s_next, h_start, rfl⟩
+      · rcases ih rfl rfl with
+          ⟨y, hx'', hy⟩ |
+          ⟨u, v, q_acc, q_next, rfl, hu, hq_acc, hq_next, hv, hlt⟩
+        · left
+          use oa :: y
+          constructor
+          · change ([oa] ++ y).reduceOption = ([oa] ++ x').reduceOption
+            rw [List.reduceOption_append, hx'', ← List.reduceOption_append]
+          · exact cons s_next s t oa y h_step_M hy
+        · right
+          use oa :: u, v, q_acc, q_next
+          and_intros
+          · simp
+          · exact cons s_next s q_acc oa u h_step_M hu
+          · exact hq_acc
+          · exact hq_next
+          · exact hv
+          · simpa using Nat.lt_add_right 1 hlt
+      · right
+        use [], x', s, s_next
+        and_intros
+        · simp
+        · exact (isPath_nil M).mpr rfl
+        · exact hs_acc
+        · exact h_start
+        · exact h_path
+        · simp
+
+lemma IsPath.kstar_no_return {q : σ} {x : List (Option α)} :
+    ¬ (kstar M).IsPath (some q) none x := by
+  intro h
+  generalize hq : some q = oq at h
+  generalize hn : none = n at h
+  induction h generalizing q with
+  | nil =>
+    cases hq
+    cases hn
+  | cons _ _ _ _ _ h_step _ ih =>
+    subst hq hn
+    simp only [kstar_step_some, mem_union, mem_image, mem_ite_empty_right] at h_step
+    rcases h_step with ⟨_, _, rfl⟩ | ⟨_, _, _, rfl⟩ <;> exact ih rfl rfl
+
+lemma IsPath.kstar_exists_decomp {s t : σ} {x : List (Option α)}
+    (h : (kstar M).IsPath (some s) (some t) x)
+    (hs : s ∈ M.start) (ht : t ∈ M.accept) :
+    ∃ (L : List (List α)), L.flatten = x.reduceOption ∧ ∀ y ∈ L, y ∈ M.accepts := by
+  generalize h_len : x.length = n
+  induction n using Nat.strong_induction_on generalizing s x with
+  | h n ih =>
+    rcases IsPath.kstar_split_some h with
+      ⟨x', hx, hx'⟩ |
+      ⟨u, v, q_acc, s_next, hx, hu, h_acc, h_next, hv, hlt⟩
+    · use [x'.reduceOption]
+      constructor
+      · simpa
+      · simp only [List.mem_cons, List.not_mem_nil, or_false, forall_eq]
+        apply (mem_accepts_iff_exists_path M).mpr
+        use s, t, x'
+    · have hu_acc : u.reduceOption ∈ M.accepts := by
+        apply (mem_accepts_iff_exists_path M).mpr
+        use s, q_acc, u
+      subst h_len
+      rcases ih v.length hlt hv h_next rfl with ⟨L', hv', hL'⟩
+      use u.reduceOption :: L'
+      constructor
+      · subst hx
+        simp [hv', List.reduceOption_append]
+      · intro y hy
+        simp only [List.mem_cons] at hy
+        rcases hy with hy | hy
+        · simp [hu_acc, hy]
+        · exact hL' y hy
+
+@[simp]
+theorem accepts_kstar : (kstar M).accepts = (M.accepts)∗ := by
+  ext x
+  constructor
+  · intro h
+    rcases (mem_accepts_iff_exists_path (kstar M)).mp h with
+      ⟨s_start, s_end, x', h_start, h_end, hx', h_path⟩
+    simp only [kstar, singleton_union, mem_singleton_iff] at h_start
+    subst h_start
+    simp only [Language.mem_kstar]
+    simp only [kstar, singleton_union, mem_insert_iff, mem_image] at h_end
+    rcases h_end with rfl | ⟨q_start, hq_start, rfl⟩
+    · cases h_path with
+      | nil _ =>
+        use []
+        simpa using hx'
+      | cons t' s' u oa x'' h_step h_rest =>
+        cases oa with
+        | some a => simp at h_step
+        | none =>
+          exfalso
+          simp only [kstar_step, mem_image] at h_step
+          rcases h_step with ⟨y, _, rfl⟩
+          exact IsPath.kstar_no_return h_rest
+    · cases h_path with
+      | cons t' s' u oa x'' h_step h_rest =>
+        cases oa with
+        | some a => simp at h_step
+        | none =>
+          simp only [kstar, singleton_union, mem_image] at h_step
+          rcases h_step with ⟨u', hu', rfl⟩
+          rcases IsPath.kstar_exists_decomp h_rest hu' hq_start with ⟨L, hx'', hL⟩
+          exact ⟨L, by simp_all, hL⟩
+  · intro h
+    simp only [Language.mem_kstar] at h
+    rcases h with ⟨L, hx, hL⟩
+    apply (mem_accepts_iff_exists_path (kstar M)).mpr
+    induction L generalizing x with
+    | nil => exact ⟨none, none, [], by simp [hx]⟩
+    | cons w L' ih =>
+      expose_names
+      have h_nonempty : w :: L' ≠ [] := by simp
+      rcases kstar_exists_path_some (w :: L') h_nonempty hL with ⟨s, q, x', hs, hq, hL', hx'⟩
+      use none, q, none :: x'
+      and_intros
+      · simp
+      · exact hq
+      · simp [hx, hL']
+      · apply IsPath.cons (some s)
+        · simpa
+        · exact hx'
+
+end kstar
+
 /-! ### Conversions between `εNFA` and `NFA` -/
 
 
@@ -323,6 +690,26 @@ theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
 
 end NFA
 
+namespace Language
+
+/-- Regular languages are closed under concatenation. -/
+theorem IsRegular.mul {L₁ L₂ : Language α} (h₁ : IsRegular L₁) (h₂ : IsRegular L₂) :
+    IsRegular (L₁ * L₂) := by
+  classical
+  have ⟨σ₁, _, M₁, hM₁⟩ := h₁
+  have ⟨σ₂, _, M₂, hM₂⟩ := h₂
+  let M := εNFA.concat M₁.toNFA.toεNFA M₂.toNFA.toεNFA
+  exact ⟨Set (σ₁ ⊕ σ₂), inferInstance, M.toNFA.toDFA, by aesop⟩
+
+/-- Regular languages are closed under Kleene star. -/
+theorem IsRegular.kstar {L : Language α} (h : IsRegular L) : IsRegular L∗ := by
+  classical
+  have ⟨σ, _, M, hM⟩ := h
+  let M := εNFA.kstar M.toNFA.toεNFA
+  exact ⟨Set (Option σ), inferInstance, M.toNFA.toDFA, by aesop⟩
+
+end Language
+
 /-! ### Regex-like operations -/
 
 
@@ -362,3 +749,17 @@ theorem accept_one : (1 : εNFA α σ).accept = univ :=
   rfl
 
 end εNFA
+
+namespace RegularExpressions
+
+/-- The language matched by a regular expression is a regular language. -/
+theorem IsRegular.matches' (P : RegularExpression α) : Language.IsRegular (P.matches') := by
+  induction P with
+  | zero             => simp [Language.IsRegular.zero]
+  | epsilon          => simp [Language.IsRegular.one]
+  | char             => simp [Language.IsRegular.singleton]
+  | plus _ _ ih₁ ih₂ => simp only [RegularExpression.matches', Language.IsRegular.add ih₁ ih₂]
+  | comp _ _ ih₁ ih₂ => simp [Language.IsRegular.mul ih₁ ih₂]
+  | star _ ih        => simp [Language.IsRegular.kstar ih]
+
+end RegularExpressions
