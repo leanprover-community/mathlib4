@@ -167,10 +167,10 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ := i₂
   __ := LinearOrder.toLattice
   __ :=
-    letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
+    letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
       simp only [dif_pos hn]
-      exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx⟩
+      exact IsLeast.isGLB ⟨h.min_mem s hn, fun _ hx ↦ h.min_le hx⟩
   csSup_empty := by simp [sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
   csSup_of_not_bddAbove s H := by
     rw [BddAbove] at H

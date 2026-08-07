@@ -199,7 +199,7 @@ alias StrictMono.not_bddBelow_range_of_isSuccArchimedean :=
 
 end bdd_range
 
-section IsWellFounded
+section WellFounded
 
 variable [PartialOrder α]
 
@@ -207,9 +207,8 @@ variable [PartialOrder α]
 instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
-    refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
-      h.wf ?_ b
-    intro b ih hab
+    induction b using WellFoundedLT.induction with | ind b ih
+    intro hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
@@ -225,7 +224,7 @@ instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT 
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellFounded
+end WellFounded
 
 section OrderBot
 
