@@ -806,6 +806,18 @@ theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
 
+@[simp] lemma ennrealToEReal_le_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) ≤ n ↔ r ≤ n := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+
+@[simp] lemma natCast_le_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n ≤ (r : EReal) ↔ n ≤ r := by
+  rw [← EReal.coe_ennreal_le_coe_ennreal_iff]; rfl
+
+@[simp] lemma ennrealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔ r < n := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
+
+@[simp] lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
+  rw [← EReal.coe_ennreal_lt_coe_ennreal_iff]; rfl
+
 /-! ### Miscellaneous lemmas -/
 
 theorem exists_rat_btwn_of_lt :
