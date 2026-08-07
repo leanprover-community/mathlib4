@@ -380,6 +380,9 @@ alias powerset_union := powerset_sups
   rintro ⟨v, hv, w, hw, rfl⟩
   exact inter_subset_inter hv hw
 
+@[deprecated powerset_infs (since := "2026-08-07")]
+alias powerset_inter := powerset_infs
+
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
     s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_sups]
 
