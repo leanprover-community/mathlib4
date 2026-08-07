@@ -14,6 +14,7 @@ public import Batteries.Tactic.Lint.Misc
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Lint.Basic
 import Lean.Elab.Term.TermElabM
+public import Lean.Elab.Term.TermElabM
 
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`
@@ -130,21 +131,80 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
+deriving instance Inhabited for Term.BodyInfo
+
+structure Body extends Term.BodyInfo where
+  stx : Syntax
+deriving Inhabited
+
+def _root_.Lean.Elab.CustomInfo.toBodyInfo? (i : CustomInfo) : Option Body := do
+  guard <| i.value.typeName == ``Lean.Elab.Term.BodyInfo
+  let bodyInfo := i.value.get? Lean.Elab.Term.BodyInfo |>.get!
+  return { bodyInfo with stx := i.stx }
+
+/--
+Fold an info tree as follows, while ensuring that the correct `ContextInfo` is supplied at each stage:
+
+ * Nodes are combined with the initial value `init` using `f`, and the result is then combined with the children using a left fold
+ * On InfoTree holes, we just return the initial value.
+
+This is like `InfoTree.foldInfo`, but it also passes the whole node to `f` instead of just the head.
+-/
+partial def foldInfoTreeM {m} [Monad m] {α} (init : α)
+    (f : ContextInfo → InfoTree → α → m α) : InfoTree → m α :=
+  go none init
+where
+  /-- `foldInfoTreeM.go` is like `foldInfoTreeM` but with an additional outer context parameter `ctx?`. -/
+  go ctx? a
+  | context ctx t => go (ctx.mergeIntoOuter? ctx?) a t
+  | t@(node i ts) => do
+    let a ← match ctx? with
+      | none => pure a
+      | some ctx => f ctx t a
+    ts.foldlM (init := a) (go <| i.updateContext? ctx?)
+  | hole _ => pure a
+
 /-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
 should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
 either of these conditions. -/
-def getDeclBodyInfos (t : InfoTree) : List (Syntax × ContextInfo × Info) :=
-  t.foldInfoTree (init := []) fun ctx t acc =>
+@[specialize f]
+def foldDeclBodyInfos {α} (t : InfoTree) (f : Body → ContextInfo → Info → α → α)
+    (init : α) : α :=
+  t.foldInfoTree (init := init) fun ctx t acc =>
     match t with
     | .node (.ofCustomInfo i) body => Id.run do
-      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+      if let some bi := i.toBodyInfo? then
         if h : 0 < body.size then
           -- See through `.context`s instead of just matching on `.node`:
           let result? := body[0].getHighestInfo? ctx
-          if let some result := result? then
-            return (i.stx, result) :: acc
+          if let some (ctx, info) := result? then
+            return f bi ctx info acc
       return acc
     | _ => acc
+
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+@[specialize f]
+def foldDeclBodyInfosM {m} [Monad m] {α} (t : InfoTree) (f : Body → ContextInfo → Info → α → m α)
+    (init : α) : m α :=
+  t.foldInfoTreeM (init := init) fun ctx t acc =>
+    match t with
+    | .node (.ofCustomInfo i) body => do
+      if let some bi := i.toBodyInfo? then
+        if h : 0 < body.size then
+          -- See through `.context`s instead of just matching on `.node`:
+          let result? := body[0].getHighestInfo? ctx
+          if let some (ctx, info) := result? then
+            return ← f bi ctx info acc
+      return acc
+    | _ => return acc
+
+/-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
+should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
+either of these conditions. -/
+def getDeclBodyInfos (t : InfoTree) : Array (Body × ContextInfo × Info) :=
+  t.foldDeclBodyInfos (init := #[]) fun bi ctx i acc => acc.push (bi, ctx, i)
 
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
