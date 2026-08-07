@@ -549,12 +549,11 @@ omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
 convolution of `f` and `g` exists everywhere. -/
 theorem ConvolutionExists.of_memLp_memLp [IsAddRightInvariant μ] {p q : ENNReal}
-    [hpq : p.HolderConjugate q] (hL : ∀ (x y : G), ‖L (f x) (g y)‖ ≤ ‖f x‖ * ‖g y‖)
-    (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
+    [hpq : p.HolderConjugate q] (hfp : MemLp f p μ) (hgq : MemLp g q μ) :
     ConvolutionExists f g L μ := by
   refine fun x ↦
     ⟨hfp.aestronglyMeasurable.convolution_integrand_snd L hgq.aestronglyMeasurable x, ?_⟩
-  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_eLpNorm_mul_eLpNorm L hL
+  apply lt_of_le_of_lt (lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm L
     hfp.aestronglyMeasurable hgq.aestronglyMeasurable x (hpq := hpq))
   finiteness
 
