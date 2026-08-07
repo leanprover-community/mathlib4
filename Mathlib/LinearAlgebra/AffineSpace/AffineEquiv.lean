@@ -297,6 +297,10 @@ theorem coe_trans_to_affineMap (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P�
 theorem trans_apply (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) (p : P₁) : e.trans e' p = e' (e p) :=
   rfl
 
+@[simp]
+theorem symm_trans (e : P₁ ≃ᵃ[k] P₂) (e' : P₂ ≃ᵃ[k] P₃) :
+    (e.trans e').symm = e'.symm.trans e.symm := rfl
+
 theorem trans_assoc (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₂ ≃ᵃ[k] P₃) (e₃ : P₃ ≃ᵃ[k] P₄) :
     (e₁.trans e₂).trans e₃ = e₁.trans (e₂.trans e₃) :=
   ext fun _ => rfl
@@ -583,6 +587,10 @@ def toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : V₁ ≃ᵃ[k] V₂ where
 
 @[simp]
 theorem coe_toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : ⇑e.toAffineEquiv = e :=
+  rfl
+
+@[simp]
+theorem toAffineEquiv_symm (e : V₁ ≃ₗ[k] V₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
   rfl
 
 end LinearEquiv

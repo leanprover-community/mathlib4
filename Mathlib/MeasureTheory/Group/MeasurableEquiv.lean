@@ -52,8 +52,6 @@ automorphism of `α`. -/
       defines a measurable automorphism of `α`. -/]
 def smul (c : G) : α ≃ᵐ α where
   toEquiv := MulAction.toPerm c
-  measurable_toFun := measurable_const_smul c
-  measurable_invFun := measurable_const_smul c⁻¹
 
 @[to_additive]
 theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding (c • · : α → α) :=
@@ -192,8 +190,6 @@ theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
 @[to_additive /-- `equiv.subRight` as a `MeasurableEquiv` -/]
 def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divRight g
-  measurable_toFun := measurable_div_const' g
-  measurable_invFun := measurable_mul_const g
 
 @[to_additive]
 lemma _root_.measurableEmbedding_divRight [MeasurableMul G] (g : G) :
@@ -204,8 +200,6 @@ lemma _root_.measurableEmbedding_divRight [MeasurableMul G] (g : G) :
 @[to_additive /-- `equiv.subLeft` as a `MeasurableEquiv` -/]
 def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divLeft g
-  measurable_toFun := measurable_id.const_div g
-  measurable_invFun := measurable_inv.mul_const g
 
 @[to_additive]
 lemma _root_.measurableEmbedding_divLeft [MeasurableMul G] [MeasurableInv G] (g : G) :
