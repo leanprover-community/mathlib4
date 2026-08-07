@@ -123,6 +123,15 @@ theorem isCoprime_two_left {m : ℤ} : IsCoprime 2 m ↔ Odd m := by
 theorem isCoprime_two_right {m : ℤ} : IsCoprime m 2 ↔ Odd m := by
   simp [isCoprime_iff_nat_coprime]
 
+/-- If two integers are coprime and their sum is odd, then their sum and difference are
+coprime. Equivalently, the original integers have opposite parity. -/
+theorem isCoprime_add_sub {m n : ℤ} (hprime : IsCoprime m n) (hparity : Odd (m + n)) :
+    IsCoprime (m + n) (m - n) := by
+  rw [← IsCoprime.mul_add_right_right_iff, one_mul, add_add_sub_cancel, ← two_mul]
+  apply IsCoprime.mul_right
+  · simpa [isCoprime_iff_nat_coprime]
+  · simpa using hprime.symm.mul_add_right_left 1
+
 theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, a = d ^ k := by
   obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow' hab h
