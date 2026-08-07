@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.IsOpenUnits
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.RingTheory.Ideal.Nonunits
 
@@ -22,7 +23,9 @@ state, in varying forms, that perturbations of a unit are units. They are not st
 in their optimal form; more precise versions would use the spectral radius.
 
 The first main result is `Units.isOpen`: the group of units of a normed ring with summable
-geometric series is an open subset of the ring.
+geometric series is an open subset of the ring. Furthermore, the topology `Rˣ` comes equipped with
+(induced by the map `Rˣ → R × R` given by `a ↦ (a, a⁻¹)`) coincides with the subspace topology;
+together we provide this in the form of an `IsOpenUnits`-instance.
 
 The function `Ring.inverse` (defined elsewhere), for a ring `R`, sends `a : R` to `a⁻¹` if `a` is a
 unit and `0` if not.  The other major results of this file (notably `NormedRing.inverse_add`,
@@ -190,25 +193,18 @@ theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
   rw [ContinuousAt, tendsto_iff_norm_sub_tendsto_zero, inverse_unit]
   simpa [Function.comp_def] using h_is_o.norm_left.tendsto_div_nhds_zero.comp h_lim
 
+/-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
+induced topology from the embedding in `R × R`) to `R` is an open embedding.
+
+You can use this fact using the lemma `Units.isOpenEmbedding_val` that is part of the
+`IsOpenUnits`-API. -/
+instance instIsOpenUnits : IsOpenUnits R where
+  isOpenEmbedding_unitsVal := {
+    toIsEmbedding := Units.isEmbedding_val_mk'
+      (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
+    isOpen_range := Units.isOpen }
+
 end NormedRing
-
-namespace Units
-
-open MulOpposite Filter NormedRing
-
-/-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
-induced topology from the embedding in `R × R`) to `R` is an open embedding. -/
-theorem isOpenEmbedding_val : IsOpenEmbedding (val : Rˣ → R) where
-  toIsEmbedding := isEmbedding_val_mk'
-    (fun _ ⟨u, hu⟩ ↦ hu ▸ (inverse_continuousAt u).continuousWithinAt) Ring.inverse_unit
-  isOpen_range := Units.isOpen
-
-/-- In a normed ring with summable geometric series, the coercion from `Rˣ` (equipped with the
-induced topology from the embedding in `R × R`) to `R` is an open map. -/
-theorem isOpenMap_val : IsOpenMap (val : Rˣ → R) :=
-  isOpenEmbedding_val.isOpenMap
-
-end Units
 
 namespace Ideal
 
