@@ -130,44 +130,42 @@ private lemma linearIsometry_kerFun_apply_eq_mk (x : X) (v : V) :
       (by simp [UniformSpace.Completion.isUniformInducing_coe])]
   simp [linearIsometryAux, toKerOrthogonal]
 
-private lemma linearIsometry_surjective : Function.Surjective (linearIsometry K K') := by
-  set W := WithLp 2 (OfKernel K × OfKernel K')
-  set L : Submodule 𝕜 W := (generator K K').ker
-  set T : Submodule 𝕜 W := Submodule.span 𝕜
-    {p : W | ∃ x v, p = WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)}
-  have hdense : Dense ((Submodule.Quotient.mk : W → W ⧸ L) '' T) := by
-    refine dense_iff_closure_eq.mpr (Set.univ_subset_iff.mp ?_)
-    apply subset_trans ?_ (image_closure_subset_closure_image continuous_quotient_mk')
-    rw [← topologicalClosure_coe, ← orthogonal_orthogonal_eq_closure, ← generator_ker K K']
-    exact Set.univ_subset_iff.mpr (Set.eq_univ_of_forall fun y ↦ ⟨
-      (generator K K').ker.quotientEquivOrthogonal y,
-      ((generator K K').ker.quotientEquivOrthogonal y).2, by
-        rw [Quotient.mk'_eq_mk', coe_quotientEquivOrthogonal, mk_quotientEquivOfIsCompl_apply]⟩)
-  have hMapRange : (Submodule.Quotient.mk : W → W ⧸ L) '' T ⊆ (linearIsometry K K').range := by
-    rintro _ ⟨t, ht, rfl⟩
-    induction ht using Submodule.span_induction with
-    | mem p hp =>
-      obtain ⟨x, v, rfl⟩ := hp
-      exact ⟨kerFun (OfKernel (K + K')) x v, linearIsometry_kerFun_apply_eq_mk K K' x v⟩
-    | zero => exact ⟨0, by simp⟩
-    | add p q _ _ ihp ihq =>
-      obtain ⟨a, ha⟩ := ihp; obtain ⟨b, hb⟩ := ihq
-      exact ⟨a + b, by simp [-LinearIsometry.coe_toLinearMap, ha, hb]⟩
-    | smul c p _ ih =>
-      obtain ⟨a, ha⟩ := ih
-      exact ⟨c • a, by simp [ha]⟩
-  rw [← Set.range_eq_univ]
-  refine le_antisymm (Set.subset_univ _) ?_
-  rw [← hdense.closure_eq,
-    ← (linearIsometry K K').isometry.isClosedEmbedding.isClosed_range.closure_eq]
-  exact closure_mono hMapRange
-
 /-- The RKHS made from a sum of kernels is linearly isometrically equivalent to a quotient space
 formed by quotienting the pair of RKHS formed by the consituent kernels with the kernel of the map
 `generator`. -/
 def linearIsometryEquiv :
     OfKernel (K + K') ≃ₗᵢ[𝕜] WithLp 2 ((OfKernel K) × (OfKernel K')) ⧸ (generator K K').ker :=
-  LinearIsometryEquiv.ofSurjective (linearIsometry K K') (linearIsometry_surjective K K')
+  .ofSurjective (linearIsometry K K') <| by
+    set W := WithLp 2 (OfKernel K × OfKernel K')
+    set L : Submodule 𝕜 W := (generator K K').ker
+    set T : Submodule 𝕜 W := Submodule.span 𝕜
+      {p : W | ∃ x v, p = WithLp.toLp 2 (kerFun (OfKernel K) x v, kerFun (OfKernel K') x v)}
+    have hdense : Dense ((Submodule.Quotient.mk : W → W ⧸ L) '' T) := by
+      refine dense_iff_closure_eq.mpr (Set.univ_subset_iff.mp ?_)
+      apply subset_trans ?_ (image_closure_subset_closure_image continuous_quotient_mk')
+      rw [← topologicalClosure_coe, ← orthogonal_orthogonal_eq_closure, ← generator_ker K K']
+      exact Set.univ_subset_iff.mpr (Set.eq_univ_of_forall fun y ↦ ⟨
+        (generator K K').ker.quotientEquivOrthogonal y,
+        ((generator K K').ker.quotientEquivOrthogonal y).2, by
+          rw [Quotient.mk'_eq_mk', coe_quotientEquivOrthogonal, mk_quotientEquivOfIsCompl_apply]⟩)
+    have hMapRange : (Submodule.Quotient.mk : W → W ⧸ L) '' T ⊆ (linearIsometry K K').range := by
+      rintro _ ⟨t, ht, rfl⟩
+      induction ht using Submodule.span_induction with
+      | mem p hp =>
+        obtain ⟨x, v, rfl⟩ := hp
+        exact ⟨kerFun (OfKernel (K + K')) x v, linearIsometry_kerFun_apply_eq_mk K K' x v⟩
+      | zero => exact ⟨0, by simp⟩
+      | add p q _ _ ihp ihq =>
+        obtain ⟨a, ha⟩ := ihp; obtain ⟨b, hb⟩ := ihq
+        exact ⟨a + b, by simp [-LinearIsometry.coe_toLinearMap, ha, hb]⟩
+      | smul c p _ ih =>
+        obtain ⟨a, ha⟩ := ih
+        exact ⟨c • a, by simp [ha]⟩
+    rw [← Set.range_eq_univ]
+    refine le_antisymm (Set.subset_univ _) ?_
+    rw [← hdense.closure_eq,
+      ← (linearIsometry K K').isometry.isClosedEmbedding.isClosed_range.closure_eq]
+    exact closure_mono hMapRange
 
 /-- The map taking every function in `OfKernel (K + K')` to the elements from
 `WithLp 2 ((OfKernel K) × (OfKernel K'))` that minimizes the quotient norm. -/
@@ -188,8 +186,7 @@ theorem projection_kerFun (x : X) (v : V) :
     kerFun_mem_orthogonal K K' x v]
 
 theorem range_projection : Set.range (projection K K') = (generator K K').kerᗮ := by
-  ext
-  simp [Set.range_comp, Set.range_comp, (linearIsometry_surjective K K').range_eq]
+  simp [projection, -coe_orthogonalProjection, Set.range_comp, Set.range_comp]
 
 theorem norm_sq_kerFun_add (x : X) (v : V) :
     ‖kerFun (OfKernel (K + K')) x v‖ ^ 2 =
