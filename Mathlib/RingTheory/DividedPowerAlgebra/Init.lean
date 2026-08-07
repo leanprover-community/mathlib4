@@ -307,7 +307,7 @@ private theorem lift'_imp {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
     (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
     (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) ↦ f ⟨k, u⟩ * f ⟨l, v⟩)
     (p q : MvPolynomial (ℕ × M) R) (h : (Rel R M) p q) :
-    eval₂AlgHom R f p = eval₂AlgHom R f q := by
+    aeval f p = aeval f q := by
   rcases h <;>
   simp_all
 
@@ -319,7 +319,7 @@ def lift' {f : ℕ × M → A} (hf_zero : ∀ m, f (0, m) = 1)
     (hf_mul : ∀ n p m, f ⟨n, m⟩ * f ⟨p, m⟩ = (n + p).choose n • f ⟨n + p, m⟩)
     (hf_add : ∀ n u v, f ⟨n, u + v⟩ = (antidiagonal n).sum fun (k, l) ↦ f ⟨k, u⟩ * f ⟨l, v⟩) :
     DividedPowerAlgebra R M →ₐ[R] A :=
-  RingCon.liftₐ _ (eval₂AlgHom R f) <| by
+  RingCon.liftₐ _ (aeval f) <| by
     grw [ringCon, RingCon.ringConGen_le]
     exact lift'_imp R M hf_zero hf_smul hf_mul hf_add
 
