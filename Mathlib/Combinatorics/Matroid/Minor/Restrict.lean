@@ -198,7 +198,7 @@ theorem isBasis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ R := by
   rw [isBasis_restrict_iff', and_congr_left_iff]
   intro hXR
-  rw [← isBasis'_iff_isBasis_inter_ground, isBasis'_iff_isBasis]
+  rw [← isBasis'_iff_isBasis_inter_ground, isBasis'_iff_isBasis <| hXR.trans hR]
 
 lemma isBasis'_iff_isBasis_restrict_univ : M.IsBasis' I X ↔ (M ↾ univ).IsBasis I X := by
   rw [isBasis_restrict_iff', isBasis'_iff_isBasis_inter_ground, and_iff_left (subset_univ _)]
