@@ -43,7 +43,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, X b) := by
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
-  simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
+  exact Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 
 lemma nndist_pi_def (f g : ∀ b, X b) : nndist f g = sup univ fun b => nndist (f b) (g b) := rfl
 

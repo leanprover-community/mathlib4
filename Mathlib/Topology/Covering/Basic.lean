@@ -76,10 +76,10 @@ noncomputable def toTrivialization' {x : X} [Nonempty I] (h : IsEvenlyCovered f 
     right_inv' xi := by rintro ⟨hx, -⟩; simpa [hx] using fun h ↦ (h (H.symm _).2).elim
     open_source := hfU
     open_target := hU.prod isOpen_univ
-    continuousOn_toFun := continuousOn_iff_continuous_restrict.mpr <|
+    continuousOn_toFun := continuousOn_iff_continuous_domRestrict.mpr <|
       ((continuous_subtype_val.prodMap continuous_id).comp H.continuous).congr
       fun ⟨e, (he : f e ∈ U)⟩ ↦ by simp [Prod.map, he]
-    continuousOn_invFun := continuousOn_iff_continuous_restrict.mpr <|
+    continuousOn_invFun := continuousOn_iff_continuous_domRestrict.mpr <|
       ((continuous_subtype_val.comp H.symm.continuous).comp (by fun_prop :
         Continuous fun ui ↦ ⟨⟨_, ui.2.1⟩, ui.1.2⟩)).congr fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
     baseSet := U
@@ -126,7 +126,7 @@ theorem of_trivialization [DiscreteTopology I] {x : X} {t : Trivialization I f}
     left_inv e := Subtype.ext <| t.symm_apply_mk_proj (t.mem_source.mpr e.2)
     right_inv xi := by simp [t.proj_symm_apply', t.apply_symm_apply']
     continuous_toFun := (IsInducing.subtypeVal.prodMap .id).continuous_iff.mpr <|
-      (continuousOn_iff_continuous_restrict.mp <| t.continuousOn_toFun.mono t.source_eq.ge).congr
+      (continuousOn_iff_continuous_domRestrict.mp <| t.continuousOn_toFun.mono t.source_eq.ge).congr
       fun e ↦ by simp [t.mk_proj_snd' e.2]
     continuous_invFun := IsInducing.subtypeVal.continuous_iff.mpr <|
       t.continuousOn_invFun.comp_continuous (continuous_subtype_val.prodMap continuous_id)

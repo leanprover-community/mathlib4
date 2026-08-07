@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
@@ -415,14 +416,20 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
 end IsTopologicalGroup
 
 section CommGroupWithZero
-variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K] [SeparatelyContinuousMul K]
-  {f g : α → K}
+
+variable {K : Type*} [CommGroupWithZero K] [TopologicalSpace K]
+  {f g : α → K} {L : SummationFilter α}
+
 /-!
 ## Groups with a zero
 
 These lemmas apply to a `CommGroupWithZero`; the most familiar case is when `K` is a field. These
 are specific to the product setting and do not have a sensible additive analogue.
 -/
+
+section SeparatelyContinuousMul
+
+variable [SeparatelyContinuousMul K]
 
 open Finset in
 lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
@@ -458,5 +465,37 @@ lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠
   obtain ⟨c, hc⟩ := hf
   obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
   exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
+
+end SeparatelyContinuousMul
+
+theorem HasProd.inv₀ {a : K} [ContinuousInv₀ K] (h : HasProd f a L) (ha : a ≠ 0) :
+    HasProd (fun x ↦ (f x)⁻¹) a⁻¹ L := by
+  simp_rw [HasProd, Finset.prod_inv_distrib]
+  exact Tendsto.inv₀ h ha
+
+theorem Multipliable.inv₀ [ContinuousInv₀ K] (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    Multipliable (fun x ↦ (f x)⁻¹) L :=
+  h.hasProd.inv₀ ne_zero|>.multipliable
+
+theorem Multipliable.tprod_inv₀ [ContinuousInv₀ K] [T2Space K] [L.NeBot]
+    (h : Multipliable f L) (ne_zero : ∏'[L] x, f x ≠ 0) :
+    ∏'[L] x, (f x)⁻¹ = (∏'[L] x, f x )⁻¹ :=
+  h.hasProd.inv₀ ne_zero|>.tprod_eq
+
+theorem HasProd.div₀ [ContinuousInv₀ K] [ContinuousMul K] {a b : K}
+    (hf : HasProd f a L) (hg : HasProd g b L) (hb : b ≠ 0) :
+    HasProd (fun x ↦ f x / g x) (a / b) L := by
+  simp only [div_eq_mul_inv]
+  exact hf.mul <| hg.inv₀ hb
+
+theorem Multipliable.div₀ [ContinuousInv₀ K] [ContinuousMul K]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    Multipliable (fun x ↦ f x / g x) L :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.multipliable
+
+theorem Multipliable.tprod_div₀ [ContinuousInv₀ K] [ContinuousMul K] [T2Space K] [L.NeBot]
+    (hf : Multipliable f L) (hg : Multipliable g L) (ne_zero : ∏'[L] x, g x ≠ 0) :
+    (∏'[L] x, f x / g x) = (∏'[L] x, f x) / (∏'[L] x, g x) :=
+  hf.hasProd.div₀ hg.hasProd ne_zero|>.tprod_eq
 
 end CommGroupWithZero
