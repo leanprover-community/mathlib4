@@ -211,6 +211,29 @@ them is π/2. -/
 theorem inner_eq_zero_iff_angle_eq_pi_div_two (x y : V) : ⟪x, y⟫ = 0 ↔ angle x y = π / 2 :=
   Iff.symm <| by simp +contextual [angle, or_imp]
 
+/-- The inner product of two vectors is nonpositive if and only if the angle between them is
+at least `π / 2`. -/
+theorem inner_nonpos_iff_pi_div_two_le_angle {x y : V} :
+    ⟪x, y⟫ ≤ 0 ↔ π / 2 ≤ angle x y := by
+  rw [angle, Real.pi_div_two_le_arccos]
+  refine ⟨fun h => div_nonpos_of_nonpos_of_nonneg h (by positivity), fun h => ?_⟩
+  by_contra hpos
+  push Not at hpos
+  exact absurd h (not_le.2 (div_pos hpos (hpos.trans_le (real_inner_le_norm x y))))
+
+/-- The inner product of two vectors is negative if and only if the angle between them exceeds
+`π / 2`. -/
+theorem inner_neg_iff_pi_div_two_lt_angle {x y : V} :
+    ⟪x, y⟫ < 0 ↔ π / 2 < angle x y := by
+  rw [angle, Real.pi_div_two_lt_arccos]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · have hx : x ≠ 0 := by rintro rfl; simp at h
+    have hy : y ≠ 0 := by rintro rfl; simp at h
+    exact div_neg_of_neg_of_pos h (mul_pos (norm_pos_iff.2 hx) (norm_pos_iff.2 hy))
+  · by_contra hnonneg
+    push Not at hnonneg
+    exact absurd h (not_lt.2 (div_nonneg hnonneg (by positivity)))
+
 /-- If the angle between two vectors is π, the inner product equals the negative product
 of the norms. -/
 theorem inner_eq_neg_mul_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
