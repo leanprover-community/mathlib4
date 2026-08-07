@@ -130,7 +130,7 @@ lemma completelyRegularSpace_induced
 
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
-  letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
+  let := (⨅ i, t i) -- register this as default topological space to reduce `@`s
   rw [completelyRegularSpace_iff_isOpen]
   intro x K hK hxK
   simp_rw [← hK.mem_nhds_iff, nhds_iInf, mem_iInf, exists_finite_iff_finset,

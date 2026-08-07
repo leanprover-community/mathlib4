@@ -676,14 +676,19 @@ For each main subgoal, also return whether the sides of the relation are swapped
 
 This function is used by both the `gcongr` and `grw` tactic.
 In the case of `grw`, one of the two sides of the goal is a metavariable that is filled in
-by this function. -/
+by this function.
+
+In the main subgoals, the forall binders are introduced. They are named using the `with` clause of
+`gcongr`, or otherwise using binder names in the goal. `grw` relies on these names to ensure that
+binder names are preserved in the goal.
+-/
 def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     GCongrM (Array (MVarId × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
   let type ← inferType const
   -- Use `withDefault` so that we can unfold `Monotone`.
   let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
-  guard <| ← approxDefEq <| isDefEq (← g.getType) type
+  guard <| ← approxDefEq <| isDefEq (← g.getType) (← preprocess type)
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
@@ -720,6 +725,15 @@ where
     match e with
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
     | _ => acc
+  /-- Remove any redundant eta expansions in the arguments on either side of the relation `e`.
+  As a result, the corresponding binder names are removed, so they cannot end up in the expression
+  produced by `grw`. -/
+  preprocess (e : Expr) : MetaM Expr := do
+    let normArgs (x : Expr) := x.headBeta.withApp (mkAppN · <| ·.map Expr.eta)
+    match ← whnf e with
+    | .forallE _ lhs rhs _ => return e.updateForallE! (normArgs lhs) (normArgs rhs)
+    | mkApp2 rel lhs rhs => return mkApp2 rel (normArgs lhs) (normArgs rhs)
+    | _ => throwError "internal `gcongr` error: expected `{e}` to be a relation"
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on

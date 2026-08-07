@@ -225,6 +225,14 @@ theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 
+/-- If the range of a function `g` is bounded above, then `g ∘ f` is bounded above for all functions
+`f`. -/
+@[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
+functions `f`. -/]
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
+  hg.mono (range_comp_subset_range f g)
+
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
 set `t`, `s ⊆ t ⊆ p`. -/
 @[to_dual /-- If `a` is a greatest lower bound for sets `s` and `p`, then it is a greater lower
@@ -505,55 +513,44 @@ theorem upperBounds_singleton : upperBounds {a} = Ici a :=
 -/
 
 
-@[simp] lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
-@[simp] lemma bddBelow_Icc : BddBelow (Icc a b) := ⟨a, fun _ => And.left⟩
-@[simp] lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
-@[simp] lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
-@[simp] lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
-@[simp] lemma bddBelow_Ioc : BddBelow (Ioc a b) := bddBelow_Icc.mono Ioc_subset_Icc_self
-@[simp] lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
-@[simp] lemma bddBelow_Ioo : BddBelow (Ioo a b) := bddBelow_Icc.mono Ioo_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
+@[to_dual (attr := simp)]
+lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
 
+@[to_dual]
 theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩
 
+@[to_dual]
 theorem isLUB_Icc (h : a ≤ b) : IsLUB (Icc a b) b :=
   (isGreatest_Icc h).isLUB
 
+@[to_dual]
 theorem upperBounds_Icc (h : a ≤ b) : upperBounds (Icc a b) = Ici b :=
   (isLUB_Icc h).upperBounds_eq
 
-theorem isLeast_Icc (h : a ≤ b) : IsLeast (Icc a b) a :=
-  ⟨left_mem_Icc.2 h, fun _ => And.left⟩
-
-theorem isGLB_Icc (h : a ≤ b) : IsGLB (Icc a b) a :=
-  (isLeast_Icc h).isGLB
-
-theorem lowerBounds_Icc (h : a ≤ b) : lowerBounds (Icc a b) = Iic a :=
-  (isGLB_Icc h).lowerBounds_eq
-
+@[to_dual]
 theorem isGreatest_Ioc (h : a < b) : IsGreatest (Ioc a b) b :=
   ⟨right_mem_Ioc.2 h, fun _ => And.right⟩
 
+@[to_dual]
 theorem isLUB_Ioc (h : a < b) : IsLUB (Ioc a b) b :=
   (isGreatest_Ioc h).isLUB
 
+@[to_dual]
 theorem upperBounds_Ioc (h : a < b) : upperBounds (Ioc a b) = Ici b :=
   (isLUB_Ioc h).upperBounds_eq
-
-theorem isLeast_Ico (h : a < b) : IsLeast (Ico a b) a :=
-  ⟨left_mem_Ico.2 h, fun _ => And.left⟩
-
-theorem isGLB_Ico (h : a < b) : IsGLB (Ico a b) a :=
-  (isLeast_Ico h).isGLB
-
-theorem lowerBounds_Ico (h : a < b) : lowerBounds (Ico a b) = Iic a :=
-  (isGLB_Ico h).lowerBounds_eq
 
 section
 
 variable [SemilatticeSup γ] [DenselyOrdered γ]
 
+@[to_dual]
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun _ hx => hx.1.le, fun x hx => by
     rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
@@ -563,32 +560,17 @@ theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
     obtain ⟨u, au, ub⟩ := exists_between h
     apply (hx ⟨au, ub⟩).trans ub.le⟩
 
+@[to_dual]
 theorem lowerBounds_Ioo {a b : γ} (hab : a < b) : lowerBounds (Ioo a b) = Iic a :=
   (isGLB_Ioo hab).lowerBounds_eq
 
+@[to_dual]
 theorem isGLB_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
   (isGLB_Ioo hab).of_subset_of_superset (isGLB_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
 
+@[to_dual]
 theorem lowerBounds_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
   (isGLB_Ioc hab).lowerBounds_eq
-
-end
-
-section
-
-variable [SemilatticeInf γ] [DenselyOrdered γ]
-
-theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [Ioo_toDual] using! isGLB_Ioo hab.dual
-
-theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
-  (isLUB_Ioo hab).upperBounds_eq
-
-theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [Ioc_toDual] using! isGLB_Ioc hab.dual
-
-theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
-  (isLUB_Ico hab).upperBounds_eq
 
 end
 
@@ -596,6 +578,7 @@ end
 theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
   Iff.rfl
 
+@[to_dual none]
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
   simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
     bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
@@ -634,7 +617,7 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
@@ -894,7 +877,7 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
 
 /-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
 def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
@@ -905,7 +888,7 @@ def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
   sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
 
 /-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
-@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+@[instance_reducible, to_dual self (reorder := 3 4, 5 6)]
 def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
     Lattice α where

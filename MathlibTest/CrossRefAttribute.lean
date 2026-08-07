@@ -97,6 +97,41 @@ info:
 /-- info: Q42 -/
 #guard_msgs in #parse Mathlib.CrossRef.wikidataIdFn => "Q42"
 
+namespace LMFDB
+
+@[lmfdb group.abelian "A vacuous comment"]
+theorem IsAbelian : 1 + 1 = 2 := by
+  rfl
+
+/--
+info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `LMFDB.IsAbelian}"
+
+/--
+error: <input>:1:9: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB.tag"
+
+/-- info: lmfdb.tag_99 -/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "lmfdb.tag_99"
+
+/--
+error: <input>:1:5: LMFDB ids must consist only of lowercase letters, digits, periods, and underscores.
+-/
+#guard_msgs in #parse Mathlib.CrossRef.lmfdbIdFn => "LMFDB&tag"
+
+/--
+info:
+[LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) corresponds to declaration 'IsAbelian'. (A vacuous comment)
+-/
+#guard_msgs in
+#lmfdb_tags
+
+end LMFDB
+
 section errors
 
 open Lean Parser Mathlib.CrossRef

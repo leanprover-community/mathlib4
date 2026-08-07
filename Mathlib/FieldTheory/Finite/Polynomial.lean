@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
@@ -175,7 +174,7 @@ noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
 open scoped Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
-  simp only [Set.mem_setOf_eq]; infer_instance
+  simp only [Set.mem_ofPred_eq]; infer_instance
 
 variable [Field K]
 
