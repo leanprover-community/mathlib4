@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Snir Broshi
 -/
 module
 
@@ -345,6 +345,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
+theorem IsTree.ncard_edgeSet_add_one [Finite V] (hG : G.IsTree) :
+    G.edgeSet.ncard + 1 = Nat.card V := by
+  have := Fintype.ofFinite V
+  have := Fintype.ofFinite G.edgeSet
+  simpa [edgeFinset] using hG.card_edgeFinset
+
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
@@ -468,6 +474,23 @@ lemma Connected.exists_isTree_le (h : G.Connected) : ∃ T ≤ G, IsTree T := by
   obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
   grind [IsTree, Connected, preconnected_iff_reachable_eq_top]
 
+theorem connected_iff_card_connectedComponent_eq_one :
+    G.Connected ↔ Nat.card G.ConnectedComponent = 1 := by
+  have : G.ConnectedComponent = Quotient G.reachableSetoid := rfl
+  simp_rw [connected_iff, preconnected_iff_reachable_eq_top, Nat.card_eq_one_iff_unique, this,
+    nonempty_quotient_iff, Quotient.subsingleton_iff, reachableSetoid, Setoid.mk_eq_top]
+
+variable (G) in
+theorem sum_connectedComponent_ncard_supp [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.supp.ncard = Nat.card V := by
+  rw [Nat.card_congr G.verticesEquivSigmaConnectedComponent, Nat.card_sigma]
+  rfl
+
+variable (G) in
+theorem sum_connectedComponent_ncard_edgeSet [Finite V] [Fintype G.ConnectedComponent] :
+    ∑ c : G.ConnectedComponent, c.toSimpleGraph.edgeSet.ncard = G.edgeSet.ncard := by
+  simpa [Nat.card_sigma] using Nat.card_congr G.edgeSetEquivSigmaConnectedComponent.symm
+
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card V ≤ Nat.card G.edgeSet + 1 := by
@@ -484,14 +507,40 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.connected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
-    fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.connected, h.ncard_edgeSet_add_one⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
+
+/-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges. -/
+theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :
+    G.edgeSet.ncard + Nat.card G.ConnectedComponent = Nat.card V := by
+  have := Fintype.ofFinite G.ConnectedComponent
+  rw [← sum_connectedComponent_ncard_edgeSet, ← G.sum_connectedComponent_ncard_supp,
+    ← Fintype.card_eq_nat_card, Fintype.card_eq_sum_ones, ← Finset.sum_add_distrib]
+  simp_rw [h.isTree_connectedComponent _ |>.ncard_edgeSet_add_one]
+  rfl
+
+/-- An acyclic graph on `n` vertices has at most `n - 1` edges. -/
+theorem IsAcyclic.ncard_edgeSet_add_one_le_card [Finite V] [Nonempty V] (h : G.IsAcyclic) :
+    G.edgeSet.ncard + 1 ≤ Nat.card V := by
+  grind [h.ncard_edgeSet_add_card_connectedComponent, Nat.card_pos]
+
+/-- A graph on `n` vertices with at least `n` edges has a cycle. -/
+theorem exists_isCycle_of_card_le [Finite V] [Nonempty V]
+    (h : Nat.card V ≤ G.edgeSet.ncard) : ∃ (v : V) (c : G.Walk v v), c.IsCycle := by
+  suffices ¬G.IsAcyclic by grind [IsAcyclic]
+  apply mt IsAcyclic.ncard_edgeSet_add_one_le_card
+  lia
+
+/-- A graph on `n` vertices is a tree iff it is acyclic and has exactly `n - 1` edges. -/
+theorem isTree_iff_isAcyclic_and_ncard_edgeSet_add_one_eq_card [Finite V] :
+    G.IsTree ↔ G.IsAcyclic ∧ G.edgeSet.ncard + 1 = Nat.card V := by
+  refine ⟨fun h ↦ ⟨h.isAcyclic, h.ncard_edgeSet_add_one⟩, fun ⟨h, _⟩ ↦ ⟨?_, h⟩⟩
+  grind [connected_iff_card_connectedComponent_eq_one, h.ncard_edgeSet_add_card_connectedComponent]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
