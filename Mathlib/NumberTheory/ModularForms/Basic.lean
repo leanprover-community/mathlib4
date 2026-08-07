@@ -538,6 +538,7 @@ lemma mcast_eq_zero_iff {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a 
     (hΓ : Γ' = Γ) (f : ModularForm Γ a) : mcast h f hΓ = 0 ↔ f = 0 := by
   simp [← FunLike.coe_zero_iff]
 
+
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
     (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
