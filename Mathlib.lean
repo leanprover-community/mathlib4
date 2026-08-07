@@ -6118,6 +6118,7 @@ public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints
+public import Mathlib.Order.FixedPointsIcc
 public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.GameAdd
