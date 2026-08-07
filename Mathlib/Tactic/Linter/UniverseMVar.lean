@@ -26,6 +26,8 @@ public register_option linter.universeMVarInVariable : Bool :=
 namespace universeMVarInVariableLinter
 
 open Meta Term in
+/-- Lint on `variable (foo : Bar)`, and emits a warning if `Bar` has
+universe metavariables in its type. -/
 def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do
   match stx with
   | `(variable $[$x:bracketedBinder]*)
