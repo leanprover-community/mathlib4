@@ -55,8 +55,8 @@ structure Decomposition (A : Matrix (Fin m) (Fin n) R) where
 
 theorem Decomposition.rank_eq (cert : Decomposition A) :
     A.rank = #{i | cert.pivot i ≠ ⊤} := by
-  have hr : (A.submatrix cert.σ id).rank = A.rank := A.rank_submatrix cert.σ (Equiv.refl (Fin n))
-  rw [← hr, ← Matrix.rank_mul_eq_right_of_isLowerTriangular cert.L _ cert.L_lowerTriangular
-    cert.L_diag_ne_zero, cert.isPivotedBy.rank_eq]
+  rw [← cert.isPivotedBy.rank_eq,
+    cert.L.rank_mul_eq_right_of_isLowerTriangular _ cert.L_lowerTriangular cert.L_diag_ne_zero]
+  exact (A.rank_submatrix cert.σ (.refl _)).symm
 
 end Echelon
