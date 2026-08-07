@@ -92,12 +92,13 @@ instance partialOrder : PartialOrder Cardinal.{u} where
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
 
-instance linearOrder : LinearOrder Cardinal.{u} :=
-  { Cardinal.partialOrder with
-    le_total := by
-      rintro ⟨α⟩ ⟨β⟩
-      apply Embedding.total
-    toDecidableLE := Classical.decRel _ }
+instance linearOrder : LinearOrder Cardinal.{u} where
+  le_total := by
+    rintro ⟨α⟩ ⟨β⟩
+    apply Embedding.total
+  toDecidableLE := Classical.decRel _
+  toDecidableEq := @decidableEqOfDecidableLE _ _ <| Classical.decRel _
+  toDecidableLT := @decidableLTOfDecidableLE _ _ <| Classical.decRel _
 
 theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
   Iff.rfl

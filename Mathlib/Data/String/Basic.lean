@@ -150,9 +150,6 @@ instance : LinearOrder String where
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := String.decidableLT
   compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by

@@ -160,7 +160,7 @@ theorem vertexCoverNum_ne_top_of_finite_edgeSet (h : G.edgeSet.Finite) : vertexC
 
 @[simp]
 theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 := by
-  nontriviality V using tsub_eq_zero_of_le
+  nontriviality V using tsub_eq_zero_of_le ENat.card_le_one
   refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩
   · grw [hn, vertexCoverNum_le_card_sub_one]
   by_contra! hh

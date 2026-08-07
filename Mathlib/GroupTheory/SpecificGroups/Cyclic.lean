@@ -809,10 +809,10 @@ theorem Group.isCyclic_prod_iff {M N : Type*} [Group M] [Group N] :
     IsCyclic (M × N) ↔ IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
   refine ⟨fun h ↦ ⟨isCyclic_left_of_prod M N, isCyclic_right_of_prod M N, ?_⟩, fun ⟨hM, hN, h⟩ ↦ ?_⟩
   · cases (finite_or_infinite M).symm
-    · cases subsingleton_or_nontrivial N; · simp
+    · cases subsingleton_or_nontrivial N; · simp [Nat.card_unique]
       exact (not_isCyclic_prod_of_infinite_nontrivial M N h).elim
     cases (finite_or_infinite N).symm
-    · cases subsingleton_or_nontrivial M; · simp
+    · cases subsingleton_or_nontrivial M; · simp [Nat.card_unique]
       rw [(MulEquiv.prodComm ..).isCyclic] at h
       exact (not_isCyclic_prod_of_infinite_nontrivial N M h).elim
     apply coprime_card_of_isCyclic_prod

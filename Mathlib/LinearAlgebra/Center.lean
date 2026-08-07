@@ -209,7 +209,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
   rcases subsingleton_or_nontrivial ι with hι | hι
   · have : Nonempty ι := Free.instNonemptyChooseBasisIndexOfNontrivial R V
     have : Fintype ι := Fintype.ofFinite ι
-    simp_all [finrank_eq_card_basis b, ← Nat.card_eq_fintype_card]
+    simp_all [finrank_eq_card_basis b, ← Nat.card_eq_fintype_card, Nat.card_unique]
   exact exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis b h
 
 /-- Over a commutative domain, an endomorphism `f` of a free module `V`

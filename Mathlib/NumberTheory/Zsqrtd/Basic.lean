@@ -788,14 +788,12 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
 theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
   eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
 
-instance linearOrder : LinearOrder (ℤ√d) :=
-  { Zsqrtd.preorder with
-    le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
-    le_total := fun a b => by
-      have t := (b - a).nonneg_total
-      rwa [neg_sub] at t
-    toDecidableLE := Zsqrtd.decidableLE
-    toDecidableEq := inferInstance }
+instance linearOrder : LinearOrder (ℤ√d) where
+  le_antisymm _ _ ab ba := eq_of_sub_eq_zero <| nonneg_antisymm ba <| by rwa [neg_sub]
+  le_total a b := by
+    have t := (b - a).nonneg_total
+    rwa [neg_sub] at t
+  toDecidableLT := decidableLTOfDecidableLE
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
