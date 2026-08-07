@@ -212,7 +212,6 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
     (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : lift₂Expand P hP (r₁ /ₒ s₁) (r₂ /ₒ s₂) = P r₁ s₁ r₂ s₂ :=
   rfl
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
@@ -240,7 +239,6 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
   · rw [← mul_assoc (b := (u₀ : R)), mul_assoc (c := (u₀ : R)), h₃]
     simp only [mul_assoc]
 
-set_option backward.privateInPublic true in
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
 private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
@@ -263,12 +261,10 @@ private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive
+@[no_expose, to_additive
   /-- the vector addition on the Ore localization of additive monoids. -/]
-protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+protected def smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
   liftExpand (smul'' · · x) (fun r₁ r₂ s hs => by
     cases x with | _ x s₂
     change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂

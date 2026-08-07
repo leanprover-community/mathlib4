@@ -23,15 +23,13 @@ section Find
 
 /-! ### `Nat.find` -/
 
-set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
 
-variable [DecidablePred p] (H : ∃ n, p n)
+variable (H : ∃ n, p n)
 
-set_option linter.defProp false in
-set_option backward.privateInPublic true in
-private def wf_lbp : WellFounded (@lbp p) :=
+include H in
+private theorem wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
@@ -45,10 +43,10 @@ private def wf_lbp : WellFounded (@lbp p) :=
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
+variable [DecidablePred p]
+
 /-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
-protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
+@[no_expose] protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
     (fun m IH al =>
       if pm : p m then ⟨m, pm, al⟩
@@ -142,7 +140,7 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) 
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ ?_⟩
   cases n
-  exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
+  exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) h₂ _ _ (succ_lt_succ_iff.1 hn)]
 
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
   Nat.pos_iff_ne_zero.trans (Nat.find_eq_zero _).not
