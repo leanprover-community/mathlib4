@@ -127,7 +127,7 @@ def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M 
 
 instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
     SMul ℕ (SeparationQuotient M) :=
-  inferInstance
+  inferInstanceAs (SMul ℕ (SeparationQuotient M))
 
 @[to_additive existing]
 instance instPow [Monoid M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ where
@@ -183,7 +183,7 @@ instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (Separation
   continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
 instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
-  inferInstance
+  inferInstanceAs (SMul ℤ (SeparationQuotient G))
 
 @[to_additive existing]
 instance instZPow [Group G] [IsTopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
