@@ -25,6 +25,16 @@ public register_option linter.universeMVarInVariable : Bool :=
 
 namespace universeMVarInVariableLinter
 
+open Parser.Term in
+/- Returns `True` if the binder has no type annotation (this happens e.g when
+updating a binder annotation) -/
+private def isTypelessBinder : TSyntax ``Parser.Term.bracketedBinder → Bool
+  | `(bracketedBinderF|($_*))
+  | `(bracketedBinderF|{$_*})
+  | `(bracketedBinderF|⦃$_*⦄)
+  | `(bracketedBinderF|[$_]) => False
+  | _ => True
+
 open Meta Term in
 /-- Lint on `variable (foo : Bar)`, and emits a warning if `Bar` has
 universe metavariables in its type. -/
@@ -32,11 +42,12 @@ def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do
   match stx with
   | `(variable $[$x:bracketedBinder]*)
   | `(variable $[$x:bracketedBinder]* in $t) =>
-    runTermElabM <| fun _ ↦ elabBinders x fun s => do
-      for x in s do
-        let v ← instantiateMVars <| ← inferType x
+    for binder in x do
+      if !(isTypelessBinder binder) then
+      runTermElabM <| fun f ↦ elabBinder binder fun s => do
+        let v ← instantiateMVars <| ← inferType s
         if v.hasLevelMVar then
-          logLint linter.universeMVarInVariable stx
+          logLint linter.universeMVarInVariable binder
             m!"type of variable contains universe metavariable! {v}"
   | _ => return
 
