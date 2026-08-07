@@ -544,21 +544,19 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
 variable (α) in
-/-- The **well-ordering theorem** (or **Zermelo's theorem**):
-every type has a linear order which satisfies `WellFoundedLT`. -/
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be well-ordered. -/
 theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
-  exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.wf⟩
-
-@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
+  exact ⟨linearOrderOfSTO WellOrderingRel, ⟨WellOrderingRel.isWellOrder.wf⟩⟩
 
 variable (α) in
-/-- The **well-ordering theorem** (or **Zermelo's theorem**):
-every type has a linear order which satisfies `WellFoundedGT`. -/
+/-- The **well-ordering theorem** (or **Zermelo's theorem**): every type can be co-well-ordered. -/
 @[to_dual existing]
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), WellOrderingRel.isWellOrder.wf⟩
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel), ⟨WellOrderingRel.isWellOrder.wf⟩⟩
+
+@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
 
 namespace Cardinal
 
