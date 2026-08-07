@@ -46,6 +46,7 @@ def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
     simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
 
@@ -88,6 +89,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
       intro x hx
       rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
     finsuppAntidiag (insert a s) n = (antidiagonal n).biUnion
@@ -118,6 +120,7 @@ theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
 
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
+set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
 lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiag s n).map (mapRange.addEquiv e).toEmbedding ⊆ finsuppAntidiag s (e n) := by

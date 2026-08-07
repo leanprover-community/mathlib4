@@ -45,7 +45,6 @@ lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
   exact Functor.isCardinalAccessible_of_natIso
     (show G ⋙ _ ≅ _ from (Adjunction.compUliftCoyonedaIso.{0} adj).symm.app (op X)) κ
 
-set_option backward.isDefEq.respectTransparency false in
 variable {κ} in
 lemma isCardinalFilteredGenerator
     {P : ObjectProperty C} (hP : P.IsCardinalFilteredGenerator κ)
@@ -86,8 +85,9 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+  toHasCardinalFilteredColimits := ⟨fun J _ _ ↦
     let : Reflective G := ⟨_, adj⟩
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 

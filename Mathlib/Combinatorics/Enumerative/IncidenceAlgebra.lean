@@ -501,7 +501,7 @@ variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [Decidable
 
 @[simp]
 lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
-  letI : DecidableLE α := Classical.decRel _
+  let : DecidableLE α := Classical.decRel _
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
@@ -536,7 +536,7 @@ variable [Ring 𝕜] [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α] [De
 O'Donnell. -/
 lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici x, f y) (x : α) :
     f x = ∑ y ∈ Ici x, mu 𝕜 x y * g y := by
-  letI : DecidableLE α := Classical.decRel _
+  let : DecidableLE α := Classical.decRel _
   symm
   calc
     ∑ y ∈ Ici x, mu 𝕜 x y * g y = ∑ y ∈ Ici x, mu 𝕜 x y * ∑ z ∈ Ici y, f z := by simp_rw [h]

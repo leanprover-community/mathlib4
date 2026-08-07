@@ -232,6 +232,7 @@ lemma fromIncl_comp_cofanPtIsoSelf_inv (i : X.I) :
     ∐ X.toFun ≅ X :=
   coproductIsoCofanPt _ _ ≪≫ cofanPtIsoSelf X
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)] lemma ι_comp_coproductIsoSelf_hom (i : X.I) :
     Sigma.ι _ i ≫ (coproductIsoSelf X).hom = .fromIncl i (𝟙 (X.obj i)) := by
   simp [coproductIsoSelf]

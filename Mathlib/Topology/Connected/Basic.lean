@@ -500,7 +500,9 @@ open scoped Classical in
 component of `x` in `F` is the connected component of `x` in the subtype `F` seen as
 a set in `α`. This definition does not make sense if `x` is not in `F` so we return the
 empty set in this case. -/
-def connectedComponentIn (F : Set α) (x : α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def connectedComponentIn (F : Set α) (x : α) : Set α :=
   if h : x ∈ F then (↑) '' connectedComponent (⟨x, h⟩ : F) else ∅
 
 theorem connectedComponentIn_eq_image {F : Set α} {x : α} (h : x ∈ F) :
@@ -611,21 +613,51 @@ theorem Continuous.image_connectedComponent_subset [TopologicalSpace β] {f : α
   (isConnected_connectedComponent.image f h.continuousOn).subset_connectedComponent
     ((mem_image f (connectedComponent a) (f a)).2 ⟨a, mem_connectedComponent, rfl⟩)
 
+theorem ContinuousOn.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
+    {a : α} (hf : ContinuousOn f s) (hx : a ∈ s) :
+    f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
+  (isPreconnected_connectedComponentIn.image _ <| hf.mono <| connectedComponentIn_subset _ _)
+    |>.subset_connectedComponentIn (mem_image_of_mem _ <| mem_connectedComponentIn hx)
+      (image_mono <| connectedComponentIn_subset _ _)
+
+@[deprecated ContinuousOn.image_connectedComponentIn_subset (since := "2026-07-27")]
 theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : α → β} {s : Set α}
     {a : α} (hf : Continuous f) (hx : a ∈ s) :
     f '' connectedComponentIn s a ⊆ connectedComponentIn (f '' s) (f a) :=
-  (isPreconnected_connectedComponentIn.image _ hf.continuousOn).subset_connectedComponentIn
-    (mem_image_of_mem _ <| mem_connectedComponentIn hx)
-    (image_mono <| connectedComponentIn_subset _ _)
+  hf.continuousOn.image_connectedComponentIn_subset hx
 
 theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → β} (h : Continuous f)
     (a : α) : MapsTo f (connectedComponent a) (connectedComponent (f a)) :=
   mapsTo_iff_image_subset.2 <| h.image_connectedComponent_subset a
 
+theorem ContinuousOn.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
+    (h : ContinuousOn f s) {a : α} (hx : a ∈ s) :
+    MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
+  mapsTo_iff_image_subset.2 <| h.image_connectedComponentIn_subset hx
+
+@[deprecated ContinuousOn.mapsTo_connectedComponentIn (since := "2026-07-27")]
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
-  mapsTo_iff_image_subset.2 <| image_connectedComponentIn_subset h hx
+  h.continuousOn.mapsTo_connectedComponentIn hx
+
+/-- The connected component of `(x, y)` in the product space is the product of the connected
+components of `x` and `y`. -/
+theorem connectedComponent_prod [TopologicalSpace β] (x : α) (y : β) :
+    connectedComponent (x, y) = connectedComponent x ×ˢ connectedComponent y :=
+  subset_antisymm
+    (fun _ hp ↦ ⟨continuous_fst.mapsTo_connectedComponent (x, y) hp,
+      continuous_snd.mapsTo_connectedComponent (x, y) hp⟩)
+    (isPreconnected_connectedComponent.prod isPreconnected_connectedComponent
+      |>.subset_connectedComponent ⟨mem_connectedComponent, mem_connectedComponent⟩)
+
+/-- The connected component of `x` in a product space is the product of the connected components
+of its coordinates. -/
+theorem connectedComponent_pi [∀ i, TopologicalSpace (X i)] (x : ∀ i, X i) :
+    connectedComponent x = univ.pi fun i ↦ connectedComponent (x i) :=
+  subset_antisymm (fun _ hy i _ ↦ (continuous_apply i).mapsTo_connectedComponent x hy)
+    (isPreconnected_univ_pi (fun _ ↦ isPreconnected_connectedComponent)
+      |>.subset_connectedComponent fun _ _ ↦ mem_connectedComponent)
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
@@ -641,6 +673,26 @@ theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
   · rw [connectedComponentIn_eq_empty hx]
     exact Set.empty_subset _
 
+/-- The preimage of a connected component of `F` is the union of the connected components of
+`f ⁻¹' F` at the points of that preimage. -/
+theorem ContinuousOn.preimage_connectedComponentIn [TopologicalSpace β] {f : α → β} {F : Set β}
+    (hf : ContinuousOn f (f ⁻¹' F)) (y : β) :
+    f ⁻¹' connectedComponentIn F y =
+      ⋃ x ∈ f ⁻¹' connectedComponentIn F y, connectedComponentIn (f ⁻¹' F) x := by
+  refine subset_antisymm (fun z hz ↦ ?_) (iUnion₂_subset fun x hx z hz ↦ ?_)
+  · exact mem_biUnion hz (mem_connectedComponentIn (connectedComponentIn_subset F y hz))
+  · rw [mem_preimage, connectedComponentIn_eq hx]
+    exact connectedComponentIn_mono _ (image_preimage_subset f F)
+      (hf.mapsTo_connectedComponentIn (connectedComponentIn_subset F y hx) hz)
+
+/-- The preimage of a connected component is the union of the connected components at the points
+of that preimage. -/
+theorem Continuous.preimage_connectedComponent [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (y : β) :
+    f ⁻¹' connectedComponent y = ⋃ x ∈ f ⁻¹' connectedComponent y, connectedComponent x := by
+  simpa [connectedComponentIn_univ] using
+    hf.continuousOn.preimage_connectedComponentIn (F := univ) y
+
 /-- A preconnected space is one where there is no non-trivial open partition. -/
 class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
   /-- The universal set `Set.univ` in a preconnected space is a preconnected set. -/
@@ -649,7 +701,7 @@ class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
 export PreconnectedSpace (isPreconnected_univ)
 
 /-- A connected space is a nonempty one where there is no non-trivial open partition. -/
-@[wikidata Q1491995]
+@[wikidata Q1491995, mk_iff]
 class ConnectedSpace (α : Type u) [TopologicalSpace α] : Prop extends PreconnectedSpace α where
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
@@ -700,7 +752,7 @@ theorem connectedSpace_iff_connectedComponent :
     exact
       ⟨x, eq_univ_of_univ_subset <| isPreconnected_univ.subset_connectedComponent (mem_univ x)⟩
   · rintro ⟨x, h⟩
-    haveI : PreconnectedSpace α :=
+    have : PreconnectedSpace α :=
       ⟨by rw [← h]; exact isPreconnected_connectedComponent⟩
     exact ⟨⟨x⟩⟩
 
