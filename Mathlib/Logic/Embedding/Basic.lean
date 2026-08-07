@@ -33,7 +33,7 @@ infixr:25 " ↪ " => Embedding
 
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  coe_injective' f g h := by { cases f; cases g; congr }
+  coe_injective f g h := by { cases f; cases g; congr }
 
 instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   injective' := Embedding.inj'

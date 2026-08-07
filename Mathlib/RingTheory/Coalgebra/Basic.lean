@@ -48,9 +48,7 @@ A representation of an element `a` of a coalgebra `A` is a finite sum of pure te
 that is equal to `comul a`.
 -/
 structure Coalgebra.Repr (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) where
-  /-- the indexing type of a representation of `comul a` -/
-  {ι : Type*}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) (ι : Type*) where
   /-- the finite indexing set of a representation of `comul a` -/
   (index : Finset ι)
   /-- the first coordinate of a representation of `comul a` -/
@@ -63,7 +61,7 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
 /-- An arbitrarily chosen representation. -/
 noncomputable def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
-    Coalgebra.Repr R a where
+    Coalgebra.Repr R a (A × A) where
   left := Prod.fst
   right := Prod.snd
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
@@ -88,8 +86,12 @@ class Coalgebra (R : Type u) (A : Type v)
   lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
-variable {R : Type u} {A : Type v}
+variable {R : Type u} {A : Type v} {ι : Type*} {κ Λ : ι → Type*}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] {a : A}
+
+/-- The indexing type of a representation of `comul a` -/
+@[nolint unusedArguments, deprecated "The indexing type is now unbundled" (since := "2026-05-31")]
+protected abbrev Repr.ι (_repr : Repr R a ι) : Type _ := ι
 
 @[simp]
 theorem coassoc_apply (a : A) :
@@ -116,18 +118,18 @@ theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
 @[simp]
-lemma sum_counit_tmul_eq {a : A} (repr : Coalgebra.Repr R a) :
+lemma sum_counit_tmul_eq (repr : Repr R a ι) :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ (repr.right i) = 1 ⊗ₜ[R] a := by
   simpa [← repr.eq, map_sum] using congr($(rTensor_counit_comp_comul (R := R) (A := A)) a)
 
 @[simp]
-lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
+lemma sum_tmul_counit_eq (repr : Repr R a ι) :
     ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
   simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
 
 -- Cannot be @[simp] because `a₂` cannot be inferred by `simp`.
-lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
-    (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
+lemma sum_tmul_tmul_eq (repr : Repr R a ι)
+    (a₁ : (i : ι) → Repr R (repr.left i) (κ i)) (a₂ : (i : ι) → Repr R (repr.right i) (Λ i)) :
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
       (a₁ i).left j ⊗ₜ[R] ((a₁ i).right j ⊗ₜ[R] repr.right i)
       = ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
@@ -137,7 +139,7 @@ lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
 
 @[simp]
 theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
-    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a} :
+    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a ι} :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ f (repr.right i) = 1 ⊗ₜ[R] f a := by
   have := sum_counit_tmul_eq repr
   apply_fun LinearMap.lTensor R (f : A →ₗ[R] B) at this
@@ -145,7 +147,7 @@ theorem sum_counit_tmul_map_eq {B : Type*} [AddCommMonoid B] [Module R B]
 
 @[simp]
 theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
-    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a} :
+    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f : F) (a : A) {repr : Repr R a ι} :
     ∑ i ∈ repr.index, f (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = f a ⊗ₜ[R] 1 := by
   have := sum_tmul_counit_eq repr
   apply_fun LinearMap.rTensor R (f : A →ₗ[R] B) at this
@@ -153,8 +155,8 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
 
 -- Cannot be @[simp] because `a₁` cannot be inferred by `simp`.
 theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
-    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a}
-    {a₁ : (i : repr.ι) → Repr R (repr.left i)} {a₂ : (i : repr.ι) → Repr R (repr.right i)} :
+    {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a ι}
+    {a₁ : (i : ι) → Repr R (repr.left i) (κ i)} {a₂ : (i : ι) → Repr R (repr.right i) (Λ i)} :
     ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
       f (repr.left i) ⊗ₜ (g ((a₂ i).left j) ⊗ₜ h ((a₂ i).right j)) =
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
@@ -164,7 +166,7 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
 
-lemma sum_counit_smul (𝓡 : Repr R a) :
+lemma sum_counit_smul (𝓡 : Repr R a ι) :
     ∑ x ∈ 𝓡.index, counit (R := R) (𝓡.left x) • 𝓡.right x = a := by
   simpa only [map_sum, TensorProduct.lift.tmul, LinearMap.lsmul_apply, one_smul]
     using congr(TensorProduct.lift (LinearMap.lsmul R A) $(sum_counit_tmul_eq (R := R) 𝓡))

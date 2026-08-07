@@ -57,9 +57,6 @@ attribute [grind cases] BicartSq
 
 namespace BicartSq
 
-@[deprecated (since := "2025-11-26")] alias max_eq := sup_eq
-@[deprecated (since := "2025-11-26")] alias min_eq := inf_eq
-
 variable {x₁ x₂ x₃ x₄} (sq : BicartSq x₁ x₂ x₃ x₄)
 
 include sq
@@ -89,8 +86,6 @@ structure MulticoequalizerDiagram : Prop where
   eq_inf (i j : ι) : v i j = u i ⊓ u j
 
 namespace MulticoequalizerDiagram
-
-@[deprecated (since := "2025-11-26")] alias min_eq := eq_inf
 
 attribute [local grind] MulticoequalizerDiagram
 attribute [local grind =] MultispanShape.prod_fst MultispanShape.prod_snd

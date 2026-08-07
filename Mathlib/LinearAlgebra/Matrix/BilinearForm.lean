@@ -337,6 +337,24 @@ theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     toMatrix₂_symm, toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
   simp
 
+@[simp]
+lemma LinearMap.BilinForm.isSymm_toMatrix_iff_isSymm {B : BilinForm R₁ M₁} :
+    (B.toMatrix b).IsSymm ↔ B.IsSymm := by
+  simp [isSymm_iff, IsSymm.ext_iff, isSymm_iff_eq_flip, ext_iff_basis b, eq_comm]
+
+@[simp]
+lemma Matrix.isSymm_toBilin_iff_isSymm {M : Matrix n n R₁} : (M.toBilin b).IsSymm ↔ M.IsSymm := by
+  simp [← (M.toBilin b).isSymm_toMatrix_iff_isSymm b]
+
+@[simp]
+lemma LinearMap.BilinForm.isSymm_toMatrix'_iff_isSymm {B : BilinForm R₁ (n → R₁)} :
+    B.toMatrix'.IsSymm ↔ B.IsSymm :=
+  B.isSymm_toMatrix_iff_isSymm (Pi.basisFun R₁ n)
+
+@[simp]
+lemma Matrix.isSymm_toBilin'_iff_isSymm {M : Matrix n n R₁} : M.toBilin'.IsSymm ↔ M.IsSymm := by
+  simp [← M.toBilin'.isSymm_toMatrix'_iff_isSymm]
+
 end ToMatrix
 
 end Matrix

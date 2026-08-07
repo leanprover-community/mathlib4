@@ -33,7 +33,7 @@ variable (A B : Type*) [MyClass A] [MyClass B]
 
 instance : FunLike (MyHom A B) A B where
   coe := MyHom.toFun
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective := fun f g h => by cases f; cases g; congr
 
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -100,7 +100,7 @@ variable {A B : Type*} [CoolClass A] [CoolClass B]
 
 instance : FunLike (CoolerHom A B) A B where
   coe f := f.toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr
+  coe_injective := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr
 
 instance : CoolerHomClass (CoolerHom A B) A B where
   map_op f := f.map_op'
@@ -146,7 +146,7 @@ class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
   /-- The coercion to functions must be injective. -/
-  coe_injective' : Function.Injective coe
+  coe_injective : Function.Injective coe
 
 /-- The class `FunLike F α β` (`Fun`ction-`Like`) expresses that terms of type `F`
 have an injective coercion to functions from `α` to `β`.
@@ -166,30 +166,30 @@ namespace DFunLike
 
 variable {F α β} [i : DFunLike F α β]
 
-instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
+@[deprecated (since := "2026-06-04")] alias coe_injective' := coe_injective
+
+instance (priority := 100) toCoeFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
   coe := @DFunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
+@[deprecated "Now a syntactic tautology" (since := "2026-06-04")]
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
-
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
-  DFunLike.coe_injective'
 
 @[simp]
 theorem coe_fn_eq {f g : F} : (f : ∀ a : α, β a) = (g : ∀ a : α, β a) ↔ f = g :=
-  ⟨fun h ↦ DFunLike.coe_injective' h, fun h ↦ by cases h; rfl⟩
+  ⟨fun h ↦ DFunLike.coe_injective h, fun h ↦ by cases h; rfl⟩
 
 theorem ext' {f g : F} (h : (f : ∀ a : α, β a) = (g : ∀ a : α, β a)) : f = g :=
-  DFunLike.coe_injective' h
+  DFunLike.coe_injective h
 
 theorem ext'_iff {f g : F} : f = g ↔ (f : ∀ a : α, β a) = (g : ∀ a : α, β a) :=
   coe_fn_eq.symm
 
 theorem ext (f g : F) (h : ∀ x : α, f x = g x) : f = g :=
-  DFunLike.coe_injective' (funext h)
+  DFunLike.coe_injective (funext h)
 
 theorem ext_iff {f g : F} : f = g ↔ ∀ x, f x = g x :=
   coe_fn_eq.symm.trans funext_iff

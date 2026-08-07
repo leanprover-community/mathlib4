@@ -133,6 +133,8 @@ variable [AddCommGroup N] [Module R N] [LieRingModule L N] [LieModule R L N]
 
 namespace LieModule
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- The kernel of the action of a Lie algebra `L` on a Lie module `M` as a Lie ideal in `L`. -/
 protected def ker : LieIdeal R L :=
   (toEnd R L M).ker
@@ -203,6 +205,7 @@ theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M
 
 variable {R L M N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `maxTrivSubmodule` is functorial. -/
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
@@ -286,6 +289,8 @@ abbrev center : LieIdeal R L :=
 instance : IsLieAbelian (center R L) :=
   inferInstance
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 @[simp]
 theorem ad_ker_eq_self_module_ker : (ad R L).ker = LieModule.ker R L L :=
   rfl
@@ -318,6 +323,8 @@ variable {R L}
 variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
 include hx
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 lemma commute_toEnd_of_mem_center_left :
     Commute (toEnd R L M x) (toEnd R L M y) := by
   rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, map_zero]
@@ -346,7 +353,7 @@ theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N�
 
 theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, I⁆ = ⊥ := by
   simp only [_root_.eq_bot_iff, lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le,
-    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_setOf_eq, exists_imp]
+    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_ofPred_eq, exists_imp]
   refine
     ⟨fun h z x y hz =>
       hz.symm.trans

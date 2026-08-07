@@ -53,7 +53,7 @@ section LinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- Linear map from the dual to `Lp` equal to `MemLp.toLp` if `MemLp id p μ` and to 0 otherwise. -/
 noncomputable
 def toLpₗ (μ : Measure E) (p : ℝ≥0∞) :
@@ -91,7 +91,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     gcongr
     · rw [ENNReal.essSup_const_mul]
       exact ENNReal.mul_ne_top (by simp) h_Lp.eLpNorm_ne_top
-    · exact essSup_mono_ae <| ae_of_all _ L.le_opNorm_enorm
+    · exact essSup_mono_ae <| ae_of_all _ L.le_opENorm
   have h0 : 0 < p.toReal := by simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, hp, Ne.lt_top hp_top]
   suffices ‖L.toLpₗ μ p‖
       ≤ (‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ).toReal ^ p.toReal⁻¹ by
@@ -119,7 +119,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     rw [← ENNReal.mul_rpow_of_nonneg]
     swap; · positivity
     gcongr
-    exact L.le_opNorm_enorm x
+    exact L.le_opENorm x
   _ = ‖L‖ₑ ^ p.toReal * ∫⁻ x, ‖x‖ₑ ^ p.toReal ∂μ := by rw [lintegral_const_mul]; fun_prop
 
 end LinearMap
@@ -224,7 +224,6 @@ section Covariance
 
 variable [NormedSpace ℝ E] [BorelSpace E]
 
-open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
 if `MemLp id 2 μ`. If not, we set it to zero. -/
 noncomputable
