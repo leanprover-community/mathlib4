@@ -99,8 +99,16 @@ theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
 theorem mem_under {x : A} : x ∈ P.under A ↔ algebraMap A B x ∈ P := mem_comap
 
-instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
+instance IsPrime.isCompletelyPrime_under [hP : P.IsPrime] :
+    (P.under A).IsCompletelyPrime := by
+  apply isCompletelyPrime_comap_of_range_subset_center
+  rw [Set.range_subset_iff]
+  exact Set.algebraMap_mem_center
+
+lemma IsCompletelyPrime.under [hP : P.IsCompletelyPrime] : (P.under A).IsCompletelyPrime :=
   hP.comap (algebraMap A B)
+
+lemma IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime := inferInstance
 
 @[simp]
 lemma under_smul [SMulCommClass G A B] : (g • P : Ideal B).under A = P.under A := by
@@ -142,6 +150,10 @@ theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
   exact comap_eq_top_iff.symm
 
 lemma ne_top_iff_of_liesOver [P.LiesOver p] : P ≠ ⊤ ↔ p ≠ ⊤ := (eq_top_iff_of_liesOver ..).ne
+
+lemma isCompletelyPrime_of_liesOver [P.LiesOver p] [P.IsCompletelyPrime] : p.IsCompletelyPrime := by
+  rw [over_def P p]
+  exact IsCompletelyPrime.under A P
 
 lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
   rw [over_def P p]
@@ -237,7 +249,7 @@ theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Alge
     map_under_le_under_map P
 
 theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
-  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+    Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
   rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
   simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
     using! Set.subset_compl_comm.mp (by simp)

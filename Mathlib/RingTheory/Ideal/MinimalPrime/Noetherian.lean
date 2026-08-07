@@ -34,7 +34,7 @@ lemma Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
   obtain ⟨x, hx, y, hy, h⟩ := (not_isPrime_iff.mp h1).resolve_left h2
   rw [← Ideal.span_singleton_le_iff_mem, ← left_lt_sup] at hx hy
   refine hI (((hmax _ hx).union (hmax _ hy)).subset fun p ⟨⟨hp, hI⟩, hmin⟩ ↦ ?_)
-  rcases hp.2 (hI h) with hxp | hyp
+  rcases hp.mem_or_mem (hI h) with hxp | hyp
   · exact Or.inl ⟨⟨hp, sup_le hI (p.span_singleton_le_iff_mem.mpr hxp)⟩,
       fun q hq hqp ↦ hmin ⟨hq.1, hx.le.trans hq.2⟩ hqp⟩
   · exact Or.inr ⟨⟨hp, sup_le hI (p.span_singleton_le_iff_mem.mpr hyp)⟩,

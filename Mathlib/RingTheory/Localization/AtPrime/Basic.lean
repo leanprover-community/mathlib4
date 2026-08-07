@@ -95,7 +95,7 @@ variable {A : Type*} [CommRing A] [IsDomain A]
 
 /-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
 -/
-instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
+instance isDomain_of_local_atPrime {P : Ideal A} [P.IsPrime] :
     IsDomain (Localization.AtPrime P) :=
   isDomain_localization P.primeCompl_le_nonZeroDivisors
 
@@ -212,7 +212,8 @@ theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert! congr_arg (Ideal.map _) AtPrime.under_maximalIdeal.symm
-  rw [map_under I.primeCompl]
+  · rw [map_under I.primeCompl]
+  · assumption
 
 lemma AtPrime.eq_maximalIdeal_iff_under_eq {J : Ideal (Localization.AtPrime I)} :
     J.under R = I ↔ J = IsLocalRing.maximalIdeal (Localization.AtPrime I) where

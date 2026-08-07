@@ -116,8 +116,9 @@ theorem IsMaximal.exists_inv {I : Ideal α} (hI : I.IsMaximal) {x} (hx : x ∉ I
   refine ⟨y, z, ?_, hy.symm⟩
   rwa [← span_eq I]
 
-theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
-    (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
+theorem sInf_isCompletelyPrime_of_isChain {s : Set (Ideal α)}
+    (hs : s.Nonempty) (hs' : IsChain (· ≤ ·) s)
+    (H : ∀ p ∈ s, p.IsCompletelyPrime) : (sInf s).IsCompletelyPrime :=
   ⟨fun e =>
     let ⟨x, hx⟩ := hs
     (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
@@ -130,6 +131,21 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
       rcases hs'.total hI hJ with h | h
       · exact h (((H I hI).mem_or_mem (e hI)).resolve_left hI')
       · exact ((H J hJ).mem_or_mem (e hJ)).resolve_left fun x => hI' <| h x⟩
+
+theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty)
+    (hs' : IsChain (· ≤ ·) s) (H : ∀ p ∈ s, p.IsPrime) : (sInf s).IsPrime :=
+  ⟨fun e =>
+    let ⟨x, hx⟩ := hs
+    (H x hx).ne_top (eq_top_iff.mpr (e.symm.trans_le (sInf_le hx))),
+    fun e =>
+    or_iff_not_imp_left.mpr fun hx => by
+      simp_rw [Ideal.mem_sInf] at hx e ⊢
+      push Not at hx
+      obtain ⟨I, hI, hI'⟩ := hx
+      intro J hJ
+      rcases hs'.total hI hJ with h | h
+      · exact h (((H I hI).mem_or_mem_of_forall (fun a ↦ e a hI)).resolve_left hI')
+      · exact ((H J hJ).mem_or_mem_of_forall (fun a ↦ e a hJ)).resolve_left fun x ↦ hI' <| h x⟩
 
 end Ideal
 
@@ -146,13 +162,14 @@ namespace Ideal
 variable [CommSemiring α] (I : Ideal α)
 
 theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set α)) ↔ Prime p := by
-  simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]
+  simp [isPrime_iff_of_comm, Prime, span_singleton_eq_top, hp, mem_span_singleton]
 
 theorem isPrime_span_singleton_of_prime {p : α} (hp : Prime p) : (span {p}).IsPrime := by
   simp [Ideal.span_singleton_prime hp.ne_zero, hp]
 
-theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
-  ⟨H.1.1, @fun x y hxy =>
+theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime := .of_comm
+  H.1.1
+  @fun x y hxy =>
     or_iff_not_imp_left.2 fun hx => by
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
@@ -163,7 +180,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       obtain F : y * 1 = y * (a • x + b) := congr_arg (fun g : α => y * g) oe
       rw [← mul_one y, F, mul_add, mul_comm, smul_eq_mul, mul_assoc]
       refine Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y ?_)
-      rwa [Submodule.span_eq] at h⟩
+      rwa [Submodule.span_eq] at h
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMaximal], I.IsPrime :=
@@ -187,12 +204,12 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     (S : Submonoid α)
     (disjoint : Disjoint (I : Set α) S)
     (maximally_disjoint : ∀ (J : Ideal α), I < J → ¬ Disjoint (J : Set α) S) :
-    I.IsPrime where
-  ne_top' := by
+    I.IsPrime := .of_comm
+  (by
     rintro rfl
     have : 1 ∈ (S : Set α) := S.one_mem
-    simp_all
-  mem_or_mem' {x y} hxy := by
+    simp_all)
+  fun {x y} hxy ↦ by
     by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_notMem.mpr rid.1)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_notMem.mpr rid.2)
