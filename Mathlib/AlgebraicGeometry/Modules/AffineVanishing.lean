@@ -6,7 +6,6 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib
 public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
 public import Mathlib.AlgebraicGeometry.Modules.KempfProp1
 
