@@ -160,7 +160,7 @@ theorem IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
       refine ⟨W', f', g', αW, hf, hg, H''⟩
     · intro ⟨hh, hi⟩
       obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (H' h' i' αX αY αZ sq_h sq_i).1 ⟨hh, hi⟩
-      refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)
+      refine hP.of_iso (IsPullback.isoIsPullback hf' hf)
         (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) ?_ (by simp) (by simp)
       · apply hi.hom_ext
         · simp [← cs.w, hP.w]
