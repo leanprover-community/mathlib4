@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Restrict
+public import Mathlib.Topology.Sheaves.Over
+
+set_option linter.directoryDependency false
 
 @[expose] public section
 
@@ -27,8 +30,8 @@ theorem IsFlasue.of_restrict (C : Type*) [Category* C] {Y : TopCat.{u}} {f : Y �
     (F : TopCat.Sheaf C X) [F.IsFlasque] (hf : IsOpenEmbedding f) :
     ((restrict C hf).obj F).IsFlasque where
   epi i := by
-    dsimp
-    exact IsFlasque.epi' F _
+    change Epi (F.obj.map _)
+    infer_instance
 
 section
 
@@ -41,7 +44,8 @@ instance {Y : TopCat.{u}} {f : Y ⟶ X} (hf : IsOpenEmbedding f) :
 instance {Y : TopCat.{u}} {f : Y ⟶ X} :
     (pushforward AddCommGrpCat.{u} f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 
-instance (U : Opens X) : (restrict AddCommGrpCat.{u} U.isOpenEmbedding).IsRightAdjoint := sorry
+instance (U : Opens X) : (restrict AddCommGrpCat.{u} U.isOpenEmbedding).IsRightAdjoint :=
+  inferInstanceAs U.sheafRestrict.IsRightAdjoint
 
 end
 
@@ -75,10 +79,12 @@ lemma hom_naturality_apply {A : Type*} [Category.{u} A] {FC : A → A → Type*}
     {F G : Sheaf A X} (f : F ⟶ G) {U V : (Opens X)ᵒᵖ} (hUV : U ⟶ V) (s : ToType (F.obj.obj U)) :
     f.hom.app V (F.obj.map hUV s) = G.obj.map hUV (f.hom.app U s) := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.respectTransparency false in
 lemma one_ex_opens_toRestrict_app_zero (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B : Set (Opens X)}
-    (hB : Opens.IsBasis B) (c : H F 1) (x : X) : ∃ (U : Opens X),
-    (x ∈ U ∧ U ∈ B ∧ H.map ((toRestrict _ U).app F) 1 c = 0) := by
+    (hB : Opens.IsBasis B) (c : CategoryTheory.Sheaf.H F 1) (x : X) : ∃ (U : Opens X),
+    (x ∈ U ∧ U ∈ B ∧
+      CategoryTheory.Sheaf.H.map ((toRestrict _ U).app F) 1 c = 0) := by
   let pres := (EnoughInjectives.presentation F).some.shortComplex
   have presEx : pres.ShortExact := (EnoughInjectives.presentation F).some.shortExact_shortComplex
   obtain ⟨b, hb⟩ :=
@@ -121,25 +127,33 @@ lemma one_ex_opens_toRestrict_app_zero (F : TopCat.Sheaf AddCommGrpCat.{u} X) {B
   have φ₂ : res.τ₃ ≫ φ = (toRestrict _ V).app pres.X₃ := by
     rw [← cancel_epi pres.g, ← res.comm₂₃_assoc, φ₁]
     simp [pres, res]
-  change (H.map res.τ₁ 1) c = 0
+  change (CategoryTheory.Sheaf.H.map res.τ₁ 1) c = 0
   subst hb
-  rw [← Sheaf.H.connectingHom_naturality 0 1 rfl presEx presᵥEx, Sheaf.H.equiv₀_symm_naturality]
+  rw [← Sheaf.H.connectingHom_naturality 0 1 rfl presEx presᵥEx,
+    CategoryTheory.Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop]
   have : res.τ₃.hom.app (op ⊤) b = presᵥ.g.hom.app (op ⊤)
     (pres.X₂.restrictOfEq (Opens.isOpenEmbedding_obj_top V) s) := by
     apply ConcreteCategory.injective_of_mono_of_preservesPullback (φ.hom.app (op ⊤))
     rw [comp_app_apply φ₁, comp_app_apply φ₂]
     erw [hom_naturality_apply pres.g]
-    simpa [hs] using (restrict_restrict_apply b ..).symm
-  rw [this, ← Sheaf.H.equiv₀_symm_naturality, Sheaf.H.longSequence_comp_zero₃]
+    rw [hs]
+    rw [toRestrict_app_hom_app]
+    exact (restrict_restrict_apply b ..).symm
+  rw [this, ← CategoryTheory.Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop,
+    Sheaf.H.longSequence_comp_zero₃]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.respectTransparency false in
 theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X)}
     (hB : Opens.IsBasis B)
     (hinter : ∀ (U V : Opens X), U ∈ B → V ∈ B → U ⊓ V ∈ B)
     (vanish : ∀ (r : ℕ) (U : Opens X), 1 ≤ r → r ≤ n → U ∈ B →
-    Subsingleton (H ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
-    (c : H F (n + 1)) : ∃ (I : Type u) (U : I → Opens X), (IsOpenCover U) ∧
-    (∀ i, U i ∈ B ∧ H.map ((toRestrict _ (U i)).app F) (n + 1) c = 0) := by
+    Subsingleton (CategoryTheory.Sheaf.H
+      ((restrict AddCommGrpCat.{u} U.isOpenEmbedding).obj F) r))
+    (c : CategoryTheory.Sheaf.H F (n + 1)) :
+    ∃ (I : Type u) (U : I → Opens X), (IsOpenCover U) ∧
+      (∀ i, U i ∈ B ∧ CategoryTheory.Sheaf.H.map
+        ((toRestrict _ (U i)).app F) (n + 1) c = 0) := by
   induction n generalizing F with
   | zero =>
     use X, (fun x => (one_ex_opens_toRestrict_app_zero F hB c x).choose)
@@ -151,19 +165,22 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
     have presEx : pres.ShortExact := (EnoughInjectives.presentation F).some.shortExact_shortComplex
     obtain ⟨b, hb⟩ := Sheaf.H.longSequence_exact₁ presEx (n + 1) (n + 1 + 1) rfl c
       (Subsingleton.elim _ _)
+    subst hb
     obtain ⟨I, ⟨U, ⟨hU₁, hU₂⟩⟩⟩ := hn pres.X₃ (by
       intro r U hr₁ hr₂ hU
       refine subsingleton_of_forall_eq 0 (fun x => ?_)
       let presᵤ := pres.map (restrict _ U.isOpenEmbedding)
       have presᵤEx : presᵤ.ShortExact := presEx.map_of_exact _
-      have : Subsingleton (presᵤ.X₁.H (r + 1)) := vanish (r + 1) U (by omega) (by omega) hU
+      let hsub₁ : Subsingleton (presᵤ.X₁.H (r + 1)) :=
+        vanish (r + 1) U (by omega) (by omega) hU
       obtain ⟨x₂, rfl⟩ :=
-        Sheaf.H.longSequence_exact₃ presᵤEx r (r + 1) rfl x (Subsingleton.elim _ _)
-      have : Subsingleton (presᵤ.X₂.H r) := by
+        Sheaf.H.longSequence_exact₃ presᵤEx r (r + 1) rfl x
+          (@Subsingleton.elim _ hsub₁ _ _)
+      let hsub₂ : Subsingleton (presᵤ.X₂.H r) := by
         have : presᵤ.X₂.IsFlasque := IsFlasue.of_restrict _ pres.X₂ U.isOpenEmbedding
         rw [(Nat.sub_eq_iff_eq_add hr₁).mp rfl]
         infer_instance
-      rw [Subsingleton.elim x₂ 0]
+      rw [@Subsingleton.elim _ hsub₂ x₂ 0]
       simp) b
     use I, U, hU₁
     refine fun i => ⟨(hU₂ i).left, ?_⟩
@@ -183,8 +200,10 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
         erw [← Opens.isOpenEmbedding_obj_top V]
         let presᵥ := pres.map (restrict _ V.isOpenEmbedding)
         have presᵥEx : presᵥ.ShortExact := presEx.map_of_exact _
-        have : Subsingleton (presᵥ.X₁.H 1) := vanish 1 V (le_refl 1) (by omega) hV
-        exact Sheaf.H.longSequence_surjective_of_subsingleton_H presᵥEx Limits.isTerminalTop
+        let hsub : Subsingleton (presᵥ.X₁.H 1) :=
+          vanish 1 V (le_refl 1) (by omega) hV
+        exact @CategoryTheory.Sheaf.H.longSequence_surjective_of_subsingleton_H
+          _ _ _ _ _ presᵥ presᵥEx _ Limits.isTerminalTop hsub
       have : (U i).isOpenEmbedding.functor.obj ((Opens.map (U i).inclusion').obj W) ∈ B := by
         rw [Opens.functor_map_eq_inf]
         exact hinter _ _ hW.1 (hU₂ i).1
@@ -192,8 +211,13 @@ theorem prop1 (F : TopCat.Sheaf AddCommGrpCat.{u} X) (n : ℕ) {B : Set (Opens X
     have r₁ := Sheaf.H.connectingHom_naturality (n + 1) (n + 1 + 1) rfl presEx this
       (pres.mapNatTrans (toRestrict AddCommGrpCat (U i))) b
     have r₂ := (hU₂ i).right
+    rw [ShortComplex.mapNatTrans_τ₁, ShortComplex.mapNatTrans_τ₃] at r₁
     dsimp [pres] at r₁ r₂ ⊢
-    rw [← hb, ← r₁, r₂]
-    erw [map_zero]
+    calc
+      _ = Sheaf.H.connectingHom this (n + 1) (n + 1 + 1) rfl
+          (CategoryTheory.Sheaf.H.map ((toRestrict AddCommGrpCat (U i)).app pres.X₃)
+            (n + 1) b) := r₁.symm
+      _ = Sheaf.H.connectingHom this (n + 1) (n + 1 + 1) rfl 0 := congrArg _ r₂
+      _ = 0 := map_zero _
 
 end TopCat.Sheaf

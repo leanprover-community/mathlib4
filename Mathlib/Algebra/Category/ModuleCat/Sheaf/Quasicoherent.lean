@@ -259,7 +259,9 @@ theorem IsQuasicoherent.of_iso [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
     N.IsQuasicoherent := by
   obtain ⟨q⟩ := hM.nonempty_quasicoherentData
   exact (SheafOfModules.QuasicoherentData.mk q.I q.X q.coversTop
-    (fun i => (q.presentation i).of_isIso ((pushforward (𝟙 _)).mapIso e).hom)).isQuasicoherent
+    (fun i =>
+      let e' := (pushforward (𝟙 _)).mapIso e
+      @Presentation.ofIsIso _ _ _ _ _ _ _ _ e'.hom e'.isIso_hom (q.presentation i))).isQuasicoherent
 
 variable (R) in
 @[inherit_doc IsQuasicoherent]

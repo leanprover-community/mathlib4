@@ -6,7 +6,7 @@ Authors: Brian Nugent
 
 module
 
-public import Mathlib.AlgebraicGeometry.Modules.Sheaf
+public import Mathlib.AlgebraicGeometry.Modules.Tilde
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 
 @[expose] public section
@@ -30,12 +30,8 @@ abbrev Modules.isQuasicoherent : ObjectProperty X.Modules :=
 
 section
 
-instance AlgebraicGeometry.Scheme.Modules.isQuasicoherent_restrictFunctor {X Y : Scheme.{u}}
-    (f : X ⟶ Y) [IsOpenImmersion f] (M : Y.Modules) [M.IsQuasicoherent] :
-    (M.restrict f).IsQuasicoherent := sorry
-
 theorem isIso_fromTildeΓ_iff_isQuasiCoherent (M : (Spec R).Modules) :
-    IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := sorry
+    IsIso M.fromTildeΓ ↔ M.IsQuasicoherent := isQuasicoherent_iff_isIso_fromTildeΓ _ |>.symm
 
 instance isQuasicoherent_IsIso_fromTildeΓ (M : (Spec R).Modules) [M.IsQuasicoherent] :
     IsIso M.fromTildeΓ := (isIso_fromTildeΓ_iff_isQuasiCoherent M).mpr inferInstance
@@ -65,6 +61,8 @@ instance : (isQuasicoherent (Spec R)).IsClosedUnderColimitsOfShape J := by
   rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
   exact instIsClosedUnderColimitsOfShapeEssImageOfHasColimitsOfShapeOfPreservesColimitsOfShapeOfFullOfFaithful (tilde.functor R)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance [Finite J] : (isQuasicoherent (Spec R)).IsClosedUnderLimitsOfShape (Discrete J) := by
   rw [← isQuasicoherent_iff_isIso_fromSpecΓ]
   exact instIsClosedUnderLimitsOfShapeEssImageOfHasLimitsOfShapeOfPreservesLimitsOfShapeOfFullOfFaithful (tilde.functor R)
@@ -137,7 +135,7 @@ theorem isQuasicoherent_surjective_of_epi {M N : X.Modules} [IsAffine X] (f : M 
 instance {R S : CommRingCat.{u}} (φ : R ⟶ S) {M : (Spec S).Modules} [hM : M.IsQuasicoherent] :
     ((Scheme.Modules.pushforward (Spec.map φ)).obj M).IsQuasicoherent := by
   rw [← isIso_fromTildeΓ_iff_isQuasiCoherent] at ⊢ hM
-  exact pushforward_isIso_fromTildeΓ φ M
+  exact isIso_fromTildeΓ_pushforward φ M
 
 instance isQuasicoherent_of_pushforward {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y]
     (f : X ⟶ Y) (M : X.Modules) [M.IsQuasicoherent] :

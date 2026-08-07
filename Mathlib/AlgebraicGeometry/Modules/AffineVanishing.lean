@@ -8,6 +8,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Modules.Quasicoherent
 public import Mathlib.AlgebraicGeometry.Modules.KempfProp1
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+
+set_option linter.directoryDependency false
 
 @[expose] public section
 
@@ -151,7 +154,9 @@ lemma toCoverSheaf_comp_pi_sheafHom_hom_app {V : X.Opens} (s : F.sheaf.obj.obj (
     (Pi.π (fun i => (restrictFunctor (U i).ι ⋙ pushforward (U i).ι).obj F) i).sheafHom.hom.app
       (op V) ((F.toCoverSheaf U).sheafHom.hom.app (op V) s)
     = ((restrictAdjunction (U i).ι).unit.app F).sheafHom.hom.app (op V) s := by
-  simpa using congr($(toCoverSheaf_comp_pi F U i).sheafHom.hom.app (op V) s)
+  rw [← toCoverSheaf_comp_pi F U i]
+  simp only [Hom.sheafHom, Functor.map_comp]
+  erw [← ConcreteCategory.comp_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 variable {U} in
@@ -196,13 +201,14 @@ theorem toCoverSheaf_H_map_zero (n : ℕ) (c : H F.sheaf n) [Finite I]
   intro i
   simp only [map_zero]
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp]
-  simp only [Functor.comp_obj, CategoryTheory.Sheaf.functorH_obj_coe, Functor.comp_map,
-    Sheaf.functorH_map, AddCommGrpCat.hom_ofHom, Pi.lift_π]
+  simp only [Functor.comp_obj, Functor.comp_map, Sheaf.functorH_map, AddCommGrpCat.hom_ofHom,
+    Pi.lift_π]
   rw [restrictAdjunction_toSheaf_map, ← h i]
   rfl
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.isDefEq.respectTransparency false in
 instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n + 1)) := by
   revert F X
@@ -237,7 +243,8 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf 0 1 rfl c <|
       F.toCoverSheaf_H_map_zero U 1 c (fun i => (vanish i).right)
     obtain ⟨x₂, hx₂⟩ := this x₃
-    simpa [← hx₃, ← hx₂] using Sheaf.H.longSequence_comp_zero₃ hSsheaf 0 1 rfl x₂
+    rw [← hx₃, ← hx₂]
+    exact Sheaf.H.longSequence_comp_zero₃ hSsheaf 0 1 rfl x₂
   -- Inductive Step
   refine fun n hi X F _ _ => subsingleton_of_forall_eq 0 (fun c => ?_)
   obtain ⟨I, ⟨(U' : I → X.Opens) , ⟨hU', vanish⟩⟩⟩ := Sheaf.prop1 F.sheaf (n + 1)
@@ -264,8 +271,9 @@ instance [IsAffine X] [F.IsQuasicoherent] (n : ℕ) : Subsingleton (H F.sheaf (n
       (by rintro ⟨_, _⟩; all_goals simpa)
     refine (injective_iff_map_eq_zero _).mpr (fun c hc => ?_)
     obtain ⟨x₃, hx₃⟩ := Sheaf.H.longSequence_exact₁ hSsheaf (n + 1) (n + 1 + 1) rfl c hc
-    have : Subsingleton (H Ssheaf.X₃ (n + 1)) := hi n (le_refl n) S.X₃
-    rw [← hx₃, Subsingleton.elim x₃ 0, map_zero]
+    let hsub : Subsingleton (CategoryTheory.Sheaf.H Ssheaf.X₃ (n + 1)) :=
+      hi n (le_refl n) S.X₃
+    rw [← hx₃, @Subsingleton.elim _ hsub x₃ 0, map_zero]
   apply this
   rw [map_zero]
   exact F.toCoverSheaf_H_map_zero U (n + 1 + 1) c (fun i => (vanish i).right)

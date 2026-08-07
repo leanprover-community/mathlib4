@@ -7,8 +7,10 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.LocallySurjective
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Flasque Sheaves
@@ -106,7 +108,7 @@ lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
       rfl
   have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
   have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
-  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_of_locally_eq ht
+  use StructuredArrow.mk (CategoryOfElements.homMk _ _ (homOfLE le₁).op (eq_app_locally_eq ht
       (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (CategoryOfElements.map_snd i.1.hom).symm)).symm :
       ⟨op U, s⟩ ⟶ (Functor.whiskerRight g.hom
       (CategoryTheory.forget AddCommGrpCat)).mapElements.obj ⟨op (iSup f), t⟩)
@@ -142,7 +144,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     have : (S.g.hom.app (op (t.right.1.unop ⊓ W))) t₂ = 0 := by
       simp [map_restrict, ← tcomp, restrict_restrict, ht₁, t₂]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
-    obtain ⟨t₃, ht₃⟩ := Sheaf.sections_exact_of_left_exact hS.1 hS.2 t₂ this
+    obtain ⟨t₃, ht₃⟩ := Sheaf.addCommGrpCat_shortExact_app_zero hS.1 hS.2 t₂ this
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`.
     obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.1.unop ⊓ W) = t₃)⟩ := (AddCommGrpCat.epi_iff_surjective
       (S.X₁.obj.map (homOfLE inf_le_right).op)).mp inferInstance t₃
@@ -167,7 +169,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       StructuredArrow.mk (S := ⟨op U, s⟩)
         (T := (Functor.whiskerRight S.g.hom (CategoryTheory.forget AddCommGrpCat)).mapElements)
         (Y := ⟨op (iSup f), t₅⟩) <| CategoryOfElements.homMk _ _ (homOfLE le).op (by
-          refine (eq_app_of_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
+          refine (eq_app_locally_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨tle, Wle⟩) ?_).symm
           rw [Fin.forall_fin_two]
           refine ⟨tcomp.symm, ?_⟩
           simp only [Fin.isValue, map_add, homOfLE_leOfHom, sf, f]
@@ -259,7 +261,7 @@ theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
       ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
     change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
     conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ S.g.hom.app (op ⊤)
-      => ext x; exact Sheaf.H.equiv₀_symm_naturality Limits.isTerminalTop S.g x
+      => ext x; exact Sheaf.H.equiv₀_symm_naturality S.g x
     rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
     exact epi_of_shortExact hS
   | succ n hn =>

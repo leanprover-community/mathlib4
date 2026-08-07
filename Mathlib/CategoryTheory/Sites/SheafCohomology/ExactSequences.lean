@@ -172,35 +172,38 @@ noncomputable def longSequenceFunctor :
       obj S := longSequence S.property n₀ n₁ h
       map {S₁ S₂} f := longSequence_hom n₀ n₁ h S₁.property S₂.property f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma longSequence_comp_zero₁ (x : S.X₃.H n₀) : map S.f n₁ (connectingHom hS n₀ n₁ h x) = 0 := by
   simpa using congr($(((longSequence_exact hS n₀ n₁ h).sc 2).zero) x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma longSequence_exact₁' :
-    (ShortComplex.mk (ofHom (connectingHom hS n₀ n₁ h)) (ofHom (map S.f n₁)) (by
-      ext x
-      simpa using longSequence_comp_zero₁ hS n₀ n₁ h x)).Exact := by
-  convert (longSequence_exact hS n₀ n₁ h).exact 2
+    (ShortComplex.mk (ofHom (connectingHom hS n₀ n₁ h)) (ofHom (map S.f n₁))
+      ((longSequence_exact hS n₀ n₁ h).zero 2)).Exact :=
+  (longSequence_exact hS n₀ n₁ h).exact 2
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma longSequence_comp_zero₃ (x : S.X₂.H n₀) : connectingHom hS n₀ n₁ h (map S.g n₀ x) = 0 := by
   simpa using congr($(((longSequence_exact hS n₀ n₁ h).sc 1).zero) x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma longSequence_exact₃' :
-    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (connectingHom hS n₀ n₁ h)) (by
-      ext x
-      simpa using longSequence_comp_zero₃ hS n₀ n₁ h x)).Exact := by
-  convert (longSequence_exact hS n₀ n₁ h).exact 1
+    (ShortComplex.mk (ofHom (map S.g n₀)) (ofHom (connectingHom hS n₀ n₁ h))
+      ((longSequence_exact hS n₀ n₁ h).zero 1)).Exact :=
+  (longSequence_exact hS n₀ n₁ h).exact 1
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma longSequence_comp_zero₂ (n : ℕ) (x : S.X₁.H n) : map S.g n (map S.f n x) = 0 := by
   simpa using congr($(((longSequence_exact hS n _ rfl).sc 0).zero) x)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma longSequence_exact₂' (n : ℕ) :
-    (ShortComplex.mk (ofHom (map S.f n)) (ofHom (map S.g n)) (by
-      ext x
-      simpa using longSequence_comp_zero₂ hS n x)).Exact := by
-  convert (longSequence_exact hS n _ rfl).exact 0
+    (ShortComplex.mk (ofHom (map S.f n)) (ofHom (map S.g n))
+      (((longSequence_exact hS n _ rfl).sc 0).zero)).Exact :=
+  (longSequence_exact hS n _ rfl).exact 0
 
 include hS in
 lemma longSequence_exact₂ (x₂ : H S.X₂ n) (hx₂ : map S.g n x₂ = 0) :

@@ -71,16 +71,14 @@ instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCo
   hasExt_of_enoughInjectives _
 
 /-- The cohomology of a sheaf of abelian groups in degree `n`. -/
-abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
+abbrev H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u :=
+  (CategoryTheory.Sheaf.functorH (Opens.grothendieckTopology X) n).obj F
 
 variable {F G : Sheaf AddCommGrpCat.{u} X} (f : F ⟶ G)
 
 /-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
 abbrev H.map (n : ℕ) : H F n →+ H G n :=
-    CategoryTheory.Sheaf.H.map f n
-
-instance {n : ℕ} : AddCommGroup (H F n) :=
-  inferInstanceAs <| AddCommGroup <| CategoryTheory.Sheaf.H _ _
+  CategoryTheory.Sheaf.H.map f n
 
 variable (F) in
 set_option backward.isDefEq.respectTransparency false in
@@ -91,7 +89,7 @@ variable (F) in
 set_option backward.isDefEq.respectTransparency false in
 /-- `H F 0` is equivalent to taking global sections. -/
 abbrev H.equiv₀ : H F 0 ≃+ F.obj.obj (op ⊤) :=
-    CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
+  CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `H.equiv₀` is natural. -/
