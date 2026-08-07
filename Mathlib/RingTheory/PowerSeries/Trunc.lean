@@ -166,7 +166,7 @@ open Finset Finset.Nat
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
   ext d
-  rw [coeff_trunc, coeff_trunc, coeff_coe]
+  rw [coeff_trunc, coeff_trunc, Polynomial.coeff_coe]
   split_ifs with h
   · rw [coeff_trunc, if_pos <| lt_of_lt_of_le h hnm]
   · rfl
@@ -182,7 +182,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
   · rw [coeff_mul, coeff_mul, sum_congr rfl]
     intro _ hab
     have ha := lt_of_le_of_lt (antidiagonal.fst_le hab) h
-    rw [coeff_coe, coeff_trunc, if_pos ha]
+    rw [Polynomial.coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
@@ -205,19 +205,19 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   rw [← Polynomial.coe_inj]
   ext m
-  rw [coeff_coe, coeff_trunc]
+  rw [Polynomial.coeff_coe, coeff_trunc]
   split
   case isTrue h => rfl
   case isFalse h =>
     rw [not_lt] at h
-    rw [coeff_coe]; symm
+    rw [Polynomial.coeff_coe]; symm
     exact coeff_eq_zero_of_natDegree_lt <| lt_of_lt_of_le hn h
 
 /-- The function `coeff n : R⟦X⟧ → R` is continuous. I.e. `coeff n f` depends only on a sufficiently
 long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff n (trunc m f) = coeff n f := by
-  rwa [coeff_coe, coeff_trunc, if_pos]
+  rwa [Polynomial.coeff_coe, coeff_trunc, if_pos]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`. -/
