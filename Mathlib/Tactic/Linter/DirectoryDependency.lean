@@ -625,6 +625,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Topology.ContinuousMap.ContinuousSqrt, `Mathlib.Algebra.Order),
   (`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus, `Mathlib.Algebra.Order),
   (`Mathlib.Algebra.Order.Ring.StandardPart, `Mathlib.Analysis),
+  (`Mathlib.LinearAlgebra.AffineSpace.Simplex.Standard, `Mathlib.Topology), -- For standard affine n-simplex
 ]
 
 end DirectoryDependency

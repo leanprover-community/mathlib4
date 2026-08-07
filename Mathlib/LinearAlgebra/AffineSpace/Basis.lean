@@ -385,3 +385,27 @@ theorem exists_affineBasis : ∃ (s : Set P) (b : AffineBasis (↥s) k P), ⇑b 
 end DivisionRing
 
 end AffineBasis
+
+namespace Module.Basis
+
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P] {n : ℕ}
+
+/-- `0` together with the vectors of a basis of `V` indexed by `Fin n` form an affine basis of
+`V`, indexed by `Fin (n + 1)`. -/
+noncomputable def toAffineBasis (b : Basis (Fin n) k V) : AffineBasis (Fin (n + 1)) k V where
+  toFun := Fin.cons 0 b
+  ind' := by
+    rw [affineIndependent_iff_linearIndependent_vsub k (Fin.cons 0 (⇑b)) 0,
+      ← linearIndependent_equiv' (finSuccAboveEquiv 0) (g := b) ?_]
+    · exact b.linearIndependent
+    · ext j
+      simp [finSuccAboveEquiv_apply]
+  tot' := SetLike.coe_injective <| by
+    rw [Fin.range_cons, affineSpan_insert_zero, b.span_eq]
+    simp
+
+@[simp] lemma coe_toAffineBasis (b : Basis (Fin n) k V) :
+    ⇑b.toAffineBasis = Fin.cons 0 ⇑b :=
+  rfl
+
+end Module.Basis
