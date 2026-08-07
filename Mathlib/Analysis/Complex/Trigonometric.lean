@@ -535,6 +535,9 @@ theorem exp_ofReal_mul_I_im (x : ℝ) : (exp (x * I)).im = Real.sin x := by
 theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I := by
   simp [exp_mul_I]
 
+theorem conj_exp_ofReal_mul_I (x : ℝ) : conj (exp (x * I)) = exp (-(x * I)) := by
+  simp [← exp_conj]
+
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
