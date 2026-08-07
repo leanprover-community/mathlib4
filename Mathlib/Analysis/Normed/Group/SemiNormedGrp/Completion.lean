@@ -26,9 +26,9 @@ objects and morphisms).
 ## Projects
 
 1. Construct the category of complete seminormed groups, say `CompleteSemiNormedGrp`
-  and promote the `Completion` functor below to a functor landing in this category.
+   and promote the `Completion` functor below to a functor landing in this category.
 2. Prove that the functor `Completion : SemiNormedGrp ⥤ CompleteSemiNormedGrp`
-  is left adjoint to the forgetful functor.
+   is left adjoint to the forgetful functor.
 
 -/
 

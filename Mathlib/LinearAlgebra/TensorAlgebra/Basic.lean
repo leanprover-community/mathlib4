@@ -22,16 +22,16 @@ This is the free `R`-algebra generated (`R`-linearly) by the module `M`.
 1. `TensorAlgebra R M` is the tensor algebra itself. It is endowed with an R-algebra structure.
 2. `TensorAlgebra.ι R` is the canonical R-linear map `M → TensorAlgebra R M`.
 3. Given a linear map `f : M → A` to an R-algebra `A`, `lift R f` is the lift of `f` to an
-  `R`-algebra morphism `TensorAlgebra R M → A`.
+   `R`-algebra morphism `TensorAlgebra R M → A`.
 
 ## Theorems
 
 1. `ι_comp_lift` states that the composition `(lift R f) ∘ (ι R)` is identical to `f`.
 2. `lift_unique` states that whenever an R-algebra morphism `g : TensorAlgebra R M → A` is
-  given whose composition with `ι R` is `f`, then one has `g = lift R f`.
+   given whose composition with `ι R` is `f`, then one has `g = lift R f`.
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
-  of the composition of an algebra morphism with `ι` is the algebra morphism itself.
+   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
 
 ## Implementation details
 

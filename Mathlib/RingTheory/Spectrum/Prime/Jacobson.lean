@@ -20,7 +20,7 @@ public import Mathlib.Topology.JacobsonSpace
   1. `{x}` is open (i.e. `x` is an isolated point)
   2. `{x}` is clopen
   3. `{x}` is both closed and stable under generalization
-    (i.e. `x` is both a minimal prime and a maximal ideal)
+     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
 
 public section
@@ -75,7 +75,7 @@ If `R` is both Noetherian and Jacobson, then the following are equivalent for `x
 1. `{x}` is open (i.e. `x` is an isolated point)
 2. `{x}` is clopen
 3. `{x}` is both closed and stable under generalization
-  (i.e. `x` is both a minimal prime and a maximal ideal)
+   (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
 lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
     [IsNoetherianRing R] [IsJacobsonRing R] (x : PrimeSpectrum R) :
