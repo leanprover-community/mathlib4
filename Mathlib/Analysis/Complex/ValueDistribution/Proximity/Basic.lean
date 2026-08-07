@@ -180,7 +180,7 @@ theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f
     _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
       apply circleAverage_mono
       · apply (Meromorphic.fun_sum hf).meromorphicOn.circleIntegrable_posLog_norm
-      · apply (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
+      · fun_prop
       · intro x hx
         rw [add_comm]
         apply posLog_norm_sum_le

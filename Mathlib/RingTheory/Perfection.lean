@@ -423,7 +423,7 @@ variable (p R P)
 
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
-  mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
+  mk' (RingEquiv.refl _) <| (Equiv.eq_symm_apply _).1 rfl
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
@@ -478,7 +478,7 @@ noncomputable def lift [PerfectRing R p] (S : Type u₂) [CommSemiring S] [CharP
   right_inv f := by
     exact RingHom.ext fun x => m.equiv.injective <| (m.equiv.apply_symm_apply _).trans
       <| show Perfection.lift p R S (π.comp f) x = RingHom.comp (↑m.equiv) f x from
-        RingHom.ext_iff.1 (by rw [Equiv.apply_eq_iff_eq_symm_apply]; rfl) _
+        RingHom.ext_iff.1 (by rw [← Equiv.eq_symm_apply]; rfl) _
 
 variable {R p}
 

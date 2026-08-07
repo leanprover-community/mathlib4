@@ -473,7 +473,7 @@ protected theorem Disjoint.symmDiff_right (ha : Disjoint a b) (hb : Disjoint a c
 
 theorem symmDiff_eq_iff_sdiff_eq (ha : a ≤ c) : a ∆ b = c ↔ c \ a = b := by
   rw [← symmDiff_of_le ha]
-  exact ((symmDiff_right_involutive a).toPerm _).apply_eq_iff_eq_symm_apply.trans eq_comm
+  exact ((symmDiff_right_involutive a).toPerm _).eq_symm_apply.symm.trans eq_comm
 
 end GeneralizedBooleanAlgebra
 
