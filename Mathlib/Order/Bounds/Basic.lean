@@ -515,13 +515,10 @@ theorem upperBounds_singleton : upperBounds {a} = Ici a :=
 
 @[to_dual (attr := simp)]
 lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
-
 @[to_dual (attr := simp)]
 lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
-
 @[to_dual (attr := simp)]
-lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
-
+lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
 @[to_dual (attr := simp)]
 lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
 
@@ -551,29 +548,29 @@ theorem upperBounds_Ioc (h : a < b) : upperBounds (Ioc a b) = Ici b :=
 
 section
 
-variable [SemilatticeInf γ] [DenselyOrdered γ]
+variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 @[to_dual]
-theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b :=
-  ⟨fun _ hx => hx.2.le, fun x hx => by
-    rcases eq_or_lt_of_le (inf_le_right : x ⊓ b ≤ b) with h₁ | h₂
-    · exact h₁.symm ▸ inf_le_left
+theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
+  ⟨fun _ hx => hx.1.le, fun x hx => by
+    rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
+    · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
-    refine (not_lt_of_ge (le_inf (hx ⟨lty.trans_le' (le_inf ?_ hab.le), ylt⟩) ylt.le) lty).elim
-    obtain ⟨u, au, ub⟩ := exists_between hab
-    exact au.le.trans (hx ⟨au, ub⟩)⟩
+    apply (not_lt_of_ge (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
+    obtain ⟨u, au, ub⟩ := exists_between h
+    apply (hx ⟨au, ub⟩).trans ub.le⟩
 
 @[to_dual]
-theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
-  (isLUB_Ioo hab).upperBounds_eq
+theorem lowerBounds_Ioo {a b : γ} (hab : a < b) : lowerBounds (Ioo a b) = Iic a :=
+  (isGLB_Ioo hab).lowerBounds_eq
 
 @[to_dual]
-theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b :=
-  (isLUB_Ioo hab).of_subset_of_superset (isLUB_Icc hab.le) Ioo_subset_Ico_self Ico_subset_Icc_self
+theorem isGLB_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
+  (isGLB_Ioo hab).of_subset_of_superset (isGLB_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
 
 @[to_dual]
-theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
-  (isLUB_Ico hab).upperBounds_eq
+theorem lowerBounds_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
+  (isGLB_Ioc hab).lowerBounds_eq
 
 end
 
@@ -581,6 +578,7 @@ end
 theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
   Iff.rfl
 
+@[to_dual none]
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
   simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
     bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
