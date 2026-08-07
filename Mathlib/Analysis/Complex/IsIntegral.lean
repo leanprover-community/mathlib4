@@ -22,7 +22,7 @@ open Polynomial
 
 namespace Complex
 
-theorem isIntegral_I {R : Type*} [CommRing R] [Algebra R ℂ] : IsIntegral R I :=
+theorem isIntegral_I (R : Type*) [CommRing R] [Algebra R ℂ] : IsIntegral R I :=
   ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, by simp⟩
 
 @[deprecated (since := "2026-08-06")] alias isIntegral_int_I := isIntegral_I
