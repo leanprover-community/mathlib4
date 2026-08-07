@@ -84,7 +84,7 @@ theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
   | cons h p' => ⟨_, h, p', rfl⟩
 
 /-- The length of a walk is the number of edges/darts along it. -/
-def length {u v : V} : G.Walk u v → ℕ
+@[cast_data] def length {u v : V} : G.Walk u v → ℕ
   | nil => 0
   | cons _ q => q.length.succ
 
@@ -115,18 +115,18 @@ theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.len
   grind [cases Walk, length_cons, Adj.ne]
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
-def support {u v : V} : G.Walk u v → List V
+@[cast_data] def support {u v : V} : G.Walk u v → List V
   | nil => [u]
   | cons _ p => u :: p.support
 
 /-- The `darts` of a walk is the list of darts it visits in order. -/
-def darts {u v : V} : G.Walk u v → List G.Dart
+@[cast_data] def darts {u v : V} : G.Walk u v → List G.Dart
   | nil => []
   | cons h p => ⟨(u, _), h⟩ :: p.darts
 
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
-def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
+@[cast_data] def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 
 theorem edges_eq_map_darts (p : G.Walk u v) : p.edges = p.darts.map Dart.edge :=
   rfl
