@@ -18,7 +18,7 @@ by conjugation. Entries are `⟨a, b⟩` literals, `√d`, or numerals.
 
 ## Main definitions
 
-- `zsqrtdExt`: the `ℤ√d` model.
+- `zsqrtdProducer`: the `ℤ√d` model.
 -/
 
 public meta section
@@ -44,13 +44,9 @@ def evalZsqrtdEntry (e : Expr) : MetaM (Int × Int) := do
   | Zsqrtd.sqrtd _ => return (0, 1)
   | _ => return (← evalInt e, 0)
 
-/-- The `ℤ√d` model: values are pairs `(a, b)` denoting `a + b√d`, and the elimination
-runs on integer pairs. -/
-def zsqrtdExt : BareissExt := fun R => do
-  let R ← whnf R
-  let_expr Zsqrtd dE := R | return none
-  let some d ← getIntValue? dE | return none
-  have dQ : Q(ℤ) := dE
+/-- The `ℤ√d` model, for `d` the value of the integer literal `dQ`: values are pairs
+`(a, b)` denoting `a + b√d`, and the elimination runs on integer pairs. -/
+def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
   let ops : RingOps (Int × Int) := {
     zero := (0, 0)
     one := (1, 0)
@@ -65,8 +61,8 @@ def zsqrtdExt : BareissExt := fun R => do
       MetaM (Array (Array (Int × Int)) × (BareissData (Int × Int) → BareissData (Int × Int))) := do
     let values ← entries.mapM (·.mapM evalZsqrtdEntry)
     return (values, id)
-  let render := fun ((a, b) : Int × Int) =>
+  let render : Int × Int → MetaM Expr := fun (a, b) =>
     return q((⟨$(mkIntLitQ a), $(mkIntLitQ b)⟩ : Zsqrtd $dQ))
-  return some (mkProducer ops prepare render)
+  mkProducer ops prepare render
 
 end Mathlib.Tactic.Echelon

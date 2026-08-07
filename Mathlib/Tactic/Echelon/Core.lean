@@ -12,21 +12,19 @@ public import Mathlib.Init
 
 A computable model of a ring packages the representation the untrusted producer computes
 with: a value type `V`, its arithmetic (`RingOps V`), and the encoding between entry
-syntax and values. `mkProducer` assembles a `Producer` from a model's parts; ring
-families provide a `BareissExt`, and the tactic selects one by matching on the ring
-expression.
+syntax and values. `mkProducer` assembles a `Producer` from a model's parts, and the
+tactic selects a model by matching on the ring expression.
 
 ## Main definitions
 
 - `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
 - `mkProducer`: assemble a producer from a model's parts.
-- `BareissExt`: a ring model extension.
 
 ## Implementation notes
 
-`BareissExt` traffics in `Producer`s rather than model records: a structure bundling
+Model selection traffics in `Producer`s rather than model records: a structure bundling
 `V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
-inside each extension's closure.
+inside each producer's closure.
 
 The elimination in `bareissDecomp` maintains the invariant `L * A_σ = W`, where
 `A_σ := A.submatrix σ id` is the input with its rows in the arrangement `σ` accumulated
@@ -52,12 +50,17 @@ namespace Mathlib.Tactic.Echelon
 
 /-- Arithmetic of a model's value type. -/
 structure RingOps (V : Type) where
+  /-- The zero value. -/
   zero : V
+  /-- The one value. -/
   one : V
+  /-- Multiplication. -/
   mul : V → V → V
+  /-- Subtraction. -/
   sub : V → V → V
   /-- Exact division: total on the quotients of the elimination -/
   divExact : V → V → V
+  /-- The pivot zero test. -/
   isZero : V → MetaM Bool
 
 /-- Decomposition data with entries in `V`: the values of the elimination, or the
@@ -81,10 +84,6 @@ def BareissData.mapM {V W : Type} (f : V → MetaM W) (d : BareissData V) :
 /-- A producer: run the elimination on the parsed entries of a matrix literal, returning
 the rendered decomposition. -/
 @[expose] def Producer := Array (Array Expr) → MetaM (BareissData Expr)
-
-/-- A ring model extension: match a ring expression and construct its producer.
-Extensions decline by returning `none`. -/
-@[expose] def BareissExt := Expr → MetaM (Option Producer)
 
 /-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.

@@ -20,7 +20,7 @@ the tactic uses when no ring-specific model matches the ring.
 
 ## Main definitions
 
-- `ratExt`: the rational model.
+- `ratProducer`: the rational model.
 - `evalEntry`: evaluate a matrix entry to its rational value.
 - `isZeroInRing`: the kernel zero test for an integer value in a ring.
 -/
@@ -87,9 +87,9 @@ def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
 /-- The rational model of a ring: entries evaluate to rational numerals, rows scale
-integral, and the elimination runs on integer values. It applies to every ring, so it
-returns a producer unconditionally. -/
-def ratExt (R : Expr) : MetaM Producer := do
+integral, and the elimination runs on integer values. It applies to every ring, as the
+fallback model. -/
+def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have R : Q(Type u) := R
   let charZero ← do

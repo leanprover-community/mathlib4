@@ -96,11 +96,16 @@ def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
   instantiateMVars e
 
 -- TODO: implement this in compiler using some method like a `norm_num` extension
-/-- Select the computation model for the ring expression `R`. -/
+/-- Select the computation model for the ring expression `R`: ring-specific models by
+matching the head of `R`, the rational model as the fallback. -/
 def producerFor (R : Expr) : MetaM Producer := do
-  -- ring-specific models match on the head of `R` here, before the fallback
-  if let some p ← zsqrtdExt R then return p
-  ratExt R
+  match_expr ← whnf R with
+  | Zsqrtd dE =>
+    if let some d ← getIntValue? dE then
+      have dQ : Q(ℤ) := dE
+      return zsqrtdProducer dQ d
+    ratProducer R
+  | _ => ratProducer R
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/
