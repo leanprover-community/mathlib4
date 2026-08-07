@@ -180,25 +180,38 @@ end UniformSpace.Completion
 
 open UniformSpace Completion NNReal
 
-theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
-    {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
+theorem LipschitzWith.fromCompletion [MetricSpace β] [CompleteSpace β] {f : α → β}
+    {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Function.fromCompletion f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
     (isClosed_le (by fun_prop) (by fun_prop)) <| by
-      simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
+      simpa only [Function.fromCompletion_coe h.uniformContinuous, Completion.dist_eq] using
+        h.dist_le_mul
 
-theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
-    (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
-  one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
+@[deprecated (since := "2026-06-26")] alias LipschitzWith.completion_extension :=
+  LipschitzWith.fromCompletion
 
-theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
-    {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
+theorem LipschitzWith.completion [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
+    (h : LipschitzWith K f) : LipschitzWith K (Function.completion f) :=
+  one_mul K ▸ (coe_isometry.lipschitz.comp h).fromCompletion
+
+@[deprecated (since := "2026-06-26")] alias LipschitzWith.completion_map :=
+  LipschitzWith.completion
+
+theorem Isometry.fromCompletion [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
+    {f : α → β} (h : Isometry f) : Isometry (Function.fromCompletion f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
-      simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
+      simp only [Function.fromCompletion_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
-theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
-    (h : Isometry f) : Isometry (Completion.map f) :=
-  (coe_isometry.comp h).completion_extension
+@[deprecated (since := "2026-06-26")] alias Isometry.completion_extension :=
+  Isometry.fromCompletion
+
+open Function in
+theorem Isometry.completion [PseudoMetricSpace β] {f : α → β}
+    (h : Isometry f) : Isometry (Function.completion f) :=
+  (coe_isometry.comp h).fromCompletion
+
+@[deprecated (since := "2026-06-26")] alias Isometry.completion_map := Isometry.completion
 
 section extension_maps
 
@@ -206,25 +219,37 @@ variable [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β]
 
 /-- The extension of an isometry to the completion of the domain. -/
-def Isometry.extensionHom [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f) :
-    Completion α →+* β := Completion.extensionHom f h.continuous
+def Isometry.ringHomFromCompletion [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f) :
+    Completion α →+* β := f.fromCompletion h.continuous
+
+@[deprecated (since := "2026-06-26")] alias Isometry.extensionHom := Isometry.ringHomFromCompletion
+
+open RingHom
 
 @[simp]
-theorem Isometry.extensionHom_coe [CompleteSpace β] [T0Space β] {f : α →+* β} (h : Isometry f)
-    (x : α) : h.extensionHom x = f x := Completion.extensionHom_coe f h.continuous _
+theorem Isometry.ringHomFromCompletion_coe [CompleteSpace β] [T0Space β] {f : α →+* β}
+    (h : Isometry f) (x : α) : h.ringHomFromCompletion x = f x :=
+  f.fromCompletion_coe h.continuous _
+
+@[deprecated (since := "2026-06-26")]
+alias Isometry.extensionHom_coe := Isometry.ringHomFromCompletion_coe
 
 /-- The lift of an isometry to completions. -/
-def Isometry.mapRingHom {f : α →+* β} (h : Isometry f) : Completion α →+* Completion β :=
-  Completion.mapRingHom f h.continuous
+def Isometry.ringHomCompletion {f : α →+* β} (h : Isometry f) : Completion α →+* Completion β :=
+  f.completion h.continuous
 
-theorem Isometry.mapRingHom_coe {f : α →+* β} (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
-  Completion.mapRingHom_coe h.uniformContinuous.continuous _
+@[deprecated (since := "2026-06-26")] alias Isometry.mapRingHom := Isometry.ringHomCompletion
 
-theorem Isometry.isometry_mapRingHom {f : α →+* β} (h : Isometry f) : Isometry h.mapRingHom :=
-  Isometry.of_dist_eq fun x y => by
-    induction x, y using induction_on₂ with
-    | hp => exact isClosed_eq (continuous_dist.comp₂ (continuous_map.comp continuous_fst)
-        (continuous_map.comp continuous_snd)) (by fun_prop)
-    | ih x y => simp only [Completion.dist_eq, mapRingHom_coe, h.dist_eq]
+theorem Isometry.ringHomCompletion_coe {f : α →+* β} (h : Isometry f) (x : α) :
+    h.ringHomCompletion x = f x := RingHom.completion_coe h.uniformContinuous.continuous _
+
+@[deprecated (since := "2026-06-26")]
+alias Isometry.mapRingHom_coe := Isometry.ringHomCompletion_coe
+
+theorem Isometry.ringHomCompletion_isometry {f : α →+* β} (h : Isometry f) :
+    Isometry h.ringHomCompletion := by eta_expand; simpa [ringHomCompletion] using h.completion
+
+@[deprecated (since := "2026-06-26")]
+alias Isometry.isometry_mapRingHom := Isometry.ringHomCompletion_isometry
 
 end extension_maps

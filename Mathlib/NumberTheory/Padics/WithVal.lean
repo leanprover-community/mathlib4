@@ -104,8 +104,8 @@ the `p`-adic valuation. -/
 noncomputable
 def withValRingEquiv :
     (Rat.padicValuation p).Completion ≃+* ℚ_[p] where
-  toFun := (extensionHom ((Rat.castHom ℚ_[p]).comp (WithVal.equiv (Rat.padicValuation p)).toRingHom)
-    Padic.isUniformInducing_cast_withVal.uniformContinuous.continuous)
+  toFun := (Rat.castHom ℚ_[p]).comp (WithVal.equiv (Rat.padicValuation p)).toRingHom
+    |>.fromCompletion Padic.isUniformInducing_cast_withVal.uniformContinuous.continuous
   invFun := Padic.isDenseInducing_cast_withVal.extend coe'
   left_inv y := by
     induction y using induction_on
@@ -113,14 +113,14 @@ def withValRingEquiv :
       refine isClosed_eq ?_ continuous_id
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous.comp
-        (continuous_extension)
-    · rw [extensionHom_coe]
+        Function.continuous_fromCompletion
+    · rw [RingHom.fromCompletion_coe]
       apply IsDenseInducing.extend_eq
       exact continuous_coe _
   right_inv y := by
     induction y using isClosed_property (Padic.denseRange_ratCast p)
     · refine isClosed_eq ?_ continuous_id
-      refine continuous_extension.comp ?_
+      refine Function.continuous_fromCompletion.comp ?_
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         Padic.isDenseInducing_cast_withVal.dense (uniformContinuous_coe _)).continuous
     · have : ∀ q : ℚ, Padic.isDenseInducing_cast_withVal.extend coe' q = coe'
@@ -128,7 +128,7 @@ def withValRingEquiv :
         intro q
         apply IsDenseInducing.extend_eq
         exact continuous_coe _
-      rw [this, extensionHom_coe]
+      rw [this, RingHom.fromCompletion_coe]
       simp
   map_mul' := map_mul _
   map_add' := map_add _
@@ -136,7 +136,7 @@ def withValRingEquiv :
 
 @[simp]
 lemma coe_withValRingEquiv :
-    ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension
+    ⇑(Padic.withValRingEquiv (p := p)) = Function.fromCompletion
       ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) := rfl
 
 @[simp]
@@ -163,7 +163,7 @@ open UniformSpace.Completion in
 theorem withValUniformEquiv_cast_apply (x : WithVal (Rat.padicValuation p)) :
     Padic.withValUniformEquiv (p := p) x = WithVal.equiv (Rat.padicValuation p) x := by
   simpa [Equiv.toUniformEquivOfIsUniformInducing] using!
-    extension_coe (Padic.isUniformInducing_cast_withVal (p := p)).uniformContinuous _
+    Function.fromCompletion_coe (Padic.isUniformInducing_cast_withVal (p := p)).uniformContinuous _
 
 open PadicInt in
 theorem norm_rat_le_one_iff_padicValuation_le_one (p : ℕ) [Fact p.Prime] {x : ℚ} :

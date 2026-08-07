@@ -30,16 +30,16 @@ variable [w.LiesOver v]
 lies over `v`. -/
 noncomputable def completionMap : v.Completion →+* w.Completion :=
   ((Completion.equiv w).symm.toRingHom.comp
-    (LiesOver.isometry_algebraMap w v).mapRingHom).comp (Completion.equiv v).toRingHom
+    (LiesOver.isometry_algebraMap w v).ringHomCompletion).comp (Completion.equiv v).toRingHom
 
 theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) :=
   (continuous_ofCompletion w).comp <|
-    UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
+    UniformSpace.Function.continuous_completion.comp (continuous_toCompletion v)
 
 theorem completionMap_coe (x : WithAbs v.1) :
     completionMap (x : v.Completion) = ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) :
       w.Completion) :=
-  Completion.ext <| (LiesOver.isometry_algebraMap w v).mapRingHom_coe x
+  Completion.ext <| (LiesOver.isometry_algebraMap w v).ringHomCompletion_coe x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion := completionMap.toAlgebra
