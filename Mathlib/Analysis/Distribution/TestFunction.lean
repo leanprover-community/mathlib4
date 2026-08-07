@@ -824,6 +824,24 @@ theorem smulLeftCLM_neg {g : E → 𝕜} (hg : ContDiff ℝ n g) :
   ext f x
   simp [Pi.neg_def, hg, hg.neg, neg_smul]
 
+instance : ContinuousConstSMul 𝕜 𝓓^{n}(Ω, F) where
+  continuous_const_smul c := by
+    have : ContDiff ℝ n (fun (_ : E) ↦ c) := contDiff_const
+    rw [show (fun f : 𝓓^{n}(Ω, F) ↦ c • f) = (smulLeftCLM Ω F n (fun _ ↦ c)) by aesop]
+    exact (smulLeftCLM Ω F n (fun _ ↦ c)).continuous
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM Ω F n (fun (_ : E) ↦ c) = c • (ContinuousLinearMap.id 𝕜 𝓓^{n}(Ω, F)) := by
+  ext f x
+  simp [contDiff_const]
+
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : ContDiff ℝ n g) (c : 𝕜) :
+    smulLeftCLM Ω F n (c • g) = c • (smulLeftCLM Ω F n g) := by
+  have : ContDiff ℝ n (fun (_ : E) ↦ c):= by fun_prop
+  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  simp
+
 end smul
 
 end Multiplication
