@@ -178,7 +178,7 @@ lemma OpenPartialHomeomorph.mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
   · exact hφ.comp (he''.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
   · exact he'.comp (hφ'.comp (I.contMDiffOn_symm.mono (by simp)) (by grind)) (by grind)
 
-lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
+lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn
     {ϕ ϕ' : OpenPartialHomeomorph M H} (hϕ : ϕ ∈ maximalAtlas I n M) (hϕ' : ϕ' ∈ maximalAtlas I n M)
     {f : OpenPartialHomeomorph M M} (hf : ContMDiffOn I I n f f.source)
     (hf' : ContMDiffOn I I n f.symm f.target) :
@@ -192,7 +192,7 @@ lemma symm_trans_trans_mem_maximalAtlas_of_contMDiffOn [IsManifold I n M]
         fun z hz ↦ hz.1.2)
       fun z hz ↦ hz.2
 
-lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn [IsManifold I n M]
+lemma symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
     {ϕ ϕ' : OpenPartialHomeomorph M H} (hϕ : ϕ ∈ maximalAtlas I n M) (hϕ' : ϕ' ∈ maximalAtlas I n M)
     {f : OpenPartialHomeomorph M M} (hf : ContMDiffOn I I n f f.source)
     (hf' : ContMDiffOn I I n f.symm f.target) :
