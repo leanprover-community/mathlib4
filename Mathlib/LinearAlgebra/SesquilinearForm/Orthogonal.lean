@@ -60,15 +60,10 @@ alias mem_orthogonalBilin_iff := mem_orthogonalBilin
 theorem mem_orthogonalBilin_iff_le_ker_flip {y : M₂} :
     y ∈ orthogonalBilin B S ↔ S ≤ ker (B.flip y) := .rfl
 
+/- This is high priority in order to be prefered over `Submodule.mem_orthogonalBilin`. -/
 @[simp high] theorem mem_orthogonalBilin_span {s : Set M₁} {y : M₂} :
     y ∈ orthogonalBilin B (span R₁ s) ↔ ∀ ⦃x⦄, x ∈ s → B x y = 0 := by
-  constructor <;> intro h x hx
-  · exact h _ (subset_span hx)
-  induction hx using span_induction with
-  | mem _ hxs => exact h hxs
-  | zero => simp
-  | add _ _ _ _ hy hz => simp [hy, hz]
-  | smul _ _ _ hy => simp [hy]
+  simpa using! span_le (p := LinearMap.ker (B.flip y))
 
 @[simp] theorem orthogonalBilin_bot : orthogonalBilin B ⊥ = ⊤ := by ext; simp
 
@@ -149,19 +144,15 @@ theorem le_orthogonalBilin_iff_le_orthogonalBilin {T : Submodule R₂ M₂} :
   orthogonalBilin_orthogonalBilin_flip_orthogonalBilin S
 
 theorem orthogonalBilin_sup_orthogonalBilin_le_orthogonalBilin_inf (S T) :
-    orthogonalBilin B S ⊔ orthogonalBilin B T ≤ orthogonalBilin B (S ⊓ T) := by
-  intro _ h _ ⟨hS, hT⟩
-  simp only [mem_sup, mem_orthogonalBilin] at h
-  obtain ⟨_, hx, _, hy, hxy⟩ := h
-  simp [← hxy, hx _ hS, hy _ hT]
+    orthogonalBilin B S ⊔ orthogonalBilin B T ≤ orthogonalBilin B (S ⊓ T) :=
+  sup_le (orthogonalBilin_le inf_le_left) (orthogonalBilin_le inf_le_right)
 
 /-- The orthogonal submodule w.r.t. the standard bilinear pairing is the dual annihilator. -/
-theorem orthogonalBilin_dualAnnihilator (S) :
-    orthogonalBilin (Dual.eval R₁ M₁) S = S.dualAnnihilator := by
-  ext x; simp
+@[simp] theorem orthogonalBilin_eval_eq_dualAnnihilator (S) :
+    orthogonalBilin (Dual.eval R₁ M₁) S = S.dualAnnihilator := by ext x; simp
 
 /-- The orthogonal submodule w.r.t. the identity pairing is the dual coannihilator. -/
-theorem orthogonalBilin_dualCoannihilator (S : Submodule R₁ (Dual R₁ M₁)) :
+@[simp] theorem orthogonalBilin_id_eq_dualCoannihilator (S : Submodule R₁ (Dual R₁ M₁)) :
     orthogonalBilin .id S = S.dualCoannihilator := by ext; simp
 
 variable {R₃ : Type*} [CommSemiring R₃]
@@ -175,8 +166,8 @@ variable [RingHomSurjective J₃] in
 variable [RingHomSurjective I₁] in
 /-- Orthogonality w.r.t. a general bilinear map can be expressed as orthogonality w.r.t
 the identity pairing. -/
-lemma orthogonalBilin_eq_orthogonalBilin_id_map (S) :
-    orthogonalBilin B S = orthogonalBilin .id (map B S) := by simp
+lemma orthogonalBilin_id_map (S) :
+    orthogonalBilin .id (map B S) = orthogonalBilin B S := by simp
 
 section
 
@@ -184,14 +175,14 @@ variable {I₂ : R₂ →+* R₁} {B : M₁ →ₗ[R₁] M₂ →ₛₗ[I₂] R�
 
 /-- Orthogonality w.r.t. a general bilinear map can be expressed as orthogonality w.r.t
 the evaluation pairing. -/
-lemma orthogonalBilin_eq_comap_orthogonalBilin_eval (S) :
-    orthogonalBilin B S = comap B.flip (orthogonalBilin (Dual.eval R₁ M₁) S) := by
+lemma comap_orthogonalBilin_eval (S) :
+    comap B.flip (orthogonalBilin (Dual.eval R₁ M₁) S) = orthogonalBilin B S := by
   ext; simp
 
 variable (B) in
-theorem orthogonalBilin_comap_dualAnnihilator (S) :
-    orthogonalBilin B S = comap B.flip S.dualAnnihilator := by
-  rw [← orthogonalBilin_dualAnnihilator, orthogonalBilin_eq_comap_orthogonalBilin_eval]
+@[simp] theorem comap_dualAnnihilator_eq_orthogonalBilin (S) :
+    comap B.flip S.dualAnnihilator = orthogonalBilin B S := by
+  rw [← orthogonalBilin_eval_eq_dualAnnihilator, comap_orthogonalBilin_eval]
 
 end
 
@@ -200,7 +191,7 @@ section
 variable {I₁ : R₁ →+* R₂} {B : M₁ →ₛₗ[I₁] M₂ →ₗ[R₂] R₂}
 
 variable (B) [RingHomSurjective I₁] in
-theorem orthogonalBilin_map_dualCoannihilator (S) :
+theorem orthogonalBilin_eq_map_dualCoannihilator (S) :
     orthogonalBilin B S = (map B S).dualCoannihilator := by ext x; simp
 
 end
