@@ -181,7 +181,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F : Type*}
   [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [T2Space F] {f : E →L[𝕜] F}
 
-/-- If `f : E → F` is injective and `E` is finite-dimensional,
+/-- If `f : E → F` is injective and `F` is finite-dimensional,
 `f` has a continuous left inverse. -/
 lemma of_injective_of_finiteDimensional [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
     (hf : Injective f) :
