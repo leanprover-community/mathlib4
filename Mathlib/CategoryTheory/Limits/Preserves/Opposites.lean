@@ -37,6 +37,12 @@ lemma preservesLimit_op (K : J ⥤ Cᵒᵖ) (F : C ⥤ D) [PreservesColimit K.le
   preserves {_} hc :=
     ⟨isLimitConeRightOpOfCocone _ (isColimitOfPreserves F (isColimitCoconeLeftOpOfCone _ hc))⟩
 
+/-- If `F : C ⥤ D` preserves colimits of `K : J ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
+limits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
+instance PreservesColimit.op (K : J ⥤ C) (F : C ⥤ D) [PreservesColimit K F] :
+    PreservesLimit K.op F.op where
+  preserves {_} hc := ⟨(isColimitOfPreserves F hc.unop).op⟩
+
 /-- If `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : C ⥤ D` preserves
 limits of `K : J ⥤ C`. -/
 lemma preservesLimit_of_op (K : J ⥤ C) (F : C ⥤ D) [PreservesColimit K.op F.op] :
@@ -84,6 +90,12 @@ lemma preservesLimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [Pres
     PreservesLimit K F where
   preserves {_} hc :=
     ⟨isLimitOfCoconeLeftOpOfCone _ (isColimitOfPreserves F.unop (isColimitCoconeLeftOpOfCone _ hc))⟩
+
+/-- If `F : C ⥤ D` preserves limits of `K : J ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
+colimits of `K.op : Jᵒᵖ ⥤ Cᵒᵖ`. -/
+instance PreservesLimit.op (K : J ⥤ C) (F : C ⥤ D) [PreservesLimit K F] :
+    PreservesColimit K.op F.op where
+  preserves {_} hc := ⟨(isLimitOfPreserves F hc.unop).op⟩
 
 /-- If `F : C ⥤ D` preserves limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F.op : Cᵒᵖ ⥤ Dᵒᵖ` preserves
 colimits of `K : J ⥤ Cᵒᵖ`. -/
