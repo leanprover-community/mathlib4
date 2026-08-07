@@ -883,6 +883,13 @@ theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
     ((sec M x).snd : R) ≠ 0 :=
   nonZeroDivisors.coe_ne_zero ⟨(sec M x).snd.val, hM (sec M x).snd.property⟩
 
+variable (M S) in
+/-- The submonoid defining a nontrivial localization in a cancellative semiring consists of
+nonZeroDivisors. -/
+theorem le_nonZeroDivisors [IsCancelMulZero R] [Nontrivial S] : M ≤ nonZeroDivisors R :=
+  fun m hm ↦ (IsRegular.of_ne_zero fun h ↦
+  (IsLocalization.map_units S ⟨m, hm⟩).ne_zero (by simp [h])).mem_nonZeroDivisors
+
 variable [IsDomain R]
 
 variable (S) in

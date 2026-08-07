@@ -385,6 +385,11 @@ theorem associated_primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
   gcongr
   exact (associated_content_mul ..).symm.map _
 
+theorem associated_primPart_C_mul {r : R} {p : R[X]} (hr : r ≠ 0) (hp : p ≠ 0) :
+    Associated (C r * p).primPart p.primPart :=
+  (associated_primPart_mul (mul_ne_zero (C_ne_zero.mpr hr) hp)).trans
+    (associated_unit_mul_left _ _ (isUnit_primPart_C r))
+
 @[simp]
 theorem primPart_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} (h0 : p * q ≠ 0) :
     (p * q).primPart = p.primPart * q.primPart := by
