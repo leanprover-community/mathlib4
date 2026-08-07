@@ -29,8 +29,6 @@ triangle unnecessarily.
 public section
 
 
-noncomputable section
-
 open scoped EuclideanGeometry
 
 open scoped Real

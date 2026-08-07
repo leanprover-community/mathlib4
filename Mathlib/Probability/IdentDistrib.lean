@@ -56,8 +56,6 @@ public section
 
 open MeasureTheory Filter Finset
 
-noncomputable section
-
 open scoped Topology MeasureTheory ENNReal NNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]

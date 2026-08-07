@@ -19,8 +19,6 @@ located here.
 public section
 
 
-noncomputable section
-
 open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
 
 /-!

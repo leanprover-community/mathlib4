@@ -25,8 +25,6 @@ transcendence
 
 public section
 
-noncomputable section
-
 open Function Set Subalgebra MvPolynomial Algebra
 
 universe u v

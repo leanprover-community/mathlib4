@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 # Monotonicity and ℒp seminorms
 -/
 
-public noncomputable section
+public section
 
 open TopologicalSpace MeasureTheory Filter
 

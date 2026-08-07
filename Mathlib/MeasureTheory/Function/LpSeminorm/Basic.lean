@@ -15,7 +15,6 @@ public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 -/
 
 public section
-noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
 

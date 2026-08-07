@@ -164,7 +164,7 @@ theorem LSeries_eq_mul_integral_of_nonneg (f : ℕ → ℝ) {r : ℝ} (hr : 0 �
 
 end integralrepresentation
 
-noncomputable section residue
+section residue
 
 variable {f : ℕ → ℂ} {l : ℂ}
 

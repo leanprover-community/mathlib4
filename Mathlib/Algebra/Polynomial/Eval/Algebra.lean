@@ -18,8 +18,6 @@ TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 
 public section
 
-noncomputable section
-
 open Finset AddMonoidAlgebra
 
 open Polynomial

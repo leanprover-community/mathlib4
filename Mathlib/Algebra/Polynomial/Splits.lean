@@ -687,8 +687,6 @@ theorem splits_iff_splits {f : R[X]} :
 
 end Field
 
-noncomputable section
-
 open Polynomial
 
 universe u v w
@@ -724,7 +722,5 @@ end UFD
 variable [Algebra R K] [Algebra R L]
 
 end Splits
-
-end
 
 end Polynomial
