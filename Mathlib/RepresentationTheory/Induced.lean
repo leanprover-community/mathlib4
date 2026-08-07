@@ -168,8 +168,7 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom <|
-  Representation.ind.lift φ (ρ := A.ρ) (σ := (B.ρ.ind φ)) ⟨IndV.mk φ B.ρ 1 ∘ₗ f.hom, fun g => by
-    ext; simp [IntertwiningMap.isIntertwining]⟩
+  ind.lift φ ⟨IndV.mk φ B.ρ 1 ∘ₗ f.hom, fun g => by ext; simp [IntertwiningMap.isIntertwining]⟩
 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
