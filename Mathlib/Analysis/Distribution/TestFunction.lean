@@ -842,6 +842,18 @@ theorem smulLeftCLM_smul {g : E → 𝕜} (hg : ContDiff ℝ n g) (c : 𝕜) :
   convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
+theorem tsupport_smulLeftCLM_left (g : E → 𝕜) (f : 𝓓^{n}(Ω, F)) :
+    tsupport (smulLeftCLM Ω F n g f) ⊆ tsupport g := by
+  by_cases hg : ContDiff ℝ n g
+  · simpa [smulLeftCLM_apply hg] using tsupport_smul_subset_left g ⇑f
+  · simp [smulLeftCLM, hg, tsupport]
+
+theorem tsupport_smulLeftCLM_right (g : E → 𝕜) (f : 𝓓^{n}(Ω, F)) :
+    tsupport (smulLeftCLM Ω F n g f) ⊆ tsupport f := by
+  by_cases hg : ContDiff ℝ n g
+  · simpa [smulLeftCLM_apply hg] using tsupport_smul_subset_right g ⇑f
+  · simp [smulLeftCLM, hg, tsupport]
+
 end smul
 
 end Multiplication
