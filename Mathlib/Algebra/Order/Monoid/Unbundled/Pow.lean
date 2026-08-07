@@ -295,8 +295,8 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
   ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 @[to_additive]
-instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
-  pow_left_injective _ hn _ _ _ h := (pow_left_strictMono hn).injective h
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : HasUniqueRoots M where
+  pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder
 

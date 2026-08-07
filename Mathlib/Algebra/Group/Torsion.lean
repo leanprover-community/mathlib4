@@ -44,8 +44,8 @@ instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M
 variable [Monoid M]
 
 @[to_additive]
-instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
-  pow_left_injective _ _ _ _ _ _ := Subsingleton.elim _ _
+instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : HasUniqueRoots M where
+  pow_left_injective _ _ _ _ _ := Subsingleton.elim _ _
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 

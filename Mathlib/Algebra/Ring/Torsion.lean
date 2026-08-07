@@ -23,8 +23,8 @@ namespace IsDomain
 -- This instance is potentially expensive, and is known to slow down grind.
 -- Please keep it as a scoped instance.
 scoped instance (R : Type*) [Semiring R] [IsDomain R] [CharZero R] :
-    IsAddTorsionFree R where
-  nsmul_right_injective n h a b _ w := by
+    HasUniqueDiv R where
+  nsmul_right_injective n h a b w := by
     simp only [nsmul_eq_mul, mul_eq_mul_left_iff, Nat.cast_eq_zero] at w
     grind
 

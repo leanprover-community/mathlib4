@@ -824,6 +824,30 @@ attribute [to_additive existing] isMulTorsionFree_iff
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
+/-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
+`n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
+
+TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
+@[mk_iff]
+class HasUniqueDiv (M : Type*) [AddMonoid M] where
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+/-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
+This is the uniqueness counterpart to `RootableBy` which asserts existence.
+
+TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
+@[mk_iff]
+class HasUniqueRoots (M : Type*) [Monoid M] where
+  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+
+attribute [to_additive existing HasUniqueDiv] HasUniqueRoots
+attribute [to_additive existing hasUniqueDiv_iff] hasUniqueRoots_iff
+
+/-- `HasUniqueRoots` implies `IsMulTorsionFree`. -/
+@[to_additive /-- `HasUniqueDiv` implies `IsAddTorsionFree`. -/]
+instance (M : Type*) [Monoid M] [HasUniqueRoots M] : IsMulTorsionFree M where
+  pow_left_injective _ hn _ _ _ hab := HasUniqueRoots.pow_left_injective hn hab
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
