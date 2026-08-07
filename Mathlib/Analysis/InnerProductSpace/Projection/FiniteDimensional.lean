@@ -321,7 +321,7 @@ noncomputable abbrev OrthogonalFamily.decomposition
     (h : iSup V = ⊤) : DirectSum.Decomposition V where
   decompose' x := DFinsupp.equivFunOnFintype.symm fun i => (V i).orthogonalProjectionOnto x
   left_inv x := by
-    dsimp only
+    beta_reduce
     let := fun i => Classical.decEq (V i)
     rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
@@ -331,7 +331,7 @@ noncomputable abbrev OrthogonalFamily.decomposition
     · intro i
       exact map_zero _
   right_inv x := by
-    dsimp only
+    beta_reduce
     simp_rw [hV.projection_directSum_coeAddHom, DFinsupp.equivFunOnFintype_symm_coe]
 
 end OrthogonalFamily

@@ -113,7 +113,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
   refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
-  · dsimp only
+  · beta_reduce
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi

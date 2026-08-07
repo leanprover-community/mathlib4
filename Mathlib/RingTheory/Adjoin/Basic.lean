@@ -152,7 +152,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
   refine B'.toSubmodule.sum_mem ?_
   intro a ha
   have : n ≥ n₁ a := le_trans (Finset.le_sup ha) hn
-  dsimp only
+  beta_reduce
   rw [← tsub_add_cancel_of_le this, pow_add, ← smul_smul, ←
     IsScalarTower.algebraMap_smul A (l a) (a : B), smul_smul (r ^ n₁ a), mul_comm, ← smul_smul,
     smul_def, map_pow, IsScalarTower.algebraMap_smul]

@@ -671,7 +671,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     intro y hy
     simp only [Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
-    dsimp only
+    beta_reduce
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
     simpa using! hy⟩
 

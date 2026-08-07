@@ -266,7 +266,7 @@ theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace
     set U : Set (Π i, R i) := Sᶜ.pi K
     have U_nhds : U ∈ 𝓝 (x : Π i, R i) := set_pi_mem_nhds hS fun i _ ↦ hK i
     have QU : (↑) ⁻¹' U ⊆ ((↑) ⁻¹' Q : Set (Πʳ i, [R i, A i]_[𝓟 S])) := fun y H i _ ↦ by
-      dsimp only
+      beta_reduce
       split_ifs with hi
       · exact y.2 hi
       · exact H i hi

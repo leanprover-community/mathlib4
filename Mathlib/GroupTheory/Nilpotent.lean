@@ -360,7 +360,7 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   obtain ⟨h0, hH⟩ := hdesc
   refine ⟨hn, fun x m hx g => ?_⟩
-  dsimp only at hx ⊢
+  beta_reduce at hx ⊢
   by_cases! hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
@@ -378,12 +378,12 @@ theorem nilpotent_iff_finite_descending_central_series :
   constructor
   · rintro ⟨n, H, hH, hn⟩
     refine ⟨n, fun m => H (n - m), is_descending_rev_series_of_is_ascending G hn hH, ?_⟩
-    dsimp only
+    beta_reduce
     rw [tsub_self]
     exact hH.1
   · rintro ⟨n, H, hH, hn⟩
     refine ⟨n, fun m => H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
-    dsimp only
+    beta_reduce
     rw [tsub_self]
     exact hH.1
 
@@ -585,12 +585,12 @@ theorem least_descending_central_series_length_eq_nilpotencyClass :
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · rintro n ⟨H, ⟨hH, hn⟩⟩
     refine ⟨fun m => H (n - m), is_descending_rev_series_of_is_ascending G hn hH, ?_⟩
-    dsimp only
+    beta_reduce
     rw [tsub_self]
     exact hH.1
   · rintro n ⟨H, ⟨hH, hn⟩⟩
     refine ⟨fun m => H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
-    dsimp only
+    beta_reduce
     rw [tsub_self]
     exact hH.1
 

@@ -30,7 +30,7 @@ theorem eLpNorm'_lim_eq_lintegral_liminf {ι} [Nonempty ι] [LinearOrder ι] {f 
   suffices h_no_pow : (∫⁻ a, ‖f_lim a‖ₑ ^ p ∂μ) = ∫⁻ a, atTop.liminf fun m => ‖f m a‖ₑ ^ p ∂μ by
     rw [eLpNorm'_eq_lintegral_enorm, h_no_pow]
   refine lintegral_congr_ae (h_lim.mono fun a ha => ?_)
-  dsimp only
+  beta_reduce
   rw [Tendsto.liminf_eq]
   refine (ENNReal.continuous_rpow_const.tendsto ‖f_lim a‖₊).comp ?_
   exact (continuous_enorm.tendsto (f_lim a)).comp ha
@@ -58,7 +58,7 @@ theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrde
     eLpNorm f_lim ∞ μ = essSup (fun x => atTop.liminf fun m => ‖f m x‖ₑ) μ := by
   rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
   refine essSup_congr_ae (h_lim.mono fun x hx => ?_)
-  dsimp only
+  beta_reduce
   apply (Tendsto.liminf_eq ..).symm
   exact (continuous_enorm.tendsto (f_lim x)).comp hx
 

@@ -123,7 +123,7 @@ theorem GammaIntegral_ofReal (s : ℝ) :
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
   refine setIntegral_congr_fun measurableSet_Ioi ?_
-  intro x hx; dsimp only
+  intro x hx; beta_reduce
   conv_rhs => rw [← this]
   rw [ofReal_mul, ofReal_cpow (mem_Ioi.mp hx).le]
   simp
@@ -232,7 +232,7 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
   have :
       (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
-    intro x hx; dsimp only
+    intro x hx; beta_reduce
     rw [norm_mul, norm_neg, norm_cpow_eq_rpow_re_of_pos hx,
       Complex.norm_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
   exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
@@ -361,7 +361,7 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
   | succ n IH =>
     intro s
     rw [GammaAux]
-    dsimp only
+    beta_reduce
     rw [div_eq_mul_inv _ s, map_mul, conj_inv, ← div_eq_mul_inv]
     suffices conj s + 1 = conj (s + 1) by rw [this, IH]
     rw [map_add, map_one]

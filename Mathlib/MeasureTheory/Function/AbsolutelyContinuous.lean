@@ -123,7 +123,7 @@ lemma tendsto_volume_totalLengthFilter_nhds_zero :
     simp
   · intro; simp
   · intro E
-    simp only
+    beta_reduce
     grw [measure_biUnion_finset_le]
     rw [ENNReal.ofReal_sum_of_nonneg (fun _ _ ↦ dist_nonneg)]
     apply Eq.le

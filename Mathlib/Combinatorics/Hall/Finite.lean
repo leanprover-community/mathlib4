@@ -115,7 +115,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;>
       simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
-    simp only
+    beta_reduce
     split_ifs with hz
     · rwa [hz]
     · specialize hfr ⟨z, hz⟩
@@ -200,7 +200,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
-    simp only
+    beta_reduce
     split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset (hsf'' ⟨x, h⟩)

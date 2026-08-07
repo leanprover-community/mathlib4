@@ -324,6 +324,6 @@ protected lemma SupClosed.countableInfClosure [Order.Coframe α] (hs : SupClosed
   obtain ⟨u, hu, hus, rfl⟩ := hb
   rw [iInf_sup_iInf]
   refine ⟨fun n ↦ t (Nat.unpair n).1 ⊔ u (Nat.unpair n).2, fun n ↦ ?_, ?_⟩
-  · simp only
+  · beta_reduce
     exact hs (ht (Nat.unpair n).1) (hu (Nat.unpair n).2)
   · rw [iInf_unpair (f := (fun n m ↦ t n ⊔ u m)), iInf_prod']

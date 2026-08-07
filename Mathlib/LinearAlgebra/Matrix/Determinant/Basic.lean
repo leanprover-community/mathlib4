@@ -684,7 +684,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       · intro σ₁₂ _
         simp
       · intro σ₁ _ σ₂ _
-        dsimp only
+        beta_reduce
         intro h
         have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
           DFunLike.congr_fun h

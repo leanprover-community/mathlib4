@@ -311,7 +311,7 @@ theorem eq_scalar_center_equiv_rootsOfUnity
   unfold center_equiv_rootsOfUnity Or.by_cases
   split_ifs with h
   · subsingleton
-  dsimp only
+  beta_reduce
   generalize_proofs _ eq
   generalize max (Fintype.card n) 1 = c at eq
   subst eq

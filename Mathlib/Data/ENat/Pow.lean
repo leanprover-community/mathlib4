@@ -97,7 +97,7 @@ lemma epow_pos (h : x ≠ 0) : 0 < x ^ y := by
 
 lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
   intro x z x_z
-  simp only
+  beta_reduce
   induction y
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
     · rw [Order.lt_one_iff.1 x_0, zero_epow_top]; exact bot_le

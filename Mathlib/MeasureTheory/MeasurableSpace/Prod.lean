@@ -47,7 +47,7 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
       exact mem_image2_of_mem (h1t n) hs
   · apply generateFrom_le
     rintro _ ⟨s, hs, t, ht, rfl⟩
-    dsimp only
+    beta_reduce
     rw [prod_eq]
     apply (measurable_fst _).inter (measurable_snd _)
     · exact measurableSet_generateFrom hs

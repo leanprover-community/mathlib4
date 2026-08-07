@@ -44,7 +44,7 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I] :
     CompleteOrthogonalIdempotents (idempotent V) where
   idem := isIdempotentElem_idempotent V
   ortho i j hij := by
-    simp only
+    beta_reduce
     rw [← decompose_eq_mul_idempotent, idempotent, decompose_coe,
       of_eq_of_ne (h := hij.symm), Submodule.coe_zero]
   complete := by

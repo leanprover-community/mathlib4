@@ -508,7 +508,7 @@ theorem centerEquivRootsOfUnity_apply
 theorem centerEquivRootsOfUnity_apply_apply
     (g : Subgroup.center (SpecialLinearGroup R V)) (x : V) :
     (centerEquivRootsOfUnity g) • x = (g : SpecialLinearGroup R V) x := by
-  simp only
+  beta_reduce
   rw [← LinearEquiv.coe_toLinearMap, centerEquivRootsOfUnity_apply]
   simp
 

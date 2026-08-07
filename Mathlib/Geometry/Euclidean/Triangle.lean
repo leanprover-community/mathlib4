@@ -160,7 +160,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     (sin_angle_eq_sin_angle_add_add_angle_add hx hy)
   rw [add_comm y x] at h
   obtain ⟨_, ⟨n, rfl⟩, h⟩ := (QuotientAddGroup.mk'_eq_mk' _).mp h
-  simp only at h
+  beta_reduce at h
   have : -1 < n := by
     replace h := h.ge
     contrapose! h

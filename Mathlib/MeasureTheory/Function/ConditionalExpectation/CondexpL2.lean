@@ -152,7 +152,7 @@ theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
   have hg_nnnorm_eq : (fun x => (‖g x‖₊ : ℝ≥0∞)) =ᵐ[μ.restrict s] fun x =>
       (‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ : ℝ≥0∞) := by
     refine hg_eq_restrict.mono fun x hx => ?_
-    dsimp only
+    beta_reduce
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
   refine lintegral_enorm_le_of_forall_fin_meas_integral_eq
@@ -170,7 +170,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
   suffices h_nnnorm_eq_zero : ∫⁻ x in s, ‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
     rw [lintegral_eq_zero_iff] at h_nnnorm_eq_zero
     · refine h_nnnorm_eq_zero.mono fun x hx => ?_
-      dsimp only at hx
+      beta_reduce at hx
       rw [Pi.zero_apply] at hx ⊢
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
@@ -179,7 +179,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
   rw [lintegral_eq_zero_iff]
   · refine hf.mono fun x hx => ?_
-    dsimp only
+    beta_reduce
     rw [hx]
     simp
   · exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
@@ -193,7 +193,7 @@ theorem lintegral_nnnorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
       ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
     refine lintegral_congr_ae (ae_restrict_of_ae ?_)
     refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => ?_
-    dsimp only
+    beta_reduce
     rw [hx]
     classical
     simp_rw [Set.indicator_apply]

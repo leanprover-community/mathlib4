@@ -701,7 +701,7 @@ lemma excenter_singleton_ne_incenter [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
 lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
     Function.Injective fun i ↦ s.excenter {i} := by
   intro i j hij
-  dsimp only at hij
+  beta_reduce at hij
   rw [(s.excenterExists_singleton i).excenter_eq_excenter_iff (s.excenterExists_singleton j)] at hij
   rcases hij with hij | hij
   · simpa using hij

@@ -63,7 +63,7 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / x) <| .Ici
 theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     AntitoneOn (fun x : ℝ ↦ log x / x ^ a) <| .Ici (exp a⁻¹) := by
   intro x hex y _ hxy
-  simp only
+  beta_reduce
   have x_pos : 0 < x := lt_of_lt_of_le (exp_pos a⁻¹) (le_of_le_of_eq hex rfl)
   have y_pos : 0 < y := by linarith
   nth_rw 1 [← rpow_one y, ← rpow_one x]

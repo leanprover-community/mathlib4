@@ -734,13 +734,13 @@ def equivIccQuot : 𝕋 ≃ Quot (EndpointIdent p a) where
       rintro ⟨x, hx⟩
       rcases ne_or_eq x (a + p) with (h | rfl)
       · revert x
-        dsimp only
+        beta_reduce
         intro x hx h
         congr
         ext1
         apply congr_arg Subtype.val ((equivIco p a).right_inv ⟨x, hx.1, hx.2.lt_of_ne h⟩)
       · rw [← Quot.sound EndpointIdent.mk]
-        dsimp only
+        beta_reduce
         congr
         ext1
         apply congr_arg Subtype.val

@@ -394,7 +394,7 @@ theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
     [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {i : ι} (hi : 0 ≤ i) : IsStoppingTime f fun ω => τ ω + i := by
   intro j
-  simp only
+  beta_reduce
   have h_eq : {ω | τ ω + i ≤ j} = {ω | τ ω ≤ j - i} := by
     ext ω
     simp only [Set.mem_ofPred_eq, coe_sub]

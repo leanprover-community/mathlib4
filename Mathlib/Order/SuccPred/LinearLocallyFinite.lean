@@ -381,10 +381,10 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
   toFun i := (toZ ⊥ i).toNat
   invFun n := succ^[n] ⊥
   left_inv i := by
-    dsimp only
+    beta_reduce
     exact iterate_succ_toZ i bot_le
   right_inv n := by
-    dsimp only
+    beta_reduce
     rw [toZ_iterate_succ]
     exact Int.toNat_natCast n
   map_rel_iff' := by

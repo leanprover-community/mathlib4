@@ -343,7 +343,7 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
   right_inv ι := by
     apply cs.ext_simple
     intro i
-    dsimp only
+    beta_reduce
     rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
     simp only [comp_apply, simple]

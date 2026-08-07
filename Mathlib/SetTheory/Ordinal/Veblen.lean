@@ -172,7 +172,7 @@ theorem veblenWith_pos (hp : 0 < f 0) : 0 < veblenWith f o a := by
 
 theorem veblenWith_zero_strictMono (hp : 0 < f 0) : StrictMono (veblenWith f · 0) := by
   intro o₁ o₂ h
-  dsimp only
+  beta_reduce
   rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_iff_right hf]
   exact veblenWith_pos hf hp
 

@@ -145,7 +145,7 @@ protected theorem monotoneOn (hf : LocallyBoundedVariationOn f s) {a : α} (as :
 protected theorem antitoneOn (hf : LocallyBoundedVariationOn f s) {b : α} (bs : b ∈ s) :
     AntitoneOn (fun a => variationOnFromTo f s a b) s := by
   rintro a as c cs ac
-  dsimp only
+  beta_reduce
   rw [← variationOnFromTo.add hf as cs bs]
   exact le_add_of_nonneg_left (variationOnFromTo.nonneg_of_le f s ac)
 

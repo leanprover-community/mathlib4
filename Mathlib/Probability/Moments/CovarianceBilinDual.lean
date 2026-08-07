@@ -208,7 +208,7 @@ lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
       simp_rw [← mul_assoc, mul_comm _ (‖L₂‖), mul_assoc, ← pow_two]
       refine Integrable.const_mul ?_ _
       exact h.integrable_norm_pow (by simp)
-    · simp only
+    · beta_reduce
       rw [mul_assoc]
       gcongr
       · exact ContinuousLinearMap.le_opNorm L₁ x

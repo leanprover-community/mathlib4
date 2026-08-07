@@ -58,7 +58,7 @@ def coroot : M →ₗ[R] R where
   toFun y := (hx.2 y).choose
   map_add' a b := by
     refine hx.1.1 ?_
-    simp only
+    beta_reduce
     rw [← (hx.2 (a + b)).choose_spec, mul_add, ← (hx.2 a).choose_spec, ← (hx.2 b).choose_spec,
       map_add, mul_add]
   map_smul' r a := by
@@ -138,7 +138,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         simp_rw [apply_self_mul_coroot_apply B y.2] at h2y -- (y,y)x*(z) = 2(y,z)
         have h2xy : B x x = B y y := by
           refine h2.1 ?_
-          dsimp only
+          beta_reduce
           specialize h2x y
           rw [coroot_apply_self] at h2x
           specialize h2y x
@@ -148,7 +148,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
         refine h2.1 ?_
-        dsimp only
+        beta_reduce
         rw [h2x z, ← h2y z, hxy, h2xy] }
   root_coroot_two x := coroot_apply_self B x.2
   reflectionPerm x :=

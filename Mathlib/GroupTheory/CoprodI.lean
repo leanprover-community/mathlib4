@@ -593,12 +593,12 @@ theorem prod_smul (m) : ∀ w : Word M, prod (m • w) = m * prod w := by
 def equiv : CoprodI M ≃ Word M where
   toFun m := m • empty
   invFun w := prod w
-  left_inv m := by dsimp only; rw [prod_smul, prod_empty, mul_one]
+  left_inv m := by beta_reduce; rw [prod_smul, prod_empty, mul_one]
   right_inv := by
     apply smul_induction
-    · dsimp only
+    · beta_reduce
       rw [prod_empty, one_smul]
-    · dsimp only
+    · beta_reduce
       intro i m w ih
       rw [prod_smul, mul_smul, ih]
 

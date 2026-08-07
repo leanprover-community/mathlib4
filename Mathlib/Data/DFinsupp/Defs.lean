@@ -1180,7 +1180,7 @@ noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
     · rw [extendWith_none]
     · rw [extendWith_some, comapDomain_apply]
   right_inv x := by
-    dsimp only
+    beta_reduce
     ext
     · exact extendWith_none x.snd _
     · rw [comapDomain_apply, extendWith_some]

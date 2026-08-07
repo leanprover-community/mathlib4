@@ -307,7 +307,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
   -- We rewrite them to `mk (dominating term)`
   have hmono : StrictMonoOn (fun x ↦ ArchimedeanClass.mk (f x).val) f.support := by
     intro c hc d hd h
-    simp only
+    beta_reduce
     rw [seed.archimedeanClassMk_of_mem_stratum (f c).prop (by simpa using! hc)]
     rw [seed.archimedeanClassMk_of_mem_stratum (f d).prop (by simpa using! hd)]
     exact h
