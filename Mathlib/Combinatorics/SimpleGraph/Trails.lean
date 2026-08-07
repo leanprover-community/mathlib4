@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
@@ -111,20 +110,46 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
 
+theorem isEulerian_iff_isTrail_and_edgeSet_eq {u v : V} {p : G.Walk u v} :
+    p.IsEulerian ↔ p.IsTrail ∧ p.edgeSet = G.edgeSet := by
+  rw [isEulerian_iff, and_congr_right_iff]
+  exact fun _ ↦ ⟨Set.Subset.antisymm p.edges_subset_edgeSet, fun h ↦ by simp [← h]⟩
+
+theorem isEulerian_iff_isTrail_and_length_eq_encard {u v : V} {p : G.Walk u v} :
+    p.IsEulerian ↔ p.IsTrail ∧ p.length = G.edgeSet.encard := by
+  rw [isEulerian_iff_isTrail_and_edgeSet_eq, and_congr_right_iff, ← length_edges]
+  intro hp
+  rw [← hp.edges_nodup.dedup, ← List.card_toFinset, ← Set.ncard_coe_finset, List.coe_toFinset,
+    p.edges.finite_toSet.cast_ncard_eq, ← edgeSet]
+  refine ⟨congrArg _, fun h ↦ ?_⟩
+  exact p.edges.finite_toSet.eq_of_subset_of_encard_le p.edges_subset_edgeSet h.symm.le
+
 theorem IsTrail.isEulerian_iff {u v : V} {p : G.Walk u v} (hp : p.IsTrail) :
-    p.IsEulerian ↔ p.edgeSet = G.edgeSet :=
-  ⟨fun h ↦ Set.Subset.antisymm p.edges_subset_edgeSet (p.isEulerian_iff.mp h).2,
-   fun h ↦ p.isEulerian_iff.mpr ⟨hp, by simp [← h]⟩⟩
+    p.IsEulerian ↔ p.edgeSet = G.edgeSet := by
+  simp [isEulerian_iff_isTrail_and_edgeSet_eq, hp]
 
 theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
+
+theorem IsEulerian.finite_edgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+    G.edgeSet.Finite :=
+  h.edgeSet_eq ▸ p.edges.finite_toSet
+
+theorem IsEulerian.length_eq_ncard_edgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+    p.length = G.edgeSet.ncard := by
+  rw [← h.isTrail.ncard_edgeSet, h.edgeSet_eq]
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
+
+set_option backward.isDefEq.respectTransparency.types false in
+theorem IsEulerian.length_eq_card_edgeFinset [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
+    (h : p.IsEulerian) : p.length = G.edgeFinset.card := by
+  simp [← h.edgesFinset_eq]
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
