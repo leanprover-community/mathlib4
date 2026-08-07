@@ -95,11 +95,15 @@ theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
     | inl h | inr h =>
       simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
 
-theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
-  (pathGraph_preconnected n).mono pathGraph_le_cycleGraph
+theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected :=
+  (preconnected_pathGraph n).mono pathGraph_le_cycleGraph
 
-theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
-  (pathGraph_connected n).mono pathGraph_le_cycleGraph
+@[deprecated (since := "2026-06-19")] alias cycleGraph_preconnected := preconnected_cycleGraph
+
+theorem connected_cycleGraph_add_one {n : ℕ} : (cycleGraph (n + 1)).Connected :=
+  (connected_pathGraph_add_one n).mono pathGraph_le_cycleGraph
+
+@[deprecated (since := "2026-06-19")] alias cycleGraph_connected := connected_cycleGraph_add_one
 
 section cycle
 
@@ -200,5 +204,21 @@ lemma cycleGraph_isContained_iff {n : ℕ} (hn : 2 < n) :
       exact hlen ▸ (isPath_iff_injective_get_support _ |>.mp this)
 
 end IsContained
+
+section Acyclic
+
+variable {V : Type*} {G : SimpleGraph V}
+
+theorem isAcyclic_iff_free_cycleGraph : G.IsAcyclic ↔ ∀ n ≥ 3, (cycleGraph n).Free G := by
+  refine ⟨fun h n hn hle ↦ ?_, fun h v p hcyc ↦ h p.length hcyc.three_le_length ?_⟩
+  · have ⟨v, p, hcyc, hlen⟩ := cycleGraph_isContained_iff hn |>.mp hle
+    exact h p hcyc
+  · exact cycleGraph_isContained_iff hcyc.three_le_length |>.mpr ⟨v, p, hcyc, rfl⟩
+
+theorem IsAcyclic.cliqueFree (h : G.IsAcyclic) {n : ℕ} (hn : 3 ≤ n) : G.CliqueFree n := by
+  refine not_cliqueFree_iff_top_isContained n |>.not_right.mpr fun hle ↦ ?_
+  exact isAcyclic_iff_free_cycleGraph.mp h n hn <| hle.trans' <| .of_le le_top
+
+end Acyclic
 
 end SimpleGraph
