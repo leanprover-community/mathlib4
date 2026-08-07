@@ -125,6 +125,7 @@ section
 
 variable [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : GradedObject.HasTensor (tensorUnit C c).X K.X :=
   GradedObject.hasTensor_of_iso (tensorUnitIso C c) (Iso.refl _)
 
@@ -147,6 +148,7 @@ section
 
 variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
   GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
 
@@ -175,6 +177,7 @@ section LeftUnitor
 
 variable [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `leftUnitor`. -/
 noncomputable def leftUnitor' :
     (tensorObj (tensorUnit C c) K).X ≅ K.X :=
@@ -225,6 +228,7 @@ section RightUnitor
 
 variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
@@ -279,6 +283,7 @@ variable (C c) [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ 
   [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
   [DecidableEq I]
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (HomologicalComplex C c) where
   tensorObj K₁ K₂ := tensorObj K₁ K₂
@@ -335,6 +340,7 @@ noncomputable def Monoidal.inducingFunctorData :
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
+set_option backward.isDefEq.respectTransparency.types false in
 noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]

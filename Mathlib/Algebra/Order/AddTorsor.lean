@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
+
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
 reals that are closed under integer translation.  The order compatibility allows for a treatment of
@@ -32,16 +33,16 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
-* OrderedCommMonoid.toIsOrderedSMul
-* OrderedAddCommMonoid.toIsOrderedVAdd
-* IsOrderedSMul.toCovariantClassLeft
-* IsOrderedVAdd.toCovariantClassLeft
-* IsOrderedCancelSMul.toCancelSMul
-* IsOrderedCancelVAdd.toCancelVAdd
-* OrderedCancelCommMonoid.toIsOrderedCancelSMul
-* OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
-* IsOrderedCancelSMul.toContravariantClassLeft
-* IsOrderedCancelVAdd.toContravariantClassLeft
+* `IsOrderedMonoid.toIsOrderedSMul`
+* `IsOrderedAddMonoid.toIsOrderedVAdd`
+* `IsOrderedSMul.toCovariantClassLeft`
+* `IsOrderedVAdd.toCovariantClassLeft`
+* `IsOrderedCancelSMul.toCancelSMul`
+* `IsOrderedCancelVAdd.toCancelVAdd`
+* `IsOrderedCancelMonoid.toIsOrderedCancelSMul`
+* `IsOrderedCancelAddMonoid.toIsOrderedCancelVAdd`
+* `IsOrderedCancelSMul.toContravariantClassLeft`
+* `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
 * (lex) prod instances

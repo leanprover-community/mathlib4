@@ -23,9 +23,12 @@ theorem dcongrArg.{u, v} {α : Sort u} {a a' : α} {β : (a' : α) → a = a' �
     f a rfl = Eq.rec (motive := fun x h' ↦ β x (h.trans h')) (f a' h) h.symm := by
   cases h; rfl
 
-theorem nddcongrArg.{u, v} {α : Sort u} {a a' : α} {β : Sort v}
-    (h : a = a') (f : (a' : α) → (h : a = a') → β) :
-    f a rfl = f a' h := by
+theorem hdcongrArg.{u, v} {α : Sort u} {a a' : α} {β : (a' : α) → a = a' → Sort v}
+    (h : a = a') (f : (a' : α) → (h : a = a') → β a' h) :
+    f a rfl ≍ f a' h := by
+  cases h; rfl
+
+theorem eq_of_heq.{u} {α : Sort u} {a a' : α} (h : a ≍ a') : a = a' := by
   cases h; rfl
 
 theorem heqL.{u} {α β : Sort u} {a : α} {b : β} (h : HEq a b) :
@@ -467,20 +470,21 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
           -- `eqPrf : eAbst lhs rfl = eNew`
           -- `eAbst lhs rfl ≡ e`
           let (eNew, eqPrf) ← do
-            if isDep then
-              lambdaBoundedTelescope eAbst 2 fun xs eBody => do
-                let #[x, h] := xs | throwError
-                  "internal error: expected 2 arguments in{indentExpr eAbst}"
-                let eBodyTp ← inferType eBody
-                checkCastAllowed eBody eBodyTp config.castMode
-                let some eBody ← castBack? eBody eBodyTp x h ∅ ∅ | throwError
+            lambdaBoundedTelescope eAbst 2 fun xs eBody => do
+              let #[x, h] := xs | throwError
+                "internal error: expected 2 arguments in{indentExpr eAbst}"
+              let eBodyTyp ← inferType eBody
+              let motive ← mkLambdaFVars xs eBodyTyp
+              if isDep then
+                checkCastAllowed eBody eBodyTyp config.castMode
+                let some eBody ← castBack? eBody eBodyTyp x h ∅ ∅ | throwError
                   "internal error: body{indentExpr eBody}\nshould mention '{x}' or '{h}'"
-                let motive ← mkLambdaFVars xs eBodyTp
                 pure (
                   eBody.replaceFVars #[x, h] #[rhs, heq],
                   mkApp6 (.const ``dcongrArg [u1, u2]) α lhs rhs motive heq eAbst)
-            else
-              pure (eNew, mkApp6 (.const ``nddcongrArg [u1, u2]) α lhs rhs eType heq eAbst)
+              else
+                let heqPrf := mkApp6 (.const ``hdcongrArg [u1, u2]) α lhs rhs motive heq eAbst
+                pure (eNew, mkApp4 (.const ``eq_of_heq [u2]) eType e eNew heqPrf)
           postprocessAppMVars `depRewrite mvarId newMVars binderInfos
             (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
           let newMVarIds ← newMVars.map Expr.mvarId! |>.filterM fun mvarId =>

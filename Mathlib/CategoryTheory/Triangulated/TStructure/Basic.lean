@@ -74,6 +74,7 @@ attribute [instance] le_isClosedUnderIsomorphisms ge_isClosedUnderIsomorphisms
 variable {C}
 variable (t : TStructure C)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : t.le n₀ X) (_ : t.ge n₁ Y) (f : X ⟶ A) (g : A ⟶ Y)

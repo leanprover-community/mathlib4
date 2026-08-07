@@ -197,19 +197,14 @@ theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
-@[deprecated AddMonoidHom.isAddCommutative_of_isAddCyclic_of_ker_le_center (since := "2026-05-26")]
-theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [AddGroup G']
-    [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
-  f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
-
-@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+@[to_additive (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
   (since := "2026-05-26"))]
 theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive (attr := implicit_reducible)
+@[to_additive (attr := instance_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
@@ -277,9 +272,6 @@ theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
-@[deprecated (since := "2025-11-19")]
-alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
-
 section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
@@ -313,6 +305,7 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     map_add' := add_zsmul g
     map_le_map_iff' := zsmul_le_zsmul_iff_left hg' }⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linearly-ordered abelian group is cyclic iff it is isomorphic to `Multiplicative ℤ` as an
 ordered monoid. -/
 lemma LinearOrderedCommGroup.isCyclic_iff_nonempty_equiv_int {G : Type*}
@@ -587,6 +580,9 @@ abbrev intCyclicAddEquiv [AddGroup G] [IsAddCyclic G] : ℤ ≃+ G :=
 
 end Infinite
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
 @[simps!]
@@ -599,7 +595,6 @@ noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
 variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
     Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
-  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
   exact Nat.card_congr (mulAutMulEquiv G)
 
@@ -796,7 +791,6 @@ theorem not_isAddCyclic_prod_of_infinite_nontrivial (M N : Type*) [AddGroup M] [
     have := isAddCyclic_of_surjective (f.prodMap f) (Prod.map_surjective.mpr ⟨hf, hf⟩)
     simpa using coprime_card_of_isAddCyclic_prod (ZMod 2) (ZMod 2)
   let ZN := ZMod (Nat.card N)
-  have : NeZero (Nat.card N) := ⟨Nat.card_pos.ne'⟩
   have := isAddCyclic_of_surjective ((ZMod.castHom (dvd_zero _) ZN).toAddMonoidHom.prodMap (.id ZN))
     (Prod.map_surjective.mpr ⟨ZMod.castHom_surjective (dvd_zero _), Function.surjective_id⟩)
   exact Finite.one_lt_card (α := N).ne' (by simpa [ZN] using coprime_card_of_isAddCyclic_prod ZN ZN)

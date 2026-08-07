@@ -173,6 +173,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
 
 open scoped Classical in
 include hG in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Let `A` be the adjacency matrix of a `d`-regular friendship graph, and let `v` be a vector
   all of whose components are `1`. Then `v` is an eigenvector of `A ^ 2`, and we can compute
   the eigenvalue to be `d * d`, or as `d + (Fintype.card V - 1)`, so those quantities must be equal.
@@ -249,7 +250,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
   have dpos : 1 ≤ d := by lia
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
-  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
+  have : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
