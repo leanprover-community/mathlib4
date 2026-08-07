@@ -97,8 +97,10 @@ open LinearMap.FiniteRangeSetoid
 namespace ContinuousLinearMap
 section TVS
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
-    [Module 𝕜 E] [Module 𝕜 F] [TopologicalSpace E] [TopologicalSpace F]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
+    [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
+    [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
+    [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 /-!
 ## Definition and equivalent conditions
@@ -367,6 +369,123 @@ theorem IsFredholm.of_isQuasiInverse {u : E →L[𝕜] F} {v : F →L[𝕜] E} (
   isFredholm_iff_exists_isQuasiInverse.mpr ⟨v, h⟩
 
 end DefTFAE
+
+section Constructions
+
+theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
+    IsFredholm (e : E →L[𝕜] F) where
+  isStrictMap := e.isHomeomorph.isStrictMap
+  isClosed_range := by simp
+  finite_ker := by
+    rw [LinearMap.ker_eq_bot.2 (by exact e.injective)]
+    infer_instance
+  finite_coker := by simp
+  closedComplemented_ker := by simp
+
+theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
+    ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
+
+theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
+    IsFredholm f := by
+  rcases hf with ⟨e, rfl⟩
+  exact e.isFredholm
+
+theorem _root_.Topology.IsClosedEmbedding.isFredholm {f : E →L[𝕜] F}
+    (hf : IsClosedEmbedding f) (h_cofg : f.range.CoFG) :
+    IsFredholm f where
+  isStrictMap := hf.isStrictMap
+  isClosed_range := hf.isClosed_range
+  finite_ker := by
+    rw [LinearMap.ker_eq_bot.2 hf.injective]
+    infer_instance
+  finite_coker := h_cofg
+  closedComplemented_ker := by
+    rw [LinearMap.ker_eq_bot.2 hf.injective]
+    exact closedComplemented_bot
+
+theorem _root_.Submodule.isFredholm_subtypeL {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [p.CoFG] :
+    IsFredholm p.subtypeL :=
+  (IsClosedEmbedding.subtypeVal hp).isFredholm (by simpa)
+
+theorem _root_.Topology.IsQuotientMap.isFredholm {f : E →L[𝕜] F} (hq : IsQuotientMap f)
+    (hcompl : f.ker.ClosedComplemented) (hfg : FiniteDimensional 𝕜 f.ker) :
+    IsFredholm f where
+  isStrictMap := hq.isStrictMap
+  isClosed_range := by
+    rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact isClosed_univ
+  finite_ker := hfg
+  finite_coker := by
+    rw [LinearMap.range_eq_top.2 hq.surjective]
+    exact Submodule.CoFG.top
+  closedComplemented_ker := hcompl
+
+theorem _root_.Submodule.mkQL_isFredholm {p : Submodule 𝕜 E} (hcompl : p.ClosedComplemented)
+    [FiniteDimensional 𝕜 p] :
+    IsFredholm p.mkQL :=
+  p.isQuotientMap_mkQL.isFredholm (by simpa) (by rwa [toLinearMap_mkQL, ker_mkQ])
+
+variable [CompleteSpace 𝕜] [IsTopologicalAddGroup E] [IsTopologicalAddGroup F]
+  [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] [ContinuousSMul 𝕜 G]
+  [T2Space E] [T2Space F] [T2Space G]
+
+theorem isFredholm_congr {u u' : E →L[𝕜] F} (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u ↔ IsFredholm u' := by
+  simp_rw [isFredholm_iff_exists_isQuasiInverse]
+  refine exists_congr fun _ ↦ isQuasiInverse_congr (Setoid.refl _) (Setoid.symm h)
+
+theorem IsFredholm.congr {u u' : E →L[𝕜] F} (hu : IsFredholm u)
+    (h : u.toLinearMap ≈ u'.toLinearMap) :
+    IsFredholm u' := by
+  rwa [← isFredholm_congr h]
+
+theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFredholm f')
+    (hf : IsFredholm f) : IsFredholm (f' ∘L f) := by
+  rw [isFredholm_iff_exists_isQuasiInverse] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  exact ⟨g ∘L g', hg.comp hg'⟩
+
+theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
+  refine ⟨fun hcomp ↦ ?_, fun hf' ↦ hf'.comp hf⟩
+  rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hcomp with ⟨w, hw⟩
+  exact ⟨f ∘L w, hg.of_comp_left hw⟩
+
+theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
+    IsFredholm (f' ∘L f) ↔ IsFredholm f := by
+  refine ⟨fun hcomp ↦ ?_, fun hf ↦ hf'.comp hf⟩
+  rw [isFredholm_iff_exists_isQuasiInverse, toLinearMap_comp] at *
+  rcases hf' with ⟨g', hg'⟩
+  rcases hcomp with ⟨w, hw⟩
+  exact ⟨w ∘L f', hg'.of_comp_right hw⟩
+
+theorem isFredholm_restrict_iff {f : E →L[𝕜] F} {A : Submodule 𝕜 E} {B : Submodule 𝕜 F}
+    (hA : IsClosed (A : Set E)) [A.CoFG] (hB : IsClosed (B : Set F)) [B.CoFG] (hf : MapsTo f A B) :
+    IsFredholm (f.restrict hf) ↔ IsFredholm f := by
+  rw [← (isFredholm_subtypeL hA).comp_iff_left, ← (isFredholm_subtypeL hB).comp_iff_right,
+    subtypeL_comp_restrict hf, domRestrict]
+
+alias ⟨IsFredholm.of_restrict, IsFredholm.restrict⟩ := isFredholm_restrict_iff
+
+theorem isFredholm_domRestrict_iff {f : E →L[𝕜] F} {A : Submodule 𝕜 E}
+    (hA : IsClosed (A : Set E)) [A.CoFG] :
+    IsFredholm (f.domRestrict A) ↔ IsFredholm f := by
+  rw [← (isFredholm_subtypeL hA).comp_iff_left, domRestrict]
+
+alias ⟨IsFredholm.of_domRestrict, IsFredholm.domRestrict⟩ := isFredholm_domRestrict_iff
+
+theorem isFredholm_codRestrict_iff {f : E →L[𝕜] F} {B : Submodule 𝕜 F}
+    (hB : IsClosed (B : Set F)) [B.CoFG] (hf : ∀ x, f x ∈ B) :
+    IsFredholm (f.codRestrict B hf) ↔ IsFredholm f := by
+  rw [← (isFredholm_subtypeL hB).comp_iff_right, subtypeL_comp_codRestrict]
+
+alias ⟨IsFredholm.of_codRestrict, IsFredholm.codRestrict⟩ := isFredholm_codRestrict_iff
+
+end Constructions
 
 end TVS
 end ContinuousLinearMap
