@@ -142,6 +142,12 @@ theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x)
     Algebra.IsIntegral R (adjoin R S) :=
   le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
+instance [Algebra.IsIntegral R A] (S : Set A) : Algebra.IsIntegral R (Algebra.adjoin R S) :=
+  Algebra.IsIntegral.adjoin fun _ _ => Algebra.IsIntegral.isIntegral _
+
+instance [Algebra.IsIntegral R A] (S : Set A) [Finite S] : Module.Finite R (Algebra.adjoin R S) :=
+  Algebra.IsIntegral.finite
+
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
       (Subalgebra.topEquiv (R := R) (A := A)).isIntegral_iff] -- explicit arguments for speedup

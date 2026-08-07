@@ -581,6 +581,10 @@ theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsInt
   have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
 
+instance {S : Set L} [Finite S] [Algebra.IsIntegral K L] :
+    FiniteDimensional K (adjoin K S) :=
+  finiteDimensional_adjoin fun _ _ => Algebra.IsIntegral.isIntegral _
+
 end PowerBasis
 
 /-- Algebra homomorphism `F⟮α⟯ →ₐ[F] K` are in bijection with the set of roots
