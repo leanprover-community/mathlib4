@@ -428,7 +428,7 @@ variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 theorem coe_eq_coe_iff_ae {f f' : E → F} (hf : LocallyIntegrableOn f Ω volume)
     (hf' : LocallyIntegrableOn f' Ω volume) :
     (f : 𝓓'^{n}(Ω, F)) = (f' : 𝓓'^{n}(Ω, F)) ↔ f =ᵐ[volume.restrict Ω] f' :=
-  ⟨toDistribution_injective hf hf', toDistribution_eq_of_ae⟩
+  ⟨toDistribution_injective hf hf', toDistribution_eq_of_aeEq⟩
 
 end MeasureSpace
 
