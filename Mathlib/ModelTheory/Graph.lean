@@ -109,7 +109,7 @@ theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨
       simp [Fin.forall_fin_two]
 
 theorem Theory.simpleGraph_isSatisfiable : Theory.IsSatisfiable Theory.simpleGraph :=
-  ⟨@Theory.ModelType.of _ _ Unit (SimpleGraph.structure ⊥) _ _⟩
+  ⟨@Theory.ModelType.of _ _ Unit (SimpleGraph.structure ⊥) _⟩
 
 end Language
 

@@ -296,8 +296,8 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
       (hse (φ₁.sup_iff_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
     (fun {_} => hnot) fun {_ _} => hse
 
-theorem iff_toPrenex (φ : L.BoundedFormula α n) :
-    φ ⇔[∅] φ.toPrenex := fun M v xs => by
+theorem iff_toPrenex {T : L.Theory} [IsNonemptyTheory T] (φ : L.BoundedFormula α n) :
+    φ ⇔[T] φ.toPrenex := fun M v xs => by
   rw [realize_iff, realize_toPrenex]
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -305,7 +305,7 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hall : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[nonemptyTheory L] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ := by
   suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
     (hse φ.iff_toPrenex).2 (h' φ.toPrenex_isPrenex)
@@ -320,7 +320,7 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
     (hnot : ∀ {m} {φ : L.BoundedFormula α m}, P φ → P φ.not)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[nonemptyTheory L] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   φ.induction_on_all_ex (fun {_ _} => hqf)
     (fun {_ φ} hφ => (hse φ.all_iff_not_ex_not).2 (hnot (hex (hnot hφ))))
