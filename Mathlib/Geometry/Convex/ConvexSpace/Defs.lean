@@ -94,7 +94,6 @@ theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total)
 
 @[simp] lemma support_weights_eq_singleton : w.weights.support = {x} ↔ w = single x where
   mp := by
-    classical
     rw [support_eq_singleton']
     rintro ⟨a, ha, hwa⟩
     ext : 1
@@ -340,6 +339,11 @@ lemma IsAffineMap.comp {g : N → P} (hg : IsAffineMap R g) {f : M → N} (hf : 
   map_sConvexComb s := by
     simp [StdSimplex.map_comp, hf.map_sConvexComb, hg.map_sConvexComb]
 
+@[fun_prop]
+lemma IsAffineMap.const (x : N) :
+    IsAffineMap R (fun (_ : M) ↦ x) where
+  map_sConvexComb _ := by simp
+
 variable (R) in
 @[fun_prop]
 lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (R := R) f) :=
@@ -487,6 +491,7 @@ lemma IsAffineMap.map_convexCombPair {f : M → N} (hf : IsAffineMap R f)
     f (convexCombPair s t hs ht h x y) = convexCombPair s t hs ht h (f x) (f y) := by
   simp [hf.map_sConvexComb, convexCombPair]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Flattening with the outer combination specialized to `convexCombPair`. -/
 lemma convexCombPair_iConvexComb_iConvexComb {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)

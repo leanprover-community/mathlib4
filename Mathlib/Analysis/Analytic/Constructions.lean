@@ -742,7 +742,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]
-    · simp only [Metric.eball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+    · simp only [Metric.eball, edist_zero_right, Set.mem_ofPred_eq] at hy2 ⊢
       exact lt_of_le_of_lt (ContinuousLinearMap.le_opENorm _ _) (mul_lt_of_lt_div' hy2)
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :

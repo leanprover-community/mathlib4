@@ -186,7 +186,7 @@ theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducib
     obtain rfl | ⟨b, hb⟩ := s.empty_or_exists_mem
     · rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
         normalizedFactors_irreducible ia]
-    haveI := nontrivial_of_ne b 0 (ib b hb).ne_zero
+    have := nontrivial_of_ne b 0 (ib b hb).ne_zero
     rw [Multiset.prod_cons, Multiset.map_cons,
       normalizedFactors_mul ia.ne_zero (Multiset.prod_ne_zero fun h => (ib 0 h).ne_zero rfl),
       normalizedFactors_irreducible ia, ih ib, Multiset.singleton_add]
@@ -252,7 +252,7 @@ theorem disjoint_normalizedFactors {a b : α} (hc : IsRelPrime a b) :
   intro x hxa hxb
   have x_dvd_a := dvd_of_mem_normalizedFactors hxa
   have x_dvd_b := dvd_of_mem_normalizedFactors hxb
-  exact (prime_of_normalized_factor x hxa).not_unit (hc x_dvd_a x_dvd_b)
+  exact (prime_of_normalized_factor x hxa).not_isUnit (hc x_dvd_a x_dvd_b)
 
 theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
     (h : ∀ {m}, m ∈ normalizedFactors r → m = p) (hr : r ≠ 0) : ∃ i : ℕ, Associated (p ^ i) r := by
@@ -283,7 +283,7 @@ theorem normalizedFactors_pos (x : α) (hx : x ≠ 0) : 0 < normalizedFactors x 
   · intro h hx
     obtain ⟨p, hp⟩ := Multiset.exists_mem_of_ne_zero h.ne'
     exact
-      (prime_of_normalized_factor _ hp).not_unit
+      (prime_of_normalized_factor _ hp).not_isUnit
         (isUnit_of_dvd_unit (dvd_of_mem_normalizedFactors hp) hx)
   · intro h
     obtain ⟨p, hp⟩ := exists_mem_normalizedFactors hx h
@@ -375,7 +375,7 @@ variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 open scoped Classical in
 /-- Noncomputably defines a `StrongNormalizationMonoid` structure on a `UniqueFactorizationMonoid`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoid α :=
   strongNormalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
