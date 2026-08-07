@@ -5,7 +5,9 @@ Authors: Iván Renison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Definition of cycle graphs
@@ -43,13 +45,13 @@ theorem cycleGraph_one_eq_bot : cycleGraph 1 = ⊥ := Subsingleton.elim _ _
 theorem cycleGraph_zero_eq_top : cycleGraph 0 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 
-theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := by
+theorem cycleGraph_eq_top_of_le_three {n : ℕ} (hn : n ≤ 3) : cycleGraph n = ⊤ := by
   simp only [SimpleGraph.ext_iff, funext_iff]
-  decide
+  match n with
+  | 0 | 1 | 2 | 3 => decide
 
-theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
-  simp only [SimpleGraph.ext_iff, funext_iff]
-  decide
+theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
+theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := cycleGraph_eq_top_of_le_three (by simp)
 
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by
   simp [cycleGraph_one_eq_bot]
@@ -83,23 +85,6 @@ theorem cycleGraph_degree_three_le {n : ℕ} {v : Fin (n + 3)} :
   rw [cycleGraph_degree_two_le, Finset.card_pair]
   simp only [ne_eq, sub_eq_iff_eq_add, add_assoc v, left_eq_add]
   exact ne_of_beq_false rfl
-
-theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
-  match n with
-  | 0 | 1 => simp
-  | n + 2 =>
-    intro u v h
-    rw [pathGraph_adj] at h
-    rw [cycleGraph_adj']
-    cases h with
-    | inl h | inr h =>
-      simp [Fin.coe_sub_iff_le.mpr (Nat.lt_of_succ_le h.le).le, Nat.eq_sub_of_add_eq' h]
-
-theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
-  (pathGraph_preconnected n).mono pathGraph_le_cycleGraph
-
-theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
-  (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
 section cycle
 
@@ -164,7 +149,28 @@ theorem cycleGraph.isPath_tail_cycle : (cycleGraph.cycle n).tail.IsPath := by
 theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
   isCycle_iff_isPath_tail_and_le_length.mpr ⟨cycleGraph.isPath_tail_cycle, by simp⟩
 
+theorem cycleGraph.mem_support_cycle {n : ℕ} (u : Fin (n + 3)) :
+    u ∈ (cycleGraph.cycle n).support := by
+  refine mem_support_iff_exists_getVert.mpr ⟨n + 3 - u, ?_, by simp⟩
+  simp [cycleGraph.getVert_cycle, Fin.ext_iff, Nat.sub_sub_self]
+
 end cycle
+
+theorem preconnected_cycleGraph {n : ℕ} : (cycleGraph n).Preconnected := by
+  match n with
+  | 0 | 1 | 2 => simp [cycleGraph_eq_top_of_le_three]
+  | n + 3 =>
+    exact fun _ _ ↦ reachable_of_mem_support
+      (cycleGraph.mem_support_cycle _) (cycleGraph.mem_support_cycle _)
+
+@[deprecated (since := "2026-07-06")]
+alias cycleGraph_preconnected := preconnected_cycleGraph
+
+theorem connected_cycleGraph {n : ℕ} : (cycleGraph (n + 1)).Connected where
+  preconnected := preconnected_cycleGraph
+
+@[deprecated (since := "2026-07-06")]
+alias cycleGraph_connected := connected_cycleGraph
 
 section IsContained
 
