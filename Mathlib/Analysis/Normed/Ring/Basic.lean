@@ -643,8 +643,6 @@ theorem IsPowMul.restriction {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 end NormedCommRing
 
-instance Real.normedCommRing : NormedCommRing ℝ :=
-  { Real.normedAddCommGroup, Real.commRing with norm_mul_le x y := (abs_mul x y).le }
 
 namespace NNReal
 
