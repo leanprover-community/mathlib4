@@ -324,7 +324,7 @@ continuous alternating map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMap (g : N →L[R] N') (f : M [⋀^ι]→L[R] N) :
     M [⋀^ι]→L[R] N' :=
   { (g : N →ₗ[R] N').compAlternatingMap f.toAlternatingMap with
-    toContinuousMultilinearMap := g.compContinuousMultilinearMap f.1 }
+    toContinuousMultilinearMap := g ∘ᶠ f.1 }
 
 @[simp]
 theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N')

@@ -198,7 +198,7 @@ theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContD
 series whose `k`-th term is given by `g ∘ (p k)`. -/
 theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
-    HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
+    HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g ∘ᶠ (p x k)) s where
   zero_eq x hx := congr_arg g (hf.zero_eq x hx)
   fderivWithin m hm x hx := (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
     (fun _ : Fin m => E) F G g).hasFDerivAt.comp_hasFDerivWithinAt x (hf.fderivWithin m hm x hx)
@@ -242,8 +242,7 @@ theorem ContDiff.continuousLinearMap_comp {f : E → F} (g : F →L[𝕜] G) (hf
 obtained by applying the linear map to the iterated derivative. -/
 theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F →L[𝕜] G)
     (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : i ≤ n) :
-    iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
-      g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
+    iteratedFDerivWithin 𝕜 i (g ∘ f) s x = g ∘ᶠ (iteratedFDerivWithin 𝕜 i f s x) := by
   rcases hf.contDiffOn' hi (by simp) with ⟨U, hU, hxU, hfU⟩
   rw [← iteratedFDerivWithin_inter_open hU hxU, ← iteratedFDerivWithin_inter_open (f := f) hU hxU]
   rw [insert_eq_of_mem hx] at hfU
@@ -254,7 +253,7 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
 obtained by applying the linear map to the iterated derivative. -/
 theorem ContinuousLinearMap.iteratedFDeriv_comp_left {f : E → F} (g : F →L[𝕜] G)
     (hf : ContDiffAt 𝕜 n f x) {i : ℕ} (hi : i ≤ n) :
-    iteratedFDeriv 𝕜 i (g ∘ f) x = g.compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
+    iteratedFDeriv 𝕜 i (g ∘ f) x = g ∘ᶠ (iteratedFDeriv 𝕜 i f x) := by
   simp only [← iteratedFDerivWithin_univ]
   exact g.iteratedFDerivWithin_comp_left hf.contDiffWithinAt uniqueDiffOn_univ (mem_univ x) hi
 
@@ -264,11 +263,10 @@ differentiability assumptions. -/
 theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G) (f : E → F)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (i : ℕ) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
-      (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
+      (g : F →L[𝕜] G) ∘ᶠ (iteratedFDerivWithin 𝕜 i f s x) := by
   induction i generalizing x with ext1 m
   | zero =>
-    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
+    simp
   | succ i IH =>
     rw [iteratedFDerivWithin_succ_apply_left]
     have Z : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (g ∘ f) s) s x =
@@ -282,7 +280,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
 /-- Iterated derivatives commute with left composition by continuous linear equivalences. -/
 theorem ContinuousLinearEquiv.iteratedFDeriv_comp_left {f : E → F} {x : E} (g : F ≃L[𝕜] G) {i : ℕ} :
     iteratedFDeriv 𝕜 i (g ∘ f) x =
-      g.toContinuousLinearMap.compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
+      g.toContinuousLinearMap ∘ᶠ (iteratedFDeriv 𝕜 i f x) := by
   simp only [← iteratedFDerivWithin_univ]
   apply g.iteratedFDerivWithin_comp_left f uniqueDiffOn_univ trivial
 
@@ -293,7 +291,7 @@ theorem LinearIsometry.norm_iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     ‖iteratedFDerivWithin 𝕜 i (g ∘ f) s x‖ = ‖iteratedFDerivWithin 𝕜 i f s x‖ := by
   have :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
-      g.toContinuousLinearMap.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
+      g.toContinuousLinearMap ∘ᶠ (iteratedFDerivWithin 𝕜 i f s x) :=
     g.toContinuousLinearMap.iteratedFDerivWithin_comp_left hf hs hx hi
   rw [this]
   apply LinearIsometry.norm_compContinuousMultilinearMap
@@ -313,7 +311,7 @@ theorem LinearIsometryEquiv.norm_iteratedFDerivWithin_comp_left (g : F ≃ₗᵢ
     ‖iteratedFDerivWithin 𝕜 i (g ∘ f) s x‖ = ‖iteratedFDerivWithin 𝕜 i f s x‖ := by
   have :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
-      (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
+      (g : F →L[𝕜] G) ∘ᶠ (iteratedFDerivWithin 𝕜 i f s x) :=
     g.toContinuousLinearEquiv.iteratedFDerivWithin_comp_left f hs hx i
   rw [this]
   apply LinearIsometry.norm_compContinuousMultilinearMap g.toLinearIsometry

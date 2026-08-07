@@ -1038,8 +1038,7 @@ def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) :=
   intro f x
   simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
   calc
-    _ = ‖x‖ ^ k * ‖(L.restrictScalars ℝ).compContinuousMultilinearMap
-        (iteratedFDeriv ℝ n f x)‖ := by
+    _ = ‖x‖ ^ k * ‖L.restrictScalars ℝ ∘ᶠ iteratedFDeriv ℝ n f x‖ := by
       congr
       exact (L.restrictScalars ℝ).iteratedFDeriv_comp_left f.smooth'.contDiffAt (mod_cast le_top)
     _ ≤ ‖x‖ ^ k * (‖L‖ * ‖iteratedFDeriv ℝ n f x‖) := by
