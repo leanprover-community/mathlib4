@@ -175,33 +175,6 @@ lemma quotientTransitionMap_locally_smul {h : H} (hh : h ∈ (quotientTransition
     (by rwa [quotient_IsLocalHomeomorph.localInverseAt_symm] at hmid)
   exact ⟨g, hg, quotientTransitionMap_eqOn_smul x y g⟩
 
-variable {x y : orbitRel.Quotient G M}
-
-section
-
--- move this
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  {f : OpenPartialHomeomorph X Y}
-
-theorem OpenPartialHomeomorph.restr_eqOnSource_of_eqOn
-    {e e' : OpenPartialHomeomorph X Y} {s : Set X} (hs : IsOpen s)
-    (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
-    e.restr s ≈ e'.restr (e.source ∩ s) := by
-  refine ⟨?_, ?_⟩
-  · rw [e.restr_source' s hs, e'.restr_source' _ (e.open_source.inter hs),
-      inter_eq_right.mpr hsub]
-  · exact fun z hz ↦ heq (e.restr_source' s hs ▸ hz).2
-
-lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid X}
-    [ClosedUnderRestriction G] {e e' : OpenPartialHomeomorph X X} {s : Set X}
-    (he' : e' ∈ G) (hs : IsOpen s) (heq : s.EqOn e e') (hsub : e.source ∩ s ⊆ e'.source) :
-    e.restr s ∈ G :=
-  G.mem_of_eqOnSource (closedUnderRestriction' he' (e.open_source.inter hs))
-    (OpenPartialHomeomorph.restr_eqOnSource_of_eqOn hs heq hsub)
-
-end
-
 -- the action is smooth
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
   [TopologicalSpace H'] (J : ModelWithCorners 𝕜 E' H') [TopologicalSpace G] [ChartedSpace H' G]
@@ -222,7 +195,7 @@ theorem isManifold_quotient_of_contMDiffSMul [ContMDiffSMul J I n G M] :
     refine ⟨_, hto, ⟨hh.1, hg0⟩, ?_⟩
     refine StructureGroupoid.restr_mem_of_eqOn (symm_trans_trans_mem_contDiffGroupoid_of_contMDiffOn
       (IsManifold.chart_mem_maximalAtlas x.out) (IsManifold.chart_mem_maximalAtlas y.out) ?_ ?_)
-      hto (hg0'.mono inter_subset_right) ?_
+      hto (hg0'.mono inter_subset_right).symm ?_
     · rw [Homeomorph.toOpenPartialHomeomorph_apply]
       exact (ContMDiffSMul.contMDiff_const_smul (I := J) g0).contMDiffOn
     · rw [Homeomorph.toOpenPartialHomeomorph_symm_apply]
