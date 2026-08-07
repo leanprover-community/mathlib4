@@ -202,6 +202,9 @@ lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h
   rw [← Subalgebra.fg_iff_finiteType]
   exact ⟨h.toFinset, by simp⟩
 
+instance {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} [Finite t] :
+    FiniteType R (Algebra.adjoin R t) := adjoin_of_finite t.toFinite
+
 end FiniteType
 
 end Algebra
