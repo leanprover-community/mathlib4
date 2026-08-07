@@ -606,6 +606,24 @@ protected theorem MDifferentiableAt.mvfderiv {f : M → E'} (h : MDiffAt f x) :
     d% f x = fderivWithin 𝕜 (writtenInExtChartAt I 𝓘(𝕜, E') x f) (range I) (extChartAt I x x) := by
   convert! h.mfderiv
 
+section
+
+variable {f : E → E'} {s : Set E} {x : E}
+
+/-- For maps between vector spaces, `mvfderivWithin` and `fderivWithin` coincide -/
+@[simp]
+theorem mvfderivWithin_eq_fderivWithin :
+    d[s] f x = fderivWithin 𝕜 f s x := by
+  convert! mfderivWithin_eq_fderivWithin (f := f) (s := s) (x := x)
+
+/-- For maps between vector spaces, `mvfderiv` and `fderiv` coincide -/
+@[simp]
+theorem mvfderiv_eq_fderiv :
+    d% f x = fderiv 𝕜 f x := by
+  convert! mfderiv_eq_fderiv (f := f) (x := x)
+
+end
+
 /-! ## Composition lemmas for `mvfderiv(Within)` -/
 section
 
