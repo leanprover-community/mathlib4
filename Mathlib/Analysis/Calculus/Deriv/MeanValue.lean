@@ -40,7 +40,6 @@ is not differentiable on the right at that point, and similarly differentiabilit
 
 ## Main results
 
-
 * `exists_ratio_hasDerivAt_eq_ratio_slope` and `exists_ratio_deriv_eq_ratio_slope` :
   Cauchy's Mean Value Theorem.
 

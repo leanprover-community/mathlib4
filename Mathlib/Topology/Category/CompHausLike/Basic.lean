@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
-
 # Categories of Compact Hausdorff Spaces
 
 We construct the category of compact Hausdorff spaces satisfying an additional property `P`.

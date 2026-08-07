@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 /-!
-
 # Covariant instances on `WithZero`
 
 Adding a zero to a type with a preorder and multiplication which satisfies some

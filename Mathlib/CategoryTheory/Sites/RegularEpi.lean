@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
-
 # The category of type-valued sheaves is a regular epi category
 
 ## Main results

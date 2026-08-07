@@ -16,7 +16,6 @@ of the category of simplicial sets that is induced by the
 covariant involution `SimplexCategory.op : SimplexCategory ⥤ SimplexCategory`.
 We use an abbreviation `X.op` for `opFunctor.obj X`.
 
-
 ## TODO
 
 * Show that this involution sends `Δ[n]` to itself, and that via

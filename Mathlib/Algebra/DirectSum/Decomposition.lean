@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Module.Submodule.Basic
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
 
-
 ## Main statements
 
 * `DirectSum.Decomposition.isInternal`: The link to `DirectSum.IsInternal`.

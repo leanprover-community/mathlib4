@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
-
 # One-dimensional derivatives
 
 This file defines the derivative of a function `f : 𝕜 → F` where `𝕜` is a

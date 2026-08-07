@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
 /-!
 # Nilpotent ideals in Noetherian rings
 
-
 ## Main results
 
 * `IsNoetherianRing.isNilpotent_nilradical`

@@ -10,7 +10,6 @@ public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
 
 /-!
-
 ## Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to

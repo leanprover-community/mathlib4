@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-
 # Krull dimension and non-zero-divisors
 
 ## Main results

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
-
 # Partial fractions
 
 For `f, g : R[X]`, if `g` is expressed as a product `g₁ ^ n₁ * g₂ ^ n₂ * ... * gₙ ^ nₙ`,
@@ -23,10 +22,8 @@ Since polynomials do not have a division, the main theorem
 `mul_prod_pow_inverse_eq_quo_add_sum_rem_mul_pow_inverse` is stated in an `R[X]`-algebra `K`
 containing inverses `giᵢ` for each polynomial `gᵢ` occurring in the denominator.
 
-
 These results were formalised by the Xena Project, at the suggestion
 of Patrick Massot.
-
 
 ## Main results
 

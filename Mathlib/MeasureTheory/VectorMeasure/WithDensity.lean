@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
-
 # Vector measure defined by an integral
 
 Given a measure `μ` and an integrable function `f : α → E`, we can define a vector measure `v` such

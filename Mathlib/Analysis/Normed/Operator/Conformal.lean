@@ -28,7 +28,6 @@ See `Analysis.InnerProductSpace.ConformalLinearMap` for
 * `isConformalMap_iff`: a map between inner product spaces is conformal
   iff it preserves inner products up to a fixed scalar factor.
 
-
 ## Tags
 
 conformal

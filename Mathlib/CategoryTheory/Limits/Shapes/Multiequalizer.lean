@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
-
 # Multi-(co)equalizers
 
 A *multiequalizer* is an equalizer of two morphisms between two products.

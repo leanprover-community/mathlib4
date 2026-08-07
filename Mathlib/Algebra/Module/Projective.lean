@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Logic.UnivLE
 
 /-!
-
 # Projective modules
 
 This file contains a definition of a projective module, the proof that

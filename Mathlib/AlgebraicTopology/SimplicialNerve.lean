@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 /-!
-
 # The simplicial nerve of a simplicial category
 
 This file defines the simplicial nerve (sometimes called homotopy coherent nerve) of a simplicial

@@ -12,7 +12,6 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
-
 # Tensor Product of (multivariate) polynomial rings
 
 Let `Semiring R`, `Algebra R S` and `Module R N`.

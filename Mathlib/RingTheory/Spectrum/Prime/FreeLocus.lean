@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # The free locus of a module
 
 ## Main definitions and results

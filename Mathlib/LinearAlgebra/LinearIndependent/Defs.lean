@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public meta import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
-
 # Linear independence
 
 This file defines linear independence in a module or vector space.

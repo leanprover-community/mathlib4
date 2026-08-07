@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
-
 # HasExt instance for Module Category
 
 If we assume `Small.{v} R`, the category `ModuleCat.{v} R` has enough projectives, which allows to

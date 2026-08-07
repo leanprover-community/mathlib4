@@ -22,7 +22,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 `Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
 `⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
-
 ## Implementation Notes
 
 All the theorems and instances expect `DecidableEq` instance for `α`

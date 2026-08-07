@@ -11,7 +11,6 @@ public import Mathlib.Condensed.Basic
 public import Mathlib.Topology.Category.TopCat.Yoneda
 
 /-!
-
 # The functor from topological spaces to condensed sets
 
 This file builds on the API from the file `TopCat.Yoneda`. If the forgetful functor to `TopCat` has

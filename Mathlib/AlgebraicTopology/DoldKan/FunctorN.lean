@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
-
 # Construction of functors N for the Dold-Kan correspondence
 
 In this file, we construct functors `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`

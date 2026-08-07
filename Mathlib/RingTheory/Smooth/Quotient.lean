@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
 
 /-!
-
 # Some lemmas about formally smooth under quotient
 
 In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,

@@ -17,7 +17,6 @@ public import Mathlib.Tactic.FinCases
 
 Definition of the integers mod n, and the field structure on the integers mod p.
 
-
 ## Definitions
 
 * `ZMod n`, which is for integers modulo a nat `n : ℕ`

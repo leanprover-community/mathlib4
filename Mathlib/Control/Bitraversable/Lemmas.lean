@@ -31,7 +31,6 @@ with the applicatives `id` and `comp`
 
 traversable bitraversable functor bifunctor applicative
 
-
 -/
 
 public section

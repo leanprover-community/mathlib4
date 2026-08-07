@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
-
 # Vandermonde's identity
 
 In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):

@@ -26,7 +26,6 @@ that Lie groups here are not necessarily finite dimensional.
 * `ContMDiffInv₀`: typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n`
   map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
 
-
 ## Main results
 * `ContMDiff.inv`, `ContMDiff.div` and variants: point-wise inversion and division of maps `M → G`
   is `C^n`.

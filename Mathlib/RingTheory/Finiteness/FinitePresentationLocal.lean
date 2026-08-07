@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 /-!
-
 # `Algebra.FinitePresentation` is local
 
 In this file we show that being a finitely presented algebra is local.

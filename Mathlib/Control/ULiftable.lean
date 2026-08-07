@@ -26,7 +26,6 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 `Option.{u}` in a context that requires `Option.{v}`. It is often used in tandem with
 `ULift` but the two are purposefully decoupled.
 
-
 ## Main definitions
 * `ULiftable` class
 

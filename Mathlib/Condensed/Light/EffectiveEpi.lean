@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Functors
 
 /-!
-
 # The functor from light profinite sets to light condensed sets preserves effective epimorphisms
 -/
 

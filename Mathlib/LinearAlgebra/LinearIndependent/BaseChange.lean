@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 
 /-!
-
 # Base change for linear independence
 
 This file is a place to collect base change results for linear independence.

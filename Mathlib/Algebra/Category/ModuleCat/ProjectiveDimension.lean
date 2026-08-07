@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 /-!
-
 # Projective Dimension in ModuleCat
 
 This file deals with preservation of `projectiveDimension` in (semi) linear equivalences.

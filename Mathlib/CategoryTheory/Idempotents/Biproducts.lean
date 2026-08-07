@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
-
 # Biproducts in the idempotent completion of a preadditive category
 
 In this file, we define an instance expressing that if `C` is an additive category

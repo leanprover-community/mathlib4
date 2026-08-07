@@ -16,7 +16,6 @@ This file establishes many results about the variable sets of a multivariate pol
 The *variable set* of a polynomial $P \in R[X]$ is a `Finset` containing each $x \in X$
 that appears in a monomial in $P$.
 
-
 ## Main declarations
 
 * `MvPolynomial.vars p` : the finset of variables occurring in `p`.

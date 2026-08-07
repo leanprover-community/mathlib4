@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
-
 # Grothendieck categories
 
 This file defines Grothendieck categories and proves basic facts about them.

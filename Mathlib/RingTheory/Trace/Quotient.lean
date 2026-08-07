@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.LocalRing.Quotient
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
-
 We gather results about the relations between the trace map on `B → A` and the trace map on
 quotients and localizations.
 

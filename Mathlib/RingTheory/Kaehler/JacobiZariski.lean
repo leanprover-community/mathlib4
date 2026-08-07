@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
-
 # The Jacobi-Zariski exact sequence
 
 Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence

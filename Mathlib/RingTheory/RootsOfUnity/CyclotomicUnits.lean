@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 We gather miscellaneous results about units given by sums of powers of roots of unit, the so-called
 *cyclotomic units*.
 
-
 ## Main results
 
 * `IsPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime` : given an `n`-th primitive root of

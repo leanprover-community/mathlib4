@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 
 /-!
-
 # Preimmersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of topological spaces

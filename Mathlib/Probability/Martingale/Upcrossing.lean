@@ -12,7 +12,6 @@ public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Tactic.AdaptationNote
 
 /-!
-
 # Doob's upcrossing estimate
 
 Given a discrete real-valued submartingale $(f_n)_{n \in \mathbb{N}}$, denoting by $U_N(a, b)$ the
@@ -69,7 +68,6 @@ namespace MeasureTheory
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 /-!
-
 ## Proof outline
 
 In this section, we will denote by $U_N(a, b)$ the number of upcrossings of $(f_n)$ from below $a$
@@ -696,7 +694,6 @@ theorem Submartingale.mul_integral_upcrossingsBefore_le_integral_pos_part [IsFin
       (integral_nonneg fun ω => posPart_nonneg _)
 
 /-!
-
 ### Variant of the upcrossing estimate
 
 Now, we would like to prove a variant of the upcrossing estimate obtained by taking the supremum

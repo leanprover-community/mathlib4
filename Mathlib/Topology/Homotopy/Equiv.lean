@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Homotopy.Basic
 
 /-!
-
 # Homotopy equivalences between topological spaces
 
 In this file, we define homotopy equivalences between topological spaces `X` and `Y` as a pair of

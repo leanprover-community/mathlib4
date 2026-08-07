@@ -47,7 +47,6 @@ multisets of size `k` over `α`. Thus the statement that these are counted by `m
 while the "stars and bars" technique gives
 `Sym.card_sym_eq_choose : card (Sym α k) = choose (card α + k - 1) k`
 
-
 ## Tags
 
 stars and bars, multichoose

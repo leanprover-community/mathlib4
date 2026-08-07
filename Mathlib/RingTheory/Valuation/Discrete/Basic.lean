@@ -51,7 +51,6 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
   valuation ring. This instance is the formalization of Chapter I, Section 1, Proposition 1 in
   [serre1968].
 
-
 ## TODO
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)

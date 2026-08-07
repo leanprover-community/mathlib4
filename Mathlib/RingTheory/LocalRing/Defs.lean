@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Ring.Defs
 
 /-!
-
 # Local rings
 
 Define the notion of a local ring for non-commutative semirings. In the commutative case,

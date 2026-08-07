@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.RingTheory.Extension.Basic
 
 /-!
-
 # Generators of algebras
 
 ## Main definition

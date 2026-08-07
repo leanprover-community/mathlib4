@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
-
 # The meta properties of finite ring homomorphisms.
 
 ## Main results

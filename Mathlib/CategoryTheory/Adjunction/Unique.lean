@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
-
 # Uniqueness of adjoints
 
 This file shows that adjoints are unique up to natural isomorphism.

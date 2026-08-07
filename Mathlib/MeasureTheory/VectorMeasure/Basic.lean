@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
-
 # Vector-valued measures
 
 This file defines vector-valued measures, which are σ-additive functions from a set to an

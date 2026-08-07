@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Galois.Prorepresentability
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Universal property of fundamental group
 
 Let `C` be a Galois category with fiber functor `F`. While in informal mathematics, we tend to

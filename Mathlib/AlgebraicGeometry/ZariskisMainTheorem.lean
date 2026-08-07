@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.RingTheory.Etale.QuasiFinite
 
 /-!
-
 # Zariski's Main Theorem
 
 In this file we prove Grothendieck's reformulation of Zariski's main theorem, namely if

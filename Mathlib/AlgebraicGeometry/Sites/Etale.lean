@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
-
 # The étale site
 
 In this file we define the big étale site, i.e. the étale topology as a Grothendieck topology

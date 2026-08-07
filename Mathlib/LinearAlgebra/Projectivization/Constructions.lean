@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
-
 # Dot Product and Cross Product on Projective Spaces
 
 This file defines the dot product and cross product on projective spaces.

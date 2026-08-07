@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
-
 # Limits and colimits of sheaves
 
 ## Limits

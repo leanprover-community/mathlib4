@@ -13,7 +13,6 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
-
 # Topological (semi)rings
 
 A topological (semi)ring is a (semi)ring equipped with a topology such that all operations are

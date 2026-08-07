@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-!
-
 # Local structure of unramified algebras
 
 In this file, we will prove that if `S` is a finite type `R`-algebra unramified at `Q`, then

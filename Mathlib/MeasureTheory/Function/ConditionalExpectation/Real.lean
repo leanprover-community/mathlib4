@@ -13,7 +13,6 @@ import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
 
 /-!
-
 # Conditional expectation of real-valued functions
 
 This file proves some results regarding the conditional expectation of real-valued functions.

@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
-
 # Extension of continuous linear maps on Banach spaces
 
 In this file we provide two different ways to extend a continuous linear map defined on a dense

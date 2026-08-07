@@ -55,7 +55,6 @@ value of `j`.
   [MR399081]
 * [M. Nagata, *On Euclid algorithm*][MR541021]
 
-
 ## Tags
 
 Euclidean domain, transfinite Euclidean domain, Bézout's lemma

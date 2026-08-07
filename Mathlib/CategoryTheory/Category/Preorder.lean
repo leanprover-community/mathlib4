@@ -10,7 +10,6 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Data.ULift
 
 /-!
-
 # Preorders as categories
 
 We install a category instance on any preorder. This is not to be confused with the category _of_

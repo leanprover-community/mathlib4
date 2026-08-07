@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
-
 # Unramified morphisms
 
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.

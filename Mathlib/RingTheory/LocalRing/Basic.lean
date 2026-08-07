@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
-
 # Local rings
 
 We prove basic properties of local rings.

@@ -373,7 +373,6 @@ section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
 
-
 In this section we prove, under the assumption that the underlying topological space `Ω` is
 pseudo-emetrizable, that
 
@@ -481,7 +480,6 @@ end LimitBorelImpliesLimsupClosedLE --section
 section le_liminf_open_implies_convergence
 
 /-! ### Portmanteau implication: liminf condition for open sets implies weak convergence
-
 
 In this section we prove for a sequence (μsₙ)ₙ Borel probability measures that
 

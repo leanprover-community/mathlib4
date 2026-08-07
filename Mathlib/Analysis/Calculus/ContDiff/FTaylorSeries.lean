@@ -42,7 +42,6 @@ Let `f : E → F` be a map between normed vector spaces over a nontrivially norm
   It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
   `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
 
-
 ### Side of the composition, and universe issues
 
 With a naïve direct definition, the `n`-th derivative of a function belongs to the space

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.Condensed.Light.Module
 /-!
-
 # The explicit sheaf condition for light condensed sets
 
 We give an explicit description of light condensed sets:

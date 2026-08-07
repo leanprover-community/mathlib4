@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 public import Mathlib.Algebra.CharP.Defs
 
 /-!
-
 # Some normal forms of elliptic curves
 
 This file defines some normal forms of Weierstrass equations of elliptic curves.

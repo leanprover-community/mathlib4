@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
-
 # Site defined by a morphism property
 
 Given a multiplicative morphism property `P` that is stable under base change, we define the

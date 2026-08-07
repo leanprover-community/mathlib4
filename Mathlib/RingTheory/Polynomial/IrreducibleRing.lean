@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Irreducible
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
-
 # Polynomials over an irreducible ring
 
 This file contains results about the polynomials over an irreducible ring (i.e. a ring with only

@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
 
 /-!
-
 # The basics of valuation theory.
 
 The basic theory of valuations (non-archimedean norms) on a commutative ring,

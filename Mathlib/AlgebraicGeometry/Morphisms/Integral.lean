@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.RingTheory.RingHom.Integral
 
 /-!
-
 # Integral morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is integral if the preimage

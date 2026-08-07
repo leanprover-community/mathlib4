@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Limits
 /-!
-
 # Epimorphisms of light condensed objects
 
 This file characterises epimorphisms in light condensed sets and modules as the locally surjective

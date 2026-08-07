@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
-
 # Ind- and pro- (co)yoneda lemmas
 
 We define limit versions of the yoneda and coyoneda lemmas.

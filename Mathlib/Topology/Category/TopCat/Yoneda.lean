@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
-
 # Yoneda presheaves on topologically concrete categories
 
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
