@@ -93,6 +93,14 @@ theorem lt_def [∀ i, LT (α i)] {a b : Σ i, α i} : a < b ↔ ∃ h : a.1 = b
     rintro ⟨rfl : i = j, h⟩
     exact LT.fiber _ _ _ h
 
+/-- To prove something for all `a ≤ b`, it suffices to prove this for all `(i, x)` and `(i, y)`
+where `x ≤ y`. -/
+@[elab_as_elim]
+lemma le_rec [∀ i, LE (α i)] {P : ∀ (a b : Σ i, α i), a ≤ b → Prop}
+    (H : ∀ i x y, (h : x ≤ y) → P ⟨i, x⟩ ⟨i, y⟩ (mk_le_mk_iff.mpr h)) {a b} (h) : P a b h := by
+  rcases h with ⟨i, _, _, h⟩
+  exact H i _ _ h
+
 protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
   { le_refl := fun ⟨i, a⟩ => Sigma.LE.fiber i a a le_rfl,
     le_trans := by
@@ -117,6 +125,29 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
     rintro ⟨i, a⟩ ⟨_, _⟩ ⟨_, _, b, h⟩
     obtain ⟨c, ha, hb⟩ := exists_between h
     exact ⟨⟨i, c⟩, LT.fiber i a c ha, LT.fiber i c b hb⟩
+
+@[gcongr]
+lemma fst_mono [Preorder ι] [∀ i, Preorder (α i)] : Monotone (fst : (Σ i, α i) → ι) := by
+  rintro _ _ ⟨_, _, _, _⟩
+  rfl
+
+@[gcongr]
+lemma snd_mono {β : Type*} [Preorder β] : Monotone (snd : (_ : ι) × β → β) := by
+  rintro _ _ ⟨_, _, _, h⟩
+  exact h
+
+@[gcongr]
+lemma mk_mono [∀ i, Preorder (α i)] (i : ι) : Monotone (mk i : α i → Σ i, α i) := by
+  simp [Monotone]
+
+lemma rec_mono {δ β : Type*} [Preorder δ] [Preorder β] [∀ i, Preorder (α i)]
+    {f : δ → (i : ι) × α i} (hf : Monotone f)
+    {g : δ → (i : ι) → α i → β} (hg : ∀ i, Monotone (Function.uncurry (g · i ·))) :
+    Monotone (fun x ↦ Sigma.rec (motive := fun _ ↦ β) (g x) (f x)) := by
+  intro i₁ i₂ hi
+  dsimp only
+  refine le_rec (fun i _ _ hf => ?_) (hf hi)
+  exact hg i (Prod.mk_le_mk.mpr ⟨hi, hf⟩)
 
 /-! ### Lexicographical order on `Sigma` -/
 
