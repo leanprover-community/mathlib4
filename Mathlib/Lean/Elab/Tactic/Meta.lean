@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 # Additions to `Lean.Elab.Tactic.Meta`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Elab
 open Term

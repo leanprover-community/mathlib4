@@ -26,7 +26,7 @@ or is either `true` or `false`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u}
@@ -41,11 +41,11 @@ variable {u : Level}
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
-@[instance_reducible]
+@[expose, instance_reducible]
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
-@[instance_reducible]
+@[expose, instance_reducible]
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
@@ -307,7 +307,7 @@ inductive Result' where
   | isNegNNRat (inst : Expr) (q : Rat) (n d proof : Expr)
   deriving Inhabited
 
-section
+@[expose] section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/

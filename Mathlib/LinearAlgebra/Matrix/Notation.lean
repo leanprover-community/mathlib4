@@ -40,7 +40,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 

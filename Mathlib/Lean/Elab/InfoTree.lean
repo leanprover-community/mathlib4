@@ -19,7 +19,7 @@ import Lean.Elab.Term.TermElabM
 # Additions to `Lean.Elab.InfoTree.Main`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Elab
 

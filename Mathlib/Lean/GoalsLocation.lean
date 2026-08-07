@@ -11,7 +11,7 @@ public import Lean.SubExpr
 
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
 
-@[expose] public section
+public section
 
 namespace Lean.SubExpr.GoalsLocation
 /-- The root expression of the position specified by the `GoalsLocation`. -/
