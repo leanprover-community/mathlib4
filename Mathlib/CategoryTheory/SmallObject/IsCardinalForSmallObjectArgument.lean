@@ -245,7 +245,10 @@ lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ
 lemma prop_iterationFunctor_map_succ (j : κ.ord.ToType) :
     (succStruct I κ).prop ((iterationFunctor I κ).map (homOfLE (Order.le_succ j))) := by
   have := hasIterationOfShape I κ
-  have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+  have : NoMaxOrder κ.ord.ToType := by
+    rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
+    exact (Cardinal.isSuccLimit_ord
+      (Fact.elim inferInstance : κ.IsRegular).aleph0_le).isSuccPrelimit
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -259,7 +262,10 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
     Arrow.mk (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f) ≅
       (ε I.homFamily).app (((iterationFunctor I κ).obj j).obj f) :=
   have := hasIterationOfShape I κ
-  have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+  have : NoMaxOrder κ.ord.ToType := by
+    rw [← Ordinal.isSuccPrelimit_type_lt_iff, Ordinal.type_toType]
+    exact (Cardinal.isSuccLimit_ord
+      (Fact.elim inferInstance : κ.IsRegular).aleph0_le).isSuccPrelimit
   Arrow.isoMk (Iso.refl _)
     (((evaluation _ _).obj f).mapIso
       ((succStruct I κ).iterationFunctorObjSuccIso j (not_isMax j))) (by

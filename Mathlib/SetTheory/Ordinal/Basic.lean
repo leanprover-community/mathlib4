@@ -494,10 +494,10 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Ii
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
--- TODO: generalize to other well-orders
 @[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
-    enum (· < ·) o₁ ≤ enum (α := a.ToType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
+theorem enum_le_enum' [LinearOrder α] [IsWellOrder α (· < ·)]
+    {o₁ o₂ : Iio (type (α := α) (· < ·))} :
+    enum (α := α) (· < ·) o₁ ≤ enum (α := α) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
 
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
@@ -533,7 +533,7 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
   invFun x := ⟨typein (α := o.ToType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
-  map_rel_iff' := enum_le_enum' _
+  map_rel_iff' := enum_le_enum'
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
@@ -1339,7 +1339,7 @@ theorem _root_.Cardinal.le_ord_iff_card_le_of_lt_aleph0 (o : Ordinal) {c : Cardi
 
 theorem mem_range_lift_of_card_le {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card b ≤ Cardinal.lift.{v, u} a) : b ∈ Set.range lift.{v, u} := by
-  rw [card_le_iff, ← lift_succ, ← lift_ord] at h
+  rw [card_le_iff, ← Cardinal.lift_succ, ← lift_ord] at h
   exact mem_range_lift_of_le h.le
 
 @[simp]
