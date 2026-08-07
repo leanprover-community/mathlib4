@@ -227,6 +227,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : IsTopologicalGroup G := {}
   of G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A morphism of `FiniteGrp` induces a morphism of the associated profinite groups. -/
 @[to_additive /-- A morphism of `FiniteAddGrp` induces a morphism of the associated profinite
 additive groups. -/]

@@ -48,6 +48,7 @@ universe u
 /-- Morphism property selecting Markov kernels in `SFinKer`. -/
 abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
 
+set_option fun_prop.reducibleApply false in
 instance : StochHom.IsStableUnderBraiding where
   id_mem X := by dsimp [StochHom]; infer_instance
   comp_mem κ η hκ hη := by dsimp [StochHom]; infer_instance
