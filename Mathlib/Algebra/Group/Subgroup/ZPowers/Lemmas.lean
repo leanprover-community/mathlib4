@@ -82,4 +82,8 @@ theorem zmultiples_inf (a b : ℤ) : zmultiples a ⊓ zmultiples b = zmultiples 
   ext
   simp [mem_zmultiples_iff, coe_lcm_dvd_iff]
 
+theorem zmultiples_le_zmultiples_iff {a b : ℤ} :
+    zmultiples a ≤ zmultiples b ↔ b ∣ a := by
+  rw [zmultiples_le, mem_zmultiples_iff]
+
 end Int
