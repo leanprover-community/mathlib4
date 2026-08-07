@@ -142,6 +142,8 @@ def WideSubcategory.isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
   hom := ⟨e.hom, h₁⟩
   inv := ⟨e.inv, h₂⟩
 
+@[deprecated (since := "2026-08-07")] alias isoMk := WideSubcategory.isoMk
+
 end WideSubcategory
 
 end CategoryTheory
