@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!
