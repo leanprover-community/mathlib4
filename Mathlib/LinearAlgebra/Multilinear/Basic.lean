@@ -178,7 +178,7 @@ theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (updat
 
 @[simp]
 theorem map_zero [Nonempty ι] : f 0 = 0 := by
-  obtain ⟨i, _⟩ : ∃ i : ι, i ∈ Set.univ := Set.exists_mem_of_nonempty ι
+  obtain ⟨i⟩ := ‹Nonempty ι›
   exact map_coord_zero f i rfl
 
 instance : Add (MultilinearMap R M₁ M₂) :=
