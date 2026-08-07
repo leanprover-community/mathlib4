@@ -724,7 +724,7 @@ lemma objEquiv_symm_id_mem_nonDegenerate (n : ℕ) :
 lemma nonDegenerate_top_dim (n : ℕ) :
     (Δ[n] : SSet.{u}).nonDegenerate n = {(objEquiv (m := (op ⦋n⦌))).symm (𝟙 _)} := by
   ext x
-  simp only [mem_singleton
+  simp only [Set.mem_singleton]
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
     have : Mono f := by simpa using (mem_nonDegenerate_iff_mono _).mp h

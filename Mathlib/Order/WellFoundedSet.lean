@@ -913,7 +913,7 @@ theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
   rw [h]
   apply IsPWO.image_of_monotoneOn (hαβ.mono inter_subset_left)
   rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
-  simp only [mem_preimage, mem_singleton hb hc
+  simp only [mem_preimage, mem_singleton] at hb hc
   have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=
     Prod.Lex.toLex_le_toLex.mp hbc
   simp_all only [lt_self_iff_false, true_and, false_or]

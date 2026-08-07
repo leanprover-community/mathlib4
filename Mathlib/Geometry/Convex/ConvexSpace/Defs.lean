@@ -210,7 +210,7 @@ lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidableP
 @[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :
     w.restrict {x} hx = single x := by
   classical
-  simp only [← support_weights_eq_singleton, support_weights_restrict, mem_singleton
+  simp only [← support_weights_eq_singleton, support_weights_restrict, Set.mem_singleton]
   ext
   simp only [Finset.mem_filter, mem_support_iff, ne_eq, Finset.mem_singleton, and_iff_right_iff_imp]
   rintro rfl

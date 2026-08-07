@@ -81,8 +81,8 @@ end MeasurableSpace
 
 theorem IsPiSystem.singleton (S : Set α) : IsPiSystem ({S} : Set (Set α)) := by
   intro s h_s t h_t _
-  rw [mem_singletonmem_singmem_singletonr_self,
-    mem_singleton
+  rw [Set.mem_singleton.1 h_s, Set.mem_singleton.1 h_t, Set.inter_self,
+    Set.mem_singleton]
 
 theorem IsPiSystem.insert_empty {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert ∅ S) := by
@@ -375,7 +375,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
         ext1 x
         simp only [Finset.notMem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      simp [ht_empty, iInter_univ, mem_singleton_self univ]
+      simp [ht_empty, iInter_univ, Set.mem_singleton_self univ]
   · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
@@ -391,7 +391,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     piiUnionInter (fun i => ({s i} : Set (Set α))) S =
       { s' : Set α | ∃ (t : Finset ι) (_ : ↑t ⊆ S), s' = ⋂ i ∈ t, s i } := by
   ext1 s'
-  simp_rw [piiUnionInter, mem_singleton_prop, Set.mem_ofPred_eq]
+  simp_rw [piiUnionInter, Set.mem_singleton, exists_prop, Set.mem_ofPred_eq]
   refine ⟨fun h => ?_, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   grind
 
@@ -405,7 +405,7 @@ theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set �
     refine ⟨{k}, fun m hm => ?_, s, fun i _ => ?_, ?_⟩
     · rw [Finset.mem_coe, Finset.mem_singleton] at hm
       rwa [hm]
-    · exact mem_singleton_self _
+    · exact Set.mem_singleton_self _
     · simp only [Finset.mem_singleton, Set.iInter_iInter_eq_left]
 
 /-- If `π` is a family of π-systems, then `piiUnionInter π S` is a π-system. -/
@@ -457,7 +457,7 @@ theorem subset_piiUnionInter {π : ι → Set (Set α)} {S : Set ι} {i : ι} (h
     π i ⊆ piiUnionInter π S := by
   have h_ss : {i} ⊆ S := by
     intro j hj
-    rw [mem_singleton hj
+    rw [mem_singleton] at hj
     rwa [hj]
   refine Subset.trans ?_ (piiUnionInter_mono_right h_ss)
   rw [piiUnionInter_singleton]

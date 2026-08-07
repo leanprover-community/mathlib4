@@ -39,7 +39,7 @@ namespace MeasurableSpace
 
 lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) :
     MeasurableSpace.generateFrom {s} ≤ m :=
-  generateFrom_le (fun _ ht ↦ mem_singletont ▸ hs)
+  generateFrom_le (fun _ ht ↦ mem_singleton.1 ht ▸ hs)
 
 lemma comap_indicator_const_le_generateFrom_singleton {M : Type*} [Zero M] [MeasurableSpace M]
     (s : Set α) (c : M) :

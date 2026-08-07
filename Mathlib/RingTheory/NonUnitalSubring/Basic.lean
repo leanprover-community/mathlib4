@@ -264,7 +264,7 @@ theorem coe_bot : ((⊥ : NonUnitalSubring R) : Set R) = {0} :=
   (NonUnitalRingHom.coe_range (0 : R →ₙ+* R)).trans (@Set.range_const R R _ 0)
 
 theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
-  show x ∈ ((⊥ : NonUnitalSubring R) : Set R) ↔ x = 0 by rw [coe_bot, mem_singleton
+  show x ∈ ((⊥ : NonUnitalSubring R) : Set R) ↔ x = 0 by rw [coe_bot, Set.mem_singleton]
 
 /-! ## inf -/
 
