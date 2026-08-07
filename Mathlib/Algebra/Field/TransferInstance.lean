@@ -29,7 +29,8 @@ protected abbrev nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.
 protected abbrev ratCast [RatCast β] : RatCast α where ratCast n := e.invFun n
 
 /-- Transfer `DivisionRing` across an `Equiv` -/
-protected abbrev divisionRing [DivisionRing β] : DivisionRing α := by
+protected abbrev divisionRing [DivisionRing β] :
+    DivisionRing α := fast_instance% by
   let add_group_with_one := e.addGroupWithOne
   let inv := e.Inv
   let div := e.div
@@ -43,7 +44,7 @@ protected abbrev divisionRing [DivisionRing β] : DivisionRing α := by
   apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Field` across an `Equiv` -/
-protected abbrev field [Field β] : Field α := by
+protected abbrev field [Field β] : Field α := fast_instance% by
   let add_group_with_one := e.addGroupWithOne
   let neg := e.Neg
   let inv := e.Inv
