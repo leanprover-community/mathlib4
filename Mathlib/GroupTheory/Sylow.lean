@@ -694,6 +694,18 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
         ⟨K', by rw [hK'.1, tsub_add_cancel_of_le h0m.nat_succ_le], le_trans hK.2 hK'.2⟩)
       fun hnm : n = m => ⟨H, by simp [hH, hnm]⟩
 
+theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n m : ℕ}
+    {H L : Subgroup G} [Finite L] (hH : Nat.card H = p ^ n) (hL : p ^ m ∣ Nat.card L)
+    (hHL : H ≤ L) (hnm : n ≤ m) :
+    ∃ K : Subgroup G, Nat.card K = p ^ m ∧ H ≤ K ∧ K ≤ L := by
+  have : Fact p.Prime := ⟨hp⟩
+  have hcardeq := Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv.symm ▸ hH
+  obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hnm
+  refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
+  · rw [Subgroup.card_map_of_injective L.subtype_injective, hcard]
+  · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
+    exact Subgroup.map_mono hHK
+
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
@@ -701,6 +713,85 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
     (by rw [card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
+
+/-- A corollary of **Sylow's first theorem**. Given a chain of `p`-subgroups, one can complete the
+chain to contain subgroups of size `p ^ k` for all `k` up to `n` such that `p ^ n` divides the order
+of the group. -/
+theorem exists_subgroup_tower_subgroup [Finite G] {p n : ℕ} (hp : p.Prime)
+    (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
+    (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ≤ p ^ n) :
+    ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
+  suffices ∀ (n : ℕ) (H : Subgroup G) (hdvd : p ^ n ∣ Nat.card H) (s : Set (Subgroup G))
+      (hchain : IsChain (· ≤ ·) s) (hpgroup : ∀ t ∈ s, IsPGroup p t)
+      (hcard : ∀ t ∈ s, Nat.card t ≤ p ^ n) (hle : ∀ t ∈ s, t ≤ H),
+      ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧
+        ∀ k, Nat.card (f k) = p ^ k.val ∧ f k ≤ H by
+    obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hpgroup hcard (by simp)
+    grind
+  intro n H hdvd s hchain hpgroup hcard hle
+  classical
+  have : Fact p.Prime := ⟨hp⟩
+  induction n generalizing H s with
+  | zero => exact ⟨.ofStrictMono ![⊥] (by simp), by simpa [card_le_one_iff_eq_bot] using hcard⟩
+  | succ n ih =>
+    obtain ⟨t, htcard, hst, htH⟩ : ∃ t : Subgroup G, Nat.card t = p ^ (n + 1) ∧ (∀ g ∈ s, g ≤ t)
+        ∧ t ≤ H := by
+      by_cases h : ∃ t ∈ s, Nat.card t = p ^ (n + 1)
+      · obtain ⟨t, hts, hcardt⟩ := h
+        refine ⟨t, hcardt, fun g hg ↦ hchain.le_of_not_gt hts hg fun h ↦ ?_, hle t hts⟩
+        grind [card_lt_of_lt h]
+      · let : Fintype s := Fintype.ofFinite _
+        let : LinearOrder s := hchain.linearOrder
+        let left := if h : (Finset.univ : Finset s).Nonempty then (Finset.max' _ h).val else ⊥
+        obtain ⟨k, hk, hkn, hleftH⟩ : ∃ k, Nat.card left = p ^ k ∧ k ≤ (n + 1) ∧ left ≤ H := by
+          unfold left
+          split_ifs with h
+          · obtain ⟨k, hk⟩ := (hpgroup _ (Finset.max' _ h).prop).exists_card_eq
+            refine ⟨k, hk, ?_, hle _ (Finset.max' _ h).prop⟩
+            exact (pow_le_pow_iff_right₀ hp.one_lt).mp <| hk.symm ▸ hcard _ (Finset.max' _ h).prop
+          · exact ⟨0, by simp⟩
+        obtain ⟨t, hcardt, hlet, htle⟩ := exists_subgroup_card_pow_prime_le_le hp hk hdvd hleftH hkn
+        refine ⟨t, hcardt, fun g hg ↦ le_trans ?_ hlet, htle⟩
+        have h : (Finset.univ : Finset s).Nonempty := ⟨⟨g, hg⟩, by simp⟩
+        simp only [left, h, ↓reduceDIte]
+        exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
+    have hdvd' : p ^ n ∣ Nat.card t := by simp [htcard, pow_add]
+    have hchain' : IsChain (· ≤ ·) (s \ {t}) := hchain.mono Set.sdiff_subset
+    have hpgroup' (g : Subgroup G) (hg : g ∈ s \ {t}) : IsPGroup p g :=
+      hpgroup g (Set.mem_of_mem_sdiff hg)
+    have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ≤ p ^ n := by
+      obtain ⟨m, hm⟩ := (hpgroup g (Set.mem_of_mem_sdiff hg)).exists_card_eq
+      rw [hm, pow_le_pow_iff_right₀ hp.one_lt, ← Nat.lt_add_one_iff,
+        ← pow_lt_pow_iff_right₀ hp.one_lt, ← hm, ← htcard]
+      refine card_lt_of_lt <| lt_of_le_of_ne (hst g (Set.mem_of_mem_sdiff hg)) ?_
+      simpa using Set.notMem_of_mem_sdiff hg
+    have hle' (g : Subgroup G) (hg : g ∈ s \ {t}) : g ≤ t := hst g (Set.mem_of_mem_sdiff hg)
+    obtain ⟨f', hsf', hf'⟩ := ih t hdvd' (s \ {t}) hchain' hpgroup' hcard' hle'
+    let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else f' (x.castPred hx)
+    have hf : StrictMono f := fun x y h ↦ by
+      by_cases hy : y = Fin.last (n + 1)
+      · simp only [f, Fin.ne_last_of_lt h, hy, ↓reduceDIte]
+        apply lt_of_le_of_ne (hf' _).2
+        grind [card_map_of_injective t.subtype_injective, Nat.pow_right_inj hp.one_lt]
+      · simpa [f, Fin.ne_last_of_lt h, hy] using h
+    refine ⟨.ofStrictMono f hf, fun g hg ↦ ?_, fun x ↦ ?_⟩
+    · rw [OrderEmbedding.coe_ofStrictMono, Set.mem_range]
+      by_cases hgt : g = t
+      · exact ⟨Fin.last (n + 1), by simp [f, hgt]⟩
+      have hgf' : g ∈ Set.range f' := by grind
+      obtain ⟨x, hx⟩ := Set.mem_range.mp hgf'
+      exact ⟨x.castSucc, by simp [f, hx]⟩
+    · simp only [OrderEmbedding.coe_ofStrictMono, f]
+      split_ifs with hx
+      · simp [hx, htcard, htH]
+      · simp [(hf' _).1, (hf' _).2.trans htH]
+
+/-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
+there is a chain of subgroups of size `p ^ k` for `k` through `0` to `n`. -/
+theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
+    ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
+  obtain ⟨f, _, hcard⟩ := exists_subgroup_tower_subgroup hp h IsChain.empty (by simp) (by simp)
+  exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
 then there is a subgroup of cardinality `p ^ n`. -/
