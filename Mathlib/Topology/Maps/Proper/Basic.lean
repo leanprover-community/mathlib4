@@ -346,3 +346,6 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
+
+lemma IsProperMap.hasCompactFibers {f : X → Y} (hf : IsProperMap f) : HasCompactFibers f :=
+  (isProperMap_iff_isClosedMap_and_compact_fibers.mp hf).2.2
