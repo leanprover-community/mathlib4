@@ -137,7 +137,7 @@ instance wideSubcategory.faithful : (wideSubcategoryInclusion P).Faithful :=
 variable {P} in
 /-- Build an isomorphism in `WideSubcategory P` from an isomorphism in `C`. -/
 @[simps!]
-def isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
+def WideSubcategory.isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
     (h₁ : P e.hom) (h₂ : P e.inv) : X ≅ Y where
   hom := ⟨e.hom, h₁⟩
   inv := ⟨e.inv, h₂⟩
