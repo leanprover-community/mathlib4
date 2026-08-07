@@ -648,7 +648,7 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
 second derivative. Version in a complete space. One could also give a version avoiding
 completeness but requiring that `f` is a local diffeomorphism. Variant where unique
 differentiability and the invariance property are only required in a smaller set `u`. -/
-lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
+lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
@@ -673,6 +673,10 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
       simp [pullbackWithin, hy]
   _ = lieBracketWithin 𝕜 (pullbackWithin 𝕜 f V s) (pullbackWithin 𝕜 f W s) s x :=
     lieBracketWithin_congr_set hus
+
+@[deprecated (since := "2026-07-23")]
+alias pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq :=
+  pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding

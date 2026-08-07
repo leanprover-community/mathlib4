@@ -421,7 +421,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
     rw [← ae_iff_prob_eq_one ?_] at ha
-    · rw [eventuallyEq_comm, ae_eq_univ]
+    · rw [eventuallyEqSet_comm, ae_eq_univ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]

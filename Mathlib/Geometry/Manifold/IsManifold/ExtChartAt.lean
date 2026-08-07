@@ -184,9 +184,12 @@ theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
   (nhdsWithin_mono _ (extend_target_subset_range _)).antisymm <|
     nhdsWithin_le_of_mem (extend_target_mem_nhdsWithin _ hy)
 
-theorem extend_target_eventuallyEq {y : M} (hy : y ∈ f.source) :
+theorem extend_target_eventuallyEqSet {y : M} (hy : y ∈ f.source) :
     (f.extend I).target =ᶠ[𝓝 (f.extend I y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extend_target_eq _ hy)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extend_target_eq _ hy)
+
+@[deprecated (since := "2026-07-23")]
+alias extend_target_eventuallyEq := extend_target_eventuallyEqSet
 
 theorem continuousAt_extend_symm' {x : E} (h : x ∈ (f.extend I).target) :
     ContinuousAt (f.extend I).symm x :=
@@ -275,7 +278,7 @@ theorem continuousOn_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g :
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (continuousWithinAt_congr_set ?_).trans
     (continuousWithinAt_writtenInExtend_iff _ (hs hx) (hmaps hx) hmaps)
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin_eq_image_of_subset,
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← map_extend_nhdsWithin_eq_image_of_subset,
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
@@ -303,11 +306,15 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
-theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
+theorem extend_symm_preimage_inter_range_eventuallyEqSet {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
+    (f.extend I).symm ⁻¹' s ∩ range I =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
+
+@[deprecated (since := "2026-07-23")]
+alias extend_symm_preimage_inter_range_eventuallyEq :=
+  extend_symm_preimage_inter_range_eventuallyEqSet
 
 lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
     (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
@@ -601,19 +608,29 @@ theorem nhdsWithin_extChartAt_target_eq (x : M) :
 
 /-- Around the image of a point in the source, `(extChartAt I x).target` and `range I`
 coincide locally. -/
-theorem extChartAt_target_eventuallyEq' {x y : M} (hy : y ∈ (extChartAt I x).source) :
+theorem extChartAt_target_eventuallyEqSet' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x y)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq' hy)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq' hy)
+
+@[deprecated (since := "2026-07-23")]
+alias extChartAt_target_eventuallyEq' := extChartAt_target_eventuallyEqSet'
 
 /-- Around a point in the target, `(extChartAt I x).target` and `range I` coincide locally. -/
-theorem extChartAt_target_eventuallyEq_of_mem {x : M} {z : E} (hz : z ∈ (extChartAt I x).target) :
+theorem extChartAt_target_eventuallyEqSet_of_mem {x : M} {z : E}
+    (hz : z ∈ (extChartAt I x).target) :
     (extChartAt I x).target =ᶠ[𝓝 z] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq_of_mem hz)
+
+@[deprecated (since := "2026-07-23")]
+alias extChartAt_target_eventuallyEq_of_mem := extChartAt_target_eventuallyEqSet_of_mem
 
 /-- Around the image of the base point, `(extChartAt I x).target` and `range I` coincide locally. -/
-theorem extChartAt_target_eventuallyEq {x : M} :
+theorem extChartAt_target_eventuallyEqSet {x : M} :
     (extChartAt I x).target =ᶠ[𝓝 (extChartAt I x x)] range I :=
-  nhdsWithin_eq_iff_eventuallyEq.1 (nhdsWithin_extChartAt_target_eq x)
+  nhdsWithin_eq_iff_eventuallyEqSet.1 (nhdsWithin_extChartAt_target_eq x)
+
+@[deprecated (since := "2026-07-23")]
+alias extChartAt_target_eventuallyEq := extChartAt_target_eventuallyEqSet
 
 theorem continuousAt_extChartAt_symm'' {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     ContinuousAt (extChartAt I x).symm y :=
@@ -645,7 +662,7 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
     mem_closure_iff_nhds.1 B _ A
   refine ⟨z, ⟨tz, ?_⟩⟩
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
-  exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
+  exact (extChartAt_target_eventuallyEqSet_of_mem h''z).symm.mem_interior hz
 
 variable (I) in
 theorem interior_extChartAt_target_nonempty (x : M) :
@@ -767,13 +784,17 @@ theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range
     ← map_extChartAt_nhdsWithin, nhdsWithin_inter_of_mem']
   exact hc (extChartAt_source_mem_nhds _)
 
-theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
+theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEqSet
     {f : M → M'} {x : M} (hc : ContinuousWithinAt f s x) :
-    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝 (extChartAt I x x)]
+    (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝 (extChartAt I x x)]
       ((extChartAt I x).target ∩
         (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
-  rw [← nhdsWithin_eq_iff_eventuallyEq]
+  rw [← nhdsWithin_eq_iff_eventuallyEqSet]
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
+
+@[deprecated (since := "2026-07-23")]
+alias ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq :=
+  ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEqSet
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 

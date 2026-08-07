@@ -84,7 +84,8 @@ theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ)
     μ ((c • ·) ⁻¹' s) = μ s := by
   rw [← measure_toMeasurable s,
     ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
-  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+  exact measure_congr (s := (c • ·) ⁻¹' toMeasurable μ s) (t := (c • ·) ⁻¹' s)
+    (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
 
 end AE_smul
 
@@ -165,7 +166,7 @@ theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+  simp only [Filter.eventuallyEqSet_antisymm_iff, smul_set_ae_le]
 
 end AE
 

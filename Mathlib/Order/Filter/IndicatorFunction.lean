@@ -117,7 +117,7 @@ theorem Filter.EventuallyEq.mulIndicator_one [One β] {l : Filter α} {f : α �
   hf.mulIndicator.trans <| by rw [mulIndicator_one']
 
 @[to_additive]
-theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α → β}
+theorem Filter.EventuallyEqSet.of_mulIndicator [One β] {l : Filter α} {f : α → β}
     (hf : ∀ᶠ x in l, f x ≠ 1) {s t : Set α} (h : s.mulIndicator f =ᶠ[l] t.mulIndicator f) :
     s =ᶠ[l] t := by
   have : ∀ {s : Set α}, Function.mulSupport (s.mulIndicator f) =ᶠ[l] s := fun {s} ↦ by
@@ -125,10 +125,16 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
     exact (hf.mono fun x hx ↦ and_iff_left hx).set_eq
   exact this.symm.trans <| h.mulSupport.trans this
 
+@[to_additive (attr := deprecated (since := "2026-07-23"))]
+alias Filter.EventuallyEq.of_mulIndicator := Filter.EventuallyEqSet.of_mulIndicator
+
 @[to_additive]
-theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
+theorem Filter.EventuallyEqSet.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
     {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
   .of_mulIndicator (Eventually.of_forall fun _ ↦ hc) h
+
+@[to_additive (attr := deprecated (since := "2026-07-23"))]
+alias Filter.EventuallyEq.of_mulIndicator_const := Filter.EventuallyEqSet.of_mulIndicator_const
 
 @[to_additive]
 theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)

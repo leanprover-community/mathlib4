@@ -176,7 +176,7 @@ theorem mlieBracketWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     =ᶠ[𝓝[{(extChartAt I x) x}ᶜ] (extChartAt I x x)]
       ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) by
     apply lieBracketWithin_congr_set' _ A
-  exact preimage_extChartAt_eventuallyEq_compl_singleton y h
+  exact preimage_extChartAt_eventuallyEqSet_compl_singleton y h
 
 theorem mlieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x :=
@@ -186,7 +186,6 @@ theorem mlieBracketWithin_inter (ht : t ∈ 𝓝 x) :
     mlieBracketWithin I V W (s ∩ t) x = mlieBracketWithin I V W s x := by
   apply mlieBracketWithin_congr_set
   filter_upwards [ht] with y hy
-  change (y ∈ s ∩ t) = (y ∈ s)
   simp_all
 
 theorem mlieBracketWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
@@ -619,7 +618,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   simp only [mpullbackWithin_eq_pullbackWithin]
   -- finally, use the fact that for `C^2` maps between vector spaces with symmetric second
   -- derivative, the pullback and the Lie bracket commute.
-  rw [pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
+  rw [pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEqSet
       (u := (extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)]
   · exact hsymm
   · rw [hF, comp_assoc]
@@ -642,7 +641,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     refine ⟨?_, mem_range_self _⟩
     convert! hst hz.1
     exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
-  · rw [← nhdsWithin_eq_iff_eventuallyEq]
+  · rw [← nhdsWithin_eq_iff_eventuallyEqSet]
     apply le_antisymm
     · exact nhdsWithin_mono _ (inter_subset_inter_right _ (extChartAt_target_subset_range x₀))
     · rw [nhdsWithin_le_iff, nhdsWithin_inter]
@@ -698,8 +697,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   set s' := s ∩ u with hs'
   have s'_eq : s' =ᶠ[𝓝 x₀] s := by
     filter_upwards [u_mem] with y hy
-    change (y ∈ s ∩ u) = (y ∈ s)
-    simp [hy]
+    simp [hs', hy]
   set t' := t ∩ (extChartAt I' (f x₀)).source with ht'
   calc mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀
   _ = mpullbackWithin I I' f (mlieBracketWithin I' V W t) s' x₀ := by
@@ -715,8 +713,6 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
       apply (continuousAt_extChartAt_symm x₀).preimage_mem_nhds
       apply u_open.mem_nhds (by simpa using x₀u)
     filter_upwards [this] with y hy
-    change (y ∈ (extChartAt I x₀).symm ⁻¹' s ∩ range I) =
-      (y ∈ (extChartAt I x₀).symm ⁻¹' (s ∩ u) ∩ range I)
     simp [-extChartAt, hy]
   _ = mlieBracketWithin I (mpullbackWithin I I' f V s') (mpullbackWithin I I' f W s') s x₀ := by
     simp only [hs', mlieBracketWithin_inter u_mem]
@@ -751,12 +747,12 @@ lemma mpullbackWithin_mlieBracketWithin'
   have B : ContDiffWithinAt 𝕜 n ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
       ((extChartAt I x₀).symm ⁻¹' u ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) := by
     apply (contMDiffWithinAt_iff.1 hf).2.congr_set
-    exact EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq.symm
+    exact EventuallyEqSet.inter (by rfl) extChartAt_target_eventuallyEqSet.symm
   apply mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt hV hW hs
     ((hf.mono hsu).of_le (le_minSmoothness.trans hn)) hx₀ hst
   have : ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target : Set E)
-      =ᶠ[𝓝 (extChartAt I x₀ x₀)] ((extChartAt I x₀).symm ⁻¹' s ∩ range I : Set E) :=
-    EventuallyEq.inter (by rfl) extChartAt_target_eventuallyEq
+      =ᶠ[𝓝 (extChartAt I x₀ x₀)] (extChartAt I x₀).symm ⁻¹' s ∩ range I :=
+    EventuallyEqSet.inter (by rfl) extChartAt_target_eventuallyEqSet
   apply IsSymmSndFDerivWithinAt.congr_set _ this
   have : IsSymmSndFDerivWithinAt 𝕜 ((extChartAt I' (f x₀)) ∘ f ∘ (extChartAt I x₀).symm)
       ((extChartAt I x₀).symm ⁻¹' u ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) := by
