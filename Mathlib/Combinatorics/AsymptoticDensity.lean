@@ -70,6 +70,18 @@ theorem hasDensity_empty (L : SummationFilter α) : HasDensity (∅ : Set α) 0 
   simpa using (tendsto_const_nhds :
     Tendsto (fun _ : Finset α ↦ (0 : ℝ)) L.filter (𝓝 0))
 
+/-- The universal set has density `1` along every summation filter consistent with unconditional
+summation on a nonempty type. -/
+theorem hasDensity_univ (L : SummationFilter α) [L.LeAtTop] [Nonempty α] :
+    HasDensity (Set.univ : Set α) 1 L := by
+  classical
+  rw [HasDensity]
+  let a : α := Classical.choice (inferInstance : Nonempty α)
+  refine tendsto_const_nhds.congr' ?_
+  filter_upwards [(eventually_ge_atTop ({a} : Finset α)).filter_mono L.le_atTop] with s hs
+  have hs0 : s.card ≠ 0 := Finset.card_ne_zero.mpr ⟨a, hs (by simp)⟩
+  simp [hs0]
+
 /-- A density along a nontrivial summation filter is nonnegative. -/
 theorem HasDensity.nonneg [L.NeBot] {δ : ℝ} (h : A.HasDensity δ L) : 0 ≤ δ := by
   rw [HasDensity] at h
@@ -128,13 +140,8 @@ theorem hasNaturalDensity_empty : HasNaturalDensity (∅ : Set ℕ) 0 :=
   hasDensity_empty _
 
 /-- The universal set has natural density `1`. -/
-theorem hasNaturalDensity_univ : HasNaturalDensity (Set.univ : Set ℕ) 1 := by
-  classical
-  rw [hasNaturalDensity_iff]
-  refine tendsto_const_nhds.congr' ?_
-  exact eventually_atTop.2 ⟨1, fun n hn ↦ by
-    have hn0 : n ≠ 0 := Nat.ne_of_gt (Nat.zero_lt_one.trans_le hn)
-    simp [hn0]⟩
+theorem hasNaturalDensity_univ : HasNaturalDensity (Set.univ : Set ℕ) 1 :=
+  hasDensity_univ _
 
 /-- The natural density of the empty set is `0`. -/
 @[simp]
