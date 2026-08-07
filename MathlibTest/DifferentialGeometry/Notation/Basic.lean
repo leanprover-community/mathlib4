@@ -1033,10 +1033,49 @@ open ContDiff in -- for the ∞ notation
 
 end
 
-/-! Inferring a model with corners on a normed space, for an `IsManifold` hypothesis -/
+/-! Inferring a model with corners on a normed space, even without an `IsManifold` hypothesis -/
 section
 
 open scoped ContDiff
+
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] {f : X → Y}
+
+/--
+info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
+-/
+#guard_msgs in
+#check CMDiff ω f
+
+variable {f : X → ℝ} in /--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
+
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] {f : X → 𝕜} in
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+-- This test is expected to fail: it passing would amount to guessing a model with corners on
+-- a product of two normed spaces (which is ambiguous).
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] {f : X → 𝕜} in
+/--
+error: Could not find a model with corners for `X`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
+#guard_msgs in
+#check MDiff f
+
+end
+
+/-! Inferring a model with corners from a local `IsManifold` assumption. -/
+section fromAssumption
+
+open scoped ContDiff
+
+section
 
 variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
   [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
@@ -1057,18 +1096,37 @@ variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(�
 #guard_msgs in
 #check MDiff f
 
--- This test is expected to fail: it passing would amount to guessing a model with corners on
--- a product of two normed spaces (which is ambiguous).
+-- This even works when the model with corners would otherwise be ambiguous,
+-- such as on a product of two normed spaces.
 variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
-/--
-error: Could not find a model with corners for `X`.
+/-- info: MDifferentiable (modelWithCornersSelf 𝕜 (Prod F F)) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
 
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-- When there are two such hypotheses in context, we pick the first one.
+-- This can lead to confusing error messages: TODO change this.
+-- Or should we pick the last hypothesis instead?
+-- (In practice, there should not be two conflicting ones.)
+set_option pp.mvars.anonymous false in
+variable [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+/--
+error: Application type mismatch: The argument
+  modelWithCornersSelf 𝕜 𝕜
+has type
+  ModelWithCorners.{u_1, u_1, u_1} 𝕜 𝕜 𝕜
+but is expected to have type
+  ModelWithCorners.{0, _, _} Real ?E' ?H'
+in the application
+  @MDifferentiable Real DenselyNormedField.toNontriviallyNormedField Real Real.normedAddCommGroup
+    NormedField.toNormedSpace Real PseudoMetricSpace.toUniformSpace.toTopologicalSpace (modelWithCornersSelf Real Real)
+    ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴ (modelWithCornersSelf 𝕜 𝕜)
 -/
 #guard_msgs in
 #check MDiff f
 
 end
+
+end fromAssumption
 
 /-! Tests for the elaborators for `tangentMap(Within)` and `TangentSpace` -/
 section
@@ -1432,6 +1490,9 @@ variable {f : Unit → Unit}
 error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
+[Elab.DiffGeo.MDiff] 💥️ instance assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `IsManifold` hypothesis involving `Unit` among local instances.
 [Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
