@@ -403,7 +403,7 @@ theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ 
     (I * J).IsHomogeneous 𝒜 := by
   rw [Ideal.IsHomogeneous.iff_exists] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
-  rw [Ideal.span_mul_span']
+  rw [Ideal.span_mul_span]
   exact ⟨s₁ * s₂, congr_arg _ <| (Set.image_mul (homogeneousSubmonoid 𝒜).subtype).symm⟩
 
 instance : Mul (HomogeneousIdeal 𝒜) where
