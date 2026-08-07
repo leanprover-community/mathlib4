@@ -229,21 +229,28 @@ theorem exists_comap_subtype_eq {H : Subgroup G} (P : Sylow p H) :
     ∃ Q : Sylow p G, Q.comap H.subtype = P :=
   P.exists_comap_eq_of_injective Subtype.coe_injective
 
-theorem iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
+theorem _root_.IsPGroup.iSup_of_normal {ι : Type*} (H : ι → Subgroup G) [∀ i, (H i).Normal]
     (h : ∀ i, IsPGroup p (H i)) : IsPGroup p (⨆ i, H i : Subgroup G) :=
   have H' := Classical.arbitrary <| Sylow p G
   H'.isPGroup'.to_le <| iSup_le (h · |>.le_sylow_of_normal H')
 
-theorem biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G) (h : ∀ i ∈ s, IsPGroup p (H i))
-    (hn : ∀ i ∈ s, (H i).Normal) : IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
+@[deprecated (since := "2026-06-03")] alias iSup_of_normal := IsPGroup.iSup_of_normal
+
+theorem _root_.IsPGroup.biSup_of_normal {ι : Type*} (s : Set ι) (H : ι → Subgroup G)
+    (h : ∀ i ∈ s, IsPGroup p (H i)) (hn : ∀ i ∈ s, (H i).Normal) :
+    IsPGroup p (⨆ i ∈ s, H i : Subgroup G) := by
   rw [← iSup_subtype'']
   have : ∀ i : s, (H i).Normal := fun i ↦ hn i i.property
-  exact iSup_of_normal _ fun i ↦ h i i.property
+  exact .iSup_of_normal _ fun i ↦ h i i.property
 
-theorem sSup_of_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, IsPGroup p H)
+@[deprecated (since := "2026-06-03")] alias biSup_of_normal := IsPGroup.biSup_of_normal
+
+theorem _root_.IsPGroup.sSup_of_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, IsPGroup p H)
     (hn : ∀ H ∈ Hs, H.Normal) : IsPGroup p (sSup Hs : Subgroup G) := by
   rw [sSup_eq_iSup]
-  exact biSup_of_normal Hs id h hn
+  exact .biSup_of_normal Hs id h hn
+
+@[deprecated (since := "2026-06-03")] alias sSup_of_normal := IsPGroup.sSup_of_normal
 
 /-- If the kernel of `f : H →* G` is a `p`-group,
   then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
@@ -881,5 +888,72 @@ noncomputable def directProductOfNormal [Finite G]
         (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
       _ = Nat.card G := Nat.prod_factorization_pow_eq_self Nat.card_pos.ne'
+
+section pCore
+
+variable (p : ℕ) (G : Type*) [Group G]
+
+theorem isPGroup_pCore : IsPGroup p <| pCore p G := by
+  generalize h : pCore p G = H
+  simp_rw [pCore_eq_iSup, iSup_and'] at h
+  subst h
+  exact .biSup_of_normal _ id (fun _ ↦ And.right) (fun _ ↦ And.left)
+
+variable {G} in
+theorem comap_pCore_le_of_injective {H : Type*} [Group H] {f : H →* G} (h : Function.Injective f) :
+    (pCore p G).comap f ≤ pCore p H :=
+  isPGroup_pCore p G |>.comap_of_injective f h |>.le_pCore
+
+variable {G} in
+theorem map_pCore_le_of_surjective {H : Type*} [Group H] {f : G →* H} (h : Function.Surjective f) :
+    (pCore p G).map f ≤ pCore p H :=
+  have := normal_pCore p G |>.map f h
+  isPGroup_pCore p G |>.map f |>.le_pCore
+
+variable {G} in
+/-- A surjective group homomorphism can be lifted to a homomorphism between the `p`-cores. -/
+@[simps]
+def pCoreMonoidHom {H : Type*} [Group H] (f : G →* H) (h : Function.Surjective f) :
+    pCore p G →* pCore p H where
+  toFun g := ⟨f g, map_pCore_le_of_surjective p h <| (pCore p G).mem_map_of_mem f g.property⟩
+  map_one' := by simp
+  map_mul' := by simp
+
+variable {G} in
+/-- A group isomorphism can be lifted to an isomorphism between the `p`-cores. -/
+@[simps]
+def pCoreMulEquiv {H : Type*} [Group H] (φ : G ≃* H) : pCore p G ≃* pCore p H where
+  __ := pCoreMonoidHom p φ φ.surjective
+  invFun := pCoreMonoidHom p φ.symm φ.symm.surjective
+  left_inv _ := by simp [pCoreMonoidHom]
+  right_inv _ := by simp [pCoreMonoidHom]
+
+instance characteristic_pCore : pCore p G |>.Characteristic :=
+  characteristic_iff_map_le.mpr (map_pCore_le_of_surjective p ·.surjective)
+
+variable {p G} in
+theorem pCore_le (H : Sylow p G) : pCore p G ≤ H :=
+  isPGroup_pCore p G |>.le_sylow_of_normal H
+
+variable {p G} in
+theorem pCore_eq_normalCore (H : Sylow p G) : pCore p G = H.normalCore := by
+  refine le_antisymm ?_ (H.isPGroup'.to_le <| normalCore_le _).le_pCore
+  grw [← normalCore_mono H.pCore_le, normalCore_eq_self]
+
+variable {p G} in
+theorem pCore_eq_of_normal (H : Sylow p G) [H.Normal] : pCore p G = H := by
+  rw [pCore_eq_normalCore H, normalCore_eq_self]
+
+set_option backward.isDefEq.respectTransparency.types false in
+theorem pCore_eq_iInf : pCore p G = ⨅ H : Sylow p G, (H : Subgroup G) := by
+  have K : Sylow p G := Sylow.nonempty.some
+  suffices (⨅ H : Sylow p G, (H : Subgroup G)).Normal from
+    le_antisymm (le_iInf (·.pCore_le)) (K.isPGroup'.to_le <| iInf_le _ K).le_pCore
+  refine .of_conjugate_fixed fun g ↦ ?_
+  rw [Subgroup.pointwise_smul_def, map_iInf _ <| MulEquiv.injective _]
+  simp_rw [← Subgroup.pointwise_smul_def, ← pointwise_smul_def]
+  exact MulAction.surjective g |>.iInf_comp _
+
+end pCore
 
 end Sylow
