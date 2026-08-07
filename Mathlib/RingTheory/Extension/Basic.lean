@@ -550,7 +550,7 @@ noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := 
     simp only [mk_apply, LinearMap.liftBaseChange_tmul, one_smul, Cotangent.mk_eq_zero_iff,
       pow_two] at hx ⊢
     refine Submodule.smul_induction_on' (p := fun x (hx : x ∈ P.ker * P.ker) ↦
-      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_right hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
+      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_left hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
     · intro r hr s hs
       trans (r • 1) ⊗ₜ[P.Ring] ⟨s, hs⟩
       · rw [smul_tmul]; rfl
