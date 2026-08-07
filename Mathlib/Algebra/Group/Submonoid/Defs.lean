@@ -232,7 +232,7 @@ instance : Top (Submonoid M) :=
 @[to_additive /-- The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`. -/]
 instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
-      one_mem' := mem_singleton_self 1
+      one_mem' := Set.mem_singleton_self 1
       mul_mem' := fun ha hb => by
         push _ ∈ _ at *
         rw [ha, hb, mul_one] }⟩
@@ -243,7 +243,7 @@ instance : Inhabited (Submonoid M) :=
 
 @[to_additive (attr := simp)]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submonoid M) ↔ x = 1 :=
-  mem_singleton
+  Set.mem_singleton
 
 @[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Submonoid M) :=

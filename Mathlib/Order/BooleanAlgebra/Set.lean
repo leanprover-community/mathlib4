@@ -583,7 +583,7 @@ lemma insert_sdiff_singleton : insert a (s \ {a}) = insert a s := by
 lemma insert_sdiff_singleton_comm (hab : a ≠ b) (s : Set α) :
     insert a (s \ {b}) = insert a s \ {b} := by
   simp_rw [← union_singleton, union_sdiff_distrib,
-    sdiff_singleton_eq_self (mem_singleton.2 hab.symm)]
+    sdiff_singleton_eq_self (mem_singleton.not.2 hab.symm)]
 
 @[deprecated (since := "2026-06-03")]
 alias insert_diff_singleton_comm := insert_sdiff_singleton_comm
