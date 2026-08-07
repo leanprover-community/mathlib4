@@ -208,7 +208,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   classical
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 
-theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
+protected theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff φ = 0 :=
   ⟨fun h => by simpa using congr_arg constantCoeff h, fun h =>
     ext fun n => by
       classical
@@ -218,7 +218,7 @@ theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff φ
 
 @[simp]
 theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
-  rw [inv_eq_zero, constantCoeff_zero]
+  rw [MvPowerSeries.inv_eq_zero, constantCoeff_zero]
 
 @[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff φ ≠ 0) :
@@ -256,10 +256,10 @@ protected theorem inv_eq_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : consta
 protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
     (φ * ψ)⁻¹ = ψ⁻¹ * φ⁻¹ := by
   by_cases h : constantCoeff (φ * ψ) = 0
-  · rw [inv_eq_zero.mpr h]
+  · rw [MvPowerSeries.inv_eq_zero.mpr h]
     simp only [map_mul, mul_eq_zero] at h
     -- we don't have `NoZeroDivisors (MvPowerSeries σ k)` yet,
-    rcases h with h | h <;> simp [inv_eq_zero.mpr h]
+    rcases h with h | h <;> simp [MvPowerSeries.inv_eq_zero.mpr h]
   · rw [MvPowerSeries.inv_eq_iff_mul_eq_one h]
     simp only [not_or, map_mul, mul_eq_zero] at h
     rw [← mul_assoc, mul_assoc _⁻¹, MvPowerSeries.inv_mul_cancel _ h.left, mul_one,
@@ -281,7 +281,7 @@ theorem C_inv (r : k) : (C (σ := σ) r)⁻¹ = C r⁻¹ := by
 
 @[simp]
 theorem X_inv (s : σ) : (X s : MvPowerSeries σ k)⁻¹ = 0 := by
-  rw [inv_eq_zero, constantCoeff_X]
+  rw [MvPowerSeries.inv_eq_zero, constantCoeff_X]
 
 @[simp]
 theorem smul_inv (r : k) (φ : MvPowerSeries σ k) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ := by
