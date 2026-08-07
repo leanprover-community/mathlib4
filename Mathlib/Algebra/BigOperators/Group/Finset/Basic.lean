@@ -1029,7 +1029,7 @@ theorem prod_subsingleton [Subsingleton ι] (f : ι → M) (a : ι) : ∏ x : ι
   have : Unique ι := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 
-@[to_additive] theorem prod_Prop (f : Prop → M) : ∏ p, f p = f True * f False := by simp
+@[to_additive] theorem prod_Prop (f : Prop → M) : ∏ p, f p = f True * f False := by classical simp
 
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype (p : ι → Prop) (f : ι → M) [DecidablePred p] :
