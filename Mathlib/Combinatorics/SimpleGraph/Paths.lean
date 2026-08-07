@@ -605,14 +605,14 @@ lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : 
   List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
 @[simp] lemma isTrail_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
-    (c.rotate u hu).IsTrail ↔ c.IsTrail := by
-  rw [isTrail_def, isTrail_def, (c.rotate_edges u hu).perm.nodup_iff]
+    (c.rotate u).IsTrail ↔ c.IsTrail := by
+  rw [isTrail_def, isTrail_def, (c.rotate_edges hu).perm.nodup_iff]
 
 @[simp] lemma isCircuit_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
-    (c.rotate u hu).IsCircuit ↔ c.IsCircuit := by simp [isCircuit_def]
+    (c.rotate u).IsCircuit ↔ c.IsCircuit := by simp [isCircuit_def, hu]
 
 @[simp] lemma isCycle_rotate {c : G.Walk v v} (hu : u ∈ c.support) :
-    (c.rotate u hu).IsCycle ↔ c.IsCycle := by simp [isCycle_def, (support_rotate ..).perm.nodup_iff]
+    (c.rotate u).IsCycle ↔ c.IsCycle := by simp [isCycle_def, (support_rotate _).perm.nodup_iff, hu]
 
 protected alias ⟨IsTrail.of_rotate, IsTrail.rotate⟩ := isTrail_rotate
 protected alias ⟨IsCircuit.of_rotate, IsCircuit.rotate⟩ := isCircuit_rotate
