@@ -41,7 +41,8 @@ As in other polynomial files, we typically use the notation:
 
 -/
 
-@[expose] public section
+/- @[expose] -/
+public section
 
 
 noncomputable section
@@ -96,7 +97,7 @@ theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support
 @[deprecated (since := "2026-04-24")] alias mem_vars := mem_vars_iff_mem_support
 
 theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
-  classical simp [degreeOf, vars_def]
+  classical simp [degreeOf_def, vars_def]
 
 theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
@@ -352,6 +353,31 @@ lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
   leadingCoeff_single toLex.injective _ r
 
 end Lex
+
+section MainDegree
+
+variable [LinearOrder σ] {c : σ}
+
+theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
+  apply card_mainDegree_eq_degreeOf_of_forall_degrees_le
+  · rw [← Multiset.mem_toFinset, ← vars_def]
+    exact Finset.mem_of_max h
+  rw [isMaxOn_iff]
+  intro j hj
+  rw [id_eq, id_eq, ← WithBot.coe_le_coe, ← h, vars_def]
+  exact Finset.le_max hj
+
+theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · cases hc : p.vars.max
+    · simp only
+    absurd Finset.mem_of_max hc
+    simpa [card_mainDegree_eq_degreeOf hc, degreeOf_def, vars_def] using h
+  suffices p.degrees = 0 by simp [mainDegree_def, this]
+  rw [Finset.max_eq_bot, vars_def] at h
+  exact Multiset.toFinset_eq_empty.mp h
+
+end MainDegree
 
 end CommSemiring
 
