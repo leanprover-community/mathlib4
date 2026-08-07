@@ -112,7 +112,7 @@ lemma IndV.mk_map_inv_eq (g : G) (a : A) :
   simp [← map_inv]
 
 /-- Construct a linear map `IndV φ ρ →ₗ[k] B` from a compatible family of linear maps
-`IndV.mk φ ρ h : A →ₗ[k] B`. -/
+`f : H → A →ₗ[k] B`, whose composition with `IndV.mk φ ρ h : A →ₗ[k] IndV φ ρ` is `f h`. -/
 noncomputable def IndV.lift (f : H → A →ₗ[k] B)
     (hf : ∀ (g : G) (h : H) (a : A), f (φ g * h) a = f h (ρ g⁻¹ a)) :
     IndV φ ρ →ₗ[k] B :=
@@ -137,7 +137,7 @@ lemma ind_apply (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
   simp
 
-lemma ind_conj_map_mem_apply (g : G) (h : H) (a : A) :
+lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
     ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
   simp
 
