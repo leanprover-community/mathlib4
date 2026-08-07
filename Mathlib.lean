@@ -2300,6 +2300,7 @@ public import Mathlib.Analysis.ODE.DiscreteGronwall
 public import Mathlib.Analysis.ODE.ExistUnique
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Analysis.ODE.SmoothFlow
 public import Mathlib.Analysis.ODE.Transform
 public import Mathlib.Analysis.Oscillation
 public import Mathlib.Analysis.PSeries
