@@ -26,7 +26,7 @@ definition is mainly needed to define a module instance on `F`.
 
 namespace FunLike
 
-variable {F α β : Type*} [FunLike F α β]
+variable {F F₁ F₂ α β : Type*} [FunLike F α β] [FunLike F₁ α β] [FunLike F₂ α β]
 
 section CoercionHom
 
@@ -52,6 +52,20 @@ theorem coe_coeMulHom : (coeMulHom F α β : F → α → β) = DFunLike.coe := 
 theorem coeMulHom_injective : Function.Injective (coeMulHom F α β) := by
   rw [coe_coeMulHom]
   exact DFunLike.coe_injective
+
+variable [Mul F₁] [Mul F₂] [IsMulApply F₁ α β] [IsMulApply F₂ α β] [Coe F₁ F₂]
+  [IsCoeApply F₁ F₂ α β]
+
+variable (F₁ F₂) in
+/-- Coercion between two `FunLike` types as a multiplicative homomorphism. -/
+@[to_additive
+/-- Coercion between two `FunLike` types as an additive homomorphism. -/]
+def toFunLikeMulHom : F₁ →ₙ* F₂ where
+  toFun f := f
+  map_mul' := coe_mul_eq_mul
+
+@[to_additive (attr := norm_cast)]
+theorem coe_toFunLikeMulHom : (toFunLikeMulHom F₁ F₂ : F₁ → F₂) = Coe.coe := rfl
 
 end MulHom
 
