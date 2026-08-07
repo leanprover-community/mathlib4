@@ -46,8 +46,11 @@ This version does not store the final echelon form itself as it can be computed
 by the data enclosed.
 -/
 structure Decomposition (A : Matrix (Fin m) (Fin n) R) where
+  /-- The transformation matrix. -/
   L : Matrix (Fin m) (Fin m) R
+  /-- The row permutation on the rows of `A`. -/
   σ : Equiv.Perm (Fin m)
+  /-- The pivot of the resulting echelon form. -/
   pivot : Fin m → WithTop (Fin n)
   isPivotedBy : (L * (A.submatrix σ id)).IsPivotedBy pivot
   L_lowerTriangular : L.IsLowerTriangular
