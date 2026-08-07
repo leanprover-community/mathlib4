@@ -374,10 +374,18 @@ lemma «forall» {p : Finset α → Prop} :
   mp h s hs := h _
   mpr h s := by simpa using h s s.finite_toSet
 
+theorem forall_iff_forall_finite {p : Set α → Prop} :
+    (∀ s : Finset α, p s) ↔ ∀ s : Set α, s.Finite → p s := by
+  simp [Finset.forall]
+
 lemma «exists» {p : Finset α → Prop} :
     (∃ s, p s) ↔ ∃ (s : Set α) (hs : s.Finite), p hs.toFinset where
   mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
   mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
+
+theorem exists_iff_exists_finite {p : Set α → Prop} :
+    (∃ s : Finset α, p s) ↔ ∃ s : Set α, p s ∧ s.Finite := by
+  simp [Finset.exists, and_comm]
 
 lemma mem_range_coe_iff {s : Set α} : s ∈ Set.range ((↑) : Finset α → Set α) ↔ s.Finite where
   mp := by
