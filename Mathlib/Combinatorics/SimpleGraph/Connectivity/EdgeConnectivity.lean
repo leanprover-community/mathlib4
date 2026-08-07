@@ -213,7 +213,7 @@ theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] {u v : V}
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp only [isEdgeReachable_comm, edgeReachability]
 
-theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := 
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ le_edgeReachability (hi u v)
 
 /-!
