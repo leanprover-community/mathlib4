@@ -372,4 +372,69 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
 
 end Salient
 
+section DirectedOrderRing
+
+variable {R : Type*} [Ring R] [PartialOrder R] [IsDirectedOrder R] [IsOrderedRing R]
+variable {E : Type*} [AddCommGroup E] [Module R E]
+variable {C : PointedCone R E} {x : E}
+
+/-- A cone that is closed under negation forms a submodule. -/
+abbrev toSubmodule (hC : -C = C) : Submodule R E where
+  __ := C
+  smul_mem' a x hx := by
+    obtain ⟨b, hab, hb⟩ := exists_ge_ge a 0
+    suffices b • x + -(b - a) • x ∈ C by
+      rw [← add_smul] at this
+      abel_nf at this
+      exact this
+    have : -(b - a) • x ∈ C := by
+      rw [← hC]
+      simpa [← neg_smul] using smul_mem _ (sub_nonneg.mpr hab) hx
+    aesop
+
+@[simp] lemma ofSubmodule_toSubmodule (hC : -C = C) : C.toSubmodule hC = C := rfl
+
+lemma coe_toSubmodule (hC : -C = C) : (C.toSubmodule hC : Set E) = C := by simp
+
+lemma mem_toSubmodule {hC : -C = C} : x ∈ C.toSubmodule hC ↔ x ∈ C := by simp
+
+instance : CanLift (PointedCone R E) (Submodule R E) ofSubmodule (fun C => -C = C) where
+  prf _ h := ⟨toSubmodule h, ofSubmodule_toSubmodule h⟩
+
+variable (R)
+
+lemma span_eq_hull_neg_sup_hull (s : Set E) : span R s = hull R (-s) ⊔ hull R s := by
+  suffices span R s = (hull R (-s) ⊔ hull R s).toSubmodule
+    (by simp [← span_neg_eq_neg, sup_comm]) by simp [this]
+  refine span_eq_of_le _ (fun x hx ↦ ?_) ?_
+  · simpa using mem_sup_right (Submodule.subset_span hx)
+  · rw [← ofSubmodule_le_ofSubmodule]
+    simpa [hull_le_span] using hull_le_span R (-s)
+
+variable (x) in
+@[simp] lemma hull_neg_pair_eq_span_singleton : hull R {-x, x} = R ∙ x := by
+  change hull R ({-x} ∪ {x}) = (R ∙ x)
+  simp only [span_union, span_eq_hull_neg_sup_hull, Set.neg_singleton]
+
+lemma hull_eq_span_of_neg_eq {s : Set E} (hs : -s = s) :
+    hull R s = span R s := by
+  simp [span_eq_hull_neg_sup_hull, hs]
+
+variable {R}
+
+variable (C) in
+lemma span_eq_neg_sup : span R (C : Set E) = -C ⊔ C := by
+  simp [span_eq_hull_neg_sup_hull, span_neg_eq_neg]
+
+lemma mem_span_iff_mem_neg_sup : x ∈ span R C ↔ x ∈ -C ⊔ C := by
+  rw [← span_eq_neg_sup, mem_ofSubmodule_iff]
+
+lemma mem_span : x ∈ span R C ↔ ∃ p ∈ C, ∃ n ∈ C, x = p - n := by
+  simp_rw [mem_span_iff_mem_neg_sup, mem_sup, mem_neg]
+  refine ⟨fun ⟨y, hy', z, hz, h⟩ ↦ ?_, fun ⟨p, hp, n, hn, h⟩ ↦ ?_⟩
+  · exact ⟨z, hz, -y, hy', by grind⟩
+  · exact ⟨-n, by simp [hn], x + n, by simp [h, hp], by simp⟩
+
+end DirectedOrderRing
+
 end PointedCone
