@@ -1026,8 +1026,7 @@ theorem HasSeparator.of_adjunction [HasSeparator C] {F : C ⥤ D} {G : D ⥤ C}
   ⟨_, (isSeparator_separator C).leftAdjoint_obj adj⟩
 
 theorem HasCoseparator.of_adjunction [HasCoseparator C] {F : C ⥤ D} {G : D ⥤ C}
-    [G.Faithful] (adj : G ⊣ F) :
-    HasCoseparator D :=
+    [G.Faithful] (adj : G ⊣ F) : HasCoseparator D :=
   ⟨_, (isCoseparator_coseparator C).rightAdjoint_obj adj⟩
 
 end Adjunction
