@@ -324,12 +324,12 @@ instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
       simp [this]
     | single_add i a =>
     simp only [UniformSpace.Completion.coe_add, inner_add_left, *, add_zero]
-    rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
+    rw [← UniformSpace.Completion.coe_toComplL (S := 𝕜)]
     have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
     have := by simpa [OfKernel.kerFun, adjoint_inner_right] using this
     rw [← mul_zero (conj a), ← this, ← inner_smul_left]
     refine (ext_iff_inner_right 𝕜).mp ?_ f
-    simp [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜),
+    simp [← UniformSpace.Completion.coe_toComplL (S := 𝕜),
       ← map_smul, -SeparationQuotient.mkCLM_apply, -UniformSpace.Completion.coe_toComplL]
 
 /-- The kernel of the reproducing kernel Hilbert space
