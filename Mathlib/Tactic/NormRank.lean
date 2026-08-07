@@ -51,8 +51,10 @@ def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
   let some (m, n, R, entries) ← matchMatrixLit? A | return .continue
-  let .ok _ ← checkBareissApplicable R | return .continue
-  return .done (← normalizeRank e A m n R entries)
+  --let .ok _ ← checkBareissApplicable R | return .continue
+  match ← checkBareissApplicable R with
+  | .ok _ => return .done (← normalizeRank e A m n R entries)
+  | .error err => trace[debug] "{err}"; return .continue
 
 end Mathlib.Tactic.Echelon
 
@@ -71,6 +73,10 @@ simproc_decl norm_rank_throw (Matrix.rank _) := fun e => normRankCore e
 close the goal. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
+  -- TODO: might need to check the simp goal meta API instead of simp only followed by goal check
+  -- instead of evalTactic and check what simprocs are used
+  -- check into simpGoal / mkSimpContext (simp.context)
+  -- check into trace[debug] for tactic debugging / register trace class
   Tactic.evalTactic (← `(tactic| simp -failIfUnchanged only [norm_rank_throw]))
   unless ← goal.isAssigned do
     /- diagnose the skip: a closed rank literal over an unsupported element type reports the

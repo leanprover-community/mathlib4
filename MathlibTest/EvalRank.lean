@@ -10,6 +10,8 @@ import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 
+-- set_option trace.debug true
+
 /-! # Tests for the `eval_rank` tactic -/
 
 /-! ## Basic evaluation over `ℤ` and `ℚ` -/

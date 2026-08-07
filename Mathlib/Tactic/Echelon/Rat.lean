@@ -60,7 +60,7 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
   let n ← mkNumeral R i.natAbs
   have n : Q($R) := n
   if i < 0 then
-    let _instNeg ← synthInstanceQ q(Neg $R)
+    let _ ← synthInstanceQ q(Neg $R)
     return q(-$n)
   else
     return n
@@ -69,6 +69,9 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
 `(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
 def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   if v == 0 then return true
+  -- TODO: considering moving them out of the individual check? This requires re-synthesising the
+  -- instance at every check (some sort of caching?)
+  -- test on a positive-char ring to observe performance
   let _instCast ← synthInstanceQ q(IntCast $R)
   let _instZero ← synthInstanceQ q(Zero $R)
   have vE : Q(Int) := mkIntLitQ v

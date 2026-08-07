@@ -76,6 +76,7 @@ the rendered decomposition. -/
 Extensions decline by returning `none`. -/
 @[expose] def BareissExt := Expr → MetaM (Option Producer)
 
+-- TODO: might worth putting it under implementation notes at the headers
 /- Pivot swap mechanism
 Let `A_σ := A.submatrix σ id` be the original matrix with its rows in the arrangement `σ`
 accumulated so far.
