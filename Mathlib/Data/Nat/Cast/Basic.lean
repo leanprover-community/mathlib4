@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -185,21 +186,6 @@ namespace Pi
 
 variable {π : α → Type*}
 
-section NatCast
-variable [∀ a, NatCast (π a)]
-
-instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
-
-@[simp]
-theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
-  rfl
-
-@[push ←]
-theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
-  rfl
-
-end NatCast
-
 section OfNat
 
 -- This instance is low priority, as `to_additive` only works with the one that comes from `One`
@@ -216,7 +202,3 @@ lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (OfNat.ofNat n : ∀ a, π a
 end OfNat
 
 end Pi
-
-theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
-    Sum.elim (n : α → γ) (n : β → γ) = n :=
-  Sum.elim_lam_const_lam_const (γ := γ) n
