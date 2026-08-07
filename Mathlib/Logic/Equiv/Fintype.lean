@@ -175,4 +175,13 @@ theorem Perm.exists_map_finset_eq
   obtain ⟨a, ha, rfl⟩ := Finset.mem_map.mp hb
   exact (hσ ⟨a, ha⟩) ▸ ((s.equivOfCardEq h) ⟨a, ha⟩).2
 
+/-- For some `Fintype α`, there is (computably) a bijection `α → Bool` and `Finset α` by using
+`s : Finset α` as the set where the `f : α → Bool` is `true`. -/
+@[simps]
+def arrowBoolEquivFinset [DecidableEq α] [Fintype α] : (α → Bool) ≃ (Finset α) where
+  toFun f := Finset.univ.filter (f · = true)
+  invFun s := fun i ↦ decide (i ∈ s)
+  left_inv l := by simp
+  right_inv l := by simp
+
 end Equiv
