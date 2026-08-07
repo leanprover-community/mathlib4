@@ -1361,3 +1361,26 @@ set_option pp.explicit true in
 /-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
 #guard_msgs in
 #check zero_n
+
+-- `@[simps]`-generated rfl-lemmas are tagged `@[defeq]` (and so usable by `dsimp`) on the same
+-- footing as a hand-written `:= rfl` projection lemma, even though the projected definition is only
+-- semireducible. See
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.40.5Bsimps.5D.20fails.20to.20declare.20some.20lemmas.20as.20defeq
+section DefEqAttr
+
+structure DefEqFoo where
+  l : ℕ
+
+@[simps]
+def defEqFoo : DefEqFoo where
+  l := 42
+
+run_cmd liftCoreM do
+  unless Lean.defeqAttr.hasTag (← getEnv) `defEqFoo_l do
+    throwError "expected `defEqFoo_l` to be tagged `@[defeq]`"
+
+-- `dsimp` uses it even with the backward escape hatch disabled, i.e. via a genuine `@[defeq]` tag.
+set_option backward.defeqAttrib.useBackward false in
+example : defEqFoo.l = 42 := by dsimp only [defEqFoo_l]
+
+end DefEqAttr
