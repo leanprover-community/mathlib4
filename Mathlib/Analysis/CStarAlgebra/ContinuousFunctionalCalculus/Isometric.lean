@@ -368,14 +368,23 @@ lemma nnnorm_quasispectrum_le (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a) (
 
 /- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
 for general semigroups. -/
+variable (𝕜) in
+lemma _root_.CFC.norm_cfcₙ_pow (a : A) (n : ℕ) (hn : n ≠ 0) (ha : p a := by cfc_tac) :
+    ‖cfcₙ (· ^ n : 𝕜 → 𝕜) a‖ = ‖a‖ ^ n := by
+  refine le_antisymm (norm_cfcₙ_le fun x hx ↦ ?_) ?_
+  · grw [norm_pow, norm_quasispectrum_le a hx]
+  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
+  simp only [← hx', ← norm_pow, norm_apply_le_norm_cfcₙ (· ^ n) a hx]
+
+/- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
+for general semigroups. -/
 include 𝕜 in
 variable (𝕜) in
 lemma _root_.CFC.norm_mul_self (a : A) (ha : p a := by cfc_tac) :
     ‖a * a‖ = ‖a‖ ^ 2 := by
-  apply le_antisymm (by simpa [sq] using norm_mul_le ..)
-  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
-  rw [← hx', ← norm_pow, sq, ← cfcₙ_id' 𝕜 a, ← cfcₙ_mul ..]
-  exact norm_apply_le_norm_cfcₙ (fun x ↦ x * x) a hx
+  convert CFC.norm_cfcₙ_pow 𝕜 a 2 (by simp)
+  simp_rw [sq]
+  rw [cfcₙ_mul .., cfcₙ_id' 𝕜 a]
 
 /- Replace this with a version of `CFC.norm_pow` for `PNat` powers when we have those
 for general semigroups.
@@ -385,10 +394,9 @@ include 𝕜 in
 variable (𝕜) in
 lemma _root_.CFC.norm_mul_mul_self (a : A) (ha : p a := by cfc_tac) :
     ‖a * a * a‖ = ‖a‖ ^ 3 := by
-  apply le_antisymm (by simpa [pow_succ] using norm_mul₃_le ..)
-  have ⟨⟨x, hx, hx'⟩, h₂⟩ := isGreatest_norm_quasispectrum (𝕜 := 𝕜) a ha
-  rw [← hx', ← norm_pow, ← cfcₙ_id' 𝕜 a, ← cfcₙ_mul .., ← cfcₙ_mul ..]
-  simpa only [pow_succ, pow_zero, one_mul] using norm_apply_le_norm_cfcₙ (fun x ↦ x * x * x) a hx
+  convert CFC.norm_cfcₙ_pow 𝕜 a 3 (by simp)
+  simp only [pow_succ, pow_zero, one_mul]
+  rw [cfcₙ_mul .., cfcₙ_mul .., cfcₙ_id' 𝕜 a]
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 
