@@ -1088,6 +1088,28 @@ theorem orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ) :
   rw [eq_const_of_unique b]
   grind
 
+/-! ### Determinant of a linear isometry equivalence -/
+
+namespace LinearIsometryEquiv
+
+/-- The determinant of a linear isometry equivalence on a finite-dimensional
+inner-product space has unit norm. -/
+@[simp]
+theorem norm_det (R : E ≃ₗᵢ[𝕜] E) : ‖R.toLinearMap.det‖ = 1 := by
+  rw [← R.toLinearMap.det_toMatrix (stdOrthonormalBasis 𝕜 E).toBasis]
+  apply CStarRing.norm_of_mem_unitary
+  exact Matrix.det_of_mem_unitary <| R.toMatrix_mem_unitaryGroup _ _
+
+/-- The absolute value of the determinant of a linear isometry equivalence
+on a finite-dimensional real inner-product space is `1`. -/
+@[simp]
+theorem abs_det {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
+    [FiniteDimensional ℝ F'] (R : F' ≃ₗᵢ[ℝ] F') :
+    |LinearMap.det (R : F' →ₗ[ℝ] F')| = 1 := by
+  simpa only [Real.norm_eq_abs] using R.norm_det
+
+end LinearIsometryEquiv
+
 variable {𝕜 E}
 
 section SubordinateOrthonormalBasis
