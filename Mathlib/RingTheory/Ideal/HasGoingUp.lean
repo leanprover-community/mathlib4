@@ -25,7 +25,6 @@ This file closely mirrors `Mathlib.RingTheory.Ideal.GoingDown`.
 -/
 
 @[expose] public section
-
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingUp R S` if for every pair of
 prime ideals `p ≤ q` of `R` with `P` a prime of `S` lying above `p`, there exists a
@@ -77,12 +76,9 @@ lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
     simpa [PrimeSpectrum.ext_iff] using lo.over.symm
   | cons l q lt ih =>
     simp only [RelSeries.head_cons] at lo
-    obtain ⟨Q, PQlt, hQ, Qlo⟩ :=
-      Ideal.exists_ideal_gt_liesOver_of_lt P lt
+    obtain ⟨Q, PQlt, hQ, Qlo⟩ := Ideal.exists_ideal_gt_liesOver_of_lt P lt
     obtain ⟨L, len, head, spec⟩ := ih Q
-    refine ⟨L.cons ⟨P, inferInstance⟩ (by
-      simp_all only [Set.mem_ofPred_eq]
-      exact PQlt), by simpa using len, rfl, ?_⟩
+    refine ⟨L.cons ⟨P, inferInstance⟩ (by simpa [head]), by simpa using len, rfl, ?_⟩
     simpa [spec, PrimeSpectrum.ext_iff] using lo.over.symm
 
 end Ideal
@@ -97,10 +93,8 @@ along `Spec S → Spec R`. -/
 lemma iff_specializingMap_primeSpectrumComap :
     Algebra.HasGoingUp R S ↔
       SpecializingMap (PrimeSpectrum.comap (algebraMap R S)) := by
-  refine ⟨?_, fun h ↦ ⟨fun {q} hq P hP hlt ↦ ?_⟩⟩
-  · intro h P q hq
-    simp only [flip] at hq
-    rw [← PrimeSpectrum.le_iff_specializes] at hq
+  refine ⟨fun h P q hq ↦ ?_, fun h ↦ ⟨fun {q} hq P hP hlt ↦ ?_⟩⟩
+  · rw [flip, ← PrimeSpectrum.le_iff_specializes] at hq
     obtain ⟨Q, hle, hQ, h⟩ := P.asIdeal.exists_ideal_ge_liesOver_of_le (q := q.asIdeal)
       (p := P.asIdeal.under R) hq
     refine ⟨⟨Q, hQ⟩, (PrimeSpectrum.le_iff_specializes P _).mp hle, ?_⟩
@@ -119,9 +113,7 @@ lemma trans (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower 
     Algebra.HasGoingUp R T := by
   rw [iff_specializingMap_primeSpectrumComap, IsScalarTower.algebraMap_eq R S T]
   simp only [PrimeSpectrum.comap_comp]
-  apply SpecializingMap.comp
-  · rwa [← iff_specializingMap_primeSpectrumComap]
-  · rwa [← iff_specializingMap_primeSpectrumComap]
+  apply SpecializingMap.comp <;> rwa [← iff_specializingMap_primeSpectrumComap]
 
 /-- Integral algebras satisfy the going up property. -/
 @[stacks 00GU]
