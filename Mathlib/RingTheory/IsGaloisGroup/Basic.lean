@@ -58,12 +58,11 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [SMulDistribClass G B L]
 
-instance [IsGaloisGroup G A B] : IsGaloisGroup G (algebraMap A B).range B where
-  faithful := IsGaloisGroup.faithful A
-  commutes := ⟨fun g ⟨a', ⟨a, ha⟩⟩ b ↦ by simp [Subring.smul_def, ← ha]⟩
-  isInvariant := ⟨fun b hb ↦ by
-    obtain ⟨a, ha⟩ := Algebra.IsInvariant.isInvariant (A := A) b hb
-    exact ⟨⟨algebraMap A B a, ⟨a, rfl⟩⟩, ha⟩⟩
+instance (C : Type*) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTower A B C]
+    [MulSemiringAction G C] [IsGaloisGroup G A C] : IsGaloisGroup G (algebraMap A B).range C :=
+  .of_ringHom_surjective G A (algebraMap A B).range C (algebraMap A B).rangeRestrict
+    (fun x ↦ (IsScalarTower.algebraMap_apply A B C x).symm)
+      (algebraMap A B).rangeRestrict_surjective
 
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
 theorem IsGaloisGroup.to_isFractionRing_of_isIntegral
@@ -116,13 +115,11 @@ If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is
 a Galois group for `FractionRing B / FractionRing A` for the action defined by
 `IsFractionRing.mulSemiringAction`.
 -/
-instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [Finite G]
-    [IsGaloisGroup G A B] [Algebra (FractionRing A) (FractionRing B)]
-    [IsScalarTower A (FractionRing A) (FractionRing B)] :
-    letI := IsFractionRing.mulSemiringAction G B (FractionRing B)
-    IsGaloisGroup G (FractionRing A) (FractionRing B) := by
-  let := IsFractionRing.mulSemiringAction G B (FractionRing B)
-  apply IsGaloisGroup.to_isFractionRing G A B _ _
+instance IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [Finite G] [IsGaloisGroup G A B]
+    [Algebra (FractionRing A) (FractionRing B)] [IsScalarTower A (FractionRing A) (FractionRing B)]
+    [MulSemiringAction G (FractionRing B)] [SMulDistribClass G B (FractionRing B)] :
+    IsGaloisGroup G (FractionRing A) (FractionRing B) :=
+  .to_isFractionRing G A B _ _
 
 end Field
 
@@ -132,14 +129,18 @@ namespace IsGaloisGroup
 
 section IsDomain
 
-variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
   [MulSemiringAction G B] [IsGaloisGroup G A B] [Finite G]
 
 attribute [local instance] FractionRing.liftAlgebra in
 /-- If `G` is a finite Galois group for `B/A`, then `G` is isomorphic to `Gal(B/A)`. -/
 @[simps!] noncomputable def mulEquivAlgEquiv : G ≃* Gal(B/A) :=
   MulEquiv.ofBijective (MulSemiringAction.toAlgAut G A B) (by
-    have := IsDomain.of_faithfulSMul A B
+    let := (algebraMap A B).rangeRestrict.toAlgebra
+    have : IsScalarTower A (algebraMap A B).range B := IsScalarTower.of_algebraMap_eq' rfl
+    refine .of_comp_left ?_
+      (AlgEquiv.extendScalarsHomOfSurjective (algebraMap A B).rangeRestrict_surjective).injective
+    let A := (algebraMap A B).range
     have : FaithfulSMul G B := IsGaloisGroup.faithful A
     refine ⟨fun _ _ ↦ eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, fun φ ↦ ?_⟩
     obtain ⟨g, hg⟩ := Ideal.Quotient.stabilizerHom_surjective G ⊥ ⊥
