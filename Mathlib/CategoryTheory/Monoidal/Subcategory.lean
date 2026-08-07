@@ -98,6 +98,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
+@[nolint instanceDiamonds]
 instance monoidalι : P.ι.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _

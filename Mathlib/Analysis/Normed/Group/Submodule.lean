@@ -18,6 +18,7 @@ namespace Submodule
 
 /-- A submodule of a seminormed group is also a seminormed group, with the restriction of the norm.
 -/
+@[nolint instanceDiamonds]
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
   fast_instance% SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
@@ -39,6 +40,7 @@ theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Sub
   rfl
 
 /-- A submodule of a normed group is also a normed group, with the restriction of the norm. -/
+@[nolint instanceDiamonds]
 instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : NormedAddCommGroup s :=
   { Submodule.seminormedAddCommGroup s with

@@ -33,7 +33,8 @@ section SMul
 
 variable {M X : Type*} [TopologicalSpace X] [SMul M X] [ContinuousConstSMul M X]
 
-@[to_additive]
+set_option allowUnsafeReducibility true in
+@[to_additive (attr := semireducible)]
 instance instSMul : SMul M (SeparationQuotient X) where
   smul c := Quotient.map' (c • ·) fun _ _ h ↦ h.const_smul c
 
@@ -125,7 +126,7 @@ def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M 
   map_mul' := mk_mul
   map_one' := mk_one
 
-instance (priority := 900) instNSMul [AddMonoid M] [ContinuousAdd M] :
+instance instNSMul [AddMonoid M] [ContinuousAdd M] :
     SMul ℕ (SeparationQuotient M) :=
   inferInstance
 
