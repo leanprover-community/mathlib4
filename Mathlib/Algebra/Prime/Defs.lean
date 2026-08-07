@@ -51,11 +51,14 @@ include hp
 theorem ne_zero : p ≠ 0 :=
   hp.1
 
-theorem not_unit : ¬IsUnit p :=
+theorem not_isUnit : ¬IsUnit p :=
   hp.2.1
 
+@[deprecated (since := "2026-08-02")]
+alias not_unit := not_isUnit
+
 theorem not_dvd_one : ¬p ∣ 1 :=
-  mt (isUnit_of_dvd_one ·) hp.not_unit
+  mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
 theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
 
@@ -76,7 +79,7 @@ theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   | zero =>
     rw [pow_zero] at h
     have := isUnit_of_dvd_one h
-    have := not_unit hp
+    have := not_isUnit hp
     contradiction
   | succ n ih =>
     rw [pow_succ'] at h
@@ -93,7 +96,7 @@ end Prime
 theorem not_prime_zero : ¬Prime (0 : M) := fun h => h.ne_zero rfl
 
 @[simp]
-theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
+theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_isUnit isUnit_one
 
 end Prime
 
@@ -147,7 +150,7 @@ section CancelCommMonoidWithZero
 variable [CommMonoidWithZero M] [IsCancelMulZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
-  ⟨hp.not_unit, fun a b ↦ by
+  ⟨hp.not_isUnit, fun a b ↦ by
     rintro rfl
     exact (hp.dvd_or_dvd dvd_rfl).symm.imp
       (isUnit_of_dvd_one <| (mul_dvd_mul_iff_right <| right_ne_zero_of_mul hp.ne_zero).mp <|
