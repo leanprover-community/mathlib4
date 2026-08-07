@@ -291,19 +291,17 @@ theorem mapDomain_of_notMem_range {f : α → β} (x : α →₀ M) (a : β) (h 
 lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
     b ∈ Set.range f := by contrapose! h; exact mapDomain_of_notMem_range _ _ h
 
-@[simp]
-theorem mapDomain_id : mapDomain id v = v :=
-  sum_single _
+@[to_fun mapDomain_fun_id]
+lemma mapDomain_id : mapDomain id v = v := sum_single _
+
+attribute [simp] mapDomain_fun_id
+
+lemma mapDomain_fun_comp (f : α → β) (g : β → γ) :
+    mapDomain (fun a ↦ g (f a)) v = mapDomain g (mapDomain f v) := by
+  simp [mapDomain, sum_sum_index]
 
 theorem mapDomain_comp {f : α → β} {g : β → γ} :
-    mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := by
-  refine ((sum_sum_index ?_ ?_).trans ?_).symm
-  · intro
-    exact single_zero _
-  · intro
-    exact single_add _
-  refine sum_congr fun _ _ => sum_single_index ?_
-  exact single_zero _
+    mapDomain (g ∘ f) v = mapDomain g (mapDomain f v) := mapDomain_fun_comp f g
 
 @[simp]
 theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single a b) = single (f a) b :=
@@ -313,7 +311,7 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
-theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
+@[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
     v.mapDomain f = v.mapDomain g :=
   Finset.sum_congr rfl fun _ H => by simp only [h _ H]
 
@@ -1073,7 +1071,7 @@ lemma sumElim_eq_add [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
 
 @[simp] lemma mapDomain_swap_sumElim [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
     mapDomain Sum.swap (sumElim f g) = sumElim g f := by
-  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_comp, Function.comp_def, add_comm]
+  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_fun_comp, add_comm]
 
 @[to_additive]
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
