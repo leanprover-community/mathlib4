@@ -260,7 +260,7 @@ open scoped Function in -- required for scoped `on` notation
   have _ : Std.Symm fun a b : List β ↦ List.Disjoint a b := { symm a b h := h.symm }
   exact Quot.induction_on s <| by
     unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise]
+    simp [this, List.nodup_flatMap, pairwise_coe_iff]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :
