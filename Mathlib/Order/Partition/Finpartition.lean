@@ -447,6 +447,39 @@ def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
     rw [this, inf_eq_right.mpr hb]
   bot_notMem := notMem_erase _ _
 
+@[simp]
+theorem parts_restrict (P : Finpartition a) (hb : b ≤ a) :
+    (P.restrict hb).parts = (P.parts.image (· ⊓ b)).erase ⊥ :=
+  rfl
+
+@[gcongr]
+theorem restrict_mono {P Q : Finpartition a} (hb : b ≤ a) (hPQ : P ≤ Q) :
+    P.restrict hb ≤ Q.restrict hb := by
+  intro x hx
+  simp_rw [parts_restrict, mem_erase, mem_image] at hx ⊢
+  obtain ⟨h, x, hx, rfl⟩ := hx
+  obtain ⟨y, hy, hxy⟩ := hPQ hx
+  exact ⟨y ⊓ b, ⟨ne_bot_of_le_ne_bot h (by gcongr), y, hy, rfl⟩, by gcongr⟩
+
+@[simp]
+theorem restrict_top (hb : b ≤ a) : restrict ⊤ hb = ⊤ := by
+  simp_rw [Top.top]
+  rcases eq_or_ne b ⊥ with rfl | hb'
+  · exact Subsingleton.elim ..
+  rw [dif_neg (ne_bot_of_le_ne_bot hb' hb), dif_neg hb']
+  ext1
+  simp_rw [parts_restrict, indiscrete_parts, image_singleton, inf_eq_right.mpr hb,
+    erase_eq_of_notMem (mem_singleton.not.mpr hb'.symm)]
+
+theorem restrict_inf (P Q : Finpartition a) (hb : b ≤ a) :
+    (P ⊓ Q).restrict hb = P.restrict hb ⊓ Q.restrict hb := by
+  refine le_antisymm (Monotone.map_inf_le (fun _ _ => restrict_mono hb) _ _) (fun x => ?_)
+  simp only [parts_inf, parts_restrict, mem_erase, mem_image, mem_product, Prod.exists]
+  rintro ⟨h, -, -, ⟨⟨-, y, hy, rfl⟩, ⟨-, z, hz, rfl⟩⟩, rfl⟩
+  exact ⟨y ⊓ z ⊓ b, ⟨by ac_nf at h ⊢, y ⊓ z,
+    ⟨ne_bot_of_le_ne_bot h <| inf_le_inf inf_le_left inf_le_left, y, z, ⟨hy, hz⟩, rfl⟩, rfl⟩,
+    by ac_nf⟩
+
 /-- The sum of a set-valued function over restricted partition parts equals the sum over original
 parts with `f (· ⊓ b)`, provided `f ⊥ = 0` (so bottom terms don't contribute). -/
 lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
@@ -463,7 +496,7 @@ lemma sum_restrict (P : Finpartition a) (hb : b ≤ a) {M : Type*} [AddCommMonoi
   have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
     simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
     rw [hx.2, hf]
-  simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
+  simp only [parts_restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
     Finset.sum_image hinj, add_zero]
 
 /-- A `Finpartition` constructor of `parts.sup id` from a finset `parts` of pairwise disjoint
