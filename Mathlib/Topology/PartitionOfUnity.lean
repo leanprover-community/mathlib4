@@ -308,6 +308,33 @@ theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X
     (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
   f.continuous_finsum_smul fun i _ hx => (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
 
+
+/-! ### Pointwise decomposition + algebraic-bound utilities -/
+
+/-- For any real-valued `f : X → ℝ` and any `x ∈ s`, the pointwise PoU
+decomposition holds: `f x = ∑ᶠ i, ρ i x · f x`. This is the pointwise step
+that lifts to integral linearity in measure-theoretic PoU integration:
+`∫_s f dμ = ∑ᶠ i, ∫_s (ρ i · f) dμ`. -/
+theorem pointwise_decomposition_finsum {ι X : Type*} [TopologicalSpace X]
+    {s : Set X} (ρ : PartitionOfUnity ι X s) (f : X → ℝ) {x : X} (hx : x ∈ s) :
+    f x = ∑ᶠ i, ρ i x * f x := by
+  rw [← finsum_mul (fun i => ρ i x) (f x), ρ.sum_eq_one hx, one_mul]
+
+/-- The complement of the global PoU sum is non-negative. Direct rearrangement
+of `sum_le_one`; useful as a complement-mass remainder bound. -/
+theorem one_minus_sum_nonneg {ι X : Type*} [TopologicalSpace X]
+    {s : Set X} (ρ : PartitionOfUnity ι X s) (x : X) :
+    0 ≤ 1 - ∑ᶠ i, ρ i x := by
+  linarith [ρ.sum_le_one x]
+
+/-- The absolute value of any PoU function value is bounded by `1`. Direct
+consequence of `nonneg` + `le_one`. -/
+theorem abs_le_one {ι X : Type*} [TopologicalSpace X]
+    {s : Set X} (ρ : PartitionOfUnity ι X s) (i : ι) (x : X) :
+    |ρ i x| ≤ 1 := by
+  rw [abs_of_nonneg (ρ.nonneg i x)]
+  exact ρ.le_one i x
+
 end PartitionOfUnity
 
 namespace BumpCovering
