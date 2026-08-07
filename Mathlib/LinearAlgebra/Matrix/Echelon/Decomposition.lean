@@ -25,18 +25,16 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 matrix, echelon form
 -/
 
-@[expose] public section
+public section
 
-universe v
-
-variable {m n : ℕ}
-variable {R : Type v} {A : Matrix (Fin m) (Fin n) R}
+variable
+  {m : Type*} [Fintype m] [LinearOrder m]
+  {n : Type*} [Fintype n] [LinearOrder n]
+  {R : Type*} [CommRing R] [IsDomain R]
 
 namespace Echelon
 
-open Finset
-
-variable [CommRing R] [IsDomain R]
+open scoped Finset
 
 /-- A certificate of an echelon form decomposition of `A`, certifying that
 `L * (A.submatrix σ id)` is in echelon form by providing a pivot, where `L`
