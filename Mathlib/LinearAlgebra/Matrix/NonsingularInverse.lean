@@ -488,6 +488,23 @@ theorem inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
 
 end InvEqInv
 
+section Map
+
+variable {R S F : Type*} [CommRing R] [CommRing S]
+  [FunLike F (Matrix n n R) (Matrix n n S)]
+  [MonoidHomClass F (Matrix n n R) (Matrix n n S)]
+
+/-- Any monoid homomorphism `f : Matrix n n R →* Matrix n n S` between matrix rings
+sends the nonsingular inverse of an invertible matrix to the nonsingular inverse of its image.
+In particular this applies to `RingHom`, `RingEquiv`, `AlgHom`, `AlgEquiv`, and `StarAlgEquiv`
+between matrix rings, since each of these provides a `MonoidHomClass` instance. -/
+theorem map_nonsing_inv (f : F) {A : Matrix n n R} (hA : IsUnit A.det) :
+    (f A)⁻¹ = f A⁻¹ := by
+  apply Matrix.inv_eq_right_inv
+  rw [← map_mul, Matrix.mul_nonsing_inv A hA, map_one]
+
+end Map
+
 variable (A)
 
 set_option backward.isDefEq.respectTransparency false in
