@@ -68,9 +68,9 @@ noncomputable def IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
 
 @[ext 10000]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ (h : H) (a : A), f (IndV.mk φ ρ h a) = g (IndV.mk φ ρ h a)) : f = g :=
+    (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
-    LinearMap.ext_ring <| by ext a; exact hfg h a
+    LinearMap.ext_ring <| hfg h
 
 variable {φ ρ} in
 @[elab_as_elim]
@@ -174,15 +174,13 @@ noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the induced `H`-representation `ind φ A`, with action on maps induced by left tensoring. -/
-@[implicit_reducible, simps obj map]
-noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
+noncomputable abbrev indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
   map_id _ := by ext; simp
   map_comp _ _ := by ext; simp
 
 end Ind
-
 section Adjunction
 
 open Representation
