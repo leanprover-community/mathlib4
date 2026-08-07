@@ -23,23 +23,6 @@ values `{-1, -1/2, 0, 1/2, 1}`.
 
 public section
 
-namespace IsIntegral
-
-variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
-
-@[simp]
-theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
-  isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective ℚ α)
-
-theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by
-  refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
-  rintro ⟨q, rfl⟩
-  rw [ratCast_iff] at h₁
-  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁ with h
-  simp [← h]
-
-end IsIntegral
-
 variable {θ : ℝ}
 
 open Real
@@ -125,8 +108,8 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Since `2 cos θ ` is an algebraic integer and rational, it must be an integer.
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨r, rfl⟩ := hθ
-  obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos (r * π) = k := by
-    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
+  obtain ⟨k, hk⟩ : 2 * cos (r * π) ∈ Set.range Int.cast := by
+    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).mem_range_ratCast_iff]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by

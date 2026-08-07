@@ -368,6 +368,20 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
 
 variable {R} (A) {B}
 
+theorem mem_range_algebraMap {C : Type*} [Ring C] [Algebra R C] [Algebra A C] [Algebra B C]
+    [FaithfulSMul B C] [IsScalarTower R B C] [IsScalarTower A B C] {x : C} (h : IsIntegral R x) :
+    x ∈ Set.range (algebraMap B C) ↔ x ∈ Set.range (algebraMap A C) := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · obtain ⟨x, rfl⟩ := h
+    rw [isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective B C),
+      @IsIntegralClosure.isIntegral_iff A R B] at h
+    obtain ⟨x, rfl⟩ := h
+    rw [← IsScalarTower.algebraMap_apply]
+    exact Set.mem_range_self _
+  · obtain ⟨x, rfl⟩ := h
+    rw [IsScalarTower.algebraMap_apply A B C]
+    exact Set.mem_range_self _
+
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/
 noncomputable def mk' (x : B) (hx : IsIntegral R x) : A :=
   Classical.choose (isIntegral_iff.mp hx)
