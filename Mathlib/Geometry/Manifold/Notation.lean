@@ -394,6 +394,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
+  if let some m ← tryStrategy "ComplexUnitDisc"     fromUnitDisc        then return some m
   if let some m ← tryStrategy "Units of algebra"    fromUnitsOfAlgebra  then return some m
   if let some m ← tryStrategy "Complex unit circle" fromCircle          then return some m
   if let some m ← tryStrategy "Sphere"              fromSphere          then return some m
@@ -504,7 +505,27 @@ where
         | _ => return none
       | trace[Elab.DiffGeo.MDiff]
           "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
-        -- Try a normed space, and a normed field as last alternatives.
+        -- As last alternatives, check if `H` is Euclidean half-space, a Euclidean quadrant,
+        -- Euclidean space, a normed space or a normed field.
+        -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace` and friends.
+        match H with
+        | mkApp2 (.const `EuclideanSpace _) k _n =>
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean space over `{k}`"
+          mkAppOptM ``modelWithCornersSelf #[k, none, H, none, none]
+        | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+          mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
+        | mkApp (.const `EuclideanQuadrant _) n =>
+          mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
+        | _ =>
+        if H.isConstOf `UpperHalfPlane || H.isConstOf `Complex.UnitDisc then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex upper half plane or the unit disc"
+          return ← mkAppOptM ``modelWithCornersSelf
+            #[mkConst `Complex, none, mkConst `Complex, none, none]
+        else if H.isConstOf `Circle then
+          trace[Elab.DiffGeo.MDiff] "`{H}` is the complex unit circle"
+          return ← mkAppOptM ``modelWithCornersSelf
+            #[mkConst `Real, none, ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)], none, none]
+        trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
         let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
           match_expr type with
           | NormedSpace K E _ _ =>
@@ -517,9 +538,7 @@ where
         trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
           assuming it is a non-trivially normed field"
         -- Return the trivial model with corners: this will work if `H` is a normed field.
-        let eT : Term ← Term.exprToSyntax H
-        let iTerm : Term ← ``(𝓘($eT))
-        Term.elabTerm iTerm none
+        mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -542,6 +561,12 @@ where
     | mkApp (.const `EuclideanQuadrant _) n =>
       mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
     | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+  /-- Attempt to find a model with corners on the complex unit disc -/
+  fromUnitDisc : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `Complex.UnitDisc then
+      mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
+    else throwError "`{e}` is not the complex unit disc"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
@@ -569,8 +594,7 @@ where
   fromUpperHalfPlane : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
-      let c ← Term.exprToSyntax (mkConst `Complex)
-      Term.elabTerm (← `(𝓘($c))) none
+      mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
     else throwError "`{e}` is not the complex upper half plane"
   /-- Attempt to find a model with corners on the units in a normed algebra -/
   fromUnitsOfAlgebra : TermElabM Expr := do
@@ -638,9 +662,8 @@ where
     -- We don't use `match_expr` to avoid importing `Circle`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
       -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
-      let r ← Term.exprToSyntax q(ℝ)
-      let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
-      Term.elabTerm (← ``(𝓘($r, $eE))) none
+      mkAppOptM ``modelWithCornersSelf
+        #[mkConst `Real, none, ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)], none, none]
     else throwError "`{e}` is not the complex unit circle"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
@@ -704,9 +727,8 @@ where
         let some nE ← factFinder E
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
         -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
-        let r ← Term.exprToSyntax q(ℝ)
-        let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
-        Term.elabTerm (← ``(𝓘($r, $eE))) none
+        mkAppOptM ``modelWithCornersSelf
+          #[mkConst `Real, none, ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)], none, none]
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
