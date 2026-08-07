@@ -267,18 +267,12 @@ lemma LatinRectangle.row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintyp
   rw [forall_existsUnique_iff] at hrow
   exact hrow
 
-/-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
-theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
-    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n)
-    {k' : Type*} [Fintype k'] (ι : k ↪ k') (h₂ : Fintype.card k' = Fintype.card k + 1) :
-    ∃ (A' : LatinRectangle k' n α), IsSubrect A A' := by
-  classical
-  let B := symbolsNotIn A
-  have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) :=
-    LatinRectangle.card_symbols_not_in A j
-  have exactly_n_minus_k_cols_without_x : ∀ x,
-    (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by
+lemma LatinRectangle.forall_card_in_eq_card {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
+  ∀ x, (Finset.card {j : n | x ∈ (symbolsNotIn A) j}) = Fintype.card n - Fintype.card k := by
+    classical
     intro x
+    let B := symbolsNotIn A
     set As : Finset (n) := {j | ∃ i, LatinRectangle.col A j i = x} with hA -- column indices with x
     set Bs : Finset (n) := {j | x ∈ B j} with hB -- column indices without x
     set Cs : Finset (k) := {i | ∃ j, LatinRectangle.row A i j = x} with hC -- row indices with x
@@ -354,6 +348,18 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     have h_card := Finset.card_union As Bs
     simp [h_union_card, h_As_card, h_intersect] at h_card
     lia
+
+/-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
+theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n)
+    {k' : Type*} [Fintype k'] (ι : k ↪ k') (h₂ : Fintype.card k' = Fintype.card k + 1) :
+    ∃ (A' : LatinRectangle k' n α), IsSubrect A A' := by
+  classical
+  let B := symbolsNotIn A
+  have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) :=
+    LatinRectangle.card_symbols_not_in A j
+  have exactly_n_minus_k_cols_without_x := LatinRectangle.forall_card_in_eq_card (n := n) (k := k)
+    (α := α) A h
   have pre_property_H : ∀ x, ∀ (t : Finset n),
     (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ Fintype.card n - Fintype.card k := by
     intro x t
