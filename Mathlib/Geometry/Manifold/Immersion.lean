@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.ImmersedPoint
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Geometry.Manifold.Notation
@@ -63,6 +64,12 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `ContMDiffAt.iff_comp_isImmersionAt` and `ContMDiff.iff_comp_isImmersion`: a function `f : M → N`
   is `C^n` (at `x`) if and only if it is continuous (at `x`) and its composition `φ ∘ f` with a
   `C^n` immersion `φ : N → P` (at `f x`) is `C^n`.
+* `IsImmersionAt.isImmersedPoint`: if `f` is an immersion at `x`, then `x` is an immersed point,
+  i.e. `mfderiv% f x` is a continuous left inverse
+* `IsImmersionAt.injective_mfderiv`: if `f` is an immersion at `x`, the differential `mfderiv% f x`
+  at `x` is injective
+* `IsImmersion.isImmersedPoint` and `IsImmersion.injective_mfderiv`: if `f` is an immersion,
+  every point of the domain is an immersed point, and in particular has injective differential
 
 ## Implementation notes
 
@@ -491,6 +498,38 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAtOfComplement
   refine ⟨hf.continuousWithinAt, ?_⟩
   exact aux hφ h' ht hxt
 
+/-- If `f` is an immersion at `x`, then `mfderiv f x` has a continuous left inverse. -/
+lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    IsImmersedPoint I J f x := by
+  have hn' : 1 ≤ n := ENat.one_le_iff_ne_zero_withTop.mpr hn
+  suffices IsImmersedPoint I 𝓘(𝕜, E'') ((h.codChart.extend J) ∘ f) x by
+    apply IsImmersedPoint.of_comp (h.contMDiffAt.mdifferentiableAt hn) ?_ this
+    exact h.codChart.mdifferentiableAt_extend
+      (IsManifold.maximalAtlas_subset_of_le hn' h.codChart_mem_maximalAtlas) h.mem_codChart_source
+  -- The local representative of f in the nice charts at x, as a continuous linear map.
+  let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+  have heq : EqOn ((h.codChart.extend J) ∘ f) (rhs ∘ (h.domChart.extend I)) h.domChart.source := by
+    intro x' hx'
+    trans ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x'
+    · simp [h.domChart.left_inv hx']
+    · exact h.writtenInCharts ((h.domChart.extend I).map_source' (by simpa))
+  suffices IsImmersedPoint I 𝓘(𝕜, E'') (rhs ∘ (h.domChart.extend I)) x from
+    this.congr
+      (Filter.eventually_of_mem (h.domChart.open_source.mem_nhds h.mem_domChart_source) heq)
+  apply IsImmersedPoint.comp (I' := 𝓘(𝕜, E))
+  · apply h.equiv.isImmersedPoint.comp
+    dsimp
+    rw [isImmersedPoint_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
+    exact ContinuousLinearMap.HasLeftInverse.inl
+  · exact IsImmersedPoint.of_mfderiv_isInvertible <| isInvertible_mfderiv_extend
+      (IsManifold.maximalAtlas_subset_of_le hn' h.domChart_mem_maximalAtlas)
+      (by simp [h.mem_domChart_source])
+
+/-- An immersion at `x` has injective differential. -/
+lemma injective_mfderiv (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    Injective (mfderiv% f x) :=
+  (h.isImmersedPoint hn).mfderiv_injective
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -684,6 +723,14 @@ lemma _root_.ContMDiffAt.iff_comp_isImmersionAt {f : M → N} {φ : N → N'}
     CMDiffAt n f x ↔ ContinuousAt f x ∧ CMDiffAt n (φ ∘ f) x := by
   rw [← ContMDiffAt.iff_comp_isImmersionAtOfComplement hφ.isImmersionAtOfComplement_complement]
 
+/-- If `f` is an immersion at `x`, then `mfderiv f x` has a continuous left inverse. -/
+lemma isImmersedPoint (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : IsImmersedPoint I J f x :=
+  h.isImmersionAtOfComplement_complement.isImmersedPoint hn
+
+/-- An immersion at `x` has injective differential. -/
+lemma injective_mfderiv (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : Injective (mfderiv% f x) :=
+    h.isImmersionAtOfComplement_complement.injective_mfderiv hn
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -822,6 +869,16 @@ lemma _root_.ContMDiff.iff_comp_isImmersionOfComplement {f : M → N} {φ : N �
   rw [ContMDiffAt.iff_comp_isImmersionAtOfComplement (hφ (f x))]
   exact ⟨h.continuousAt, h' x⟩
 
+/-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/
+lemma isImmersedPoint (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
+    IsImmersedPoint I J f x :=
+  (h x).isImmersedPoint hn
+
+/-- An immersion has injective differential at each point. -/
+lemma injective_mfderiv (h : IsImmersionOfComplement F I J n f) (hn : n ≠ 0) (x : M) :
+    Injective (mfderiv% f x) :=
+  (h x).injective_mfderiv hn
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -898,6 +955,16 @@ and its composition `φ ∘ f` with a `C^n` immersion `φ : N → N'` is `C^n`. 
 lemma _root_.ContMDiff.iff_comp_isImmersion {f : M → N} {φ : N → N'} (hφ : IsImmersion J J' n φ) :
     CMDiff n f ↔ Continuous f ∧ CMDiff n (φ ∘ f) := by
   rw [ContMDiff.iff_comp_isImmersionOfComplement hφ.isImmersionOfComplement_complement]
+
+/-- If `f` is an immersion, each differential `mfderiv f x` has a continuous left inverse. -/
+lemma isImmersedPoint (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
+    IsImmersedPoint I J f x :=
+  (h.isImmersionOfComplement_complement x).isImmersedPoint hn
+
+/-- An immersion has injective differential at each point. -/
+lemma injective_mfderiv (h : IsImmersion I J n f) (hn : n ≠ 0) (x : M) :
+    Injective (mfderiv% f x) :=
+  (h.isImmersionOfComplement_complement x).injective_mfderiv hn
 
 end IsImmersion
 
