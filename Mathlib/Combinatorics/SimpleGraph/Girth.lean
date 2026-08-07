@@ -26,6 +26,16 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 namespace SimpleGraph
 variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
+-- #41373
+theorem Free.cliqueFree {n : ℕ} {H : SimpleGraph (Fin n)} (h : H.Free G) : G.CliqueFree n := by
+  rw [cliqueFree_iff]
+  contrapose! h
+  exact .trans (.of_le le_top) h
+
+-- #41364
+theorem cliqueFree_iff_free_top_fin {n : ℕ} : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
+  not_cliqueFree_iff_top_isContained n |>.not_right
+
 section egirth
 
 
@@ -102,6 +112,36 @@ lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
   le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
+theorem le_egirth_iff_free_cycleGraph {k : ℕ∞} :
+    k ≤ G.egirth ↔ ∀ n : ℕ, 3 ≤ n → n < k → (cycleGraph n).Free G := by
+  rw [le_egirth]
+  refine ⟨fun h n hn hnk hcyc ↦ hnk.not_ge ?_, fun h v p hp ↦ ?_⟩
+  · obtain ⟨v, p, hp, rfl⟩ := cycleGraph_isContained_iff hn |>.mp hcyc
+    exact h v p hp
+  · by_contra! hlt
+    apply h p.length hp.three_le_length hlt
+    exact cycleGraph_isContained_iff hp.three_le_length |>.mpr ⟨v, p, hp, rfl⟩
+
+theorem free_cycleGraph_of_lt_egirth {n : ℕ} (hle : 3 ≤ n) (hlt : n < G.egirth) :
+    (cycleGraph n).Free G :=
+  le_egirth_iff_free_cycleGraph.mp (Order.add_one_le_of_lt hlt) n hle ENat.natCast_lt_succ
+
+theorem IsClique.egirth_le_encard {s : Set α} (hs : G.IsClique s) (hcard : 3 ≤ s.encard) :
+    G.egirth ≤ s.encard := by
+  rcases s.finite_or_infinite with hfin | hinf
+  · by_contra! hlt
+    have : 3 ≤ s.ncard := ENat.natCast_le_natCast.mp <| hcard.trans_eq hfin.cast_ncard_eq.symm
+    have := (free_cycleGraph_of_lt_egirth this <| hfin.cast_ncard_eq.trans_lt hlt).cliqueFree
+    exact this hfin.toFinset ⟨by simpa using hs, s.ncard_eq_toFinset_card (hs := hfin).symm⟩
+  · simp [hinf]
+
+theorem egirth_ne_three_iff_cliqueFree : G.egirth ≠ 3 ↔ G.CliqueFree 3 := by
+  simp_rw [← G.three_le_egirth.lt_iff_ne', ← Nat.cast_ofNat (R := ℕ∞),
+    ← ENat.natCast_add_one_le_iff, le_egirth_iff_free_cycleGraph, ENat.lt_natCast_add_one_iff,
+    ENat.natCast_le_natCast, cliqueFree_iff_free_top_fin, completeGraph_eq_top,
+    ← cycleGraph_three_eq_top]
+  grind
+
 end egirth
 
 section girth
@@ -114,14 +154,48 @@ acyclic.
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
+variable (G) in
+theorem girth_eq_toNat_egirth : G.girth = G.egirth.toNat :=
+  rfl
+
+variable (G) in
+theorem natCast_girth_le_egirth : G.girth ≤ G.egirth :=
+  G.egirth.natCast_toNat_le_self
+
+theorem natCast_girth_eq_egirth_iff : G.girth = G.egirth ↔ ¬G.IsAcyclic :=
+  G.egirth.natCast_toNat_eq_self.trans G.egirth_eq_top.not
+
+theorem girth_eq_iff {n : ℕ} : G.girth = n ↔ G.egirth = n ∨ (n = 0 ∧ G.IsAcyclic) := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
+  · simp [girth_eq_toNat_egirth, ENat.toNat_eq_iff, hn]
+
+theorem girth_eq_iff_of_ne_zero {n : ℕ} (hn : n ≠ 0) : G.girth = n ↔ G.egirth = n := by
+  simp [girth_eq_iff, hn]
+
+theorem girth_eq_iff_of_not_isAcyclic {n : ℕ} (h : ¬G.IsAcyclic) : G.girth = n ↔ G.egirth = n := by
+  simp [girth_eq_iff, h]
+
+@[simp]
+theorem le_girth_iff_natCast_le_egirth {n : ℕ} :
+    n ≤ G.girth ↔ n ≤ G.egirth ∧ (n = 0 ∨ ¬G.IsAcyclic) := by
+  rcases eq_or_ne G.egirth ⊤ with h | h
+  · simp [girth_eq_toNat_egirth, egirth_eq_top.mp, h]
+  rw [← ENat.natCast_toNat h]
+  simp [girth_eq_toNat_egirth, egirth_eq_top.not.mp h]
+
+theorem le_girth {n : ℕ} :
+    n ≤ G.girth ↔ (n = 0 ∨ ¬G.IsAcyclic) ∧ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
+  simp [and_comm]
+
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
+  ENat.natCast_le_natCast.mp <| G.natCast_girth_le_egirth.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
-lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
-  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by lia, fun h ↦ by simp [girth, h]⟩
+lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic := by
+  simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
 
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 
@@ -130,7 +204,7 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
 
 lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
     G.girth ≤ w.length :=
-  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| hwc.egirth_le_length
+  ENat.natCast_le_natCast.mp <| G.natCast_girth_le_egirth.trans <| hwc.egirth_le_length
 
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
@@ -150,6 +224,23 @@ lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.
 
 lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
   simp [girth, f.egirth_eq]
+
+theorem le_girth_iff_free_cycleGraph {k : ℕ} :
+    k ≤ G.girth ↔ (k = 0 ∨ ¬G.IsAcyclic) ∧ ∀ n : ℕ, 3 ≤ n → n < k → (cycleGraph n).Free G := by
+  simp_rw [le_girth_iff_natCast_le_egirth, and_comm, le_egirth_iff_free_cycleGraph, Nat.cast_lt]
+
+theorem free_cycleGraph_of_lt_girth {n : ℕ} (hle : 3 ≤ n) (hlt : n < G.girth) :
+    (cycleGraph n).Free G :=
+  free_cycleGraph_of_lt_egirth hle <| by grw [hlt, ← G.natCast_girth_le_egirth]
+
+theorem IsClique.girth_le_encard {s : Set α} (hs : G.IsClique s) (hcard : 3 ≤ s.ncard) :
+    G.girth ≤ s.ncard := by
+  have := s.finite_of_ncard_pos <| by lia
+  grw [← Nat.cast_le (α := ℕ∞), G.natCast_girth_le_egirth, this.cast_ncard_eq, hs.egirth_le_encard]
+  grw [← Nat.cast_ofNat, hcard, this.cast_ncard_eq]
+
+theorem girth_ne_three_iff_cliqueFree : G.girth ≠ 3 ↔ G.CliqueFree 3 := by
+  simp [egirth_ne_three_iff_cliqueFree, girth_eq_iff_of_ne_zero]
 
 end girth
 
