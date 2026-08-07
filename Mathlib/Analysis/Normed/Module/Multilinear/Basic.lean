@@ -369,7 +369,7 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
 theorem isLeast_opNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
-  simp only [Set.setOf_and, Set.setOf_forall]
+  simp only [Set.ofPred_and, Set.ofPred_forall]
   exact isClosed_Ici.inter (isClosed_iInter fun m ↦ isClosed_le continuous_const (by fun_prop))
 
 theorem opNorm_nonneg (f : ContinuousMultilinearMap 𝕜 E G) : 0 ≤ ‖f‖ :=
@@ -559,7 +559,7 @@ section
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
-  letI : Unique ι := uniqueOfSubsingleton i
+  let : Unique ι := uniqueOfSubsingleton i
   simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
@@ -924,6 +924,7 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
       _ = _ := (mul_assoc _ _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]
@@ -1195,7 +1196,7 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one

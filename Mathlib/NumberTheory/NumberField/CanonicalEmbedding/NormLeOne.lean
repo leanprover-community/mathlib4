@@ -150,7 +150,7 @@ theorem norm_normAtAllPlaces (x : mixedSpace K) :
 theorem normAtAllPlaces_mem_fundamentalCone_iff {x : mixedSpace K} :
     mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   simp_rw [fundamentalCone, Set.mem_sdiff, Set.mem_preimage, logMap_normAtAllPlaces,
-    Set.mem_setOf_eq, norm_normAtAllPlaces]
+    Set.mem_ofPred_eq, norm_normAtAllPlaces]
 
 end normAtAllPlaces
 
@@ -161,7 +161,10 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev normLeOne : Set (mixedSpace K) :=
+  fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
@@ -195,8 +198,8 @@ theorem normAtAllPlaces_normLeOne :
     refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₂
+    · rwa [Set.mem_ofPred_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -533,7 +536,6 @@ theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
         ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
       ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
-  classical
   simp_rw [ZSpan.mem_fundamentalDomain, equivFinRank.forall_congr_left, Subtype.forall]
   refine forall₂_congr fun w hw ↦ ?_
   rw [expMapBasis_apply'', map_smul, logMap_real_smul (norm_expMapBasis_ne_zero _)
@@ -634,7 +636,9 @@ open scoped Classical in
 The set that parametrizes `normAtAllPlaces '' (normLeOne K)`, see
 `normAtAllPlaces_normLeOne_eq_image`.
 -/
-abbrev paramSet : Set (realSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev paramSet : Set (realSpace K) :=
   Set.univ.pi fun w ↦ if w = w₀ then Set.Iic 0 else Set.Ico 0 1
 
 theorem measurableSet_paramSet :
@@ -659,7 +663,7 @@ theorem normAtAllPlaces_normLeOne_eq_image :
   ext x
   by_cases hx : ∀ w, 0 < x w
   · rw [← expMapBasis.right_inv (Set.mem_univ_pi.mpr hx), (injective_expMapBasis K).mem_set_image]
-    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
+    simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_ofPred_eq, expMapBasis_nonneg,
       Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
       ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
@@ -721,7 +725,9 @@ open scoped Classical in
 A compact set that contains `expMapBasis '' closure (paramSet K)` and furthermore is almost
 equal to it, see `compactSet_ae`.
 -/
-abbrev compactSet : Set (realSpace K) :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable abbrev compactSet : Set (realSpace K) :=
   (Set.Icc (0 : ℝ) 1) • (expMapBasis '' Set.univ.pi fun w ↦ if w = w₀ then {0} else Set.Icc 0 1)
 
 theorem isCompact_compactSet :
@@ -780,7 +786,6 @@ theorem compactSet_eq_union_aux₂ {x : realSpace K} (hx₀ : x ≠ 0)
 
 theorem compactSet_eq_union :
     compactSet K = expMapBasis '' closure (paramSet K) ∪ {0} := by
-  classical
   ext x
   by_cases hx₀ : x = 0
   · simpa [hx₀] using zero_mem_compactSet K

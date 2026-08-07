@@ -12,6 +12,7 @@ public import Mathlib.Topology.Homotopy.Product
 
 /-!
 # Fundamental groupoid preserves products
+
 In this file, we give the following definitions/theorems:
 
   - `FundamentalGroupoidFunctor.piIso` An isomorphism between Π i, (π Xᵢ) and π (Πi, Xᵢ), whose

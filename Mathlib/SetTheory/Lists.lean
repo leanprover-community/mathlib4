@@ -175,6 +175,7 @@ theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
   · rfl
   · rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
@@ -225,6 +226,7 @@ theorem isList_toList (l : List (Lists α)) : IsList (ofList l) :=
 
 theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by simp [ofList, of']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
   | ⟨true, l⟩, _ => by simp_all [ofList, of']
 
@@ -324,8 +326,9 @@ theorem lt_sizeof_cons' {b} (a : Lists' α b) (l) :
 
 variable [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 mutual
-  @[implicit_reducible]
+  @[instance_reducible]
   def Equiv.decidable : ∀ l₁ l₂ : Lists α, Decidable (l₁ ~ l₂)
     | ⟨false, l₁⟩, ⟨false, l₂⟩ =>
       decidable_of_iff' (l₁ = l₂) <| by
@@ -348,7 +351,7 @@ mutual
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
   termination_by x y => sizeOf x + sizeOf y
-  @[implicit_reducible]
+  @[instance_reducible]
   def Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, _ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
@@ -362,7 +365,7 @@ mutual
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
   termination_by x y => sizeOf x + sizeOf y
-  @[implicit_reducible]
+  @[instance_reducible]
   def mem.decidable : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by
