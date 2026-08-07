@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 public import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -78,17 +79,11 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
 theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
-  classical
-  refine le_antisymm ?_ three_le_egirth
-  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
-  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
-  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
-  have : w.IsCycle :=
-    { edges_nodup := by aesop
-      ne_nil := by aesop
-      support_nodup := by aesop }
-  grw [egirth_le_length this]
-  simp [hw]
+  apply three_le_egirth.antisymm'
+  have : Nonempty (Fin 3 ↪ α) := by simpa [← Cardinal.lift_mk_le', ← Cardinal.ofNat_le_toENat]
+  have : cycleGraph 3 ⊑ ⊤ := isContained_top_iff.mpr this
+  have ⟨v, p, hcyc, hlen⟩ := (cycleGraph_isContained_iff <| by simp).mp this
+  grw [egirth_le_length hcyc, hlen, Nat.cast_ofNat]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
