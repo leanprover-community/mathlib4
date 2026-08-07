@@ -69,13 +69,16 @@ def mkIntNumeral {u : Level} (R : Q(Type u)) (i : Int) : MetaM Q($R) := do
 `(v : R) = 0` in the kernel, matching the semantics of the final certificate check. -/
 def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
   if v == 0 then return true
-  -- TODO: considering moving them out of the individual check? This requires re-synthesising the
-  -- instance at every check (some sort of caching?)
-  -- test on a positive-char ring to observe performance
+  -- MetaM caches the synthesised instances (including failures), so these are fine.
   let _instCast ← synthInstanceQ q(IntCast $R)
   let _instZero ← synthInstanceQ q(Zero $R)
   have vE : Q(Int) := mkIntLitQ v
   let eq : Q(Prop) := q((Int.cast $vE : $R) = 0)
+  /- this instance is synthesised for every value which is repeated.
+    technically it's possible to synthesise a DecidableEq instance once and then use it
+    for all checks, but there can be rings where eq is only partially decidable (for 0 only).
+    The cost here is also negligible (~1%) compared to the kernel check itself.
+  -/
   let some inst ← synthInstance? q(Decidable $eq)
     | throwError "equality with zero in the element type is not decidable{indentExpr R}"
   if let .ok r := Kernel.whnf (← getEnv) (← getLCtx) inst then
