@@ -1711,6 +1711,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Project
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.RealImaginaryPart
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Transfer
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
