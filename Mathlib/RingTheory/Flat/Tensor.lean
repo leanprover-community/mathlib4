@@ -45,13 +45,13 @@ The character module of `M` is an injective module if and only if
 -/
 lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
     Module.Injective R (CharacterModule M) ↔
-    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+    ∀ ⦃N N' : Type u⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) := by
   simp_rw [injective_iff, rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff]; rfl
 
 /-- `CharacterModule M` is an injective module iff `M` is flat.
 See [Lambek_1964] for a self-contained proof. -/
-theorem iff_characterModule_injective [Small.{v} R] :
+theorem iff_characterModule_injective :
     Flat R M ↔ Module.Injective R (CharacterModule M) := by
   rw [injective_characterModule_iff_rTensor_preserves_injective_linearMap,
     iff_rTensor_preserves_injective_linearMap']
