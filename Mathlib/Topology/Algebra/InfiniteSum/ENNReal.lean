@@ -146,7 +146,6 @@ protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
   ENNReal.summable.le_tsum' a
 
-@[simp]
 protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
   ENNReal.summable.tsum_eq_zero_iff
 
