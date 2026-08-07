@@ -121,10 +121,10 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
   | (_, ``List.range, #[(n : Q(ℕ))]) =>
     have s : Q(List ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveNilOrConsResult s) from do
     let ⟨nn, pn⟩ ← NormNum.deriveNat n _
-    haveI' : $s =Q .range $n := ⟨⟩
+    have : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
-      haveI' : $nn =Q 0 := ⟨⟩
+      have : $nn =Q 0 := ⟨⟩
       return .nil q(List.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
@@ -133,12 +133,12 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
   | (_, ``List.finRange, #[(n : Q(ℕ))]) =>
     have s : Q(List (Fin $n)) := s
     .uncheckedCast _ _ <$> show MetaM (ProveNilOrConsResult s) from do
-    haveI' : $s =Q .finRange $n := ⟨⟩
+    have : $s =Q .finRange $n := ⟨⟩
     return match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
     | .zero _pf => .nil q(List.finRange_zero)
     | .succ n' _pf => .cons _ _ q(List.finRange_succ)
   | (.const ``List.map [v, _], _, #[(β : Q(Type v)), _, (f : Q($β → $α)), (xxs : Q(List $β))]) => do
-    haveI' : $s =Q ($xxs).map $f := ⟨⟩
+    have : $s =Q ($xxs).map $f := ⟨⟩
     return match ← List.proveNilOrCons xxs with
     | .nil pf => .nil q(($pf ▸ List.map_nil : List.map _ _ = _))
     | .cons x xs pf => .cons q($f $x) q(($xs).map $f)
@@ -203,14 +203,14 @@ partial def Multiset.proveZeroOrCons {α : Q(Type u)} (s : Q(Multiset $α)) :
   | (``Multiset.range, #[(n : Q(ℕ))]) => do
     have s : Q(Multiset ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveZeroOrConsResult s) from do
     let ⟨nn, pn⟩ ← NormNum.deriveNat n _
-    haveI' : $s =Q .range $n := ⟨⟩
+    have : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
-      haveI' : $nn =Q 0 := ⟨⟩
+      have : $nn =Q 0 := ⟨⟩
       return .zero q(Multiset.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
-      haveI' : $nn =Q ($n').succ := ⟨⟩
+      have : $nn =Q ($n').succ := ⟨⟩
       return .cons _ _ q(Multiset.range_succ' $pn rfl)
   | (fn, args) =>
     throwError "Multiset.proveZeroOrCons: unsupported multiset expression {s} ({fn}, {args})"
@@ -280,17 +280,17 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} (s : Q(Finset $α)) :
   | (``Finset.range, #[(n : Q(ℕ))]) =>
     have s : Q(Finset ℕ) := s; .uncheckedCast _ _ <$> show MetaM (ProveEmptyOrConsResult s) from do
     let ⟨nn, pn⟩ ← NormNum.deriveNat n _
-    haveI' : $s =Q .range $n := ⟨⟩
+    have : $s =Q .range $n := ⟨⟩
     let nnL := nn.natLit!
     if nnL = 0 then
       haveI : $nn =Q 0 := ⟨⟩
       return .empty q(Finset.range_zero' $pn)
     else
       have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
-      haveI' : $nn =Q ($n').succ := ⟨⟩
+      have : $nn =Q ($n').succ := ⟨⟩
       return .cons n' _ _ q(Finset.range_succ' $pn (.refl $nn))
   | (``Finset.univ, #[_, (instFT : Q(Fintype $α))]) => do
-    haveI' : $s =Q .univ := ⟨⟩
+    have : $s =Q .univ := ⟨⟩
     match (← whnfI instFT).getAppFnArgs with
     | (``Fintype.mk, #[_, (elems : Q(Finset $α)), (complete : Q(∀ x : $α, x ∈ $elems))]) => do
       let res ← Finset.proveEmptyOrCons elems
