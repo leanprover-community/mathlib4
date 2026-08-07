@@ -100,37 +100,23 @@ lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
 lemma isInt_emod_neg {a b : ℤ} {r : ℕ} (h : IsNat (a % -b) r) : IsNat (a % b) r :=
   ⟨by rw [← Int.emod_neg, h.out]⟩
 
-attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `Int.emod a b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℤ) % _, Int.emod _ _]
-partial def evalIntMod : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
-  -- We assert that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
-  guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
-  haveI' : $e =Q ($a % $b) := ⟨⟩
-  let rℤ : Q(Ring ℤ) := q(Int.instRing)
-  let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
-  go a na za pa b (← derive (u := .zero) b)
+/-- Given a result for evaluating `a b` in `ℤ`, evaluate `a % b`. -/
+def evalIntMod.go (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
+    (b : Q(ℤ)) : Result (u := .zero) b → Option (Result q($a % $b))
+  | .isNat _ nb pb => do
+    assumeInstancesCommute
+    if nb.natLit! == 0 then
+      have _ : $nb =Q nat_lit 0 := ⟨⟩
+      return .isInt q(Int.instRing) na za q(isInt_emod_zero $pa $pb)
+    else
+      let ⟨r, p⟩ := core a na za pa b nb pb
+      return .isNat q(instAddMonoidWithOne) r p
+  | .isNegNat _ nb pb => do
+    assumeInstancesCommute
+    let ⟨r, p⟩ := core a na za pa q(-$b) nb q(isNat_neg_of_isNegNat $pb)
+    return .isNat q(instAddMonoidWithOne) r q(isInt_emod_neg $p)
+  | _ => none
 where
-  /-- Given a result for evaluating `a b` in `ℤ`, evaluate `a % b`. -/
-  go (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
-      (b : Q(ℤ)) : Result b → Option (Result q($a % $b))
-    | .isNat inst nb pb => do
-      assumeInstancesCommute
-      if nb.natLit! == 0 then
-        have _ : $nb =Q nat_lit 0 := ⟨⟩
-        return .isInt q(Int.instRing) na za q(isInt_emod_zero $pa $pb)
-      else
-        let ⟨r, p⟩ := core a na za pa b nb pb
-        return .isNat q(instAddMonoidWithOne) r p
-    | .isNegNat _ nb pb => do
-      assumeInstancesCommute
-      let ⟨r, p⟩ := core a na za pa q(-$b) nb q(isNat_neg_of_isNegNat $pb)
-      return .isNat q(instAddMonoidWithOne) r q(isInt_emod_neg $p)
-    | _ => none
-
   /-- Given a result for evaluating `a b` in `ℤ` where `b > 0`, evaluate `a % b`. -/
   core (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
       (b : Q(ℤ)) (nb : Q(ℕ)) (pb : Q(IsNat $b $nb)) :
@@ -146,6 +132,20 @@ where
     have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)
     have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true) :)
     ⟨nr, q(isInt_emod $pa $pb $pf₁ $pf₂ $pf₃)⟩
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- The `norm_num` extension which identifies expressions of the form `Int.emod a b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num (_ : ℤ) % _, Int.emod _ _]
+partial def evalIntMod : NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
+  -- We assert that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
+  guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
+  haveI' : $e =Q ($a % $b) := ⟨⟩
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
+  let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
+  evalIntMod.go a na za pa b (← derive (u := .zero) b)
 
 theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
     IsInt a a' → IsInt b b' → Int.mul a' c = b' → a ∣ b
