@@ -173,6 +173,12 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
 
+lemma Icc_sub_Icc {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+    [AddLeftReflectLE α] [ExistsAddOfLE α] {a b c d : α} (hab : a ≤ b) (hcd : c ≤ d) :
+    Icc a b - Icc c d = Icc (a - d) (b - c) := by
+  rw [sub_eq_add_neg, neg_Icc, Icc_add_Icc hab (neg_le_neg hcd)]
+  simp [sub_eq_add_neg]
+
 /-!
 ### Preimages under `x ↦ a * x`
 -/
