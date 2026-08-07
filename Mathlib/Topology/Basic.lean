@@ -106,6 +106,10 @@ theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpe
     IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
+lemma IsOpen.iInter_of_finite_ne_univ {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsOpen (s i))
+    (hs_nonempty : {i | s i ≠ univ}.Finite) : IsOpen (⋂ i, s i) := by
+  simpa using hs_nonempty.isOpen_biInter (f := s) fun _ _ ↦ hs _
+
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isOpen_biInter h
@@ -135,16 +139,22 @@ theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
 theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
 
 @[closedness .]
+lemma IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
+  simpa only [← isOpen_compl_iff, compl_union] using .inter
+
+lemma Set.Finite.isClosed_sUnion {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsClosed t) :
+    IsClosed (⋃₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => rw [sUnion_empty]; exact isClosed_empty
+  | insert _ _ ih => simp only [sUnion_insert, forall_mem_insert] at h ⊢; exact h.1.union (ih h.2)
+
+@[closedness .]
 lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
   ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
 
 @[closedness .]
 lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
   ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
-
-@[closedness .]
-theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
-  simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
 
 @[closedness .]
 theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClosed (⋂₀ s) := by
@@ -192,6 +202,10 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact isOpen_iInter_of_finite h
+
+lemma IsClosed.iUnion_of_finite_nonempty {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsClosed (s i))
+    (hs_nonempty : {i | (s i).Nonempty}.Finite) : IsClosed (⋃ i, s i) := by
+  simpa using hs_nonempty.isClosed_biUnion (f := s) fun _ _ ↦ hs _
 
 @[closedness .]
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :
