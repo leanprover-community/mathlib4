@@ -33,6 +33,7 @@ formula which is an important input in functional equations of (un-completed) Di
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -51,6 +52,19 @@ Note that this is not the same as `Complex.Gamma`. -/
 noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
 
 lemma Gammaℂ_def (s : ℂ) : Gammaℂ s = 2 * (2 * π) ^ (-s) * Gamma s := rfl
+
+private lemma pi_cpow_conj (w : ℂ) : (π : ℂ) ^ conj w = conj ((π : ℂ) ^ w) := by
+  have harg : (π : ℂ).arg ≠ π := by
+    rw [arg_ofReal_of_nonneg pi_pos.le]
+    exact Ne.symm pi_ne_zero
+  rw [cpow_conj _ _ harg, conj_ofReal]
+
+/-- The Gamma factor `Gammaℝ` commutes with complex conjugation. -/
+@[simp]
+lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
+  have hneg : -conj s / 2 = conj (-s / 2) := by rw [map_div₀, map_neg, map_ofNat]
+  have hhalf : conj s / 2 = conj (s / 2) := by rw [map_div₀, map_ofNat]
+  rw [Gammaℝ_def, Gammaℝ_def, map_mul, hneg, hhalf, pi_cpow_conj, Gamma_conj]
 
 lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s * s / 2 / π := by
   rw [Gammaℝ_def, Gammaℝ_def, neg_div, add_div, neg_add, div_self two_ne_zero,
