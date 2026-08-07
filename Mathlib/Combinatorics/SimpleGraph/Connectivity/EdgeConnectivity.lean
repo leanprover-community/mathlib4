@@ -6,9 +6,9 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Edge Connectivity
@@ -211,11 +211,10 @@ theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] {u v : V}
   exact edgeReachability_self
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
-  simp only [isEdgeReachable_comm,edgeReachability]
+  simp only [isEdgeReachable_comm, edgeReachability]
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v := 
   iSup₂_le fun _ hi ↦ le_edgeReachability (hi u v)
-
 
 /-!
 ### 2-reachability
