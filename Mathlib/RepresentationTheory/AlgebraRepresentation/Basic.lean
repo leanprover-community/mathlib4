@@ -5,8 +5,8 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations
@@ -21,21 +21,19 @@ public section
 
 variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
   [Module A V] [IsScalarTower k A V]
-  [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
+  [IsSimpleModule A V] [FiniteDimensional k (Module.End A V)] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a representation of an algebra `A` over an algebraically closed field
-`k`, then any endomorphism of `V` is scalar. -/
+/-- Schur's Lemma: If `V` is an irreducible representation of an algebra `A` over an algebraically
+closed field `k` with finite dimensional endomorphisms, then any endomorphism of `V` is scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
-  have : Module.Finite k (Module.End A V) := .of_injective (LinearMap.restrictScalarsₗ k A V V k) <|
-    LinearMap.restrictScalars_injective _
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
 
 variable (A V)
 
 open scoped IsMulCommutative in
-/-- Any finite-dimensional irreducible representation of a commutative algebra over an algebraically
-closed field is one-dimensional. -/
+/-- Any irreducible representation of a commutative algebra with finite dimensional endomorphisms
+over an algebraically closed field is one-dimensional. -/
 theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
     Module.finrank k V = 1 := by
   have : Nontrivial V := IsSimpleModule.nontrivial A V
