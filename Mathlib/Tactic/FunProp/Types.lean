@@ -160,7 +160,7 @@ def increaseSteps : FunPropM Unit := do
   let numSteps := (← get).numSteps
   let maxSteps := (← read).config.maxSteps
   if numSteps > maxSteps then
-     throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
+     throwError "`fun_prop` failed, maximum number ({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})
 
 /-- Increase transition depth. Return `none` if maximum transition depth has been reached. -/
