@@ -79,7 +79,7 @@ set_option backward.isDefEq.respectTransparency false in
   trivializationAtlas' := {trivialization B F}
   trivializationAt' _ := trivialization B F
   mem_baseSet_trivializationAt' := mem_univ
-  trivialization_mem_atlas' _ := mem_singleton _
+  trivialization_mem_atlas' _ := mem_singleton_self _
   totalSpaceMk_isInducing' _ := (homeomorphProd B F).symm.isInducing.comp
     (isInducing_const_prod.2 .id)
 

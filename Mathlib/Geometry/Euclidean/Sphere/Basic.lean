@@ -434,7 +434,7 @@ theorem Cospherical.affineIndependent_of_ne {p₁ p₂ p₃ : P} (hs : Cospheric
     (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) : AffineIndependent ℝ ![p₁, p₂, p₃] :=
   hs.affineIndependent_of_mem_of_ne (Set.mem_insert _ _)
     (Set.mem_insert_of_mem _ (Set.mem_insert _ _))
-    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) h₁₂ h₁₃ h₂₃
+    (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (mem_singleton_self _))) h₁₂ h₁₃ h₂₃
 
 /-- Suppose that `p₁` and `p₂` lie in spheres `s₁` and `s₂`. Then the vector between the centers
 of those spheres is orthogonal to that between `p₁` and `p₂`; this is a version of

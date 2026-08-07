@@ -313,7 +313,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
         exact hyu.trans_lt hua
     · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
       refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
-      exact .basic _ ⟨a, hts ha, b, hts hb, hab.le, mem_singleton _⟩
+      exact .basic _ ⟨a, hts ha, b, hts hb, hab.le, mem_singleton_self _⟩
   · rcases ha with ⟨b, ba, hb⟩
     have hbs : b ∈ s := hIoo b a ba hb
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l ≤ b), Icc l b)
@@ -326,7 +326,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩
       exact ⟨z, hzx, by order, hzt, by order⟩
     · refine .biUnion hc fun x hx => MeasurableSet.iUnion fun hlt => ?_
-      exact .basic _ ⟨x, hts hx, b, hbs, hlt, mem_singleton _⟩
+      exact .basic _ ⟨x, hts hx, b, hbs, hlt, mem_singleton_self _⟩
 
 theorem Dense.borel_eq_generateFrom_Icc_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
@@ -374,7 +374,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
         exact hyu.trans_le hua
     · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
       refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
-      exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
+      exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton_self _⟩
   · replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.1 ha.choose_spec.2
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
@@ -384,7 +384,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩
       exact ⟨z, hzt, hzx.trans_lt hx, hzx⟩
     · refine .biUnion hc fun x hx => MeasurableSet.iUnion fun hlt => ?_
-      exact .basic _ ⟨x, hts hx, a, ha, hlt, mem_singleton _⟩
+      exact .basic _ ⟨x, hts hx, a, ha, hlt, mem_singleton_self _⟩
 
 theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [SecondCountableTopology α] [DenselyOrdered α] [NoMinOrder α] {s : Set α}
@@ -1092,7 +1092,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     · rw [← inter_union_distrib_left]
       congr
       ext x
-      simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
+      simp only [mem_singletonm_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
       · simp only [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true, false_or]

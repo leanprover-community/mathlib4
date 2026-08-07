@@ -816,7 +816,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
     have C : Continuous (fun (p : α × E) ↦ f a p.2) := by fun_prop
     have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
-      simp only [mem_singleton_iff] at hb
+      simp only [mem_singleton hb
       simp [hb]
     obtain ⟨v, v_open, sub_v, hv⟩ : ∃ v, IsOpen v ∧ {a} ×ˢ closedBall x t ⊆ v ∧
         ∀ p ∈ v, dist (Function.uncurry f p) (f a p.2) < ε :=

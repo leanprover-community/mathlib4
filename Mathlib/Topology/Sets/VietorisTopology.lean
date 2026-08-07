@@ -636,7 +636,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
         ← disjoint_iff_inter_eq_empty, ← subset_compl_iff_disjoint_right]
       gcongr
     · rw [(isOpen_inter_nonempty_of_isOpen hV).mem_nhds_iff]
-      exact ⟨x, hx₁, hxV <| Set.mem_singleton x⟩
+      exact ⟨x, hx₁, hxV <| mem_singleton_self x⟩
 
 @[simp]
 theorem regularSpace_iff : RegularSpace (Compacts α) ↔ RegularSpace α :=
@@ -686,7 +686,7 @@ theorem compactSpace_iff : CompactSpace (Compacts α) ↔ CompactSpace α := by
   convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
-  exact fun x => ⟨{x}, Set.mem_singleton x⟩
+  exact fun x => ⟨{x}, mem_singleton_self x⟩
 
 @[simp]
 theorem noncompactSpace_iff : NoncompactSpace (Compacts α) ↔ NoncompactSpace α := by
@@ -1028,7 +1028,7 @@ theorem compactSpace_iff : CompactSpace (NonemptyCompacts α) ↔ CompactSpace �
   convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
-  exact fun x => ⟨{x}, Set.mem_singleton x⟩
+  exact fun x => ⟨{x}, mem_singleton_self x⟩
 
 @[simp]
 theorem noncompactSpace_iff : NoncompactSpace (NonemptyCompacts α) ↔ NoncompactSpace α := by

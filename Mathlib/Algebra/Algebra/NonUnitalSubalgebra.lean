@@ -577,7 +577,7 @@ theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s 
 
 @[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
-  NonUnitalAlgebra.subset_adjoin R (Set.mem_singleton x)
+  NonUnitalAlgebra.subset_adjoin R (mem_singleton_self x)
 
 variable {R}
 

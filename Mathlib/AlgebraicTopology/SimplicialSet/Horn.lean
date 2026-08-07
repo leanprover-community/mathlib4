@@ -70,7 +70,7 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   ext j
   -- this was produced using `simp? [horn_eq_iSup]`
   simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
-    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
+    Set.mem_compl_iff, mem_singletonm_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
     Set.mem_univ, iff_true]
   let S : Finset (Fin (n + 3)) := {i, j 0}
@@ -209,7 +209,7 @@ def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) 
     simp only [mem_insert, mem_singleton, not_or] at hk
     -- this was produced by `simp? [horn_eq_iSup, -Fin.forall_fin_two]`
     simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
-      Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
+      mem_singletonm_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
       mem_singleton, exists_prop]
     refine ⟨k, hk.1, fun a ↦ ?_⟩
     fin_cases a
@@ -253,7 +253,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
   -- this was produced using `simp? [horn_eq_iSup]`
   simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set,
-    Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
+    Set.mem_compl_iff, mem_singletonm_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
   have hS : ¬ ({i, (⟨k, by lia⟩ : Fin (n + 4)), (⟨k + 1, by lia⟩ : Fin (n + 4)),
       (⟨k + 2, by lia⟩ : Fin (n + 4))} = Finset.univ) := fun hS ↦ by
@@ -297,7 +297,7 @@ lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i
   rw [← Subfunctor.equalizer_eq_iff]
   apply le_antisymm (Subfunctor.equalizer_le σ₁ σ₂)
   simp only [horn_eq_iSup, iSup_le_iff,
-    Subtype.forall, Set.mem_compl_iff, Set.mem_singleton_iff,
+    Subtype.forall, Set.mem_compl_iff, mem_singleton
     ← stdSimplex.ofSimplex_yonedaEquiv_δ, Subcomplex.ofSimplex_le_iff]
   intro j hj
   exact (Subfunctor.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)

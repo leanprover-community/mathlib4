@@ -76,10 +76,10 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
   rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
   have (a : _) : ρCond a (Prod.mk a ⁻¹' {x} ×ˢ s) = ({x} : Set α).indicator (ρCond · s) a := by
     obtain rfl | hax := eq_or_ne a x
-    · simp only [singleton_prod, mem_singleton_iff, indicator_of_mem]
+    · simp only [singleton_prod, mem_singletondicator_of_mem]
       congr with y
       simp
-    · simp only [singleton_prod, mem_singleton_iff, hax, not_false_eq_true, indicator_of_notMem]
+    · simp only [singleton_prod, mem_singletonx, not_false_eq_true, indicator_of_notMem]
       have : Prod.mk a ⁻¹' Prod.mk x '' s = ∅ := by ext y; simp [Ne.symm hax]
       simp only [this, measure_empty]
   simp_rw [this]

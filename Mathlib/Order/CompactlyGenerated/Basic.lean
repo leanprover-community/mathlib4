@@ -432,7 +432,7 @@ theorem sSupIndep_iff_finite {s : Set α} :
     classical
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
       · rwa [Finset.coe_insert, Set.insert_sdiff_self_of_notMem] at h'
-        exact fun con => ((Set.mem_sdiff a).1 (ht con)).2 (Set.mem_singleton a)
+        exact fun con => ((Set.mem_sdiff a).1 (ht con)).2 (mem_singleton_self a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht sdiff_subset⟩⟩
 
@@ -665,24 +665,24 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   rw [s_max ⟨fun x hx => ?_, ?_, fun x hx => ?_⟩ Set.subset_union_left]
-  · exact Set.mem_union_right _ (Set.mem_singleton _)
+  · exact Set.mem_union_right _ (mem_singleton_self _)
   · rw [sSup_union, sSup_singleton]
     exact b_inf_Sup_s.disjoint_sup_right_of_disjoint_sup_left con.symm
-  · rw [Set.mem_union, Set.mem_singleton_iff] at hx
+  · rw [Set.mem_union, mem_singleton
     obtain rfl | xa := eq_or_ne x a
-    · simp only [Set.mem_singleton, Set.insert_sdiff_of_mem, Set.union_singleton]
+    · simp only [mem_singleton_self, Set.insert_sdiff_of_mem, Set.union_singleton]
       exact con.mono_right ((sSup_le_sSup Set.sdiff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
         rw [Set.insert_sdiff_of_notMem]
-        rw [Set.mem_singleton_iff]
+        rw [mem_singleton
         exact Ne.symm xa
       rw [h, sSup_union, sSup_singleton]
       apply
         (s_ind (hx.resolve_right xa)).disjoint_sup_right_of_disjoint_sup_left
           (a_dis_Sup_s.mono_right _).symm
       rw [← sSup_insert, Set.insert_sdiff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
-  · rw [Set.mem_union, Set.mem_singleton_iff] at hx
+  · rw [Set.mem_union, mem_singleton
     obtain hx | rfl := hx
     · exact s_atoms x hx
     · exact ha.symm

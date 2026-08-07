@@ -239,7 +239,7 @@ theorem tendsto_principal_principal {f : α → β} {s : Set α} {t : Set β} :
 
 @[simp] theorem tendsto_pure {f : α → β} {a : Filter α} {b : β} :
     Tendsto f a (pure b) ↔ ∀ᶠ x in a, f x = b := by
-  simp only [Tendsto, le_pure_iff, mem_map', mem_singleton_iff, Filter.Eventually]
+  simp only [Tendsto, le_pure_iff, mem_map', mem_singletonlter.Eventually]
 
 theorem tendsto_pure_pure (f : α → β) (a : α) : Tendsto f (pure a) (pure (f a)) :=
   tendsto_pure.2 rfl

@@ -52,7 +52,7 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal {p : A} (hp : IsIdempote
   simp only [isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts,
     QuasispectrumRestricts.real_iff, and_iff_left_iff_imp]
   intro h x hx
-  rcases hp.quasispectrum_subset _ hx with (hx | hx) <;> simp [Set.mem_singleton_iff.mp hx]
+  rcases hp.quasispectrum_subset _ hx with (hx | hx) <;> simp [mem_singleton
 
 /-- An element in a non-unital C⋆-algebra is a star projection
 if and only if it is idempotent and normal. -/

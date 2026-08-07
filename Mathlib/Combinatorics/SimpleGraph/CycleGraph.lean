@@ -67,7 +67,7 @@ theorem cycleGraph_adj' {n : ℕ} {u v : Fin n} :
 theorem cycleGraph_neighborSet {n : ℕ} {v : Fin (n + 2)} :
     (cycleGraph (n + 2)).neighborSet v = {v - 1, v + 1} := by
   ext w
-  simp only [mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff]
+  simp only [mem_neighborSet, Set.mem_insert_iff, mem_singleton
   rw [cycleGraph_adj, sub_eq_iff_eq_add', sub_eq_iff_eq_add', eq_sub_iff_add_eq, eq_comm]
 
 theorem cycleGraph_neighborFinset {n : ℕ} {v : Fin (n + 2)} :

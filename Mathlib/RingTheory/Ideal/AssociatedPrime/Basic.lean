@@ -78,7 +78,7 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
   · rintro ⟨hx, x, rfl⟩
     refine ⟨hx, exists_eq_colon_of_mem_minimalPrimes (x := x) ?_⟩
     rw [← Ideal.radical_minimalPrimes, Ideal.minimalPrimes_eq_subsingleton_self,
-      Set.mem_singleton_iff]
+      mem_singleton
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
 
@@ -282,7 +282,7 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
 theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.IsPrimary) :
     associatedPrimes R (R ⧸ I) = {I.radical} := by
   ext J
-  rw [Set.mem_singleton_iff]
+  rw [mem_singleton
   refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
   rintro rfl
   have : Nontrivial (R ⧸ I) := by

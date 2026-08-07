@@ -277,7 +277,7 @@ theorem image_singleton {f : α → β} {a : α} : f '' {a} = {f a} := by grind
 @[simp]
 theorem Nonempty.image_const {s : Set α} (hs : s.Nonempty) (a : β) : (fun _ => a) '' s = {a} :=
   ext fun _ =>
-    ⟨fun ⟨_, _, h⟩ => h ▸ mem_singleton _, fun h =>
+    ⟨fun ⟨_, _, h⟩ => h ▸ mem_singleton_self _, fun h =>
       (eq_of_mem_singleton h).symm ▸ hs.imp fun _ hy => ⟨hy, rfl⟩⟩
 
 @[simp, mfld_simps]
@@ -671,7 +671,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
 @[simp]
 theorem range_eq_singleton_iff [Nonempty ι] {y} :
     Set.range f = {y} ↔ ∀ (x : ι), f x = y := by
-  simp_rw [Set.ext_iff, Set.mem_range, Set.mem_singleton_iff]
+  simp_rw [Set.ext_iff, Set.mem_range, mem_singleton
   exact ⟨fun h _ => by simp_rw [← h, exists_apply_eq_apply],
       fun h _ => by simp_rw [h, exists_const, eq_comm]⟩
 
@@ -932,7 +932,7 @@ theorem range_unique [Unique ι] : range f = {f default} := by
   aesop (add simp [Unique.eq_default])
 
 @[simp]
-theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x, mem_singleton x⟩} :=
+theorem range_singleton {x : α} (f : ({x} : Set α) → β) : range f = {f ⟨x, mem_singleton_self x⟩} :=
   range_unique
 
 @[simp]
@@ -1311,7 +1311,7 @@ variable {α : Type u} {β : Type v} {f : α → β}
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
   refine ⟨fun h y => ?_, Surjective.image_surjective⟩
   rcases h {y} with ⟨s, hs⟩
-  have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
+  have := mem_singleton_self y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
 
 @[simp]

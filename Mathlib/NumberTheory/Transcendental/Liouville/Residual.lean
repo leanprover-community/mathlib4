@@ -30,7 +30,7 @@ theorem setOfPred_liouville_eq_iInter_iUnion :
       ball ((a : ℝ) / b) (1 / (b : ℝ) ^ n) \ {(a : ℝ) / b} := by
   ext x
   simp only [mem_iInter, mem_iUnion, Liouville, mem_ofPred_eq, exists_prop, Set.mem_sdiff,
-    mem_singleton_iff, mem_ball, Real.dist_eq, and_comm]
+    mem_singletonm_ball, Real.dist_eq, and_comm]
 
 @[deprecated (since := "2026-07-09")]
 alias setOf_liouville_eq_iInter_iUnion := setOfPred_liouville_eq_iInter_iUnion

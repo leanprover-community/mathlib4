@@ -83,7 +83,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
   tfae_have 1 → 2
   | h => by
     obtain ⟨y, rfl : y = x, h'⟩ := exists_isClosed_singleton_of_isJacobsonRing _ h
-      ⟨x, Set.mem_singleton x⟩
+      ⟨x, mem_singleton_self x⟩
     exact ⟨h', h⟩
   tfae_have 2 → 3
   | h => ⟨h.isClosed, h.isOpen.stableUnderGeneralization⟩
@@ -95,7 +95,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
       refine Set.Finite.isClosed_biUnion ?_ (fun _ _ ↦ isClosed_closure)
       exact (finite_setOfPred_isMin R).subset fun x h ↦ h.1
     ext p
-    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_ofPred_eq, Set.compl_iUnion, Set.mem_iInter,
+    simp only [mem_singleton Set.mem_ofPred_eq, Set.compl_iUnion, Set.mem_iInter,
       Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes,
       not_imp_not]
     constructor

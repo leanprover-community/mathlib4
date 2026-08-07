@@ -241,7 +241,7 @@ theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g 
       filter_upwards [h₁g.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.mpr h₂g)]
       intro y hy
       rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage,
-        Set.mem_singleton_iff] at hy
+        mem_singleton
       simp [hy]
     rw [meromorphicNFAt_congr this]
     exact hprod.smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
@@ -635,13 +635,13 @@ theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,
-      Set.mem_singleton_iff, Function.mem_support, h₁f.meromorphicOn, MeromorphicOn.divisor_apply,
+      mem_singletonon.mem_support, h₁f.meromorphicOn, MeromorphicOn.divisor_apply,
       WithTop.untop₀_eq_zero, (h₁f hu.1).meromorphicOrderAt_eq_zero_iff, not_true_eq_false, or_self,
       not_false_eq_true]
   · simp only [Function.mem_support, ne_eq] at hu
     constructor
     · exact (MeromorphicOn.divisor f U).supportWithinDomain hu
-    · rw [Set.mem_preimage, Set.mem_singleton_iff]
+    · rw [Set.mem_preimage, mem_singleton
       have := h₁f ((MeromorphicOn.divisor f U).supportWithinDomain hu)
         |>.meromorphicOrderAt_eq_zero_iff.not
       simp only [h₁f.meromorphicOn, (MeromorphicOn.divisor f U).supportWithinDomain hu,

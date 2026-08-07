@@ -751,7 +751,7 @@ lemma mul_mem_one_two_three_iff {a b : ℤ} :
       (1, 1), (-1, -1),
       (1, 2), (2, 1), (-1, -2), (-2, -1),
       (1, 3), (3, 1), (-1, -3), (-3, -1)} : Set (ℤ × ℤ)) := by
-  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
+  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, mem_singleton
     one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
   aesop
 
@@ -763,7 +763,7 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
       (1, 2), (2, 1), (-1, -2), (-2, -1),
       (1, 3), (3, 1), (-1, -3), (-3, -1),
       (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
-  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, Set.mem_singleton_iff, ne_eq,
+  simp only [← Int.prodMk_mem_divisorsAntidiag, Set.mem_insert_iff, mem_singleton
     one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
   aesop
 

@@ -120,7 +120,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     Subalgebra.mul_mem _ (Subalgebra.neg_mem _ (Subalgebra.one_mem _))
       (Subalgebra.sum_mem _ fun i _ =>
         Subalgebra.mul_mem _ (Subalgebra.algebraMap_mem _ _)
-          (Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton x)) _))
+          (Subalgebra.pow_mem _ (subset_adjoin (mem_singleton_self x)) _))
 
 theorem exists_mem_adjoin_mul_eq_pow_natDegree_le {x : S} (hx : aeval x f = 0) (hmo : f.Monic)
     (hf : f.IsWeaklyEisensteinAt (Submodule.span R {p})) :
@@ -131,7 +131,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree_le {x : S} (hx : aeval x f = 0) (
   rw [hk, pow_add]
   obtain ⟨y, hy, H⟩ := exists_mem_adjoin_mul_eq_pow_natDegree hx hmo hf
   refine ⟨y * x ^ k, ?_, ?_⟩
-  · exact Subalgebra.mul_mem _ hy (Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton x)) _)
+  · exact Subalgebra.mul_mem _ hy (Subalgebra.pow_mem _ (subset_adjoin (mem_singleton_self x)) _)
   · rw [← mul_assoc _ y, H]
 
 end Principal

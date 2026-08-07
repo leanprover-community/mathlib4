@@ -304,7 +304,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [TopologicalSpace 
     apply Continuous.closure_preimage_subset hf {f b}
     apply mem_of_mem_of_subset hab
     apply closure_mono
-    rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+    rw [singleton_subset_iff, mem_preimage, mem_singleton
 
 lemma monotone_to_upperTopology_continuous [TopologicalSpace α] [TopologicalSpace β]
     [Topology.IsUpperSet α] [IsUpper β] {f : α → β} (hf : Monotone f) : Continuous f := by

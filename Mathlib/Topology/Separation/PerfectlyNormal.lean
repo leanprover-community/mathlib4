@@ -55,7 +55,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       · suffices ∀ n, f n x = 0 from by simp [h, this]
         exact fun n => hfs n hp
       · contrapose h
-        simp only [preimage, notMem_ofPred_iff, ContinuousMap.coe_mk, mem_singleton_iff]
+        simp only [preimage, notMem_ofPred_iff, ContinuousMap.coe_mk, mem_singleton
         apply ne_of_gt
         obtain ⟨i, hi⟩ := mem_iUnion.1 <| compl_iInter _ ▸ mem_compl (hu ▸ h)
         calc
@@ -78,7 +78,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
           SeparatedNhds.of_finite (finite_singleton _) (finite_singleton _)
           (disjoint_singleton.2 zero_ne_one)
         have hfg (x : X) : f x + g x ≠ 0 := by
-          simp_all only [preimage, mem_singleton_iff]
+          simp_all only [preimage, mem_singleton
           by_cases! hfx : f x = 0
           · simpa [hfx] using hst.notMem_of_mem_left hfx
           · positivity [(hgr x).1, (hfr x).1]

@@ -69,8 +69,8 @@ lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
     rw [hIcc] at hp
     obtain (hp | hp) | hp := hp
     · exact monotoneOn_nnrpow_Ioo hp ha hb hab
-    · simp_all [mem_singleton_iff]
-    · simp_all [mem_singleton_iff, nnrpow_one a, nnrpow_one b]
+    · simp_all [mem_singleton
+    · simp_all [mem_singletonrpow_one a, nnrpow_one b]
   · have : a ^ p = 0 := cfcₙ_apply_of_not_predicate a ha
     simp [this]
 
@@ -108,10 +108,10 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
   rw [hIcc] at hp
   obtain (hp | hp) | hp := hp
   · exact concaveOn_nnrpow_Ioo hp
-  · simp only [mem_singleton_iff] at hp
+  · simp only [mem_singleton hp
     simp only [hp, nnrpow_zero]
     exact concaveOn_const _ (convex_Ici _)
-  · simp only [mem_singleton_iff] at hp
+  · simp only [mem_singleton hp
     simp only [hp]
     exact ConcaveOn.congr (concaveOn_id (convex_Ici _)) nnrpow_one_eqOn.symm
 

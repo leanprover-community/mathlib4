@@ -85,13 +85,13 @@ variable (n)
 /-- If `B` is an `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
 unity in `B`. -/
 noncomputable def zeta : B :=
-  (exists_isPrimitiveRoot A B (Set.mem_singleton n) (NeZero.ne _) :
+  (exists_isPrimitiveRoot A B (mem_singleton_self n) (NeZero.ne _) :
     ∃ r : B, IsPrimitiveRoot r n).choose
 
 /-- `zeta n A B` is a primitive `n`-th root of unity. -/
 @[simp]
 theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
-  (exists_isPrimitiveRoot A B (Set.mem_singleton n) (NeZero.ne _) :
+  (exists_isPrimitiveRoot A B (mem_singleton_self n) (NeZero.ne _) :
     ∃ r : B, IsPrimitiveRoot r n).choose_spec
 
 theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :

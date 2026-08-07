@@ -635,13 +635,13 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     IsLocalization.Away f S ↔ IsLocalization.AtPrime S p.1 :=
   have : IsLocalization.AtPrime (Localization.Away f) p.1 := by
     refine .of_le_of_exists_dvd (.powers f) _
-      (Submonoid.powers_le.mpr <| by apply h ▸ Set.mem_singleton p) fun r hr ↦ ?_
+      (Submonoid.powers_le.mpr <| by apply h ▸ mem_singleton_self p) fun r hr ↦ ?_
     contrapose! hr
     simp_rw [← Ideal.mem_span_singleton] at hr
     have ⟨q, prime, le, disj⟩ := Ideal.exists_le_prime_disjoint (Ideal.span {r})
       (.powers f) (Set.disjoint_right.mpr hr)
     have : ⟨q, prime⟩ ∈ (basicOpen f).1 := Set.disjoint_right.mp disj (Submonoid.mem_powers f)
-    rw [h, Set.mem_singleton_iff] at this
+    rw [h, mem_singletons
     rw [← this]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
@@ -986,13 +986,13 @@ protected def zeroLocusEquivIrreducibleCloseds (I : Set R) :
 
 lemma stableUnderSpecialization_singleton {x : PrimeSpectrum R} :
     StableUnderSpecialization {x} ↔ x.asIdeal.IsMaximal := by
-  simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, Set.mem_singleton_iff,
+  simp_rw [← isMax_iff, StableUnderSpecialization, ← le_iff_specializes, mem_singleton
     @forall_comm _ (_ = _), forall_eq]
   exact ⟨fun H a h ↦ (H a h).le, fun H a h ↦ le_antisymm (H h) h⟩
 
 lemma stableUnderGeneralization_singleton {x : PrimeSpectrum R} :
     StableUnderGeneralization {x} ↔ x.asIdeal ∈ minimalPrimes R := by
-  simp_rw [← isMin_iff, StableUnderGeneralization, ← le_iff_specializes, Set.mem_singleton_iff,
+  simp_rw [← isMin_iff, StableUnderGeneralization, ← le_iff_specializes, mem_singleton
     @forall_comm _ (_ = _), forall_eq]
   exact ⟨fun H a h ↦ (H a h).ge, fun H a h ↦ le_antisymm h (H h)⟩
 

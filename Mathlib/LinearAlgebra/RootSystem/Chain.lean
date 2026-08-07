@@ -312,9 +312,9 @@ lemma chainBotCoeff_eq_zero_iff :
   by_cases h : LinearIndependent R ![P.root i, P.root j]
   swap; · simp [chainBotCoeff_of_not_linearIndependent h, h]
   have : P.chainBotCoeff i j = 0 ↔ Iic (P.chainBotCoeff i j) = {0} := by
-    simpa [Set.ext_iff, mem_Iic, mem_singleton_iff] using ⟨fun h ↦ by simp [h], fun h ↦ by rw [← h]⟩
+    simpa [Set.ext_iff, mem_Iic, mem_singletoning ⟨fun h ↦ by simp [h], fun h ↦ by rw [← h]⟩
   simp only [h, not_true_eq_false, false_or, this, Iic_chainBotCoeff_eq h, Set.ext_iff,
-    mem_ofPred_eq, mem_singleton_iff]
+    mem_ofPred_eq, mem_singleton
   refine ⟨fun h' ↦ by simpa using h' 1, fun h' n ↦ ⟨fun h'' ↦ ?_, fun h'' ↦ by simp [h'']⟩⟩
   replace h' : 1 ∉ {k | P.root j - k • P.root i ∈ range P.root} := by simpa using h'
   rw [← Iic_chainBotCoeff_eq h, mem_Iic, not_le, Nat.lt_one_iff] at h'

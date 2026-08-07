@@ -90,7 +90,7 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
     simp only [sin_pi_div_two, one_pow, mul_one, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       Set.preimage_compl, forall_const] at this
     filter_upwards [this] with a ha
-    simp only [Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff, mul_eq_zero,
+    simp only [Set.mem_compl_iff, Set.mem_preimage, mem_singleton_zero,
       OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true, pow_eq_zero_iff, false_or] at ha
     rw [log_mul (by simp) (by simp_all), log_pow, Nat.cast_ofNat]
   _ = (∫ (x : ℝ) in 0..π, log 4) + 2 * ∫ (x : ℝ) in 0..π, log (sin x) := by

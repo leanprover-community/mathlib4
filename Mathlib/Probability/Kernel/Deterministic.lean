@@ -112,7 +112,7 @@ theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Ke
   refine ⟨f, ?_, ?_⟩
   · intro s hs
     have : f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} := by
-      simp only [preimage, mem_singleton_iff]
+      simp only [preimage, mem_singleton
       simp_rw [hf, Measure.dirac_apply' _ hs]
       ext x
       exact (indicator_eq_one_iff_mem ENNReal).symm

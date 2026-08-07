@@ -51,7 +51,7 @@ theorem mem_centralizer_iff_commutator_eq_one' {g : G} {s : Set G} :
 @[to_additive]
 lemma mem_centralizer_singleton_iff {g k : G} :
     k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
+  simp only [mem_centralizer_iff, mem_singleton_eq]
   exact eq_comm
 
 @[to_additive]

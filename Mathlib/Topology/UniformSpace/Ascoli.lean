@@ -503,6 +503,6 @@ theorem ArzelaAscoli.isCompact_of_equicontinuous
     exact (Equiv.toHomeomorphOfIsInducing _ h).symm.compactSpace
   rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi]
   · exact ContinuousMap.isUniformEmbedding_toUniformOnFunIsCompact.isInducing.comp .subtypeVal
-  · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+  · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton_self x) isCompact_singleton)
   · exact fun _ ↦ id
   · exact fun K _ ↦ hS2.equicontinuousOn K

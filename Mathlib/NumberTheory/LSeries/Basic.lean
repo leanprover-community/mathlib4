@@ -193,7 +193,7 @@ lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
     refine ⟨S \ {0}, sdiff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
-    rw [Set.mem_sdiff, Set.mem_singleton_iff] at hn
+    rw [Set.mem_sdiff, mem_singleton
     simp [hn.2, hS' hn.1]
   exact this.symm.mono fun n hn ↦ by simp [hn]
 

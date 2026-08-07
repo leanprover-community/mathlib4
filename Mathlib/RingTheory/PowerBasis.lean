@@ -477,7 +477,7 @@ theorem adjoin_gen_eq_top (B : PowerBasis R S) : adjoin R ({B.gen} : Set S) = �
   rw [← toSubmodule_eq_top, _root_.eq_top_iff, ← B.basis.span_eq, Submodule.span_le]
   rintro x ⟨i, rfl⟩
   rw [B.basis_eq_pow i]
-  exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
+  exact Subalgebra.pow_mem _ (subset_adjoin (mem_singleton_self _)) _
 
 theorem adjoin_eq_top_of_gen_mem_adjoin {B : PowerBasis R S} {x : S}
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : adjoin R ({x} : Set S) = ⊤ := by

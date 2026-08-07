@@ -918,7 +918,7 @@ theorem inter_eq_singleton_of_nonempty_of_isCompl {s₁ s₂ : AffineSubspace k 
   obtain ⟨p, hp⟩ := inter_nonempty_of_nonempty_of_sup_direction_eq_top h1 h2 hd.sup_eq_top
   use p
   ext q
-  rw [Set.mem_singleton_iff]
+  rw [mem_singleton
   constructor
   · rintro ⟨hq1, hq2⟩
     have hqp : q -ᵥ p ∈ s₁.direction ⊓ s₂.direction :=
@@ -1018,11 +1018,11 @@ variable (k)
 
 /-- The difference between two points lies in their `vectorSpan`. -/
 theorem vsub_mem_vectorSpan_pair (p₁ p₂ : P) : p₁ -ᵥ p₂ ∈ vectorSpan k ({p₁, p₂} : Set P) :=
-  vsub_mem_vectorSpan _ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+  vsub_mem_vectorSpan _ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (mem_singleton_self _))
 
 /-- The difference between two points (reversed) lies in their `vectorSpan`. -/
 theorem vsub_rev_mem_vectorSpan_pair (p₁ p₂ : P) : p₂ -ᵥ p₁ ∈ vectorSpan k ({p₁, p₂} : Set P) :=
-  vsub_mem_vectorSpan _ (Set.mem_insert_of_mem _ (Set.mem_singleton _)) (Set.mem_insert _ _)
+  vsub_mem_vectorSpan _ (Set.mem_insert_of_mem _ (mem_singleton_self _)) (Set.mem_insert _ _)
 
 variable {k}
 
@@ -1048,7 +1048,7 @@ theorem left_mem_affineSpan_pair (p₁ p₂ : P) : p₁ ∈ line[k, p₁, p₂] 
 
 /-- The second of two points lies in their affine span. -/
 theorem right_mem_affineSpan_pair (p₁ p₂ : P) : p₂ ∈ line[k, p₁, p₂] :=
-  mem_affineSpan _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+  mem_affineSpan _ (Set.mem_insert_of_mem _ (mem_singleton_self _))
 
 variable {k}
 

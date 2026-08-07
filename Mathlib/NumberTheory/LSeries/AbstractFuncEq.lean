@@ -322,11 +322,11 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
   simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
   · simp_rw [indicator_of_notMem (notMem_Ioi.mpr hx'.le), indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
-      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne)]
+      indicator_of_notMem (mem_singleton.mpr hx'.ne)]
     abel
   · simp [add_comm, sub_eq_add_neg]
   · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_notMem (notMem_Ioo_of_ge hx'.le),
-      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
+      indicator_of_notMem (mem_singleton.mpr hx'.ne')]
     abel
 
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at

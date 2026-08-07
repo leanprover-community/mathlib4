@@ -101,7 +101,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     | zero =>
       simp only [CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
       specialize hx x₀ (le_of_max_le_left hx₀_ge)
-      simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
+      simp only [hx₀, mul_zero, Set.Icc_self, mem_singleton
       refine fun z _ hz => hx _ ?_
       simp only [zpow_neg, zpow_one] at hz
       simp only [one_div, hz]
@@ -118,7 +118,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         gcongr
         · norm_num
         · lia
-      simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
+      simp only [ih, mul_zero, Set.Icc_self, mem_singleton
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
         rw [one_div, ← zpow_neg_one, ← mul_assoc, ← zpow_add₀ (by norm_num)]
@@ -181,7 +181,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     exact nonpos_of_mul_nonpos_right hu' (by linarith)
   | .inr (.inl heq) => -- c₁ = c₂
     have hmain : ∃ c, ∀ᶠ x in atTop, f x = c := by
-      simp only [heq, Set.Icc_self, Set.mem_singleton_iff] at h
+      simp only [heq, Set.Icc_self, mem_singleton
       rw [eventually_atTop] at h
       obtain ⟨n₀, hn₀⟩ := h
       refine ⟨f (max n₀ 2), ?_⟩
@@ -482,7 +482,7 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     filter_upwards [hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx'
     intro u hu
-    simp only [hx, inv_zero, mul_zero, Set.Icc_self, Set.mem_singleton_iff, hx' u hu.1]
+    simp only [hx, inv_zero, mul_zero, Set.Icc_self, mem_singletonhu.1]
   | inr hf_pos_or_neg =>
     suffices GrowsPolynomially fun x => |(f x)⁻¹| by
       cases hf_pos_or_neg with
@@ -557,8 +557,8 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       filter_upwards [hzero, hfnew] with x hx hx'
       intro u hu
       simp only [hx, zero_rpow (ne_of_lt hp), mul_zero,
-        Set.Icc_self, Set.mem_singleton_iff]
-      simp only [hx, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx'
+        Set.Icc_self, mem_singleton
+      simp only [hx, mul_zero, Set.Icc_self, mem_singleton
       rw [hx' u hu, zero_rpow (ne_of_lt hp)]
     | .inr (.inl hpos) => -- eventually positive
       refine ⟨c₂^p, hc₂p, ?_⟩

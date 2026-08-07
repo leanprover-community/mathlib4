@@ -314,7 +314,7 @@ theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomoge
     let ⟨f', eq_f'⟩ := M_homog.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
       ((subtype _).comp f.toEquiv.toEmbedding) (inclusion dom_le_S) (h := ⟨subtype _⟩)
     refine ⟨⟨⟨S, f'.toHom.range, f'.equivRange⟩, f_FG.sup (fg_closure_singleton _)⟩,
-      subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨dom_le_S, ?_⟩⟩
+      subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton_self m), ⟨dom_le_S, ?_⟩⟩
     ext
     simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coe_subtype, eq_f',
       Embedding.equivRange_apply, Substructure.coe_inclusion]
@@ -381,7 +381,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   let ⟨g, g_eq⟩ := hN.ultrahomogeneous.extend_embedding (f.dom.fg_iff_structure_fg.1 f_FG)
     ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion (le_sup_left : _ ≤ S))
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
-    subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
+    subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton_self m), ⟨le_sup_left, ?_⟩⟩
   ext
   simp [S, g_eq]
 

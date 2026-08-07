@@ -168,7 +168,7 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
     (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v => v : s → V) ↔
     AffineIndependent k (fun p => p : ({p₁} ∪ (fun v => v +ᵥ p₁) '' s : Set P) → P) := by
   rw [affineIndependent_set_iff_linearIndependent_vsub k
-      (Set.mem_union_left _ (Set.mem_singleton p₁))]
+      (Set.mem_union_left _ (mem_singleton_self p₁))]
   have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
     simp_rw [Set.union_sdiff_left, Set.image_sdiff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
@@ -523,7 +523,7 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
   · intro hs
     have h :=
       AffineIndependent.exists_mem_inter_of_exists_mem_inter_affineSpan ha hs
-        (mem_affineSpan k (Set.mem_image_of_mem _ (Set.mem_singleton _)))
+        (mem_affineSpan k (Set.mem_image_of_mem _ (mem_singleton_self _)))
     rwa [← Set.nonempty_def, Set.inter_singleton_nonempty] at h
   · exact fun h => mem_affineSpan k (Set.mem_image_of_mem p h)
 

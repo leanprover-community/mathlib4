@@ -113,7 +113,7 @@ lemma setGcd_insert_of_dvd (h : setGcd s ∣ n) : setGcd (insert n s) = setGcd s
 
 lemma setGcd_eq_zero_iff : setGcd s = 0 ↔ s ⊆ {0} := by
   simp_rw [setGcd, Int.natAbs_eq_zero, ← eq_bot_iff_generator_eq_zero, Ideal.span_eq_bot,
-    Set.forall_mem_image, Int.natCast_eq_zero, Set.subset_def, Set.mem_singleton_iff]
+    Set.forall_mem_image, Int.natCast_eq_zero, Set.subset_def, mem_singleton
 
 lemma exists_ne_zero_of_setGcd_ne_zero (hs : setGcd s ≠ 0) : ∃ n ∈ s, n ≠ 0 := by
   contrapose! hs

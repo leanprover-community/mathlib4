@@ -106,7 +106,7 @@ lemma IsConvexSet.sdiff_singleton_iff_notMem_convexHull (hs : IsConvexSet R s) :
     IsConvexSet R (s \ {x}) ↔ x ∉ convexHull R (s \ {x}) where
   mp hsx hx := by
     rw [hsx.convexHull_eq_self] at hx
-    exact hx.2 (mem_singleton _)
+    exact hx.2 (mem_singleton_self _)
   mpr hx := by
     rw [← convexHull_subset_self]
     rintro y hy

@@ -566,7 +566,7 @@ lemma eq_bouquet_of_subsingleton (hv : v ∈ V(G)) (hss : V(G).Subsingleton) :
     G = bouquet v E(G) := by
   have hrw := hss.eq_singleton_of_mem hv
   refine Graph.ext_inc (by simpa) fun e x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp [← mem_singleton_iff, ← hrw, h.edge_mem, h.vertex_mem]
+  · simp [← mem_singletonhrw, h.edge_mem, h.vertex_mem]
   simp only [bouquet_inc] at h
   obtain ⟨z, w, hzw⟩ := exists_isLink_of_mem_edgeSet h.1
   rw [h.2, ← show z = v from (show z ∈ {v} from hrw ▸ hzw.left_mem)]

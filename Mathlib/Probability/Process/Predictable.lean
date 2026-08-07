@@ -84,7 +84,7 @@ lemma measurableSet_predictable_singleton_prod
   rw [(_ : {n + 1} = Set.Ioc n (n + 1))]
   · exact measurableSet_predictable_Ioc_prod _ _ hs
   · ext m
-    simp only [Set.mem_singleton_iff, Set.mem_Ioc]
+    simp only [mem_singletonm_Ioc]
     lia
 
 lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s : Set (ℕ × Ω)}
@@ -101,7 +101,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
       (_ : (fun (p : Set.singleton (n + 1) × Ω) ↦ ((p.1 : ℕ), p.2)) ⁻¹' ({⊥} ×ˢ A) = ∅)]
     · simp
     · ext p
-      simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, Set.mem_singleton_iff,
+      simp only [Nat.bot_eq_zero, Set.mem_preimage, Set.mem_prod, mem_singleton
         Set.mem_empty_iff_false, iff_false, not_and]
       exact fun hp1 ↦ False.elim <| Nat.succ_ne_zero n (hp1 ▸ p.1.2.symm)
   · rw [MeasurableSpace.map_def]
@@ -117,7 +117,7 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
           = {⟨n + 1, rfl⟩} ×ˢ A)]
       · exact MeasurableSet.prod (MeasurableSet.of_subtype_image trivial) (𝓕.mono hin _ hA)
       · ext p
-        simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, Set.mem_singleton_iff,
+        simp only [Set.mem_preimage, Set.mem_prod, Set.mem_Ioi, mem_singleton
           and_congr_left_iff]
         intro hp2
         rw [p.1.2]

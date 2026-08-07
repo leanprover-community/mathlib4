@@ -72,7 +72,7 @@ lemma bot_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
 variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
-  Set.mem_singleton_iff
+  mem_singleton
 
 @[simp] lemma mk_eq_bot (carrier : AddSubmonoid M) (smul_mem') :
     mk carrier smul_mem' = (⊥ : Submodule R M) ↔ carrier = ⊥ := by simp [← toAddSubmonoid_inj]

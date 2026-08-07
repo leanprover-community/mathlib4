@@ -394,7 +394,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   refine fun x y hxy => h_zero _ ((measurableSet_fiber f x).inter (measurableSet_fiber g y)) ?_
   rw [EventuallyEq, ae_iff] at h
   refine measure_mono_null (fun z => ?_) h
-  simp_rw [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_preimage, Set.mem_singleton_iff]
+  simp_rw [Set.mem_inter_iff, Set.mem_ofPred_eq, Set.mem_preimage, mem_singleton
   intro h
   rwa [h.1, h.2]
 
@@ -618,14 +618,14 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
   simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Function.const_zero,
     piecewise_eq_indicator]
   rw [indicator_preimage, ← Function.const_def, preimage_const_of_mem]
-  swap; · exact Set.mem_singleton x
+  swap; · exact mem_singleton_self x
   rw [← Function.const_zero, ← Function.const_def, preimage_const_of_notMem]
-  swap; · rw [Set.mem_singleton_iff]; exact Ne.symm hx0
+  swap; · rw [mem_singleton Ne.symm hx0
   simp
 
 theorem setToSimpleFunc_const' [Nonempty α] (T : Set α → F →L[ℝ] F') (x : F)
     {m : MeasurableSpace α} : SimpleFunc.setToSimpleFunc T (SimpleFunc.const α x) = T univ x := by
-  simp only [setToSimpleFunc, range_const, Set.mem_singleton, preimage_const_of_mem,
+  simp only [setToSimpleFunc, range_const, mem_singleton_self, preimage_const_of_mem,
     sum_singleton, ← Function.const_def, coe_const]
 
 theorem setToSimpleFunc_const (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0) (x : F)

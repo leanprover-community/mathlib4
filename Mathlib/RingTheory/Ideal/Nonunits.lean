@@ -63,7 +63,7 @@ theorem exists_max_ideal_of_mem_nonunits [CommSemiring α] (h : a ∈ nonunits �
   use I, Imax
   apply H
   apply Ideal.subset_span
-  exact Set.mem_singleton a
+  exact mem_singleton_self a
 
 namespace Submonoid
 

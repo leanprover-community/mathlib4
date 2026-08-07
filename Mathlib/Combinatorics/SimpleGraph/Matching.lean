@@ -155,7 +155,7 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
 
 lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
   intro _ hv
-  rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
+  rw [subgraphOfAdj_verts, Set.mem_insert_iff, mem_singleton
   cases hv with
   | inl => use w; aesop
   | inr => use v; aesop
@@ -518,7 +518,7 @@ lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by
     simp only [Walk.toSubgraph, singletonSubgraph_le_iff, subgraphOfAdj_verts, Set.mem_insert_iff,
-      Set.mem_singleton_iff, or_true, sup_of_le_left]
+      mem_singletone, sup_of_le_left]
     exact (Subgraph.spanningCoe_subgraphOfAdj hadj).symm
   rw [show G.deleteEdges {s(v, w)} = G \ fromEdgeSet {s(v, w)} by rfl]
   exact this ▸ (hcyc.reachable_sdiff_toSubgraph_spanningCoe hadj.toWalk

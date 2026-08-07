@@ -29,7 +29,7 @@ that are not divisible by the characteristic of `F`. -/
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity F n where
   prim := by
     have : NeZero n := .of_neZero_natCast F
-    have := isCyclotomicExtension {n} F fun _ h _ ↦ Set.mem_singleton_iff.mp h ▸ ‹NeZero (n : F)›
+    have := isCyclotomicExtension {n} F fun _ h _ ↦ mem_singleton‹NeZero (n : F)›
     exact IsCyclotomicExtension.exists_isPrimitiveRoot (S := {n}) F _ rfl (NeZero.ne _)
   cyc :=
     have : NeZero n := .of_neZero_natCast F

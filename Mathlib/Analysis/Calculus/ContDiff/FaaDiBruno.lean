@@ -453,12 +453,12 @@ lemma range_emb_extendMiddle_ne_singleton_zero (c : OrderedFinpartition n) (i j 
       have A : (c.extendMiddle j).partSize j = c.partSize j + 1 := by simp [extendMiddle]
       refine ⟨Fin.cast A.symm (succ 0), ?_⟩
       simp only [extendMiddle, ↓reduceDIte, comp_apply, Fin.cast_cast, cast_eq_self, cases_succ]
-    simp only [mem_singleton_iff] at this
+    simp only [mem_singleton this
     exact Fin.succ_ne_zero _ this
   · have : (c.extendMiddle i).emb j 0 ∈ range ((c.extendMiddle i).emb j) :=
       mem_range_self 0
     rw [h] at this
-    simp only [extendMiddle, hij, ↓reduceDIte, comp_apply, mem_singleton_iff] at this
+    simp only [extendMiddle, hij, ↓reduceDIte, comp_apply, mem_singleton this
     exact Fin.succ_ne_zero _ this
 
 /-- Extend an ordered partition of `n` entries, by adding singleton to the left or appending it
@@ -487,7 +487,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     have : c.length - 1 + 1 = c.length := Nat.sub_add_cancel (c.length_pos (Nat.zero_lt_succ n))
     refine Fin.pred (c.emb (Fin.cast this (succ i)) j) ?_
     have := c.disjoint (mem_univ (Fin.cast this (succ i))) (mem_univ 0) (ne_of_beq_false rfl)
-    exact Set.disjoint_iff_forall_ne.1 this (by simp) (by simp only [mem_singleton_iff, hc])
+    exact Set.disjoint_iff_forall_ne.1 this (by simp) (by simp only [mem_singleton])
   emb_strictMono i a b hab := by
     simp only [pred_lt_pred_iff, Nat.succ_eq_add_one]
     apply c.emb_strictMono _ hab
@@ -509,7 +509,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     have i_ne : i ≠ 0 := by
       intro h
       have : succ x ∈ range (c.emb i) := by rw [← hij]; apply mem_range_self
-      rw [h, hc, mem_singleton_iff] at this
+      rw [h, hc, mem_singleton this
       exact Fin.succ_ne_zero _ this
     refine ⟨pred (Fin.cast A i) (by simpa using i_ne), Fin.cast (by simp) j, ?_⟩
     have : x = pred (succ x) (succ_ne_zero x) := rfl

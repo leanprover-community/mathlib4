@@ -109,8 +109,8 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   have f_sur : Surjective f := by
     intro x
     by_cases hx : x ∈ U
-    · exact ⟨⟨(x, false), Or.inr ⟨subset_closure hx, mem_singleton _⟩⟩, rfl⟩
-    · exact ⟨⟨(x, true), Or.inl ⟨hx, mem_singleton _⟩⟩, rfl⟩
+    · exact ⟨⟨(x, false), Or.inr ⟨subset_closure hx, mem_singleton_self _⟩⟩, rfl⟩
+    · exact ⟨⟨(x, true), Or.inl ⟨hx, mem_singleton_self _⟩⟩, rfl⟩
   have : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
   let φ := Subtype.val ∘ g

@@ -685,7 +685,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
       (hc.collinear_insert_iff_of_ne
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_insert _ _)))
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _
-          (Set.mem_singleton _)))) hp₃p₄).1 hc₅₁₂₃₄
+          (mem_singleton_self _)))) hp₃p₄).1 hc₅₁₂₃₄
     rw [Set.insert_comm] at hc₅₁₂ hc₅₃₄
     have hs₁₅₂ := oangle_eq_zero_or_eq_pi_iff_collinear.2 hc₅₁₂
     have hs₃₅₄ := oangle_eq_zero_or_eq_pi_iff_collinear.2 hc₅₃₄

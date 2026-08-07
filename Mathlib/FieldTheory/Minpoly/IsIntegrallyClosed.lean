@@ -231,7 +231,7 @@ theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
-    (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
+    (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton_self x⟩ := by
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
     AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftAlgHom_root]
 

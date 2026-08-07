@@ -137,7 +137,7 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → K)) :
     fun _ hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun _ hI =>
       let ⟨x, hx⟩ := hI
-      hx.2 ▸ fun _ hx' => (Set.mem_singleton_iff.1 hx').symm ▸ hp x hx.1
+      hx.2 ▸ fun _ hx' => (mem_singletonsymm ▸ hp x hx.1
 
 theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ K)) :
     pointToPoint (k := K) '' MvPolynomial.zeroLocus K I ≤ PrimeSpectrum.zeroLocus I := fun J hJ =>
@@ -177,7 +177,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
   rintro J ⟨hJI, hJ⟩
   obtain ⟨x, hx⟩ := eq_vanishingIdeal_singleton_of_isMaximal K hJ
   refine hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => ?_
-  rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
+  rw [← mem_vanishingIdeal_singleton_iff, mem_singleton hx]
   exact hJI hp
 
 @[simp high] -- This needs to fire before `vanishingIdeal_zeroLocus_eq_radical`

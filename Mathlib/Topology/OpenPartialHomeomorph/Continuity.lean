@@ -51,7 +51,7 @@ theorem eventually_ne_nhdsWithin {x} (hx : x ∈ e.source) :
     ∀ᶠ x' in 𝓝[≠] x, e x' ≠ e x :=
   eventually_nhdsWithin_iff.2 <|
     (e.eventually_left_inverse hx).mono fun x' hx' =>
-      mt fun h => by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
+      mt fun h => by rw [mem_singletone.left_inv hx, ← h, hx']
 
 theorem nhdsWithin_source_inter {x} (hx : x ∈ e.source) (s : Set X) : 𝓝[e.source ∩ s] x = 𝓝[s] x :=
   nhdsWithin_inter_of_mem (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds e.open_source hx)

@@ -79,7 +79,7 @@ theorem span_eq : span (I : Set α) = I := by simp
 
 @[simp]
 theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
-  (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
+  (eq_top_iff_one _).2 <| subset_span <| mem_singleton_self _
 
 theorem isCompactElement_top : IsCompactElement (⊤ : Ideal α) := by
   simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
@@ -168,7 +168,7 @@ lemma span_range_eq_span_range_support (x : ι → α) :
   rw [← span_sdiff_singleton_zero (s := range x), Function.support]
   congr
   ext1 a
-  simp only [mem_sdiff, mem_range, mem_singleton_iff]
+  simp only [mem_sdiff, mem_range, mem_singleton
   exact ⟨fun ⟨⟨i, hi⟩, ha⟩ ↦ ⟨⟨i, mem_ofPred.mpr (hi ▸ ha)⟩, hi⟩,
     fun ⟨j, hj⟩ ↦ ⟨⟨j.val, hj⟩, by grind⟩⟩
 

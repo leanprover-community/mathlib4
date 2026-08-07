@@ -591,7 +591,7 @@ theorem preimageSingletonHomeomorph_apply {b : B} (hb : b ∈ e.baseSet) (p : pr
 @[simp]
 theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p : F) :
     (e.preimageSingletonHomeomorph hb).symm p =
-      ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton_iff]⟩ :=
+      ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton=
   rfl
 
 /-- In the domain of a bundle trivialization, the projection is continuous -/
@@ -911,7 +911,7 @@ noncomputable def piecewiseLeOfEq [LinearOrder B] [OrderTopology B] (e e' : Triv
     Trivialization F proj :=
   e.piecewise e' (Iic a)
     (Set.ext fun x => and_congr_left_iff.2 fun hx => by
-      obtain rfl : x = a := mem_singleton_iff.1 (frontier_Iic_subset _ hx)
+      obtain rfl : x = a := mem_singletonfrontier_Iic_subset _ hx)
       simp [He, He'])
     fun p hp => Heq p <| frontier_Iic_subset _ hp.2
 

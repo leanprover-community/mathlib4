@@ -60,7 +60,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     simp only [lintegral_const, univ_inter,
       MeasurableSet.univ, Measure.restrict_apply]
     rw [IndepSets_iff] at h_ind
-    rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (Set.mem_singleton _)]
+    rw [mul_mul_mul_comm, h_ind s' T h_meas_s' (mem_singleton_self _)]
   · intro f' g _ h_meas_f' _ h_ind_f' h_ind_g
     have h_measM_f' : Measurable f' := h_meas_f'.mono hMf le_rfl
     simp_rw [Pi.add_apply, right_distrib]

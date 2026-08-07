@@ -357,9 +357,9 @@ theorem seminormFromBounded_is_norm_iff (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
   refine ⟨fun h0 ↦ ?_, fun h_ker x hx ↦ ?_⟩
   · rw [← seminormFromBounded_ker f_nonneg f_mul]
     ext x
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
+    simp only [Set.mem_preimage, mem_singleton
     exact ⟨fun h ↦ h0 x h, fun h ↦ by rw [h]; exact seminormFromBounded_zero f_zero⟩
-  · rw [← Set.mem_singleton_iff, ← h_ker, Set.mem_preimage, Set.mem_singleton_iff,
+  · rw [← mem_singletonr, Set.mem_preimage, mem_singmem_singleton
       ← seminormFromBounded_eq_zero_iff f_nonneg f_mul x]
     exact hx
 

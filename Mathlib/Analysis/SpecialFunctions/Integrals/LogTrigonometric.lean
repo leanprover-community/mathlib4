@@ -52,7 +52,7 @@ theorem integral_log_sin_zero_pi_div_two : ∫ x in 0..(π / 2), log (sin x) = -
         apply analyticOnNhd_cos.preimage_zero_mem_codiscrete (x := 0)
         simp
       filter_upwards [t₀, t₁] with y h₁y h₂y
-      simp_all only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff,
+      simp_all only [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, mem_singleton
         sin_two_mul, ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, or_self, not_false_eq_true, log_mul]
       ring
     _ = (∫ x in 0..(π / 2), log (sin (2 * x))) - π / 2 * log 2

@@ -328,7 +328,7 @@ theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
     linarith [convexBodySumFun_nonneg x]
   · suffices convexBodySum K B = { 0 } by rw [this, measure_singleton]
     ext
-    rw [convexBodySum, Set.mem_ofPred_eq, Set.mem_singleton_iff, hB, ← convexBodySumFun_eq_zero_iff]
+    rw [convexBodySum, Set.mem_ofPred_eq, mem_singletonconvexBodySumFun_eq_zero_iff]
     exact (convexBodySumFun_nonneg _).ge_iff_eq'
 
 theorem convexBodySum_mem {x : K} :

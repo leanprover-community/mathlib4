@@ -448,7 +448,7 @@ lemma RelCWComplex.cellFrontier_one_eq [RelCWComplex C D] (e : cell C 1) :
   ext f
   simp only [mem_sphere_iff_norm, sub_zero, Pi.norm_def, Finset.univ_unique, Fin.default_eq_zero,
     Fin.isValue, Finset.sup_singleton, coe_nnnorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
-    mem_insert_iff, mem_singleton_iff]
+    mem_insert_iff, mem_singleton
   rw [eq_const_of_unique (f := f), ← funext_iff_of_subsingleton (x := 0) (y := 0)]
   simp [const_apply, or_comm]
 
@@ -456,7 +456,7 @@ lemma CWComplex.exists_cellFrontier_one_eq [CWComplex C] (e : cell C 1) :
     ∃ x y : cell C 0, cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y := by
   obtain ⟨f, h⟩ := cellFrontier_subset_finite_closedCell 1 e
   simp only [RelCWComplex.cellFrontier_one_eq, image_pair, Order.lt_one_iff, iUnion_iUnion_eq_left,
-    RelCWComplex.closedCell_zero_eq_singleton, pair_subset_iff, mem_iUnion, mem_singleton_iff,
+    RelCWComplex.closedCell_zero_eq_singleton, pair_subset_iff, mem_iUnion, mem_singleton
     exists_prop] at h
   obtain ⟨⟨u, hu, hun1⟩, v, hv, hv1⟩ := h
   use u, v

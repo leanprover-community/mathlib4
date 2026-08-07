@@ -213,7 +213,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
       specialize h_in_H x
       have hxE : x ∈ E := by
         apply IntermediateField.subset_adjoin
-        apply Set.mem_singleton
+        apply mem_singleton_self
       exact hφx (h_in_H hxE) }
 
 end KrullT2

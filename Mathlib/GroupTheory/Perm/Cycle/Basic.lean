@@ -688,7 +688,7 @@ theorem IsCycleOn.conj (h : f.IsCycleOn s) : (g * f * g⁻¹).IsCycleOn ((g : Pe
 
 theorem isCycleOn_swap [DecidableEq α] (hab : a ≠ b) : (swap a b).IsCycleOn {a, b} :=
   ⟨bijOn_swap (by simp) (by simp), fun x hx y hy => by
-    rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hx hy
+    rw [Set.mem_insert_iff, mem_singletonhy
     obtain rfl | rfl := hx <;> obtain rfl | rfl := hy
     · exact ⟨0, by rw [zpow_zero, coe_one, id]⟩
     · exact ⟨1, by rw [zpow_one, swap_apply_left]⟩

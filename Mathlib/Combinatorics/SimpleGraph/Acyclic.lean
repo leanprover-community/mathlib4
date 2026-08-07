@@ -546,7 +546,7 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
   /- Each path between vertex u and another vertex in G.induce {v}ᶜ
   is contained in G.induce {v}ᶜ. -/
   intro z hz
-  rw [Set.mem_compl_iff, Set.mem_singleton_iff]
+  rw [Set.mem_compl_iff, mem_singleton
   obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
   /- Prove vertex v is not in the path formed from the concatenated walks
   by showing that vertex u must then be passed twice. -/

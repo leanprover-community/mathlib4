@@ -113,7 +113,7 @@ lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
   simp only [mem_factoredNumbers, Finset.notMem_empty, ← List.eq_nil_iff_forall_not_mem,
     primeFactorsList_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one,
-    false_or, Set.mem_singleton_iff]
+    false_or, mem_singleton
 
 /-- The product of two `s`-factored numbers is again `s`-factored. -/
 lemma mul_mem_factoredNumbers {s : Finset ℕ} {m n : ℕ} (hm : m ∈ factoredNumbers s)
@@ -153,7 +153,7 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
     (factoredNumbers s)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
   simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_sdiff, ne_eq, not_and, not_forall,
-    exists_prop, Set.mem_singleton_iff] at hn
+    exists_prop, mem_singleton
   simp only [Set.mem_ofPred_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by

@@ -124,7 +124,7 @@ lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
       ← finsum_mem_congr rfl fun i hi ↦ (h i hi).cast_ncard_eq, Nat.cast_finsum_mem ht]
   · obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
     rw [← Set.insert_sdiff_self_of_mem hi,
-      finsum_mem_insert _ (notMem_sdiff_of_mem <| mem_singleton i) ht.sdiff]
+      finsum_mem_insert _ (notMem_sdiff_of_mem <| mem_singleton_self i) ht.sdiff]
     simp [hn]
 
 lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :

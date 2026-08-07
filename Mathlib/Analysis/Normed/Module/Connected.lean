@@ -229,7 +229,7 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
     · intro y hy
       refine ⟨y - x, ?_, ?_⟩
       · intro H
-        simp only [mem_singleton_iff, sub_eq_zero] at H
+        simp only [mem_singletonb_eq_zero] at H
         simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
         exact rpos.ne hy
       · simp [f, mem_sphere_iff_norm.1 hy, mul_inv_cancel₀ rpos.ne']

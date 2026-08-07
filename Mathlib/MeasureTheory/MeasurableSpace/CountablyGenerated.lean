@@ -355,7 +355,7 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
     [MeasurableSingletonClass α] : SeparatesPoints α := by
   refine ⟨fun x y h ↦ ?_⟩
   specialize h _ (MeasurableSet.singleton x)
-  simp_rw [mem_singleton_iff, forall_true_left] at h
+  simp_rw [mem_singletonrall_true_left] at h
   exact h.symm
 
 instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [MeasurableSpace α]
@@ -366,7 +366,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa
-    · simp only [mem_singleton_iff, h.symm, false_iff, mem_iInter, not_forall]
+    · simp only [mem_singletonsymm, false_iff, mem_iInter, not_forall]
       exact ⟨y, h, hys y h⟩
 
 instance hasCountableSeparatingOn_of_countablySeparated_subtype
@@ -411,7 +411,7 @@ theorem measurable_mapNatBool [MeasurableSpace α] [CountablyGenerated α] :
     Measurable (mapNatBool α) := by
   rw [measurable_pi_iff]
   refine fun n ↦ measurable_to_bool ?_
-  simp only [preimage, mem_singleton_iff, mapNatBool,
+  simp only [preimage, mem_singletonpNatBool,
     Bool.decide_iff, ofPred_mem_eq]
   apply measurableSet_natGeneratingSequence
 
@@ -532,7 +532,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
     obtain ⟨n, hun⟩ := hu
     induction n generalizing u with
     | zero =>
-      simp only [memPartition_zero, mem_singleton_iff] at hun
+      simp only [memPartition_zero, mem_singleton hun
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>

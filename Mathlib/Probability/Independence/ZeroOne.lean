@@ -35,8 +35,8 @@ variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {s : ι → MeasurableSp
 theorem Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : Kernel.IndepSet t t κ μα) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 ∨ κ a t = ∞ := by
-  specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
-    (measurableSet_generateFrom (Set.mem_singleton t))
+  specialize h_indep t t (measurableSet_generateFrom (mem_singleton_self t))
+    (measurableSet_generateFrom (mem_singleton_self t))
   filter_upwards [h_indep] with a ha
   by_cases h0 : κ a t = 0
   · exact Or.inl h0

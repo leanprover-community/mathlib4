@@ -826,7 +826,7 @@ lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
 section Applicative
 
 theorem singleton_mem_pure {a : α} : {a} ∈ (pure a : Filter α) :=
-  mem_singleton a
+  mem_singleton_self a
 
 theorem pure_injective : Injective (pure : α → Filter α) := fun a _ hab =>
   (Filter.ext_iff.1 hab { x | a = x }).1 rfl

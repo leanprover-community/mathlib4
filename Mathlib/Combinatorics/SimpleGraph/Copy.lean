@@ -658,7 +658,7 @@ lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
   simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_sdiff,
     Set.mem_iUnion, not_exists] at this
   refine this.2 (G'.map <| .ofLE sdiff_le) ⟨((Copy.ofLE _ _ _).isoSubgraphMap _).comp hHG'.some⟩ ?_
-  rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]
+  rw [Sym2.map_map, mem_singleton
   congr 1 with x
   exact congr_arg _ (Equiv.Set.image_symm_apply _ _ injective_id _ _)
 

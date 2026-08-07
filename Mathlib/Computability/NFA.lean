@@ -350,7 +350,7 @@ theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   rw [NFA.mem_accepts, toNFA_start, toNFA_evalFrom_match]
   constructor
   · rintro ⟨S, hS₁, hS₂⟩
-    rwa [Set.mem_singleton_iff.mp hS₂] at hS₁
+    rwa [mem_singleton at hS₁
   · exact fun h => ⟨M.eval x, h, rfl⟩
 
 end DFA

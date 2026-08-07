@@ -273,7 +273,7 @@ def measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : Se
 
 theorem empty_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
     ∅ ∈ measurableCylinders α := by
-  simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
+  simp_rw [measurableCylinders, mem_iUnion, mem_singleton
   exact ⟨∅, ∅, MeasurableSet.empty, (cylinder_empty _).symm⟩
 
 variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
@@ -281,7 +281,7 @@ variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 @[simp]
 theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
     t ∈ measurableCylinders α ↔ ∃ s S, MeasurableSet S ∧ t = cylinder s S := by
-  simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton_iff]
+  simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton
 
 @[measurability]
 theorem _root_.MeasurableSet.of_mem_measurableCylinders {s : Set (Π i, α i)}
@@ -387,7 +387,7 @@ theorem measurableCylinders_nat {X : ℕ → Type*} [∀ n, MeasurableSpace (X n
     Finset.measurable_restrict₂ _ mS, ?_⟩
   unfold cylinder
   rw [← preimage_comp, Finset.restrict₂_comp_restrict]
-  exact mem_singleton _
+  exact mem_singleton_self _
 
 end cylinders
 

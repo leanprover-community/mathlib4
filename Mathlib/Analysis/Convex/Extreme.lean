@@ -159,7 +159,7 @@ theorem extremePoints_empty : (∅ : Set E).extremePoints 𝕜 = ∅ :=
 
 @[simp]
 theorem extremePoints_singleton : ({x} : Set E).extremePoints 𝕜 = {x} :=
-  extremePoints_subset.antisymm <| singleton_subset_iff.2 ⟨mem_singleton x, fun _ hx₁ _ _ _ ↦ hx₁⟩
+  extremePoints_subset.antisymm <| singleton_subset_iff.2 ⟨mem_singleton_self x, fun _ hx₁ _ _ _ ↦ hx₁⟩
 
 theorem inter_extremePoints_subset_extremePoints_of_subset (hBA : B ⊆ A) :
     B ∩ A.extremePoints 𝕜 ⊆ B.extremePoints 𝕜 :=
@@ -273,8 +273,8 @@ theorem Convex.mem_extremePoints_iff_convex_sdiff (hA : Convex 𝕜 A) :
   refine mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx ↦ ?_⟩
   rw [convex_iff_segment_subset] at hAx
   by_contra! h
-  exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singleton_iff.2 hx₁)⟩
-      ⟨hx₂, fun hx₂ ↦ h.2 (mem_singleton_iff.2 hx₂)⟩ hx).2 rfl
+  exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singletonx₁)⟩
+      ⟨hx₂, fun hx₂ ↦ h.2 (mem_singletonx₂)⟩ hx).2 rfl
 
 @[deprecated (since := "2026-06-03")]
 alias Convex.mem_extremePoints_iff_convex_diff := Convex.mem_extremePoints_iff_convex_sdiff

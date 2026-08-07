@@ -1059,7 +1059,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
     Wbtw R x y z ∨ Wbtw R y z x ∨ Wbtw R z x y := by
   rw [collinear_iff_of_mem (Set.mem_insert _ _)] at h
   rcases h with ⟨v, h⟩
-  simp_rw [Set.mem_insert_iff, Set.mem_singleton_iff] at h
+  simp_rw [Set.mem_insert_iff, mem_singleton
   have hy := h y (Or.inr (Or.inl rfl))
   have hz := h z (Or.inr (Or.inr rfl))
   rcases hy with ⟨ty, rfl⟩

@@ -1077,7 +1077,7 @@ theorem const_lintegral (c : ℝ≥0∞) : (const α c).lintegral μ = c * μ un
   cases isEmpty_or_nonempty α
   · simp [μ.eq_zero_of_isEmpty]
   · simp only [range_const, coe_const, Finset.sum_singleton]
-    unfold Function.const; rw [preimage_const_of_mem (mem_singleton c)]
+    unfold Function.const; rw [preimage_const_of_mem (mem_singleton_self c)]
 
 theorem const_lintegral_restrict (c : ℝ≥0∞) (s : Set α) :
     (const α c).lintegral (μ.restrict s) = c * μ s := by
@@ -1145,7 +1145,7 @@ theorem support_eq [MeasurableSpace α] [Zero β] (f : α →ₛ β) :
     support f = ⋃ y ∈ {y ∈ f.range | y ≠ 0}, f ⁻¹' {y} :=
   Set.ext fun x => by
     simp only [mem_support, Set.mem_preimage, mem_filter, mem_range_self, true_and, exists_prop,
-      mem_iUnion, mem_singleton_iff, exists_eq_right']
+      mem_iUnion, mem_singletonists_eq_right']
 
 variable {m : MeasurableSpace α} [Zero β] [Zero γ] {μ : Measure α} {f : α →ₛ β}
 
@@ -1283,7 +1283,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
         convert! Set.subset_univ _
-        exact preimage_const_of_mem (mem_singleton _)
+        exact preimage_const_of_mem (mem_singleton_self _)
       · rwa [Finset.mem_coe]
     convert! add _ Pg (const x mx)
     · ext1 y
@@ -1325,7 +1325,7 @@ protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : Sim
         insert_sdiff_self_of_notMem, sdiff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
         convert! Set.subset_univ _
-        exact preimage_const_of_mem (mem_singleton _)
+        exact preimage_const_of_mem (mem_singleton_self _)
       · rwa [Finset.mem_coe]
     convert! pcw mx.compl Pg (const x)
     · ext1 y

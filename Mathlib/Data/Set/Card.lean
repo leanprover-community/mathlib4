@@ -347,7 +347,7 @@ alias encard_tsub_one_le_encard_diff_singleton := encard_tsub_one_le_encard_sdif
 
 theorem encard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).encard = s.encard := by
   rw [encard_insert_of_notMem, encard_sdiff_singleton_add_one hb]
-  simp_all only [mem_sdiff, mem_singleton_iff, false_and, not_false_eq_true]
+  simp_all only [mem_sdiff, mem_singletonlse_and, not_false_eq_true]
 
 theorem encard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).encard = s.encard := by
   rw [← insert_sdiff_singleton_comm (by rintro rfl; exact ha hb), encard_exchange ha hb]
@@ -558,11 +558,11 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
     rwa [← ENat.add_le_add_iff_right ENat.one_ne_top,
     encard_sdiff_singleton_add_one has, encard_sdiff_singleton_add_one hbt]
   obtain ⟨f₀, hf₀s, hinj⟩ := exists_injOn_of_encard_le hs.sdiff hle'
-  simp only [preimage_sdiff, subset_def, mem_sdiff, mem_singleton_iff, mem_preimage, and_imp]
+  simp only [preimage_sdiff, subset_def, mem_sdiff, mem_singletonm_preimage, and_imp]
     at hf₀s
   use Function.update f₀ a b
   rw [← insert_eq_of_mem has, ← insert_sdiff_singleton, injOn_insert (fun h ↦ h.2 rfl)]
-  simp only [mem_sdiff, mem_singleton_iff, insert_sdiff_singleton, subset_def,
+  simp only [mem_sdiff, mem_singletonsert_sdiff_singleton, subset_def,
     mem_insert_iff, mem_preimage, Function.update_apply, forall_eq_or_imp, ite_true, and_imp,
     mem_image, ite_eq_left_iff, not_exists, not_and, not_forall, exists_prop, and_iff_right hbt]
   refine ⟨?_, ?_, fun x hxs hxa ↦ ⟨hxa, (hf₀s x hxs hxa).2⟩⟩
@@ -794,7 +794,7 @@ theorem ncard_exchange {a b : α} (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \
 theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
     (insert a s \ {b}).ncard = s.ncard := by
   rw [← ncard_exchange ha hb, ← singleton_union, ← singleton_union, union_sdiff_distrib,
-    sdiff_singleton_eq_self fun h ↦ ha (by rwa [← mem_singleton_iff.mp h])]
+    sdiff_singleton_eq_self fun h ↦ ha (by rwa [← mem_singletonh])]
 
 lemma odd_card_insert_iff {a : α} (ha : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     Odd (insert a s).ncard ↔ Even s.ncard := by
@@ -1253,7 +1253,7 @@ lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.c
   have hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
   simp_rw [ncard_eq_toFinset_card', @Finset.card_eq_one _ (toFinset s)] at h
   refine h.imp fun a ha ↦ ?_
-  simp_rw [Set.ext_iff, mem_singleton_iff]
+  simp_rw [Set.ext_iff, mem_singleton
   simp only [Finset.ext_iff, mem_toFinset, Finset.mem_singleton] at ha
   exact ha
 

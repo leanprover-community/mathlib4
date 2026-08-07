@@ -190,7 +190,7 @@ theorem torusIntegral_dim0 [CompleteSpace E]
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
     Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
     integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
-    Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
+    Measure.dirac_apply_of_mem (mem_singleton_self _), Subsingleton.elim (torusMap c R 0) c]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`

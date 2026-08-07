@@ -786,7 +786,7 @@ theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
 theorem adj_of_mem_incidenceSet (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
     (hb : e ∈ G.incidenceSet b) : G.Adj a b := by
   rwa [← mk'_mem_incidenceSet_left_iff, ←
-    Set.mem_singleton_iff.1 <| G.incidenceSet_inter_incidenceSet_subset h ⟨ha, hb⟩]
+    mem_singletonincidenceSet_inter_incidenceSet_subset h ⟨ha, hb⟩]
 
 theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠ b) :
     G.incidenceSet a ∩ G.incidenceSet b = ∅ := by
@@ -858,7 +858,7 @@ theorem mem_incidence_iff_neighbor {v w : V} :
 theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :
     G.incidenceSet v ∩ G.incidenceSet (Sym2.Mem.other h) = {e} := by
   ext e'
-  simp only [incidenceSet, Set.mem_sep_iff, Set.mem_inter_iff, Set.mem_singleton_iff]
+  simp only [incidenceSet, Set.mem_sep_iff, Set.mem_inter_iff, mem_singleton
   refine ⟨fun h' => ?_, ?_⟩
   · rw [← Sym2.other_spec h]
     exact (Sym2.mem_and_mem_iff (edge_other_ne G he h).symm).mp ⟨h'.1.2, h'.2.2⟩
@@ -876,7 +876,7 @@ theorem neighborSet_union_compl_neighborSet_eq (G : SimpleGraph V) (v : V) :
     G.neighborSet v ∪ Gᶜ.neighborSet v = {v}ᶜ := by
   ext w
   have h := @ne_of_adj _ G
-  simp_rw [Set.mem_union, mem_neighborSet, compl_adj, Set.mem_compl_iff, Set.mem_singleton_iff]
+  simp_rw [Set.mem_union, mem_neighborSet, compl_adj, Set.mem_compl_iff, mem_singleton
   tauto
 
 theorem card_neighborSet_union_compl_neighborSet [Fintype V] (G : SimpleGraph V) (v : V)

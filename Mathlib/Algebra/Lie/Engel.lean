@@ -190,7 +190,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   let K' : LieSubalgebra R L :=
     { (R ∙ x) ⊔ (K : Submodule R L) with
       lie_mem' := fun {y z} => LieSubalgebra.lie_mem_sup_of_mem_normalizer hx₁ }
-  have hxK' : x ∈ K' := Submodule.mem_sup_left (Submodule.subset_span (Set.mem_singleton _))
+  have hxK' : x ∈ K' := Submodule.mem_sup_left (Submodule.subset_span (mem_singleton_self _))
   have hKK' : K ≤ K' := (LieSubalgebra.toSubmodule_le_toSubmodule K K').mp le_sup_right
   have hK' : K' ≤ K.normalizer := by
     rw [← LieSubalgebra.toSubmodule_le_toSubmodule]

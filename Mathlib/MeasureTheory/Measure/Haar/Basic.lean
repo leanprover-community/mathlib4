@@ -435,7 +435,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
           simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
-    simp only [eval, mem_preimage, sub_eq_zero, mem_singleton_iff]; rw [eq_comm]
+    simp only [eval, mem_preimage, sub_eq_zero, mem_singletonw [eq_comm]
     apply prehaar_sup_eq
     · rw [h2U.interior_eq]; exact ⟨1, h3U⟩
     · refine disjoint_of_subset ?_ ?_ hU
@@ -454,7 +454,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩
-    simp only [eval, mem_singleton_iff, mem_preimage, sub_eq_zero]
+    simp only [eval, mem_singletonm_preimage, sub_eq_zero]
     apply is_left_invariant_prehaar; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 

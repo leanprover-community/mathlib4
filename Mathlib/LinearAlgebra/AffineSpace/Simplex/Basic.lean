@@ -526,7 +526,7 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   ext p
   simp only [Simplex.closedInterior, Simplex.setInterior, Nat.reduceAdd, univ_unique,
     Fin.default_eq_zero, Fin.isValue, sum_singleton, Set.mem_Icc, Set.mem_ofPred_eq,
-    Set.mem_singleton_iff]
+    mem_singleton
   constructor
   · rintro ⟨w, h0, hi, rfl⟩
     simp [affineCombination_apply, h0]

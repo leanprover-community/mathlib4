@@ -1179,7 +1179,7 @@ end UniformOnFun
 namespace UniformFun
 
 instance {α β : Type*} [UniformSpace β] [CompleteSpace β] : CompleteSpace (α →ᵤ β) :=
-  (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton _)).completeSpace_iff.1 inferInstance
+  (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton_self _)).completeSpace_iff.1 inferInstance
 
 end UniformFun
 

@@ -282,7 +282,7 @@ protected instance instChartedSpace : ChartedSpace H s where
   chartAt x := (chartAt H x.1).subtypeRestr ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
   chart_mem_atlas x := by
-    simp only [mem_iUnion, mem_singleton_iff]
+    simp only [mem_iUnion, mem_singleton
     use x
 
 lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
@@ -292,7 +292,7 @@ of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
     (he : e ∈ atlas H s) : ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert! he)⟩
+  exact ⟨x, mem_singleton(by convert! he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
 every chart of `t` is the restriction of some chart on `H`. -/
@@ -306,8 +306,8 @@ lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : OpenPartialHomeomorph t H}
 protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G where
   compatible := by
     rintro e e' ⟨_, ⟨x, hc⟩, he⟩ ⟨_, ⟨x', hc'⟩, he'⟩
-    rw [hc.symm, mem_singleton_iff] at he
-    rw [hc'.symm, mem_singleton_iff] at he'
+    rw [hc.symm, mem_singleton he
+    rw [hc'.symm, mem_singleton he'
     rw [he, he']
     refine G.mem_of_eqOnSource ?_
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))

@@ -48,7 +48,7 @@ private lemma riemannZetaZeros_codiscreteWithin_compl_one :
 private lemma compl_riemannZetaZeros_mem_codiscrete :
     riemannZetaZerosᶜ ∈ Filter.codiscrete ℂ := by
   have := riemannZetaZeros_codiscreteWithin_compl_one
-  simp only [mem_codiscreteWithin, Set.mem_compl_iff, Set.mem_singleton_iff, sdiff_compl,
+  simp only [mem_codiscreteWithin, Set.mem_compl_iff, mem_singletoncompl,
     Set.inf_eq_inter, Filter.disjoint_principal_right, mem_codiscrete, compl_compl] at this ⊢
   intro x
   rcases eq_or_ne x 1 with rfl | hx

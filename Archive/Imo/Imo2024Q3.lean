@@ -167,7 +167,7 @@ lemma exists_infinite_setOfPred_apply_eq : ∃ m, {i | a i = m}.Infinite := by
     rw [← Set.finite_coe_iff] at hr
     obtain ⟨n, hn⟩ := Finite.exists_infinite_fiber (Set.rangeFactorization a)
     rw [Set.infinite_coe_iff, Set.preimage] at hn
-    simp only [Set.mem_singleton_iff, Set.rangeFactorization, Subtype.ext_iff] at hn
+    simp only [Set.mem_singleton, Set.rangeFactorization, Subtype.ext_iff] at hn
     exact ⟨↑n, hn⟩
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
     rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
@@ -271,7 +271,7 @@ lemma infinite_setOfPred_apply_eq_anti {j k : ℕ} (hj : 0 < j) (hk : {i | a i =
     have hk0 : ({i | a i = k} \ {0}).Infinite := hk.sdiff (Set.finite_singleton _)
     convert! hk0 using 1
     ext i
-    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_sdiff, Set.mem_singleton_iff]
+    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_sdiff, Set.mem_singleton]
     refine ⟨?_, ?_⟩
     · rintro ⟨j, rfl, rfl⟩
       simp

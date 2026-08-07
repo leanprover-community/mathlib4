@@ -223,7 +223,7 @@ implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem of_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) [H : IsCyclotomicExtension S A B] :
     IsCyclotomicExtension (S ∪ {n}) A B := by
   refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs hs' ↦ ?_, ?_⟩
-  · rw [mem_union, mem_singleton_iff] at hs
+  · rw [mem_union, mem_singleton hs
     obtain hs | rfl := hs
     · exact H.exists_isPrimitiveRoot hs hs'
     · obtain ⟨m, hm, hm', ⟨x, rfl⟩⟩ := h
@@ -265,7 +265,7 @@ theorem iff_union_singleton_one :
   · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_sdiff_distrib,
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
+    · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singletons]⟩, ?_⟩
       simpa [adjoin_singleton_one] using subsingleton_iff_bot_eq_top.mpr inferInstance
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs ↦ (notMem_empty s hs).elim, ?_⟩
       simp [singleton_one]
@@ -304,11 +304,11 @@ theorem neZero_of_mem' [IsCyclotomicExtension S A B] [IsDomain B] (hn : n ∈ S)
 
 protected
 theorem neZero [IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero (n : B) :=
-  neZero_of_mem n {n} A B (mem_singleton n)
+  neZero_of_mem n {n} A B (mem_singleton_self n)
 
 protected
 theorem neZero' [IsCyclotomicExtension {n} A B] [IsDomain B] : NeZero (n : A) :=
-  neZero_of_mem' n {n} A B (mem_singleton n)
+  neZero_of_mem' n {n} A B (mem_singleton_self n)
 
 /-- A cyclotomic extension is integral. -/
 theorem integral [IsCyclotomicExtension S A B] : Algebra.IsIntegral A B := by
@@ -372,13 +372,13 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
   classical
   rw [Module.finite_def, ← top_toSubmodule, ← ((iff_adjoin_eq_top _ _ _).1 h).2]
   refine fg_adjoin_of_finite ?_ fun b ⟨n, hb⟩ => ?_
-  · simp only [mem_singleton_iff, exists_eq_left]
+  · simp only [mem_singletonists_eq_left]
     have : {b : B | n ≠ 0 ∧ b ^ n = 1} = (nthRoots n (1 : B)).toFinset :=
       Set.ext fun x ↦ ⟨fun h ↦ by simpa [n.pos_of_neZero] using h.2,
         fun h ↦ by simpa [n.pos_of_neZero, NeZero.ne n] using h⟩
     rw [this]
     exact (nthRoots n 1).toFinset.finite_toSet
-  · simp only [mem_singleton_iff] at hb
+  · simp only [mem_singleton hb
     exact ⟨X ^ n - 1,
       ⟨monic_X_pow_sub_C _ (hb.1 ▸ NeZero.ne _), by simpa [sub_eq_zero] using hb.2.2⟩⟩
 
@@ -429,7 +429,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     (hζ : IsPrimitiveRoot ζ n) :
     adjoin A ((cyclotomic n A).rootSet B) =
       adjoin A {b : B | ∃ a : ℕ, a ∈ ({n} : Set ℕ) ∧ a ≠ 0 ∧ b ^ a = 1} := by
-  simp only [mem_singleton_iff, exists_eq_left]
+  simp only [mem_singletonists_eq_left]
   refine le_antisymm (adjoin_mono fun x hx => ?_) (adjoin_le fun x hx => ?_)
   · rw [mem_rootSet'] at hx
     simp only [mem_ofPred_eq]
@@ -448,12 +448,12 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ} [NeZero n] [
   refine le_antisymm (adjoin_le fun x hx => ?_) (adjoin_mono fun x hx => ?_)
   · suffices hx : x ^ n = 1 by
       obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
-      exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
+      exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton_self ζ) _)
     refine (isRoot_of_unity_iff (NeZero.pos n) B).2 ?_
     refine ⟨n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
     rw [mem_rootSet', ← eval_map_algebraMap, map_cyclotomic, ← IsRoot] at hx
     exact hx.2
-  · simp only [mem_singleton_iff] at hx
+  · simp only [mem_singleton hx
     simpa only [hx, mem_rootSet', map_cyclotomic, ← eval_map_algebraMap, IsRoot] using
       And.intro (cyclotomic_ne_zero n B) (hζ.isRoot_cyclotomic (NeZero.pos n))
 
@@ -469,17 +469,17 @@ variable (A)
 theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [NeZero n]
     (h : IsPrimitiveRoot ζ n) : IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
   { exists_isPrimitiveRoot := fun hi hi' => by
-      rw [Set.mem_singleton_iff] at hi
-      refine ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, ?_⟩
+      rw [mem_singleton
+      refine ⟨⟨ζ, subset_adjoin <| mem_singleton_self ζ⟩, ?_⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]
     adjoin_roots := fun ⟨x, hx⟩ => by
       refine
         adjoin_induction
           (hx := hx) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
           (fun b₁ b₂ _ _ hb₁ hb₂ => ?_)
-      · rw [Set.mem_singleton_iff] at hb
+      · rw [mem_singleton
         refine subset_adjoin ?_
-        simp only [mem_singleton_iff, exists_eq_left, mem_ofPred_eq, hb]
+        simp only [mem_singletonists_eq_left, mem_ofPred_eq, hb]
         rw [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
         exact ⟨NeZero.ne n, ((IsPrimitiveRoot.iff_def ζ n).1 h).1⟩
       · exact Subalgebra.algebraMap_mem _ _
@@ -615,12 +615,12 @@ variable [IsCyclotomicExtension {n} K L]
 
 /-- If `IsCyclotomicExtension {n} K L`, then `L` is the splitting field of `X ^ n - 1`. -/
 theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ n - 1) :=
-  { splits' := splits_X_pow_sub_one K L (mem_singleton n)
+  { splits' := splits_X_pow_sub_one K L (mem_singleton_self n)
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       congr
       refine Set.ext fun x => ?_
-      simp only [mem_singleton_iff, ne_eq, exists_eq_left, NeZero.ne, not_false_eq_true, true_and,
+      simp only [mem_singleton_eq, exists_eq_left, NeZero.ne, not_false_eq_true, true_and,
         mem_ofPred_eq]
       simp only [mem_rootSet', map_sub, map_pow, aeval_one, aeval_X, sub_eq_zero, map_X,
         and_iff_right_iff_imp, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one]
@@ -630,12 +630,12 @@ scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X
 
 /-- If `IsCyclotomicExtension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/
 theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
-  { splits' := splits_cyclotomic K L (mem_singleton n)
+  { splits' := splits_cyclotomic K L (mem_singleton_self n)
     adjoin_rootSet' := by
       rw [← ((iff_adjoin_eq_top {n} K L).1 inferInstance).2]
       let := Classical.decEq L
       obtain ⟨ζ : L, hζ⟩ :=
-        IsCyclotomicExtension.exists_isPrimitiveRoot K L (mem_singleton n) (NeZero.ne _)
+        IsCyclotomicExtension.exists_isPrimitiveRoot K L (mem_singleton_self n) (NeZero.ne _)
       exact adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ }
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.splitting_field_cyclotomic
@@ -681,7 +681,7 @@ instance isCyclotomicExtension [NeZero (n : K)] :
     Splits.exists_eval_eq_zero (SplittingField.splits (cyclotomic n K)) (by rwa [degree_map])
   rw [eval_map, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
   refine ⟨?_, ?_⟩
-  · simp only [mem_singleton_iff, forall_eq]
+  · simp only [mem_singletonrall_eq]
     exact fun _ ↦ ⟨ζ, hζ⟩
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
@@ -768,12 +768,12 @@ set_option backward.isDefEq.respectTransparency false in
 instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_isPrimitiveRoot {a} han _ := by
-    rw [mem_singleton_iff] at han
+    rw [mem_singleton han
     subst a
     have := NeZero.of_faithfulSMul A K n
     have := NeZero.of_faithfulSMul A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_isPrimitiveRoot
-      (mem_singleton n) (NeZero.ne n)
+      (mem_singleton_self n) (NeZero.ne n)
     refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff (NeZero.pos n) (CyclotomicField n K)).mpr
       refine ⟨n, Nat.mem_divisors_self _ (NeZero.ne n), ?_⟩
@@ -785,7 +785,7 @@ instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : �
       adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
         (fun y z _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
-      simp only [mem_singleton_iff, exists_eq_left, mem_ofPred_eq]
+      simp only [mem_singletonists_eq_left, mem_ofPred_eq]
       exact ⟨NeZero.ne n, by rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]⟩
     · exact Subalgebra.algebraMap_mem _ a
     · exact Subalgebra.add_mem _ hy hz
@@ -890,14 +890,14 @@ theorem isCyclotomicExtension_iff_eq_adjoin (C : Subalgebra A B)
 theorem isCyclotomicExtension_singleton_iff_eq_adjoin (C : Subalgebra A B) {ζ : B}
     (hζ : IsPrimitiveRoot ζ n) : IsCyclotomicExtension {n} A C ↔ C = adjoin A {ζ} := by
   rw [isCyclotomicExtension_iff_eq_adjoin]
-  · simp only [Set.mem_singleton_iff, exists_eq_left]
+  · simp only [mem_singleton_eq_left]
     suffices adjoin A {b | n ≠ 0 ∧ b ^ n = 1} = adjoin A {ζ} by rw [this]
     apply le_antisymm
     · refine adjoin_le fun x ⟨_, hx⟩ ↦ ?_
       obtain ⟨k, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
       exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton A ζ) _
     · exact adjoin_mono <| Set.singleton_subset_iff.mpr ⟨NeZero.ne n, hζ.pow_eq_one⟩
-  · simpa only [Set.mem_singleton_iff, ne_eq, forall_eq, NeZero.ne n, not_false_eq_true,
+  · simpa only [mem_singleton forall_eq, NeZero.ne n, not_false_eq_true,
       forall_const] using ⟨ζ, hζ⟩
 
 theorem IsCyclotomicExtension.eq (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExtension S A C₁]

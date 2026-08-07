@@ -362,7 +362,7 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
     {φ : K →+* ℂ} (h : ComplexEmbedding.IsConj φ σ) :
     (Stab (mk φ) : Set Gal(K/k)) = {1, σ} := by
   ext
-  rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+  rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, mem_singleton
     ← h.ext_iff, eq_comm (a := σ)]
 
 variable (k w)
@@ -378,7 +378,7 @@ lemma nat_card_stabilizer_eq_one_or_two :
   · left
     trans Nat.card ({1} : Set Gal(K/k))
     · congr with x
-      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
+      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, mem_singleton_left_iff_imp,
         h x, IsEmpty.forall_iff]
     · simp
 

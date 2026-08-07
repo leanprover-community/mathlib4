@@ -583,7 +583,7 @@ lemma insert_sdiff_singleton : insert a (s \ {a}) = insert a s := by
 lemma insert_sdiff_singleton_comm (hab : a ≠ b) (s : Set α) :
     insert a (s \ {b}) = insert a s \ {b} := by
   simp_rw [← union_singleton, union_sdiff_distrib,
-    sdiff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+    sdiff_singleton_eq_self (mem_singleton.2 hab.symm)]
 
 @[deprecated (since := "2026-06-03")]
 alias insert_diff_singleton_comm := insert_sdiff_singleton_comm
@@ -607,7 +607,7 @@ lemma subset_insert_iff : s ⊆ insert a t ↔ s ⊆ t ∨ (a ∈ s ∧ s \ {a} 
   grind
 
 lemma pair_sdiff_left (hab : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
-  rw [insert_sdiff_of_mem _ (mem_singleton a), sdiff_singleton_eq_self (by simpa)]
+  rw [insert_sdiff_of_mem _ (mem_singleton_self a), sdiff_singleton_eq_self (by simpa)]
 
 @[deprecated (since := "2026-06-03")] alias pair_diff_left := pair_sdiff_left
 

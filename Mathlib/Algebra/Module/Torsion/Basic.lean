@@ -273,7 +273,7 @@ theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (
 @[simp]
 theorem torsionBySet_singleton_eq : torsionBySet R M {a} = torsionBy R M a := by
   ext x
-  simp only [mem_torsionBySet_iff, SetCoe.forall, Set.mem_singleton_iff, forall_eq,
+  simp only [mem_torsionBySet_iff, SetCoe.forall, mem_singleton_eq,
     mem_torsionBy_iff]
 
 theorem torsionBySet_le_torsionBySet_of_subset {s t : Set R} (st : s ⊆ t) :
@@ -334,7 +334,7 @@ theorem isTorsionBySet_of_subset {s t : Set R} (h : s ⊆ t)
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by
-  refine ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => ?_⟩
+  refine ⟨fun h x => @h _ ⟨_, mem_singleton_self _⟩, fun h x => ?_⟩
   rintro ⟨b, rfl : b = a⟩; exact @h _
 
 theorem isTorsionBySet_iff_is_torsion_by_span :

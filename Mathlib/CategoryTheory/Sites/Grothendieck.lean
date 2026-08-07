@@ -241,10 +241,10 @@ def trivial : GrothendieckTopology C where
   sieves _ := {⊤}
   top_mem' _ := rfl
   pullback_stable' X Y S f hf := by
-    rw [Set.mem_singleton_iff] at hf ⊢
+    rw [mem_singleton⊢
     simp [hf]
   transitive' X S hS R hR := by
-    rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS
+    rw [mem_singletone.id_mem_iff_eq_top] at hS
     simpa using hR hS
 
 /-- The discrete Grothendieck topology, in which every sieve is covering.
@@ -260,7 +260,7 @@ def discrete : GrothendieckTopology C where
 variable {C}
 
 theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
-  Set.mem_singleton_iff
+  mem_singleton
 
 @[stacks 00Z6]
 instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where

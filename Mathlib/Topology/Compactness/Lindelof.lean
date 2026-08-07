@@ -151,7 +151,7 @@ theorem IsLindelof.elim_countable_subcover {ι : Type v} (hs : IsLindelof s) (U 
     intro x hx
     let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
     refine ⟨U i, mem_nhdsWithin_of_mem_nhds ((hUo i).mem_nhds hi), {i}, by simp, ?_⟩
-    simp only [mem_singleton_iff, iUnion_iUnion_eq_left]
+    simp only [mem_singletonnion_iUnion_eq_left]
     exact Subset.refl _
   exact hs.induction_on hmono hcountable_union h_nhds
 

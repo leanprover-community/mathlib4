@@ -157,10 +157,13 @@ theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
   (insert_empty_eq a).symm
 
 @[simp, grind =, push]
-theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
+theorem mem_singleton {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 
-theorem notMem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+@[deprecated (since := "2026-08-07")]
+alias mem_singleton_iff := mem_singleton
+
+theorem notmem_singleton {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
 
 @[simp]
@@ -176,8 +179,8 @@ theorem ofPred_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
 @[deprecated (since := "2026-07-09")] alias setOf_eq_eq_singleton' := ofPred_eq_eq_singleton'
 
 -- TODO: again, annotation needed
--- Not `@[simp]` since `mem_singleton_iff` proves it.
-theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
+-- Not `@[simp]` since `mem_singleton` proves it.
+theorem mem_singleton_self (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
 theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Set α)) : x = y :=
@@ -231,7 +234,7 @@ theorem union_singleton : s ∪ {a} = insert a s :=
 
 @[simp]
 theorem singleton_inter_nonempty : ({a} ∩ s).Nonempty ↔ a ∈ s := by
-  simp only [Set.Nonempty, mem_inter_iff, mem_singleton_iff, exists_eq_left]
+  simp only [Set.Nonempty, mem_inter_iff, mem_singleton, exists_eq_left]
 
 @[simp]
 theorem inter_singleton_nonempty : (s ∩ {a}).Nonempty ↔ a ∈ s := by
@@ -255,7 +258,7 @@ theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s
   nonempty_iff_ne_empty.symm
 
 instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
-  ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.ext h⟩
+  ⟨⟨⟨a, mem_singleton_self a⟩⟩, fun ⟨_, h⟩ => Subtype.ext h⟩
 
 theorem eq_singleton_iff_unique_mem : s = {a} ↔ a ∈ s ∧ ∀ x ∈ s, x = a :=
   Subset.antisymm_iff.trans <| and_comm.trans <| and_congr_left' singleton_subset_iff
