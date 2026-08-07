@@ -37,6 +37,8 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 
 @[expose] public section
 
+universe u v w
+
 noncomputable section
 
 open Finsupp Finset Function
