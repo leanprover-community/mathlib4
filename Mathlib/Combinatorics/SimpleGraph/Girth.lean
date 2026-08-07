@@ -6,19 +6,13 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Girth of a simple graph
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
-
-## TODO
-
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
-- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
-
 -/
 
 @[expose] public section
@@ -76,6 +70,24 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ h ↦ h.three_le_length
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+open Walk in
+lemma egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) : G.egirth ≤ 2 * G.ediam + 1 := by
+  obtain ⟨u, w, _, hwl⟩ := exists_egirth_eq_length.mpr h
+  have half_g_le_edist : ↑(w.length / 2) ≤ G.edist u (w.getVert (w.length / 2)) := by
+    have ⟨p, _⟩ := ((w.take (w.length / 2)).reachable).exists_walk_length_eq_edist
+    by_contra! hlt; classical
+    have ⟨_, _, _, _, _, _⟩ := IsPath.exists_isCycle_length_le_add_of_ne
+      p.bypass_isPath (w.drop (w.length / 2)).reverse.bypass_isPath (by grind [take_length,
+      length_reverse, length_append, length_bypass_le_length, ENat.coe_lt_coe,
+      IsPath.bypass_eq_self, IsCircuit.three_le_length, length_eq_zero_iff,
+      append_take_drop_eq, IsCycle.isPath_of_append_right, IsPath.reverse])
+    grind [ENat.coe_lt_coe, length_bypass_le_length, length_reverse, egirth_le_length,
+    ENat.coe_le_coe, length_append, IsCircuit.three_le_length, length_eq_zero_iff,
+    take_length, append_take_drop_eq, IsCycle.isPath_of_append_right]
+  calc
+    G.egirth ≤ 2 * ↑(w.length / 2) + 1 := by rw [hwl]; norm_cast; grind
+    _  ≤ 2 * G.ediam + 1 := by gcongr; grind [edist_le_ediam]
 
 theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
   classical
@@ -144,6 +156,13 @@ lemma exists_girth_eq_length :
 
 theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
   simp [girth, egirth_top h]
+
+lemma girth_le_two_mul_diam_add_one (h : G.diam ≠ 0) : G.girth ≤ 2 * G.diam + 1 := by
+  by_cases hG : G.IsAcyclic
+  · simp [hG.girth_eq_zero]
+  · refine ENat.toNat_le_of_le_coe ?_
+    push_cast [diam, ENat.coe_toNat (ediam_ne_top_of_diam_ne_zero h)]
+    exact egirth_le_two_mul_ediam_add_one hG
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
