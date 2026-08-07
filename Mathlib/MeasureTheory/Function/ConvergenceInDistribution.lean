@@ -253,7 +253,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
         · exact fun x hx ↦ hF_lip.norm_sub_le_of_le hx.le
       · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
         rw [← dist_eq_norm]
-        convert!
+        exact
           hF_bounded _
             _
               -- The goal is now a simple computation

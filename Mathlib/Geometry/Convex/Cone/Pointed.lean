@@ -148,7 +148,7 @@ def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : Poin
       convert! hC
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      · convert! hpos
+      · exact hpos
       · exact hx
 
 @[simp]

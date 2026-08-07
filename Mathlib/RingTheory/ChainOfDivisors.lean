@@ -410,7 +410,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
   refine map_prime_of_factor_orderIso (mk_ne_zero.mpr hn) ?_ _
   obtain ⟨q, hq, hq'⟩ :=
     exists_mem_normalizedFactors_of_dvd (mk_ne_zero.mpr hm)
-      (prime_mk.mpr (prime_of_normalized_factor p (by convert! hp))).irreducible
+      (prime_mk.mpr (prime_of_normalized_factor p (hp))).irreducible
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 

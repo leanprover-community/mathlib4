@@ -551,7 +551,7 @@ lemma orthogonalProjection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' 
   have : (s'.map s.subtypeₐᵢ.toAffineMap).direction.HasOrthogonalProjection := by
     rw [subtypeₐᵢ_toAffineMap]
     infer_instance
-  convert! orthogonalProjection_map s' s.subtypeₐᵢ p
+  exact orthogonalProjection_map s' s.subtypeₐᵢ p
 
 @[simp] lemma reflection_map (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (f : P →ᵃⁱ[𝕜] P₂)

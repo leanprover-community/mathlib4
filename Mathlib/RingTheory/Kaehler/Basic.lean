@@ -575,7 +575,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
     (KaehlerDifferential.quotKerTotalEquiv R S).symm.toLinearMap.compDer
         (KaehlerDifferential.D R S) =
       KaehlerDifferential.derivationQuotKerTotal R S := by
-  convert! (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
+  exact (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
 
 end Presentation
 

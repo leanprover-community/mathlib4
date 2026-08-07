@@ -179,11 +179,11 @@ theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only 
 protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
   ENNReal.add_ne_top.2 ⟨ha, hb⟩
 
-theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert! WithTop.mul_top' a
+theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := WithTop.mul_top' a
 
 @[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
 
-theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert! WithTop.top_mul' a
+theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := WithTop.top_mul' a
 
 @[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
 

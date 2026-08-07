@@ -498,7 +498,7 @@ theorem X_pow_dvd_iff {n : ℕ} {φ : R⟦X⟧} :
   convert! @MvPowerSeries.X_pow_dvd_iff Unit R _ () n φ
   constructor <;> intro h m hm
   · rw [Finsupp.unique_single m]
-    convert! h _ hm
+    exact h _ hm
   · apply h
     simpa only [Finsupp.single_eq_same] using hm
 

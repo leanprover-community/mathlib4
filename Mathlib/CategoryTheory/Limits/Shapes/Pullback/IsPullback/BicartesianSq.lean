@@ -341,7 +341,7 @@ is a bi-Cartesian square.
 @[simp]
 theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
     BicartesianSq biprod.fst biprod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  convert! of_is_biproduct₁ (BinaryBiproduct.isBilimit X Y)
+  exact of_is_biproduct₁ (BinaryBiproduct.isBilimit X Y)
 
 /-- ```
    0 -----0---> X
@@ -356,7 +356,7 @@ is a bi-Cartesian square.
 @[simp]
 theorem of_has_biproduct₂ [HasBinaryBiproduct X Y] :
     BicartesianSq (0 : 0 ⟶ X) (0 : 0 ⟶ Y) biprod.inl biprod.inr := by
-  convert! of_is_biproduct₂ (BinaryBiproduct.isBilimit X Y)
+  exact of_is_biproduct₂ (BinaryBiproduct.isBilimit X Y)
 
 end BicartesianSq
 end CategoryTheory
