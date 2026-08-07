@@ -70,7 +70,7 @@ section ContinuousMul
 
 variable {M : Type*} [TopologicalSpace M] [Mul M] [ContinuousMul M]
 
-@[to_additive (attr := continuity, fun_prop)]
+@[to_additive (attr := continuity)]
 theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 
@@ -87,25 +87,37 @@ lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [Topologica
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 
-@[to_fun (attr := to_additive (attr := continuity, fun_prop))]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) :
-    Continuous (f * g) :=
+    Continuous (fun x ↦ f x * g x) :=
   continuous_mul.comp₂ hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop))]
+@[deprecated (since := "2026-08-07")] alias Continuous.fun_mul := Continuous.mul
+@[deprecated (since := "2026-08-07")] alias Continuous.fun_add := Continuous.add
+
+@[to_additive (attr := fun_prop)]
 theorem ContinuousWithinAt.mul (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (f * g) s x :=
+    ContinuousWithinAt (fun x ↦ f x * g x) s x :=
   Filter.Tendsto.mul hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop))]
+@[deprecated (since := "2026-08-07")] alias ContinuousWithinAt.fun_mul := ContinuousWithinAt.mul
+@[deprecated (since := "2026-08-07")] alias ContinuousWithinAt.fun_add := ContinuousWithinAt.add
+
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.mul (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (f * g) x :=
+    ContinuousAt (fun x ↦ f x * g x) x :=
   Filter.Tendsto.mul hf hg
 
-@[to_fun (attr := to_additive (attr := fun_prop))]
+@[deprecated (since := "2026-08-07")] alias ContinuousAt.fun_mul := ContinuousAt.mul
+@[deprecated (since := "2026-08-07")] alias ContinuousAt.fun_add := ContinuousAt.add
+
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (f * g) s := fun x hx ↦
+    ContinuousOn (fun x ↦ f x * g x) s := fun x hx ↦
   (hf x hx).mul (hg x hx)
+
+@[deprecated (since := "2026-08-07")] alias ContinuousOn.fun_mul := ContinuousOn.mul
+@[deprecated (since := "2026-08-07")] alias ContinuousOn.fun_add := ContinuousOn.add
 
 end ContinuousMul
 

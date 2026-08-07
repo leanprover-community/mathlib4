@@ -58,16 +58,24 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 ```
 
 -/
-syntax (name := funPropTacStx)
-  "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+syntax "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+
+syntax (name := funPropTacStx')
+  "fun_prop'" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+
+macro_rules
+  | `(tactic| fun_prop $cfg:optConfig $[$d]? $[[$names,*]]?) =>
+    `(tactic| (
+        try dsimp only [fun_cast]
+        fun_prop' $cfg $[$d]? $[[$names,*]]?))
 
 private def assumptionDischarge : Expr → MetaM (Option Expr) :=
   fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
 
 /-- Tactic to prove function properties -/
-@[tactic funPropTacStx]
+@[tactic funPropTacStx']
 def funPropTac : Tactic
-  | `(tactic| fun_prop $cfg:optConfig $[$d]? $[[$names,*]]?) => do
+  | `(tactic| fun_prop' $cfg:optConfig $[$d]? $[[$names,*]]?) => do
 
     let goal ← getMainGoal
     goal.withContext do
@@ -122,7 +130,6 @@ def funPropTac : Tactic
         throwError msg
 
   | _ => throwUnsupportedSyntax
-
 
 
 /-- Command that prints all function properties attached to a function.

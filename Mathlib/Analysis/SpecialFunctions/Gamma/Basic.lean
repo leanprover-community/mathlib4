@@ -208,7 +208,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
   have hn : s ≠ 0 := by contrapose! hs; rw [hs, zero_re]
-  simp only [Pi.mul_apply, Function.comp_apply, ofReal_zero, zero_cpow hn, mul_zero, add_zero,
+  simp only [Function.comp_apply, ofReal_zero, zero_cpow hn, mul_zero, add_zero,
     ← intervalIntegral.integral_const_mul]
   congr with x
   ring
