@@ -225,16 +225,16 @@ lemma isComplement_subgroup_left_iff_existsUnique_quotientMk'' :
 
 @[to_additive]
 lemma isComplement_subgroup_right_iff_bijective :
-    IsComplement S H ↔ Bijective (S.restrict (QuotientGroup.mk : G → G ⧸ H)) :=
+    IsComplement S H ↔ Bijective (S.domRestrict (QuotientGroup.mk : G → G ⧸ H)) :=
   isComplement_subgroup_right_iff_existsUnique_quotientGroupMk.trans
-    (bijective_iff_existsUnique (S.restrict QuotientGroup.mk)).symm
+    (bijective_iff_existsUnique (S.domRestrict QuotientGroup.mk)).symm
 
 @[to_additive]
 lemma isComplement_subgroup_left_iff_bijective :
     IsComplement H T ↔
-      Bijective (T.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
+      Bijective (T.domRestrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
   isComplement_subgroup_left_iff_existsUnique_quotientMk''.trans
-    (bijective_iff_existsUnique (T.restrict Quotient.mk'')).symm
+    (bijective_iff_existsUnique (T.domRestrict Quotient.mk'')).symm
 
 @[to_additive]
 lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=
@@ -383,12 +383,14 @@ theorem rightCosetEquivalence_equiv_snd (g : G) :
   -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
   rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).fst = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
     rw [equiv, Equiv.ofBijective]; simp
   conv_lhs => rw [← this, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
     (hST.equiv g).snd = ⟨g, hg⟩ := by
   have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
@@ -430,9 +432,10 @@ theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
     hHT.equiv (h * g) = (⟨h, hh⟩ * (hHT.equiv g).fst, (hHT.equiv g).snd) :=
   equiv_mul_left _ ⟨h, hh⟩ g
 
+set_option backward.isDefEq.respectTransparency false in
 theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
     hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
-  rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
+  rw [← Equiv.eq_symm_apply]; simp [equiv]
 
 theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
     ((hST.equiv g).fst : G) = g ↔ g ∈ S := by
@@ -483,7 +486,7 @@ theorem quotientGroupMk_leftQuotientEquiv (hS : IsComplement S H) (q : G ⧸ H) 
 theorem leftQuotientEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H) = q) (q : G ⧸ H) :
     (leftQuotientEquiv (isComplement_range_left hf) q : G) = f q := by
   refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
-  exact (leftQuotientEquiv (isComplement_range_left hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
+  exact (leftQuotientEquiv (isComplement_range_left hf)).eq_symm_apply.mp (hf q).symm
 
 /-- A left transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that left coset. -/
@@ -527,7 +530,7 @@ theorem rightQuotientEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
     (hf : ∀ q, Quotient.mk'' (f q) = q) (q : Quotient (QuotientGroup.rightRel H)) :
     (rightQuotientEquiv (isComplement_range_right hf) q : G) = f q := by
   refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
-  exact (rightQuotientEquiv (isComplement_range_right hf)).apply_eq_iff_eq_symm_apply.2 (hf q).symm
+  exact (rightQuotientEquiv (isComplement_range_right hf)).eq_symm_apply.1 (hf q).symm
 
 /-- A right transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that right coset. -/
@@ -608,11 +611,15 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G
 end Action
 
 @[to_additive]
-instance : Inhabited H.LeftTransversal :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : Inhabited H.LeftTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_left Quotient.out_eq'⟩⟩
 
 @[to_additive]
-instance : Inhabited H.RightTransversal :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable instance : Inhabited H.RightTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_right Quotient.out_eq'⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
@@ -635,6 +642,9 @@ theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   h.card_left.symm
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
 @[simps!]
 noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :

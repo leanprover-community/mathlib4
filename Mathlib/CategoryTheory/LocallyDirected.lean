@@ -55,6 +55,7 @@ instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   rintro ⟨i⟩ ⟨j⟩ ⟨k⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩
   simpa using fun x ↦ ⟨i, 𝟙 _, 𝟙 _, x, by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor

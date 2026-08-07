@@ -81,6 +81,7 @@ lemma piContent_cylinder {I : Finset ι} {S : Set (Π i : I, X i)} (hS : Measura
     piContent μ (cylinder I S) = Measure.pi (fun i : I ↦ μ i) S :=
   projectiveFamilyContent_cylinder _ hS
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : MeasurableSet s) :
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
@@ -257,6 +258,7 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- This is the key theorem to build the product of an arbitrary family of probability measures:
 the `piContent` of a decreasing sequence of cylinders with empty intersection converges to `0`.
 
@@ -412,11 +414,11 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
 theorem infinitePi_map_restrict' {I : Set ι} :
-    (infinitePi μ).map I.restrict = infinitePi fun i : I ↦ μ i := by
+    (infinitePi μ).map I.domRestrict = infinitePi fun i : I ↦ μ i := by
   apply eq_infinitePi
   intro s t ht
   classical
-  rw [map_apply (by fun_prop), restrict_preimage, infinitePi_pi _ (by measurability)]
+  rw [map_apply (by fun_prop), domRestrict_preimage, infinitePi_pi _ (by measurability)]
   · simp
   · exact .pi s.countable_toSet (by measurability)
 
@@ -430,7 +432,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
   · conv in ∏ _ ∈ _, _ =>
       rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
         (by fun_prop) (by apply MeasurableSet.pi (countable_toSet _) (by measurability)),
-        restrict_preimage]
+        domRestrict_preimage]
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
