@@ -60,6 +60,19 @@ lemma ofDerivation_apply (d : Derivation R A A) (x : A ⊗[R] L) :
     ofDerivation L d x = d.toLinearMap.rTensor L x :=
   rfl
 
+lemma ofDerivation_leibniz (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
+    ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x := by
+  refine x.induction_on (by simp) (fun _ _ ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
+  · simp [TensorProduct.smul_tmul', add_tmul, mul_comm]
+  · simp_rw [smul_add, map_add, h1, h2, smul_add]
+    abel_nf
+
+lemma ofDerivation_smul (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
+    ofDerivation L (a • d) x = a • ofDerivation L d x := by
+  refine x.induction_on (by simp) (fun _ _ ↦ ?_) (fun _ _ h1 h2 ↦ ?_)
+  · simp [TensorProduct.smul_tmul']
+  · simp [smul_add, map_add, h1, h2]
+
 variable (A) in
 /-- A Lie derivation of an `R-`Lie algebra `L`, induces a Lie derivation of `A ⊗[R] L` for any
 Algebra `A` over `R`. -/
