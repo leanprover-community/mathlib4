@@ -35,26 +35,30 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
-theorem TFAE.sublist {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ <+ l₂) : TFAE l₁ :=
-  fun p hp q hq ↦ h p (hl.subset hp) q (hl.subset hq)
+theorem TFAE.subset {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
+  fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
 theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁.Perm l₂) : TFAE l₁ ↔ TFAE l₂ :=
-  ⟨fun h p hp₁ q hp₂ ↦ h p (hp.mem_iff.2 hp₁) q (hp.mem_iff.2 hp₂),
-    fun h p hp₁ q hp₂ ↦ h p (hp.mem_iff.1 hp₁) q (hp.mem_iff.1 hp₂)⟩
+  ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
+
+theorem tfae_append {l₁ l₂ : List Prop} :
+    TFAE (l₁ ++ l₂) ↔ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) ∧ TFAE l₁ ∧ TFAE l₂ where
+  mp h := by
+    refine ⟨fun a ha b hb ↦ h a (mem_append_left l₂ ha) b (mem_append_right l₁ hb), ?_, ?_⟩
+    · exact h.subset (subset_append_left l₁ l₂)
+    · exact h.subset (subset_append_right l₁ l₂)
+  mpr h a ha b hb := by
+    rcases mem_append.1 ha with ha | ha <;> rcases mem_append.1 hb with hb | hb
+    · exact h.2.1 a ha b hb
+    · exact h.1 a ha b hb
+    · exact (h.1 b hb a ha).symm
+    · exact h.2.2 a ha b hb
 
 theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
-    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ where
-  mp h := by
-    refine ⟨h a (mem_append_left l₂ ha) b (mem_append_right l₁ hb), ?_, ?_⟩
-    · exact h.sublist (sublist_append_left l₁ l₂)
-    · exact h.sublist (sublist_append_right l₁ l₂)
-  mpr := by
-    rintro ⟨hab, h₁, h₂⟩ p hp q hq
-    rcases mem_append.1 hp with hp | hp <;> rcases mem_append.1 hq with hq | hq
-    · exact h₁ p hp q hq
-    · exact (h₁ p hp a ha).trans (hab.trans (h₂ b hb q hq))
-    · exact (h₂ p hp b hb).trans (hab.symm.trans (h₁ a ha q hq))
-    · exact h₂ p hp q hq
+    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
+  rw [tfae_append, and_congr_left_iff, and_imp]
+  refine fun h₁ h₂ ↦ ⟨by grind, fun h c hc d hd ↦ ?_⟩
+  rwa [h₁ c hc a ha, ← h₂ b hb d hd]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
