@@ -124,7 +124,8 @@ theorem IsNNRat.natCeil {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrder
 theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     [FloorSemiring R] (r : R) (n d : ℕ) (h : IsRat r (.negOfNat n) d) : IsNat ⌈r⌉₊ 0 := by
   constructor
-  simp [h.neg_to_eq, div_nonneg]
+  rw [Nat.cast_zero, Nat.ceil_eq_zero, h.neg_to_eq rfl rfl]
+  exact div_nonpos_of_nonpos_of_nonneg (neg_nonpos.2 (Nat.cast_nonneg n)) (Nat.cast_nonneg d)
 
 open Lean in
 /-- `norm_num` extension for `Nat.ceil` -/

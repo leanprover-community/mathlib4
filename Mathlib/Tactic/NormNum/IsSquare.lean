@@ -94,10 +94,9 @@ theorem not_isSquare_of_isRat_neg (a : ℚ) (n d : ℕ) (hn : n ≠ 0) (hd : d �
     (ha : IsRat a (Int.negOfNat n) d) : ¬IsSquare a := by
   rw [ha.neg_to_eq rfl rfl]
   rintro ⟨q, hq⟩
-  refine absurd hq (ne_of_lt ?_)
-  calc
-    -(n / d : ℚ) < 0 := by rw [Left.neg_neg_iff]; apply div_pos <;> simpa [Nat.pos_iff_ne_zero]
-    _ ≤ q * q := mul_self_nonneg _
+  apply (mul_self_nonneg q).not_gt
+  rw [← hq, div_lt_iff₀ (Nat.cast_pos.2 (Nat.pos_of_ne_zero hd)), zero_mul, neg_neg_iff_pos]
+  exact Nat.cast_pos.2 (Nat.pos_of_ne_zero hn)
 
 open Lean
 
