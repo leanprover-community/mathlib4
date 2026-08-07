@@ -16,14 +16,13 @@ import Mathlib.Tactic.NormDet
 # Cartan matrices
 
 This file defines Cartan matrices for simple Lie algebras, both the exceptional types
-(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D).
+(E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
+generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
 
 ## Main definitions
 
-### Exceptional types
-* `CartanMatrix.E₆` : The Cartan matrix of type E₆
-* `CartanMatrix.E₇` : The Cartan matrix of type E₇
-* `CartanMatrix.E₈` : The Cartan matrix of type E₈
+### Exceptional types and the E family
+* `CartanMatrix.E` : The Cartan matrix of type Eₙ
 * `CartanMatrix.F₄` : The Cartan matrix of type F₄
 * `CartanMatrix.G₂` : The Cartan matrix of type G₂
 
@@ -51,35 +50,57 @@ open Matrix
 
 /-! ### Exceptional Cartan matrices -/
 
-/-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0;
-      0,  2,  0, -1,  0,  0;
-     -1,  0,  2, -1,  0,  0;
-      0, -1, -1,  2, -1,  0;
-      0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0, -1,  2]
+/-- The generalized Cartan matrix of type Eₙ, extending E₆, E₇, E₈ by the same Dynkin-diagram
+pattern. -/
+def E (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  .of fun i j =>
+    if i = j then 2
+    else if (i.val = 0 ∧ j.val = 2) ∨ (j.val = 0 ∧ i.val = 2) ∨
+      (i.val = 1 ∧ j.val = 3) ∨ (j.val = 1 ∧ i.val = 3) ∨
+      (2 ≤ i.val ∧ i.val + 1 = j.val) ∨ (2 ≤ j.val ∧ j.val + 1 = i.val)
+    then -1 else 0
 
-/-- The Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0;
-      0,  2,  0, -1,  0,  0,  0;
-     -1,  0,  2, -1,  0,  0,  0;
-      0, -1, -1,  2, -1,  0,  0;
-      0,  0,  0, -1,  2, -1,  0;
-      0,  0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0,  0, -1,  2]
+/-- `E 6` is the Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
+lemma E_six_eq :
+    E 6 = !![ 2,  0, -1,  0,  0,  0;
+              0,  2,  0, -1,  0,  0;
+             -1,  0,  2, -1,  0,  0;
+              0, -1, -1,  2, -1,  0;
+              0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0, -1,  2] := by decide
 
-/-- The Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℤ :=
-  !![ 2,  0, -1,  0,  0,  0,  0,  0;
-      0,  2,  0, -1,  0,  0,  0,  0;
-     -1,  0,  2, -1,  0,  0,  0,  0;
-      0, -1, -1,  2, -1,  0,  0,  0;
-      0,  0,  0, -1,  2, -1,  0,  0;
-      0,  0,  0,  0, -1,  2, -1,  0;
-      0,  0,  0,  0,  0, -1,  2, -1;
-      0,  0,  0,  0,  0,  0, -1,  2]
+/-- Deprecated alias for `E 6`. -/
+@[deprecated "Use `E 6` instead" (since := "2026-07-29")]
+abbrev E₆ : Matrix (Fin 6) (Fin 6) ℤ := E 6
+
+/-- `E 7` is the Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
+lemma E_seven_eq :
+    E 7 = !![ 2,  0, -1,  0,  0,  0,  0;
+              0,  2,  0, -1,  0,  0,  0;
+             -1,  0,  2, -1,  0,  0,  0;
+              0, -1, -1,  2, -1,  0,  0;
+              0,  0,  0, -1,  2, -1,  0;
+              0,  0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0,  0, -1,  2] := by decide
+
+/-- Deprecated alias for `E 7`. -/
+@[deprecated "Use `E 7` instead" (since := "2026-07-29")]
+abbrev E₇ : Matrix (Fin 7) (Fin 7) ℤ := E 7
+
+/-- `E 8` is the Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
+lemma E_eight_eq :
+    E 8 = !![ 2,  0, -1,  0,  0,  0,  0,  0;
+              0,  2,  0, -1,  0,  0,  0,  0;
+             -1,  0,  2, -1,  0,  0,  0,  0;
+              0, -1, -1,  2, -1,  0,  0,  0;
+              0,  0,  0, -1,  2, -1,  0,  0;
+              0,  0,  0,  0, -1,  2, -1,  0;
+              0,  0,  0,  0,  0, -1,  2, -1;
+              0,  0,  0,  0,  0,  0, -1,  2] := by decide
+
+/-- Deprecated alias for `E 8`. -/
+@[deprecated "Use `E 8` instead" (since := "2026-07-29")]
+abbrev E₈ : Matrix (Fin 8) (Fin 8) ℤ := E 8
 
 /-- The Cartan matrix of type F₄. See [bourbaki1968] plate VIII, page 288. -/
 def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
@@ -214,11 +235,11 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix diagonal entries -/
 
-@[simp] theorem E₆_diag (i : Fin 6) : E₆ i i = 2 := by fin_cases i <;> decide
+@[simp] theorem E₆_diag (i : Fin 6) : E 6 i i = 2 := by fin_cases i <;> decide
 
-@[simp] theorem E₇_diag (i : Fin 7) : E₇ i i = 2 := by fin_cases i <;> decide
+@[simp] theorem E₇_diag (i : Fin 7) : E 7 i i = 2 := by fin_cases i <;> decide
 
-@[simp] theorem E₈_diag (i : Fin 8) : E₈ i i = 2 := by fin_cases i <;> decide
+@[simp] theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := by fin_cases i <;> decide
 
 @[simp] theorem F₄_diag (i : Fin 4) : F₄ i i = 2 := by fin_cases i <;> decide
 
@@ -227,14 +248,14 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 /-! ### Exceptional matrix off-diagonal entries -/
 
-theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E₆ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₆]
+theorem E₆_off_diag_nonpos (i j : Fin 6) (h : i ≠ j) : E 6 i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E]
 
-theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E₇ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₇]
+theorem E₇_off_diag_nonpos (i j : Fin 7) (h : i ≠ j) : E 7 i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E]
 
-theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E₈ i j ≤ 0 := by
-  fin_cases i <;> fin_cases j <;> simp_all [E₈]
+theorem E₈_off_diag_nonpos (i j : Fin 8) (h : i ≠ j) : E 8 i j ≤ 0 := by
+  fin_cases i <;> fin_cases j <;> simp_all [E]
 
 theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
   fin_cases i <;> fin_cases j <;> simp_all [F₄]
@@ -244,13 +265,13 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 
 /-! ### Exceptional matrix transpose properties -/
 
-@[simp] theorem E₆_transpose : E₆.transpose = E₆ := by decide
-@[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
-@[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+@[simp] theorem E₆_transpose : (E 6).transpose = E 6 := by decide
+@[simp] theorem E₇_transpose : (E 7).transpose = E 7 := by decide
+@[simp] theorem E₈_transpose : (E 8).transpose = E 8 := by decide
 
-theorem E₆_isSymm : E₆.IsSymm := E₆_transpose
-theorem E₇_isSymm : E₇.IsSymm := E₇_transpose
-theorem E₈_isSymm : E₈.IsSymm := E₈_transpose
+theorem E₆_isSymm : (E 6).IsSymm := E₆_transpose
+theorem E₇_isSymm : (E 7).IsSymm := E₇_transpose
+theorem E₈_isSymm : (E 8).IsSymm := E₈_transpose
 
 /-! ### Exceptional matrix determinants -/
 
@@ -258,16 +279,108 @@ theorem G₂_det : G₂.det = 1 := by decide
 
 theorem F₄_det : F₄.det = 1 := by decide
 
+private def reverseE (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  (E n).reindex Fin.revPerm Fin.revPerm
+
+private def headLink {n : ℕ} (i : Fin n) : ℤ :=
+  if i.val = 0 then -1 else 0
+
+private def extendPath {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    Matrix (Fin n.succ) (Fin n.succ) ℤ :=
+  fun i j =>
+    Fin.cases (Fin.cases 2 headLink j)
+      (fun i ↦ Fin.cases (headLink i) (fun j ↦ M i j) j) i
+
+private theorem extendPath_tail {n : ℕ} (M : Matrix (Fin n) (Fin n) ℤ) :
+    (extendPath M).submatrix Fin.succ Fin.succ = M := by
+  rfl
+
+private theorem extendPath_minor {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    ((extendPath M).submatrix Fin.succ (Fin.succAbove 1)).det =
+      -(M.submatrix Fin.succ Fin.succ).det := by
+  let B := (extendPath M).submatrix Fin.succ (Fin.succAbove 1)
+  have hhead : B 0 0 = -1 := by
+    change extendPath M (Fin.succ 0) 0 = -1
+    rfl
+  have hzero (i : Fin n) : B i.succ 0 = 0 := by
+    simp [B, extendPath, headLink]
+  have hminor : B.submatrix Fin.succ Fin.succ = M.submatrix Fin.succ Fin.succ := by
+    ext
+    simp [B, extendPath]
+  change B.det = _
+  rw [Matrix.det_succ_column_zero, Fin.sum_univ_succ]
+  simp [hhead, hzero, hminor]
+
+private theorem extendPath_det {n : ℕ} (M : Matrix (Fin n.succ) (Fin n.succ) ℤ) :
+    (extendPath M).det = 2 * M.det - (M.submatrix Fin.succ Fin.succ).det := by
+  rw [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+  simp [extendPath, headLink, extendPath_tail, extendPath_minor, sub_eq_add_neg]
+
+private theorem reverseE_succ (n : ℕ) (hn : 4 ≤ n) :
+    reverseE (n + 1) = extendPath (reverseE n) := by
+  ext i j
+  refine Fin.cases ?_ (fun i ↦ Fin.cases ?_ (fun j ↦ ?_) j) i
+  · refine Fin.cases ?_ (fun j ↦ ?_) j
+    · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
+      simp [extendPath]
+    · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
+      simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+      split_ifs <;> omega
+  · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
+    simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+    split_ifs <;> omega
+  · simp only [reverseE, reindex_apply, submatrix_apply, E, of_apply]
+    simp [extendPath, headLink, Fin.rev_succ, Fin.ext_iff]
+
+private theorem reverseE_det_recurrence (n : ℕ) (hn : 4 ≤ n) :
+    (reverseE (n + 2)).det = 2 * (reverseE (n + 1)).det - (reverseE n).det := by
+  have htail : (reverseE (n + 1)).submatrix Fin.succ Fin.succ = reverseE n := by
+    rw [reverseE_succ n hn, extendPath_tail]
+  rw [reverseE_succ (n + 1) (by omega), extendPath_det, htail]
+
+private theorem reverseE_three_det : (reverseE 3).det = 6 := by decide
+
+private theorem reverseE_four_det : (reverseE 4).det = 5 := by decide
+
+private theorem reverseE_five_det : (reverseE 5).det = 4 := by
+  have htail : (reverseE 4).submatrix Fin.succ Fin.succ = reverseE 3 := by decide
+  rw [reverseE_succ 4 (by omega), extendPath_det, htail, reverseE_three_det,
+    reverseE_four_det]
+  norm_num
+
+private theorem reverseE_det_from_four (n : ℕ) :
+    (reverseE (n + 4)).det = 5 - (n : ℤ) := by
+  induction n using Nat.twoStepInduction with
+  | zero => exact reverseE_four_det
+  | one => exact reverseE_five_det
+  | more n hn hn1 =>
+      rw [reverseE_det_recurrence (n + 4) (by omega), hn, hn1]
+      push_cast
+      ring
+
+/-- The determinant of `E n` is `9 - n` for `n ≥ 3`. -/
+theorem E_det {n : ℕ} (hn : 3 ≤ n) : (E n).det = 9 - (n : ℤ) := by
+  rw [← Matrix.det_reindex_self Fin.revPerm (E n)]
+  by_cases h3 : n = 3
+  · subst n
+    exact reverseE_three_det
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le (show 4 ≤ n by omega)
+  rw [show 4 + n = n + 4 by omega]
+  change (reverseE (n + 4)).det = 9 - ((n + 4 : ℕ) : ℤ)
+  rw [reverseE_det_from_four]
+  push_cast
+  ring
+
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively. -/
 
-theorem E₆_det : E₆.det = 3 := by
-  simp only [E₆, norm_det]
+theorem E₆_det : (E 6).det = 3 := by
+  simp only [E_six_eq, norm_det]
 
-theorem E₇_det : E₇.det = 2 := by
-  simp only [E₇, norm_det]
+theorem E₇_det : (E 7).det = 2 := by
+  simp only [E_seven_eq, norm_det]
 
-theorem E₈_det : E₈.det = 1 := by
-  simp only [E₈, norm_det]
+theorem E₈_det : (E 8).det = 1 := by
+  simp only [E_eight_eq, norm_det]
 
 /-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
@@ -305,16 +418,16 @@ theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
   grind
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₆ E₆_isSymm]; decide
+theorem isSimplyLaced_E₆ : IsSimplyLaced (E 6) := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 6) E₆_isSymm]; decide
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₇ E₇_isSymm]; decide
+theorem isSimplyLaced_E₇ : IsSimplyLaced (E 7) := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 7) E₇_isSymm]; decide
 
 set_option backward.isDefEq.respectTransparency.types false in
-theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ := by
-  rw [Matrix.isSimplyLaced_iff_of_linearOrder E₈ E₈_isSymm]; decide
+theorem isSimplyLaced_E₈ : IsSimplyLaced (E 8) := by
+  rw [Matrix.isSimplyLaced_iff_of_linearOrder (E 8) E₈_isSymm]; decide
 
 /-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
 off-diagonal entries that are neither 0 nor -1. -/
