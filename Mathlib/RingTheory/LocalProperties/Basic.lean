@@ -230,7 +230,7 @@ lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     apply IsLocalization.ringHom_ext (Submonoid.powers r)
     ext
     simp [RingHom.algebraMap_toAlgebra, Localization.awayMap, IsLocalization.Away.map,
-      Algebra.TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
+      Algebra.TensorProduct.tmul_one_eq_one_tmul, Algebra.TensorProduct.right_algebraMap_apply]
   rw [this]
   exact hP.1 _ _ (hf ⟨r, hr⟩)
 

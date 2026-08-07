@@ -34,7 +34,6 @@ namespace Ideal
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (T : Type*) [CommRing T] [Algebra R T] (I : Ideal S)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical map from the base change of the cotangent space `T ⊗[R] I/I²` to the
 cotangent space `(I · (T ⊗[R] S))/(I · (T ⊗[R] S))²` of the extended ideal.
@@ -47,10 +46,10 @@ def tensorCotangentHom :
     Cotangent.lift
       ((map (algebraMap S (T ⊗[R] S)) I).toCotangent.restrictScalars R ∘ₗ
         (Algebra.idealMap _ I).restrictScalars R) <| fun x y ↦ by
-    simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
+    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars,
       Function.comp_apply, Algebra.idealMap_mul]
-    simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
-      toCotangent_eq_zero, sq, MulMemClass.coe_mul]
+    refine (toCotangent_eq_zero _ _).mpr ?_
+    rw [MulMemClass.coe_mul, sq]
     exact mul_mem_mul ((Algebra.idealMap (T ⊗[R] S) I) x).property
       ((Algebra.idealMap (T ⊗[R] S) I) y).property
 
