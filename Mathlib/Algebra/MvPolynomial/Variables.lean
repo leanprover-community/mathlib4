@@ -197,7 +197,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
   | empty => simp
   | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
-    unfold Pairwise onFun at h
+    unfold Pairwise at h
     simp only [Finset.disjoint_iff_ne] at h ⊢
     grind
 

@@ -314,10 +314,8 @@ theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate 
   induction n with
   | zero => rfl
   | succ n ih =>
-    unfold map iterate get
-    rw [map, get] at ih
-    rw [iterate]
-    exact congrArg f ih
+    rw [iterate, ih]
+    rfl
 
 section Corec
 
@@ -343,7 +341,7 @@ theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 :: corec
 end Corec'
 
 theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a :: unfolds g f (f a) := by
-  unfold unfolds; rw [corec_eq]
+  rw [← corec_eq]
 
 theorem get_unfolds_head_tail (n : ℕ) (s : Stream' α) : get (unfolds head tail s) n = get s n := by
   induction n generalizing s with
@@ -356,7 +354,9 @@ theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
   let t := tail s₁ ⋈ tail s₂
   change s₁ ⋈ s₂ = head s₁::head s₂::t
-  unfold interleave; unfold corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
+  unfold interleave corecOn
+  rw [corec_eq, corec_eq]
+  rfl
 
 theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ ⋈ tail s₁ := by
   unfold interleave corecOn; rw [corec_eq]; rfl
@@ -402,7 +402,8 @@ theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
 
 theorem even_cons_cons (a₁ a₂ : α) (s : Stream' α) : even (a₁::a₂::s) = a₁::even s := by
   unfold even
-  rw [corec_eq]; rfl
+  rw [corec_eq]
+  rfl
 
 theorem even_tail (s : Stream' α) : even (tail s) = odd s :=
   rfl
@@ -623,7 +624,9 @@ theorem cycle_singleton (a : α) : cycle [a] (by simp) = const a :=
   coinduction rfl fun β fr ch => by rwa [cycle_eq, const_eq]
 
 theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
-  unfold tails; rw [corec_eq]; rfl
+  unfold tails
+  rw [corec_eq]
+  rfl
 
 @[simp]
 theorem get_tails (n : ℕ) (s : Stream' α) : get (tails s) n = drop n (tail s) := by
@@ -642,7 +645,8 @@ theorem inits_core_eq (l : List α) (s : Stream' α) :
 theorem tail_inits (s : Stream' α) :
     tail (inits s) = initsCore [head s, head (tail s)] (tail (tail s)) := by
     unfold inits
-    rw [inits_core_eq]; rfl
+    rw [inits_core_eq]
+    rfl
 
 theorem inits_tail (s : Stream' α) : inits (tail s) = initsCore [head (tail s)] (tail (tail s)) :=
   rfl

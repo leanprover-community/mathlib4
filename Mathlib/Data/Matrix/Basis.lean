@@ -61,7 +61,6 @@ end
 theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
     single i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
   ext a b
-  unfold single
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]

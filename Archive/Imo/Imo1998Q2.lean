@@ -114,7 +114,6 @@ theorem A_fibre_over_contestant_card (c : C) :
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
-  unfold Set.InjOn
   rintro ⟨a, p⟩ h ⟨a', p'⟩ h' rfl
   aesop (add simp AgreedTriple.contestant)
 
@@ -186,10 +185,8 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
     ext p; constructor <;> intro hp
-    · unfold s t at hp
-      aesop
-    · unfold s t
-      suffices p.judge₁ = p.judge₂ by simp [this]
+    · aesop
+    · suffices p.judge₁ = p.judge₂ by simp [s,t, this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff_of_subset]

@@ -197,8 +197,7 @@ theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
   | H1 _ _ h IH =>
     rw [xgcdAux_rec h]
     refine IH ?_ p
-    unfold P at p p' ⊢
-    dsimp
+    dsimp [P]
     rw [mul_sub, mul_sub, add_sub, sub_add_eq_add_sub, ← p', sub_sub, mul_comm _ s, ← mul_assoc,
       mul_comm _ t, ← mul_assoc, ← add_mul, ← p, mod_eq_sub_mul_div]
 

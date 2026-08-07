@@ -179,7 +179,6 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
       tendsto_atTop_add_const_right _ _ tendsto_natCast_atTop_atTop)
   have DCT := herglotzLogIntegrand_circleAverage_tendsto hR hρ hw hr_lt hr_tendsto
   have {n : ℕ} : circleAverage (herglotzLogIntegrand w ρ) 0 (r n) = log ‖w - ρ‖ := by
-    unfold herglotzLogIntegrand
     apply InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · refine ⟨fun z hz ↦ ?_, fun x hx ↦ ?_⟩
       · exact AnalyticAt.harmonicAt_log_norm (by fun_prop) (by grind [mem_ball, dist_zero_right])
