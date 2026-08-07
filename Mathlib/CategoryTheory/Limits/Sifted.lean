@@ -219,6 +219,14 @@ instance colim_preservesFiniteProducts_of_isSifted :
     PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u) :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal colim
 
+/-- If `C` is sifted, the `colim` functor `(C ⥤ Type max u v w) ⥤ Type max u v w` preserves
+finite products. This is a variant of `IsSifted.colim_preservesFiniteProducts_of_isSifted` with
+more general universe levels. -/
+instance colim_preservesFiniteProducts_of_isSifted' {C : Type u} [Category.{v} C] [IsSifted C] :
+    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type max u v w) := by
+  have _ := isSifted_iff_asSmallIsSifted.{w} (C := C).1 ‹_›
+  exact ⟨fun n ↦ preservesLimitsOfShape_of_natIso (Functor.Final.colimIso AsSmall.equiv.inverse)⟩
+
 end
 
 section
