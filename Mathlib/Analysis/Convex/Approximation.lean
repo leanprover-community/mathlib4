@@ -10,6 +10,7 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Topology.Semicontinuity.Lindelof
+import Mathlib.Analysis.Convex.test
 
 /-!
 # Approximation to convex functions
@@ -142,7 +143,6 @@ theorem sSup_of_countable_affine_eq [HereditarilyLindelofSpace E] (hsc : IsClose
       obtain ⟨l, c, hlc⟩ := hf.2
       rw [hlc]
       apply Continuous.lowerSemicontinuous
-      try simp only [fun_cast]
       fun_prop
     obtain ⟨𝓕', h𝓕'⟩ := exists_countable_lowerSemicontinuous_isLUB hr hl
     refine ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.csSup_eq ?_, fun f hf => h𝓕'.1 hf⟩
@@ -213,7 +213,7 @@ theorem univ_sSup_of_countable_affine_eq [HereditarilyLindelofSpace E]
     · exact (bddAbove_def.2 ⟨φ, fun y hy => hy.1⟩)
   have hr (f) (hf : f ∈ 𝓕) : LowerSemicontinuous f := by
     obtain ⟨l, c, hlc⟩ := hf.2
-    exact Continuous.lowerSemicontinuous (by rw [hlc]; dsimp only [fun_cast]; fun_prop)
+    exact Continuous.lowerSemicontinuous (by rw [hlc]; fun_prop)
   obtain ⟨𝓕', h𝓕'⟩ := exists_countable_lowerSemicontinuous_isLUB hr hl
   refine ⟨𝓕', h𝓕'.2.1, h𝓕'.2.2.csSup_eq ?_, fun f hf => h𝓕'.1 hf⟩
   by_contra!

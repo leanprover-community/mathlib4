@@ -49,7 +49,6 @@ private lemma continuousAt_herglotzLogIntegrand {w ρ z : ℂ} (hz_w : z ≠ w) 
     ContinuousAt (herglotzLogIntegrand w ρ) z := by
   have : ‖z - ρ‖ ≠ 0 := by simp_all [sub_eq_zero]
   simp only [herglotzLogIntegrand, herglotzRieszKernel_fun_def, sub_zero, smul_eq_mul]
-  dsimp [fun_cast]
   fun_prop (disch := grind)
 
 -- Auxiliary lemma for `circleAverage_re_herglotzRieszKernel_mul_log`. Continuity of the
