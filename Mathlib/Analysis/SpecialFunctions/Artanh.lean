@@ -64,18 +64,19 @@ theorem artanh_zero : artanh 0 = 0 := by simp [artanh]
 
 theorem sinh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : sinh (artanh x) = x / √(1 - x ^ 2) := by
   have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
-  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul]
-    <;> grind [artanh, sinh_eq, exp_neg, exp_log, sqrt_div]
+  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul (by grind), artanh, sinh_eq, exp_neg, exp_log (by grind),
+      sqrt_div (by grind)]
+  grind
 
 theorem cosh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : cosh (artanh x) = 1 / √(1 - x ^ 2) := by
   have : 0 < √((1 + x) / (1 - x)) := sqrt_pos_of_pos <| div_pos (by grind) (by grind)
-  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul]
-    <;> grind [artanh, cosh_eq, exp_neg, exp_log, sqrt_div]
+  rw [← one_pow, sq_sub_sq 1 x, sqrt_mul (by grind), artanh, cosh_eq, exp_neg, exp_log (by grind),
+      sqrt_div (by grind)]
+  grind
 
 /-- `artanh` is the right inverse of `tanh` over (-1, 1). -/
 theorem tanh_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : tanh (artanh x) = x := by
-  have := sq_sub_sq 1 x
-  grind [tanh_eq_sinh_div_cosh, sinh_artanh, cosh_artanh, sqrt_ne_zero', mul_pos]
+  grind [tanh_eq_sinh_div_cosh, sinh_artanh, cosh_artanh, sqrt_ne_zero', mul_pos, sq_sub_sq]
 
 /-- `artanh` is the left inverse of `tanh`. -/
 theorem artanh_tanh (x : ℝ) : artanh (tanh x) = x := by

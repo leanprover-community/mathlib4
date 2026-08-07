@@ -193,6 +193,11 @@ attribute [to_dual (attr := simp)] sup_of_le_left sup_of_le_right
 attribute [to_dual le_of_inf_eq'] le_of_sup_eq
 attribute [to_dual le_of_inf_eq] le_of_sup_eq'
 
+grind_pattern sup_of_le_left => a ⊔ b, b ≤ a
+grind_pattern sup_of_le_right => a ⊔ b, a ≤ b
+grind_pattern inf_of_le_left => a ⊓ b, a ≤ b
+grind_pattern inf_of_le_right => a ⊓ b, b ≤ a
+
 @[to_dual (attr := simp) inf_lt_left]
 theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
   le_sup_left.lt_iff_ne.trans <| not_congr left_eq_sup
