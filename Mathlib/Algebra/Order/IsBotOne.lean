@@ -163,10 +163,8 @@ theorem one_max (a : α) : max 1 a = a := by simp
 @[to_additive]
 theorem max_one (a : α) : max a 1 = a := by simp
 
-@[to_additive (attr := simp)]
-theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 :=
-  let := IsBotOneClass.toOrderBot α
-  max_eq_bot
+@[to_additive]
+theorem max_eq_one {a b : α} : max a b = 1 ↔ a = 1 ∧ b = 1 := sup_eq_one
 
 @[to_additive (attr := simp)]
 theorem min_eq_one {a b : α} : min a b = 1 ↔ a = 1 ∨ b = 1 :=
