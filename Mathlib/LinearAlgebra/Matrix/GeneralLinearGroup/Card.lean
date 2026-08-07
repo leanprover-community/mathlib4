@@ -61,6 +61,27 @@ end LinearIndependent
 
 namespace Matrix
 
+section SpecialLinearGroup
+
+variable {n : Type*} [Fintype n] [DecidableEq n] [Nonempty n] {R : Type*} [CommRing R]
+
+/-- The cardinal of the special linear group times the cardinal of the unit group is the
+cardinal of the general linear group. -/
+theorem card_SL_mul_card_units :
+    Nat.card (SpecialLinearGroup n R) * Nat.card Rˣ = Nat.card (GL n R) := by
+  simpa [Subgroup.index_ker, MonoidHom.range_eq_top.mpr GeneralLinearGroup.det_surjective,
+    Subgroup.card_top, Nat.card_congr SpecialLinearGroup.toGLKerEquiv.toEquiv]
+    using Subgroup.card_mul_index (GeneralLinearGroup.det : GL n R →* Rˣ).ker
+
+/-- The cardinal of the special linear group over a commutative ring with finitely many
+units. -/
+theorem card_SL [Finite Rˣ] :
+    Nat.card (SpecialLinearGroup n R) = Nat.card (GL n R) / Nat.card Rˣ :=
+  Nat.eq_div_of_mul_eq_right Nat.card_pos.ne'
+    (by simpa [mul_comm] using card_SL_mul_card_units)
+
+end SpecialLinearGroup
+
 section field
 
 variable {𝔽 : Type*} [Field 𝔽] [Fintype 𝔽]
@@ -91,6 +112,11 @@ theorem card_GL_field :
   rw [Nat.card_congr (equiv_GL_linearindependent n), card_linearIndependent,
     Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
   simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+
+/-- The cardinal of the special linear group over a finite field. -/
+theorem card_SL_field [NeZero n] :
+    Nat.card (SpecialLinearGroup (Fin n)  𝔽) = (∏ i : Fin n, (q ^ n - q ^ (i : ℕ))) / (q - 1) := by
+  simp [card_SL, card_GL_field, Nat.card_units]
 
 end field
 
