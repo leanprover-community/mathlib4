@@ -301,8 +301,11 @@ lemma not_isNonloop_iff (he : e ∈ M.E := by aesop_mat) : ¬M.IsNonloop e ↔ M
 lemma isNonloop_iff_mem_compl_loops : M.IsNonloop e ↔ e ∈ M.E \ M.loops := by
   rw [isNonloop_iff, IsLoop, and_comm, mem_sdiff]
 
-lemma setOf_isNonloop_eq (M : Matroid α) : {e | M.IsNonloop e} = M.E \ M.loops :=
+lemma setOfPred_isNonloop_eq (M : Matroid α) : {e | M.IsNonloop e} = M.E \ M.loops :=
   Set.ext (fun _ ↦ isNonloop_iff_mem_compl_loops)
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isNonloop_eq := setOfPred_isNonloop_eq
 
 lemma not_isNonloop_iff_closure : ¬ M.IsNonloop e ↔ M.closure {e} = M.loops := by
   by_cases he : e ∈ M.E
@@ -446,9 +449,12 @@ lemma IsNonloop.exists_mem_isCocircuit (he : M.IsNonloop e) : ∃ K, M.IsCocircu
   exact ⟨_, fundCocircuit_isCocircuit heB hB, mem_fundCocircuit M e B⟩
 
 @[simp]
-lemma closure_inter_setOf_isNonloop_eq (M : Matroid α) (X : Set α) :
+lemma closure_inter_setOfPred_isNonloop_eq (M : Matroid α) (X : Set α) :
     M.closure (X ∩ {e | M.IsNonloop e}) = M.closure X := by
-  rw [setOf_isNonloop_eq, ← inter_sdiff_assoc, closure_sdiff_loops_eq, closure_inter_ground]
+  rw [setOfPred_isNonloop_eq, ← inter_sdiff_assoc, closure_sdiff_loops_eq, closure_inter_ground]
+
+@[deprecated (since := "2026-07-09")]
+alias closure_inter_setOf_isNonloop_eq := closure_inter_setOfPred_isNonloop_eq
 
 end IsNonloop
 
@@ -866,7 +872,7 @@ lemma removeLoops_isBasis'_eq : M.removeLoops.IsBasis' = M.IsBasis' := by
 @[simp]
 lemma removeLoops_isNonloop_eq : M.removeLoops.IsNonloop = M.IsNonloop := by
   ext e
-  rw [removeLoops_eq_restrict, restrict_isNonloop_iff, mem_setOf, and_self]
+  rw [removeLoops_eq_restrict, restrict_isNonloop_iff, mem_ofPred, and_self]
 
 lemma IsNonloop.removeLoops_isNonloop (he : M.IsNonloop e) : M.removeLoops.IsNonloop e := by
   simpa
