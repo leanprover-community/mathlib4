@@ -10,10 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 /-!
 # Echelon decomposition certificates
 
-`Echelon.Decomposition` certifies an echelon decomposition of a matrix `A`: pivots for
-`L * (A.submatrix σ id)` with `L` lower triangular with nonzero diagonal and `σ` a row
-permutation. The certificate records the decomposed form rather than a computation trace,
-so a producer is free to choose how to find it.
+`Echelon.Decomposition A` certifies an echelon decomposition of the matrix `A`.
 
 ## Main definitions
 
@@ -41,15 +38,16 @@ open Finset
 
 variable [CommRing R] [IsDomain R]
 
-/-- A certificate of an echelon decomposition of `A`: pivots for
-`L * (A.submatrix σ id)`, with `L` lower triangular with nonzero diagonal and `σ` a
-row permutation. -/
+/-- A certificate of an echelon form decomposition of `A`, certifying that
+`L * (A.submatrix σ id)` is in echelon form by providing a pivot, where `L`
+is lower triangular with nonzero diagonal, and `σ` the permutation on the rows
+of `A`.
+This version does not store the final echelon form itself as it can be computed
+by the data enclosed.
+-/
 structure Decomposition (A : Matrix (Fin m) (Fin n) R) where
-  /-- The lower-triangular transform. -/
   L : Matrix (Fin m) (Fin m) R
-  /-- The row permutation. -/
   σ : Equiv.Perm (Fin m)
-  /-- The pivot column of each row of the final echelon form. -/
   pivot : Fin m → WithTop (Fin n)
   isPivotedBy : (L * (A.submatrix σ id)).IsPivotedBy pivot
   L_lowerTriangular : L.IsLowerTriangular
