@@ -525,7 +525,6 @@ theorem Nonempty.exists_const (h : s.Nonempty) {p : Prop} : (∃ x ∈ s, p) ↔
   let ⟨x, hx⟩ := h
   ⟨fun h ↦ h.elim fun _ => And.right, fun h ↦ ⟨x, hx, h⟩⟩
 
-@[simp]
 theorem exists_mem_const {p : Prop} [Nonempty s] : (∃ x ∈ s, p) ↔ p :=
   (nonempty_coe_sort.mp ‹_›).exists_const
 
