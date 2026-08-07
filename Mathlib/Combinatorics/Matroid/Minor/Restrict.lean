@@ -105,7 +105,7 @@ section restrict
     obtain rfl := hI'.indep.eq_of_isBasis hJ
     have hIJ' : I ⊂ B ∩ (R ∩ M.E) := hIJ.ssubset_of_ne (fun he ↦ hIn (by rwa [he]))
     obtain ⟨e, he⟩ := exists_of_ssubset hIJ'
-    exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id,he.1.2⟩, he.2⟩,
+    exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id, he.1.2⟩, he.2⟩,
       hI'.indep.subset (insert_subset he.1 hIJ), insert_subset he.1.2.1 hIY⟩
   indep_maximal := by
     rintro A hAR I ⟨hI, _⟩ hIA
@@ -127,7 +127,7 @@ scoped infixl:65 " ↾ " => Matroid.restrict
 @[simp] theorem restrict_indep_iff : (M ↾ R).Indep I ↔ M.Indep I ∧ I ⊆ R := Iff.rfl
 
 theorem Indep.indep_restrict_of_subset (h : M.Indep I) (hIR : I ⊆ R) : (M ↾ R).Indep I :=
-  restrict_indep_iff.mpr ⟨h,hIR⟩
+  restrict_indep_iff.mpr ⟨h, hIR⟩
 
 theorem Indep.of_restrict (hI : (M ↾ R).Indep I) : M.Indep I :=
   (restrict_indep_iff.1 hI).1

@@ -71,7 +71,7 @@ theorem hasDerivAt_inv_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
     HasDerivAt (fun x ↦ (log x)⁻¹) (-x⁻¹ / (log x ^ 2)) x := by
   simpa using (differentiableAt_inv_log hx₀ hx₁ hx₂).hasDerivAt
 
-theorem differentiableOn_inv_log' : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) {-1,0,1}ᶜ :=
+theorem differentiableOn_inv_log' : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) {-1, 0, 1}ᶜ :=
   (differentiableOn_log.mono (by grind)).inv (by simp; tauto)
 
 theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹) (.Ioi 1) :=
@@ -121,7 +121,7 @@ theorem hasDerivAt_log_log {x : ℝ} (hx₀ : x ≠ 0) (hx₁ : x ≠ 1) (hx₂ 
     HasDerivAt (fun x ↦ log (log x)) (x⁻¹ / log x) x := by
   simpa using (differentiableAt_log_log hx₀ hx₁ hx₂).hasDerivAt
 
-theorem differentiableOn_log_log' : DifferentiableOn ℝ (fun x ↦ log (log x)) {-1,0,1}ᶜ :=
+theorem differentiableOn_log_log' : DifferentiableOn ℝ (fun x ↦ log (log x)) {-1, 0, 1}ᶜ :=
   (differentiableOn_log.mono (by grind)).log (by simp; tauto)
 
 theorem differentiableOn_log_log : DifferentiableOn ℝ (fun x ↦ log (log x)) (.Ioi 1) :=

@@ -75,7 +75,7 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 -- The priority of the instance below is less than the priorities of `Subtype.Countable`
 -- and `Quotient.Countable`
 instance (priority := 400) countable [Encodable α] : Countable α where
-  exists_injective_nat' := ⟨_,encode_injective⟩
+  exists_injective_nat' := ⟨_, encode_injective⟩
 
 theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
     Surjective fun n => (Encodable.decode n).getD d := fun x =>
@@ -355,7 +355,7 @@ variable {P : α → Prop} [encA : Encodable α] [decP : DecidablePred P]
 
 /-- Explicit encoding function for a decidable subtype of an encodable type -/
 def encodeSubtype : { a : α // P a } → ℕ
-  | ⟨v,_⟩ => encode v
+  | ⟨v, _⟩ => encode v
 
 /-- Explicit decoding function for a decidable subtype of an encodable type -/
 def decodeSubtype (v : ℕ) : Option { a : α // P a } :=

@@ -175,7 +175,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem prod_ext {f g : L₁ × L₂ →ₗ⁅R⁆ L} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g := by
-  refine (prod_ext_iff R L₁ L₂).mpr ⟨hl,hr⟩
+  refine (prod_ext_iff R L₁ L₂).mpr ⟨hl, hr⟩
 
 end
 

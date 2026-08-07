@@ -80,7 +80,7 @@ theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} 
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, eLpNorm (s.indicator (f i)) p μ ≤ ε := by
   by_cases hε_top : ε = ∞
   · subst hε_top; simp
-  rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε,hε_top⟩)) with ⟨s, hμs, hfs⟩
+  rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε, hε_top⟩)) with ⟨s, hμs, hfs⟩
   refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (coe_toNNReal hε_top) ▸ hfs i⟩
   · intro s t hst ht i
     exact (eLpNorm_mono <| norm_indicator_le_of_subset hst _).trans (ht i)

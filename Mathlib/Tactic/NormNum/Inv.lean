@@ -111,15 +111,15 @@ theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
 
 theorem isNNRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℕ} → {d : ℕ} →
     IsNNRat q n d → IsNNRat (q : R) n d
-  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
+  | _, _, _, ⟨⟨qi, _, _⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
 theorem isNNRat_nnratCast {R : Type*} [DivisionSemiring R] [CharZero R] : {q : ℚ≥0} → {n : ℕ} →
     {d : ℕ} → IsNNRat q n d → IsNNRat (q : R) n d
-  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
+  | _, _, _, ⟨⟨qi, _, _⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
 theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
-  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
+  | _, _, _, ⟨⟨qi, _, _⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
 /-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
 recognizes `q`, returning the cast of `q`. -/

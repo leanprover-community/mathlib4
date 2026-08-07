@@ -172,7 +172,7 @@ theorem isElementary_closure (hA : L.MeetsDefinable A) :
   refine isElementary_of_exists ((closure L).toFun A) ?_
   intro n φ x a hφ
   let D : Set M := {y : M | φ.Realize default (Fin.snoc (Subtype.val ∘ x) y)}
-  have hD_ne : D.Nonempty := ⟨a,hφ⟩
+  have hD_ne : D.Nonempty := ⟨a, hφ⟩
   have hD : A.Definable₁ L D := by
     simp only [Definable₁, Definable, Fin.isValue]
     refine ⟨((L.lhomWithConstants A).onBoundedFormula φ).toFormula.relabel

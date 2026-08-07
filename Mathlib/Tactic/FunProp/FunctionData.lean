@@ -92,7 +92,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
+        |>.mapIdx (fun i ⟨arg, _⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -302,10 +302,10 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
 
       let ys ← mkProdSplitElem y gxs.size
       let args' := (args.zip ys).foldl (init := fData.args)
-          (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
+          (fun args' (i, y) => args'.set! i { expr := y, coe := args'[i]!.coe })
 
       let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')
-      return (f,g)
+      return (f, g)
   catch _ =>
     return none
 

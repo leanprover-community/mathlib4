@@ -173,7 +173,7 @@ lemma variation_withDensity' [CompleteSpace G]
       simp_rw [variation_restrict hs]
   -- For each `i`, choose a partition `P i` of `g ⁻¹' {i}` such that the sum of the enorms
   -- of their measures approximates well enough the variation, by definition of the variation.
-  obtain ⟨ρ,ρpos, hρ⟩ : ∃ ρ > 0, ∑ i ∈ g.range, ‖i‖ₑ * ρ ≤ δ := by
+  obtain ⟨ρ, ρpos, hρ⟩ : ∃ ρ > 0, ∑ i ∈ g.range, ‖i‖ₑ * ρ ≤ δ := by
     refine ⟨δ * (∑ i ∈ g.range, ‖i‖ₑ)⁻¹, by simp [δpos], ?_⟩
     grw [← Finset.sum_mul, mul_comm (δ : ℝ≥0∞), ← mul_assoc, ENNReal.mul_inv_le_one, one_mul]
   have C i : ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ g ⁻¹' {i})

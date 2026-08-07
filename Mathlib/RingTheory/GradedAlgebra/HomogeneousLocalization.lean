@@ -810,7 +810,7 @@ lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
   rintro _ ⟨z, rfl⟩
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, j, rfl : _ = b⟩, rfl⟩ := mk_surjective z
-  use mk ⟨n+j•e,⟨a*g^j, ?_⟩, ⟨x^j, ?_⟩, j, rfl⟩
+  use mk ⟨n+j•e, ⟨a*g^j, ?_⟩, ⟨x^j, ?_⟩, j, rfl⟩
   · simp [awayMapAux_mk 𝒜 (hx := hx)]
   · apply SetLike.mul_mem_graded ha
     exact SetLike.pow_mem_graded _ hg

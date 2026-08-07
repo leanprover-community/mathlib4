@@ -512,7 +512,7 @@ theorem isBase_compl_iff_maximal_disjoint_isBase (hB : B ⊆ M.E := by aesop_mat
     M.IsBase (M.E \ B) ↔ Maximal (fun I ↦ I ⊆ M.E ∧ ∃ B, M.IsBase B ∧ Disjoint I B) B := by
   simp_rw [maximal_iff, and_iff_right hB, and_imp, forall_exists_index]
   refine ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
-    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ ?_⟩
+    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩, h⟩ ↦ ?_⟩
   · rw [hB'.eq_of_subset_isBase h, ← subset_compl_iff_disjoint_right, sdiff_eq, compl_inter,
       compl_compl] at hIB'
     · exact fun e he ↦ (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
@@ -988,7 +988,7 @@ theorem Indep.eq_of_isBasis (hI : M.Indep I) (hJ : M.IsBasis J I) : J = I :=
   hJ.eq_of_subset_indep hI hJ.subset rfl.subset
 
 theorem IsBasis.exists_isBase (hI : M.IsBasis I X) : ∃ B, M.IsBase B ∧ I = B ∩ X :=
-  let ⟨B,hB, hIB⟩ := hI.indep.exists_isBase_superset
+  let ⟨B, hB, hIB⟩ := hI.indep.exists_isBase_superset
   ⟨B, hB, subset_antisymm (subset_inter hIB hI.subset)
     (by rw [hI.eq_of_subset_indep (hB.indep.inter_right X) (subset_inter hIB hI.subset)
     inter_subset_right])⟩

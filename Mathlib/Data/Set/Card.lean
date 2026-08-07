@@ -169,7 +169,7 @@ theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
 
 theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ : ℕ), s.encard = n₀ ∧ n₀ ≤ k :=
   ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_natCast_iff] at h⟩,
-    fun ⟨_,⟨n₀,hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
+    fun ⟨_, ⟨n₀, hs, hle⟩⟩ ↦ by rwa [hs, Nat.cast_le]⟩
 
 @[simp]
 theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t.encard := by
@@ -366,7 +366,7 @@ theorem encard_eq_add_one_iff {k : ℕ∞} :
   for well-founded induction on the value of `encard`. -/
 theorem eq_empty_or_encard_eq_top_or_encard_sdiff_singleton_lt (s : Set α) :
     s = ∅ ∨ s.encard = ⊤ ∨ ∃ a ∈ s, (s \ {a}).encard < s.encard := by
-  refine s.eq_empty_or_nonempty.elim Or.inl (Or.inr ∘ fun ⟨a,ha⟩ ↦
+  refine s.eq_empty_or_nonempty.elim Or.inl (Or.inr ∘ fun ⟨a, ha⟩ ↦
     (s.finite_or_infinite.elim (fun hfin ↦ Or.inr ⟨a, ha, ?_⟩) (Or.inl ∘ Infinite.encard_eq)))
   rw [← encard_sdiff_singleton_add_one ha]; nth_rw 1 [← add_zero (encard _)]
   exact ENat.add_lt_add_of_le_of_lt hfin.sdiff.encard_lt_top.ne le_rfl zero_lt_one

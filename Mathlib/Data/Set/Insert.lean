@@ -376,7 +376,7 @@ theorem pair_eq_pair_iff {x y z w : α} :
 theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by grind
 
 theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
-  pair_subset_iff.2 ⟨ha,hb⟩
+  pair_subset_iff.2 ⟨ha, hb⟩
 
 theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by grind
 

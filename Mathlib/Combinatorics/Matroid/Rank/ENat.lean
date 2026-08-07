@@ -484,7 +484,7 @@ lemma Indep.exists_insert_of_encard_lt {I J : Set α} (hI : M.Indep I) (hJ : M.I
 
 lemma isBasis'_iff_indep_encard_eq_of_finite (hIfin : I.Finite) :
     M.IsBasis' I X ↔ I ⊆ X ∧ M.Indep I ∧ I.encard = M.eRk X := by
-  refine ⟨fun h ↦ ⟨h.subset,h.indep, h.eRk_eq_encard.symm⟩, fun ⟨hIX, hI, hcard⟩ ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨h.subset, h.indep, h.eRk_eq_encard.symm⟩, fun ⟨hIX, hI, hcard⟩ ↦ ?_⟩
   obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis'_of_subset hIX
   rwa [hIfin.eq_of_subset_of_encard_le hIJ (hJ.encard_eq_eRk.trans hcard.symm).le]
 
@@ -621,7 +621,7 @@ lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
   rw [eRank_eq_zero_iff, emptyOn_ground, loopyOn_empty]
 
 lemma eq_loopyOn_iff_eRank : M = loopyOn X ↔ M.eRank = 0 ∧ M.E = X :=
-  ⟨fun h ↦ by rw [h]; simp, fun ⟨h,h'⟩ ↦ by rw [← h', ← eRank_eq_zero_iff, h]⟩
+  ⟨fun h ↦ by rw [h]; simp, fun ⟨h, h'⟩ ↦ by rw [← h', ← eRank_eq_zero_iff, h]⟩
 
 @[simp]
 lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by

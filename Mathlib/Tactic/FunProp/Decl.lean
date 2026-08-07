@@ -69,7 +69,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   let path ← DiscrTree.mkPath e
 
   -- find the argument position of the function `f` in `P f`
-  let mut some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+  let mut some funArgId ← (xs.zip bi).findIdxM? fun (x, bi) => do
     if (← inferType x).isForall && bi.isExplicit then
       return true
     else
@@ -106,7 +106,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
     unless decl.funArgId < e.getAppNumArgs do return none
     let f := e.getArg! decl.funArgId
 
-    return (decl,f)
+    return (decl, f)
 
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome

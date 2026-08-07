@@ -59,7 +59,7 @@ Preserves sorting and uniqueness of the first argument.
 partial def add : Linexp → Linexp → Linexp
 | [], a => a
 | a, [] => a
-| (a@(n1,z1)::t1), (b@(n2,z2)::t2) =>
+| (a@(n1, z1)::t1), (b@(n2, z2)::t2) =>
   if n1 < n2 then b::add (a::t1) t2
   else if n2 < n1 then a::add t1 (b::t2)
   else
@@ -108,7 +108,7 @@ def cmp : Linexp → Linexp → Ordering
   | [], [] => Ordering.eq
   | [], _ => Ordering.lt
   | _, [] => Ordering.gt
-  | ((n1,z1)::t1), ((n2,z2)::t2) =>
+  | ((n1, z1)::t1), ((n2, z2)::t2) =>
     if n1 < n2 then Ordering.lt
     else if n2 < n1 then Ordering.gt
     else if z1 < z2 then Ordering.lt

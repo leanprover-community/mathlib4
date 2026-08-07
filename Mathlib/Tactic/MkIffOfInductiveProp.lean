@@ -35,7 +35,7 @@ open Lean Meta Elab
 /-- `select m n` runs `right` `m` times; if `m < n`, then it also runs `left` once.
 Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
-  match m,n with
+  match m, n with
   | 0, 0             => pure goal
   | 0, (_ + 1)       => do
     let [new_goal] ← goal.nthConstructor `left 0 (some 2)
@@ -174,15 +174,15 @@ close the resulting subgoals.
 def splitThenConstructor (mvar : MVarId) (n : Nat) : MetaM Unit :=
 match n with
 | 0   => do
-  let (subgoals',_) ← Term.TermElabM.run <| Tactic.run mvar do
+  let (subgoals', _) ← Term.TermElabM.run <| Tactic.run mvar do
     Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
 | n + 1 => do
-  let (subgoals,_) ← Term.TermElabM.run <| Tactic.run mvar do
-    Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
+  let (subgoals, _) ← Term.TermElabM.run <| Tactic.run mvar do
+    Tactic.evalTactic (← `(tactic| refine ⟨?_, ?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"
-  let (subgoals',_) ← Term.TermElabM.run <| Tactic.run sg1 do
+  let (subgoals', _) ← Term.TermElabM.run <| Tactic.run sg1 do
     Tactic.evalTactic (← `(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   splitThenConstructor sg2 n
@@ -196,7 +196,7 @@ do
   let subgoals ← mvar'.cases h
   let _ ← (shape.zip subgoals.toList).zipIdx.mapM fun ⟨⟨⟨shape, t⟩, subgoal⟩, p⟩ ↦ do
     let vars := subgoal.fields
-    let si := (shape.zip vars.toList).filterMap (fun ⟨c,v⟩ ↦ if c then some v else none)
+    let si := (shape.zip vars.toList).filterMap (fun ⟨c, v⟩ ↦ if c then some v else none)
     let mvar'' ← select p (subgoals.size - 1) subgoal.mvarId
     match t with
     | none => do

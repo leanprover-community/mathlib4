@@ -149,7 +149,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
 variable {g : ((a : _) → Part <| β a) → (a : _) → Part <| β a}
 
 theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix g =
-    ωSup (approxChain (⟨g,hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
+    ωSup (approxChain (⟨g, hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
   rw [← fix_eq_ωSup]
   rfl
 
@@ -177,7 +177,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
 
 set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
-    ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
+    ωScottContinuous (toUnitMono ⟨f, hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
   erw [hc.map_ωSup]
@@ -185,7 +185,7 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
   rfl
 
 noncomputable instance lawfulFix : LawfulFix (Part α) :=
-  ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
+  ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f, hc.monotone⟩) () = _ by
     rw [Part.fix_eq_of_ωScottContinuous (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
 end Part
@@ -253,7 +253,7 @@ variable {f : (∀ a b, γ a b) → ∀ a b, γ a b}
 
 theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <|
-      (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
+      (⟨f, hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 

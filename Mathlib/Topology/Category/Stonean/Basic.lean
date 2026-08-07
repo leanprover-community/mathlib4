@@ -58,7 +58,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   let A' : CompHaus := CompHaus.of A
   let B' : CompHaus := CompHaus.of B
   let f' : X ⟶ B' := CompHausLike.ofHom _ ⟨f, hf⟩
-  let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
+  let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g, hg⟩
   have : Epi g' := by
     rw [CompHaus.epi_iff_surjective]
     assumption

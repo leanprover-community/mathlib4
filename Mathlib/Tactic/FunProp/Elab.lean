@@ -170,7 +170,7 @@ elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
 
   match funProp? with
   | none =>
-    for (funProp,thms) in theorems do
+    for (funProp, thms) in theorems do
       logTheorems funProp thms
   | some funProp =>
     logTheorems funProp (theorems.getD funProp #[])

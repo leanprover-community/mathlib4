@@ -300,7 +300,7 @@ def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.of
     · refine ⟨emptyOn β, ?_⟩
       simp only [emptyOn_ground] at f
       simp [range_eq_empty f, subset_empty_iff]
-    have _ : Nonempty M.E := ⟨⟨e,he⟩⟩
+    have _ : Nonempty M.E := ⟨⟨e, he⟩⟩
     have _ : Nonempty α := ⟨e⟩
     refine ⟨M.comapOn (range f) (fun x ↦ ↑(invFunOn f univ x)), rfl, ?_⟩
     simp_rw [comapOn_indep_iff, ← and_assoc, and_congr_left_iff, subset_range_iff_exists_image_eq]
@@ -526,7 +526,7 @@ def mapEmbedding (M : Matroid α) (f : α ↪ β) : Matroid β := M.map f f.inje
 @[simp] lemma mapEmbedding_indep_iff {f : α ↪ β} {I : Set β} :
     (M.mapEmbedding f).Indep I ↔ M.Indep (f ⁻¹' I) ∧ I ⊆ range f := by
   rw [mapEmbedding, map_indep_iff]
-  refine ⟨?_, fun ⟨h,h'⟩ ↦ ⟨f ⁻¹' I, h, by rwa [eq_comm, image_preimage_eq_iff]⟩⟩
+  refine ⟨?_, fun ⟨h, h'⟩ ↦ ⟨f ⁻¹' I, h, by rwa [eq_comm, image_preimage_eq_iff]⟩⟩
   rintro ⟨I, hI, rfl⟩
   rw [preimage_image_eq _ f.injective]
   exact ⟨hI, image_subset_range _ _⟩
@@ -546,7 +546,7 @@ lemma IsBasis.mapEmbedding {X : Set α} (hIX : M.IsBasis I X) (f : α ↪ β) :
 @[simp] lemma mapEmbedding_isBase_iff {f : α ↪ β} {B : Set β} :
     (M.mapEmbedding f).IsBase B ↔ M.IsBase (f ⁻¹' B) ∧ B ⊆ range f := by
   rw [mapEmbedding, map_isBase_iff]
-  refine ⟨?_, fun ⟨h,h'⟩ ↦ ⟨f ⁻¹' B, h, by rwa [eq_comm, image_preimage_eq_iff]⟩⟩
+  refine ⟨?_, fun ⟨h, h'⟩ ↦ ⟨f ⁻¹' B, h, by rwa [eq_comm, image_preimage_eq_iff]⟩⟩
   rintro ⟨B, hB, rfl⟩
   rw [preimage_image_eq _ f.injective]
   exact ⟨hB, image_subset_range _ _⟩

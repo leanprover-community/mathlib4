@@ -686,7 +686,7 @@ lemma indep_iff_forall_closure_sdiff_ne :
     M.Indep I ↔ ∀ ⦃e⦄, e ∈ I → M.closure (I \ {e}) ≠ M.closure I := by
   rw [indep_iff_forall_notMem_closure_sdiff']
   refine ⟨fun ⟨hIE, h⟩ e heI h_eq ↦ h e heI (h_eq.symm.subset (M.mem_closure_of_mem heI)),
-    fun h ↦ ⟨fun e heI ↦ by_contra fun heE ↦ h heI ?_,fun e heI hin ↦ h heI ?_⟩⟩
+    fun h ↦ ⟨fun e heI ↦ by_contra fun heE ↦ h heI ?_, fun e heI hin ↦ h heI ?_⟩⟩
   · rw [← closure_inter_ground, inter_comm, inter_sdiff_distrib_left,
       inter_singleton_eq_empty.mpr heE, sdiff_empty, inter_comm, closure_inter_ground]
   nth_rw 2 [show I = insert e (I \ {e}) by simp [heI]]

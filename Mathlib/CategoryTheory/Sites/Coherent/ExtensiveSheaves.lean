@@ -98,7 +98,7 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     · exact preservesLimit_of_iso_diagram F i.symm
     · apply hF
-      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
+      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default, ?_, ?_⟩⟩
       · ext b
         cases b
       · simp only [eq_iff_true_of_subsingleton]

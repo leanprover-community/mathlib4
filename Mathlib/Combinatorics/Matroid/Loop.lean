@@ -284,7 +284,7 @@ lemma compl_loops_eq (M : Matroid α) : M.E \ M.loops = {e | M.IsNonloop e} := b
   simp [Set.ext_iff, isNonloop_iff, and_comm, isLoop_iff]
 
 lemma isNonloop_of_not_isLoop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsLoop e) : M.IsNonloop e :=
-  ⟨h,he⟩
+  ⟨h, he⟩
 
 lemma isLoop_of_not_isNonloop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsNonloop e) :
     M.IsLoop e := by
@@ -852,7 +852,7 @@ lemma removeLoops_isRestriction (M : Matroid α) : M.removeLoops ≤r M :=
 lemma eq_restrict_removeLoops (M : Matroid α) : M.removeLoops ↾ M.E = M := by
   rw [removeLoops, ext_iff_indep]
   simp only [restrict_ground_eq, restrict_indep_iff, true_and]
-  exact fun I hIE ↦ ⟨ fun hI ↦ hI.1.1, fun hI ↦ ⟨⟨hI,fun e heI ↦ hI.isNonloop_of_mem heI⟩, hIE⟩⟩
+  exact fun I hIE ↦ ⟨ fun hI ↦ hI.1.1, fun hI ↦ ⟨⟨hI, fun e heI ↦ hI.isNonloop_of_mem heI⟩, hIE⟩⟩
 
 @[simp]
 lemma removeLoops_indep_eq : M.removeLoops.Indep = M.Indep := by

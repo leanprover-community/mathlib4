@@ -113,7 +113,7 @@ theorem balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
   balanced_iInter fun _ => balanced_iInter <| h _
 
 theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 𝕜 s)
-    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
+    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y, ⟨hy₁, hy₂⟩⟩ => by
   rw [mem_preimage, ← hy₂, map_smul]
   exact hs a ha (smul_mem_smul_set hy₁)
 

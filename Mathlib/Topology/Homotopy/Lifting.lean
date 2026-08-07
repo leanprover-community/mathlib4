@@ -151,7 +151,7 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
   continuations are independent of `t`. In particular, if `X` is simply connected and an analytic
   germ at `p : X` admits a continuation along every path in `X` from `p` to `q : X`, then the
   continuation to `q` is independent of the path chosen. -/
-theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0,1}) (Γ : I → C(I, E))
+theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0, 1}) (Γ : I → C(I, E))
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
   have := homeo.continuous_lift sep (.comp γ .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
@@ -359,8 +359,8 @@ theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : S
   ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
 theorem homotopicRel_liftPath {γ₀ γ₁ : C(I, X)}
-    (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
-    (cov.liftPath γ₀ e h₀).HomotopicRel (cov.liftPath γ₁ e h₁) {0,1} :=
+    (h : γ₀.HomotopicRel γ₁ {0, 1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
+    (cov.liftPath γ₀ e h₀).HomotopicRel (cov.liftPath γ₁ e h₁) {0, 1} :=
   h.map fun H ↦ cov.liftHomotopyRel (f₀' := cov.liftPath γ₀ e h₀) (f₁' := cov.liftPath γ₁ e h₁) H
     ⟨0, .inl rfl, by simp_rw [liftPath_zero]⟩ (liftPath_lifts ..) (liftPath_lifts ..)
 
@@ -368,7 +368,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
-    (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
+    (h : γ₀.HomotopicRel γ₁ {0, 1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
     cov.liftPath γ₀ e h₀ 1 = cov.liftPath γ₁ e h₁ 1 := by
   have := (cov.homotopicRel_liftPath h e h₀ h₁).some
   rw [← this.eq_fst 0 (.inr rfl), ← this.eq_snd 0 (.inr rfl)]

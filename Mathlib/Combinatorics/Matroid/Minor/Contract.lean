@@ -145,7 +145,7 @@ lemma Indep.contract_indep_iff (hI : M.Indep I) :
   simp_rw [indep_iff, hI.contract_isBase_iff, union_subset_iff]
   exact ⟨fun ⟨B, ⟨hBI, hdj⟩, hJB⟩ ↦ ⟨disjoint_of_subset_left hJB hdj, _, hBI,
     hJB.trans subset_union_left, subset_union_right⟩,
-    fun ⟨hdj, B, hB, hJB, hIB⟩ ↦ ⟨B \ I,⟨by simpa [union_eq_self_of_subset_right hIB],
+    fun ⟨hdj, B, hB, hJB, hIB⟩ ↦ ⟨B \ I, ⟨by simpa [union_eq_self_of_subset_right hIB],
       disjoint_sdiff_left⟩, subset_sdiff.2 ⟨hJB, hdj⟩ ⟩⟩
 
 lemma IsNonloop.contractElem_indep_iff (he : M.IsNonloop e) :
@@ -394,7 +394,7 @@ lemma IsNonloop.of_contract (h : (M ／ C).IsNonloop e) : M.IsNonloop e := by
 @[simp]
 lemma contract_isNonloop_iff : (M ／ C).IsNonloop e ↔ e ∈ M.E \ M.closure C := by
   rw [isNonloop_iff_mem_compl_loops, contract_ground, contract_loops_eq]
-  refine ⟨fun ⟨he,heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
+  refine ⟨fun ⟨he, heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
     fun h ↦ ⟨⟨h.1, fun heC ↦ h.2 ?_⟩, fun h' ↦ h.2 h'.1⟩⟩
   rw [← closure_inter_ground]
   exact (M.subset_closure (C ∩ M.E)) ⟨heC, h.1⟩

@@ -250,7 +250,7 @@ theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
 
 /-- `linearIndepOn_pair_iff` is a simpler version over fields. -/
 lemma LinearIndepOn.pair_iff {i j : ι} (f : ι → M) (hij : i ≠ j) :
-    LinearIndepOn R f {i,j} ↔ ∀ c d : R, c • f i + d • f j = 0 → c = 0 ∧ d = 0 := by
+    LinearIndepOn R f {i, j} ↔ ∀ c d : R, c • f i + d • f j = 0 → c = 0 ∧ d = 0 := by
   classical
   rw [linearIndepOn_iff'']
   refine ⟨fun h c d hcd ↦ ?_, fun h t g ht hg0 h0 ↦ ?_⟩
@@ -269,7 +269,7 @@ variable {x y : M}
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
-  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0, 1} from rfl,
     Finset.coe_insert, Finset.coe_singleton, LinearIndepOn.pair_iff _ (by trivial)]
   simp
 
@@ -673,7 +673,7 @@ theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     LinearIndependent K ![x, y] ↔ ∀ a : K, a • x ≠ y := by
-  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+  rw [← linearIndepOn_univ_iff, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0, 1} from rfl,
     Finset.coe_insert, Finset.coe_singleton, linearIndepOn_pair_iff _ (by simp) (by simpa)]
   simp
 

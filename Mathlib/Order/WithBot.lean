@@ -251,7 +251,7 @@ theorem unbot_inj {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) :
 @[to_dual (attr := simps)
 /-- The equivalence between the non-top elements of `WithTop α` and `α`. -/]
 def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
-  toFun := fun ⟨x,h⟩ => WithBot.unbot x h
+  toFun := fun ⟨x, h⟩ => WithBot.unbot x h
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp

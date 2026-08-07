@@ -77,7 +77,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
   whnfEasyCases e fun e => do
     let e ← whnfCore e
 
-    if let some ⟨coe,f,x⟩ ← isMorApp? e then
+    if let some ⟨coe, f, x⟩ ← isMorApp? e then
       let f ← whnfPred f pred
       if (← getConfig).zeta then
         return (coe.app f).app x

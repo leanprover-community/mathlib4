@@ -221,7 +221,7 @@ The projection from the pullback to the second component.
 -/
 def pullback.snd : pullback f g ⟶ Y :=
   ConcreteCategory.ofHom
-  { toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
+  { toFun := fun ⟨⟨_, y⟩, _⟩ ↦ y
     continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val }
 
 @[reassoc]
