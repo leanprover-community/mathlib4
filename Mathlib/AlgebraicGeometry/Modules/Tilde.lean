@@ -807,7 +807,7 @@ private lemma aux_basicOpen_of_aux_restrict (M : (Spec R).Modules) (g : R)
     (h : Aux (M.restrict <|
         Spec.map <| CommRingCat.ofHom <| algebraMap R <| Localization.Away g) ⊤) :
       Aux M (basicOpen g) := by
-  let a : R ⟶ CommRingCat.of (Localization.Away g) :=
+  let a : R ⟶ ↧(Localization.Away g) :=
     CommRingCat.ofHom <| algebraMap R _
   set ψ : Spec (.of <| Localization.Away g) ⟶ Spec (.of R) := Spec.map a
   set M' : (Spec (.of <| Localization.Away g)).Modules := M.restrict ψ

@@ -37,6 +37,11 @@ initialize_simps_projections BoolAlg (carrier → coe, -str)
 
 namespace BoolAlg
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BoolAlg.of X` as `↧X`. -/
+@[app_delab BoolAlg.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort BoolAlg (Type _) :=
   ⟨BoolAlg.carrier⟩
 
@@ -151,14 +156,14 @@ instance : Inhabited BoolAlg :=
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
 def toBddDistLat (X : BoolAlg) : BddDistLat :=
-  .of X
+  ↧X
 
 @[simp]
 theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 
 instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 section
@@ -167,7 +172,7 @@ attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
 instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map {X Y} f := HeytAlg.ofHom f.hom
 
 end
@@ -202,5 +207,5 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 /-- The powerset functor. `Set` as a contravariant functor. -/
 @[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
-  obj X := op <| .of (Set X)
+  obj X := op ↧(Set X)
   map {X Y} f := Quiver.Hom.op (BoolAlg.ofHom (CompleteLatticeHom.setPreimage f))

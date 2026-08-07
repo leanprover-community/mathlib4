@@ -38,6 +38,11 @@ initialize_simps_projections PartOrdEmb (carrier → coe, -str)
 
 namespace PartOrdEmb
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `PartOrdEmb.of X` as `↧X`. -/
+@[app_delab PartOrdEmb.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort PartOrdEmb (Type _) :=
   ⟨PartOrdEmb.carrier⟩
 
@@ -151,7 +156,7 @@ lemma hom_inv_apply {X Y : PartOrdEmb} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) =
   simp
 
 instance hasForgetToPartOrd : HasForget₂ PartOrdEmb PartOrd where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := PartOrd.ofHom f.hom
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
@@ -263,7 +268,7 @@ instance : PartialOrder (CoconePt hc) where
 category that is constructed from a colimit cocone for `F ⋙ forget _`. -/
 @[simps]
 def cocone : Cocone F where
-  pt := .of (CoconePt hc)
+  pt := ↧(CoconePt hc)
   ι.app j := ofHom
     { toFun := c.ι.app j
       inj' x y h := by
@@ -360,7 +365,7 @@ this is the functor `Subtype P ⥤ PartOrdEmb.{u}` which sends a subset `J` of `
 satisfying `P` to the induced partially ordered type `J`. -/
 @[simps obj map]
 def functorOfPredicateSet : Subtype P ⥤ PartOrdEmb.{u} where
-  obj J := .of J.val
+  obj J := ↧J.val
   map f :=
     ofHom {
       toFun x := ⟨x, leOfHom f x.prop⟩

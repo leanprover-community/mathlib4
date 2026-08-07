@@ -30,7 +30,7 @@ attribute [local simp] stdSimplex.map_comp_apply in
 associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map]
 noncomputable def toTop₀ : CosimplicialObject TopCat.{0} where
-  obj n := TopCat.of (stdSimplex ℝ (Fin (n.len + 1)))
+  obj n := ↧(stdSimplex ℝ (Fin (n.len + 1)))
   map f := TopCat.ofHom ⟨_, stdSimplex.continuous_map f⟩
 
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`

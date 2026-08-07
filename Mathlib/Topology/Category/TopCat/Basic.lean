@@ -40,10 +40,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `TopCat.of X` being printed as `{ carrier := X, str := ... }` by
-`delabStructureInstance`. -/
+/-- This prints `TopCat.of X` as `↧X`, and in particular prevents it being printed as
+`{ carrier := X, str := ... }` by `delabStructureInstance`. -/
 @[app_delab TopCat.of]
-meta def TopCat.delabOf : Delab := delabApp
+meta def TopCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 

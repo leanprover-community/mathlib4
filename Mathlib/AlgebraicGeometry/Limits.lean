@@ -133,7 +133,7 @@ lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpt
     fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec <| .of PUnit))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec ↧PUnit))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -510,7 +510,7 @@ variable (R S : Type u) [CommRing R] [CommRing S]
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
 noncomputable
-def coprodSpec : Spec (.of R) ⨿ Spec (.of S) ⟶ Spec (.of <| R × S) :=
+def coprodSpec : Spec ↧R ⨿ Spec ↧S ⟶ Spec (.of <| R × S) :=
   coprod.desc (Spec.map (CommRingCat.ofHom <| RingHom.fst _ _))
     (Spec.map (CommRingCat.ofHom <| RingHom.snd _ _))
 
@@ -564,7 +564,7 @@ instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_isIso_stalkMap]
   refine ⟨?_, isIso_stalkMap_coprodSpec R S⟩
   convert_to IsIso (TopCat.isoOfHomeo (X := Spec (.of <| R × S)) <|
-    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec <| .of R) (Spec <| .of S))).inv
+    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec ↧R) (Spec ↧S))).inv
   · ext x; exact coprodSpec_apply R S x
   · infer_instance
 

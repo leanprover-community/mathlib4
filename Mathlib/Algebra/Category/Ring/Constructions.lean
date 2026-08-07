@@ -47,7 +47,7 @@ variable [Algebra R A] [Algebra R B]
 def pushoutCocone : Limits.PushoutCocone
     (CommRingCat.ofHom (algebraMap R A)) (CommRingCat.ofHom (algebraMap R B)) := by
   fapply Limits.PushoutCocone.mk
-  · exact CommRingCat.of (A ⊗[R] B)
+  · exact ↧(A ⊗[R] B)
   · exact ofHom <| Algebra.TensorProduct.includeLeftRingHom (A := A)
   · exact ofHom <| Algebra.TensorProduct.includeRight.toRingHom (A := B)
   · ext r
@@ -67,7 +67,7 @@ theorem pushoutCocone_inr :
 
 @[simp]
 theorem pushoutCocone_pt :
-    (pushoutCocone R A B).pt = CommRingCat.of (A ⊗[R] B) :=
+    (pushoutCocone R A B).pt = ↧(A ⊗[R] B) :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -243,7 +243,7 @@ def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) :=
   IsTerminal.ofUnique _
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
-  apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
+  apply hasStrictTerminalObjects_of_terminal_is_strict ↧PUnit
   intro X f
   refine ⟨ofHom ⟨1, rfl, by simp⟩, ?_, ?_⟩
   · ext
@@ -313,7 +313,7 @@ The categorical product of rings is the Cartesian product of rings. This is its 
 -/
 @[simps! pt]
 def piFan : Fan R :=
-  Fan.mk (CommRingCat.of ((i : ι) → R i)) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
+  Fan.mk ↧((i : ι) → R i) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
 
 /--
 The categorical product of rings is the Cartesian product of rings.
@@ -327,14 +327,14 @@ def piFanIsLimit : IsLimit (piFan R) where
 /--
 The categorical product and the usual product agree
 -/
-noncomputable def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+noncomputable def piIsoPi : ∏ᶜ R ≅ ↧((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
 The categorical product and the usual product agree
 -/
 noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
-    (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+    (∏ᶜ (fun i : ι ↦ ↧(R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
 end Pi
@@ -356,7 +356,7 @@ theorem isUnit_iff_forall_isUnit (hc : IsLimit c) (r : c.pt) : IsUnit r ↔
     rw [map_mul, map_one, this] at h
     rw [← mul_one (F.map f (inv j)), ← h_inv k, ← mul_assoc]
     nth_rw 2 [mul_comm]; rw [h, one_mul]
-  let inv_r : Cone F := .mk (CommRingCat.of (FreeCommRing PUnit)) {
+  let inv_r : Cone F := .mk ↧(FreeCommRing PUnit) {
     app j := ConcreteCategory.ofHom (FreeCommRing.lift (fun _ ↦ inv j))
     naturality j k f := by
       ext1; change FreeCommRing.lift (fun _ => inv k) = _

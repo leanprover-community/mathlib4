@@ -75,7 +75,7 @@ theorem skyscraperPresheaf_eq_pushforward
     [hd : ∀ U : Opens (TopCat.of PUnit.{u + 1}), Decidable (PUnit.unit ∈ U)] :
     skyscraperPresheaf p₀ A =
       (ofHom (ContinuousMap.const (TopCat.of PUnit) p₀)) _*
-        skyscraperPresheaf (X := TopCat.of PUnit) PUnit.unit A := by
+        skyscraperPresheaf (X := ↧PUnit) PUnit.unit A := by
   convert_to @skyscraperPresheaf X p₀ (fun U => hd <| (Opens.map <| ofHom <|
       ContinuousMap.const _ p₀).obj U)
     C _ _ A = _ <;> congr

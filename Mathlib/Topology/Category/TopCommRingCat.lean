@@ -39,10 +39,10 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This prevents `TopCommRingCat.of R` being printed as `{ α := R, ... }` by
-`delabStructureInstance`. -/
+/-- This prints `TopCommRingCat.of R` as `↧R`, and in particular prevents it being printed as
+`{ α := R, ... }` by `delabStructureInstance`. -/
 @[app_delab TopCommRingCat.of]
-meta def TopCommRingCat.delabOf : Delab := delabApp
+meta def TopCommRingCat.delabOf : Delab := CategoryTheory.delabOf
 
 end Notation
 

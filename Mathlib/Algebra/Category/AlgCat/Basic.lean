@@ -162,12 +162,12 @@ instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
-    { obj := fun A => RingCat.of A
+    { obj := fun A => ↧A
       map := fun f => RingCat.ofHom f.hom.toRingHom }
 
 @[simp]
 lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
-    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = RingCat.of X :=
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = ↧X :=
   rfl
 
 @[simp]

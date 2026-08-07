@@ -289,8 +289,8 @@ theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f
 
 /-- The empty locally ringed space. -/
 def empty : LocallyRingedSpace.{u} where
-  carrier := TopCat.of PEmpty
-  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  carrier := ↧PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj ↧PUnit
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
   isLocalRing x := PEmpty.elim x
 

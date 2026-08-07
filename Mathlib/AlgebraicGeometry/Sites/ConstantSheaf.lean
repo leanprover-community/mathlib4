@@ -54,7 +54,7 @@ def continuousMapPresheafIsoUlift :
     (ContinuousMap.uliftEquiv U.1 T).symm.trans
     (TopCat.Hom.equivContinuousMap
       (TopCat.uliftFunctor.obj <| Scheme.forgetToTop.obj U.1)
-      (TopCat.uliftFunctor.obj (TopCat.of T))).symm
+      (TopCat.uliftFunctor.obj ↧T)).symm
 
 lemma isSheaf_zariskiTopology_continuousMapPresheaf :
     Presheaf.IsSheaf Scheme.zariskiTopology (continuousMapPresheaf T) := by

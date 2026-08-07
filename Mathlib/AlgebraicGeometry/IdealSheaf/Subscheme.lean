@@ -67,7 +67,7 @@ lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
 set_option backward.isDefEq.respectTransparency.types false in
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
-  let φ : Γ(X, U) ⟶ CommRingCat.of (Γ(X, U) ⧸ I.ideal U) :=
+  let φ : Γ(X, U) ⟶ ↧(Γ(X, U) ⧸ I.ideal U) :=
     CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
   change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
@@ -101,7 +101,7 @@ lemma range_glueDataObjι_ι (U : X.affineOpens) :
 /-- The underlying space of `Spec (𝒪ₓ(U)/I(U))` is homeomorphic to its image in `X`. -/
 noncomputable
 def glueDataObjCarrierIso (U : X.affineOpens) :
-    (I.glueDataObj U).carrier ≅ TopCat.of ↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
+    (I.glueDataObj U).carrier ≅ ↧↑(X.zeroLocus (U := U) (I.ideal U) ∩ U) :=
   TopCat.isoOfHomeo ((I.glueDataObjι U ≫ U.1.ι).isEmbedding.toHomeomorph.trans
     (.setCongr (I.range_glueDataObjι_ι U)))
 
@@ -565,7 +565,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ker_subschemeι_app (U : X.affineOpens) :
     RingHom.ker (I.subschemeι.app U).hom = I.ideal U := by
   rw [subschemeι_app]
-  let e : CommRingCat.of (Γ(X, U) ⧸ I.ideal U) ≅ Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) :=
+  let e : ↧(Γ(X, U) ⧸ I.ideal U) ≅ Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) :=
     (Scheme.ΓSpecIso _).symm ≪≫ ((I.subschemeCover.f U).appIso _).symm ≪≫
       I.subscheme.presheaf.mapIso (eqToIso (by simp)).op
   change RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp

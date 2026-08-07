@@ -288,10 +288,10 @@ section TopCat
 
 /-- (Implementation) An auxiliary lemma for the proof that `TopCat` is finitary extensive. -/
 noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
-    (f : Z ⟶ TopCat.of (PUnit.{u + 1} ⊕ PUnit.{u + 1})) :
+    (f : Z ⟶ ↧(PUnit.{u + 1} ⊕ PUnit.{u + 1})) :
     IsColimit (BinaryCofan.mk
-      (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inl)
-      (TopCat.pullbackFst f (TopCat.binaryCofan (TopCat.of PUnit) (TopCat.of PUnit)).inr)) := by
+      (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inl)
+      (TopCat.pullbackFst f (TopCat.binaryCofan ↧PUnit ↧PUnit).inr)) := by
   have h₁ : Set.range (TopCat.pullbackFst f (TopCat.binaryCofan (.of PUnit) (.of PUnit)).inl) =
       f ⁻¹' Set.range Sum.inl := by
     apply le_antisymm

@@ -604,7 +604,7 @@ theorem mapRingHom_id_apply {M : Pic R} : mapRingHom (.id R) M = M :=
 /-- Picard group as a functor from the category of commutative semirings to
 the category of abelian groups. -/
 noncomputable def functor : CommSemiRingCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := .of (Pic R)
+  obj R := ↧(Pic R)
   map f := CommGrpCat.ofHom (mapRingHom f.hom)
   map_id _ := CommGrpCat.Hom.ext mapRingHom_id
   map_comp _ _ := CommGrpCat.Hom.ext mapRingHom_comp_mapRingHom.symm

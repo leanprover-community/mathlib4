@@ -62,7 +62,7 @@ def const (X : TopCat) (Z : C) : PresheafedSpace C where
   presheaf := (Functor.const _).obj Z
 
 instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
-  ⟨const (TopCat.of PEmpty) default⟩
+  ⟨const ↧PEmpty default⟩
 
 /-- A morphism between presheafed spaces `X` and `Y` consists of a continuous map
 `f` between the underlying topological spaces, and a (note: contravariant!) map

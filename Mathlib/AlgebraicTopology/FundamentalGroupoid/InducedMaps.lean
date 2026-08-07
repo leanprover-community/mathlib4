@@ -227,7 +227,7 @@ def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
 /-- Proof that `f(p) = H(0 ⟶ 0, p)`, with the appropriate casts -/
 theorem apply_zero_path : (πₘ (TopCat.ofHom f)).map p = hcast (H.apply_zero x₀).symm ≫
     (πₘ (TopCat.ofHom H.uliftMap)).map
-      (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 0))) p) ≫
+      (prodToProdTopI (𝟙 (@fromTop ↧_ (ULift.up 0))) p) ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
@@ -238,7 +238,7 @@ theorem apply_zero_path : (πₘ (TopCat.ofHom f)).map p = hcast (H.apply_zero x
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
 theorem apply_one_path : (πₘ (TopCat.ofHom g)).map p = hcast (H.apply_one x₀).symm ≫
     (πₘ (TopCat.ofHom H.uliftMap)).map
-      (prodToProdTopI (𝟙 (@fromTop (TopCat.of _) (ULift.up 1))) p) ≫
+      (prodToProdTopI (𝟙 (@fromTop ↧_ (ULift.up 1))) p) ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
