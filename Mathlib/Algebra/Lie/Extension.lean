@@ -208,7 +208,7 @@ lemma bracket_ofTwoCocycle {c : twoCocycle R L M} (x y : ofTwoCocycle c) :
 instance : LieAlgebra R (ofTwoCocycle c) where
   lie_smul r x y := by
     simp only [bracket_ofTwoCocycle]
-    simp [← of_smul, ← smul_add, smul_sub]
+    exact Equiv.congr_arg (by simp [← smul_add, smul_sub])
 
 /-- An equivalence of extended Lie algebras induced by translation by a coboundary. -/
 @[simps]

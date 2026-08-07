@@ -129,6 +129,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp
     rfl
   · intro r
+    simp only [Equiv.algebraMap_def, Equiv.symm_symm]
     apply congrArg
     apply Subtype.ext
     ext j
