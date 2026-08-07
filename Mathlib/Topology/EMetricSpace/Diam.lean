@@ -16,7 +16,7 @@ as an extended nonnegative real number.
 
 @[expose] public section
 
-open Set Filter
+open Set
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 

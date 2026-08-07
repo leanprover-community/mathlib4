@@ -19,7 +19,7 @@ of sets in the limit is, in fact, a topological basis.
 public section
 
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 open CategoryTheory
 

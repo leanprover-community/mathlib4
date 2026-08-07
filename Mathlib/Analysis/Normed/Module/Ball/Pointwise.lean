@@ -229,7 +229,7 @@ theorem disjoint_closedBall_closedBall_iff (hδ : 0 ≤ δ) (hε : 0 ≤ ε) :
   rw [dist_comm] at hxz
   exact h.le_bot ⟨hxz, hzy⟩
 
-open EMetric ENNReal
+open ENNReal
 
 @[simp]
 theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :

@@ -24,9 +24,7 @@ This file contains lemmas about normed additive torsors over normed spaces.
 
 noncomputable section
 
-open NNReal Topology
-
-open Filter
+open NNReal
 
 variable {V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]

@@ -39,7 +39,7 @@ namespace WfDvdMonoid
 
 variable [CommMonoidWithZero α]
 
-open Associates Nat
+open Associates
 
 theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoid α :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).2 wellFounded_dvdNotUnit⟩

@@ -25,8 +25,6 @@ comma, arrow, preadditive
 
 namespace CategoryTheory
 
-open Category
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {A : Type u₁} [Category.{v₁} A] [Preadditive A]

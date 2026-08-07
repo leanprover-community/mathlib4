@@ -60,7 +60,7 @@ open Topology
 
 open Filter (Tendsto)
 
-open Metric ContinuousLinearMap
+open ContinuousLinearMap
 
 section Semiring
 

@@ -22,7 +22,7 @@ derivative, differentiable, Fréchet, calculus
 
 public section
 
-open Asymptotics Function Filter Set Metric
+open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
 
 noncomputable section

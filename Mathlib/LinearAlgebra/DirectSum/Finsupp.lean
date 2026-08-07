@@ -40,7 +40,7 @@ noncomputable section
 
 open DirectSum TensorProduct
 
-open Set LinearMap Submodule
+open LinearMap
 
 section TensorProduct
 

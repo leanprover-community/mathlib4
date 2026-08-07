@@ -26,7 +26,7 @@ end of a polynomial
 
 noncomputable section
 
-open Function Polynomial Finsupp Finset
+open Function Polynomial Finset
 
 open scoped Polynomial
 

@@ -114,7 +114,7 @@ Hausdorff measure, measure, metric measure
 
 open scoped NNReal ENNReal Topology
 
-open Metric EMetric Set Function Filter Encodable Module TopologicalSpace
+open Metric Set Function Filter Encodable Module TopologicalSpace
 
 noncomputable section
 
@@ -715,8 +715,6 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
 end HolderOnWith
 
 namespace LipschitzOnWith
-
-open Submodule
 
 variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 

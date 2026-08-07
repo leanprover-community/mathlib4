@@ -40,7 +40,7 @@ integrable
 
 noncomputable section
 
-open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
+open ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
 open scoped Topology
 

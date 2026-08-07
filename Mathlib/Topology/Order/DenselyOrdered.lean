@@ -13,7 +13,7 @@ public import Mathlib.Topology.Order.IsLUB
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Topology
 
 open OrderDual (toDual ofDual)
 

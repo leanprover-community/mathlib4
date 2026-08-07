@@ -799,7 +799,7 @@ section primesOver
 variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
   [Module.IsTorsionFree S R]
 
-open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
+open IsDedekindDomain Ideal.IsDedekindDomain
 
 /--
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes

@@ -33,7 +33,7 @@ assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 
