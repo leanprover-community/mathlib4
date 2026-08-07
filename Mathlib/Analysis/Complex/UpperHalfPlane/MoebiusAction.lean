@@ -281,6 +281,9 @@ instance : MulAction.IsPretransitive PGL(2, ℝ) ℍ :=
 end PGLAction
 
 section SLAction
+/-!
+## Action of the special linear group
+-/
 
 noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
@@ -377,6 +380,9 @@ instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
 end toSL2R
 
 section J
+/-!
+## The anti-holomorphic involution `J`
+-/
 
 /-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
 `τ ↦ -conj τ`. -/
@@ -398,6 +404,13 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 @[simp]
 lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
   simp [denom, vecMul, vecHead, vecTail]
+
+@[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
+
+@[simp] lemma J_smul_eq_self_iff {x : ℍ} : J • x = x ↔ x.re = 0 :=
+  calc
+    J • x = x ↔ -x.re = x.re := by simp [UpperHalfPlane.ext_iff, Complex.ext_iff, coe_J_smul]
+    _ ↔ x.re = 0 := by grind
 
 end J
 
