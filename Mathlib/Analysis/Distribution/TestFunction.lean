@@ -205,12 +205,12 @@ instance : IsSubApply 𝓓^{n}(Ω, F) E F where
 
 @[deprecated (since := "2026-06-15")] alias coe_sub := FunLike.coe_sub
 
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     SMul R 𝓓^{n}(Ω, F) where
   smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
     tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
-instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+instance {R} [DistribSMul R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
     IsSMulApply R 𝓓^{n}(Ω, F) E F where
   smul_apply _ _ _ := rfl
 
