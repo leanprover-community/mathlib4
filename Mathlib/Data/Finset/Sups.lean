@@ -387,7 +387,7 @@ lemma powerset_infs (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.po
 @[simp] lemma powerset_sups_powerset_self (s : Finset α) :
     s.powerset ⊻ s.powerset = s.powerset := by simp [← powerset_sups]
 
-@[simp] lemma powerset_infs_powerset_self (s : Finset α) :
+lemma powerset_infs_powerset_self (s : Finset α) :
     s.powerset ⊼ s.powerset = s.powerset := by simp
 
 lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
