@@ -230,6 +230,14 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
+/-- The finset of those partitions in which there are an odd number of distinct parts. -/
+def oddCountDistincts (n : ℕ) : Finset n.Partition :=
+  (distincts n).filter fun x ↦ Odd x.parts.card
+
+/-- The finset of those partitions in which there are an even number of distinct parts. -/
+def evenCountDistincts (n : ℕ) : Finset n.Partition :=
+  (distincts n).filter fun x ↦ Even x.parts.card
+
 /-- If `1 ≤ a` and `a ≤ n`, partitions of `n` containing `a` as a part are equivalent to
 partitions of `n - a`. The forward map removes one occurrence of `a`, and the inverse adds `a` as
 a part. -/
