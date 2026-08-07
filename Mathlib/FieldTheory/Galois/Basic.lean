@@ -270,6 +270,16 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem coe_fixingSubgroupEquiv_apply (σ : K.fixingSubgroup) :
+    ⇑(K.fixingSubgroupEquiv σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_fixingSubgroupEquiv_symm_apply (σ : Gal(E/K)) :
+    ⇑(K.fixingSubgroupEquiv.symm σ).1 = ⇑σ :=
+  rfl
+
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
   suffices Nat.card H = Nat.card (fixingSubgroup (fixedField H)) by
@@ -287,6 +297,16 @@ A subgroup is isomorphic to the Galois group of its fixed field.
 def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup Gal(E/F)) :
     H ≃* Gal(E/IntermediateField.fixedField H) :=
   (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_apply [FiniteDimensional F E] (σ : H) :
+    ⇑(subgroupEquivAlgEquiv H σ) = ⇑σ.1 :=
+  rfl
+
+@[simp]
+theorem coe_subgroupEquivAlgEquiv_symm_apply [FiniteDimensional F E] (σ : Gal(E/fixedField H)) :
+    ⇑((subgroupEquivAlgEquiv H).symm σ).1 = ⇑σ :=
+  rfl
 
 instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
