@@ -215,6 +215,21 @@ lemma MemLp.integrable_enorm_pow' [IsFiniteMeasure μ] {f : α → ε} {p : ℕ}
 lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} (hf : MemLp f p μ) :
     Integrable (fun x : α => ‖f x‖ ^ p) μ := by simpa using hf.integrable_norm_rpow'
 
+lemma MemLp.enorm_ae_lt_top {f : α → ε} {p : ℝ≥0∞} (hlp : MemLp f p μ) (hp_ne_zero : p ≠ 0) :
+    ∀ᵐ x ∂μ, ‖f x‖ₑ < ∞ := by
+  by_cases hp_top : p = ∞
+  · rw [hp_top] at hlp
+    have h_lt := hlp.eLpNorm_lt_top
+    simp only [eLpNorm_exponent_top] at h_lt
+    filter_upwards [ae_le_eLpNormEssSup (f := f)] with x hx_le
+    exact hx_le.trans_lt h_lt
+  have hf_int : Integrable (fun x ↦ ‖f x‖ₑ ^ p.toReal) μ :=
+    hlp.integrable_enorm_rpow hp_ne_zero hp_top
+  have hfin : ∀ᵐ ω ∂μ, ‖f ω‖ₑ ^ p.toReal ≠ ∞ := (ae_lt_top' hf_int.1.aemeasurable hf_int.2.ne).mono
+    fun _ h ↦ h.ne
+  refine hfin.mono fun x hx ↦ Ne.lt_top fun htop ↦ hx ?_
+  simpa [htop] using ENNReal.top_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_top)
+
 lemma integrable_enorm_rpow_iff {f : α → ε} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
     Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ ↔ MemLp f p μ := by
