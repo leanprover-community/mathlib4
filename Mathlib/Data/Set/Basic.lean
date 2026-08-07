@@ -746,11 +746,11 @@ theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
 theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
   right_lt_sup
 
-theorem Set.forall_mem_union {p : α → Prop} :
+theorem forall_mem_union {p : α → Prop} :
     (∀ x ∈ s ∪ t, p x) ↔ (∀ x ∈ s, p x) ∧ (∀ x ∈ t, p x) := by
   simp_rw [mem_union, or_imp, forall_and]
 
-theorem Set.exists_mem_union {p : α → Prop} :
+theorem exists_mem_union {p : α → Prop} :
     (∃ x ∈ s ∪ t, p x) ↔ (∃ x ∈ s, p x) ∨ (∃ x ∈ t, p x) := by
   simp_rw [mem_union, or_and_right, exists_or]
 
@@ -920,11 +920,11 @@ theorem union_union_union_comm (s t u v : Set α) : s ∪ t ∪ (u ∪ v) = s �
 theorem inter_inter_inter_comm (s t u v : Set α) : s ∩ t ∩ (u ∩ v) = s ∩ u ∩ (t ∩ v) :=
   inf_inf_inf_comm _ _ _ _
 
-theorem Set.forall_mem_inter {p : α → Prop} :
+theorem forall_mem_inter {p : α → Prop} :
     (∀ x ∈ s ∩ t, p x) ↔ (∀ x ∈ s, x ∈ t → p x) := by
   simp_rw [mem_inter_iff, and_imp]
 
-theorem Set.exists_mem_inter {p : α → Prop} :
+theorem exists_mem_inter {p : α → Prop} :
     (∃ x ∈ s ∩ t, p x) ↔ (∃ x ∈ s, x ∈ t ∧ p x) := by
   simp_rw [mem_inter_iff, and_assoc]
 
