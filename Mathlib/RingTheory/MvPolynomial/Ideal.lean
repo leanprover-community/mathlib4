@@ -59,6 +59,24 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
 
+theorem span_X_image_eq_ker_aeval_ite_mem (s : Set σ) [DecidablePred (· ∈ s)] :
+    Ideal.span (X '' s : Set (MvPolynomial σ R)) =
+    RingHom.ker (aeval (fun x ↦ if x ∈ sᶜ then X (R := R) x else 0)) := by
+  classical
+  refine Submodule.span_eq_of_le _ (fun _ ⟨_, hx⟩ ↦ ?_) (fun _ hx ↦ ?_)
+  · simp [← hx.2, hx.1]
+  refine mem_ideal_span_X_image.mpr fun y _ ↦ ?_
+  rw [RingHom.mem_ker, aeval_ite_mem_eq, eq_zero_iff] at hx
+  specialize hx y
+  rw [coeff_sum, Finset.sum_eq_single y (by grind [coeff_monomial, coeff_zero]) (by grind)] at hx
+  grind [coeff_monomial]
+
+theorem span_X_image_isPrime [IsCancelAdd R] [IsDomain R] (s : Set σ) :
+    Ideal.span (X '' s : Set (MvPolynomial σ R)) |>.IsPrime := by
+  classical
+  rw [span_X_image_eq_ker_aeval_ite_mem]
+  exact RingHom.ker_isPrime _
+
 section idealOfVars
 
 open Finset Finsupp
