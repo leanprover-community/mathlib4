@@ -144,8 +144,8 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
       p ≠ s.points i ∧
         p ∈ affineSpan ℝ (Set.range s.points) ∧
           p -ᵥ s.points i ∈ (affineSpan ℝ (s.points '' {i}ᶜ)).directionᗮ := by
-  rw [eq_iff_direction_eq_of_mem (mem_affineSpan ℝ (Set.mem_insert_of_mem _ (mem_singleton_self _)))
-      (s.mem_altitude _),
+  rw [eq_iff_direction_eq_of_mem (mem_affineSpan ℝ
+      (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))) (s.mem_altitude _),
     ← vsub_right_mem_direction_iff_mem (mem_affineSpan ℝ (Set.mem_range_self i)) p,
     direction_affineSpan, direction_affineSpan, direction_affineSpan]
   constructor
@@ -156,13 +156,13 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
       have hd : finrank ℝ (s.altitude i).direction = 0 := by rw [← h, finrank_bot]
       simp at hd
     · rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude, ← h]
-      exact
-        vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (mem_singleton_self _))
+      exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _)
+        (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))
   · rintro ⟨hne, h⟩
     rw [← Submodule.mem_inf, _root_.inf_comm, ← direction_altitude] at h
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
-      Set.insert_sdiff_of_mem _ (mem_singleton_self _),
-      Set.sdiff_singleton_eq_self fun h => hne (mem_singletonet.image_singleton]
+      Set.insert_sdiff_of_mem _ (Set.mem_singleton_self _),
+      Set.sdiff_singleton_eq_self fun h => hne (Set.mem_singleton.1 h), Set.image_singleton]
     refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le]
       simpa using h

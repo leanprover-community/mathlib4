@@ -342,7 +342,7 @@ lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f
     (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt
   filter_upwards [(h_tendsto.eventually <| eventually_gt_nhds hf),
     self_mem_nhdsWithin] with x hx₀ hx₁
-  rw [mem_compl_iff, mem_singletonNe.eq_def] at hx₁
+  rw [mem_compl_iff, mem_singleton, ← Ne.eq_def] at hx₁
   obtain (hx' | hx') := hx₁.lt_or_gt
   · rw [sign_neg (neg_of_slope_pos hx' hx₀ hx), sign_neg (sub_neg.mpr hx')]
   · rw [sign_pos (pos_of_slope_pos hx' hx₀ hx), sign_pos (sub_pos.mpr hx')]

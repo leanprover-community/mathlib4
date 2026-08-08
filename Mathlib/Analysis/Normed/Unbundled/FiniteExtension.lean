@@ -180,7 +180,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   let hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B
   have hem : Nonempty ι := B.index_nonempty
   have h1L : (1 : L) ∈ LinearIndepOn.extend h1 _ :=
-    Basis.subset_extend _ (mem_singleton_self (1 : L))
+    Basis.subset_extend _ (Set.mem_singleton_self (1 : L))
   have hB1 : B ⟨1, h1L⟩ = (1 : L) := by rw [Basis.coe_extend, Subtype.coe_mk]
   -- Define a function g : L → ℝ by setting g (∑ki • ei) = maxᵢ ‖ ki ‖
   set g : L → ℝ := B.norm

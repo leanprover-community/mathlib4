@@ -174,7 +174,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
       ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_natCast,
       restrict_const_lintegral]
     refine ⟨indicator_le fun x hx => le_trans ?_ (hφ _), hn⟩
-    simp only [mem_preimage, mem_singleton hx
+    simp only [mem_preimage, mem_singleton] at hx
     simp only [hx, le_top]
 
 theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞)
@@ -488,7 +488,7 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   by_cases H : t = 0
   · simp [H]
   congr with x
-  simp only [mem_preimage, mem_singletonm_inter_iff, iff_self_and]
+  simp only [mem_preimage, mem_singleton, mem_inter_iff, iff_self_and]
   rintro rfl
   contrapose H
   simpa [H] using hg x
