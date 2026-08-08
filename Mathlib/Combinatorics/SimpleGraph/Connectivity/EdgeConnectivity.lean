@@ -191,7 +191,7 @@ theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reach
   specialize h' 1
   grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
 
-theorem le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
+theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
   le_iSup₂ (α := ℕ∞) k h
 
 theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
