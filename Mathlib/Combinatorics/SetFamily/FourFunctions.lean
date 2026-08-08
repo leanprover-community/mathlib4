@@ -106,18 +106,18 @@ private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
   ext t; split_ifs <;> simp [erase_eq_iff ha] <;> aesop
 
 omit [LinearOrder β] [IsStrictOrderedRing β] in
-lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → β) :
+private lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → β) :
     collapse 𝒜 a f s = (if s ∈ 𝒜 then f s else 0) +
       if insert a s ∈ 𝒜 then f (insert a s) else 0 := by
   rw [collapse, filter_collapse_eq ha]
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
 omit [LinearOrder β] [IsStrictOrderedRing β] in
-lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
+private lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
 
-lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
+private lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
     f t ≤ collapse 𝒜 a f s := by
   subst hts
   rw [collapse_eq ha, if_pos ht]
@@ -125,16 +125,17 @@ lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈
   · exact le_add_of_nonneg_right <| hf _
   · rw [add_zero]
 
-lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s) (ht : t ∈ 𝒜) :
-    f t ≤ collapse 𝒜 a f s := by
+private lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert a s)
+    (ht : t ∈ 𝒜) : f t ≤ collapse 𝒜 a f s := by
   rw [collapse_eq ha, ← hts, if_pos ht]
   split_ifs
   · exact le_add_of_nonneg_left <| hf _
   · rw [zero_add]
 
-lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg fun _t _ ↦ hf _
+private lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦
+  sum_nonneg fun _t _ ↦ hf _
 
-lemma collapse_modular [ExistsAddOfLE β]
+private lemma collapse_modular [ExistsAddOfLE β]
     (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     (𝒜 ℬ : Finset (Finset α)) :
@@ -222,7 +223,7 @@ lemma collapse_modular [ExistsAddOfLE β]
     exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
 
 omit [LinearOrder β] [IsStrictOrderedRing β] in
-lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
+private lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     ∑ s ∈ u.powerset, collapse 𝒜 a f s = ∑ s ∈ 𝒜, f s := by
   calc
     _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ u.powerset.image (insert a) ∩ 𝒜, f s := ?_
