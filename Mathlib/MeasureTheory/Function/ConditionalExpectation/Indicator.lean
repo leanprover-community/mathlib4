@@ -43,7 +43,7 @@ theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
   swap; · simp_rw [condExp_of_not_le hm]; rfl
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · simp_rw [condExp_of_not_sigmaFinite hm hμm]; rfl
-  haveI : SigmaFinite (μ.trim hm) := hμm
+  have : SigmaFinite (μ.trim hm) := hμm
   have : SigmaFinite ((μ.restrict s).trim hm) := by
     rw [← restrict_trim hm _ hs]
     exact Restrict.sigmaFinite _ s
@@ -78,7 +78,7 @@ theorem condExp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
   swap; · simp_rw [condExp_of_not_le hm, Set.indicator_zero']; rfl
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · simp_rw [condExp_of_not_sigmaFinite hm hμm, Set.indicator_zero']; rfl
-  haveI : SigmaFinite (μ.trim hm) := hμm
+  have : SigmaFinite (μ.trim hm) := hμm
   -- use `have` to perform what should be the first calc step because of an error I don't
   -- understand
   have : s.indicator (μ[f | m]) =ᵐ[μ] s.indicator (μ[s.indicator f + sᶜ.indicator f | m]) := by

@@ -61,7 +61,7 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
       have : i.inv.app X ≫ G.map (F.map f) ≫ i.hom.app Y = f := by
         simpa using NatIso.naturality_1 i f
       rw [← this]
-      haveI : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
+      have : HasKernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasKernel_comp_mono _ _
       apply Limits.hasKernel_iso_comp }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -72,7 +72,7 @@ theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :
       have : i.inv.app X ≫ G.map (F.map f) ≫ i.hom.app Y = f := by
         simpa using NatIso.naturality_1 i f
       rw [← this]
-      haveI : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
+      have : HasCokernel (G.map (F.map f) ≫ i.hom.app _) := Limits.hasCokernel_comp_iso _ _
       apply Limits.hasCokernel_epi_comp }
 
 end AbelianOfAdjunction
@@ -84,7 +84,7 @@ we have `F : C ⥤ D` `G : D ⥤ C` (with `G` preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian. -/
-@[stacks 03A3, implicit_reducible]
+@[stacks 03A3, instance_reducible]
 def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
     (G : D ⥤ C) [Functor.PreservesZeroMorphisms G] [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C)
@@ -108,7 +108,7 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Has
 via a functor that preserves zero morphisms,
 then `C` is also abelian.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def abelianOfEquivalence {C : Type u₁} [Category.{v₁} C] [Preadditive C] [HasFiniteProducts C]
     {D : Type u₂} [Category.{v₂} D] [Abelian D] (F : C ⥤ D)
     [F.IsEquivalence] : Abelian C :=

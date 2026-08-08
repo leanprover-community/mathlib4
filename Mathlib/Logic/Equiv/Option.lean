@@ -151,6 +151,7 @@ end RemoveNone
 theorem optionCongr_injective : Function.Injective (optionCongr : α ≃ β → Option α ≃ Option β) :=
   Function.LeftInverse.injective removeNone_optionCongr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalences between `Option α` and `β` that send `none` to `x` are equivalent to
 equivalences between `α` and `{y : β // y ≠ x}`. -/
 def optionSubtype [DecidableEq β] (x : β) :
@@ -162,7 +163,7 @@ def optionSubtype [DecidableEq β] (x : β) :
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
-              ((apply_eq_iff_eq_symm_apply _).1 e.property).symm).2 b.property)),
+              ((eq_symm_apply _).2 e.property).symm).2 b.property)),
       left_inv := fun a => by
         rw [← some_inj, some_get]
         exact symm_apply_apply (e : Option α ≃ β) a,
@@ -204,6 +205,7 @@ theorem coe_optionSubtype_apply_apply
     (e : { e : Option α ≃ β // e none = x })
     (a : α) : ↑(optionSubtype x e a) = (e : Option α ≃ β) a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem optionSubtype_apply_symm_apply
     [DecidableEq β] (x : β)
@@ -232,6 +234,7 @@ theorem optionSubtype_symm_apply_apply_none
     (e : α ≃ { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β) none = x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α ≃ { y : β // y ≠ x })
     (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by

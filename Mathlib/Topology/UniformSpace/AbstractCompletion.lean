@@ -318,8 +318,6 @@ theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
     (∀ a : pkg.space,
       Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
       pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
-  let _ := pkg'.uniformStruct
-  let _ := pkg.uniformStruct
   intro h
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
     simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]
@@ -380,6 +378,7 @@ end T0Space
 variable {f : α → β → γ}
 variable [CompleteSpace γ] (f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by
   rw [uniformContinuous₂_def, AbstractCompletion.extend₂, uncurry_curry]
