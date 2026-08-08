@@ -80,8 +80,7 @@ open Fin Function Finset Set
 universe uR uS uι u v
 
 variable {R R₁ R₂ R₃ R₄ S S' ι : Type*} {n : ℕ} {A : Type*}
-variable {M M₁ M₂ M₃ : ι → Type*} {M' : Fin n.succ → Type*}
-variable {N N₁ N₂ N₂' N₃ N₄ : Type*}
+variable {M M₁ M₂ M₃ : ι → Type*} {M' : Fin n.succ → Type*} {N N₁ N₂ N₂' N₃ N₄ : Type*}
 
 -- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
 set_option genInjectivity false in
@@ -105,9 +104,8 @@ namespace MultilinearMap
 
 section Semiring
 
-variable [Semiring R] [Semiring S] {σ : R →+* S}
-variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [AddCommMonoid N] [Module S N]
-variable (f : MultilinearMap σ M N)
+variable [Semiring R] [Semiring S] {σ : R →+* S} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  [AddCommMonoid N] [Module S N] (f : MultilinearMap σ M N)
 
 instance : FunLike (MultilinearMap σ M N) (∀ i, M i) N where
   coe f := f.toFun
@@ -347,15 +345,13 @@ end
 section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-variable {σ₁₃ : R₁ →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
-variable [∀ i, AddCommMonoid (M₂ i)] [∀ i, Module R₂ (M₂ i)]
-variable [∀ i, AddCommMonoid (M₃ i)] [∀ i, Module R₃ (M₃ i)]
-variable [AddCommMonoid N₂] [AddCommMonoid N₃] [AddCommMonoid N₄]
-variable [Module R₂ N₂] [Module R₃ N₃] [Module R₄ N₄]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+  [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [∀ i, AddCommMonoid (M₃ i)]
+  [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [∀ i, Module R₃ (M₃ i)]
+  [AddCommMonoid N₂] [AddCommMonoid N₃] [AddCommMonoid N₄]
+  [Module R₂ N₂] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call
@@ -418,9 +414,8 @@ theorem comp_linearEquiv_eq_zero_iff {σ₂₁ : R₂ →+* R₁} [RingHomInvPai
 
 section compMultilinear
 
-variable {β : ι → Type*}
-variable {M₁' : (i : ι) → (b : β i) → Type*}
-variable [∀ i, ∀ b, AddCommMonoid (M₁' i b)] [∀ i, ∀ b, Module R₁ (M₁' i b)]
+variable {β : ι → Type*} {M₁' : (i : ι) → (b : β i) → Type*}
+  [∀ i, ∀ b, AddCommMonoid (M₁' i b)] [∀ i, ∀ b, Module R₁ (M₁' i b)]
 
 /-- Composition of multilinear maps. If `g` is multilinear, and if for every `i : ι`, we have a
 multilinear map `f i` with index type `β i`, then `m ↦ g (f₁ m_11 m_12 ...) (f₂ m_21 m_22 ...) ...`
@@ -799,14 +794,12 @@ end MultilinearMap
 namespace LinearMap
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-variable {σ₁₃ : R₁ →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
-variable [∀ i, AddCommMonoid (M₂ i)] [∀ i, Module R₂ (M₂ i)]
-variable [AddCommMonoid N₂] [AddCommMonoid N₂'] [AddCommMonoid N₃] [AddCommMonoid N₄]
-variable [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+  [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₂']
+  [AddCommMonoid N₃] [AddCommMonoid N₄] [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)]
+  [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- Composing a multilinear map with a linear map gives again a multilinear map. -/
 def compMultilinearMap (g : N₂ →ₛₗ[σ₂₃] N₃) (f : MultilinearMap σ₁₂ M₁ N₂) :
@@ -904,9 +897,8 @@ namespace MultilinearMap
 section Semiring
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃] {σ₁₂ : R₁ →+* R₂}
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
-variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₂']
-variable [Module R₁ N₁] [Module R₂ N₂] [Module R₂ N₂']
+  [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₂']
+  [∀ i, Module R₁ (M₁ i)] [Module R₁ N₁] [Module R₂ N₂] [Module R₂ N₂']
 
 instance [Monoid S] [DistribMulAction S N₂] [SMulCommClass R₂ S N₂] :
     DistribMulAction S (MultilinearMap σ₁₂ M₁ N₂) := fast_instance% FunLike.distribMulAction
@@ -1124,10 +1116,9 @@ end
 section
 
 variable [Semiring R₁] [CommSemiring R₂] [CommSemiring R₃]
-variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)]
-variable [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)]
-variable [AddCommMonoid N₂] [AddCommMonoid N₃] [Module R₂ N₂] [Module R₃ N₃]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₃]
+  [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₃ N₃]
 
 /-- `LinearMap.compMultilinearMap` as a semilinear map.
 
@@ -1195,9 +1186,8 @@ end
 
 section
 
-variable [Semiring R] [CommSemiring S] {σ : R →+* S}
-variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module S N]
-variable (f : MultilinearMap σ M N)
+variable [Semiring R] [CommSemiring S] {σ : R →+* S} [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
+  [∀ i, Module R (M i)] [Module S N] (f : MultilinearMap σ M N)
 
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
 map is multiplied by `∏ i ∈ s, σ (c i)`. This is mainly an auxiliary statement to prove the result
@@ -1374,9 +1364,8 @@ end RangeAddCommGroup
 
 section AddCommGroup
 
-variable [Semiring R] [Semiring S] {σ : R →+* S}
-variable [∀ i, AddCommGroup (M i)] [AddCommGroup N] [∀ i, Module R (M i)] [Module S N]
-variable (f : MultilinearMap σ M N)
+variable [Semiring R] [Semiring S] {σ : R →+* S} [∀ i, AddCommGroup (M i)] [AddCommGroup N]
+  [∀ i, Module R (M i)] [Module S N] (f : MultilinearMap σ M N)
 
 @[simp]
 theorem map_update_neg [DecidableEq ι] (m : ∀ i, M i) (i : ι) (x : M i) :
