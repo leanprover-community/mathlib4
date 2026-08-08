@@ -187,10 +187,8 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       use 1
       simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstMonoid_eq_localizedModuleInstMonoid :
-    OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
-  with_reducible_and_instances rfl
+    OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := rfl
 
 /-- A variant of `mk_mul_mk` that is `rfl` but has a stranger multiplication order. -/
 theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
