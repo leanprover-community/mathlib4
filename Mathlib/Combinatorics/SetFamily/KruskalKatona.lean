@@ -170,8 +170,9 @@ private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCom
 
 /-- If we're compressed by all useful compressions, then we're an initial segment. This is the other
 key Kruskal-Katona part. -/
-lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ : Set (Finset α)).Sized r)
-    (h₂ : ∀ U V, UsefulCompression U V → IsCompressed U V ℬ) : IsInitSeg ℬ r := by
+private lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ}
+    (h₁ : (ℬ : Set (Finset α)).Sized r) (h₂ : ∀ U V, UsefulCompression U V → IsCompressed U V ℬ) :
+    IsInitSeg ℬ r := by
   refine ⟨h₁, ?_⟩
   rintro A B hA ⟨hBA, sizeA⟩
   by_contra hB
