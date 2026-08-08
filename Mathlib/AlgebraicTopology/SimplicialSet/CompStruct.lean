@@ -275,7 +275,7 @@ def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
   d₁ := c.d₁.trans h₀₂
 
 /-- When the underlying simplex of a `CompStruct` belongs to a subcomplex,
-this is the induced `CompStruct` for the corresponding edges the subcomplex. -/
+this is the induced `CompStruct` for the corresponding edges of the subcomplex. -/
 def toSubcomplex (h : CompStruct e₀₁ e₁₂ e₀₂) (A : X.Subcomplex)
     (mem : h.simplex ∈ A.obj _) :
     CompStruct (e₀₁.toSubcomplex A (by rw [← h.d₂]; exact A.map _ mem))
