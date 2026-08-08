@@ -186,7 +186,7 @@ noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
 theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reachable u v)
   : 1 ≤ edgeReachability G u v := by
   have : G.IsEdgeReachable 1 u v := isEdgeReachable_one.mpr h
-  simp only [ le_iSup_iff , edgeReachability]
+  simp only [le_iSup_iff, edgeReachability]
   intro b h'
   specialize h' 1
   grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
