@@ -71,7 +71,7 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
 private def one : QuaternionGroup n :=
   a 0
 
-instance : Inhabited (QuaternionGroup n) :=
+@[no_expose] instance : Inhabited (QuaternionGroup n) :=
   ⟨one⟩
 
 /-- The inverse of an element of the quaternion group.
@@ -83,13 +83,13 @@ private def inv : QuaternionGroup n → QuaternionGroup n
 /-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
-  mul := mul
+  mul := private mul
   mul_assoc := by
-    unfold instHMul
+    change ∀ a b c, mul (mul a b) c = mul a (mul b c)
     rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
     have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
     grind
-  one := one
+  one := private one
   one_mul := by
     rintro (i | i)
     · exact congr_arg a (zero_add i)
@@ -98,7 +98,7 @@ instance : Group (QuaternionGroup n) where
     rintro (i | i)
     · exact congr_arg a (add_zero i)
     · exact congr_arg xa (add_zero i)
-  inv := inv
+  inv := private inv
   inv_mul_cancel := by
     rintro (i | i)
     · exact congr_arg a (neg_add_cancel i)
@@ -106,26 +106,26 @@ instance : Group (QuaternionGroup n) where
 
 @[simp]
 theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem a_mul_xa (i j : ZMod (2 * n)) : a i * xa j = xa (j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
   rfl
 
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
-  rfl
+  (rfl)
 
 private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n where
   invFun i :=
@@ -154,7 +154,7 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
 
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
-instance [NeZero n] : Fintype (QuaternionGroup n) :=
+@[no_expose] instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
