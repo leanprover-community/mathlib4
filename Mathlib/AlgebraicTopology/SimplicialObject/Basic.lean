@@ -274,6 +274,7 @@ end Truncated
 section Truncation
 
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
+@[implicit_reducible]
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
 
@@ -533,15 +534,10 @@ def augmentOfIsTerminal (X : SimplicialObject C) {T : C} (hT : IsTerminal T) :
 end SimplicialObject
 
 /-- Cosimplicial objects. -/
-def CosimplicialObject :=
+abbrev CosimplicialObject :=
   SimplexCategory ⥤ C
 
 namespace CosimplicialObject
-
-@[simps!]
-instance : Category (CosimplicialObject C) := by
-  dsimp only [CosimplicialObject]
-  infer_instance
 
 /-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
