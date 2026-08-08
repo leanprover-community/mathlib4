@@ -244,7 +244,7 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
     iCondIndepSets m' hm' (fun i ↦ {s i}) μ ↔ ∀ S : Finset ι,
       μ⟦⋂ i ∈ S, s i | m'⟧ =ᵐ[μ] ∏ i ∈ S, (μ⟦s i | m'⟧) := by
   rw [iCondIndepSets_iff]
-  · simp_all only [mem_singleton
+  · simp_all only [Set.mem_singleton]
     constructor
     · intros
       simp [*]
@@ -257,10 +257,10 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
   · simp
   · intro s' hs'
-    rw [mem_singleton
+    rw [Set.mem_singleton] at hs'
     rwa [hs']
   · intro s' hs'
-    rw [mem_singleton
+    rw [Set.mem_singleton] at hs'
     rwa [hs']
 
 lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω)
