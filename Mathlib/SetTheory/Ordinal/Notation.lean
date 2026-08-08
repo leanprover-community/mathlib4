@@ -78,7 +78,7 @@ private def toStringAux (e : ONote) (n : ℕ) (s : String) : String :=
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
 /-- Print an ordinal notation -/
-def toString : ONote → String
+@[no_expose] def toString : ONote → String
   | zero => "0"
   | oadd e n 0 => toStringAux e n (toString e)
   | oadd e n a => toStringAux e n (toString e) ++ " + " ++ toString a
