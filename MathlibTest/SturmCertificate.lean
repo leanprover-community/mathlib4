@@ -2,10 +2,37 @@ import Mathlib.Analysis.Polynomial.SturmCertificate
 
 open Polynomial
 
+/-- info: Polynomial.CertifiedSturmChain (p : ℝ[X]) (ps : List ℝ[X]) : Prop -/
+#guard_msgs in
 #check Polynomial.CertifiedSturmChain
+
+/--
+info: Polynomial.CertifiedSturmChain.toIsSturmSequence {p : ℝ[X]} {ps : List ℝ[X]} (h : p.CertifiedSturmChain ps) :
+  p.IsSturmSequence ps
+-/
+#guard_msgs in
 #check Polynomial.CertifiedSturmChain.toIsSturmSequence
+
+/--
+info: Polynomial.positive_scaled_recurrence_sign_reversal {a x : ℝ} {p q r s : ℝ[X]} (ha : 0 < a) (hrec : C a * p = q * r - s)
+  (hr : eval x r = 0) : SignType.sign (eval x s) = -SignType.sign (eval x p)
+-/
+#guard_msgs in
 #check Polynomial.positive_scaled_recurrence_sign_reversal
+
+/--
+info: Polynomial.bezout_nonzero_constant_no_common_real_root {p q u v : ℝ[X]} {c : ℝ} (hbez : u * p + v * q = C c)
+  (hc : c ≠ 0) (x : ℝ) : ¬(eval x p = 0 ∧ eval x q = 0)
+-/
+#guard_msgs in
 #check Polynomial.bezout_nonzero_constant_no_common_real_root
+
+/--
+info: Polynomial.simple_root_derivative_punctured_sign (p : ℝ[X]) {x0 : ℝ} (hp0 : eval x0 p = 0)
+  (hd0 : eval x0 (derivative p) ≠ 0) :
+  ∀ᶠ (x : ℝ) in nhdsWithin x0 {x0}ᶜ, SignType.sign (eval x (p * derivative p)) = if x > x0 then 1 else -1
+-/
+#guard_msgs in
 #check Polynomial.simple_root_derivative_punctured_sign
 
 namespace Polynomial
@@ -47,4 +74,11 @@ example : IsSturmSequence sturmTestP sturmTestChain :=
   sturmTestCertified.toIsSturmSequence
 
 end Polynomial
+
+/--
+info: Polynomial.CertifiedSturmChain.count_roots_between {p : ℝ[X]} {ps : List ℝ[X]} (h : p.CertifiedSturmChain ps)
+  (hpne : p ≠ 0) (a b : ℝ) :
+  a ≤ b → ↑(sturmVariations ps a) - ↑(sturmVariations ps b) = ↑{x | a < x ∧ x ≤ b ∧ eval x p = 0}.ncard
+-/
+#guard_msgs in
 #check Polynomial.CertifiedSturmChain.count_roots_between
