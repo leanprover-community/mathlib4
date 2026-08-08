@@ -373,7 +373,7 @@ noncomputable def LatinRectangle.extendRow {k n : Type*} [Fintype n]
     {k' : Type*} [Fintype k'] [DecidableEq k']
     (ι : k ↪ k') (h₂ : Fintype.card k' = Fintype.card k + 1)
     (f : n → α) (hf_inj : Function.Injective f) (hf_valid : ∀ j, f j ∈ symbolsNotIn A j) :
-    LatinRectangle k' n α := 
+    LatinRectangle k' n α :=
   let M' : k' → n → α := fun i j =>
     if hif : i ∈ (Finset.image ι Finset.univ)
     then A.M (Function.invFun ι i) j
@@ -463,7 +463,7 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     then A.M (Function.invFun ι i) j
     else (f' ⟨j, by simp⟩ )
   let f : n → α := fun j ↦ f' ⟨j, Finset.mem_univ j⟩
-  have hf_inj : Function.Injective f := by 
+  have hf_inj : Function.Injective f := by
     intro a b hab
     apply hf.1 at hab
     simp only [Subtype.mk.injEq] at hab
