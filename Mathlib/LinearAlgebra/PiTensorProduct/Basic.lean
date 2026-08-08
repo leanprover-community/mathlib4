@@ -390,8 +390,6 @@ variable {s}
 
 section lift
 
-variable {σ : R →+* R}
-
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
 `MultilinearMap R s E` with the property that its composition with the canonical
 `MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
