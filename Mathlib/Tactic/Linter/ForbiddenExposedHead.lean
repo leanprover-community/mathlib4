@@ -40,13 +40,14 @@ constant (defined in the `forbiddenExposed.forbiddenHeads` array). -/
   test declName := do
     let env ← getEnv
     let c := (env.find? declName).get!
-    -- skip non-definitions, automatic declarations, and definition without an exposed body
+    -- skip non-definitions, automatic declarations, and definitions without an exposed body
     unless c.isDefinition && !(← isAutoDecl declName) && env.hasExposedBody declName do return none
     let some body := c.value? | return none
-    let h := body.getAppFn
-    if forbiddenExposed.forbiddenHeads.any (· == h.constName) then
+    let (_, _, b) ← lambdaMetaTelescope body
+    let n := b.getAppFn.constName
+    if forbiddenExposed.forbiddenHeads.any (· == n) then
       return m!"The definition `{declName}` is exposed and has
-        `{h.constName}` as head symbol of its body. \
+        `{n}` as head symbol of its body. \
         Please mark this definition with `@[no_expose]` or move it in a non-exposed section
         and provide specification lemmas for this definition."
     else return none
