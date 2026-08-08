@@ -431,7 +431,7 @@ theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontr
     refine generateFrom_le ?_
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β n)
-    on_goal 4 => rw [mem_singleton
+    on_goal 4 => rw [Set.mem_singleton] at heq
     all_goals rw [heq] at hu'; rw [← hu']
     exacts [MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
       MeasurableSet.compl (measurableSet_generateFrom ⟨n, hn, rfl⟩), measurableSet_empty _]

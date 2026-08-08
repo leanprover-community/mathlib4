@@ -345,7 +345,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   have color_i : p.color i = sInf (univ \ A) := by rw [color]
   rw [color_i]
   have N_mem : N ∈ univ \ A := by
-    simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton
+    simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton,
       not_and, mem_univ, Set.mem_sdiff, Subtype.exists]
     intro j ji _
     exact (IH j ji (ji.trans hi)).ne'
@@ -363,7 +363,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     have : k ∈ A := by
       simpa only [true_and, mem_univ, Classical.not_not, Set.mem_sdiff] using
         Nat.notMem_of_lt_sInf hk
-    simpa only [A, exists_prop, mem_iUnion, mem_singletonm_closedBall, Subtype.exists,
+    simpa only [A, exists_prop, mem_iUnion, mem_singleton, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
   -- Choose for each `k < N` an ordinal `G k < i` giving a ball of color `k` intersecting
@@ -476,10 +476,10 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     intro x hx y hy x_ne_y
     obtain ⟨jx, jx_lt, jxi, rfl⟩ :
       ∃ jx : Ordinal, jx < p.lastStep ∧ p.color jx = i ∧ x = p.index jx := by
-      simpa only [s, exists_prop, mem_iUnion, mem_singletoning hx
+      simpa only [s, exists_prop, mem_iUnion, mem_singleton] using hx
     obtain ⟨jy, jy_lt, jyi, rfl⟩ :
       ∃ jy : Ordinal, jy < p.lastStep ∧ p.color jy = i ∧ y = p.index jy := by
-      simpa only [s, exists_prop, mem_iUnion, mem_singletoning hy
+      simpa only [s, exists_prop, mem_iUnion, mem_singleton] using hy
     wlog jxy : jx ≤ jy generalizing jx jy
     · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_ge jxy)).symm
     replace jxy : jx < jy := by
@@ -494,11 +494,11 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       rw [color_j]
       apply csInf_mem
       refine ⟨N, ?_⟩
-      simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singletont_and,
+      simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton, not_and,
         mem_univ, Set.mem_sdiff, Subtype.exists]
       intro k hk _
       exact (p.color_lt (hk.trans jy_lt) hN).ne'
-    simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singletont_and,
+    simp only [A, not_exists, true_and, exists_prop, mem_iUnion, mem_singleton, not_and,
       mem_univ, Set.mem_sdiff, Subtype.exists] at h
     specialize h jx jxy
     contrapose! h
@@ -509,7 +509,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       ∃ a : Ordinal, a < p.lastStep ∧ dist (p.c b) (p.c (p.index a)) < p.r (p.index a) := by
       simpa only [iUnionUpTo, exists_prop, mem_iUnion, mem_ball, Subtype.exists,
         Subtype.coe_mk] using p.mem_iUnionUpTo_lastStep b
-    simp only [s, exists_prop, mem_iUnion, mem_ball, mem_singletonUnion_and',
+    simp only [s, exists_prop, mem_iUnion, mem_ball, mem_singleton, biUnion_and',
       exists_eq_left, iUnion_exists, exists_and_left]
     exact ⟨⟨p.color a, p.color_lt ha.1 hN⟩, a, rfl, ha⟩
 

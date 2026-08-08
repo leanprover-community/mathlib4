@@ -76,7 +76,7 @@ lemma IndepFun.singleton_indepSets_of_indicator {𝓧 : Type*} [mX : MeasurableS
     IndepSets {A} {s | MeasurableSet[mX.comap X] s} P := by
   rw [IndepSets_iff]
   rintro s - hs ⟨t, ht, rfl⟩
-  rw [mem_singleton
+  rw [Set.mem_singleton.1 hs]
   have hA' : A = A.indicator (1 : Ω → ℝ) ⁻¹' {1} := by ext; simp [Set.indicator]
   rw [hA']
   exact h.measure_inter_preimage_eq_mul _ _ (by simp) ht

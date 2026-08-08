@@ -137,7 +137,7 @@ lemma norm_le_sSupNormIm (f : ℂ → E) (z : ℂ) (hD : z ∈ verticalClosedStr
   · revert hB; gcongr
     exact preimage_mono (singleton_subset_iff.mpr hD)
   · apply mem_image_of_mem (norm ∘ f)
-    simp only [mem_preimage, mem_singleton_self]
+    simp only [mem_preimage, mem_singleton]
 
 /-- Alternative version of `norm_le_sSupNormIm` with a strict inequality and a positive `ε`. -/
 lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
@@ -201,7 +201,7 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
   -- `z.re = 1`
-  · rw [mem_singleton hz1
+  · rw [mem_singleton] at hz1
     simp only [hz1, one_mul, Real.rpow_zero, sub_self, Real.rpow_neg_one,
       inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 1), mul_one]
     rw [← hz1]
@@ -327,7 +327,7 @@ lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
   `scale f l u z` on the line `z.re = 0`. -/
 lemma scale_bound_left {f : ℂ → E} {l u a : ℝ} (ha : ∀ z ∈ re ⁻¹' {l}, ‖f z‖ ≤ a) :
     ∀ z ∈ re ⁻¹' {0}, ‖scale f l u z‖ ≤ a := by
-  simp only [mem_preimage, mem_singletonale, smul_eq_mul]
+  simp only [mem_preimage, mem_singleton, scale, smul_eq_mul]
   intro z hz
   exact ha (↑l + z * (↑u - ↑l)) (by simp [hz])
 
@@ -335,7 +335,7 @@ lemma scale_bound_left {f : ℂ → E} {l u a : ℝ} (ha : ∀ z ∈ re ⁻¹' {
   on the line `z.re = 1`. -/
 lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' {u}, ‖f z‖ ≤ b) :
     ∀ z ∈ re ⁻¹' {1}, ‖scale f l u z‖ ≤ b := by
-  simp only [scale, mem_preimage, mem_singletonul_eq_mul]
+  simp only [scale, mem_preimage, mem_singleton, smul_eq_mul]
   intro z hz
   exact hb (↑l + z * (↑u - ↑l)) (by simp [hz])
 
@@ -346,7 +346,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   simp_rw [sSupNormIm, image_comp]
   have : scale f l u '' re ⁻¹' {0} = f '' re ⁻¹' {l} := by
     ext e
-    simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton
+    simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton]
     constructor
     · intro h
       obtain ⟨z, hz₁, hz₂⟩ := h
@@ -370,7 +370,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   simp_rw [sSupNormIm, image_comp]
   have : scale f l u '' re ⁻¹' {1} = f '' re ⁻¹' {u} := by
     ext e
-    simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton
+    simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton]
     constructor
     · intro h
       obtain ⟨z, hz₁, hz₂⟩ := h
@@ -498,7 +498,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
   apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
   · apply (Real.rpow_nonneg _ _)
     specialize hb 1
-    simp only [mem_preimage, one_re, mem_singletonrall_true_left] at hb
+    simp only [mem_preimage, one_re, mem_singleton, forall_true_left] at hb
     exact (norm_nonneg _).trans hb
   · gcongr
     · exact sSupNormIm_nonneg f _
@@ -515,7 +515,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       · simpa [comp_apply, mem_image, forall_exists_index,
           and_imp, forall_apply_eq_imp_iff₂] using hb
       · use ‖(f 1)‖, 1
-        simp only [mem_preimage, one_re, mem_singletonmp_apply,
+        simp only [mem_preimage, one_re, mem_singleton, comp_apply,
           and_self]
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
