@@ -251,10 +251,10 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
   toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
-  compare a b := compareOfLessAndEq a b
+  compare a b := cmpLE a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
+  compare_eq_cmpLE : ∀ a b, compare a b = cmpLE a b := by
+    cmpLE_rfl
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
