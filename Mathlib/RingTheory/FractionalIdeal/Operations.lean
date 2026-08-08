@@ -627,7 +627,8 @@ theorem spanSingleton_zero : spanSingleton S (0 : P) = 0 := by
 
 theorem spanSingleton_eq_zero_iff {y : P} : spanSingleton S y = 0 ↔ y = 0 :=
   ⟨fun h =>
-    span_eq_bot.mp (by simpa using congr_arg Subtype.val h : span R {y} = ⊥) y (mem_singleton_self y),
+    span_eq_bot.mp (by simpa using congr_arg Subtype.val h : span R {y} = ⊥)
+      y (mem_singleton_self y),
     fun h => by simp [h]⟩
 
 theorem spanSingleton_ne_zero_iff {y : P} : spanSingleton S y ≠ 0 ↔ y ≠ 0 :=

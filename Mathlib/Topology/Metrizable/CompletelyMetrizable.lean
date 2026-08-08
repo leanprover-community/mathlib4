@@ -276,7 +276,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
     convert! @Metric.isOpen_ball _ _ x 1
     refine subset_antisymm (singleton_subset_iff.2 (Metric.mem_ball_self (by simp)))
       fun y hy ↦ ?_
-    simp only [Metric.mem_ball, mem_singleton *
+    simp only [Metric.mem_ball, mem_singleton] at *
     by_contra
     change (if y = x then 0 else 1) < 1 at hy
     simp_all

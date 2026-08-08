@@ -314,7 +314,7 @@ theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G�
     zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
   rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
     with ⟨c, hc₀, hc⟩
-  simp only [mem_compl_iff, mem_singleton hc₀
+  simp only [mem_compl_iff, mem_singleton] at hc₀
   simp only [mem_smul, mem_univ, true_and]
   exact ⟨c⁻¹, c • x, hc, inv_smul_smul₀ hc₀ _⟩
 

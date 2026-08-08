@@ -95,7 +95,7 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
   obtain ⟨r, hr⟩ := h.2.2 i
   refine ⟨r, fun j ↦ ?_⟩
   convert! hr j using 2
-  simp only [Set.indicator_apply, Set.mem_sdiff, SetLike.mem_coe, mem_singleton
+  simp only [Set.indicator_apply, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton,
     Finset.coe_insert, Set.insert_sdiff_of_mem, fsx, wx]
   grind
 

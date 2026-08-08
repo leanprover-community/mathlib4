@@ -71,7 +71,7 @@ protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndepen
     Function.Injective p := by
   refine fun i j hij => hc {j} i ?_
   rw [hij, Set.image_singleton, convexHull_singleton]
-  exact mem_singleton_self _
+  exact Set.mem_singleton_self _
 
 /-- If a family is convex independent, so is any subfamily given by composition of an embedding into
 index type with the original family. -/
@@ -125,7 +125,7 @@ theorem convexIndependent_iff_notMem_convexHull_sdiff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
   refine ⟨fun hc i s h => ?_, fun h s i hi => ?_⟩
   · rw [hc.mem_convexHull_iff] at h
-    exact h.2 (mem_singleton_self _)
+    exact h.2 (Set.mem_singleton_self _)
   · by_contra H
     refine h i s ?_
     rw [Set.sdiff_singleton_eq_self H]
@@ -152,7 +152,7 @@ theorem convexIndependent_set_iff_notMem_convexHull_sdiff {s : Set E} :
   rw [convexIndependent_set_iff_inter_convexHull_subset]
   constructor
   · rintro hs x hxs hx
-    exact (hs _ Set.sdiff_subset ⟨hxs, hx⟩).2 (mem_singleton_self _)
+    exact (hs _ Set.sdiff_subset ⟨hxs, hx⟩).2 (Set.mem_singleton_self _)
   · rintro hs t ht x ⟨hxs, hxt⟩
     by_contra h
     exact hs _ hxs (convexHull_mono (Set.subset_sdiff_singleton ht h) hxt)
@@ -179,7 +179,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
     rw [← mem_singleton]
     refine h {b} a ?_
     rw [hab, image_singleton, coe_singleton, convexHull_singleton]
-    exact mem_singleton_self _
+    exact Set.mem_singleton_self _
   rw [convexHull_eq_union_convexHull_finite_subsets] at hx
   simp_rw [Set.mem_iUnion] at hx
   obtain ⟨t, ht, hx⟩ := hx
@@ -199,6 +199,6 @@ theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
     (extremePoints_convexHull_subset
           (inter_extremePoints_subset_extremePoints_of_subset
             (convexHull_min (Set.sdiff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2
-      (mem_singleton_self _)
+      (Set.mem_singleton_self _)
 
 end LinearOrderedField

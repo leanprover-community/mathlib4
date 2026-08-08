@@ -376,7 +376,7 @@ theorem card_sylow_modEq_one [Fact p.Prime] [Finite (Sylow p G)] :
       calc
         Q ∈ fixedPoints P (Sylow p G) ↔ P.1 ≤ Q := P.2.sylow_mem_fixedPoints_iff
         _ ↔ Q.1 = P.1 := ⟨P.3 Q.2, ge_of_eq⟩
-        _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans mem_singleton
+        _ ↔ Q ∈ {P} := Sylow.ext_iff.symm.trans Set.mem_singleton.symm
   have : Nat.card (fixedPoints P.1 (Sylow p G)) = 1 := by simp [this]
   exact (P.2.card_modEq_card_fixedPoints (Sylow p G)).trans (by rw [this])
 
