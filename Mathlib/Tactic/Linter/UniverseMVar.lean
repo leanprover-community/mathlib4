@@ -66,7 +66,7 @@ private def pruneUpdate (binder : TSyntax ``Parser.Term.bracketedBinder) :
       | .default => `(bracketedBinderF| ($binderId))
       | .implicit => `(bracketedBinderF| {$binderId})
       | .strictImplicit => `(bracketedBinderF| {{$binderId}})
-      | .instImplicit => throwUnsupportedSyntax
+      | .instImplicit => `(bracketedBinderF| [$(⟨binderId⟩)])
 
 open Meta Term in
 /-- Lint on `variable (foo : Bar)`, and emits a warning if `Bar` has
