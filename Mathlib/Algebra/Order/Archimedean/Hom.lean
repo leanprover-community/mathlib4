@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Order.Hom.Ring
 
 /-!
-### Uniqueness of ring homomorphisms to archimedean fields.
+# Uniqueness of ring homomorphisms to archimedean fields.
 
 There is at most one ordered ring homomorphism from a linear ordered field to an archimedean linear
 ordered field. Reciprocally, such an ordered ring homomorphism exists when the codomain is further

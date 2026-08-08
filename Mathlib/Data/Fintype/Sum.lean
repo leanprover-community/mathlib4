@@ -10,7 +10,7 @@ public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Logic.Embedding.Set
 
 /-!
-## Instances
+# Fintype instances for sum types
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
