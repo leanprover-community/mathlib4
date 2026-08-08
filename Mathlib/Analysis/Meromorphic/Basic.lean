@@ -53,7 +53,7 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
   rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
   · left
     filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
-    rw [Set.mem_compl_iff, mem_singletoneq_zero] at h₂y
+    rw [Set.mem_compl_iff, Set.mem_singleton, ← sub_eq_zero] at h₂y
     exact smul_eq_zero_iff_right (pow_ne_zero n h₂y) |>.mp h₁y
   · right
     filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
@@ -333,7 +333,7 @@ theorem eventually_continuousAt {f : 𝕜 → E}
   have : ∀ᶠ y in 𝓝[≠] x, ContinuousAt (fun z ↦ (z - x) ^ n • f z) y :=
     nhdsWithin_le_nhds h.eventually_continuousAt
   filter_upwards [this, self_mem_nhdsWithin] with y hy h'y
-  simp only [Set.mem_compl_iff, mem_singleton
+  simp only [Set.mem_compl_iff, Set.mem_singleton] at h'y
   have : ContinuousAt (fun z ↦ ((z - x) ^ n)⁻¹) y :=
     ContinuousAt.inv₀ (by fun_prop) (by simp [sub_eq_zero, h'y])
   apply (this.smul hy).congr
@@ -352,7 +352,7 @@ theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E}
   · rw [eventually_nhdsWithin_iff]
     apply Filter.Eventually.of_forall
     intro y hy hf
-    rw [Set.mem_compl_iff, mem_singleton
+    rw [Set.mem_compl_iff, Set.mem_singleton] at hy
     have := ((analyticAt_id (𝕜 := 𝕜).sub analyticAt_const).pow n).inv
       (pow_ne_zero _ (sub_ne_zero_of_ne hy))
     apply (this.smul hf).congr ∘ (eventually_ne_nhds hy).mono

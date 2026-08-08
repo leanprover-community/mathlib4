@@ -49,7 +49,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine Set.ext fun x => and_congr_right fun hx => (iff_of_eq (true_iff _)).2 ?_
     by_cases p_eq : p = 0
     · simp [p_eq]
-    simp only [coe_map, mem_preimage, Function.comp_apply, mem_singleton hx
+    simp only [coe_map, mem_preimage, Function.comp_apply, mem_singleton] at hx
     subst hx
     have : r * s x ≠ 0 := by rwa [Ne, ← ENNReal.coe_eq_zero]
     have : s x ≠ 0 := right_ne_zero_of_mul this
