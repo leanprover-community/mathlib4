@@ -75,7 +75,7 @@ private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
 the evaluation of `f` at `x`, plus `y` times the (polynomial) derivative of `f` at `x`,
 plus some element `k : R` times `y^2`.
 -/
-def binomExpansion (f : R[X]) (x y : R) :
+@[no_expose] def binomExpansion (f : R[X]) (x y : R) :
     { k : R // f.eval (x + y) = f.eval x + f.derivative.eval x * y + k * y ^ 2 } := by
   exists f.sum fun e a => a * (polyBinomAux1 x y e a).val
   rw [poly_binom_aux3]
