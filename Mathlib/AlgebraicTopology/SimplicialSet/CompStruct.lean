@@ -58,6 +58,14 @@ def toTruncated (e : Edge x₀ x₁) :
     ((truncation 2).obj X).Edge x₀ x₁ :=
   e
 
+@[simp]
+lemma toTruncated_ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
+    (ofTruncated e).toTruncated = e := rfl
+
+@[simp]
+lemma ofTruncated_toTruncated (e : X.Edge x₀ x₁) :
+    ofTruncated e.toTruncated = e := rfl
+
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
 def edge (e : Edge x₀ x₁) : X _⦋1⦌ := e.toTruncated.edge
