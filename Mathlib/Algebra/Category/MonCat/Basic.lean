@@ -71,9 +71,6 @@ structure AddMonCat.Hom (A B : AddMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
--- @[no_expose, reducible] def AddMonCat.Hom.mk {A B : AddMonCat} (hom' : ↑A →+ ↑B) : A.Hom B :=
---   AddMonCat.Hom.mkInternal hom'
-
 /-- The type of morphisms in `MonCat`. -/
 @[to_additive, ext]
 structure MonCat.Hom (A B : MonCat.{u}) where
@@ -81,16 +78,13 @@ structure MonCat.Hom (A B : MonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
--- @[no_expose, reducible] def MonCat.Hom.mk {A B : MonCat} (hom' : ↑A →* ↑B) : A.Hom B :=
---   MonCat.Hom.mkInternal hom'
-
 namespace MonCat
 
 @[to_additive]
 instance : Category MonCat.{u} where
   Hom X Y := Hom X Y
-  id X := private .mk <| MonoidHom.id X
-  comp f g := private .mk <| g.hom'.comp f.hom'
+  id X := private ⟨MonoidHom.id X⟩
+  comp f g := private ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
 instance : ConcreteCategory MonCat (· →* ·) where
@@ -259,9 +253,6 @@ structure AddCommMonCat.Hom (A B : AddCommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
--- @[no_expose, reducible] def AddCommMonCat.Hom.mk {A B : AddCommMonCat} (hom' : ↑A →+ ↑B) : A.Hom B :=
---   .mkInternal hom'
-
 /-- The type of morphisms in `CommMonCat`. -/
 @[to_additive, ext]
 structure CommMonCat.Hom (A B : CommMonCat.{u}) where
@@ -269,14 +260,13 @@ structure CommMonCat.Hom (A B : CommMonCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
-
 namespace CommMonCat
 
 @[to_additive]
 instance : Category CommMonCat.{u} where
   Hom X Y := Hom X Y
-  id X := private .mk <| MonoidHom.id X
-  comp f g := private .mk <| g.hom'.comp f.hom'
+  id X := private ⟨MonoidHom.id X⟩
+  comp f g := private ⟨g.hom'.comp f.hom'⟩
 
 @[to_additive]
 instance : ConcreteCategory CommMonCat (· →* ·) where
@@ -521,10 +511,10 @@ example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
 def AddMonCat.equivalence : AddMonCat ≌ MonCat where
   functor := { obj X := .of (Multiplicative X), map f := MonCat.ofHom f.hom.toMultiplicative }
   inverse := { obj X := .of (Additive X), map f := ofHom f.hom.toAdditive }
-  unitIso := NatIso.ofComponents
-    fun X => (AddEquiv.toAdditive_toMultiplicative (G := X)).symm.toAddMonCatIso
-  counitIso := NatIso.ofComponents
-    fun X => (MulEquiv.toMultiplicative_toAdditive (G := X)).toMonCatIso
+  unitIso := NatIso.ofComponents fun X =>
+    (AddEquiv.toAdditive_toMultiplicative (G := X)).symm.toAddMonCatIso
+  counitIso := NatIso.ofComponents fun X =>
+    (MulEquiv.toMultiplicative_toAdditive (G := X)).toMonCatIso
 
 /-- The equivalence between `AddCommMonCat` and `CommMonCat`. -/
 @[simps]
