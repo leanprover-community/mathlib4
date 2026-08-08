@@ -167,7 +167,7 @@ theorem notMem_singleton {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
   Iff.rfl
 
 @[deprecated (since := "2026-08-07")]
-alias notMem_singleton_self := notMem_singleton
+alias notMem_singleton_iff := notMem_singleton
 
 @[simp]
 theorem ofPred_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
