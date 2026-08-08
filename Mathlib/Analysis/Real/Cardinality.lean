@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.Rat
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The cardinality of the reals
@@ -297,5 +297,9 @@ lemma Real.Icc_countable_iff {x y : ℝ} :
   contrapose! h
   rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Icc_real h, not_le]
   exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+theorem mk_unitInterval : #unitInterval = 𝔠 := by
+  rw [unitInterval, mk_Icc_real zero_lt_one]
 
 end Cardinal
