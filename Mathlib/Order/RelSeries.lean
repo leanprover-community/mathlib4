@@ -163,6 +163,9 @@ open List in
 theorem le_def : p ≤ q ↔ p.toList <+ q.toList :=
   .rfl
 
+theorem length_strictMono : StrictMono (length : RelSeries r → ℕ) :=
+  fun p q ⟨hpq, hqp⟩ ↦ by grind [length_toList]
+
 end RelSeries
 
 namespace SetRel
