@@ -137,10 +137,6 @@ theorem add_one_mul_choose_eq : ∀ n k, (n + 1) * choose n k = choose (n + 1) (
       mul_add_one, ← add_one_mul_choose_eq n, Nat.add_right_comm _ _ (_ * _), ← Nat.mul_add,
       ← choose_succ_succ', ← add_one_mul]
 
-@[deprecated add_one_mul_choose_eq (since := "2025-12-09")]
-theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k :=
-  add_one_mul_choose_eq
-
 theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k * k ! * (n - k)! = n !
   | 0, _, hk => by simp [Nat.eq_zero_of_le_zero hk]
   | n + 1, 0, _ => by simp

@@ -134,12 +134,12 @@ theorem IsometryEquiv.measurePreserving_euclideanHausdorffMeasure (e : X ≃ᵢ 
 
 theorem Isometry.euclideanHausdorffMeasure_image {f : X → Y} {d : ℕ} (hf : Isometry f) (s : Set X) :
     μHE[d] (f '' s) = μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_image hf (by simp)]
 
 theorem Isometry.euclideanHausdorffMeasure_preimage {f : X → Y} {d : ℕ} (hf : Isometry f)
     (s : Set Y) : μHE[d] (f ⁻¹' s) = μHE[d] (s ∩ Set.range f) := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [Isometry.hausdorffMeasure_preimage hf (by simp)]
 
 theorem Isometry.map_euclideanHausdorffMeasure {f : X → Y} {d : ℕ} (hf : Isometry f) :
@@ -167,13 +167,13 @@ variable {𝕜 V P : Type*} [NormedField 𝕜] [NormedAddCommGroup V] [NormedSpa
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_image (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_image (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 theorem MeasureTheory.euclideanHausdorffMeasure_homothety_preimage (d : ℕ) (x : P) {c : 𝕜}
     (hc : c ≠ 0) (s : Set P) :
     μHE[d] (AffineMap.homothety x c ⁻¹' s) = ‖c‖₊⁻¹ ^ d • μHE[d] s := by
-  simp_rw [euclideanHausdorffMeasure_def, smul_apply]
+  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply]
   rw [hausdorffMeasure_homothety_preimage (by simp) x hc, smul_comm, NNReal.rpow_natCast]
 
 end Homothety

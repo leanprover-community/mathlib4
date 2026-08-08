@@ -94,7 +94,7 @@ structure DividedPowers where
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
 noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
-  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
+  dpow n a := open scoped Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
@@ -247,8 +247,8 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a 
       ← hJ.factorial_mul_dpow_eq_pow hb, ← hI.factorial_mul_dpow_eq_pow ha]
     ring
   | add x hx y hy hx' hy' =>
-    rw [hI.dpow_add (mul_le_right hx) (mul_le_right hy),
-      hJ.dpow_add (mul_le_left hx) (mul_le_left hy)]
+    rw [hI.dpow_add (mul_le_left hx) (mul_le_left hy),
+      hJ.dpow_add (mul_le_right hx) (mul_le_right hy)]
     apply sum_congr rfl
     intro k _
     rw [hx', hy']
@@ -372,7 +372,7 @@ theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
         rw [mul_comm, pow_succ, mul_assoc, hI.factorial_mul_dpow_eq_pow]
         exact hs' a (mem_insert_self a s)
       · obtain ⟨j, hj⟩ := h
-        rw [Finset.prod_eq_prod_diff_singleton_mul hj]
+        rw [Finset.prod_eq_prod_sdiff_singleton_mul hj]
         exact I.mul_mem_left _ (hs' j (mem_insert_of_mem hj))
     · simp [not_nonempty_iff_eq_empty.mp h]
 

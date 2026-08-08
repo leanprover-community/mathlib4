@@ -84,7 +84,7 @@ theorem exists_factors (a : α) :
       rw [s.prod_cons i]
       exact hs.2.mul_left i⟩
 
-theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
+theorem not_isUnit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     ¬IsUnit a ↔ ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod = a ∧ f ≠ ∅ :=
   ⟨fun hnu => by
     obtain ⟨f, hi, u, rfl⟩ := exists_factors a hn0
@@ -97,6 +97,9 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
     not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
+
+@[deprecated (since := "2026-08-02")]
+alias not_unit_iff_exists_factors_eq := not_isUnit_iff_exists_factors_eq
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
@@ -153,7 +156,7 @@ theorem exists_prime_factors (a : α) :
 
 lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
-  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
+  refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_isUnit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
   obtain ⟨f, hf, -⟩ := WfDvdMonoid.exists_irreducible_factor hxu hx₀
   exact ⟨f, UniqueFactorizationMonoid.irreducible_iff_prime.mp hf⟩
 
@@ -174,9 +177,17 @@ end UniqueFactorizationMonoid
 namespace UniqueFactorizationMonoid
 
 variable [CommMonoidWithZero α]
+
+variable (α) in
+theorem of_subsingleton [Subsingleton α] : UniqueFactorizationMonoid α where
+  mul_left_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
+  mul_right_cancel_of_ne_zero _ a b _ := Subsingleton.elim a b
+  wf := ⟨fun a ↦ Acc.intro a fun b ⟨hb, _⟩ ↦ (hb (Subsingleton.elim b 0)).elim⟩
+  irreducible_iff_prime {a} := by simp [Subsingleton.elim a 0]
+
 variable [UniqueFactorizationMonoid α]
 
-open Classical in
+open scoped Classical in
 /-- Noncomputably determines the multiset of prime factors. -/
 noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)

@@ -284,7 +284,6 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
   isGaussian_map := by
     have := hX.isProbabilityMeasure
     rw [isGaussian_iff_gaussian_charFunDual]
-    classical
     refine ⟨(∫ x, x ∂P.map X, ∫ y, y ∂P.map Y),
       .diagonalStrongDualProd (covarianceBilinDual (P.map X)) (covarianceBilinDual (P.map Y)),
       isPosSemidef_diagonalStrongDualProd isPosSemidef_covarianceBilinDual
@@ -316,7 +315,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
-    ext; simp [-coe_comp', ← comp_inl_add_comp_inr]
+    ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h, mul_zero, add_zero]

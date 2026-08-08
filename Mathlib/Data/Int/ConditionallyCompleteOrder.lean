@@ -24,6 +24,7 @@ noncomputable section
 
 namespace Int
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -45,13 +46,12 @@ instance : ConditionallyCompleteLinearOrder ℤ where
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
   simp only [sSup, dif_pos this]
   convert! (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
-
-@[deprecated (since := "2025-12-24")] alias csSup_eq_greatest_of_bdd := csSup_eq_greatestOfBdd
 
 @[simp]
 theorem csSup_empty : sSup (∅ : Set ℤ) = 0 :=
@@ -60,15 +60,12 @@ theorem csSup_empty : sSup (∅ : Set ℤ) = 0 :=
 theorem csSup_of_not_bddAbove {s : Set ℤ} (h : ¬BddAbove s) : sSup s = 0 :=
   dif_neg (by simp [h])
 
-@[deprecated (since := "2025-12-24")] alias csSup_of_not_bdd_above := csSup_of_not_bddAbove
-
+set_option backward.isDefEq.respectTransparency false in
 theorem csInf_eq_leastOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, b ≤ z)
     (Hinh : ∃ z : ℤ, z ∈ s) : sInf s = leastOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
   simp only [sInf, dif_pos this]
   convert! (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
-
-@[deprecated (since := "2025-12-24")] alias csInf_eq_least_of_bdd := csInf_eq_leastOfBdd
 
 @[simp]
 theorem csInf_empty : sInf (∅ : Set ℤ) = 0 :=
@@ -76,8 +73,6 @@ theorem csInf_empty : sInf (∅ : Set ℤ) = 0 :=
 
 theorem csInf_of_not_bddBelow {s : Set ℤ} (h : ¬BddBelow s) : sInf s = 0 :=
   dif_neg (by simp [h])
-
-@[deprecated (since := "2025-12-24")] alias csInf_of_not_bdd_below := csInf_of_not_bddBelow
 
 theorem csSup_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : sSup s ∈ s := by
   convert! (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1

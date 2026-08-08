@@ -50,7 +50,7 @@ def continuousLinearEquiv (e : α ≃ β) :
   { toLinearEquiv := e.linearEquiv _
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
-      simp +instances only [Equiv.topologicalSpace, ← @coinduced_symm]
+      simp +instances only [Equiv.topologicalSpace, toFun_as_coe, ← coinduced_symm]
       exact continuous_coinduced_rng }
 
 @[simp]
@@ -66,9 +66,11 @@ section ContinuousLinearEquiv
 
 variable [Semiring R]
 
-/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
+/-- Given a continuous multiplicative equivalence `e : α ≃ₜ* β`, if `β` is a topological group,
 then so is `α`. -/
-@[to_additive]
+@[to_additive
+/-- Given a continuous additive equivalence `e : α ≃ₜ+ β`, if `β` is a topological additive group,
+then so is `α`. -/]
 lemma ContinuousMulEquiv.isTopologicalGroup
     [TopologicalSpace β] [Group β] [IsTopologicalGroup β] [TopologicalSpace α] [Group α]
     (e : α ≃ₜ* β) : IsTopologicalGroup α where
