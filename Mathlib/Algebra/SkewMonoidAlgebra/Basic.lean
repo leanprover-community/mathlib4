@@ -72,10 +72,10 @@ instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
 @[no_expose] instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
-@[no_expose] instance {S : Type*} [SMulZeroClass S k] :
+instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
-  smul s f := smul s f
-  smul_zero a := congr_arg ofCoeff (smul_zero a)
+  smul s f := private smul s f
+  smul_zero a := congr_arg ofCoeff (private smul_zero a)
 
 @[simp]
 theorem ofCoeff_zero : (⟨0⟩ : SkewMonoidAlgebra k G) = 0 := rfl
