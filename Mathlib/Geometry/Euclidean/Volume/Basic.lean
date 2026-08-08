@@ -6,6 +6,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Geometry.Euclidean.Volume.Def
+
 import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 
 /-!
