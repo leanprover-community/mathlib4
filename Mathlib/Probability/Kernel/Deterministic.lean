@@ -68,7 +68,7 @@ lemma parallelComp_self_comp_copy {κ : Kernel α β} [IsDeterministic κ] :
 instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
   parallelComp_self_comp_copy' := by
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
-      deterministic_comp_deterministic, Function.comp_def]
+      deterministic_comp_deterministic, Function.comp_def, Function.diag_def]
 
 instance : IsDeterministic (mβ := mα) (Kernel.id (α := α)) := by unfold Kernel.id; infer_instance
 
