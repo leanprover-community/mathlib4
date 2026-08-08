@@ -857,11 +857,17 @@ theorem add_compMultilinearMap (g₁ g₂ : N₂ →ₛₗ[σ₂₃] N₃) (f : 
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]
-theorem compMultilinearMap_smul [DistribSMul S' N₂] [DistribSMul S' N₂']
-    [SMulCommClass R₂ S' N₂] [SMulCommClass R₂ S' N₂'] [CompatibleSMul N₂ N₂' S' R₂]
-    (g : N₂ →ₗ[R₂] N₂') (s : S') (f : MultilinearMap σ₁₂ M₁ N₂) :
+theorem compMultilinearMap_smul [DistribSMul S N₂] [DistribSMul S N₂']
+    [SMulCommClass R₂ S N₂] [SMulCommClass R₂ S N₂'] [CompatibleSMul N₂ N₂' S R₂]
+    (g : N₂ →ₗ[R₂] N₂') (s : S) (f : MultilinearMap σ₁₂ M₁ N₂) :
     g.compMultilinearMap (s • f) = s • (g.compMultilinearMap f) :=
   MultilinearMap.ext fun _ => g.map_smul_of_tower _ _
+
+@[simp]
+theorem compMultilinearMap_smulₛₗ [SMulCommClass R₂ R₂ N₂] [SMulCommClass R₃ R₃ N₃]
+    (g : N₂ →ₛₗ[σ₂₃] N₃) (r : R₂) (f : MultilinearMap σ₁₂ M₁ N₂) :
+    g.compMultilinearMap (r • f) = σ₂₃ r • (g.compMultilinearMap f) :=
+  MultilinearMap.ext fun _ => g.map_smulₛₗ _ _
 
 @[simp]
 theorem smul_compMultilinearMap [Monoid S] [DistribMulAction S N₃] [SMulCommClass R₃ S N₃]
