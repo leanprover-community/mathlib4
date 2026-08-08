@@ -315,6 +315,7 @@ variable {L K S : Type*} [CommSemiring K] [Semiring L] [Algebra K L] [FaithfulSM
 
 variable (K)
 
+/-- The restriction of an absolute value `w` on `L` to `K`. -/
 def under (w : AbsoluteValue L S) : AbsoluteValue K S :=
   w.comp (FaithfulSMul.algebraMap_injective K L)
 
