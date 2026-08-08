@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Init
 
-import Mathlib.Order.Defs.Unbundled
-
 /-!
 # Helper definitions and instances for `Ordering`
 -/
