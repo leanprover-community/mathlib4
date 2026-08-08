@@ -28,7 +28,7 @@ A valuation `v : A → Γ₀` on a topological ring `A` is *continuous* if the m
   p. 58: `{a | v a < γ}` is open for every `γ`.
 
 ## References
-* [Wedhorn] T. Wedhorn, *Adic Spaces*, arXiv:1910.05934, Def. 7.7, Rem. 7.8
+* [wedhorn_adic] T. Wedhorn, *Adic Spaces*, arXiv:1910.05934, Def. 7.7, Rem. 7.8
   (p. 58). The subspace `Cont(A) ⊆ Spv(A)` of continuous valuations (Wedhorn,
   p. 58) will build on `ValuationSpectrum` when that PR lands; this file
   provides the element-level notion.
