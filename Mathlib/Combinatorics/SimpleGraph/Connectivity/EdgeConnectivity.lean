@@ -203,8 +203,7 @@ theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnect
 theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
   simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast]
 
-theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] {u v : V}
-  : G.edgeReachability u v = ⊤ := by
+theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] : G.edgeReachability u v = ⊤ := by
   simpa [Subsingleton.elim u v] using edgeReachability_self
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
