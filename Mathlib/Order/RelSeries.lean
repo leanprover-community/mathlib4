@@ -88,7 +88,7 @@ theorem toFun_injective [r.IsIrrefl] [r.IsTrans] : Function.Injective p := by
     exact Fin.not_lt.mp (r.irrefl _ <| heq ▸ p.rel_of_lt ·)
 
 variable (p) in
-theorem isChain_range [r.IsTrans] : IsChain (· ~[r] ·) (.range p) := by
+theorem isChain_setRange [r.IsTrans] : IsChain (· ~[r] ·) (.range p) := by
   rintro _ ⟨i, rfl⟩ _ ⟨j, rfl⟩ hne
   exact (Fin.lt_or_lt_of_ne <| mt (congrArg _) hne).imp p.rel_of_lt p.rel_of_lt
 
@@ -231,26 +231,26 @@ theorem mem_of_le_of_mem (h : p ≤ q) (ha : x ∈ p) : x ∈ q :=
   mem_toList.mp <| h.mem <| mem_toList.mpr ha
 
 variable (r) in
-theorem range_monotone : Monotone (Set.range · : RelSeries r → Set α) :=
+theorem setRange_monotone : Monotone (Set.range · : RelSeries r → Set α) :=
   fun _ _ hle _ ↦ mem_of_le_of_mem hle
 
-theorem range_mono [r.IsIrrefl] [r.IsTrans] {p q : RelSeries r} :
+theorem setRange_mono [r.IsIrrefl] [r.IsTrans] {p q : RelSeries r} :
     Set.range p ⊆ Set.range q ↔ p ≤ q := by
-  refine ⟨fun h ↦ ?_, (range_monotone r ·)⟩
+  refine ⟨fun h ↦ ?_, (setRange_monotone r ·)⟩
   refine List.sublist_of_subperm_of_pairwise ?_ p.isChain_toList.pairwise q.isChain_toList.pairwise
   exact p.isChain_toList.pairwise.nodup.subperm fun a ha ↦ mem_toList.mpr <| h <| mem_toList.mp ha
 
 variable (r) in
-theorem range_injective [r.IsIrrefl] [r.IsTrans] :
+theorem setRange_injective [r.IsIrrefl] [r.IsTrans] :
     (Set.range · : RelSeries r → Set α).Injective := by
   refine fun p q h ↦ toList_injective ?_
   apply p.isChain_toList.pairwise.eq_of_mem_iff q.isChain_toList.pairwise
   simp [mem_def, h]
 
 variable (r) in
-theorem range_strictMono [r.IsIrrefl] [r.IsTrans] :
+theorem setRange_strictMono [r.IsIrrefl] [r.IsTrans] :
     StrictMono (Set.range · : RelSeries r → Set α) :=
-  range_monotone r |>.strictMono_of_injective <| range_injective r
+  setRange_monotone r |>.strictMono_of_injective <| setRange_injective r
 
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
@@ -918,13 +918,14 @@ variable (p) in
 theorem drop_le (i : Fin (p.length + 1)) : p.drop i ≤ p := by
   simp [le_def, List.drop_sublist]
 
-proof_wanted isMaxChain_range_of_isMax [r.IsTrans] (h : IsMax p) : IsMaxChain (· ~[r] ·) (.range p)
+proof_wanted isMaxChain_setRange_of_isMax [r.IsTrans] (h : IsMax p) :
+    IsMaxChain (· ~[r] ·) (.range p)
 
-theorem isMax_of_isMaxChain_range [r.IsIrrefl] [r.IsTrans] (h : IsMaxChain (· ~[r] ·) (.range p)) :
-    IsMax p :=
-  fun t hst ↦ (range_injective r <| h.right t.isChain_range <| range_monotone r hst).ge
+theorem isMax_of_isMaxChain_setRange [r.IsIrrefl] [r.IsTrans]
+    (h : IsMaxChain (· ~[r] ·) (.range p)) : IsMax p :=
+  fun t hst ↦ (setRange_injective r <| h.right t.isChain_setRange <| setRange_monotone r hst).ge
 
-proof_wanted isMaxChain_range_iff [r.IsIrrefl] [r.IsTrans] :
+proof_wanted isMaxChain_setRange_iff [r.IsIrrefl] [r.IsTrans] :
     IsMaxChain (· ~[r] ·) (.range p) ↔ IsMax p
 
 end RelSeries
@@ -1122,11 +1123,11 @@ def range (n : ℕ) : LTSeries ℕ where
 theorem toList_range (n : ℕ) : (range n).toList = .range (n + 1) := by
   simp [RelSeries.toList, range, List.ofFn_eq_pmap, -List.ofFn_succ]
 
-theorem range_strictMono : StrictMono range :=
+theorem setRange_strictMono : StrictMono range :=
   fun _ _ h ↦ ⟨by simp [h.le], by simp [h]⟩
 
-theorem range_injective : range.Injective :=
-  range_strictMono.injective
+theorem setRange_injective : range.Injective :=
+  setRange_strictMono.injective
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
