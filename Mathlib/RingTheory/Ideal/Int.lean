@@ -51,7 +51,6 @@ theorem Int.ringChar_idealQuot (n : ℕ) : ringChar (ℤ ⧸ Ideal.span {(n : �
   rw [Ideal.Quotient.eq_zero_iff_mem, ← Int.cast_natCast, Ideal.mem_span_singleton,
     Int.cast_natCast, Int.natCast_dvd_natCast]
 
-
 variable {R : Type*}
 
 namespace Int
@@ -123,7 +122,7 @@ theorem Int.under_span_natCast [CharZero R] (n : ℤ) :
     show (n : R) = algebraMap ℤ R n by rw [eq_intCast],
     IsIntegrallyClosed.algebraMap_dvd_algebraMap_iff]
 
-/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), The norm of the ideal
+/-- If `ℤ` is integrally closed in `R` (e.g. `R` is a ring of integers), the norm of the ideal
 below `span {(n : R)}` is `n`. -/
 theorem Int.absNorm_under_span_natCast [CharZero R] (n : ℕ) :
     absNorm ((span {(n : R)}).under ℤ) = n := by
