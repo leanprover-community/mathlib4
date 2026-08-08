@@ -92,7 +92,6 @@ set_option linter.defProp false
 @[expose] def fImplicit : {_ : Nat} → 1 = 1 := private fooThm
 
 -- and not accidentally re-inserted when we disable them
--- note: 'declaration has metavariables' occurs even with a normal `by exact @fooThm`
 /--
 error: Type mismatch
   fooThm
@@ -100,13 +99,41 @@ has type
   1 = 1
 but is expected to have type
   ∀ {x : Nat}, 1 = 1
----
-error: (kernel) declaration has metavariables 'fImplicit''
 -/
 #guard_msgs in
 @[expose] def fImplicit' : {_ : Nat} → 1 = 1 := @(private fooThm)
 
 end implicitLambda
+
+-- Implicit arguments of the wrapped lemma are still instantiated by unification; `private` must not
+-- make them explicit.
+private theorem implThm {n : Nat} : n = n := rfl
+
+@[expose] def G {n : Nat} (_ : n = n) := Bool
+
+def gImpl (_ : G (n := 5) (private implThm)) : Bool := true
+
+-- `private` does not rely on `by`'s own proof abstraction, so it keeps working when that is
+-- disabled.
+set_option backward.proofsInPublic true in
+def fProofsInPublic (_ : FEq (private fooThm)) : Bool := true
+
+-- A local hypothesis needs no auxiliary theorem, and is returned as-is.
+def fLocal (h : 1 = 1) : FEq (private h) := true
+
+-- Synthetic metavariables created while elaborating the term (here, a nested `by`) are synthesized
+-- before we abstract, so that the proof ends up *inside* the auxiliary theorem. Otherwise the
+-- pending metavariable is abstracted into a parameter and the auxiliary theorem would instead get
+-- type `2 = 2 → 2 = 2`. (Note `2 = 2` is used so as not to hit the `mkAuxLemma` cache.)
+private theorem barThm : 2 = 2 := rfl
+
+@[expose] def FEq2 (_ : 2 = 2) := Bool
+
+def fNested (_ : FEq2 (private (id (by exact barThm)))) : Bool := true
+
+/-- info: fNested._proof_1 : 2 = 2 -/
+#guard_msgs in
+#check fNested._proof_1
 
 end
 
