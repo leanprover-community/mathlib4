@@ -466,47 +466,50 @@ end lift
 
 section map
 
-variable {t t' : ι → Type*}
-variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
-variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
-variable (g : Π i, t i →ₗ[R] t' i) (f : Π i, s i →ₗ[R] t i)
+variable [CommSemiring R₁] [CommSemiring R₂] [CommSemiring R₃]
+variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
+variable [∀ i, AddCommMonoid (M₂ i)] [∀ i, Module R₂ (M₂ i)]
+variable [∀ i, AddCommMonoid (M₃ i)] [∀ i, Module R₃ (M₃ i)]
+variable [AddCommMonoid N₃] [Module R₃ N₃]
+variable (g : Π i, M₂ i →ₛₗ[σ₂₃] M₃ i) (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i)
 
 /--
-Let `sᵢ` and `tᵢ` be two families of `R`-modules.
-Let `f` be a family of `R`-linear maps between `sᵢ` and `tᵢ`, i.e. `f : Πᵢ sᵢ → tᵢ`,
-then there is an induced map `⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+Let `M₁ᵢ` and `M₂ᵢ` be families of `R₁`- and `R₂`-modules.
+Let `f` be a family of `σ₁₂`-semilinear maps between `M₁ᵢ` and `M₂ᵢ`, i.e. `f : Πᵢ M₁ᵢ → M₂ᵢ`,
+then there is an induced map `⨂ᵢ M₁ᵢ → ⨂ᵢ M₂ᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
 
 This is `TensorProduct.map` for an arbitrary family of modules.
 -/
-def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
-  lift <| (tprod R).compLinearMap f
+def map : (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₂] ⨂[R₂] i, M₂ i :=
+  lift <| (tprod R₂).compLinearMap f
 
-@[simp] lemma map_tprod (x : Π i, s i) :
-    map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
+@[simp] lemma map_tprod (x : Π i, M₁ i) :
+    map f (tprod R₁ x) = tprod R₂ fun i ↦ f i (x i) :=
   lift.tprod _
 
 -- No lemmas about associativity, because we don't have associativity of `PiTensorProduct` yet.
 
-theorem map_range_eq_span_tprod :
+theorem map_range_eq_span_tprod [RingHomSurjective σ₁₂] :
     LinearMap.range (map f) =
-      Submodule.span R {t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t} := by
+      Submodule.span R₂ {t | ∃ (m : Π i, M₁ i), tprod R₂ (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
   simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_ofPred_eq]
 
-/-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`.
+/-- Given submodules `p i ⊆ M i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, M i`.
 This is `TensorProduct.mapIncl` for an arbitrary family of modules.
 -/
 @[simp]
-def mapIncl (p : Π i, Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
+def mapIncl (p : Π i, Submodule R (M i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, M i :=
   map fun (i : ι) ↦ (p i).subtype
 
-theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = map g ∘ₗ map f := by
+theorem map_comp : map (fun (i : ι) ↦ g i ∘ₛₗ f i) = map g ∘ₛₗ map f := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
-theorem lift_comp_map (h : MultilinearMap (.id R) t E) :
-    lift h ∘ₗ map f = lift (h.compLinearMap f) := by
+theorem lift_comp_map (φ : MultilinearMap σ₂₃ M₂ N₃) :
+    lift φ ∘ₛₗ map f = lift (φ.compLinearMap f) := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_tprod, lift.tprod, MultilinearMap.compLinearMap_apply]
@@ -514,44 +517,44 @@ theorem lift_comp_map (h : MultilinearMap (.id R) t E) :
 attribute [local ext high] ext
 
 @[simp]
-theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
+theorem map_id : map (fun i ↦ (LinearMap.id : M i →ₗ[R] M i)) = .id := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
 @[simp]
-protected theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
+protected theorem map_one : map (fun (i : ι) ↦ (1 : M i →ₗ[R] M i)) = 1 :=
   map_id
 
-protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
+protected theorem map_mul (f₁ f₂ : Π i, M i →ₗ[R] M i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
-/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `s = t`. -/
+/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `M₁ = M₂`. -/
 @[simps]
-def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
+def mapMonoidHom : (Π i, M i →ₗ[R] M i) →* ((⨂[R] i, M i) →ₗ[R] ⨂[R] i, M i) where
   toFun := map
   map_one' := PiTensorProduct.map_one
   map_mul' := PiTensorProduct.map_mul
 
 @[simp]
-protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
+protected theorem map_pow (f : Π i, M i →ₗ[R] M i) (n : ℕ) :
     map (f ^ n) = map f ^ n := map_pow mapMonoidHom _ _
 
 open Function in
-private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
+private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, M₁ i) (u : M₁ i →ₛₗ[σ₁₂] M₂ i) :
     (fun j ↦ update f i u j (x j)) = update (fun j ↦ (f j) (x j)) i (u (x i)) := by
   ext j
   exact apply_update (fun i F => F (x i)) f i u j
 
 open Function in
-protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
+protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : M₁ i →ₛₗ[σ₁₂] M₂ i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
     MultilinearMap.map_update_add]
 
 open Function in
-protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
+protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R₂) (u : M₁ i →ₛₗ[σ₁₂] M₂ i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
