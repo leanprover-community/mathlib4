@@ -382,6 +382,9 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
       ← Finset.sum_mul, ← map_sum, RCLike.conj_mul]
     simp
 
+instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
+  simp [fact_iff, posSemidef_outerKernel 𝕜 f]
+
 lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
     ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
   rw [posSemidef_iff_re_sum_kernel']
@@ -416,6 +419,17 @@ def toSubmodule : Submodule 𝕜 (X → V) := (coeCLM 𝕜 (H := OfKernel K)).ra
 lemma kerFun_OfKernel_apply_eq_toComplL_single (x : X) (v : V) :
     kerFun (OfKernel K) x v = UniformSpace.Completion.toComplL (𝕜:=𝕜) (.single ⟨x, v⟩ 1) := by
   simp [kerFun, coeCLM]
+
+lemma mem_toSubmodule_outerKernel (f : X → V) (hf : ∃ x, f x ≠ 0) :
+    f ∈ toSubmodule (outerKernel 𝕜 f) := by
+  let hx := Classical.choose_spec hf
+  set x : X := Classical.choose hf
+  use UniformSpace.Completion.toComplL (𝕜:=𝕜) (Finsupp.single ⟨x, f x⟩ (1/(‖f x‖ ^ 2)))
+  rw [← Finsupp.smul_single_one, map_smul, ← kerFun_OfKernel_apply_eq_toComplL_single]
+  ext
+  simp only [one_div, map_smul, coe_coe, coeCLM_apply, Pi.smul_apply, kerFun_apply,
+    OfKernel.kernel_ofKernel, outerKernel_apply, rankOne_apply, inner_self_eq_norm_sq_to_K]
+  rw [inv_smul_smul₀ (pow_ne_zero 2 <| RCLike.ofReal_ne_zero.mpr <| norm_ne_zero_iff.mpr hx)]
 
 lemma mem_toSubmodule (f : X → V) {c : ℝ}
     (hc : ((c : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef) : f ∈ toSubmodule K := by
