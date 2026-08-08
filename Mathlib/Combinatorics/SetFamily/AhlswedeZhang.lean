@@ -123,10 +123,10 @@ variable [DecidableLE α] [OrderTop α]
 
 /-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
-  if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (sup_aux h) id else ⊤
+  if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (private sup_aux h) id else ⊤
 
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
-    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
+    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (private sup_aux h) id := dif_pos h
 
 lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
 
@@ -193,10 +193,10 @@ variable [DecidableLE α] [BoundedOrder α]
 
 /-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊥`. -/
 def truncatedInf (s : Finset α) (a : α) : α :=
-  if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (inf_aux h) id else ⊥
+  if h : a ∈ upperClosure s then {b ∈ s | b ≤ a}.inf' (private inf_aux h) id else ⊥
 
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
-    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
+    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (private inf_aux h) id := dif_pos h
 
 lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
 
