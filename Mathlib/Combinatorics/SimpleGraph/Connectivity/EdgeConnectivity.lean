@@ -205,9 +205,7 @@ theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
 
 theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] {u v : V}
   : G.edgeReachability u v = ⊤ := by
-  have : u = v := by exact of_decide_eq_true rfl
-  rw [this]
-  exact edgeReachability_self
+  simpa [Subsingleton.elim u v] using edgeReachability_self
 
 theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
   simp only [isEdgeReachable_comm, edgeReachability]
