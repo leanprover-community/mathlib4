@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Tactic.TFAE
 
 /-!
 ### Order instances on quotients
@@ -104,6 +105,35 @@ theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y �
     exact fun h ↦ ((H _).out h₁.symm rfl ⟨h₂, h.le⟩).symm
   · exact .inr (_root_.trans h₁ h₂)
 
+theorem tfae_le {x y : Quotient s} : List.TFAE
+    [ x ≤ y,
+      ∀ ax, ⟦ax⟧ = x → ∃ ay, ⟦ay⟧ = y ∧ ax ≤ ay,
+      ∀ ay, ⟦ay⟧ = y → ∃ ax, ⟦ax⟧ = x ∧ ax ≤ ay,
+      ∃ ax ay, ⟦ax⟧ = x ∧ ⟦ay⟧ = y ∧ ax ≤ ay ] := by
+  tfae_have 1 → 2 := fun le ax ↦ by
+    rintro rfl; obtain ⟨ay⟩ := y
+    obtain (le | eq) := mk_le_mk.mp le
+    exacts [⟨ay, rfl, le⟩, ⟨ax, Quotient.sound eq, le_rfl⟩]
+  tfae_have 1 → 3 := fun le ay ↦ by
+    rintro rfl; obtain ⟨ax⟩ := x
+    obtain (le | eq) := mk_le_mk.mp le
+    exacts [⟨ax, rfl, le⟩, ⟨ay, (Quotient.sound eq).symm, le_rfl⟩]
+  tfae_have 2 → 4 := fun h ↦ by
+    obtain ⟨ax⟩ := x; obtain ⟨ay, rfl, le⟩ := h ax rfl; exact ⟨_, _, rfl, rfl, le⟩
+  tfae_have 3 → 4 := fun h ↦ by
+    obtain ⟨ay⟩ := y; obtain ⟨ax, rfl, le⟩ := h ay rfl; exact ⟨_, _, rfl, rfl, le⟩
+  tfae_have 4 → 1 := by rintro ⟨ax, ay, rfl, rfl, le⟩; exact mk_le_mk.mpr (.inl le)
+  tfae_finish
+
+theorem le_iff_forall_left_exists {x y : Quotient s} :
+    x ≤ y ↔ ∀ ax, ⟦ax⟧ = x → ∃ ay, ⟦ay⟧ = y ∧ ax ≤ ay := tfae_le.out 0 1
+
+theorem le_iff_forall_right_exists {x y : Quotient s} :
+    x ≤ y ↔ ∀ ay, ⟦ay⟧ = y → ∃ ax, ⟦ax⟧ = x ∧ ax ≤ ay := tfae_le.out 0 2
+
+theorem le_iff_exists {x y : Quotient s} : x ≤ y ↔ ∃ ax ay, ⟦ax⟧ = x ∧ ⟦ay⟧ = y ∧ ax ≤ ay :=
+  tfae_le.out 0 3
+
 instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
   le_antisymm x y h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
@@ -125,6 +155,18 @@ theorem mk_lt_mk {x y : α} : Quotient.mk s x < Quotient.mk s y ↔ x < y ∧ ¬
 
 theorem lt_of_mk_lt_mk {x y : α} (h : Quotient.mk s x < Quotient.mk s y) : x < y :=
   (mk_lt_mk.1 h).1
+
+theorem lt_iff_exists_left_forall {x y : Quotient s} :
+    x < y ↔ ∃ ax, ⟦ax⟧ = x ∧ ∀ ay, ⟦ay⟧ = y → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_forall_right_exists]; push Not; rfl
+
+theorem lt_iff_exists_right_forall {x y : Quotient s} :
+    x < y ↔ ∃ ay, ⟦ay⟧ = y ∧ ∀ ax, ⟦ax⟧ = x → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_forall_left_exists]; push Not; rfl
+
+theorem lt_iff_forall {x y : Quotient s} : x < y ↔ ∀ ax ay, ⟦ax⟧ = x → ⟦ay⟧ = y → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_exists]
+  push Not; rw [forall_comm]; congr! 2; apply forall_comm
 
 end LinearOrder
 end Quotient
