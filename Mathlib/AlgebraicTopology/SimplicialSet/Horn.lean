@@ -264,7 +264,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
       simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
-        Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
+        Fin.val_zero, add_eq_zero, OfNat.ofNat_ne_zero, and_false,
         Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
       simp only [Fin.lt_def, Fin.val_last] at hₙ
       lia
@@ -272,7 +272,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
       simp only [mem_insert, Fin.ext_iff, Fin.val_zero, right_eq_add,
-        AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
+        add_eq_zero, one_ne_zero, and_false, mem_singleton,
         OfNat.ofNat_ne_zero, or_self, or_false] at this
       obtain rfl | rfl := this <;> tauto
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
