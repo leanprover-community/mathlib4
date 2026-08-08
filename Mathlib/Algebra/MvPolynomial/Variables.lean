@@ -353,6 +353,37 @@ lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
 
 end Lex
 
+section MainDegree
+
+variable [LinearOrder σ] {c : σ}
+
+theorem card_mainDegree_eq_degreeOf (h : p.vars.max = c) : p.mainDegree.card = p.degreeOf c := by
+  rw [vars_def] at h
+  apply card_mainDegree_eq_degreeOf_of_forall_degrees_le
+  · apply Multiset.mem_toFinset.mp
+    exact Finset.mem_of_max h
+  intro j hj
+  have := Finset.le_max hj
+  simp only [h, WithBot.coe_le_coe] at this
+  exact this
+
+theorem card_mainDegree_eq_zero_iff : p.mainDegree.card = 0 ↔ p.vars.max = ⊥ where
+  mp h :=
+    match hc : p.vars.max with
+    | ⊥ => rfl
+    | Option.some c => by
+      absurd Finset.mem_of_max hc
+      rw [card_mainDegree_eq_degreeOf hc, degreeOf] at h
+      simpa only [vars_def, Multiset.mem_toFinset, Multiset.count_eq_zero] using h
+  mpr h := by
+    simp only [mainDegree, Multiset.card_eq_zero]
+    suffices p.degrees = 0 by simp [this, Multiset.filter_zero]
+    rw [vars_def] at h
+    apply Multiset.toFinset_eq_empty.mp
+    exact Finset.max_eq_bot.mp h
+
+end MainDegree
+
 end CommSemiring
 
 end MvPolynomial
