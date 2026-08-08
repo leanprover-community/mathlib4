@@ -579,7 +579,7 @@ need to use `sInf` on seminorms, then you should probably provide a more workabl
 but this is unlikely to happen so we keep the "bad" definition for now. -/
 noncomputable instance instConditionallyCompleteLattice :
     ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
-  conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) Seminorm.isLUB_sSup
+  conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) (private Seminorm.isLUB_sSup)
 
 end Classical
 

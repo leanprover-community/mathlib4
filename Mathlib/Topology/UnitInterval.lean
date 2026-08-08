@@ -446,7 +446,7 @@ can be expressed as a convex combination of them.
 -/
 theorem eq_convexComb {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     y = convexComb x z ⟨((y - x) / (z - x)),
-          eq_convexComb.zero_le hxy hyz, eq_convexComb.le_one hxy hyz⟩ := by
+          private eq_convexComb.zero_le hxy hyz, private eq_convexComb.le_one hxy hyz⟩ := by
   ext
   simp only [coe_convexComb]
   by_cases h : (z - x : ℝ) = 0
