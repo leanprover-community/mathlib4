@@ -126,7 +126,6 @@ theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
   · rintro rfl
     apply singleton.mk
 
-@[simp]
 theorem singleton_self : singleton f f :=
   singleton.mk
 
