@@ -724,7 +724,7 @@ equivalence class. -/
 theorem ZerothHomotopy.preimage_singleton_eq_pathComponent (x : X) :
     ZerothHomotopy.mk ⁻¹' {.mk x} = pathComponent x := by
   ext y
-  rw [mem_preimage, mem_singleton_comm, mem_pathComponent_iff]
+  rw [mem_preimage, mem_singleton, eq_comm, mem_pathComponent_iff]
   exact Quotient.eq
 
 instance [CompactSpace X] : CompactSpace <| ZerothHomotopy X := Quotient.compactSpace
