@@ -229,7 +229,8 @@ abbrev FundamentalGroupoid : Type u :=
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-abbrev mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
+@[implicit_reducible]
+def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
@@ -281,6 +282,39 @@ lemma desc_obj_mk (x : X _⦋0⦌) :
 lemma desc_map_homMk {x y : X _⦋0⦌} (e : Edge x y) :
     (desc obj map map_comp).map (homMk e) = map e :=
   Truncated.FundamentalGroupoid.desc_map_homMk ..
+
+end
+
+section
+
+variable {D : Type*} [Category* D] {F G : FundamentalGroupoid X ⥤ D}
+
+open MorphismProperty in
+/-- Constructor for natural transformations for functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natTransMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ⟶ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ app y = app x ≫ G.map (homMk e) := by cat_disch) : F ⟶ G where
+  app x := app x.pt
+  naturality := by
+    let φ (x : FundamentalGroupoid X) := app x.pt
+    intro _ _ f
+    change naturalityProperty φ f
+    induction f with
+    | homMk e => exact naturality e
+    | inv f hf => exact (naturalityProperty.stableUnderInverse φ) (asIso f) hf
+    | comp f g hf hg => exact comp_mem _ _ _ hf hg
+
+/-- Constructor for natural isomorphisms for functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natIsoMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ≅ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ (app y).hom =
+        (app x).hom ≫ G.map (homMk e) := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (fun x ↦ app x.pt)
+    (fun f ↦ (natTransMk _ naturality).naturality f)
 
 end
 
