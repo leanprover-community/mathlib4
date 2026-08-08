@@ -6,7 +6,9 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Edge Connectivity
@@ -167,6 +169,49 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
+
+/--
+The edge reachability number of a graph `G` and two vertices `u`,`v` is the largest `k` for which
+`u`,`v` are `k`-edge-reachable
+-/
+noncomputable def edgeReachability (G : SimpleGraph V) (u v : V) : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), k
+
+/--
+The edge connectivity number of a graph `G` is the largest `k` such that `G` is `k`-edge-connected.
+-/
+noncomputable def edgeConnectivity (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), k
+
+theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reachable u v)
+  : 1 ≤ edgeReachability G u v := by
+  have : G.IsEdgeReachable 1 u v := isEdgeReachable_one.mpr h
+  simp only [ le_iSup_iff , edgeReachability]
+  intro b h'
+  specialize h' 1
+  grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
+
+theorem le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
+  le_iSup₂_of_le k h le_rfl
+
+theorem le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
+  le_iSup₂_of_le k h le_rfl
+
+theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
+  simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
+
+theorem edgeReachability_self : G.edgeReachability v v = ⊤ := by
+  simp only [edgeReachability, IsEdgeReachable.rfl, iSup_pos, ENat.iSup_natCast]
+
+theorem edgeReachability_eq_top_of_subsingleton [Subsingleton V] {u v : V}
+  : G.edgeReachability u v = ⊤ := by
+  simpa [Subsingleton.elim u v] using edgeReachability_self
+
+theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u := by
+  simp only [isEdgeReachable_comm, edgeReachability]
+
+theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
+  iSup₂_le fun _ hi ↦ le_edgeReachability (hi u v)
 
 /-!
 ### 2-reachability
