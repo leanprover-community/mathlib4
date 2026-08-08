@@ -338,6 +338,34 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
 
+/-- In an integrally closed domain `A`, divisibility can be checked in any domain `B` that is
+integral over `A`: `algebraMap A B x ∣ algebraMap A B y ↔ x ∣ y`. -/
+@[simp]
+theorem algebraMap_dvd_algebraMap_iff {A B : Type*} [CommRing A] [IsDomain A]
+    [IsIntegrallyClosed A] [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegral A B]
+    [FaithfulSMul A B] {x y : A} : algebraMap A B x ∣ algebraMap A B y ↔ x ∣ y := by
+  refine ⟨fun h ↦ ?_, fun h ↦ map_dvd (algebraMap A B) h⟩
+  by_cases hx : x = 0
+  · simp_all
+  let K := FractionRing A
+  let L := FractionRing B
+  let : Algebra K L := FractionRing.liftAlgebra _ _
+  have hx₁ : algebraMap A K x ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A K)).mpr hx
+  have hx₂ : algebraMap A L x ≠ 0 :=
+    (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A L)).mpr hx
+  suffices IsIntegral A (algebraMap A K y / algebraMap A K x) by
+    obtain ⟨a, ha⟩ := IsIntegrallyClosed.isIntegral_iff.mp this
+    refine ⟨a, ?_⟩
+    apply FaithfulSMul.algebraMap_injective A K
+    rw [map_mul, ha, mul_div_cancel₀ _ hx₁]
+  obtain ⟨c, hc⟩ := h
+  rw [← isIntegral_algHom_iff (IsScalarTower.toAlgHom A K L)
+    (FaithfulSMul.algebraMap_injective K L), map_div₀, AlgHom.commutes,
+    AlgHom.commutes, IsScalarTower.algebraMap_apply A B L, hc, map_mul,
+    ← IsScalarTower.algebraMap_apply, mul_div_assoc, mul_div_cancel₀ _ hx₂]
+  exact (Algebra.IsIntegral.isIntegral c).map (IsScalarTower.toAlgHom A B L)
+
 @[simp]
 theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} (hn : n ≠ 0)
     {a b : R} :

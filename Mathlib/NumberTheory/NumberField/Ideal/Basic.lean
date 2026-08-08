@@ -120,3 +120,7 @@ end torsionMapQuot
 
 instance [NumberField K] [I.IsMaximal] : Finite (𝓞 K ⧸ I) :=
   I.finiteQuotientOfFreeOfNeBot (I.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+
+open IsDedekindDomain in
+instance [NumberField K] : Infinite (HeightOneSpectrum (𝓞 K)) :=
+  HeightOneSpectrum.infinite_of_isIntegral (A := ℤ)
