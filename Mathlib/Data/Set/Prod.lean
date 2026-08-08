@@ -424,32 +424,37 @@ lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 
-theorem preimage_coe_coe_diagonal (s : Set α) :
-    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by
-  ext ⟨⟨x, hx⟩, ⟨y, hy⟩⟩
-  simp [Set.diagonal]
-
 @[simp]
-theorem range_diag : (range fun x => (x, x)) = diagonal α := by
+theorem range_diagMap : (range fun x : α => (x, x)) = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
 
+@[deprecated (since := "2026-04-22")]
+alias range_diag := range_diagMap
+
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  rw [← range_diag, range_subset_iff]
+  rw [← range_diagMap, range_subset_iff]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diagMap_preimage_prod (s t : Set α) : (fun x : α => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
+@[deprecated (since := "2026-04-22")]
+alias diag_preimage_prod := diagMap_preimage_prod
+
+theorem diagMap_preimage_prod_self (s : Set α) : (fun x : α => (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 
+@[deprecated (since := "2026-04-22")]
+alias diag_preimage_prod_self := diagMap_preimage_prod_self
+
+@[deprecated "Use `diag_eq_sep_prod` (or `image_diag`) instead." (since := "2026-04-22")]
 theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
-  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
+  rw [← range_diagMap, ← image_preimage_eq_range_inter, diagMap_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
   simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
@@ -550,6 +555,68 @@ end Pullback
 
 namespace Set
 
+section Diag
+
+variable {α : Type*} {s t : Set α} {a : α}
+
+instance decidableMemDiag [DecidablePred (· ∈ s)] [DecidableEq α] (x : α × α) :
+    Decidable (x ∈ s.diag) :=
+  inferInstanceAs (Decidable (_ ∧ _))
+
+theorem diag_mono : Monotone (diag : Set α → Set (α × α)) := fun _ _ h _ =>
+  And.imp_left (@h _)
+
+@[simp]
+theorem diag_nonempty_iff : s.diag.Nonempty ↔ s.Nonempty := by
+  simp [diag, Set.Nonempty]
+
+@[simp]
+theorem diag_eq_empty_iff : s.diag = ∅ ↔ s = ∅ := by
+  simp [Set.ext_iff]
+
+alias ⟨_, Nonempty.diag_nonempty⟩ := diag_nonempty_iff
+
+@[simp]
+theorem diag_empty : (∅ : Set α).diag = ∅ := by grind
+
+variable (s t)
+
+theorem diag_subset_prod : s.diag ⊆ s ×ˢ s := by grind
+
+theorem diag_eq_sep_prod : s.diag = { x ∈ s ×ˢ s | x.1 = x.2 } := by grind
+
+variable {s t}
+
+@[simp]
+theorem diag_singleton (a : α) : ({a} : Set α).diag = {(a, a)} := by grind
+
+@[simp]
+theorem diag_univ : (univ : Set α).diag = diagonal α := by grind
+
+variable (s t)
+
+theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag := by grind
+
+variable {s t}
+
+theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by grind
+
+theorem diag_insert (a : α) (s : Set α) :
+    (insert a s).diag = insert (a, a) s.diag := by grind
+
+theorem diag_eq_image : s.diag = (fun x => (x, x)) '' s := by grind
+
+theorem image_diag {β : Type*} (f : α × α → β) :
+    f '' s.diag = (fun x => f (x, x)) '' s := by grind
+
+theorem preimage_coe_coe_diag (s : Set α) :
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' s.diag = diagonal s := by grind
+
+theorem preimage_coe_coe_diagonal (s : Set α) :
+    Prod.map (fun x : s => (x : α)) (fun x : s => (x : α)) ⁻¹' diagonal α = diagonal s := by grind
+
+end Diag
+
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {a : α}
@@ -558,12 +625,18 @@ theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _
   And.imp (@h _) <| And.imp_left <| @h _
 
 @[simp]
-theorem offDiag_nonempty : s.offDiag.Nonempty ↔ s.Nontrivial := by
+theorem offDiag_nonempty_iff : s.offDiag.Nonempty ↔ s.Nontrivial := by
   simp [offDiag, Set.Nonempty, Set.Nontrivial]
 
+@[deprecated (since := "2026-06-26")]
+alias offDiag_nonempty := offDiag_nonempty_iff
+
 @[simp]
-theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
-  rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiag_nonempty.not]
+theorem offDiag_eq_empty_iff : s.offDiag = ∅ ↔ s.Subsingleton := by
+  simp [Set.ext_iff, Set.Subsingleton, forall_cond_comm]
+
+@[deprecated (since := "2026-06-26")]
+alias offDiag_eq_empty := offDiag_eq_empty_iff
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
@@ -612,6 +685,19 @@ theorem offDiag_union (h : Disjoint s t) :
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
+
+variable (s)
+
+theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by grind
+
+@[simp]
+theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by grind
+
+@[simp]
+theorem prod_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by grind
+
+@[simp]
+theorem prod_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
 
 end OffDiag
 
