@@ -596,9 +596,9 @@ lemma sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E}
 
 /-- Finite sums of meromorphic functions are meromorphic. -/
 lemma fun_sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E}
-    (h : ∀ σ, MeromorphicOn (f σ) U) :
+    (h : ∀ σ ∈ s, MeromorphicOn (f σ) U) :
     MeromorphicOn (fun z ↦ ∑ n ∈ s, f n z) U :=
-  fun z hz ↦ MeromorphicAt.fun_sum (fun σ _ ↦ h σ z hz)
+  fun z hz ↦ MeromorphicAt.fun_sum (fun σ hσ ↦ h σ hσ z hz)
 
 /-- Finsums of meromorphic functions are meromorphic. -/
 lemma finsum {U : Set 𝕜} {ι : Type*} {f : ι → 𝕜 → 𝕜'} (h : ∀ σ, MeromorphicOn (f σ) U) :
@@ -630,8 +630,9 @@ theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv
   fun z hz ↦ (hf z hz).iterated_deriv
 
 /-- If `f` is meromorphic on a set, then so is its logarithmic derivative. -/
-protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} {hf : MeromorphicOn f U} :
+protected theorem logDeriv [CompleteSpace 𝕜'] {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) :
     MeromorphicOn (logDeriv f) U := hf.deriv.div hf
+
 /-- `MeromorphicOn` is invariant under translation. -/
 @[to_fun meromorphicOn_fun_comp_add_const_iff_meromorphicOn]
 theorem meromorphicOn_comp_add_const_iff_meromorphicOn {c : 𝕜} {U : Set 𝕜} :
