@@ -264,12 +264,12 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
       ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
           Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} : Set (Set α)) := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
-  · apply_rules [Or.inr, mem_singleton_self]
+  · apply_rules [Or.inr, mem_singleton]
   have hs' : IsConnected s := ⟨hne, hs⟩
   by_cases hb : BddBelow s <;> by_cases ha : BddAbove s
   · refine mem_of_subset_of_mem ?_ <| mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset
       (hs'.Ioo_csInf_csSup_subset hb ha) (subset_Icc_csInf_csSup hb ha)
-    simp only [insert_subset_iff, mem_insert_iff, mem_singletonue_or, or_true,
+    simp only [insert_subset_iff, mem_insert_iff, mem_singleton, true_or, or_true,
       singleton_subset_iff, and_self]
   · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
     rcases mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx ↦
@@ -522,7 +522,7 @@ theorem setOfPred_isPreconnected_eq_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   refine Subset.antisymm setOfPred_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
-    mem_ofPred_eq, insert_eq, mem_singletonrall_eq, forall_true_iff, and_true,
+    mem_ofPred_eq, insert_eq, mem_singleton, forall_eq, forall_true_iff, and_true,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]

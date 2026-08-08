@@ -441,7 +441,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_
   · simp [Function.onFun]
   · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
   · simp +contextual [← Units.val_le_val, MapsTo]
-  · simp only [mem_sdiff, mem_ofPred_eq, mem_singletonnction.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton, Function.onFun, and_imp]
     intro _ _ ha0 _ _ hb0 h
     simp [ha0, hb0, ← Units.val_lt_val, h]
 
@@ -459,7 +459,7 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_
   · intro x
     rcases eq_or_ne x 0 with rfl | hx
     · simp [hg]
-    simp only [mem_ofPred_eq, mem_sdiff, mem_singletonv_eq_zero, hx, not_false_eq_true,
+    simp only [mem_ofPred_eq, mem_sdiff, mem_singleton, inv_eq_zero, hx, not_false_eq_true,
       and_true]
     refine (inv_le_comm₀ ?_ ?_).mp <;>
     simp [zero_lt_iff, hg, hx]
@@ -470,11 +470,11 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_ge_gt_iff_nonempty_
     simp only [le_zero_iff] at ha
     simp [zero_lt_iff, ha, hg]
   · intro x
-    simp only [mem_sdiff, mem_ofPred_eq, mem_singletond_imp]
+    simp only [mem_sdiff, mem_ofPred_eq, mem_singleton, and_imp]
     intro hxg hx
     refine inv_anti₀ ?_ hxg
     simp [zero_lt_iff, hx]
-  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton_lt, Function.onFun, and_imp]
+  · simp only [mem_sdiff, mem_ofPred_eq, mem_singleton, gt_iff_lt, Function.onFun, and_imp]
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]

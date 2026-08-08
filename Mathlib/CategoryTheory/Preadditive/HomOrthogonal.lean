@@ -132,7 +132,7 @@ open scoped Classical in
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f : α → ι} (i : ι) :
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
-  simp only [Set.mem_preimage, mem_singletonroperty
+  simp only [Set.mem_preimage, Set.mem_singleton] at j_property
   simp only [Category.comp_id, Category.id_comp, End.one_def, eqToHom_refl,
     Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
   split_ifs with h
@@ -149,7 +149,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
-  simp only [Set.mem_preimage, mem_singletonroperty
+  simp only [Set.mem_preimage, Set.mem_singleton] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
     HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
     End.mul_def, eqToHom_refl, eqToHom_trans_assoc]
@@ -158,7 +158,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
   apply Finset.sum_congr_set
   · simp
   · intro b nm
-    simp only [Set.mem_preimage, mem_singleton
+    simp only [Set.mem_preimage, Set.mem_singleton] at nm
     simp only [Category.assoc]
     convert! comp_zero
     convert! comp_zero

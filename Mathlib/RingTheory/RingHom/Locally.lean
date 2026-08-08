@@ -134,7 +134,7 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   use {1}
   let e : S ≃+* Localization.Away (1 : S) :=
     (IsLocalization.atUnits S (Submonoid.powers 1) (by simp)).toRingEquiv
-  simp only [mem_singleton_eq, Ideal.span_singleton_one, exists_const]
+  simp only [Set.mem_singleton, forall_eq, Ideal.span_singleton_one, exists_const]
   exact hP.left f e hf
 
 lemma locally_of_locally {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
@@ -200,7 +200,7 @@ lemma locally_holdsForLocalizationAway (hPa : HoldsForLocalizationAway P) :
     HoldsForLocalizationAway (Locally P) := by
   introv R _
   use {1}
-  simp only [mem_singleton_eq, Ideal.span_singleton_one, exists_const]
+  simp only [Set.mem_singleton, forall_eq, Ideal.span_singleton_one, exists_const]
   let e : S ≃ₐ[R] (Localization.Away (1 : S)) :=
     (IsLocalization.atUnits S (Submonoid.powers 1) (by simp)).restrictScalars R
   have : IsLocalization.Away r (Localization.Away (1 : S)) :=

@@ -466,7 +466,7 @@ lemma IsCircuit.strong_multi_elimination (hC₀ : M.IsCircuit C₀) (x : ι → 
     exact h_mem_C₀ i
   · rintro ⟨i, hi, rfl⟩
     exact hzC _ (h_mem i)
-  simp only [mem_sdiff, mem_singletont_and, not_not]
+  simp only [mem_sdiff, mem_singleton, not_and, not_not]
   exact fun i hzi ↦ (hzC i hzi).elim
 
 /-- A version of `Circuit.strong_multi_elimination` where the collection of circuits is

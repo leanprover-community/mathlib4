@@ -561,7 +561,7 @@ variable [IsLocalization S P]
 
 theorem isFractional_span_singleton (x : P) : IsFractional S (span R {x} : Submodule R P) :=
   let ⟨a, ha⟩ := exists_integer_multiple S x
-  isFractional_span_iff.mpr ⟨a, a.2, fun _ hx' => (mem_singleton.symm ▸ ha⟩
+  isFractional_span_iff.mpr ⟨a, a.2, fun _ hx' => (Set.mem_singleton.mp hx').symm ▸ ha⟩
 
 variable (S)
 
@@ -909,7 +909,7 @@ theorem adjoinIntegral_coe (hx : IsIntegral R x) :
   rfl
 
 theorem mem_adjoinIntegral_self (hx : IsIntegral R x) : x ∈ adjoinIntegral S x hx :=
-  Algebra.subset_adjoin (mem_singleton_self x)
+  Algebra.subset_adjoin (Set.mem_singleton_self x)
 
 end Adjoin
 

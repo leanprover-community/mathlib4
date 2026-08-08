@@ -279,7 +279,7 @@ theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s
 
 @[simp]
 theorem zeroLocus_singleton_one : zeroLocus ({1} : Set R) = ∅ :=
-  zeroLocus_empty_of_one_mem (mem_singleton_self (1 : R))
+  zeroLocus_empty_of_one_mem (Set.mem_singleton_self (1 : R))
 
 theorem zeroLocus_empty_iff_eq_top {I : Ideal R} : zeroLocus (I : Set R) = ∅ ↔ I = ⊤ := by
   constructor
@@ -414,7 +414,7 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
     simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
-  · simp [mem_singleton
+  · simp [Set.mem_singleton.mp h]
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by

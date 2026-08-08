@@ -170,7 +170,7 @@ theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   constructor
   · rw [← Set.powerset_empty]
     exact isClosed_empty.powerset_hausdorff
-  · simp_rw [isOpen_iff_mem_nhds, mem_singleton_eq, nhds_eq_uniformity]
+  · simp_rw [isOpen_iff_mem_nhds, Set.mem_singleton, forall_eq, nhds_eq_uniformity]
     filter_upwards [Filter.mem_lift' <| Filter.mem_lift' Filter.univ_mem] with F ⟨_, hF⟩
     simpa using hF
 
