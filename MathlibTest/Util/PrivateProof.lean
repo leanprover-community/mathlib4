@@ -129,6 +129,7 @@ def fNested (_ : FEq2 (private (id (by exact barThm)))) : Bool := true
 
 -- Ensure we have `fNested : ∀ (_ : FEq2 <constant>), _` and not e.g.
 -- `fNested : ∀ (_ : FEq2 (<constant> args), _`.
+-- (We use meta code in case e.g. `#check fNested._proof_1` is not stable.)
 open Lean in
 run_cmd do
   let .defnInfo { type .. } ← getConstInfo ``fNested | throwError "not a def"
