@@ -38,10 +38,9 @@ constant (defined in the `forbiddenExposed.forbiddenHeads` array). -/
   noErrorsFound := "no exposed definitions with a forbidden head symbol."
   errorsFound := "FOUND exposed definitions with a forbidden head symbol"
   test declName := do
-    let env ← getEnv
     let c ← getConstInfo declName
     -- skip non-definitions, automatic declarations, and definitions without an exposed body
-    unless c.isDefinition && !(← isAutoDecl declName) && env.hasExposedBody declName do return none
+    unless c.isDefinition && !(← isAutoDecl declName) && (← getEnv).hasExposedBody declName do return none
     let some body := c.value? | return none
     let (_, _, b) ← lambdaMetaTelescope body
     let n := b.getAppFn.constName
