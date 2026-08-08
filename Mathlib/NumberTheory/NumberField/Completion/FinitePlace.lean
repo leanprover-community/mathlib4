@@ -240,6 +240,12 @@ alias NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one := adi
 alias _root_.NumberField.RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one :=
   adicAbv_intCast_le_one
 
+@[deprecated (since := "2026-08-08")]
+alias absNorm_ne_zero := absNorm_ne_zero_nnreal
+
+@[deprecated Ideal.one_lt_absNorm (since := "2026-08-08")]
+lemma one_lt_absNorm : 1 < absNorm v.asIdeal := Ideal.one_lt_absNorm v.ne_bot
+
 end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
