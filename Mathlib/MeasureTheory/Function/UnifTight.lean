@@ -73,6 +73,15 @@ theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : 
   obtain ⟨s, hμs, hfε⟩ := hut ε.toReal (ε.toReal_pos hε.ne' hε_top.ne)
   exact ⟨s, hμs, fun i ↦ (hfε i).trans ofReal_toReal_le⟩
 
+theorem unifTight_iff_nnreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+    UnifTight f p μ ↔ ∀ ⦃ε : NNReal⦄, 0 < ε → ∃ s : Set α,
+      μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
+  refine ⟨fun hut ε hε ↦ hut ε (coe_pos.2 hε), fun hut ε hε ↦ ?_⟩
+  rcases eq_top_or_lt_top ε with rfl | hε_top
+  · exact ⟨∅, by simp⟩
+  obtain ⟨s, hμs, hfε⟩ := hut (toNNReal_pos hε.ne' hε_top.ne)
+  exact ⟨s, hμs, fun i ↦ (hfε i).trans coe_toNNReal_le_self⟩
+
 namespace UnifTight
 
 theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :

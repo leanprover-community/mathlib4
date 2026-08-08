@@ -72,6 +72,9 @@ uniformly integrable in the measure theory sense and is uniformly bounded. -/
 def UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   (∀ i, AEStronglyMeasurable (f i) μ) ∧ UnifIntegrable f p μ ∧ ∃ C : ℝ≥0, ∀ i, eLpNorm (f i) p μ ≤ C
 
+/-- A characterization of `UnifIntegrable` families. This version does not assume that the sets `s`
+are measurable, and is convenient for applying the hypothesis that a family is `UnifIntegrable`.
+See `unifIntegrable_iff'` for a version where the sets `s` are assumed measurable. -/
 theorem unifIntegrable_iff :
   UnifIntegrable f p μ ↔
     ∀ ε > 0, ∃ δ > 0, ∀ i s, μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
@@ -174,6 +177,9 @@ protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifIntegrable f p �
 
 end UnifIntegrable
 
+/-- A characterization of `UnifIntegrable` families. This version assumes that the sets `s` are
+measurable, and is convenient for proving that a family is `UnifIntegrable`.
+See `unifIntegrable_iff` for a version where the sets `s` are not assumed measurable. -/
 theorem unifIntegrable_iff' :
   UnifIntegrable f p μ ↔
     ∀ ε > 0, ∃ δ > 0, ∀ i s, MeasurableSet s → μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
