@@ -125,6 +125,8 @@ elab "#whats_new " "in" ppLine cmd:command : command => do
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
 
+/-- `#whats_new in` executes the following command and then prints the
+declarations that were added to the environment. -/
 macro (name := oldStx) "whatsnew " "in" ppLine cmd:command : command =>
   `(command| #whats_new in $cmd)
 
