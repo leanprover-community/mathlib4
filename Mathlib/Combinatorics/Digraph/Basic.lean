@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Digraphs
@@ -45,7 +44,7 @@ The relation describes which pairs of vertices are adjacent.
 
 In this treatment, a digraph may have self-loops.
 -/
-@[ext, wikidata Q1137726]
+@[ext]
 structure Digraph (V : Type*) where
   /-- The adjacency relation of a digraph. -/
   Adj : V → V → Prop

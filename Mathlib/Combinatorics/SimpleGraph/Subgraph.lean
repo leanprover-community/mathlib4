@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Subgraphs of a simple graph
@@ -1171,7 +1170,7 @@ unlike for subgraphs, results in a graph with a different vertex type. -/
 /-- The induced subgraph of a subgraph. The expectation is that `s ⊆ G'.verts` for the usual
 notion of an induced subgraph, but, in general, `s` is taken to be the new vertex set and edges
 are induced from the subgraph `G'`. -/
-@[simps, wikidata Q24743362]
+@[simps]
 def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   verts := s
   Adj u v := u ∈ s ∧ v ∈ s ∧ G'.Adj u v
