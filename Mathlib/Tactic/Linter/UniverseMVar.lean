@@ -27,7 +27,13 @@ namespace universeMVarInVariableLinter
 
 open Meta Term Parser.Term
 
--- Copied from Core
+/- (Probably) because of lean4#14574, trying to `import all` the next two definitions from
+`Lean.Elab.BuiltinCommand` causes
+interpreter crash. We copy their code instead.
+Original license header for `typelessBinder?` and `containsId`:
+Copyright (c) 2021 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura -/
 
 private def typelessBinder? : Syntax → Option (Array (TSyntax [`ident, `Lean.Parser.Term.hole]) × BinderInfo)
   | `(bracketedBinderF|($ids*))     => some (ids, .default)
@@ -35,8 +41,6 @@ private def typelessBinder? : Syntax → Option (Array (TSyntax [`ident, `Lean.P
   | `(bracketedBinderF|⦃$ids*⦄)     => some (ids, .strictImplicit)
   | `(bracketedBinderF|[$id:ident]) => some (#[id], .instImplicit)
   | _                               => none
-
--- Copied from Core
 
 /--  If `id` is an identifier, return true if `ids` contains `id`. -/
 private def containsId (ids : Array (TSyntax [`ident, ``Parser.Term.hole])) (id : TSyntax [`ident, ``Parser.Term.hole]) : Bool :=
