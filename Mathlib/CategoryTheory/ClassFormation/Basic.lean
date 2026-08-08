@@ -12,7 +12,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.ContAction
-public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
@@ -245,8 +246,22 @@ instance [GaloisCategory C] : Preregular (isConnected C).FullSubcategory where
     ext
     simp [pullback.condition]
 
-example [GaloisCategory C] : GrothendieckTopology (isConnected C).FullSubcategory :=
+variable (C) in
+abbrev isConnectedTopology [GaloisCategory C] :
+    GrothendieckTopology (isConnected C).FullSubcategory :=
   regularTopology (isConnected C).FullSubcategory
+
+def isConnectedTopologyFiberFunctor [GaloisCategory C]
+    (F : C ⥤ FintypeCat.{w}) [EssentiallySmall.{w} C] [FiberFunctor F] :
+    GrothendieckTopology.Point.{w} (isConnectedTopology C) where
+  fiber := ObjectProperty.ι _ ⋙ F ⋙ ObjectProperty.ι _
+  jointly_surjective {X} R hR x := by
+    rw [regularTopology.mem_sieves_iff_hasEffectiveEpi] at hR
+    obtain ⟨Y, f, _, hR⟩ := hR
+    obtain ⟨y, rfl⟩ := surjective_of_epi ((forget _).map (F.map f.hom)) x
+    exact ⟨Y, f, hR, y, rfl⟩
+  initiallySmall := sorry
+  isCofiltered := sorry
 
 lemma isConnected_over_iff
     {S : C} (X : Over S)
@@ -377,7 +392,7 @@ open GaloisCategory
 
 variable (C) in
 structure Formation [GaloisCategory C] [EssentiallySmall.{v} C] where
-  sheaf : Sheaf (regularTopology (isConnected C).FullSubcategory) Ab.{v}
+  sheaf : Sheaf (isConnectedTopology C) Ab.{v}
 
 namespace Formation
 
