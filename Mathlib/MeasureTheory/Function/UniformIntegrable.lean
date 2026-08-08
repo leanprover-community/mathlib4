@@ -178,8 +178,8 @@ protected theorem comp {ι' : Type*} (g : ι' → ι) (hf : UnifIntegrable f p �
 end UnifIntegrable
 
 /-- A characterization of `UnifIntegrable` families. This version assumes that the sets `s` are
-measurable, and is convenient for proving that a family is `UnifIntegrable`.
-See `unifIntegrable_iff` for a version where the sets `s` are not assumed measurable. -/
+measurable, and is convenient for proving that a family is `UnifIntegrable`. See
+`unifIntegrable_iff` for a version where the sets `s` are not assumed measurable. -/
 theorem unifIntegrable_iff' :
   UnifIntegrable f p μ ↔
     ∀ ε > 0, ∃ δ > 0, ∀ i s, MeasurableSet s → μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
