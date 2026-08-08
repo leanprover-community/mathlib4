@@ -354,7 +354,7 @@ lemma LatinRectangle.card_symbolsNotIn_eq {k n : Type*} [Fintype n]
 open Classical in
 /-- At most n-k columns that do not contain a given entry x -/
 lemma LatinRectangle.card_symbolsNotIn_le {k n : Type*} [Fintype n]
-    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
+    [Fintype k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
     ∀ x, ∀ (t : Finset n),
     (Finset.card {j : n | j ∈ t ∧ x ∈ (symbolsNotIn A) j}) ≤ Fintype.card n - Fintype.card k := by
   let B := symbolsNotIn A
