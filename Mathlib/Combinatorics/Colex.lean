@@ -101,7 +101,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm _ _ hst hts := private (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -305,7 +305,7 @@ lemma toColex_le_toColex_iff_max'_mem :
     simpa [mem_symmDiff, h hst] using max'_mem _ <| symmDiff_nonempty.2 hst
 
 lemma le_iff_max'_mem {s t : Colex (Finset α)} :
-    s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
+    s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (private max_mem_aux h) ∈ ofColex t :=
   toColex_le_toColex_iff_max'_mem
 
 lemma toColex_lt_toColex_iff_max'_mem :
@@ -313,7 +313,7 @@ lemma toColex_lt_toColex_iff_max'_mem :
   rw [lt_iff_le_and_ne, toColex_le_toColex_iff_max'_mem]; aesop
 
 lemma lt_iff_max'_mem {s t : Colex (Finset α)} :
-    s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
+    s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (private max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
 lemma lt_iff_exists_filter_lt :
