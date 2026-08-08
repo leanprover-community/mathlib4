@@ -393,6 +393,7 @@ theorem coe_fromCompletion : f.fromCompletion = Completion.extension f := by
   refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
   rw [fromCompletion_eq, Completion.extension_coe f.isometry.uniformContinuous]
 
+@[simp]
 theorem toContinuousLinearMap_fromCompletion :
     f.fromCompletion.toContinuousLinearMap = f.toContinuousLinearMap.fromCompletion := rfl
 
@@ -424,6 +425,7 @@ theorem coe_completion : f.completion = Completion.map f := by
   refine Completion.ext f.completion.continuous Completion.continuous_map fun a => ?_
   rw [completion_eq, Completion.map_coe f.isometry.uniformContinuous]
 
+@[simp]
 theorem toContinuousLinearMap_completion :
     f.completion.toContinuousLinearMap = f.toContinuousLinearMap.completion := by
   ext x
