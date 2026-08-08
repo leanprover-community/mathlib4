@@ -59,7 +59,7 @@ lemma mem_range_ofFinEmbEquiv_symm_iff_mem (s : powersetCard I n) (i : I) :
   simp [ofFinEmbEquiv_symm_apply]
 
 /-- The natural enumeration of the elements of linearly-ordered type. -/
-@[simps!] def orderIsoOfFin {n : ℕ} {I : Type*} [LinearOrder I] (s : powersetCard I n) :
+@[simps!] def orderIsoOfFin (s : powersetCard I n) :
     Fin n ≃o s.val :=
   s.val.orderIsoOfFin s.prop
 
@@ -70,6 +70,7 @@ and `t₁ < t₂ < ⋯ < tₙ` (disjoint) this is the permutation obtained by so
 def permOfDisjoint {m n : ℕ} {I : Type*} [LinearOrder I]
     {s : powersetCard I m} {t : powersetCard I n} (h : Disjoint s.val t.val) :
     Equiv.Perm (Fin (m + n)) :=
+  let : DecidableEq I := decidableEqOfDecidableLE
   letI e₁ : Fin (m + n) ≃ Fin m ⊕ Fin n := finSumFinEquiv.symm
   letI e₂ : Fin m ⊕ Fin n ≃ s.val ⊕ t.val := (orderIsoOfFin s).sumCongr (orderIsoOfFin t)
   letI e₃ : s.val ⊕ t.val ≃ disjUnion h := Equiv.Finset.disjUnionEquiv _ _ h

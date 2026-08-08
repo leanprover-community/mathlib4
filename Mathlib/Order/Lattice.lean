@@ -597,11 +597,9 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (�
 /-- A lattice with total order is a linear order.
 
 See note [reducible non-instances]. -/
-abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
-    [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
+abbrev Lattice.toLinearOrder (α : Type u) [Lattice α]
+    [DecidableLE α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
   toDecidableLE := ‹_›
-  toDecidableEq := ‹_›
-  toDecidableLT := ‹_›
   le_total := total_of (· ≤ ·)
   max_def := by exact congr_fun₂ sup_eq_maxDefault
   min_def := by exact congr_fun₂ inf_eq_minDefault
@@ -1016,7 +1014,7 @@ protected abbrev partialOrder [PartialOrder β] : PartialOrder α := by
   apply e.injective.partialOrder <;> intros <;> rfl
 
 /-- Transfer `LinearOrder` across an `Equiv`. -/
-protected abbrev linearOrder [LinearOrder β] [DecidableEq α] : LinearOrder α := by
+protected abbrev linearOrder [LinearOrder β] : LinearOrder α := by
   let max := e.max
   let min := e.min
   let preorder := e.preorder

@@ -21,7 +21,7 @@ Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more import
 
 @[expose] public section
 
-deriving instance LinearOrder for PNat
+deriving instance LinearOrder, DecidableLT for PNat
 
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩

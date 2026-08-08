@@ -48,9 +48,20 @@ variable {R : Type*} [Semiring R] [LinearOrder R] (P : Polynomial R)
 /-- Counts the number of times that the coefficients in a polynomial change sign, with
 the convention that 0 can count as either sign. -/
 def signVariations : ℕ :=
+  let : DecidableLT R := decidableLTOfDecidableLE
   letI coeff_signs := (coeffList P).map SignType.sign
   letI nonzero_signs := coeff_signs.filter (· ≠ 0)
   (nonzero_signs.destutter (· ≠ ·)).length - 1
+
+theorem signVariations_def [DecidableLT R] :
+    P.signVariations =
+      letI coeff_signs := (coeffList P).map SignType.sign
+      letI nonzero_signs := coeff_signs.filter (· ≠ 0)
+      (nonzero_signs.destutter (· ≠ ·)).length - 1 := by
+  unfold signVariations
+  congr!
+
+attribute [eqns signVariations_def] signVariations
 
 variable (R) in
 @[simp]
@@ -65,8 +76,10 @@ theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c
   · simp [hcz, signVariations, coeffList_eraseLead (mt (monomial_eq_zero_iff c d).mp hcz)]
 
 /-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
-theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
+theorem signVariations_eraseLead [DecidableLT R]
+    (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
     signVariations P.eraseLead = signVariations P := by
+  cases Subsingleton.elim ‹_› (decidableLTOfDecidableLE (α := R))
   by_cases hpz : P = 0
   · simp_all
   · have h₂ : nextCoeff P ≠ 0 := by intro; simp_all
@@ -76,7 +89,7 @@ theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.si
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
 the first two nonzero coefficients match. -/
-theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
+theorem signVariations_eq_eraseLead_add_ite [DecidableLT R] {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by
   by_cases hpz : P = 0
@@ -112,13 +125,13 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
 theorem signVariations_eraseLead_le : signVariations P.eraseLead ≤ signVariations P := by
   by_cases hpz : P = 0
   · simp [hpz]
-  · grind [signVariations_eq_eraseLead_add_ite]
+  · classical grind [signVariations_eq_eraseLead_add_ite]
 
 /-- We can only lose at most one sign changes if we drop the leading coefficient. -/
 theorem signVariations_le_eraseLead_succ : signVariations P ≤ signVariations P.eraseLead + 1 := by
   by_cases hpz : P = 0
   · simp [hpz]
-  · grind [signVariations_eq_eraseLead_add_ite]
+  · classical grind [signVariations_eq_eraseLead_add_ite]
 
 end Semiring
 
@@ -129,6 +142,7 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 /-- The number of sign changes does not change if we negate. -/
 @[simp]
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
+  classical
   rw [signVariations, signVariations, coeffList_neg]
   simp only [List.map_map, List.filter_map]
   have hsc : SignType.sign ∘ (fun (x : R) => -x) = (fun x => -x) ∘ SignType.sign := by
@@ -153,6 +167,7 @@ theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
   wlog! hx2 : 0 < η
   · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
+  classical
   rw [signVariations, signVariations]
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
   congr 5
@@ -186,6 +201,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
   have hndexP0 : natDegree (eraseLead ((X - C η) * P)) = P.natDegree := by
     apply Nat.add_right_cancel (m := 1)
     rw [← hndxP, natDegree_eraseLead_add_one hQ₁.ne]
+  classical
   --the theorem is true mainly because all the signs are the same;
   --in fact, the coefficients are all the same except the first.
   suffices eraseLead (eraseLead ((X - C η) * P)) = eraseLead ((X - C η) * P.eraseLead) by
@@ -208,6 +224,7 @@ lemma signVariations_eraseLead_mul_X_sub_C (hη : 0 < η) (hP₀ : 0 < leadingCo
 /-- This lemma is really a specialization of `succ_signVariations_le_sub_mul` to monomials. -/
 lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < η) :
     (monomial d c).signVariations + 1 ≤ ((X - C η) * monomial d c).signVariations := by
+  classical
   have h₁ : nextCoeff ((X - C η) * monomial d c) = -(η * c) := by
     convert coeff_mul_monomial (X - C η) d 0 c
     · simp [hc, nextCoeff, natDegree_mul (X_sub_C_ne_zero η)]
@@ -217,7 +234,7 @@ lemma succ_signVariations_X_sub_C_mul_monomial {d c} (hc : c ≠ 0) (hη : 0 < �
     simp [h₁, hc, hη.ne']
   have h₃ : SignType.sign c ≠ SignType.sign (-(η * c)) := by
     simp [hη, hc, Left.sign_neg, sign_mul]
-  simpa [h₁, h₂, h₃, hc, hη.ne', signVariations, List.destutter_cons_cons,
+  simpa [h₁, h₂, h₃, hc, hη.ne', signVariations_def, List.destutter_cons_cons,
     ← leadingCoeff_cons_eraseLead, coeffList_eraseLead, leadingCoeff_eraseLead_eq_nextCoeff]
   using! List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _)
 
@@ -241,6 +258,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         (X - C η) * P.eraseLead - monomial P.natDegree P.nextCoeff := by
       simp [← self_sub_monomial_natDegree_leadingCoeff (_ * _), natDegree_mul,
         h₅, h₆, h₂, h₄, add_comm 1]
+    classical
     have : P.eraseLead.natDegree + 2 = ((X - C η) * P.eraseLead).coeffList.length := by
       simp [h₅, h₆, natDegree_mul, add_comm 1]
     have : P.natDegree + 2 = ((X - C η) * P).coeffList.length := by simp [X_sub_C_ne_zero, h₃, h₇]
@@ -277,7 +295,8 @@ since it's cleaner and sufficient for the later use. -/
 lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0 < P.nextCoeff) :
     signVariations ((X - C η) * P.eraseLead) ≤ signVariations ((X - C η) * P) := by
   obtain ⟨c₀, cs, ⟨hcs, hecs⟩⟩ := exists_cons_of_leadingCoeff_pos η h h₂.ne'
-  simp +decide only [hcs, hecs, h, h₂, signVariations, List.destutter, List.map_cons, sign_pos,
+  classical
+  simp +decide only [hcs, hecs, h, h₂, signVariations_def, List.destutter, List.map_cons, sign_pos,
     List.filter_cons_of_pos, tsub_le_iff_right,
     Nat.sub_add_cancel (List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _))]
   rw [List.filter_cons]
@@ -316,6 +335,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
   -- P is positive degree. Set up some temporary variables for signs for the nextCoeffs.
+  classical
   generalize hs_nC : SignType.sign P.nextCoeff = s_nC
   generalize hs_nC_mul : SignType.sign ((X - C η) * P).nextCoeff = s_nC_mul
   --We're really doing induction on `P.eraseLead` in a sense
@@ -376,7 +396,8 @@ variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (P : P
 
 /-- **Descartes' Rule of Signs**: the number of positive roots is at most the number of sign
 variations. -/
-theorem roots_countP_pos_le_signVariations : P.roots.countP (0 < ·) ≤ signVariations P := by
+theorem roots_countP_pos_le_signVariations [DecidableLT R] :
+    P.roots.countP (0 < ·) ≤ signVariations P := by
   generalize h : P.roots.countP (0 < ·) = num_pos_roots
   induction num_pos_roots generalizing P -- Induct on number of roots.
   · exact zero_le

@@ -46,7 +46,7 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 `round (0.5 : ℚ) = 1`.
 -/
 def round (x : α) : ℤ :=
-  if 2 * fract x < 1 then ⌊x⌋ else ⌈x⌉
+  if 1 ≤ 2 * fract x then ⌈x⌉ else ⌊x⌋
 
 /-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
 
@@ -56,17 +56,18 @@ theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
     ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,
     Int.mul_add_ediv_left _ _ two_ne_zero, Int.cast_ofNat]
   split_ifs with h <;> congr 1
-  · rw [Int.floor_eq_zero_iff.mpr, Int.floor_eq_zero_iff.mpr]
-    · simp
-    · simp [h]
-    · suffices fract x < 1 by simpa
-      refine lt_of_le_of_lt ?_ h
-      apply le_mul_of_one_le_left <;> simp
   · have H : ⌊2 * fract x⌋ = 1 := by simpa [floor_eq_iff, ← two_mul, fract_lt_one] using h
     suffices 0 < fract x by simp [this, H, ceil_eq_iff, (fract_lt_one _).le]
     contrapose! h
     grw [h]
     simp
+  · push Not at h
+    rw [Int.floor_eq_zero_iff.mpr, Int.floor_eq_zero_iff.mpr]
+    · simp
+    · simp [h]
+    · suffices fract x < 1 by simpa
+      refine lt_of_le_of_lt ?_ h
+      apply le_mul_of_one_le_left <;> simp
 
 @[simp]
 theorem round_zero : round (0 : α) = 0 := by simp [round]
@@ -146,14 +147,14 @@ theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
   round_natCast_add x n
 
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
-  simp_rw [round, min_def_lt, two_mul, ← lt_tsub_iff_left]
-  rcases lt_or_ge (fract x) (1 - fract x) with hx | hx
-  · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
+  simp_rw [round, min_def', two_mul, ← tsub_le_iff_left]
+  rcases le_or_gt (1 - fract x) (fract x) with hx | hx
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
       simpa only [← two_mul, mul_pos_iff_of_pos_left, zero_lt_two] using hx
-    rw [if_neg (not_lt.mpr hx), if_neg (not_lt.mpr hx), abs_sub_comm, ceil_sub_self_eq this.ne.symm,
+    rw [if_pos hx, if_pos hx, abs_sub_comm, ceil_sub_self_eq this.ne.symm,
       abs_one_sub_fract]
+  · rw [if_neg (not_le.mpr hx), if_neg (not_le.mpr hx), self_sub_floor, abs_fract]
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]

@@ -61,6 +61,7 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
   have ex : ∃ n ≥ N, u k < u n := exists_lt_of_tendsto_atTop hu _ _
   obtain ⟨n : ℕ, hnN : n ≥ N, hnk : u k < u n, hn_min : ∀ m, m < n → N ≤ m → u m ≤ u k⟩ :
       ∃ n ≥ N, u k < u n ∧ ∀ m, m < n → N ≤ m → u m ≤ u k := by
+    classical
     rcases Nat.findX ex with ⟨n, ⟨hnN, hnk⟩, hn_min⟩
     push Not at hn_min
     exact ⟨n, hnN, hnk, hn_min⟩

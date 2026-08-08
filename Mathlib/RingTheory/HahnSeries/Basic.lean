@@ -624,7 +624,7 @@ theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ] {c i : Γ} (h : i
     (truncLT c x).coeff i = x.coeff i := by
   simp [h]
 
-theorem coeff_truncLT_of_le [LinearOrder Γ] {c i : Γ} (h : c ≤ i) (x : R⟦Γ⟧) :
+theorem coeff_truncLT_of_le [LinearOrder Γ] [DecidableLT Γ] {c i : Γ} (h : c ≤ i) (x : R⟦Γ⟧) :
     (truncLT c x).coeff i = 0 := by
   simp [h]
 

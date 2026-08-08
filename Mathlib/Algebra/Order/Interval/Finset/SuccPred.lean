@@ -67,6 +67,9 @@ lemma Ico_add_one_add_one_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
 
 /-! ##### Inserting into intervals -/
 
+section insert
+variable [DecidableEq α]
+
 lemma insert_Icc_add_one_left_eq_Icc (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   simpa [succ_eq_add_one] using insert_Icc_succ_left_eq_Icc h
 
@@ -87,6 +90,8 @@ lemma insert_Ioc_right_eq_Ioc_add_one_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax 
 
 lemma insert_Ioc_add_one_left_eq_Ioc (h : a < b) : insert (a + 1) (Ioc (a + 1) b) = Ioc a b := by
   simpa [succ_eq_add_one] using insert_Ioc_succ_left_eq_Ioc h
+
+end insert
 
 /-!
 #### Orders with no maximal elements
@@ -110,11 +115,16 @@ lemma Ico_add_one_add_one_eq_Ioc (a b : α) : Ico (a + 1) (b + 1) = Ioc a b := b
 
 /-! ##### Inserting into intervals -/
 
+section insert
+variable [DecidableEq α]
+
 lemma insert_Ico_right_eq_Ico_add_one (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ h
 
 lemma insert_Ioc_right_eq_Ioc_add_one (h : a ≤ b) : insert (b + 1) (Ioc a b) = Ioc a (b + 1) :=
   insert_Ioc_right_eq_Ioc_add_one_of_not_isMax h (not_isMax _)
+
+end insert
 
 end SuccAddOrder
 
@@ -145,6 +155,9 @@ lemma Ioc_sub_one_sub_one_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 
 /-! ##### Inserting into intervals -/
 
+section insert
+variable [DecidableEq α]
+
 lemma insert_Icc_sub_one_right_eq_Icc (h : a ≤ b) : insert b (Icc a (b - 1)) = Icc a b := by
   simpa [pred_eq_sub_one] using insert_Icc_pred_right_eq_Icc h
 
@@ -165,6 +178,8 @@ lemma insert_Ico_left_eq_Ico_sub_one_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a
 
 lemma insert_Ico_sub_one_right_eq_Ico (h : a < b) : insert (b - 1) (Ico a (b - 1)) = Ico a b := by
   simpa [pred_eq_sub_one] using insert_Ico_pred_right_eq_Ico h
+
+end insert
 
 /-!
 #### Orders with no minimal elements
@@ -188,11 +203,16 @@ lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := b
 
 /-! ##### Inserting into intervals -/
 
+section insert
+variable [DecidableEq α]
+
 lemma insert_Ioc_left_eq_Ioc_sub_one (h : a ≤ b) : insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred h
 
 lemma insert_Ico_left_eq_Ico_sub_one (h : a ≤ b) : insert (a - 1) (Ico a b) = Ico (a - 1) b :=
   insert_Ico_left_eq_Ico_sub_one_of_not_isMin h (not_isMin _)
+
+end insert
 
 end PredSubOrder
 

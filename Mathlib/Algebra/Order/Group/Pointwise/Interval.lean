@@ -852,6 +852,7 @@ lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
 
 @[simp]
 theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * a]] :=
+  let : DecidableEq α := decidableEqOfDecidableLE
   if ha : a = 0 then by simp [ha]
   else calc
     (fun x => x * a) '' [[b, c]] = (· * a⁻¹) ⁻¹' [[b, c]] :=

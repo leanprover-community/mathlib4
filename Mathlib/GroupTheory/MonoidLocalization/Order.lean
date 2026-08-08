@@ -115,8 +115,6 @@ instance [CommMonoid α] [LinearOrder α] [IsOrderedCancelMonoid α] {s : Submon
       Localization.induction_on₂ a b fun _ _ => by
         simp_rw [mk_le_mk]
         exact le_total _ _
-    toDecidableLE := Localization.decidableLE
-    toDecidableLT := Localization.decidableLT
-    toDecidableEq := Localization.decidableEq }
+    toDecidableLE := Localization.decidableLE }
 
 end Localization

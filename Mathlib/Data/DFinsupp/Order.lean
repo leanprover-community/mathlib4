@@ -296,7 +296,7 @@ end PartialOrder
 
 section LinearOrder
 variable [∀ i, AddCommMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, IsBotZeroClass (α i)]
-  [DecidableEq ι] {f g : Π₀ i, α i}
+  [DecidableEq ι] [∀ i, DecidablePred (α := α i) (· = 0)] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by

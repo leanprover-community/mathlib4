@@ -63,6 +63,7 @@ This function can be used to compute the exact value approximated by a continued
 `GenContFract.of v` as described in lemma `compExactValue_correctness_of_stream_eq_some`.
 -/
 protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
+  let : DecidableEq K := decidableEqOfDecidableLE
   -- if the fractional part is zero, we exactly approximated the value by the last continuants
   if fr = 0 then
     conts.a / conts.b

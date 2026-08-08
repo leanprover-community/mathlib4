@@ -483,18 +483,22 @@ lemma not_monotone_not_antitone_iff_exists_lt_lt :
 -/
 
 
-theorem StrictMonoOn.cmp_map_eq (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+theorem StrictMonoOn.cmp_map_eq [DecidableLT α] [DecidableLT β]
+    (hf : StrictMonoOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp x y :=
   ((hf.compares hx hy).2 (cmp_compares x y)).cmp_eq
 
-theorem StrictMono.cmp_map_eq (hf : StrictMono f) (x y : α) : cmp (f x) (f y) = cmp x y :=
+theorem StrictMono.cmp_map_eq [DecidableLT α] [DecidableLT β]
+    (hf : StrictMono f) (x y : α) : cmp (f x) (f y) = cmp x y :=
   (hf.strictMonoOn Set.univ).cmp_map_eq trivial trivial
 
-theorem StrictAntiOn.cmp_map_eq (hf : StrictAntiOn f s) (hx : x ∈ s) (hy : y ∈ s) :
+theorem StrictAntiOn.cmp_map_eq [DecidableLT α] [DecidableLT β]
+    (hf : StrictAntiOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     cmp (f x) (f y) = cmp y x :=
   hf.dual_right.cmp_map_eq hy hx
 
-theorem StrictAnti.cmp_map_eq (hf : StrictAnti f) (x y : α) : cmp (f x) (f y) = cmp y x :=
+theorem StrictAnti.cmp_map_eq [DecidableLT α] [DecidableLT β]
+    (hf : StrictAnti f) (x y : α) : cmp (f x) (f y) = cmp y x :=
   (hf.strictAntiOn Set.univ).cmp_map_eq trivial trivial
 
 end LinearOrder

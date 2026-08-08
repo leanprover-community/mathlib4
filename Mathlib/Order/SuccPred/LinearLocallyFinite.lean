@@ -69,6 +69,7 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
     IsPredArchimedean ι where
   exists_pred_iterate_of_le {i j} hij := by
     have h_exists := exists_succ_iterate_of_le hij
+    classical
     obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
       ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
     refine ⟨n, ?_⟩
@@ -201,7 +202,7 @@ end LinearLocallyFiniteOrder
 section toZ
 
 -- Requiring either of `IsSuccArchimedean` or `IsPredArchimedean` is equivalent.
-variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
+variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] [DecidableEq ι] {i0 i : ι}
 
 -- For "to_Z"
 
@@ -341,7 +342,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `toZ` defines an `OrderIso` between `ι` and its range. -/
-noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
+noncomputable def orderIsoRangeToZOfLinearSuccPredArch [DecidableEq ι] [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
   map_rel_iff' := by simp
@@ -349,11 +350,13 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
   rcases isEmpty_or_nonempty ι with _ | hι
   · infer_instance
-  · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
+  · classical
+    exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If the order has neither bot nor top, `toZ` defines an `OrderIso` between `ι` and `ℤ`. -/
-noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι] [hι : Nonempty ι] :
+noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι]
+    [DecidableEq ι] [hι : Nonempty ι] :
     ι ≃o ℤ where
   toFun := toZ hι.some
   invFun n := if 0 ≤ n then succ^[n.toNat] hι.some else pred^[(-n).toNat] hι.some
@@ -377,7 +380,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
-def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
+def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] [DecidableEq ι] : ι ≃o ℕ where
   toFun i := (toZ ⊥ i).toNat
   invFun n := succ^[n] ⊥
   left_inv i := by
@@ -395,7 +398,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
 set_option backward.isDefEq.respectTransparency false in
 /-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
 `Finset.range n` for some `n`. -/
-def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
+def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] [DecidableEq ι] :
     ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1) where
   toFun i :=
     ⟨(toZ ⊥ i).toNat,

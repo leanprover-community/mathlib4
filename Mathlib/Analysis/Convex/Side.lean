@@ -916,8 +916,8 @@ open AffineSubspace
 variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup V] [Module R V]
 variable [AddTorsor V P] {n : ℕ} [NeZero n] (s : Simplex R P n)
 
-set_option backward.isDefEq.respectTransparency false in
-lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
+lemma sSameSide_affineSpan_faceOpposite_of_sign_eq [DecidableLT R]
+    {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs : SignType.sign (w₁ i) = SignType.sign (w₂ i))
     (h0 : w₁ i ≠ 0) :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide
@@ -947,7 +947,6 @@ lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → 
   · rw [sign_pos h, eq_comm, sign_eq_one_iff] at hs
     positivity
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sOppSide_affineSpan_faceOpposite_of_pos_of_neg {w₁ w₂ : Fin (n + 1) → R}
     (hw₁ : ∑ j, w₁ j = 1) (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs₁ : 0 < w₁ i)
     (hs₂ : w₂ i < 0) :
@@ -974,7 +973,8 @@ lemma sOppSide_affineSpan_faceOpposite_of_pos_of_neg {w₁ w₂ : Fin (n + 1) �
   rw [← neg_sub (w₁ i) (w₂ i), mul_neg, div_mul_cancel₀ _ hp.ne']
   simp
 
-lemma sSameSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
+lemma sSameSide_affineSpan_faceOpposite_iff [DecidableLT R]
+    {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide
       (Finset.univ.affineCombination R s.points w₁)
@@ -997,7 +997,8 @@ lemma sSameSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw�
       exact (s.sOppSide_affineSpan_faceOpposite_of_pos_of_neg
         hw₁ hw₂ h' hs).wOppSide.not_sSameSide h
 
-lemma sOppSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
+lemma sOppSide_affineSpan_faceOpposite_iff [DecidableLT R]
+    {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SOppSide
       (Finset.univ.affineCombination R s.points w₁)
@@ -1019,7 +1020,8 @@ lemma sOppSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw�
     · rw [sign_pos h', eq_comm, neg_eq_iff_eq_neg, sign_eq_neg_one_iff] at hs
       exact s.sOppSide_affineSpan_faceOpposite_of_pos_of_neg hw₁ hw₂ h' hs
 
-lemma wSameSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
+lemma wSameSide_affineSpan_faceOpposite_iff [DecidableLT R]
+    {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WSameSide
       (Finset.univ.affineCombination R s.points w₁)
@@ -1041,7 +1043,8 @@ lemma wSameSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw�
       simp only [h0, h0', or_self, or_false] at h
       exact (s.sSameSide_affineSpan_faceOpposite_of_sign_eq hw₁ hw₂ h h0).wSameSide
 
-lemma wOppSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
+lemma wOppSide_affineSpan_faceOpposite_iff [DecidableLT R]
+    {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WOppSide
       (Finset.univ.affineCombination R s.points w₁)
@@ -1071,6 +1074,7 @@ lemma sSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ 0 < w i := by
+  classical
   rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
     s.sSameSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm]
   simp [sign_eq_one_iff]
@@ -1085,6 +1089,7 @@ lemma sOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).SOppSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ w i < 0 := by
+  classical
   rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
     s.sOppSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm,
     neg_eq_iff_eq_neg]
@@ -1100,6 +1105,7 @@ lemma wSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WSameSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ 0 ≤ w i := by
+  classical
   rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
     s.wSameSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm]
   simp [sign_eq_one_iff, le_iff_eq_or_lt', or_comm]
@@ -1114,6 +1120,7 @@ lemma wOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
     (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
     (affineSpan R (Set.range (s.faceOpposite i).points)).WOppSide (s.points i)
       (Finset.univ.affineCombination R s.points w) ↔ w i ≤ 0 := by
+  classical
   rw [← Finset.univ.affineCombination_piSingle R s.points (Finset.mem_univ i),
     s.wOppSide_affineSpan_faceOpposite_iff (Fintype.sum_pi_single' _ _) hw, eq_comm,
     neg_eq_iff_eq_neg]

@@ -157,11 +157,11 @@ variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isIntegral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
   let l := l₀.map (fun a ↦ valuation R K a)
+  classical
   let lmax : ValueGroup R K :=
     l.maximum_of_length_pos (by simp [l₀, l])
   have hlmax_mem : lmax ∈ l :=

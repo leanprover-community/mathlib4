@@ -45,15 +45,16 @@ theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
 @[simp, grind =]
-theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
+theorem max_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
 @[simp]
 theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
+  classical
   rw [← insert_empty_eq]
   exact max_insert
 
-lemma max_pair (a b : α) :
+lemma max_pair [DecidableEq α] (a b : α) :
     Finset.max {a, b} = max (↑a) (↑b) := by
   simp
 
@@ -71,6 +72,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
     fun h ↦ h.symm ▸ max_empty⟩
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
+  classical
   induction s using Finset.induction_on with
   | empty => intro _ H; cases H
   | _ => grind [WithBot.coe_eq_coe]
@@ -87,7 +89,7 @@ theorem le_max_of_eq {s : Finset α} {a b : α} (h₁ : a ∈ s) (h₂ : s.max =
 theorem notMem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
   Finset.notMem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
 
-theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
+theorem max_union [DecidableEq α] {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
 
 @[gcongr]
 theorem max_mono {s t : Finset α} (st : s ⊆ t) : s.max ≤ t.max :=
@@ -119,15 +121,16 @@ theorem min_empty : (∅ : Finset α).min = ⊤ :=
   rfl
 
 @[simp]
-theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
+theorem min_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
   fold_insert_idem
 
 @[simp]
 theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
+  classical
   rw [← insert_empty_eq]
   exact min_insert
 
-lemma min_pair (a b : α) :
+lemma min_pair [DecidableEq α] (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
@@ -157,7 +160,7 @@ theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min =
 theorem notMem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
   Finset.notMem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
 
-theorem min_union {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
+theorem min_union [DecidableEq α] {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
 
 @[gcongr]
 theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
@@ -260,41 +263,45 @@ theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 
-theorem max'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
+theorem max'_union [DecidableEq α] {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     (s₁ ∪ s₂).max' (h₁.mono subset_union_left) = s₁.max' h₁ ⊔ s₂.max' h₂ := sup'_union h₁ h₂ id
 
-theorem min'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
+theorem min'_union [DecidableEq α] {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     (s₁ ∪ s₂).min' (h₁.mono subset_union_left) = s₁.min' h₁ ⊓ s₂.min' h₂ := inf'_union h₁ h₂ id
 
-theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDual).max := by
+theorem map_ofDual_min [DecidableEq α] (s : Finset αᵒᵈ) :
+    s.min.map ofDual = (s.image ofDual).max := by
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
-theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
+theorem map_ofDual_max [DecidableEq α] (s : Finset αᵒᵈ) :
+    s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
 
-theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max := by
+theorem map_toDual_min [DecidableEq α] (s : Finset α) :
+    s.min.map toDual = (s.image toDual).max := by
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
-theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
+theorem map_toDual_max [DecidableEq α] (s : Finset α) :
+    s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
 
-theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
+theorem ofDual_min' [DecidableEq α] {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
+theorem ofDual_max' [DecidableEq α] {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
+theorem toDual_min' [DecidableEq α] {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-theorem toDual_max' {s : Finset α} (hs : s.Nonempty) :
+theorem toDual_max' [DecidableEq α] {s : Finset α} (hs : s.Nonempty) :
     toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
@@ -306,23 +313,23 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     t.min' (H.mono hst) ≤ s.min' H :=
   min'_le _ _ (hst (s.min'_mem H))
 
-@[simp] theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem max'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).max' (s.insert_nonempty a) = max a (s.max' H) :=
   (isGreatest_max' _ _).unique <| by
     rw [coe_insert]
     exact (isGreatest_max' _ _).insert _
 
-@[simp] theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem min'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min a (s.min' H) :=
   (isLeast_min' _ _).unique <| by
     rw [coe_insert]
     exact (isLeast_min' _ _).insert _
 
-lemma min'_pair (a b : α) :
+lemma min'_pair [DecidableEq α] (a b : α) :
     min' {a, b} (insert_nonempty _ _) = min a b := by
   simp
 
-lemma max'_pair (a b : α) :
+lemma max'_pair [DecidableEq α] (a b : α) :
     max' {a, b} (insert_nonempty _ _) = max a b := by
   simp
 
@@ -336,27 +343,29 @@ theorem min'_lt_of_mem_erase_min' [DecidableEq α] {a : α} (ha : a ∈ s.erase 
 
 /-- To rewrite from right to left, use `Monotone.map_finset_max'`. -/
 @[simp]
-theorem max'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
+theorem max'_image [LinearOrder β] [DecidableEq β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).max' h = f (s.max' h.of_image) := by
   simp only [max', sup'_image]
   exact .symm <| apply_sup'_eq_sup'_comp _ _ fun _ _ ↦ hf.map_max
 
 /-- A version of `Finset.max'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
-lemma _root_.Monotone.map_finset_max' [LinearOrder β] {f : α → β} (hf : Monotone f) {s : Finset α}
+lemma _root_.Monotone.map_finset_max' [LinearOrder β] [DecidableEq β]
+    {f : α → β} (hf : Monotone f) {s : Finset α}
     (h : s.Nonempty) : f (s.max' h) = (s.image f).max' (h.image f) :=
   .symm <| max'_image hf ..
 
 /-- To rewrite from right to left, use `Monotone.map_finset_min'`. -/
 @[simp]
-theorem min'_image [LinearOrder β] {f : α → β} (hf : Monotone f) (s : Finset α)
+theorem min'_image [LinearOrder β] [DecidableEq β] {f : α → β} (hf : Monotone f) (s : Finset α)
     (h : (s.image f).Nonempty) : (s.image f).min' h = f (s.min' h.of_image) := by
   simp only [min', inf'_image]
   exact .symm <| apply_inf'_eq_inf'_comp _ _ fun _ _ ↦ hf.map_min
 
 /-- A version of `Finset.min'_image` with LHS and RHS reversed.
 Also, this version assumes that `s` is nonempty, not its image. -/
-lemma _root_.Monotone.map_finset_min' [LinearOrder β] {f : α → β} (hf : Monotone f) {s : Finset α}
+lemma _root_.Monotone.map_finset_min' [LinearOrder β] [DecidableEq β] {f : α → β}
+    (hf : Monotone f) {s : Finset α}
     (h : s.Nonempty) : f (s.min' h) = (s.image f).min' (h.image f) :=
   .symm <| min'_image hf ..
 
@@ -366,42 +375,45 @@ theorem coe_max' {s : Finset α} (hs : s.Nonempty) : ↑(s.max' hs) = s.max :=
 theorem coe_min' {s : Finset α} (hs : s.Nonempty) : ↑(s.min' hs) = s.min :=
   coe_inf' hs id
 
-theorem max_mem_image_coe {s : Finset α} (hs : s.Nonempty) :
+theorem max_mem_image_coe [DecidableEq α] {s : Finset α} (hs : s.Nonempty) :
     s.max ∈ (s.image (↑) : Finset (WithBot α)) :=
   mem_image.2 ⟨max' s hs, max'_mem _ _, coe_max' hs⟩
 
-theorem min_mem_image_coe {s : Finset α} (hs : s.Nonempty) :
+theorem min_mem_image_coe [DecidableEq α] {s : Finset α} (hs : s.Nonempty) :
     s.min ∈ (s.image (↑) : Finset (WithTop α)) :=
   mem_image.2 ⟨min' s hs, min'_mem _ _, coe_min' hs⟩
 
-theorem max_mem_insert_bot_image_coe (s : Finset α) :
+theorem max_mem_insert_bot_image_coe [DecidableEq α] (s : Finset α) :
     s.max ∈ (insert ⊥ (s.image (↑)) : Finset (WithBot α)) :=
   mem_insert.2 <| s.eq_empty_or_nonempty.imp max_eq_bot.2 max_mem_image_coe
 
-theorem min_mem_insert_top_image_coe (s : Finset α) :
+theorem min_mem_insert_top_image_coe [DecidableEq α] (s : Finset α) :
     s.min ∈ (insert ⊤ (s.image (↑)) : Finset (WithTop α)) :=
   mem_insert.2 <| s.eq_empty_or_nonempty.imp min_eq_top.2 min_mem_image_coe
 
-theorem max'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.erase x).max' s0 ≠ x :=
+theorem max'_erase_ne_self [DecidableEq α] {s : Finset α} (s0 : (s.erase x).Nonempty) :
+    (s.erase x).max' s0 ≠ x :=
   ne_of_mem_erase (max'_mem _ s0)
 
-theorem min'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.erase x).min' s0 ≠ x :=
+theorem min'_erase_ne_self [DecidableEq α] {s : Finset α} (s0 : (s.erase x).Nonempty) :
+    (s.erase x).min' s0 ≠ x :=
   ne_of_mem_erase (min'_mem _ s0)
 
-theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
+theorem max_erase_ne_self [DecidableEq α] {s : Finset α} : (s.erase x).max ≠ x := by
   by_cases! s0 : (s.erase x).Nonempty
   · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
   · rw [s0, max_empty]
     exact WithBot.bot_ne_coe
 
-theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
+theorem min_erase_ne_self [DecidableEq α] {s : Finset α} : (s.erase x).min ≠ x := by
   apply mt (congr_arg (WithTop.map toDual))
   rw [map_toDual_min, image_erase toDual.injective, WithTop.map_coe]
   apply max_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=
+  let : DecidableLT α := decidableLTOfDecidableLE
   have Hne : (s.filter (x < ·)).Nonempty := h.imp fun y hy => mem_filter.2 (by simpa)
   have aux := mem_filter.1 (min'_mem _ Hne)
   ⟨min' _ Hne, aux.1, by simp, fun z hzs hz => min'_le _ _ <| mem_filter.2 ⟨hzs, by simpa⟩⟩
@@ -420,6 +432,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
     rcases h x hx a has hxa fun z hzs hz => hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩
+  classical
   set f : α → WithTop α := fun x => (t.filter fun y => x < y).min
   have f_mono : StrictMonoOn f s := by
     intro x hx y hy hxy
@@ -438,7 +451,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
-theorem card_le_sdiff_of_interleaved {s t : Finset α}
+theorem card_le_sdiff_of_interleaved [DecidableEq α] {s t : Finset α}
     (h :
       ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
@@ -496,6 +509,7 @@ theorem induction_on_max_value
     [DecidableEq ι] (f : ι → α) {motive : Finset ι → Prop} (s : Finset ι) (empty : motive ∅)
     (insert : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → motive s → motive (insert a s)) : motive s := by
   induction s using Finset.eraseInduction with | _ s ihs
+  classical
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, empty]
@@ -527,6 +541,7 @@ variable [LinearOrder α]
 
 theorem exists_max_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
     ∃ x ∈ s, ∀ x' ∈ s, f x' ≤ f x := by
+  classical
   obtain ⟨y, hy⟩ := max_of_nonempty (h.image f)
   rcases mem_image.mp (mem_of_max hy) with ⟨x, hx, rfl⟩
   exact ⟨x, hx, fun x' hx' => le_max_of_eq (mem_image_of_mem f hx') hy⟩

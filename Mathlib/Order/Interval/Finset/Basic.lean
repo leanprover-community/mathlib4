@@ -827,63 +827,71 @@ theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
   rw [← coe_subset, coe_Ico, coe_Ico, Set.Ico_subset_Ico_iff h]
 
-theorem Ico_union_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
+theorem Ico_union_Ico_eq_Ico [DecidableEq α] {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     Ico a b ∪ Ico b c = Ico a c := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico_eq_Ico hab hbc]
 
 @[simp]
-theorem Ioc_union_Ioc_eq_Ioc {a b c : α} (h₁ : a ≤ b) (h₂ : b ≤ c) :
+theorem Ioc_union_Ioc_eq_Ioc [DecidableEq α] {a b c : α} (h₁ : a ≤ b) (h₂ : b ≤ c) :
     Ioc a b ∪ Ioc b c = Ioc a c := by
   rw [← coe_inj, coe_union, coe_Ioc, coe_Ioc, coe_Ioc, Set.Ioc_union_Ioc_eq_Ioc h₁ h₂]
 
-theorem Ico_subset_Ico_union_Ico {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c := by
+theorem Ico_subset_Ico_union_Ico [DecidableEq α] {a b c : α} : Ico a c ⊆ Ico a b ∪ Ico b c := by
   rw [← coe_subset, coe_union, coe_Ico, coe_Ico, coe_Ico]
   exact Set.Ico_subset_Ico_union_Ico
 
-theorem Ico_union_Ico {a b c d : α} (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
+theorem Ico_union_Ico [DecidableEq α] {a b c d : α}
+    (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico h₁ h₂]
 
 /-- This is a special case of `Ico_union_Ico` -/
-theorem Ico_union_Ico' {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
+theorem Ico_union_Ico' [DecidableEq α] {a b c d : α} (hcb : c ≤ b) (had : a ≤ d) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   rw [← coe_inj, coe_union, coe_Ico, coe_Ico, coe_Ico, Set.Ico_union_Ico' hcb had]
 
-theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
+theorem Ico_inter_Ico [DecidableEq α] {a b c d : α} :
+    Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, Set.Ico_inter_Ico]
 
-theorem Ioc_inter_Ioc {a b c d : α} : Ioc a b ∩ Ioc c d = Ioc (max a c) (min b d) := by grind
+theorem Ioc_inter_Ioc [DecidableEq α] {a b c d : α} :
+    Ioc a b ∩ Ioc c d = Ioc (max a c) (min b d) := by grind
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : {x ∈ Ico a b | x < c} = Ico a (min b c) := by grind
+theorem Ico_filter_lt [DecidableLT α] (a b c : α) :
+    {x ∈ Ico a b | x < c} = Ico a (min b c) := by grind
 
 @[simp]
 theorem Ico_filter_le (a b c : α) : {x ∈ Ico a b | c ≤ x} = Ico (max a c) b := by grind
 
 @[simp]
-theorem Ioo_filter_lt (a b c : α) : {x ∈ Ioo a b | x < c} = Ioo a (min b c) := by grind
+theorem Ioo_filter_lt [DecidableLT α] (a b c : α) :
+    {x ∈ Ioo a b | x < c} = Ioo a (min b c) := by grind
 
 @[simp]
-theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
+theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] [DecidableLT α] (a b : α) :
     {x ∈ Iio a | x < b} = Iio (min a b) := by grind
 
 @[simp]
-theorem Ico_sdiff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by grind
+theorem Ico_sdiff_Ico_left [DecidableEq α] (a b c : α) :
+    Ico a b \ Ico a c = Ico (max a c) b := by grind
 
 @[deprecated (since := "2026-06-03")] alias Ico_diff_Ico_left := Ico_sdiff_Ico_left
 
 @[simp]
-theorem Ico_sdiff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) := by grind
+theorem Ico_sdiff_Ico_right [DecidableEq α] (a b c : α) :
+    Ico a b \ Ico c b = Ico a (min b c) := by grind
 
 @[deprecated (since := "2026-06-03")] alias Ico_diff_Ico_right := Ico_sdiff_Ico_right
 
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
+  classical
   simp_rw [disjoint_iff_inter_eq_empty, Ioc_inter_Ioc, Ioc_eq_empty_iff, not_lt]
 
 section LocallyFiniteOrderBot
 
-variable [LocallyFiniteOrderBot α]
+variable [LocallyFiniteOrderBot α] [DecidableEq α]
 
 theorem Iic_sdiff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
   grind
@@ -924,7 +932,7 @@ theorem _root_.Set.infinite_iff_exists_lt [Nonempty α] : s.Infinite ↔ ∀ a, 
 
 end LocallyFiniteOrderTop
 
-variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α] [DecidableEq α]
 
 theorem Ioi_disjUnion_Iio (a : α) :
     (Ioi a).disjUnion (Iio a) (disjoint_Ioi_Iio a) = ({a} : Finset α)ᶜ := by
@@ -1033,12 +1041,14 @@ theorem uIcc_of_not_le (h : ¬a ≤ b) : [[a, b]] = Icc b a :=
 theorem uIcc_of_not_ge (h : ¬b ≤ a) : [[a, b]] = Icc a b :=
   uIcc_of_le <| le_of_not_ge h
 
-theorem uIcc_eq_union : [[a, b]] = Icc a b ∪ Icc b a :=
+theorem uIcc_eq_union [DecidableEq α] : [[a, b]] = Icc a b ∪ Icc b a :=
   coe_injective <| by
     push_cast
     exact Set.uIcc_eq_union
 
-theorem mem_uIcc' : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by simp [uIcc_eq_union]
+theorem mem_uIcc' : a ∈ [[b, c]] ↔ b ≤ a ∧ a ≤ c ∨ c ≤ a ∧ a ≤ b := by
+  classical
+  simp [uIcc_eq_union]
 
 theorem notMem_uIcc_of_lt : c < a → c < b → c ∉ [[a, b]] := by
   rw [mem_uIcc]
@@ -1053,7 +1063,7 @@ theorem uIcc_subset_uIcc_iff_le :
   uIcc_subset_uIcc_iff_le'
 
 /-- A sort of triangle inequality. -/
-theorem uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
+theorem uIcc_subset_uIcc_union_uIcc [DecidableEq α] : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
   coe_subset.1 <| by
     push_cast
     exact Set.uIcc_subset_uIcc_union_uIcc

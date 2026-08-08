@@ -145,6 +145,7 @@ end Preorder
 theorem partialSups_succ [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccOrder ι]
     (f : ι → α) (i : ι) :
     partialSups f (Order.succ i) = partialSups f i ⊔ f (Order.succ i) := by
+  classical
   suffices Iic (Order.succ i) = Iic i ∪ {Order.succ i} by simp only [partialSups_apply, this,
     sup'_union nonempty_Iic ⟨_, mem_singleton_self _⟩ f, sup'_singleton]
   ext

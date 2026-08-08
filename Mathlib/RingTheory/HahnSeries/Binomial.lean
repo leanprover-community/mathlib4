@@ -58,6 +58,7 @@ theorem binomialFamily_apply_of_orderTop_nonpos {x : A⟦Γ⟧} (hx : ¬ 0 < (x 
 theorem binomialFamily_orderTop_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop) (r : R) {n : ℕ}
     (hn : 0 < n) :
     0 < (binomialFamily x r n).orderTop := by
+  classical
   simp only [binomialFamily, smulFamily_toFun, PowerSeries.binomialSeries_coeff, powers_toFun, hx,
     ↓reduceIte, smul_assoc, one_smul]
   have : n ≠ 0 := by exact Nat.ne_zero_of_lt hn

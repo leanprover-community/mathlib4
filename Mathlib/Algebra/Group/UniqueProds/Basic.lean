@@ -581,6 +581,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
     rw [card_pos] at hA hB
     rw [← card_product] at hc
+    classical
     obtain ⟨a0, ha0, b0, hb0, he0⟩ := mem_mul.mp (max'_mem _ <| hA.mul hB)
     obtain ⟨a1, ha1, b1, hb1, he1⟩ := mem_mul.mp (min'_mem _ <| hA.mul hB)
     have : UniqueMul A B a0 b0 := by

@@ -125,6 +125,7 @@ theorem cardSupp_hsum_powers_le [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
     (x : R⟦Γ⟧) : (SummableFamily.powers x).hsum.cardSupp ≤ max ℵ₀ x.cardSupp := by
   grw [← lift_uzero (cardSupp _), ← sum_pow_le_max_aleph0, cardSupp_hsum_le, sum_le_sum]
   intro i
+  classical
   rw [SummableFamily.powers_toFun]
   split_ifs
   · exact cardSupp_pow_le ..

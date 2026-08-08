@@ -96,6 +96,7 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   have hy' : ∀ k, abv (bS.repr a k) ≤ y' := by
     intro k
     exact @Finset.le_max' ℤ _ _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
+  classical
   have : (y' : T) < y := by
     rw [y'_def,
       ← Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)

@@ -75,8 +75,8 @@ private lemma innerProductForm_symm (x y : ⋀[ℝ]^n E) :
   congr($flip_innerProductForm x y)
 
 @[simp]
-private lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder ι] {v : ι → E}
-    (hv : Orthonormal ℝ v) (s t : Set.powersetCard ι n) :
+private lemma innerProductForm_ιMulti_family_of_orthonormal {ι : Type*} [LinearOrder ι]
+    [DecidableEq ι] {v : ι → E} (hv : Orthonormal ℝ v) (s t : Set.powersetCard ι n) :
     innerProductForm (ιMulti_family ℝ n v s) (ιMulti_family ℝ n v t) = if s = t then 1 else 0 := by
   simp only [ιMulti_family]
   split_ifs with h
@@ -95,6 +95,7 @@ private lemma innerProductForm_eq_sum {ι : Type*} [Fintype ι] [LinearOrder ι]
       ∑ s, (b.toBasis.exteriorPower n).repr y s * (b.toBasis.exteriorPower n).repr x s := by
   conv_lhs =>
     rw [← (b.toBasis.exteriorPower n).sum_repr x, ← (b.toBasis.exteriorPower n).sum_repr y]
+  classical
   simp
 
 private lemma innerProductForm_self (x : ⋀[ℝ]^n E) {ι : Type*} [Fintype ι] [LinearOrder ι]
@@ -142,6 +143,7 @@ orthonormal basis of `⋀[ℝ]^n E`, indexed by `n`-element subsets of the index
 def OrthonormalBasis.exteriorPower (b : OrthonormalBasis I ℝ E) (n : ℕ) :
     OrthonormalBasis (Set.powersetCard I n) ℝ (⋀[ℝ]^n E) :=
   (b.toBasis.exteriorPower n).toOrthonormalBasis <| by
+    classical
     rw [orthonormal_iff_ite]
     intro i j
     rw [exteriorPower.coe_basis, OrthonormalBasis.coe_toBasis]

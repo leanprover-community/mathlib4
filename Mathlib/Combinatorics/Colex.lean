@@ -197,15 +197,16 @@ lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
       lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by
   simp [le_def, Set.subset_def, and_assoc]
 
-section DecidableEq
-variable [DecidableEq α]
-
 instance instDecidableLE [DecidableLE α] : DecidableLE (Colex (Finset α)) :=
+  let : DecidableEq α := decidableEqOfDecidableLE
   fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
 instance instDecidableLT [DecidableLE α] : DecidableLT (Colex (Finset α)) :=
   decidableLTOfDecidableLE
+
+section DecidableEq
+variable [DecidableEq α]
 
 /-- The colexicographic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -270,18 +271,19 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
   le_total s t := by
     obtain rfl | hts := eq_or_ne t s
     · simp
+    classical
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
       (symmDiff_nonempty.2 <| ofColex.injective.ne_iff.2 hts)
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
-  toDecidableLE := instDecidableLE
-  toDecidableLT := instDecidableLT
+  toDecidableLE :=instDecidableLE
 
 open scoped symmDiff
 
 set_option backward.privateInPublic true in
-private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
+omit [LinearOrder α] in
+private lemma max_mem_aux [DecidableEq α] {s t : Colex (Finset α)} (hst : s ≠ t) :
     (ofColex s ∆ ofColex t).Nonempty := by
   simpa
 
@@ -294,7 +296,7 @@ lemma lt_iff_exists_forall_lt {s t : Colex (Finset α)} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
   toColex_lt_toColex_iff_exists_forall_lt
 
-lemma toColex_le_toColex_iff_max'_mem :
+lemma toColex_le_toColex_iff_max'_mem [DecidableEq α] :
     toColex s ≤ toColex t ↔ ∀ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
   refine ⟨fun h hst ↦ ?_, fun h a has hat ↦ ?_⟩
   · set m := (s ∆ t).max' (symmDiff_nonempty.2 hst)
@@ -310,21 +312,21 @@ lemma toColex_le_toColex_iff_max'_mem :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-lemma le_iff_max'_mem {s t : Colex (Finset α)} :
+lemma le_iff_max'_mem {s t : Colex (Finset α)} [DecidableEq α] :
     s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
   toColex_le_toColex_iff_max'_mem
 
-lemma toColex_lt_toColex_iff_max'_mem :
+lemma toColex_lt_toColex_iff_max'_mem [DecidableEq α] :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
   rw [lt_iff_le_and_ne, toColex_le_toColex_iff_max'_mem]; aesop
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-lemma lt_iff_max'_mem {s t : Colex (Finset α)} :
+lemma lt_iff_max'_mem {s t : Colex (Finset α)} [DecidableEq α] :
     s < t ↔ ∃ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
   rw [lt_iff_le_and_ne, le_iff_max'_mem]; aesop
 
-lemma lt_iff_exists_filter_lt :
+lemma lt_iff_exists_filter_lt [DecidableEq α] [DecidableLT α] :
     toColex s < toColex t ↔ ∃ w ∈ t \ s, {a ∈ s | w < a} = {a ∈ t | w < a} := by
   simp only [lt_iff_exists_forall_lt, mem_sdiff, filter_inj, and_assoc]
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -343,7 +345,8 @@ lemma lt_iff_exists_filter_lt :
     exact hat <| (hw <| hwa.lt_of_ne <| ne_of_mem_of_not_mem hwt hat).1 has
 
 /-- If `s ≤ t` in colex and `#s ≤ #t`, then `s \ {a} ≤ t \ {min t}` for any `a ∈ s`. -/
-lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (ha : a ∈ s) :
+lemma erase_le_erase_min' [DecidableEq α]
+    (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (ha : a ∈ s) :
     toColex (s.erase a) ≤
       toColex (t.erase <| min' t <| card_pos.1 <| (card_pos.2 ⟨a, ha⟩).trans_le hcard) := by
   generalize_proofs ht
@@ -354,6 +357,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   · exact (erase_le_erase ha <| min'_mem _ _).2 <| min'_le _ _ <| ha
   -- If `s ≠ t`, call `w` the colex witness. Case on whether `w < a` or `a < w`
   replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
+  classical
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
   obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_gt
@@ -389,16 +393,16 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
       exact hbt <| (hw <| hwb.lt_of_ne <| ne_of_mem_of_not_mem hwt hbt).1 <| mem_of_mem_erase hbs
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-lemma toColex_image_le_toColex_image (hf : StrictMono f) :
+lemma toColex_image_le_toColex_image [DecidableEq β] (hf : StrictMono f) :
     toColex (s.image f) ≤ toColex (t.image f) ↔ toColex s ≤ toColex t := by
   simp [toColex_le_toColex, hf.le_iff_le, hf.injective.eq_iff]
 
 /-- Strictly monotone functions preserve the colex ordering. -/
-lemma toColex_image_lt_toColex_image (hf : StrictMono f) :
+lemma toColex_image_lt_toColex_image [DecidableEq β] (hf : StrictMono f) :
     toColex (s.image f) < toColex (t.image f) ↔ toColex s < toColex t :=
   lt_iff_lt_of_le_iff_le <| toColex_image_le_toColex_image hf
 
-lemma toColex_image_ofColex_strictMono (hf : StrictMono f) :
+lemma toColex_image_ofColex_strictMono [DecidableEq β] (hf : StrictMono f) :
     StrictMono fun s ↦ toColex <| image f <| ofColex s :=
   fun _s _t ↦ (toColex_image_lt_toColex_image hf).2
 
@@ -428,6 +432,7 @@ def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
 /-- Initial segments are nested in some way. In particular, if they're the same size they're equal.
 -/
 lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) : 𝒜₁ ⊆ 𝒜₂ ∨ 𝒜₂ ⊆ 𝒜₁ := by
+  classical
   simp_rw [← sdiff_eq_empty_iff_subset]
   by_contra! h
   have ⟨⟨s, hs⟩, t, ht⟩ := h

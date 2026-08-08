@@ -151,8 +151,6 @@ instance : LinearOrder String where
     simp only [le_iff_toList_le]
     apply le_total
   toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := String.decidableLT
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]

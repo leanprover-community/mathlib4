@@ -325,7 +325,7 @@ position, i.e. bounds for the term `|v - (GenContFract.of v).convs n|`.
 
 /-- This lemma follows from the finite correctness proof, the determinant equality, and
 by simplifying the difference. -/
-theorem sub_convs_eq {ifp : IntFractPair K}
+theorem sub_convs_eq [DecidableEq K] {ifp : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp) :
     let g := of v
     let B := (g.contsAux (n + 1)).b
@@ -422,7 +422,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   let den' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
   -- now we can use `sub_convs_eq` to simplify our goal
-  suffices |(-1) ^ n / den'| ≤ 1 / den by grind [sub_convs_eq]
+  suffices |(-1) ^ n / den'| ≤ 1 / den by classical grind [sub_convs_eq]
   -- derive some tedious inequalities that we need to rewrite our goal
   have nextConts_b_ineq : (fib (n + 2) : K) ≤ pred_conts.b + gp.b * conts.b := by
     have : (fib (n + 2) : K) ≤ nextConts.b :=

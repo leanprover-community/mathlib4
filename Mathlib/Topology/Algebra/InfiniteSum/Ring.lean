@@ -330,6 +330,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   obtain ⟨a, ha⟩ := hsum
   convert! hx.tprod_eq
   unfold HasProd at hx
+  classical
   conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
   rw [ha.tsum_eq]
   refine (tendsto_nhds_unique (hx.comp tendsto_finset_Iic_atTop_atTop) ?_).symm

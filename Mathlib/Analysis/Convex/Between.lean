@@ -791,6 +791,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [IsTorsionFree R V]
   rcases h₁i with ⟨r₁, ⟨hr₁0, hr₁1⟩, rfl⟩
   rcases h₂i with ⟨r₂, ⟨hr₂0, hr₂1⟩, rfl⟩
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
+  classical
   have h₁s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'

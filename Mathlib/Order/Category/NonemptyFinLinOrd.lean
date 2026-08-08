@@ -144,6 +144,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     dsimp only [Function.Surjective]
     by_contra! ⟨m, hm⟩
     let Y := of (ULift (Fin 2))
+    classical
     let p₁ : B ⟶ Y := ofHom
       ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
@@ -202,6 +203,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
 
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
+    classical
     let I := of (Set.image f ⊤)
     let e : X ⟶ I := ofHom ⟨fun x => ⟨f x, ⟨x, by tauto⟩⟩, fun x₁ x₂ h => f.hom.hom.monotone h⟩
     let m : I ⟶ Y := ofHom ⟨fun y => y.1, by tauto⟩

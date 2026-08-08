@@ -715,9 +715,10 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
 
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
 return a junk value given by pretending `x = 0`. -/
-@[simps]
 def powers (x : R⟦Γ⟧) : SummableFamily Γ R ℕ where
-  toFun n := (if 0 < x.orderTop then x else 0) ^ n
+  toFun n :=
+    let : DecidableLT Γ := decidableLTOfDecidableLE
+    (if 0 < x.orderTop then x else 0) ^ n
   isPWO_iUnion_support' := by
     by_cases h : 0 < x.orderTop
     · simp only [h, ↓reduceIte]
@@ -732,8 +733,15 @@ def powers (x : R⟦Γ⟧) : SummableFamily Γ R ℕ where
     · simp only [h, ↓reduceIte]
       exact pow_finite_co_support (orderTop_zero (R := R) (Γ := Γ) ▸ WithTop.top_pos) g
 
+@[simp]
+theorem powers_toFun [DecidableLT Γ] (x : R⟦Γ⟧) (n : ℕ) :
+    (powers x) n = (if 0 < x.orderTop then x else 0) ^ n := by
+  cases Subsingleton.elim ‹_› decidableLTOfDecidableLE
+  rfl
+
 theorem powers_of_orderTop_pos {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (n : ℕ) :
     powers x n = x ^ n := by
+  classical
   simp [hx]
 
 theorem powers_of_not_orderTop_pos {x : R⟦Γ⟧} (hx : ¬ 0 < x.orderTop) :
@@ -753,6 +761,7 @@ include hx in
 @[simp]
 theorem coe_powers : ⇑(powers x) = HPow.hPow x := by
   ext1 n
+  classical
   simp [hx]
 
 include hx in

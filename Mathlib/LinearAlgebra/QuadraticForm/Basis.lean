@@ -82,14 +82,18 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N
 Unlike `QuadraticMap.associated`, this is not symmetric; however, as a result it can be used even
 in characteristic two. When considered as a matrix, the form is triangular. -/
 noncomputable def toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) : LinearMap.BilinMap R M N :=
+  let : DecidableEq ι := decidableEqOfDecidableLE
+  let : DecidableLT ι := decidableLTOfDecidableLE
   bm.constr (S := R) fun i =>
     bm.constr (S := R) fun j =>
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0
 
-theorem toBilin_apply (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
+theorem toBilin_apply [DecidableEq ι] [DecidableLT ι]
+    (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) :
     Q.toBilin bm (bm i) (bm j) =
       if i = j then Q (bm i) else if i < j then polar Q (bm i) (bm j) else 0 := by
-  simp [toBilin]
+  simp only [toBilin, Basis.constr_basis]
+  congr!
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
@@ -97,6 +101,7 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   ext x
   rw [← bm.linearCombination_repr x, LinearMap.BilinMap.toQuadraticMap_apply,
       Finsupp.linearCombination_apply, Finsupp.sum]
+  classical
   simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, map_smul, toBilin_apply,
     smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
     Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, if_true]
@@ -124,6 +129,7 @@ theorem _root_.LinearMap.BilinMap.toQuadraticMap_surjective [Module.Free R M] :
 lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
     (Q₁ + Q₂).toBilin bm = Q₁.toBilin bm + Q₂.toBilin bm := by
   refine bm.ext fun i => bm.ext fun j => ?_
+  classical
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_add]
   · simp [toBilin_apply]
@@ -136,6 +142,7 @@ variable [Module S N] [IsScalarTower S R N]
 lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
     (s • Q).toBilin bm = s • Q.toBilin bm := by
   refine bm.ext fun i => bm.ext fun j => ?_
+  classical
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
   · simp [toBilin_apply]

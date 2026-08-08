@@ -42,7 +42,10 @@ namespace LinearOrderFromLE
 def X := Nat deriving LE, Std.IsLinearOrder, DecidableLE
 instance h : LinearOrder X := .ofStd X {}
 example : h.toLE = instLEX := rfl
-example {a b} : h.toOrd.compare a b = compareOfLessAndEq a b := rfl
+example {a b} : h.toOrd.compare a b =
+    let : DecidableEq X := decidableEqOfDecidableLE
+    let : DecidableLT X := decidableLTOfDecidableLE
+    compareOfLessAndEq a b := rfl
 
 end LinearOrderFromLE
 
@@ -56,8 +59,6 @@ deriving
   Min, Max, Std.LawfulOrderLeftLeaningMin, Std.LawfulOrderLeftLeaningMax
 attribute [irreducible] instDecidableEqX instDecidableLTX instMinX instMaxX
 instance h : LinearOrder X := .ofStd X {}
-example : h.toDecidableEq = instDecidableEqX := rfl
-example : h.toDecidableLT = instDecidableLTX := rfl
 example : h.toMin = instMinX := rfl
 example : h.toMax = instMaxX := rfl
 

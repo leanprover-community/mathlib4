@@ -233,15 +233,20 @@ variable [Fact (Even (Fintype.card n))] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- In case of an even dimension, the sign of the determinant of `g : PGL(n, R)` is well-defined. -/
 def signDet : PGL(n, R) →* SignTypeˣ :=
+  let : DecidableLT R := decidableLTOfDecidableLE
   lift ((Units.map signHom.toMonoidHom).comp GeneralLinearGroup.det) <| by
     ext u
     simp [← sign_pow, Even.pow_pos Fact.out]
 
-theorem signDet_mk (g : GL n R) : signDet (mk g) = Units.map signHom.toMonoidHom g.det := by
+theorem signDet_mk [DecidableLT R] (g : GL n R) :
+    signDet (mk g) = Units.map signHom.toMonoidHom g.det := by
+  cases Subsingleton.elim ‹_› decidableLTOfDecidableLE
   rfl
 
 @[simp]
-theorem val_signDet_mk (g : GL n R) : (signDet (mk g) : SignType) = .sign g.det.val := by
+theorem val_signDet_mk [DecidableLT R] (g : GL n R) :
+    (signDet (mk g) : SignType) = .sign g.det.val := by
+  cases Subsingleton.elim ‹_› decidableLTOfDecidableLE
   rfl
 
 end ProjGenLinGroup

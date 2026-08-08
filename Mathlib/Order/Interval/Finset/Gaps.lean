@@ -47,7 +47,8 @@ section IntervalGapsWithin
 
 namespace Finset
 
-variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : F.card = k) (a b : α)
+variable {α : Type*} [LinearOrder α]
+  (F : Finset (α × α)) {k : ℕ} (h : F.card = k) (a b : α)
   (j : ℕ)
 
 /-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.

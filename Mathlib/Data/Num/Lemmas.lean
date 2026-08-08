@@ -384,12 +384,7 @@ instance linearOrder : LinearOrder Num :=
       intro a b
       transfer_rw
       apply le_total
-    toDecidableLT := Num.decidableLT
-    toDecidableLE := Num.decidableLE
-    -- This is relying on an automatically generated instance name,
-    -- generated in a `deriving` handler.
-    -- See https://github.com/leanprover/lean4/issues/2343
-    toDecidableEq := instDecidableEqNum }
+    toDecidableLE := Num.decidableLE }
 
 instance isStrictOrderedRing : IsStrictOrderedRing Num where
   zero_le_one := by decide
@@ -556,9 +551,7 @@ instance linearOrder : LinearOrder PosNum where
     intro a b
     transfer_rw
     apply le_total
-  toDecidableLT := by infer_instance
   toDecidableLE := by infer_instance
-  toDecidableEq := by infer_instance
 
 @[simp]
 theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, ← of_to_nat n]

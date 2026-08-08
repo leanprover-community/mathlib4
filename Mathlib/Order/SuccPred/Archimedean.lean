@@ -120,15 +120,12 @@ lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ 
 This isn't an instance due to a loop with `LinearOrder`.
 -/
 -- See note [reducible non-instances]
-abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
-     [DecidableEq α] [DecidableLE α] [DecidableLT α]
-     [IsCodirectedOrder α] : LinearOrder α where
+abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α] [DecidableLE α]
+    [IsCodirectedOrder α] : LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
-  toDecidableEq := inferInstance
   toDecidableLE := inferInstance
-  toDecidableLT := inferInstance
 
 /--
 This isn't an instance due to a loop with `LinearOrder`.

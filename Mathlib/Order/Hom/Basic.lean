@@ -1117,8 +1117,8 @@ theorem toRelIsoLT_ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
 
 /-- To show that `f : α → β`, `g : β → α` make up an order isomorphism of linear orders,
 it suffices to prove `cmp a (g b) = cmp (f a) b`. -/
-def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β → α)
-    (h : ∀ (a : α) (b : β), cmp a (g b) = cmp (f a) b) : α ≃o β :=
+def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] [DecidableLT α] [DecidableLT β]
+    (f : α → β) (g : β → α) (h : ∀ (a : α) (b : β), cmp a (g b) = cmp (f a) b) : α ≃o β :=
   have gf : ∀ a : α, a = g (f a) := by
     intro
     rw [← cmp_eq_eq_iff, h, cmp_self_eq_eq]

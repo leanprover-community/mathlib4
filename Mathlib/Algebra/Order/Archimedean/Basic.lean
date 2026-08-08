@@ -196,6 +196,7 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] [E
 natural-number powers of every y greater than one. -/
 theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
   have h : ∃ n : ℕ, x < y ^ n := pow_unbounded_of_one_lt _ hy
+  classical
   exact
       let n := Nat.find h
       have hn : x < y ^ n := Nat.find_spec h
@@ -272,6 +273,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hb�
     (hc₀ : 0 < c) (hc₁ : c < 1) :
     ∃ n : ℕ, a < c ^ n ∧ c ^ n < b := by
   have := exists_pow_lt_of_lt_one hb₀ hc₁
+  classical
   refine ⟨Nat.find this, h.trans_le ?_, Nat.find_spec this⟩
   by_contra! H
   have hn : Nat.find this ≠ 0 := by

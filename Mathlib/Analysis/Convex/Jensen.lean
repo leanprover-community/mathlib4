@@ -198,6 +198,7 @@ theorem StrictConvexOn.map_sum_eq_iff_of_nonneg (hf : StrictConvexOn 𝕜 s f) (
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
       ∀ ⦃j⦄, j ∈ t → w j ≠ 0 → ∀ ⦃k⦄, k ∈ t → w k ≠ 0 → p j = p k := by
+  classical
   have :
       f (∑ i ∈ t with w i ≠ 0, w i • p i) = ∑ i ∈ t with w i ≠ 0, w i • f (p i) ↔
         ∀ ⦃j : ι⦄, j ∈ {x ∈ t | w x ≠ 0} → ∀ ⦃k : ι⦄, k ∈ {x ∈ t | w x ≠ 0} → p j = p k :=
@@ -278,6 +279,7 @@ lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ 
       ∀ j ∈ t, w j ≠ 0 → p j = ∑ i ∈ t, w i • p i := by
   have hw (i) (_ : i ∈ t) : w i • p i ≠ 0 → w i ≠ 0 := by simp_all
   have hw' (i) (_ : i ∈ t) : w i • f (p i) ≠ 0 → w i ≠ 0 := by simp_all
+  classical
   rw [← sum_filter_of_ne hw, ← sum_filter_of_ne hw', hf.map_sum_eq_iff]
   · simp
   · simp +contextual [(h₀ _ _).lt_iff_ne']
@@ -313,6 +315,7 @@ theorem StrictConvexOn.map_sum_lt_iff_of_nonneg' (hf : StrictConvexOn 𝕜 s f) 
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) < ∑ i ∈ t, w i • f (p i) ↔
       ∃ j ∈ t, w j ≠ 0 ∧ p j ≠ ∑ i ∈ t, w i • p i := by
+  classical
   have :
       f (∑ i ∈ t with w i ≠ 0, w i • p i) < ∑ i ∈ t with w i ≠ 0, w i • f (p i) ↔
         ∃ j ∈ {x ∈ t | w x ≠ 0}, p j ≠ ∑ i ∈ t with w i ≠ 0, w i • p i :=
@@ -357,6 +360,7 @@ lemma ConvexOn.exists_ge_of_centerMass {t : Finset ι} (h : ConvexOn 𝕜 s f)
     ∃ i ∈ t, f (t.centerMass w p) ≤ f (p i) := by
   set y := t.centerMass w p
   -- TODO: can `rsuffices` be used to write the `exact` first, then the proof of this obtain?
+  classical
   obtain ⟨i, hi, hfi⟩ : ∃ i ∈ {i ∈ t | w i ≠ 0}, w i • f y ≤ w i • (f ∘ p) i := by
     have hw' : (0 : 𝕜) < ∑ i ∈ t with w i ≠ 0, w i := by rwa [sum_filter_ne_zero]
     refine exists_le_of_sum_le (nonempty_of_sum_ne_zero hw'.ne') ?_

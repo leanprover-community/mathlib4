@@ -43,7 +43,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [OrderTopology α]
+variable [LinearOrder α] [DecidableLT α] [OrderTopology α]
 
 theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignType.sign a := by
   rcases h.lt_or_gt with (h_neg | h_pos)

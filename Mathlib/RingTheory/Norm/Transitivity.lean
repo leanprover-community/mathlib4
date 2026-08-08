@@ -88,6 +88,7 @@ scoped notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) Fals
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
+  classical
   trans (M * auxMat M k).det
   · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
       auxMat_toSquareBlock_ne, auxMat_toSquareBlock_eq]
@@ -128,6 +129,7 @@ lemma eval_zero_comp_det :
 theorem comp_det_mul_pow :
     ((M.map f).comp m m n n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
       (f (M k k)).det * (((mulAuxMatBlock).map f).comp _ _ n n R).det := by
+  classical
   trans (((M * auxMat M k).map f).comp m m n n R).det
   · simp_rw [← f.mapMatrix_apply, ← compRingEquiv_apply, map_mul, det_mul, f.mapMatrix_apply,
       compRingEquiv_apply, ((auxMat_blockTriangular M k).map f).comp.det_fintype, Fintype.prod_Prop,

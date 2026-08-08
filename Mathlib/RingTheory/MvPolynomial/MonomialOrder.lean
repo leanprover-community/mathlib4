@@ -853,6 +853,7 @@ variable (m) in
 `0` has degree `⊥`, which is not equal to `0`. `MonomialOrder.withBotDegree` is to
 `MonomialOrder.degree` as `Polynomial.degree` is to `Polynomial.natDegree`. -/
 noncomputable def withBotDegree : WithBot (σ →₀ ℕ) :=
+  let : DecidableEq m.syn := decidableEqOfDecidableLE
   f.support.image m.toSyn |>.max.map m.toSyn.symm
 
 lemma withBotDegree_eq [Decidable (f = 0)] :

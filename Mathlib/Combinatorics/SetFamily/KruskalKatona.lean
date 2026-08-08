@@ -51,7 +51,7 @@ open scoped FinsetFamily
 
 namespace Finset
 namespace Colex
-variable {α : Type*} [LinearOrder α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
+variable {α : Type*} [LinearOrder α] [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
 /-- This is important for iterating Kruskal-Katona: the shadow of an initial segment is also an
 initial segment. -/
@@ -68,6 +68,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
     · simpa [ha] using erase_le_erase_min' hts hst.ge (mem_insert_self _ _)
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
+  classical
   simp_rw [le_iff_eq_or_lt, lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc]
   simp only [toColex_inj, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
@@ -122,7 +123,7 @@ end Colex
 open Finset.Colex UV
 open scoped FinsetFamily
 
-variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
+variable {α : Type*} [LinearOrder α] [DecidableEq α] {s U V : Finset α} {n : ℕ}
 
 namespace UV
 
@@ -131,6 +132,7 @@ the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
     (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
   rw [compress, ite_ne_right_iff] at hA
+  classical
   rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
   refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
@@ -145,6 +147,7 @@ private def UsefulCompression (U V : Finset α) : Prop :=
 
 private instance UsefulCompression.instDecidableRel :
     DecidableRel (α := Finset α) UsefulCompression :=
+  let : DecidableLT α := decidableLTOfDecidableLE
   fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease

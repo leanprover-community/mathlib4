@@ -61,6 +61,7 @@ lemma ιMultiDual_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     (b (powersetCard.ofFinEmbEquiv.symm s i))) = 1 by
     simp_rw [Function.comp_apply, this, Matrix.det_one]
   ext
+  classical
   simp [Matrix.one_apply, Finsupp.single_apply]
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`

@@ -277,14 +277,16 @@ theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
 
 theorem Ico_add_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
     Ico a b + Ico b c = Ico a c := by
+  classical
   rw [add_eq_union_iff_disjoint.2 (Ico_disjoint_Ico le_rfl), Ico, Ico, Ico, ← Finset.union_val,
     Finset.Ico_union_Ico_eq_Ico hab hbc]
 
-theorem Ico_inter_Ico : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
+theorem Ico_inter_Ico [DecidableEq α] : Ico a b ∩ Ico c d = Ico (max a c) (min b d) := by
   rw [Ico, Ico, Ico, ← Finset.inter_val, Finset.Ico_inter_Ico]
 
 @[simp]
-theorem Ico_filter_lt (a b c : α) : ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
+theorem Ico_filter_lt [DecidableLT α] (a b c : α) :
+    ((Ico a b).filter fun x => x < c) = Ico a (min b c) := by
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_lt]
 
 @[simp]
@@ -292,11 +294,11 @@ theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (
   rw [Ico, Ico, ← Finset.filter_val, Finset.Ico_filter_le]
 
 @[simp]
-theorem Ico_sub_Ico_left (a b c : α) : Ico a b - Ico a c = Ico (max a c) b := by
+theorem Ico_sub_Ico_left [DecidableEq α] (a b c : α) : Ico a b - Ico a c = Ico (max a c) b := by
   rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_left]
 
 @[simp]
-theorem Ico_sub_Ico_right (a b c : α) : Ico a b - Ico c b = Ico a (min b c) := by
+theorem Ico_sub_Ico_right [DecidableEq α] (a b c : α) : Ico a b - Ico c b = Ico a (min b c) := by
   rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_right]
 
 end LinearOrder

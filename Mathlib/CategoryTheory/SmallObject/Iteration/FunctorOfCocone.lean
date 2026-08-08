@@ -36,6 +36,7 @@ namespace ofCocone
 
 /-- Auxiliary definition for `ofCocone`. -/
 def obj (i : J) : C :=
+  let : DecidableLT J := decidableLTOfDecidableLE
   if hi : i < j then
     F.obj ⟨i, hi⟩
   else c.pt
@@ -53,6 +54,7 @@ def objIsoPt :
 /-- Auxiliary definition for `ofCocone`. -/
 def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     obj c i₁ ⟶ obj c i₂ :=
+  let : DecidableLT J := decidableLTOfDecidableLE
   if h₂ : i₂ < j then
     (objIso c i₁ (lt_of_le_of_lt hi h₂)).hom ≫ F.map (homOfLE hi) ≫ (objIso c i₂ h₂).inv
   else

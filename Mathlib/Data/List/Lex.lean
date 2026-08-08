@@ -141,6 +141,8 @@ end Lex
 instance [LinearOrder α] : LinearOrder (List α) :=
   have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
     { isStrictWeakOrder_of_isOrderConnected with }
+  letI : DecidableEq α := decidableEqOfDecidableLE
+  letI : DecidableLT α := decidableLTOfDecidableLE
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean

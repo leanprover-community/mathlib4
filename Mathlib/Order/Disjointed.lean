@@ -257,7 +257,8 @@ lemma sup_Ioc_disjointed_of_monotone
   | succ m hm ih =>
     by_cases h'm : IsMax m
     · simpa [Order.succ_eq_iff_isMax.mpr h'm] using ih
-    · rw [← Finset.insert_Ioc_right_eq_Ioc_succ_of_not_isMax hm h'm]
+    · classical
+      rw [← Finset.insert_Ioc_right_eq_Ioc_succ_of_not_isMax hm h'm]
       simp only [sup_insert, hf.disjointed_succ h'm, ih]
       exact sdiff_sup_sdiff_cancel (hf (Order.le_succ m)) (hf hm)
 

@@ -288,6 +288,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         gcongr
         apply Nat.le_add_right
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
+  classical
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)

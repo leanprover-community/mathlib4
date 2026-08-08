@@ -63,10 +63,6 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   protected le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableLE : DecidableLE α
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
@@ -82,9 +78,7 @@ attribute [to_dual existing] LinearOrder.toMax
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [instance_reducible, instance 900] LinearOrder.toDecidableLT
 attribute [instance_reducible, instance 900] LinearOrder.toDecidableLE
-attribute [instance_reducible, instance 900] LinearOrder.toDecidableEq
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
@@ -223,14 +217,14 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+theorem cmp_eq_compare [DecidableLT α] (a b : α) : cmp a b = compare a b := by
   refine ((compare_iff ..).2 ?_).symm
   unfold cmp cmpUsing; split_ifs with h1 h2
   · exact h1
   · exact h2
   · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
 
-theorem compare_eq_compareOfLessAndEq (a b : α) :
+theorem compare_eq_compareOfLessAndEq [DecidableLT α] [DecidableEq α] (a b : α) :
     compare a b = compareOfLessAndEq a b := by
   rw [compare_iff, compareOfLessAndEq]
   split_ifs with h1 h2
@@ -238,11 +232,11 @@ theorem compare_eq_compareOfLessAndEq (a b : α) :
   · exact h2
   · exact (lt_or_gt_of_ne h2).resolve_left h1
 
-theorem cmp_eq_compareOfLessAndEq (a b : α) :
+theorem cmp_eq_compareOfLessAndEq [DecidableLT α] [DecidableEq α] (a b : α) :
     cmp a b = compareOfLessAndEq a b := by
   rw [cmp_eq_compare, compare_eq_compareOfLessAndEq]
 
-instance : Std.LawfulBCmp (compare (α := α)) where
+instance [DecidableEq α] : Std.LawfulBCmp (compare (α := α)) where
   eq_swap {a b} := by
     cases _ : compare b a <;>
       simp_all [Ordering.swap, compare_eq_iff_eq, compare_lt_iff_lt, compare_gt_iff_gt]

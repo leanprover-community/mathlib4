@@ -788,8 +788,7 @@ protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
         else
           isFalse fun H =>
             hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
-              (eq_bot_or_eq_top a) ha)) H))
-    toDecidableEq := ‹_› }
+              (eq_bot_or_eq_top a) ha)) H)) }
 
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩

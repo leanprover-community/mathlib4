@@ -873,7 +873,7 @@ lemma stoppedProcess_div [Div β] :
 @[simp] lemma stoppedProcess_const_top : stoppedProcess u (fun _ ↦ ⊤) = u := by
   ext; simp [stoppedProcess]
 
-theorem stoppedValue_stoppedProcess :
+theorem stoppedValue_stoppedProcess [DecidableEq ι] :
     stoppedValue (stoppedProcess u τ) σ =
       fun ω ↦ if σ ω ≠ ⊤ then stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω
       else stoppedValue u (fun ω ↦ min (Classical.arbitrary ι) (τ ω)) ω := by
@@ -883,12 +883,12 @@ theorem stoppedValue_stoppedProcess :
 
 theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
     stoppedValue (stoppedProcess u τ) σ ω = stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω := by
-  simp [stoppedValue_stoppedProcess, hω]
+  classical simp [stoppedValue_stoppedProcess, hω]
 
 theorem stoppedValue_stoppedProcess_ae_eq {μ : Measure Ω}
     (hσ : ∀ᵐ ω ∂μ, σ ω ≠ ⊤) :
     stoppedValue (stoppedProcess u τ) σ =ᵐ[μ] stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) := by
-  filter_upwards [hσ] with ω hσ using by simp [stoppedValue_stoppedProcess, hσ]
+  classical filter_upwards [hσ] with ω hσ using by simp [stoppedValue_stoppedProcess, hσ]
 
 theorem stoppedProcess_eq_of_le {i : ι} {ω : Ω} (h : i ≤ τ ω) :
     stoppedProcess u τ i ω = u i ω := by simp [stoppedProcess, min_eq_left h]
@@ -1120,7 +1120,8 @@ theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid
   lift τ ω to ι using h_top with i hi
   exact ⟨i, mod_cast hbdd, rfl⟩
 
-theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
+theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [DecidableLT ι]
+    [AddCommMonoid E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
     stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
       ∑ i ∈ s with i < n, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1162,6 +1163,7 @@ theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddComm
     have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at h
     lift τ ω to ι using h_top with i hi
     exact ⟨i, mod_cast h, rfl⟩
+  classical
   rw [stoppedProcess_eq_of_mem_finset n h_mem]
   congr with i
   simp
@@ -1218,6 +1220,7 @@ variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [FirstCountab
 theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
     (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
     MemLp (stoppedProcess u τ n) p μ := by
+  classical
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine MemLp.add ?_ ?_
   · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)

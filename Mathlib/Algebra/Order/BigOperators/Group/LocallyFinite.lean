@@ -109,6 +109,7 @@ variable [LocallyFiniteOrder α] [AddMonoidWithOne α] [SuccAddOrder α] [NoMaxO
 @[to_additive (dont_translate := α) sum_Ico_add_eq_sum_Ico_add_one]
 lemma prod_Ico_mul_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
     (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Ico a (b + 1), f x := by
+  classical
   rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 end LocallyFiniteOrder
@@ -119,6 +120,7 @@ variable [LocallyFiniteOrderBot α]
 @[to_additive (dont_translate := α)]
 lemma prod_Iio_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
     (a : α) (f : α → M) : ∏ i < a + 1, f i = f a * (∏ i < a, f i) := by
+  classical
   simp [Iio_add_one_eq_Iic, ← Iio_insert, Finset.prod_insert]
 
 @[to_additive (dont_translate := α) (attr := simp)]
@@ -129,6 +131,7 @@ lemma prod_Iio_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
 @[to_additive (dont_translate := α)]
 lemma prod_Iic_add_one_comm [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
     (a : α) (f : α → M) : ∏ i ≤ a + 1, f i = f (a + 1) * (∏ i ≤ a, f i) := by
+  classical
   simp only [← Iio_insert, mem_Iio, lt_self_iff_false, not_false_eq_true, prod_insert,
     prod_Iio_add_one_comm]
 
@@ -140,7 +143,7 @@ lemma prod_Iic_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α]
 end LocallyFiniteOrderBot
 
 section LocallyFiniteOrderTopBot
-variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+variable [Fintype α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α] [DecidableEq α]
 
 @[to_additive]
 lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :

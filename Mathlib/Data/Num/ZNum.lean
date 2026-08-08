@@ -402,11 +402,7 @@ instance linearOrder : LinearOrder ZNum where
     intro a b
     transfer_rw
     apply le_total
-  -- This is relying on an automatically generated instance name, generated in a `deriving` handler.
-  -- See https://github.com/leanprover/lean4/issues/2343
-  toDecidableEq := instDecidableEqZNum
   toDecidableLE := ZNum.decidableLE
-  toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
   add_assoc := by transfer

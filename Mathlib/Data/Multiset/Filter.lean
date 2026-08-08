@@ -403,16 +403,9 @@ end Embedding
 theorem count_eq_card_filter_eq [DecidableEq α] (s : Multiset α) (a : α) :
     s.count a = card (s.filter (a = ·)) := by rw [count, countP_eq_card_filter]
 
-/--
-Mapping a multiset through a predicate and counting the `True`s yields the cardinality of the set
-filtered by the predicate. Note that this uses the notion of a multiset of `Prop`s - due to the
-decidability requirements of `count`, the decidability instance on the LHS is different from the
-RHS. In particular, the decidability instance on the left leaks `Classical.decEq`.
-See [here](https://github.com/leanprover-community/mathlib/pull/11306#discussion_r782286812)
-for more discussion.
--/
 @[simp]
-theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
+theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p]
+    {i : DecidableEq Prop} :
     (s.map p).count True = card (s.filter p) := by
   simp only [count_eq_card_filter_eq, eq_iff_iff, true_iff, filter_map, comp_apply, card_map]
 

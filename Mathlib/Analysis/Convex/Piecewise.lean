@@ -99,6 +99,7 @@ theorem convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic
     ConvexOn 𝕜 Set.univ ((Set.Ici e).piecewise f g) := by
   have h_piecewise_Ici_eq_piecewise_Iic :
       (Set.Ici e).piecewise f g = (Set.Iic e).piecewise g f := by
+    classical
     ext x; by_cases hx : x = e
       <;> simp [Set.piecewise, @le_iff_lt_or_eq _ _ x e, ← @ite_not _ (e ≤ _), hx, h_eq]
   rw [h_piecewise_Ici_eq_piecewise_Iic]

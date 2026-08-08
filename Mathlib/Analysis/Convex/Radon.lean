@@ -49,6 +49,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
   push Not at h
   obtain ⟨s, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩ := h
   let I : Finset ι := {i ∈ s | 0 ≤ w i}
+  classical
   let J : Finset ι := {i ∈ s | w i < 0}
   let p : E := centerMass I w f -- point of intersection
   have hJI : ∑ j ∈ J, w j + ∑ i ∈ I, w i = 0 := by

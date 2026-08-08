@@ -348,6 +348,7 @@ private lemma ιMulti_family_span_fixedDegree_aux
     use (σ.sign : R)
     norm_cast
     simp only [Int.units_mul_self, Units.val_one, Int.cast_one]
+  classical
   have α_card : (Finset.image α Finset.univ).card = n :=
     (Finset.card_image_of_injective Finset.univ α_inj).trans (Finset.card_fin n)
   use (Finset.orderIsoOfFin (Finset.image α Finset.univ) α_card).toEquiv.trans

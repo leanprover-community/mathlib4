@@ -59,8 +59,7 @@ instance lt [LT ι] [∀ i, LT (α i)] : LT (Σₗ' i, α i) :=
   ⟨Lex (· < ·) fun _ => (· < ·)⟩
 
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, α i) :=
-  { Lex.le, Lex.lt with
-    le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
+  { le_refl := fun ⟨_, _⟩ => Lex.right _ le_rfl,
     le_trans := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨a₃, b₃⟩ ⟨h₁r⟩ ⟨h₂r⟩
       · left
@@ -86,8 +85,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
 
 /-- Dictionary / lexicographic `PartialOrder` for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
-  { Lex.preorder with
-    le_antisymm := by
+  { le_antisymm := by
       rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨_, _, hlt₁⟩ | ⟨_, hlt₁⟩) (⟨_, _, hlt₂⟩ | ⟨_, hlt₂⟩)
       · exact (lt_irrefl a₁ <| hlt₁.trans hlt₂).elim
       · exact (lt_irrefl a₁ hlt₁).elim
@@ -96,8 +94,7 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
 
 /-- Dictionary / lexicographic `LinearOrder` for pairs. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
-  { Lex.partialOrder with
-    le_total := by
+  { le_total := by
       rintro ⟨i, a⟩ ⟨j, b⟩
       obtain hij | rfl | hji := lt_trichotomy i j
       · exact Or.inl (Lex.left _ _ hij)
@@ -105,8 +102,10 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder 
         · exact Or.inl (Lex.right _ hab)
         · exact Or.inr (Lex.right _ hba)
       · exact Or.inr (Lex.left _ _ hji),
-    toDecidableEq := PSigma.decidableEq, toDecidableLE := Lex.decidable _ _,
-    toDecidableLT := Lex.decidable _ _ }
+    toDecidableLE :=
+      letI : DecidableEq ι := decidableEqOfDecidableLE
+      letI : DecidableLT ι := decidableLTOfDecidableLE
+      inferInstanceAs (DecidableRel (Lex (· < ·) fun _ => (· ≤ ·))) }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

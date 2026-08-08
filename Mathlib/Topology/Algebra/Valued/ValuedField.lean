@@ -431,34 +431,34 @@ noncomputable def valueGroup₀_hom_extensionValuation :
     apply_fun embedding using embedding_injective
     simpa using (restrict₀_surjective (.ofClass hv.v) 1).choose_spec
   map_mul' a b := by
-    set x := (restrict₀_surjective (.ofClass hv.v) a).choose with hx_def
+    generalize hx_def : (restrict₀_surjective (.ofClass hv.v) a).choose = x
     have hx := (restrict₀_surjective (.ofClass hv.v) a).choose_spec
-    set y := (restrict₀_surjective (.ofClass hv.v) b).choose with hy_def
+    generalize hy_def : (restrict₀_surjective (.ofClass hv.v) b).choose = y
     have hy := (restrict₀_surjective (.ofClass hv.v) b).choose_spec
-    set xy := (restrict₀_surjective (.ofClass hv.v) (a * b)).choose with hxy_def
+    generalize hxy_def : (restrict₀_surjective (.ofClass hv.v) (a * b)).choose = xy
     have hxy := (restrict₀_surjective (.ofClass hv.v) (a * b)).choose_spec
-    rw [← hx_def] at hx
-    rw [← hy_def] at hy
-    rw [← hxy_def] at hxy
+    rw [hx_def] at hx
+    rw [hy_def] at hy
+    rw [hxy_def] at hxy
     apply_fun embedding at hxy
     apply_fun embedding at hx
     apply_fun embedding at hy
     simp only [embedding_restrict₀, coe_ofClass, map_mul] at hxy hx hy
+    classical
     simp only [Valuation.restrict_def, restrict₀_apply, coe_ofClass, extensionValuation_apply_coe,
       map_eq_zero, mul_dite, mul_zero, dite_mul, zero_mul]
     by_cases hx0 : x = 0
     · simpa [← hx, hx0] using hxy
     · by_cases hy0 : y = 0
       · simpa [← hy, hy0] using hxy
-      · rw [dif_neg, dif_neg, dif_neg]
+      · rw [dif_neg hy0, dif_neg hx0, dif_neg]
         · simp only [← WithZero.coe_mul, MulMemClass.mk_mul_mk, WithZero.coe_inj, Subtype.mk.injEq]
           rw [← Units.mk0_mul]
           · ext
             simp [Units.val_mk0, hx, hy, hxy]
           · aesop
-        · simpa
-        · simpa
-        · simp [extensionValuation_apply_coe, hxy, ← hx, ← hy, hx0, hy0]
+        rw [← map_eq_zero hv.v]
+        simp [hxy, ← hx, ← hy, hx0, hy0]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
@@ -529,14 +529,14 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
         rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
         by_cases hx0 : x = 0
         · simp only [hx0]
-          rw [dif_pos (map_zero _)]
-          · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
-              MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
-            · have hext : hv.extension 0 = 0 := by rw [extension_eq_zero_iff]
-              simp [hext]
-            · simp [← v.restrict.zero_iff, v.restrict_def,
-                (restrict₀_surjective (.ofClass hv.v) _).choose_spec]
+          rw [dif_pos (by simp [hx0])]
+          simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
+            MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
+          rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
+          · have hext : hv.extension 0 = 0 := by rw [extension_eq_zero_iff]
+            simp [hext]
+          · simp [← v.restrict.zero_iff, v.restrict_def,
+              (restrict₀_surjective (.ofClass hv.v) _).choose_spec]
         · rw [dif_neg (by simp [hx0])]
           · set y := (restrict₀_surjective (.ofClass hv.v) γ).choose with hy_def
             have hy := (restrict₀_surjective (.ofClass hv.v) γ).choose_spec
