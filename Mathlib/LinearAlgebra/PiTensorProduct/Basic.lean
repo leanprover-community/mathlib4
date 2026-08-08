@@ -621,57 +621,59 @@ theorem congr_symm_tprod (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) (p : Π i
 end congr
 
 /--
-Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
-element of `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules;
+then `f : Πᵢ M₁ᵢ → M₂ᵢ → M₃ᵢ` induces an element of `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
+defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `PiTensorProduct.map` for two arbitrary families of modules.
 This is `TensorProduct.map₂` for families of modules.
 -/
-def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i :=
-  lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
+def map₂ (f : Π i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) :
+    (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₃] (⨂[R₂] i, M₂ i) →ₛₗ[σ₂₃] ⨂[R₃] i, M₃ i :=
+  lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R₃).compLinearMap f
 
-lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
-    map₂ f (tprod R x) (tprod R y) = tprod R fun i ↦ f i (x i) (y i) := by
+lemma map₂_tprod_tprod (f : Π i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) (x : Π i, M₁ i) (y : Π i, M₂ i) :
+    map₂ f (tprod R₁ x) (tprod R₂ y) = tprod R₃ fun i ↦ f i (x i) (y i) := by
   simp [map₂]
 
 /--
-Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
-Then there is a function from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules.
+Then there is a function from `⨂ᵢ Hom(M₁ᵢ, Hom(M₂ᵢ, M₃ᵢ))` to `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`. -/
-def piTensorHomMapFun₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) :=
+def piTensorHomMapFun₂ : (⨂[R₃] i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) →
+    (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₃] (⨂[R₂] i, M₂ i) →ₛₗ[σ₂₃] (⨂[R₃] i, M₃ i) :=
   fun φ => lift <| LinearMap.compMultilinearMap piTensorHomMap <|
-    (lift <| MultilinearMap.piLinearMap <| tprod R) φ
+    (lift <| MultilinearMap.piLinearMap <| tprod R₃) φ
 
-theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+theorem piTensorHomMapFun₂_add (φ ψ : ⨂[R₃] i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) :
     piTensorHomMapFun₂ (φ + ψ) = piTensorHomMapFun₂ φ + piTensorHomMapFun₂ ψ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_add, LinearMap.compMultilinearMap_apply,
     lift.tprod, add_apply, LinearMap.add_apply]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) :
+theorem piTensorHomMapFun₂_smul (r : R₃) (φ : ⨂[R₃] i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) :
     piTensorHomMapFun₂ (r • φ) = r • piTensorHomMapFun₂ φ := by
   dsimp [piTensorHomMapFun₂]; ext; simp only [map_smul, LinearMap.compMultilinearMap_apply,
     lift.tprod, smul_apply, LinearMap.smul_apply]
 
 /--
-Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
-Then there is a linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules;
+Then there is a linear map from `⨂ᵢ Hom(M₁ᵢ, Hom(M₂ᵢ, M₃ᵢ))` to `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
 -/
-def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
+def piTensorHomMap₂ : (⨂[R₃] i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) →ₗ[R₃]
+    (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₃] (⨂[R₂] i, M₂ i) →ₛₗ[σ₂₃] (⨂[R₃] i, M₃ i) where
   toFun := piTensorHomMapFun₂
   map_add' x y := piTensorHomMapFun₂_add x y
   map_smul' x y := piTensorHomMapFun₂_smul x y
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
-    (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
-    piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
+    (f : Π i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) (x : ∀ i, M₁ i) (y : ∀ i, M₂ i) :
+    piTensorHomMap₂ (tprod R₃ f) (tprod R₁ x) (tprod R₂ y) =
+      tprod R₃ (fun i ↦ f i (x i) (y i)) := by
   simp [piTensorHomMapFun₂, piTensorHomMap₂]
 
 end map
