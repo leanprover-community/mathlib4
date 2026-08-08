@@ -5,14 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib
+--public import Mathlib
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Over
 public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Galois.Equivalence
 public import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 public import Mathlib.CategoryTheory.Galois.ContAction
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
 /-!
 # ...
@@ -144,18 +146,14 @@ instance [GaloisCategory C] : HasFiniteColimits C where
     Adjunction.hasColimitsOfShape_of_equivalence
       (functorToContAction (GaloisCategory.getFiberFunctor C))
 
-instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
-    PreservesFiniteColimits
-      (ObjectProperty.ι _ : ContAction FintypeCat.{w} (Aut F) ⥤ _) where
-  preservesFiniteColimits _ _ _ := inferInstance
+-- ???
+attribute [local instance] comp_preservesFiniteColimits comp_preservesFiniteLimits
 
 instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
     PreservesFiniteColimits F := by
   change (PreservesFiniteColimits
     (functorToContAction F ⋙ ObjectProperty.ι _ ⋙ Action.forget _ _))
   infer_instance
-  /-apply +allowSynthFailures comp_preservesFiniteColimits
-  apply +allowSynthFailures comp_preservesFiniteColimits-/
 
 open PreGaloisCategory
 
@@ -425,57 +423,5 @@ structure FieldFormation extends Formation C where
       IsZero (groupCohomology (toFormation.rep f) 1)
 
 end
-
-namespace Presieve
-
-variable {F : Cᵒᵖ ⥤ Type w}
-
-lemma IsSeparatedFor.of_singleton_comp {Y X S : C} (p : Y ⟶ X) (f : X ⟶ S)
-    (h : IsSeparatedFor F (singleton (p ≫ f))) :
-    IsSeparatedFor F (singleton f) := by
-  simp only [isSeparatedFor_singleton, op_comp, Functor.map_comp] at h ⊢
-  exact Function.Injective.of_comp (f := F.map p.op) h
-
-lemma IsSheafFor.of_singleton_comp {Y X S : C} (p : Y ⟶ X) (f : X ⟶ S)
-    (h : IsSheafFor F (singleton (p ≫ f))) (h' : IsSeparatedFor F (singleton p)) :
-    IsSheafFor F (singleton f) := by
-  have h'' := h.isSeparatedFor.of_singleton_comp
-  rw [isSheafFor_singleton] at h ⊢
-  rw [isSeparatedFor_singleton] at h' h''
-  intro β hβ
-  refine existsUnique_of_exists_of_unique ?_
-    (fun α α' hα hα' ↦ h'' (by rw [hα, hα']))
-  obtain ⟨γ, hγ⟩ := (h (F.map p.op β) (fun a b eq ↦ by
-    simp only [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
-    exact hβ _ _ (by simpa))).exists
-  exact ⟨γ, h' (by simpa using hγ)⟩
-
-@[simp]
-lemma singleton_le_iff {X S : C} {f : X ⟶ S} {R : Presieve S} :
-    singleton f ≤ R ↔ R f :=
-  ⟨fun hf ↦ hf _ _ ⟨⟩, by rintro hf _ _ ⟨⟩; exact hf⟩
-
-lemma IsSheafFor.of_singleton {X S : C} {f : X ⟶ S} (hf : IsSheafFor F (singleton f))
-    {R : Presieve S} (hf' : R f)
-    (H : ∀ {Y : C} (g : Y ⟶ S) (_ : R g), ∃ (Z : C) (a : Z ⟶ Y) (b : Z ⟶ X), a ≫ g = b ≫ f ∧
-      IsSeparatedFor F (singleton a)) :
-    IsSheafFor F R := by
-  simp only [isSeparatedFor_singleton] at H
-  intro x hx
-  refine existsUnique_of_exists_of_unique ?_ (fun α α' hα hα' ↦ ?_)
-  · let x' : FamilyOfElements F (singleton f) := x.restrict (by simpa)
-    have hx' : x'.Compatible := FamilyOfElements.Compatible.restrict _ hx
-    refine ⟨hf.amalgamate x' hx', fun Y g hg ↦ ?_⟩
-    obtain ⟨Z, a, b, fac, ha⟩ := H g hg
-    refine ha ?_
-    rw [← ConcreteCategory.comp_apply, ← Functor.map_comp, ← op_comp, fac,
-      op_comp, Functor.map_comp, ConcreteCategory.comp_apply,
-      hf.valid_glue hx' f (by simp)]
-    exact hx _ _ _ _ fac.symm
-  · refine hf.isSeparatedFor.ext ?_
-    rintro _ _ ⟨⟩
-    rw [hα f hf', hα' f hf']
-
-end Presieve
 
 end CategoryTheory
