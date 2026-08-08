@@ -536,7 +536,9 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
   | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
   | .isNat sα lit p => do
+    trace[debug] "entering isNat"
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
+    trace[debug] "isNat {a'}"
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
@@ -556,6 +558,12 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
   in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
 abbrev BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)
+
+/-- Returns the boolean that is the result of `norm_num` evaluation. -/
+def Result.toBool {p : Q(Prop)} (r : NormNum.Result q($p)) :
+    Option ((b : Bool) × BoolResult q($p) b) := do
+  let .isBool b prf := r | failure
+  pure ⟨b, prf⟩
 
 /-- Obtain a `Result` from a `BoolResult`. -/
 def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) : Result q(Prop) :=
