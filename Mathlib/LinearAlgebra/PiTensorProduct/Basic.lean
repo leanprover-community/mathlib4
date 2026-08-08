@@ -719,16 +719,14 @@ theorem lift_reindex_symm
     lift φ (reindex R M e |>.symm x) = lift (domDomCongrLinearEquiv' S M N σ e φ) x :=
   LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     (reindex R M e).trans (reindex R _ e') = reindex R M (e.trans e') := by
   apply LinearEquiv.toLinearMap_injective
-  ext f
-  simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
-    LinearMap.coe_compMultilinearMap, Function.comp_apply,
-    reindex_comp_tprod]
-  congr
+  ext
+  rw [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+    reindex_tprod, reindex_tprod]
+  exact (reindex_tprod (e.trans e') _).symm
 
 theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, M i) :
     reindex R _ e' (reindex R M e x) = reindex R M (e.trans e') x :=
@@ -741,11 +739,12 @@ theorem reindex_symm (e : ι ≃ ι₂) :
   ext x
   simp [reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
+  apply LinearEquiv.toLinearMap_injective
   ext
-  simp [reindex, domDomCongrLinearEquiv']
+  rw [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe, reindex_tprod]
+  exact DFunLike.congr_arg (tprod R) rfl
 
 variable [CommSemiring R₁] [CommSemiring R₂] {σ₁₂ : R₁ →+* R₂}
 variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
