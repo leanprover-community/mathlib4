@@ -695,7 +695,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
     unless ← isDefEq value decl.1.type do
       throwError "@[{t.attrName}] failed to add declaration `{decl.1.name}`.\n  \
-        The translated type doesn't match the translated value.\n\
+        The translated value does not have the translated type.\n\
         The value{indentExpr value}\nhas type{indentExpr (← inferType value)}\n\
         but is expected to have type{indentExpr decl.1.type}\n\n\
         For help, see the docstring of `to_additive`, section `Troubleshooting`."
