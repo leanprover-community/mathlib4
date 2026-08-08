@@ -317,6 +317,14 @@ noncomputable instance _root_.LowerSet.instLinearOrder : LinearOrder (LowerSet �
   classical exact Lattice.toLinearOrder _
 
 @[to_dual existing]
+noncomputable instance _root_.LowerSet.instDecidableEq : DecidableEq (LowerSet α) :=
+  Classical.decRel _
+
+@[to_dual existing]
+noncomputable instance _root_.LowerSet.instDecidableLT : DecidableLT (LowerSet α) :=
+  Classical.decRel _
+
+@[to_dual existing]
 noncomputable instance _root_.LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
   { LowerSet.completelyDistribLattice, LowerSet.instLinearOrder with }
 
