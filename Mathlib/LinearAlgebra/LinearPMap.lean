@@ -309,7 +309,7 @@ private theorem sup_aux (f g : E →ₛₗ.[σ] F)
 with `f` and `g`. -/
 protected noncomputable def sup (f g : E →ₛₗ.[σ] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : E →ₛₗ.[σ] F :=
-  ⟨_, Classical.choose (sup_aux f g h)⟩
+  ⟨_, Classical.choose (private sup_aux f g h)⟩
 
 @[simp]
 theorem domain_sup (f g : E →ₛₗ.[σ] F)
@@ -611,7 +611,7 @@ domain restricts to the one defined on the smaller domain, this defines the (sem
 on the union of the domains extending all the (semi)linear maps in the family. -/
 protected noncomputable def sSup (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤ ·) c) :
     E →ₛₗ.[σ] F :=
-  ⟨_, Classical.choose <| sSup_aux c hc⟩
+  ⟨_, Classical.choose <| private sSup_aux c hc⟩
 
 theorem domain_sSup {c : Set (E →ₛₗ.[σ] F)} (hc : DirectedOn (· ≤ ·) c) :
     (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
