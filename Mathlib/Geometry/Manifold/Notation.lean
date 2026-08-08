@@ -512,8 +512,10 @@ where
           trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean space over `{k}`"
           mkAppOptM ``modelWithCornersSelf #[k, none, H, none, none]
         | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean half-space"
           mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
         | mkApp (.const `EuclideanQuadrant _) n =>
+          trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean quadrant"
           mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
         | _ =>
         trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
