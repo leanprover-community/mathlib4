@@ -363,7 +363,7 @@ private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
-def mu : IncidenceAlgebra 𝕜 α :=
+@[no_expose] def mu : IncidenceAlgebra 𝕜 α :=
   ⟨muFun 𝕜, fun a b ↦ not_imp_comm.1 fun h ↦ by
     rw [muFun_apply] at h
     split_ifs at h with hab
