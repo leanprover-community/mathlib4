@@ -21,12 +21,79 @@ public import Mathlib.CategoryTheory.Limits.Over
 
 -- #42397, #42396, #42320
 
-public section
+@[expose] public section
 
 universe w v u
 
 open CategoryTheory Limits Opposite
 open scoped FintypeCatDiscrete
+
+namespace FintypeCat
+
+variable {S : FintypeCat.{w}} (s : S)
+
+@[implicit_reducible, simps]
+def overFiber : Over S ⥤ FintypeCat.{w} where
+  obj X := of (X.hom ⁻¹' {s})
+  map f := homMk (fun x ↦ ⟨f.left x, by
+    simpa only [Set.mem_preimage, Set.mem_singleton_iff,
+      ← ConcreteCategory.comp_apply, f.w] using x.prop⟩)
+
+@[implicit_reducible, simps]
+def overFiberLeftAdjoint : FintypeCat.{w} ⥤ Over S where
+  obj Y := Over.mk (Y := Y) (homMk (fun _ ↦ s))
+  map f := Over.homMk f
+
+def overFiberLeftAdjunction :
+    overFiberLeftAdjoint s ⊣ overFiber s where
+  unit.app Y := homMk (fun y ↦ ⟨y, by simp⟩)
+  counit.app X := Over.homMk (homMk (fun x ↦ x.val))
+    (by ext ⟨_, _⟩; simpa)
+
+
+@[implicit_reducible, simps]
+def overFiberRightAdjoint : FintypeCat.{w} ⥤ Over S where
+  obj X :=
+    Over.mk (Y := of (Σ (t : S), (Subtype.val (p := (· ∈ Set.singleton s))) ⁻¹' {t} → X))
+      (homMk Sigma.fst)
+  map f := Over.homMk (homMk (fun ⟨t, g⟩ ↦ ⟨t, f ∘ g⟩))
+
+private lemma overFiberRightAdjunction_obj_left_ext_iff (X : FintypeCat.{w})
+    (a b : Σ (t : S), (Subtype.val (p := (· ∈ Set.singleton s))) ⁻¹' {t} → X) :
+    a = b ↔ ∃ (h : a.1 = b.1),
+      ∀ (h' : a.1 = s), a.2 ⟨⟨s, by aesop⟩, by aesop⟩ = b.2 ⟨⟨s, by aesop⟩, by aesop⟩ := by
+  refine ⟨?_, ?_⟩
+  · rintro rfl
+    exact ⟨rfl, fun _ ↦ rfl⟩
+  · rintro ⟨eq, h⟩
+    obtain ⟨a, a'⟩ := a
+    obtain ⟨b, b'⟩ := b
+    obtain rfl : a = b := eq
+    obtain rfl : a' = b' := by ext ⟨⟨t, rfl⟩, rfl⟩; exact h rfl
+    rfl
+
+def overFiberRightAdjunction :
+    overFiber s ⊣ overFiberRightAdjoint s where
+  unit.app X :=
+    Over.homMk (homMk (fun x ↦ ⟨X.hom x, fun h ↦ ⟨x, by aesop⟩⟩)) (by aesop)
+  unit.naturality X X' f := by
+    ext x
+    rw [overFiberRightAdjunction_obj_left_ext_iff]
+    exact ⟨ConcreteCategory.congr_hom f.w x, fun _ ↦ rfl⟩
+  counit.app Y :=
+    homMk (fun y ↦ y.val.2 ⟨⟨s, Set.mem_singleton _⟩, y.prop.symm⟩)
+  right_triangle_components X := by
+    ext ⟨x, hx⟩
+    rw [overFiberRightAdjunction_obj_left_ext_iff]
+    exact ⟨rfl, fun _ ↦ rfl⟩
+
+instance : (overFiber s).IsRightAdjoint :=
+  (overFiberLeftAdjunction s).isRightAdjoint
+
+instance : (overFiber s).IsLeftAdjoint :=
+  (overFiberRightAdjunction s).isLeftAdjoint
+
+end FintypeCat
 
 namespace CategoryTheory
 
@@ -240,9 +307,17 @@ instance : PreGaloisCategory (Over S) where
       ⟨isColimitOfReflects (Over.forget _)
         ((isColimitMapCoconeBinaryCofanEquiv ..).2 h)⟩⟩
 
-instance (s : F.obj S) : PreservesFiniteColimits (fiberFunctorOver F S s) := sorry
+instance : PreservesFiniteColimits (Over.post F (X := S)) where
+  preservesFiniteColimits J _ _ := by
+    have : PreservesColimitsOfShape J (Over.post F ⋙ Over.forget (F.obj S)) :=
+      inferInstanceAs (PreservesColimitsOfShape J (Over.forget _ ⋙ F))
+    exact preservesColimitsOfShape_of_reflects_of_preserves _ (Over.forget _)
 
-instance (s : F.obj S) : PreservesFiniteLimits (fiberFunctorOver F S s) := sorry
+instance (s : F.obj S) : PreservesFiniteColimits (fiberFunctorOver F S s) :=
+  inferInstanceAs (PreservesFiniteColimits (Over.post F ⋙ FintypeCat.overFiber s))
+
+instance (s : F.obj S) : PreservesFiniteLimits (fiberFunctorOver F S s) :=
+  inferInstanceAs (PreservesFiniteLimits (Over.post F ⋙ FintypeCat.overFiber s))
 
 set_option backward.isDefEq.respectTransparency false in
 instance (s : F.obj S) : FiberFunctor (fiberFunctorOver F S s) where
