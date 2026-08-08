@@ -171,9 +171,6 @@ theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousE
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
 
-@[deprecated (since := "2025-12-23")]
-alias Inseparable.enorm_eq_enorm' := Inseparable.enorm_eq_enorm
-
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
   rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).ge_iff_eq']
@@ -218,8 +215,6 @@ variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : �
 
 lemma Filter.Tendsto.enorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   .comp continuous_enorm.continuousAt h
-
-@[deprecated (since := "2025-12-23")] alias Filter.Tendsto.enorm' := Filter.Tendsto.enorm
 
 end ContinuousENorm
 
@@ -407,8 +402,11 @@ theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
 
 variable (E)
 
-/-- A version of `comap_norm_nhdsGT_zero` for a multiplicative normed group. -/
-@[to_additive comap_norm_nhdsGT_zero]
+/-- In a normed group, the pullback under the norm of `𝓝[>] 0` is the punctured neighborhood
+of `1`. -/
+@[to_additive comap_norm_nhdsGT_zero
+/-- In a normed additive group, the pullback under the norm of `𝓝[>] 0` is the punctured
+neighborhood of `0`. -/]
 lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 

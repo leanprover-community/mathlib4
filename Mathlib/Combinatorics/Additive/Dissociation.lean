@@ -57,7 +57,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
 
 @[to_additive (attr := simp)]
 lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
-  simp [MulDissociated, setOf_or, -subset_singleton_iff,
+  simp [MulDissociated, ofPred_or, -subset_singleton_iff,
     Finset.coe_subset_singleton]
 
 @[to_additive (attr := simp)]

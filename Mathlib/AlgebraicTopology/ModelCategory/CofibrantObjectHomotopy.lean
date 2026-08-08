@@ -56,6 +56,7 @@ abbrev HoCat := Quotient (CofibrantObject.homRel C)
 
 /-- The quotient functor from the category of cofibrant objects to its
 homotopy category. -/
+@[implicit_reducible]
 def toHoCat : CofibrantObject C ⥤ HoCat C := Quotient.functor _
 
 lemma toHoCat_obj_surjective : Function.Surjective (toHoCat (C := C)).obj :=
