@@ -81,7 +81,7 @@ instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
 The functor from `LightProfinite` to `LightCondSet` is monoidal with respect to the cartesian
 monoidal structure.
 -/
-noncomputable instance : lightProfiniteToLightCondSet.{u}.Monoidal :=
+@[no_expose] noncomputable instance : lightProfiniteToLightCondSet.{u}.Monoidal :=
   (Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance |>.some
 
 instance : PreservesFiniteCoproducts lightProfiniteToLightCondSet.{u} :=
