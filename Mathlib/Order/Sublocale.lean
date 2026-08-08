@@ -159,7 +159,7 @@ def restrict (S : Sublocale X) : FrameHom X S where
 
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
 from the sublocale to the original locale. -/
-def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
+@[no_expose] def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
 
