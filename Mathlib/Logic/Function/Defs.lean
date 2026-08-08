@@ -101,43 +101,6 @@ theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
 
 end Prod
 
-/-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
-`g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
-from `β` to `α`. -/
-abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
-
-@[inherit_doc onFun]
-scoped infixl:2 " on " => onFun
-
-/-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
-in the reverse order. `swap f y x = f x y`. -/
-abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
-
-theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
-
-theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
-
-attribute [mfld_simps] id_comp comp_id
-
-theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
-  rfl
-
-/-- A function is called bijective if it is both injective and surjective. -/
-def Bijective (f : α → β) :=
-  Injective f ∧ Surjective f
-
-theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
-  | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
-
-theorem bijective_id : Bijective (@id α) :=
-  ⟨injective_id, surjective_id⟩
-
-variable {f : α → β}
-
-theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
-    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
-  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
-
 section Bicomp
 
 variable {α β γ δ ε : Sort*}
@@ -162,6 +125,68 @@ theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) 
   rfl
 
 end Bicomp
+
+/-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
+`g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
+from `β` to `α`. -/
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+
+@[inherit_doc onFun]
+scoped infixl:2 " on " => onFun
+
+/-- For a two-argument function `f`, `dflip f` is the same function but taking the arguments
+in the reverse order. `dflip f y x = f x y`. -/
+abbrev dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+
+/-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
+in the reverse order. `swap f y x = f x y`. -/
+@[deprecated dflip (since := "2026-07-30")] abbrev swap := @dflip
+
+theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
+
+theorem dflip_dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip (dflip f) = f := rfl
+theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ dflip = id := rfl
+
+theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
+
+@[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_swap_comm (f : β → β → φ)
+    (g : α → β) : (dflip f on g) = dflip (f on g) := onFun_dflip f g
+
+@[simp] theorem bicompl_dflip (f : φ → δ → ζ) (g : α → φ) (h : β → δ) : bicompl (dflip f) h g =
+    dflip (bicompl f g h) := rfl
+
+@[simp] theorem bicompr_dflip (f : φ → δ) (g : α → β → φ) : bicompr f (dflip g) =
+    dflip (bicompr f g) := rfl
+
+theorem injective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Injective :=
+  fun _ _ h => funext fun _ => funext fun _ => congrFun (congrFun h _) _
+
+theorem surjective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Surjective :=
+  (⟨dflip ·, rfl⟩)
+
+attribute [mfld_simps] id_comp comp_id
+
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+  rfl
+
+/-- A function is called bijective if it is both injective and surjective. -/
+def Bijective (f : α → β) :=
+  Injective f ∧ Surjective f
+
+theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
+  | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
+
+theorem bijective_id : Bijective (@id α) :=
+  ⟨injective_id, surjective_id⟩
+
+theorem bijective_dflip {α β : Sort*} {φ : α → β → Sort u₃} :
+    Function.Bijective (dflip (φ := φ)) := ⟨injective_dflip, surjective_dflip⟩
+
+variable {f : α → β}
+
+theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
+    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
+  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
 end Function
 
@@ -205,3 +230,21 @@ protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) :
 lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
 
 end Pi
+
+namespace Std.Commutative
+
+open Function
+
+variable {α} {op : α → α → α}
+
+@[simp] theorem flip_eq [Std.Commutative op] : flip op = op :=
+  funext fun a ↦ funext fun b ↦ comm b a
+
+@[simp] theorem dflip_eq [Std.Commutative op] : dflip op = op := flip_eq
+
+theorem flip_eq_iff : flip op = op ↔ Std.Commutative op :=
+  ⟨fun h ↦ ⟨fun a b ↦ congrFun (congrFun h b) a⟩, fun _ ↦ flip_eq⟩
+
+theorem dflip_eq_iff : dflip op = op ↔ Std.Commutative op := flip_eq_iff
+
+end Std.Commutative

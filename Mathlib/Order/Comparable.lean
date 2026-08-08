@@ -60,13 +60,13 @@ theorem CompRel.of_rel (h : r a b) : CompRel r a b :=
 theorem CompRel.of_rel_symm (h : r b a) : CompRel r a b :=
   SymmGen.of_rel_symm h
 
-@[deprecated symmGen_swap (since := "2026-01-25")]
-theorem compRel_swap (r : α → α → Prop) : CompRel (swap r) = CompRel r :=
-  symmGen_swap r
+@[deprecated symmGen_dflip (since := "2026-01-25")]
+theorem compRel_dflip (r : α → α → Prop) : CompRel (dflip r) = CompRel r :=
+  symmGen_dflip r
 
-@[deprecated symmGen_swap_apply (since := "2026-01-25")]
-theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ CompRel r a b :=
-  symmGen_swap_apply r
+@[deprecated symmGen_dflip_apply (since := "2026-01-25")]
+theorem compRel_dflip_apply (r : α → α → Prop) : CompRel (dflip r) a b ↔ CompRel r a b :=
+  symmGen_dflip_apply r
 
 @[simp, refl, deprecated SymmGen.refl (since := "2026-01-25")]
 theorem CompRel.refl (r : α → α → Prop) [Std.Refl r] (a : α) : CompRel r a a :=
@@ -215,11 +215,11 @@ theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
   simp
 
-theorem incompRel_swap : IncompRel (swap r) = IncompRel r :=
-  antisymmRel_swap rᶜ
+theorem incompRel_dflip : IncompRel (dflip r) = IncompRel r :=
+  antisymmRel_dflip rᶜ
 
-theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
-  antisymmRel_swap_apply rᶜ
+theorem incompRel_dflip_apply : IncompRel (dflip r) a b ↔ IncompRel r a b :=
+  antisymmRel_dflip_apply rᶜ
 
 @[simp, refl]
 theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=

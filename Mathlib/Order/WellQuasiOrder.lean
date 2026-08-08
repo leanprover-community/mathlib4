@@ -170,7 +170,7 @@ theorem wellQuasiOrderedLE_iff :
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq (· > ·) f
   · exfalso
     apply RelEmbedding.not_wellFounded _ hwf.wf
-    exact (RelEmbedding.ofMonotone _ h1).swap
+    exact (RelEmbedding.ofMonotone _ h1).dflip
   · contrapose! hc
     refine ⟨Set.range (f ∘ g), ?_, ?_⟩
     · rintro _ ⟨m, rfl⟩ _ ⟨n, rfl⟩ _ hf

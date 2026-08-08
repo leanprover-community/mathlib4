@@ -189,7 +189,7 @@ lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
-  ⟨Function.swap (· ∈ Set.range ·)⟩
+  ⟨Function.dflip (· ∈ Set.range ·)⟩
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 

@@ -155,7 +155,7 @@ theorem id_comp (f : r →r s) : (RelHom.id s).comp f = f := rfl
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 @[simps]
-protected def swap (f : r →r s) : swap r →r swap s :=
+protected def dflip (f : r →r s) : dflip r →r dflip s :=
   ⟨f, f.map_rel⟩
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
@@ -296,11 +296,11 @@ theorem trans_refl (f : r ↪r s) : f.trans (.refl s) = f := rfl
 theorem refl_trans (f : r ↪r s) : .trans (.refl r) f = f := rfl
 
 /-- A relation embedding is also a relation embedding between dual relations. -/
-protected def swap (f : r ↪r s) : swap r ↪r swap s :=
+protected def dflip (f : r ↪r s) : dflip r ↪r dflip s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
 @[simp]
-theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
+theorem dflip_apply (f : r ↪r s) (a : α) : f.dflip a = f a := rfl
 
 /-- If `f` is injective, then it is a relation embedding from the
   preimage relation of `s` to `s`. -/
@@ -707,7 +707,7 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
   ext fun x => by subst h₁; rfl
 
 /-- A relation isomorphism is also a relation isomorphism between dual relations. -/
-protected def swap (f : r ≃r s) : swap r ≃r swap s :=
+protected def dflip (f : r ≃r s) : dflip r ≃r dflip s :=
   ⟨f, f.map_rel_iff⟩
 
 /-- A relation isomorphism is also a relation isomorphism between complemented relations. -/

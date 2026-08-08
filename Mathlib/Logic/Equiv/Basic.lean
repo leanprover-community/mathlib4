@@ -149,13 +149,16 @@ lemma piCongrRight_refl {β : α → Sort*} : piCongrRight (fun a ↦ .refl (β 
   rfl
 
 /-- Given `φ : α → β → Sort*`, we have an equivalence between `∀ a b, φ a b` and `∀ b a, φ a b`.
-This is `Function.swap` as an `Equiv`. -/
+This is `Function.dflip` as an `Equiv`. -/
 @[simps apply]
-def piComm (φ : α → β → Sort*) : (∀ a b, φ a b) ≃ ∀ b a, φ a b :=
-  ⟨swap, swap, fun _ => rfl, fun _ => rfl⟩
+def piComm (φ : α → β → Sort*) : (∀ a b, φ a b) ≃ ∀ b a, φ a b where
+  toFun := Function.dflip
+  invFun := Function.dflip
+
+@[deprecated (since := "2026-07-30")] alias functionSwap := piComm
 
 @[simp]
-theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm <| swap φ) :=
+theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm (Function.dflip φ)) :=
   rfl
 
 /-- Dependent `curry` equivalence: the type of dependent functions on `Σ i, β i` is equivalent

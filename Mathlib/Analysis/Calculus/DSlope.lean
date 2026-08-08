@@ -147,8 +147,8 @@ lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : �
   simp [hf]
 
 lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
-    (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
-    (b - a) ^ n • (Function.swap dslope a)^[n] f b = f b := by
+    (hf : ∀ k < n, (Function.dflip dslope a)^[k] f a = 0) (b : 𝕜) :
+    (b - a) ^ n • (Function.dflip dslope a)^[n] f b = f b := by
   induction n generalizing f with
   | zero => simp
   | succ n ih =>

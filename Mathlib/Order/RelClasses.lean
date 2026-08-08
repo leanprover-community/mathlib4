@@ -649,7 +649,7 @@ alias transitive_lt := isTrans_lt
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
-  inferInstanceAs <| @Std.Total α <| swap (· ≤ ·)
+  inferInstanceAs <| @Std.Total α <| dflip (· ≤ ·)
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

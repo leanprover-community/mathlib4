@@ -140,7 +140,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] {s : Set α}
   {a₀ : α} {b₀ : β} {c₀ : γ}
 
 @[to_dual]
-theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (dflip l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a))
     (ha₀ : IsLUB s a₀) (hb₀ : IsLUB t b₀) :
     IsLUB (image2 l s t) (l a₀ b₀) := by
@@ -149,21 +149,22 @@ theorem isLUB_image2_of_isLUB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b) (
     ← hb₀, ← (h₂ _).le_iff_le, (h₁ _).le_iff_le, ← ha₀, forall_true_iff]
 
 @[to_dual]
-theorem isLUB_image2_of_isLUB_isGLB (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+theorem isLUB_image2_of_isLUB_isGLB (h₁ : ∀ b, GaloisConnection (dflip l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a))
     (ha₀ : IsLUB s a₀) (hb₀ : IsGLB t b₀) :
     IsLUB (image2 l s t) (l a₀ b₀) :=
   isLUB_image2_of_isLUB_isLUB (β := βᵒᵈ) h₁ h₂ ha₀ hb₀
 
 @[to_dual]
-theorem isLUB_image2_of_isGLB_isLUB (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
-    (h₂ : ∀ a, GaloisConnection (l a) (u₂ a))
+theorem isLUB_image2_of_isGLB_isLUB (h₁ : ∀ b, GaloisConnection
+    (dflip l b ∘ ofDual) (toDual ∘ u₁ b)) (h₂ : ∀ a, GaloisConnection (l a) (u₂ a))
     (ha₀ : IsGLB s a₀) (hb₀ : IsLUB t b₀) :
     IsLUB (image2 l s t) (l a₀ b₀) :=
   isLUB_image2_of_isLUB_isLUB (α := αᵒᵈ) h₁ h₂ ha₀ hb₀
 
 @[to_dual]
-theorem isLUB_image2_of_isGLB_isGLB (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+theorem isLUB_image2_of_isGLB_isGLB (h₁ : ∀ b, GaloisConnection
+    (dflip l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a))
     (ha₀ : IsGLB s a₀) (hb₀ : IsGLB t b₀) :
     IsLUB (image2 l s t) (l a₀ b₀) :=
@@ -177,23 +178,23 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
 @[to_dual]
-theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (dflip l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sSup s) (sSup t) :=
   (isLUB_image2_of_isLUB_isLUB h₁ h₂ (isLUB_sSup _) (isLUB_sSup _)).sSup_eq
 
 @[to_dual]
-theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
+theorem sSup_image2_eq_sSup_sInf (h₁ : ∀ b, GaloisConnection (dflip l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sSup s) (sInf t) :=
   sSup_image2_eq_sSup_sSup (β := βᵒᵈ) h₁ h₂
 
 @[to_dual]
-theorem sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+theorem sSup_image2_eq_sInf_sSup (h₁ : ∀ b, GaloisConnection (dflip l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) : sSup (image2 l s t) = l (sInf s) (sSup t) :=
   sSup_image2_eq_sSup_sSup (α := αᵒᵈ) h₁ h₂
 
 @[to_dual]
-theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
+theorem sSup_image2_eq_sInf_sInf (h₁ : ∀ b, GaloisConnection (dflip l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     sSup (image2 l s t) = l (sInf s) (sInf t) :=
   sSup_image2_eq_sSup_sSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂

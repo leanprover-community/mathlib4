@@ -133,55 +133,55 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
-section swap
+section dflip
 
-theorem swap_lt {α} [LT α] : swap (· < · : α → α → _) = (· > ·) := rfl
-theorem swap_le {α} [LE α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
-theorem swap_gt {α} [LT α] : swap (· > · : α → α → _) = (· < ·) := rfl
-theorem swap_ge {α} [LE α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+theorem dflip_lt {α} [LT α] : dflip (· < · : α → α → _) = (· > ·) := rfl
+theorem dflip_le {α} [LE α] : dflip (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem dflip_gt {α} [LT α] : dflip (· > · : α → α → _) = (· < ·) := rfl
+theorem dflip_ge {α} [LE α] : dflip (· ≥ · : α → α → _) = (· ≤ ·) := rfl
 
 variable (r : α → α → Prop)
 
-instance [Std.Refl r] : Std.Refl (swap r) where
+instance [Std.Refl r] : Std.Refl (dflip r) where
   refl := refl_of r
 
-instance [Std.Irrefl r] : Std.Irrefl (swap r) where
+instance [Std.Irrefl r] : Std.Irrefl (dflip r) where
   irrefl := irrefl_of r
 
-instance [Std.Symm r] : Std.Symm (swap r) where
+instance [Std.Symm r] : Std.Symm (dflip r) where
   symm _ _ := symm_of r
 
-instance [Std.Antisymm r] : Std.Antisymm (swap r) where
+instance [Std.Antisymm r] : Std.Antisymm (dflip r) where
   antisymm _ _ hab hba := antisymm_of r hab hba |>.symm
 
-instance [Std.Asymm r] : Std.Asymm (swap r) where
+instance [Std.Asymm r] : Std.Asymm (dflip r) where
   asymm _ _ := asymm_of r
 
-instance [IsTrans α r] : IsTrans α (swap r) where
+instance [IsTrans α r] : IsTrans α (dflip r) where
   trans _ _ _ hab hbc := trans_of r hbc hab
 
-instance [Std.Total r] : Std.Total (swap r) where
+instance [Std.Total r] : Std.Total (dflip r) where
   total _ _ := total_of r _ _
 
-instance [Std.Trichotomous r] : Std.Trichotomous (swap r) where
+instance [Std.Trichotomous r] : Std.Trichotomous (dflip r) where
   trichotomous a b hab hba := Std.Trichotomous.trichotomous a b hba hab
 
-instance [IsEquiv α r] : IsEquiv α (swap r) where
+instance [IsEquiv α r] : IsEquiv α (dflip r) where
 
-instance [IsPreorder α r] : IsPreorder α (swap r) where
+instance [IsPreorder α r] : IsPreorder α (dflip r) where
 
-instance [IsPartialOrder α r] : IsPartialOrder α (swap r) where
+instance [IsPartialOrder α r] : IsPartialOrder α (dflip r) where
 
-instance [IsLinearOrder α r] : IsLinearOrder α (swap r) where
+instance [IsLinearOrder α r] : IsLinearOrder α (dflip r) where
 
-instance [IsStrictOrder α r] : IsStrictOrder α (swap r) where
+instance [IsStrictOrder α r] : IsStrictOrder α (dflip r) where
 
-instance [IsStrictWeakOrder α r] : IsStrictWeakOrder α (swap r) where
+instance [IsStrictWeakOrder α r] : IsStrictWeakOrder α (dflip r) where
   incomp_trans a b c hab hbc := IsStrictWeakOrder.incomp_trans a b c hab.symm hbc.symm |>.symm
 
-instance [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) where
+instance [IsStrictTotalOrder α r] : IsStrictTotalOrder α (dflip r) where
 
-end swap
+end dflip
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
@@ -964,6 +964,12 @@ theorem uncurry_flip {α β γ} (f : α → β → γ) : uncurry (flip f) = uncu
   rfl
 
 theorem flip_curry {α β γ} (f : α × β → γ) : flip (curry f) = curry (f ∘ Prod.swap) :=
+  rfl
+
+theorem uncurry_dflip {α β γ} (f : α → β → γ) : uncurry (dflip f) = uncurry f ∘ Prod.swap :=
+  rfl
+
+theorem dflip_curry {α β γ} (f : α × β → γ) : dflip (curry f) = curry (f ∘ Prod.swap) :=
   rfl
 
 theorem curry_update {α α' β : Type*} [DecidableEq α] [DecidableEq α']

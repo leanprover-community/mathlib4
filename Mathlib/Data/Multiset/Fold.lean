@@ -40,7 +40,7 @@ theorem coe_fold_r (b : α) (l : List α) : fold op b l = l.foldr op b :=
   rfl
 
 theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
-  (coe_foldr_swap op b l).trans <| by simp [hc.comm]
+  (coe_foldr_dflip op b l).trans <| by simp
 
 theorem fold_eq_foldl (b : α) (s : Multiset α) :
     fold op b s = foldl op b s :=

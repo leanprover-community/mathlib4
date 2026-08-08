@@ -132,10 +132,10 @@ abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
     (finset_mem_Ico : ∀ (a b x : α), x ∈ finsetIco a b ↔ x ≤ a ∧ b < x)
     (finset_mem_Ioc : ∀ (a b x : α), x ∈ finsetIoc a b ↔ x < a ∧ b ≤ x)
     (finset_mem_Ioo : ∀ (a b x : α), x ∈ finsetIoo a b ↔ x < a ∧ b < x) : LocallyFiniteOrder α where
-  finsetIcc := swap finsetIcc
-  finsetIco := swap finsetIoc
-  finsetIoc := swap finsetIco
-  finsetIoo := swap finsetIoo
+  finsetIcc := dflip finsetIcc
+  finsetIco := dflip finsetIoc
+  finsetIoc := dflip finsetIco
+  finsetIoo := dflip finsetIoo
   finset_mem_Icc := by grind
   finset_mem_Ico := by grind
   finset_mem_Ioc := by grind
