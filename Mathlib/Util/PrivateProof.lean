@@ -73,6 +73,8 @@ elab_rules : term <= ty
           {indentD ty} : {← inferType ty}"
         return e
       else if e.isFVar then
+        logWarningAt tk m!"`private` is unnecessary, since the resulting expression is just a free \
+          variable:{indentD e}"
         return e
       else
         mkAuxTheorem ty e (zetaDelta := true) (cache := !e.hasSorry)

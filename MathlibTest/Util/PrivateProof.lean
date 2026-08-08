@@ -76,14 +76,6 @@ in the application
 #guard_msgs in
 def fαPub'' (_ : F (α := Bool) (private fooPub)) : Bool := true
 
-set_option backward.privateInPublic true in
-/--
-@ +1:18...25
-warning: `private` is unnecessary, since `backward.privateInPublic` is `true`.
--/
-#guard_msgs (positions := true) in
-def aPriv (_ : F (private fooPub)) : Bool := true
-
 section implicitLambda
 
 set_option linter.defProp false
@@ -103,37 +95,53 @@ but is expected to have type
 #guard_msgs in
 @[expose] def fImplicit' : {_ : Nat} → 1 = 1 := @(private fooThm)
 
+-- and, we do not accidentally disable insertion of implicit arguments just because we disabled
+-- implicit lambda.
+private theorem implicitThm {n : Nat} : n = n := rfl
+
+def gImplicit (_ : FEq (private implicitThm)) : Bool := true
+
 end implicitLambda
 
--- Implicit arguments of the wrapped lemma are still instantiated by unification; `private` must not
--- make them explicit.
-private theorem implThm {n : Nat} : n = n := rfl
-
-@[expose] def G {n : Nat} (_ : n = n) := Bool
-
-def gImpl (_ : G (n := 5) (private implThm)) : Bool := true
-
--- `private` does not rely on `by`'s own proof abstraction, so it keeps working when that is
--- disabled.
+-- unlike `by exact`, `private` ignores `backward.proofsInPublic`
 set_option backward.proofsInPublic true in
 def fProofsInPublic (_ : FEq (private fooThm)) : Bool := true
 
--- A local hypothesis needs no auxiliary theorem, and is returned as-is.
+-- a local hypothesis needs no auxiliary theorem
+/--
+@ +1:30...37
+warning: `private` is unnecessary, since the resulting expression is just a free variable:
+  h
+-/
+#guard_msgs (positions := true) in
 def fLocal (h : 1 = 1) : FEq (private h) := true
 
 -- Synthetic metavariables created while elaborating the term (here, a nested `by`) are synthesized
 -- before we abstract, so that the proof ends up *inside* the auxiliary theorem. Otherwise the
 -- pending metavariable is abstracted into a parameter and the auxiliary theorem would instead get
--- type `2 = 2 → 2 = 2`. (Note `2 = 2` is used so as not to hit the `mkAuxLemma` cache.)
+-- type `2 = 2 → 2 = 2`. (Note `2 = 2` is used so as not to hit the `mkAuxLemma` cache populated by
+-- other aux lemmas in this file.)
 private theorem barThm : 2 = 2 := rfl
 
 @[expose] def FEq2 (_ : 2 = 2) := Bool
 
 def fNested (_ : FEq2 (private (id (by exact barThm)))) : Bool := true
 
-/-- info: fNested._proof_1 : 2 = 2 -/
-#guard_msgs in
-#check fNested._proof_1
+-- Ensure we have `fNested : ∀ (_ : FEq2 <constant>), _` and not e.g.
+-- `fNested : ∀ (_ : FEq2 (<constant> args), _`.
+open Lean in
+run_cmd do
+  let .defnInfo { type .. } ← getConstInfo ``fNested | throwError "not a def"
+  let_expr FEq2 auxThm := type.bindingDomain! | throwError "Wrong shape!{indentD type}"
+  unless auxThm.isConst do throwError "Expected constant; got{indentD auxThm}"
+
+set_option backward.privateInPublic true in
+/--
+@ +1:18...25
+warning: `private` is unnecessary, since `backward.privateInPublic` is `true`.
+-/
+#guard_msgs (positions := true) in
+def aPriv (_ : F (private fooPub)) : Bool := true
 
 end
 
