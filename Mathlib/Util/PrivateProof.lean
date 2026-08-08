@@ -66,7 +66,7 @@ elab_rules : term <= ty
         Use `private_decl%` to wrap a non-proof term in an auxiliary definition."
       Term.elabTerm t ty (implicitLambda := false)
     else
-      let e ← instantiateMVars <|← withoutExporting do withSynthesize do
+      let e ← instantiateMVars <|← withoutExporting do withSynthesize (postpone := .partial) do
         Term.elabTermEnsuringType t ty (implicitLambda := false)
       if !(← isProp ty) then
         let knownToBe? := if (← instantiateMVars ty).hasMVar then " known to be" else ""
