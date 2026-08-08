@@ -415,11 +415,11 @@ lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
   · simp; grind
   · simp [RelSeries.append, List.getElem_append, Fin.append, Fin.addCases]
 
-theorem left_le_append (connect : p.last ~[r] q.head) : p ≤ p.append q connect := by
-  simp [le_def]
+theorem left_lt_append (connect : p.last ~[r] q.head) : p < p.append q connect := by
+  refine ⟨by simp, (by simp [toList_ne_nil] at ·)⟩
 
-theorem right_le_append (connect : p.last ~[r] q.head) : q ≤ p.append q connect := by
-  simp [le_def]
+theorem right_lt_append (connect : p.last ~[r] q.head) : q < p.append q connect := by
+  refine ⟨by simp, (by simp [toList_ne_nil] at ·)⟩
 
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
@@ -508,8 +508,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           congr; ext; exact hm.symm
 
 variable (p) in
-proof_wanted le_insertNth (i : Fin p.length) (a : α) (hl : p i.castSucc ~[r] a)
-    (hr : a ~[r] p i.succ) : p.insertNth i a hl hr ≤ p
+proof_wanted insertNth_lt (i : Fin p.length) (a : α) (hl : p i.castSucc ~[r] a)
+    (hr : a ~[r] p i.succ) : p < p.insertNth i a hl hr
 
 /--
 A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
@@ -588,8 +588,8 @@ lemma toList_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
   rw [cons, toList_append]
   simp
 
-theorem le_cons {a : α} (h : a ~[r] p.head) : p ≤ p.cons a h := by
-  simp [le_def]
+theorem lt_cons {a : α} (h : a ~[r] p.head) : p < p.cons a h :=
+  ⟨by simp, (by simpa using ·.length_le)⟩
 
 lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
     (hl : l.IsChain (· ~[r] ·)) (x : α) (hx : x ~[r] l.head l_ne_nil) :
@@ -693,8 +693,8 @@ lemma cons_self_tail {p : RelSeries r} (hp : p.length ≠ 0) :
   apply toList_injective
   simp [← head_toList]
 
-theorem tail_le (h : p.length ≠ 0) : p.tail h ≤ p := by
-  simp [le_def, List.tail_sublist]
+theorem tail_lt (h : p.length ≠ 0) : p.tail h < p :=
+  ⟨by simp [List.tail_sublist], (by simpa using ·.length_le)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -732,8 +732,8 @@ lemma toList_snoc (p : RelSeries r) (newLast : α) (rel : p.last ~[r] newLast) :
     (p.snoc newLast rel).toList = p.toList ++ [newLast] := by
   simp [snoc]
 
-theorem le_snoc {a : α} (h : p.last ~[r] a) : p ≤ p.snoc a h :=
-  left_le_append h
+theorem lt_snoc {a : α} (h : p.last ~[r] a) : p < p.snoc a h :=
+  left_lt_append h
 
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
@@ -775,11 +775,12 @@ lemma snoc_self_eraseLast (p : RelSeries r) (h : p.length ≠ 0) :
   apply toList_injective
   rw [toList_snoc, ← getLast_toList, toList_eraseLast _ h, List.dropLast_append_getLast]
 
+theorem eraseLast_lt (h : p.length ≠ 0) : p.eraseLast < p :=
+  ⟨by simp [h, List.dropLast_sublist], (by simpa [h] using ·.length_le)⟩
+
 variable (p) in
-theorem eraseLast_le : p.eraseLast ≤ p := by
-  rcases eq_or_ne p.length 0 with h | h
-  · rw [eraseLast_eq_self_iff.mpr h]
-  · simp [h, le_def, List.dropLast_sublist]
+theorem eraseLast_le : p.eraseLast ≤ p :=
+  eq_or_ne p.length 0 |>.elim (eraseLast_eq_self_iff.mpr · |>.le) (eraseLast_lt · |>.le)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -1164,6 +1165,9 @@ theorem exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
   refine ⟨t, i, hit, ?_, ?_⟩
   · rw [← h₁, RelSeries.head, RelSeries.head, ← hi₁, ← hit, Function.comp]
   · rw [← h₂, RelSeries.last, RelSeries.last, ← hi₂, ← hit, Function.comp]
+
+proof_wanted covBy_castSucc_succ_of_isMax {p : LTSeries α} (h : IsMax p) (i : Fin p.length) :
+    p i.castSucc ⋖ p i.succ
 
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
