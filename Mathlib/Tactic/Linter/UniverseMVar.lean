@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-meta import all Lean.Elab.BuiltinCommand
 meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
@@ -27,6 +26,21 @@ public register_option linter.universeMVarInVariable : Bool :=
 namespace universeMVarInVariableLinter
 
 open Meta Term Parser.Term
+
+-- Copied from Core
+
+private def typelessBinder? : Syntax → Option (Array (TSyntax [`ident, `Lean.Parser.Term.hole]) × BinderInfo)
+  | `(bracketedBinderF|($ids*))     => some (ids, .default)
+  | `(bracketedBinderF|{$ids*})     => some (ids, .implicit)
+  | `(bracketedBinderF|⦃$ids*⦄)     => some (ids, .strictImplicit)
+  | `(bracketedBinderF|[$id:ident]) => some (#[id], .instImplicit)
+  | _                               => none
+
+-- Copied from Core
+
+/--  If `id` is an identifier, return true if `ids` contains `id`. -/
+private def containsId (ids : Array (TSyntax [`ident, ``Parser.Term.hole])) (id : TSyntax [`ident, ``Parser.Term.hole]) : Bool :=
+  id.raw.isIdent && ids.any fun id' => id'.raw.getId == id.raw.getId
 
 /-- Open scopes and remove the binders that are binder updates. -/
 private def pruneUpdate (binder : TSyntax ``Parser.Term.bracketedBinder) :
