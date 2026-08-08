@@ -5,6 +5,7 @@ Authors: Sophie Morel, Daniel Morrison
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.RingTheory.Finiteness.Subalgebra
@@ -121,6 +122,15 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCar
   · rw [hst, ιMultiDual_apply_diag, ← basis_apply, Basis.repr_self, Finsupp.single_eq_same]
   · rw [ιMultiDual_apply_nondiag R n b s t hst, ← basis_apply, Basis.repr_self,
       Finsupp.single_eq_of_ne hst]
+
+/-- If `b` is a finite basis of `M`, then `pairingDual` maps the exterior power of its dual basis
+to the dual basis of the exterior power of `b`. -/
+lemma pairingDual_apply_dualBasis_exteriorPower {I : Type*} [Finite I] [LinearOrder I]
+    (b : Basis I R M) (k : ℕ) (s : powersetCard I k) :
+    pairingDual R M k (b.dualBasis.exteriorPower k s) =
+      (b.exteriorPower k).dualBasis s := by
+  rw [Basis.coe_dualBasis, basis_coord]
+  simp [basis_apply, ιMulti_family, ιMultiDual, Basis.coe_dualBasis]
 
 lemma basis_repr_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (x : ⋀[R]^n M)
     (s : powersetCard I n) :
