@@ -165,7 +165,7 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   prop' x t ht := by
     rcases ht with ht | ht
     · norm_num [ht]
-    · rw [mem_singleton
+    · rw [Set.mem_singleton] at ht
       norm_num [ht]
 
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :
@@ -197,7 +197,7 @@ def reparam (p : Path x₀ x₁) (f : I → I) (hf : Continuous f) (hf₀ : f 0 
     rcases hx with hx | hx
     · rw [hx]
       simp [hf₀]
-    · rw [mem_singleton
+    · rw [Set.mem_singleton] at hx
       rw [hx]
       simp [hf₁]
   continuous_toFun := by fun_prop
@@ -214,7 +214,7 @@ def symm₂ {p q : Path x₀ x₁} (F : p.Homotopy q) : p.symm.Homotopy q.symm w
     rcases hx with hx | hx
     · rw [hx]
       simp
-    · rw [mem_singleton
+    · rw [Set.mem_singleton] at hx
       rw [hx]
       simp
 
@@ -231,7 +231,7 @@ def map {p q : Path x₀ x₁} (F : p.Homotopy q) (f : C(X, Y)) :
   prop' t x hx := by
     rcases hx with hx | hx
     · simp [hx]
-    · rw [mem_singleton
+    · rw [Set.mem_singleton] at hx
       simp [hx]
 
 end Homotopy

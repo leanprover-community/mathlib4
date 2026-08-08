@@ -130,7 +130,7 @@ theorem gauge_neg_set_eq_gauge_neg (x : E) : gauge (-s) x = gauge s (-x) := by
 
 theorem gauge_le_of_mem (ha : 0 ≤ a) (hx : x ∈ a • s) : gauge s x ≤ a := by
   obtain rfl | ha' := ha.eq_or_lt
-  · rw [mem_singletonzero_smul_set_subset _ hx), gauge_zero]
+  · rw [mem_singleton.1 (zero_smul_set_subset _ hx), gauge_zero]
   · exact csInf_le bddBelow_gauge_set ⟨ha', hx⟩
 
 theorem setOfPred_gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Absorbent ℝ s)

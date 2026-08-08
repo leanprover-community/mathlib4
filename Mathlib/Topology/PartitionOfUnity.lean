@@ -344,7 +344,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
     refine ⟨univ, univ_mem, (finite_singleton i).subset ?_⟩
     rintro j ⟨x, hx, -⟩
     contrapose! hx
-    rw [mem_singleton hx
+    rw [mem_singleton] at hx
     simp [hx]
   nonneg' := le_update_iff.2 ⟨fun _ => zero_le_one, fun _ _ => le_rfl⟩
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩

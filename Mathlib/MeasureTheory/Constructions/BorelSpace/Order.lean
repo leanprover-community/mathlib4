@@ -1092,7 +1092,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     · rw [← inter_union_distrib_left]
       congr
       ext x
-      simp only [mem_singletonm_union, mem_Ioo, mem_Ioi, mem_preimage]
+      simp only [mem_singleton, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
       · simp only [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true, false_or]

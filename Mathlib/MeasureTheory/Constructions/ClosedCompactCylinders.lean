@@ -41,13 +41,13 @@ def closedCompactCylinders : Set (Set (Π i, X i)) :=
 
 variable (X) in
 theorem empty_mem_closedCompactCylinders : ∅ ∈ closedCompactCylinders X := by
-  simp_rw [closedCompactCylinders, mem_iUnion, mem_singleton
+  simp_rw [closedCompactCylinders, mem_iUnion, mem_singleton]
   exact ⟨∅, ∅, isClosed_empty, isCompact_empty, (cylinder_empty _).symm⟩
 
 theorem mem_closedCompactCylinders (t : Set (Π i, X i)) :
     t ∈ closedCompactCylinders X
       ↔ ∃ (s S : _), IsClosed S ∧ IsCompact S ∧ t = cylinder s S := by
-  simp_rw [closedCompactCylinders, mem_iUnion, mem_singletonists_prop]
+  simp_rw [closedCompactCylinders, mem_iUnion, mem_singleton, exists_prop]
 
 /-- A finset `s` such that `t = cylinder s S`. `S` is given by `closedCompactCylinders.set`. -/
 noncomputable def closedCompactCylinders.finset (ht : t ∈ closedCompactCylinders X) :

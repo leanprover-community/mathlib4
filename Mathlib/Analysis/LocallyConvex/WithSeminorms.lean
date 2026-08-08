@@ -87,7 +87,7 @@ variable (p : SeminormFamily R E ι)
 
 theorem basisSets_iff {U : Set E} :
     U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
-  simp only [basisSets, mem_iUnion, exists_prop, mem_singleton
+  simp only [basisSets, mem_iUnion, exists_prop, Set.mem_singleton]
 
 theorem basisSets_mem (i : Finset ι) {r : ℝ} (hr : 0 < r) : (i.sup p).ball 0 r ∈ p.basisSets :=
   (basisSets_iff _).mpr ⟨i, _, hr, rfl⟩
@@ -930,7 +930,7 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     exact FilterBasis.hasBasis _
   · intro s hs
     change s ∈ Set.iUnion _ at hs
-    simp_rw [Set.mem_iUnion, mem_singleton
+    simp_rw [Set.mem_iUnion, Set.mem_singleton] at hs
     rcases hs with ⟨I, r, _, rfl⟩
     exact convex_ball _ _ _
 

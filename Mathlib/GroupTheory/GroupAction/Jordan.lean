@@ -261,7 +261,7 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
       obtain ⟨a, t, _, hst⟩ := this
       have ha' : a ∉ Subtype.val '' t := by
         intro h; rw [Set.mem_image] at h; obtain ⟨x, hx⟩ := h
-        apply x.prop; rw [hx.right]; exact mem_singleton_self a
+        apply x.prop; rw [hx.right]; exact Set.mem_singleton_self a
       have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
         rw [← is_one_preprimitive_iff]
         rw [← isMultiplyPreprimitive_succ_iff_ofStabilizer]

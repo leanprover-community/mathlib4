@@ -309,7 +309,7 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
   · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
     · exact OpenPartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
     · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
-        mem_singletonue_and]
+        mem_singleton, true_and]
       exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
@@ -320,7 +320,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
     isOpen_inter_preimage _ (isOpen_discrete _)
   convert! this
   refine Subset.antisymm (by simp) ?_
-  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singletond_imp]
+  simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton, and_imp]
   intro y hy h'y
   exact (chartAt H x).injOn hy (mem_chart_source _ x) h'y
 
@@ -644,7 +644,7 @@ protected def toTopologicalSpace : TopologicalSpace M :=
 
 theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.source := by
   apply TopologicalSpace.GenerateOpen.basic
-  simp only [exists_prop, mem_iUnion, mem_singleton
+  simp only [exists_prop, mem_iUnion, mem_singleton]
   refine ⟨e, he, univ, isOpen_univ, ?_⟩
   simp only [Set.univ_inter, Set.preimage_univ]
 
@@ -669,13 +669,13 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
       intro s s_open
       rw [inter_comm]
       apply TopologicalSpace.GenerateOpen.basic
-      simp only [exists_prop, mem_iUnion, mem_singleton
+      simp only [exists_prop, mem_iUnion, mem_singleton]
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuousOn_invFun := by
       let : TopologicalSpace M := c.toTopologicalSpace
       apply continuousOn_isOpen_of_generateFrom
       intro t ht
-      simp only [exists_prop, mem_iUnion, mem_singleton ht
+      simp only [exists_prop, mem_iUnion, mem_singleton] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩
       rw [ts]
       let f := e.symm.trans e'
@@ -698,7 +698,7 @@ def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
     chartAt := fun x ↦ c.openPartialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
     mem_chart_source := fun x ↦ c.mem_chart_source x
     chart_mem_atlas := fun x ↦ by
-      simp only [mem_iUnion, mem_singleton
+      simp only [mem_iUnion, mem_singleton]
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
 
 end ChartedSpaceCore

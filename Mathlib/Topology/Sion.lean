@@ -364,7 +364,7 @@ public theorem minimax
       fun x hx ↦ le_antisymm (hsup_y x hx sup_inf) (hsup_inf (sup_y x))
     suffices {t | ∃ x ∈ X, sup_y x = t} = {sup_inf} from (this ▸ hinf_sup).unique (by simp) |>.le
     ext t
-    simp only [mem_ofPred_eq, mem_singleton
+    simp only [mem_ofPred_eq, mem_singleton]
     constructor
     · rintro ⟨x, hx, rfl⟩
       exact hsup_y x hx
