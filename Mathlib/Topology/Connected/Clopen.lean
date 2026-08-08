@@ -663,7 +663,7 @@ of an element in the equivalence class. -/
 theorem connectedComponents_preimage_singleton {x : α} :
     (↑) ⁻¹' ({↑x} : Set (ConnectedComponents α)) = connectedComponent x := by
   ext y
-  rw [mem_preimage, mem_singletonnnectedComponents.coe_eq_coe']
+  rw [mem_preimage, mem_singleton, ConnectedComponents.coe_eq_coe']
 
 /-- The preimage of the image of a set under the quotient map to `connectedComponents α`
 is the union of the connected components of the elements in it. -/

@@ -297,7 +297,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
   · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [notMem_empty, not_and, mem_singleton
+    simp only [notMem_empty, not_and, Set.mem_singleton,
       mem_vaddAntidiagonal, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
@@ -306,7 +306,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     (HahnSeries.single b r).coeff ij.fst • ((of R).symm x).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [mem_singletonk_inj, mem_vaddAntidiagonal, mem_singleton]
+    simp only [Set.mem_singleton, Prod.mk_inj, mem_vaddAntidiagonal, mem_singleton]
     constructor
     · rintro ⟨rfl, _, h1⟩
       exact ⟨rfl, IsCancelVAdd.left_cancel a1 a2 a h1⟩
@@ -453,7 +453,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
   · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [notMem_empty, not_and, mem_singleton
+    simp only [notMem_empty, not_and, Set.mem_singleton,
       mem_antidiagonal, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
@@ -461,7 +461,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
   trans ∑ ij ∈ {(a, b)}, x.coeff ij.fst * (single b r).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
-    simp only [mem_singletonk_inj, mem_antidiagonal, mem_singleton]
+    simp only [Set.mem_singleton, Prod.mk_inj, mem_antidiagonal, mem_singleton]
     constructor
     · rintro ⟨_, rfl, h1⟩
       exact ⟨add_right_cancel h1, rfl⟩

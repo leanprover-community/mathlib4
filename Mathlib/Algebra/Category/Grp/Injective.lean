@@ -39,7 +39,7 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
     rw [Submodule.span_zero_singleton] at hn
     subst hn
     exact (map_zero g).symm
-  let gₘ := g ⟨m, Submodule.subset_span (mem_singleton_self _)⟩
+  let gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton_self _)⟩
   refine ⟨LinearMap.toSpanSingleton ℤ A (DivisibleBy.div gₘ m), fun n hn ↦ ?_⟩
   rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
   rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,

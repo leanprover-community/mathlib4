@@ -457,7 +457,7 @@ theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s 
 
 @[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
-  Algebra.subset_adjoin <| Set.mem_union_left _ (mem_singleton_self x)
+  Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton_self x)
 
 theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set A) :=
   star_mem <| self_mem_adjoin_singleton R x
@@ -792,7 +792,7 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
     f = g :=
   ext_adjoin fun x hx =>
     (show x = ⟨a, self_mem_adjoin_singleton R a⟩ from
-          Subtype.ext <| mem_singletonsymm ▸
+          Subtype.ext <| Set.mem_singleton.mp hx).symm ▸
       h
 
 variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)

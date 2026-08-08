@@ -188,7 +188,7 @@ private lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → Char
   apply h_char_zero.cast_injective.ne n.ne_zero
   -- But `n` generates the ideal, so its image is clearly zero.
   rw [← map_natCast (Ideal.Quotient.mk _), Nat.cast_zero, Ideal.Quotient.eq_zero_iff_mem]
-  exact Ideal.subset_span (mem_singleton_self _)
+  exact Ideal.subset_span (Set.mem_singleton_self _)
 
 @[coe]
 private noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=

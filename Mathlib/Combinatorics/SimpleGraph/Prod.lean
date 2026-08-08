@@ -63,7 +63,7 @@ theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a
 theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
-  simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, mem_singleton
+  simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton]
   simp only [eq_comm, and_comm]
 
 variable (G H)

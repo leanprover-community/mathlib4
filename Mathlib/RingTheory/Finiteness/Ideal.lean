@@ -61,7 +61,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
   intro J hJ hJK
   induction J, hJ using Submodule.fg_induction with
   | singleton x =>
-    obtain ⟨n, hn⟩ := hJK (subset_span (mem_singleton_self x))
+    obtain ⟨n, hn⟩ := hJK (subset_span (Set.mem_singleton_self x))
     exact ⟨n, by rwa [← span, span_singleton_pow, span_le, Set.singleton_subset_iff]⟩
   | sup J K _ _ hJ hK =>
     obtain ⟨n, hn⟩ := hJ fun x hx => hJK <| mem_sup_left hx

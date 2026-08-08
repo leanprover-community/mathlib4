@@ -503,7 +503,7 @@ theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) 
   have : NeZero (n / p ^ n.factorization p) := ⟨(Nat.ordCompl_pos p (NeZero.ne n)).ne'⟩
   have hcop := Nat.coprime_ordCompl hp.out (NeZero.ne n)
   simp only [subgroupOfPrimitiveMapToOne, Subgroup.mem_map, mem_annihilator_iff,
-    mem_singleton_eq, ZMod.coe_unitOfCoprime]
+    Set.mem_singleton, forall_eq, ZMod.coe_unitOfCoprime]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ψ, hψ, rfl⟩
     rw [← Int.cast_natCast] at hψ ⊢
