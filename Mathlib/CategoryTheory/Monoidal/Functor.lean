@@ -175,6 +175,13 @@ variable {F : C ⥤ D}
     (ε : 𝟙_ D ⟶ F.obj (𝟙_ C))
     /- tensorator -/
     (μ : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
+
+/--
+A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
+`whiskerLeft` and `whiskerRight`.
+-/
+@[instance_reducible]
+def ofTensorHom
     (μ_natural :
       ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
         (F.map f ⊗ₘ F.map g) ≫ μ Y Y' = μ X X' ≫ F.map (f ⊗ₘ g) := by
@@ -191,14 +198,8 @@ variable {F : C ⥤ D}
         cat_disch)
     (right_unitality :
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ₘ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
-        cat_disch)
-
-/--
-A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
-`whiskerLeft` and `whiskerRight`.
--/
-@[instance_reducible]
-def ofTensorHom : F.LaxMonoidal where
+        cat_disch) :
+    F.LaxMonoidal where
   ε := ε
   μ := μ
   μ_natural_left := fun f X' => by
