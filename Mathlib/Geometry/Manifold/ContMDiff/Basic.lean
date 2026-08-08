@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
-## Basic properties of `C^n` functions between manifolds
+# Basic properties of `C^n` functions between manifolds
 
 In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition

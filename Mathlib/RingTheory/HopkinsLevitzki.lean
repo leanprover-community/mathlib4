@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
-## The Hopkins–Levitzki theorem
+# The Hopkins–Levitzki theorem
 
 ## Main results
 

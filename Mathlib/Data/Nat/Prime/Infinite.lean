@@ -10,6 +10,8 @@ public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Order.Bounds.Basic
 
 /-!
+# Infinitude of the primes
+
 ## Notable Theorems
 
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.

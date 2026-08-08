@@ -9,13 +9,13 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Expand
 
 /-!
-## Expand power series
+# Expand power series
 
 Given a power series `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some nonzero natural number `n`.
 This operation is called `PowerSeries.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `PowerSeries.expand`: expand a power series by a nonzero factor of p,
   so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.

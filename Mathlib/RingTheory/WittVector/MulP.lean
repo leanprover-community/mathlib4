@@ -8,13 +8,13 @@ module
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-## Multiplication by `n` in the ring of Witt vectors
+# Multiplication by `n` in the ring of Witt vectors
 
 In this file we show that multiplication by `n` in the ring of Witt vectors
 is a polynomial function. We then use this fact to show that the composition of Frobenius
 and Verschiebung is equal to multiplication by `p`.
 
-### Main declarations
+## Main declarations
 
 * `mulN_isPoly`: multiplication by `n` is a polynomial function
 
