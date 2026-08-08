@@ -571,13 +571,19 @@ lemma sum_add (p : SkewPolynomial R) (f g : ℕ → R → S) :
 
 /-- See also `SkewPolynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
 lemma sum_smul_index (p : SkewPolynomial R) (b : R) (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) :
-    (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
-  Finsupp.sum_smul_index hf
+    (b • p).sum f = p.sum fun n a ↦ f n (b * a) := by
+  convert! Finsupp.sum_smul_index hf
+  ext
+  simp only [sum, SkewMonoidAlgebra.sum, Finsupp.sum, coeff_smul, Finsupp.coe_smul, Pi.smul_apply]
+  congr
 
 /-- See also `SkewPolynomial.sum_smul_index` for a version using multiplication on the RHS. -/
 lemma sum_smul_index' {T : Type*} [DistribSMul T R] (p : SkewPolynomial R) (b : T) (f : ℕ → R → S)
-    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
-  Finsupp.sum_smul_index' hf
+    (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) := by
+  convert! Finsupp.sum_smul_index' hf
+  ext
+  simp only [sum, SkewMonoidAlgebra.sum, Finsupp.sum, coeff_smul, Finsupp.coe_smul, Pi.smul_apply]
+  congr
 
 protected lemma smul_sum {T : Type*} [DistribSMul T S] (p : SkewPolynomial R) (b : T)
     (f : ℕ → R → S) : b • p.sum f = p.sum fun n a ↦ b • f n a :=
