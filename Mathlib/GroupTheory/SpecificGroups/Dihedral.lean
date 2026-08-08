@@ -52,7 +52,7 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
 private def one : DihedralGroup n :=
   r 0
 
-instance : Inhabited (DihedralGroup n) :=
+@[no_expose] instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
 /-- The inverse of an element of the dihedral group.
@@ -63,7 +63,7 @@ private def inv : DihedralGroup n → DihedralGroup n
 
 /-- The group structure on `DihedralGroup n`.
 -/
-instance : Group (DihedralGroup n) where
+@[no_expose] instance : Group (DihedralGroup n) where
   mul := mul
   mul_assoc := by rintro (a | a) (b | b) (c | c) <;> simp only [(· * ·), mul] <;> ring_nf
   one := one
@@ -83,34 +83,34 @@ instance : Group (DihedralGroup n) where
 
 @[simp]
 theorem r_mul_r (i j : ZMod n) : r i * r j = r (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem r_mul_sr (i j : ZMod n) : r i * sr j = sr (j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr i :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem r_zero : r 0 = (1 : DihedralGroup n) :=
-  rfl
+  (rfl)
 
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
@@ -257,10 +257,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | ⟨⟨sr i, sr j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inl (i + j)))
       | ⟨⟨r i, r j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩))
     invFun := fun
-      | .inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
-      | .inr (.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
+      | .inl i => ⟨⟨sr i, r 0⟩, private congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+      | .inr (.inl j) => ⟨⟨r 0, sr j⟩, private congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
       | .inr (.inr (.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
-      | .inr (.inr (.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
+      | .inr (.inr (.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, private congrArg r (add_comm i j)⟩
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
