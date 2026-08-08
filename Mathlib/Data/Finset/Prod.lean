@@ -286,7 +286,7 @@ variable (s)
 
 @[simp]
 theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
-    s.diag.image f = s.image fun x ↦ f (x, x) := by
+    s.diag.image f = s.image (f ∘ Function.diag) := by
   grind
 
 @[simp, norm_cast]
