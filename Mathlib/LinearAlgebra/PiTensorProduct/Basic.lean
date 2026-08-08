@@ -560,47 +560,47 @@ protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R₂) (u : M₁
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
     MultilinearMap.map_update_smul, RingHom.id_apply]
 
-variable (R s t)
-
-/-- The tensor of a family of linear maps from `sᵢ` to `tᵢ`, as a multilinear map of
-the family.
--/
+variable (σ₁₂ M₁ M₂) in
+/-- The tensor product of a family of linear maps from `M₁ᵢ` to `M₂ᵢ`,
+as a multilinear map of the family. -/
 @[simps]
 noncomputable def mapMultilinear :
-    MultilinearMap (.id R) (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
+    MultilinearMap (.id R₂) (fun (i : ι) ↦ M₁ i →ₛₗ[σ₁₂] M₂ i)
+      ((⨂[R₁] i, M₁ i) →ₛₗ[σ₁₂] ⨂[R₂] i, M₂ i) where
   toFun := map
   map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
 
-variable {R s t}
-
 /--
-Let `sᵢ` and `tᵢ` be families of `R`-modules.
-Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
+Let `M₁ᵢ` and `M₂ᵢ` be families of `R₁`- and `R₂`-modules.
+Then there is an `R₂`-linear map between `⨂ᵢ Hom(M₁ᵢ, M₂ᵢ)` and `Hom(⨂ᵢ M₁ᵢ, ⨂ M₂ᵢ)` defined by
 `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 
-Note that `PiTensorProduct.piTensorHomMap (tprod R f)` is equal to `PiTensorProduct.map f`.
+Note that `PiTensorProduct.piTensorHomMap (tprod R₂ f)` is equal to `PiTensorProduct.map f`.
 -/
-def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
-  lift.toLinearMap ∘ₗ lift (MultilinearMap.piLinearMap <| tprod R)
+def piTensorHomMap : (⨂[R₂] i, M₁ i →ₛₗ[σ₁₂] M₂ i) →ₗ[R₂] (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₂] ⨂[R₂] i, M₂ i :=
+  lift.toLinearMap ∘ₗ lift (MultilinearMap.piLinearMap <| tprod R₂)
 
-@[simp] lemma piTensorHomMap_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
-    piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
+@[simp] lemma piTensorHomMap_tprod_tprod (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (x : Π i, M₁ i) :
+    piTensorHomMap (tprod R₂ f) (tprod R₁ x) = tprod R₂ fun i ↦ f i (x i) := by
   simp [piTensorHomMap]
 
-lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₗ[R] t i) :
-    piTensorHomMap (tprod R f) = map f := by
+lemma piTensorHomMap_tprod_eq_map (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
+    piTensorHomMap (tprod R₂ f) = map f := by
   ext; simp
 
-/-- If `s i` and `t i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
-`⨂[R] i, t i` are linearly equivalent.
+section congr
+
+variable {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+
+/-- If `M₁ᵢ` and `M₂ᵢ` are linearly equivalent for every `i` in `ι`, then `⨂[R₁] i, M₁ i` and
+`⨂[R₂] i, M₂ i` are linearly equivalent.
 
 This is the n-ary version of `TensorProduct.congr`
 -/
-noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
-    (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i :=
+noncomputable def congr (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) : (⨂[R₁] i, M₁ i) ≃ₛₗ[σ₁₂] ⨂[R₂] i, M₂ i :=
   .ofLinearMap
     (map (fun i ↦ f i))
     (map (fun i ↦ (f i).symm))
@@ -608,15 +608,17 @@ noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
     (by ext; simp)
 
 @[simp]
-theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
-    congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
+theorem congr_tprod (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) (m : Π i, M₁ i) :
+    congr f (tprod R₁ m) = tprod R₂ (fun (i : ι) ↦ (f i) (m i)) := by
   simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
-theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
-    (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
+theorem congr_symm_tprod (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) (p : Π i, M₂ i) :
+    (congr f).symm (tprod R₂ p) = tprod R₁ (fun (i : ι) ↦ (f i).symm (p i)) := by
   simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
     LinearEquiv.coe_coe]
+
+end congr
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
