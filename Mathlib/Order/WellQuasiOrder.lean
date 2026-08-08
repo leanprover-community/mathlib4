@@ -88,8 +88,8 @@ product of well-quasi-ordered sets and `Pi.wellQuasiOrderedLE` when the relation
 theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : ∀ i, (α i → α i → Prop)}
     [∀ i, IsPreorder (α i) (r i)] (hr : ∀ i, WellQuasiOrdered (r i)) :
     WellQuasiOrdered fun a b : ∀ i, α i => ∀ i, r i (a i) (b i) := by
-  haveI := Fintype.ofFinite ι
-  haveI : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
+  have := Fintype.ofFinite ι
+  have : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
     { refl a i := refl (a i)
       trans a b c hab hbc i := _root_.trans (hab i) (hbc i) }
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ i, α i),

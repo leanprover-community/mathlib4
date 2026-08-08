@@ -153,7 +153,7 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
           right
           apply le_trans h' (le_cSup _ _ hz)
 
-lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
+lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
     IsAdmissible x f {y | IsExtremePt x f y} := by
   apply IsAdmissible.mk
   · constructor
@@ -193,14 +193,20 @@ lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
       intro hc'
       exact lt_irrefl y (lt_of_lt_of_le hy' hc')
 
-lemma setOf_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x f y} = bot x f := by
+@[deprecated (since := "2026-07-09")]
+alias setOf_isExtremePt_isAdmissible := setOfPred_isExtremePt_isAdmissible
+
+lemma setOfPred_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x f y} = bot x f := by
   rw [← subset_bot_iff]
   · exact fun _ h ↦ h.mem_bot
-  · exact setOf_isExtremePt_isAdmissible le_map
+  · exact setOfPred_isExtremePt_isAdmissible le_map
+
+@[deprecated (since := "2026-07-09")]
+alias setOf_isExtremePt_eq_bot := setOfPred_isExtremePt_eq_bot
 
 lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
     y ∈ bot x f ↔ IsExtremePt x f y := by
-  rw [← setOf_isExtremePt_eq_bot le_map, mem_setOf]
+  rw [← setOfPred_isExtremePt_eq_bot le_map, mem_ofPred]
 
 lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) := by
   intro y hy z hz _
@@ -251,6 +257,15 @@ lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g
   apply ωScottContinuous.sSup
   rintro f (rfl | rfl | _) <;> assumption
 
+#adaptation_note
+/--
+Why `respectTransparency.types false` here?
+The proof of this lemma involves a very subtle form of abuse of definitional equality.
+`monotone_const` is only applicable if `Top.top` (`⊤`) can be unfolded to see that it's constant.
+However, `Top.top` is semireducible.
+This mismatch is problematic because `simp` works at implicit transparency.
+-/
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
   ωScottContinuous.of_monotone_map_ωSup
     ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩

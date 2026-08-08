@@ -309,13 +309,13 @@ noncomputable def cyclotomicCharacter (p : ℕ) [Fact p.Prime] :
   { toFun g := cyclotomicCharacter.toFun p g
     map_one' := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H]
     map_mul' f g := by
       by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i)
-      · haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+      · have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
         refine PadicInt.ext_of_toZModPow.mp fun n ↦ ?_
         simp [cyclotomicCharacter.toZModPow_toFun]
       · simp [cyclotomicCharacter.toFun, dif_neg H] }
@@ -339,7 +339,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
   · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)
-  haveI _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
+  have _ (i) : HasEnoughRootsOfUnity L (p ^ i) := ⟨H i, rootsOfUnity.isCyclic _ _⟩
   choose ζ hζ using H
   refine Continuous.of_coeHom_comp ?_
   apply continuous_of_continuousAt_one

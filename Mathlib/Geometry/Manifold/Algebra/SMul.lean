@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2026 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ben Eltschig
+Authors: Ben Eltschig, Pepa Montero
 -/
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Cⁿ monoid actions
@@ -24,6 +25,9 @@ a finite-dimensional manifold `M` is `C^n` provided it is `C^n` in the second va
 
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
+
+For a group `G` acting smoothly on `M`, we define `Diffeomorph.smul`, scalar multiplication by a
+fixed `g : G` as a diffeomorphism of `M` (in analogy to `Homeomorph.smul`).
 
 See also:
 * `ContMDiffMul I n G` for continuous differentiability of multiplication `G × G → G` in a single
@@ -168,6 +172,12 @@ theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :
 theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
     CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
 
+-- TODO: after #41534 is merged, weaken the hypothesis to `ContMDiffConstSMul`
+@[to_additive]
+theorem ContMDiffSMul.contMDiff_const_smul {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G) :
+    CMDiff n fun x : M ↦ g • x :=
+  contMDiff_const.smul (I := I) contMDiff_id
+
 end
 
 @[to_additive prod]
@@ -278,3 +288,39 @@ end
 
 
 end ContMDiffConstSMul
+
+section Diffeomorph
+
+variable [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
+
+variable (I I' n) in
+/-- The diffeomorphism given by scalar multiplication by an element of a group `G` acting
+Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is scalar
+multiplication by `g⁻¹`. -/
+@[expose, to_additive
+/-- The diffeomorphism given by affine-addition of an element of an additive group `G` acting
+Cⁿ-differentiably on a manifold `M` is a diffeomorphism from `M` to itself. Its inverse is
+addition of `-g`. -/]
+def Diffeomorph.smul : M ≃ₘ^n⟮I', I'⟯ M where
+  toEquiv := MulAction.toPerm g
+  contMDiff_toFun := ContMDiffSMul.contMDiff_const_smul (I := I) g
+  contMDiff_invFun := ContMDiffSMul.contMDiff_const_smul (I := I) g⁻¹
+
+@[to_additive (attr := simp)]
+lemma Diffeomorph.smul_toHomeomorph :
+    haveI : ContinuousSMul G M := ContMDiffSMul.continuousSMul (I := I) (I' := I') n
+    (Diffeomorph.smul I I' n g).toHomeomorph = Homeomorph.smul (α := M) g :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma Diffeomorph.smul_apply (x : M) : Diffeomorph.smul I I' n g x = g • x := rfl
+
+@[to_additive (attr := simp)]
+lemma Diffeomorph.smul_symm_apply (x : M) : (Diffeomorph.smul I I' n g).symm x = g⁻¹ • x := rfl
+
+@[to_additive]
+lemma Diffeomorph.smul_symm :
+    (Diffeomorph.smul I I' n g : M ≃ₘ^n⟮I', I'⟯ M).symm = Diffeomorph.smul I I' n g⁻¹ :=
+  Diffeomorph.ext fun _ ↦ rfl
+
+end Diffeomorph

@@ -294,6 +294,7 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   use i'
   exact hi'.2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
     (hs : LinearIndepOn R id s) (h : t ⊆ s) (hst : s ⊆ span R t) : s = t := by
   let f : t ↪ s :=
@@ -496,8 +497,8 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
-  letI := Classical.decEq (G →* L)
-  letI : MulAction L L := DistribMulAction.toMulAction
+  let := Classical.decEq (G →* L)
+  let : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   apply linearIndependent_iff'.2
   intro s

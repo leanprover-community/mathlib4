@@ -70,7 +70,7 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
     refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
     exact ⟨n, zpow_natCast _ _⟩
   tfae_have 4 → 1 := by
-    refine fun h ↦ closure_minimal ?_ isClosed_setOf_clusterPt h
+    refine fun h ↦ closure_minimal ?_ isClosed_setOfPred_clusterPt h
     exact range_subset_iff.2 (mapClusterPt_self_zpow_atTop_pow _)
   tfae_have 1 → 3 := by
     rw [mem_closure_iff_clusterPt]
