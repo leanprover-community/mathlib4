@@ -670,6 +670,26 @@ theorem meromorphicOn_sphere_comp_sub_const_iff_meromorphicOn_sphere {c : 𝕜} 
 
 end arithmetic
 
+section composition
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F] {V : Set 𝕜'}
+
+/-- The composition of a meromorphic and an analytic function is meromorphic. -/
+lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} (hf : MeromorphicOn f V)
+    (hg : AnalyticOnNhd 𝕜 g U) (hUV : Set.MapsTo g U V) :
+    MeromorphicOn (f ∘ g) U :=
+  fun z hz ↦ (hf _ (hUV hz)).comp_analyticAt (hg z hz)
+
+/-- Variant of `MeromorphicOn.comp_analyticOnNhd` which trades the `Set.MapsTo` hypothesis for a
+smaller set. -/
+lemma comp_analyticOnNhd_inter {f : 𝕜' → F} {g : 𝕜 → 𝕜'} (hf : MeromorphicOn f V)
+    (hg : AnalyticOnNhd 𝕜 g U) :
+    MeromorphicOn (f ∘ g) (U ∩ g ⁻¹' V) :=
+  hf.comp_analyticOnNhd (hg.mono inter_subset_left) inter_subset_right
+
+end composition
+
 include hf in
 lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
   refine fun x hx ↦ (hf x hx).congr (EventuallyEq.filter_mono ?_ nhdsWithin_le_nhds)
@@ -715,6 +735,24 @@ variable
 lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
 
 lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
+
+section composition
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F]
+
+/-- The composition of a meromorphic and an analytic function is meromorphic. Compared to
+`MeromorphicOn.comp_analyticOnNhd`, the outer function is meromorphic everywhere, so no
+`Set.MapsTo` hypothesis is required. -/
+lemma comp_analyticOnNhd {f : 𝕜' → F} {g : 𝕜 → 𝕜'} {U : Set 𝕜} (hf : Meromorphic f)
+    (hg : AnalyticOnNhd 𝕜 g U) :
+    MeromorphicOn (f ∘ g) U :=
+  fun z hz ↦ (hf _).comp_analyticAt (hg z hz)
+
+end composition
+
+@[fun_prop]
+lemma id : Meromorphic (id : 𝕜 → 𝕜) := fun x ↦ .id x
 
 @[fun_prop]
 lemma const (x : E) : Meromorphic fun _ : 𝕜 ↦ x := fun _ ↦ .const _ _
