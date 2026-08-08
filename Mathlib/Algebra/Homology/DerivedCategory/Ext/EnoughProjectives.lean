@@ -110,6 +110,20 @@ lemma subsingleton_of_projective [HasExt.{w} C]
     (P Y : C) [Projective P] (n : ℕ) : Subsingleton (Ext.{w} P Y (n + 1)) :=
   subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
 
+attribute [local instance] Ext.subsingleton_of_projective in
+/-- For a short exact complex whose middle object is projective, the vanishing of
+`Ext S.X₃ M 1` is equivalent to surjectivity of precomposition along `S.f` on `Ext⁰`. -/
+lemma one_subsingleton_iff_of_projective [HasExt.{w} C] (X : C)
+    (S : ShortComplex C) (S_exact : S.ShortExact) (proj : Projective S.X₂) :
+    Subsingleton (Ext S.X₃ X 1) ↔
+      Function.Surjective ((Ext.mk₀ S.f).precomp X (add_zero 0)) := by
+  refine ⟨fun h x₁ ↦ Ext.contravariant_sequence_exact₁ S_exact _ x₁ (add_zero _)
+    (by subsingleton), fun h ↦ subsingleton_of_forall_eq 0 (fun x₃ ↦ ?_)⟩
+  obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ S_exact _ x₃
+    (by subsingleton) (add_zero 1)
+  obtain ⟨x₂, rfl⟩ := h x₁
+  simp
+
 end Abelian.Ext
 
 variable (C)
