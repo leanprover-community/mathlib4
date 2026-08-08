@@ -419,7 +419,7 @@ theorem IsCompact.nhdsSet_inf_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filte
 
 theorem IsCompact.inf_nhdsSet_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter X) :
     l ⊓ (𝓝ˢ K) = ⨆ x ∈ K, l ⊓ 𝓝 x := by
-  simp only [inf_comm l, hK.nhdsSet_inf_eq_biSup]
+  simp [inf_comm l, hK.nhdsSet_inf_eq_biSup]
 
 /-- If `s : Set X` belongs to `l ⊓ 𝓝 x` for all `x` from a compact set `K`,
 then it belongs to `l ⊓ (𝓝ˢ K)`,
@@ -435,14 +435,13 @@ theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) {Y} (l : 
   rcases isEmpty_or_nonempty Y with hY | hY
   · simp [filter_eq_bot_of_isEmpty l]
   · let : TopologicalSpace Y := ⊤
-    have hKY : IsCompact (K ×ˢ ({hY.some} : Set Y)) := by
-      rw [prod_singleton]; exact hK.image (continuous_id.prodMk continuous_const)
-    have h1 : 𝓝ˢ (K ×ˢ ({hY.some} : Set Y)) = comap Prod.fst (𝓝ˢ K) := by
-      simp_rw [nhdsSet, sSup_image, biSup_prod, iSup_singleton, nhds_prod_eq,
+    have hKY : IsCompact ((fun x ↦ (x, hY.some)) '' K) :=
+      hK.image (continuous_id.prodMk continuous_const)
+    have h1 : 𝓝ˢ ((fun x ↦ (x, hY.some)) '' K) = (𝓝ˢ K) ×ˢ (⊤ : Filter Y) := by
+      simp_rw [prod_top, nhdsSet, sSup_image, iSup_image, nhds_prod_eq,
         IndiscreteTopology.nhds_eq, prod_top, comap_iSup]
-    rw [prod_eq_inf, ← h1, hKY.nhdsSet_inf_eq_biSup]
-    simp_rw [biSup_prod, iSup_singleton, nhds_prod_eq, IndiscreteTopology.nhds_eq, ← top_prod,
-      prod_inf_prod, inf_top_eq, top_inf_eq]
+    simpa only [h1, iSup_image, nhds_prod_eq, IndiscreteTopology.nhds_eq, prod_inf_prod,
+      inf_top_eq, top_inf_eq] using hKY.nhdsSet_inf_eq_biSup ((⊤ : Filter X) ×ˢ l)
 
 /-- If `s : Set (X × Y)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
 then it belongs to `(𝓝ˢ K) ×ˢ l`,
