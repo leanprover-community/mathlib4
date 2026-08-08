@@ -6,13 +6,15 @@ Authors: Moritz Doll, Zhouhang Zhou
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
 
 # Extension of continuous linear maps on Banach spaces
 
-In this file we provide two different ways to extend a continuous linear map defined on a dense
+In this file we provide three different ways to extend a continuous linear map defined on a dense
 subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
@@ -29,6 +31,9 @@ Moreover, we can extend a linear equivalence:
   `Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
   and `f` preserves the norm.
 
+Finally, we can extend a linear isometry:
+* `LinearIsometry.completion`: The linear isometric version of `UniformSpace.Completion.extension`.
+* `LinearIsometry.fromCompletion`: The linear isometric version of `UniformSpace.Completion.map`.
 -/
 
 @[expose] public section
@@ -249,7 +254,7 @@ variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F �
 set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a linear equivalence `f : E ≃ₛₗ[σ₁₂] F` to a continuous linear equivalence
 `Eₗ ≃SL[σ₁₂] Fₗ`, where `E` and `F` are normed spaces and `Eₗ` and `Fₗ` are Banach spaces,
-using dense maps `e₁ : E →ₗ[𝕜₁] Eₗ` and `e₂ : F →ₗ[𝕜₂] F₂` together with bounds
+using dense maps `e₁ : E →ₗ[𝕜₁] Eₗ` and `e₂ : F →ₗ[𝕜₂] Fₗ` together with bounds
 `‖e₂ (f x)‖ ≤ C * ‖e₁ x‖` for all `x : E` and `‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖` for all `x : F`. -/
 def extend (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
     (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) :
@@ -358,3 +363,80 @@ theorem extendOfIsometry_symm_eq (h_dense₁ : DenseRange e₁) (h_dense₂ : De
 end extendOfIsometry
 
 end LinearEquiv
+
+namespace LinearIsometry
+
+open UniformSpace
+
+variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
+  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+  {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
+
+section fromCompletion
+
+variable [PseudoMetricSpace R₂] [CompleteSpace F] [IsBoundedSMul R₂ F]
+
+/-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
+`UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F` between the completions of `E` and a complete space
+`F`, via the canonical completion embedding. This is the linear isometric version of
+`UniformSpace.Completion.extension`. -/
+def fromCompletion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
+  __ := f.toContinuousLinearMap.fromCompletion
+  norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
+    f.toContinuousLinearMap.fromCompletion.map_zero
+
+theorem fromCompletion_apply_coe (x : E) : f.fromCompletion x = f x :=
+  ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
+
+@[simp low]
+theorem coe_fromCompletion : f.fromCompletion = Completion.extension f := by
+  refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
+  rw [fromCompletion_apply_coe, Completion.extension_coe f.isometry.uniformContinuous]
+
+@[simp]
+theorem toContinuousLinearMap_fromCompletion :
+    f.fromCompletion.toContinuousLinearMap = f.toContinuousLinearMap.fromCompletion := rfl
+
+@[simp]
+theorem toAddMonoidHom_fromCompletion (f : E →ₛₗᵢ[σ₁₂] F) :
+    f.fromCompletion.toAddMonoidHom = f.toAddMonoidHom.extension f.continuous := rfl
+
+end fromCompletion
+
+section completion
+
+variable [UniformContinuousConstSMul R₂ F]
+
+/-- Extend a linear isometry `f : E →ₛₗᵢ[σ₁₂] F` to a linear isometry
+`UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F` between the completions of `E` and
+`F`, via the canonical completion embeddings. This is the linear isometric version of
+`UniformSpace.Completion.map`. -/
+def completion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.Completion F where
+  __ := f.toContinuousLinearMap.completion
+  norm_map' e := Completion.induction_on e
+      (isClosed_eq (f.toContinuousLinearMap.completion.continuous.norm) continuous_norm) <| by
+    simp [UniformSpace.Completion.norm_coe]
+
+theorem completion_apply_coe (x : E) : f.completion x = f x :=
+  ContinuousLinearMap.completion_apply_coe f.toContinuousLinearMap x
+
+@[simp low]
+theorem coe_completion : f.completion = Completion.map f := by
+  refine Completion.ext f.completion.continuous Completion.continuous_map fun a => ?_
+  rw [completion_apply_coe, Completion.map_coe f.isometry.uniformContinuous]
+
+@[simp]
+theorem toContinuousLinearMap_completion :
+    f.completion.toContinuousLinearMap = f.toContinuousLinearMap.completion := by
+  ext x
+  induction x using Completion.induction_on with
+  | hp => exact isClosed_eq f.completion.continuous f.toContinuousLinearMap.completion.continuous
+  | ih x => congr
+
+@[simp]
+theorem toAddMonoidHom_completion :
+    f.completion.toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
+
+end completion
+
+end LinearIsometry
