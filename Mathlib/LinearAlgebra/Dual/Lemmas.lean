@@ -1003,7 +1003,7 @@ theorem dualCoannihilator_inf_eq {W W' : Subspace K (Dual K V)}
   rw [← dualAnnihilator_inj, dualAnnihilator_sup_eq]
   repeat rw [dualCoannihilator_dualAnnihilator_eq]
 
-theorem dualCoannihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K (Module.Dual K V))
+theorem dualCoannihilator_iInf_eq {ι : Type*} (W : ι → Subspace K (Module.Dual K V))
     [inst : ∀ i, FiniteDimensional K (W i)] :
   (⨅ i, W i).dualCoannihilator = ⨆ i, (W i).dualCoannihilator := by
   cases isEmpty_or_nonempty ι
