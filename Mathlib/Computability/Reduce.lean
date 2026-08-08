@@ -387,9 +387,9 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le_refl := le_refl
-  le_trans _ _ _ := le_trans
-  le_antisymm _ _ := le_antisymm
+  le_refl := private le_refl
+  le_trans _ _ _ := private le_trans
+  le_antisymm _ _ := private le_antisymm
 
 /-- The join of two degrees, induced by the disjoint union of two underlying sets. -/
 instance instAdd : Add ManyOneDegree :=
