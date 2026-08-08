@@ -14,13 +14,33 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 # Projective Dimension in ModuleCat
 
+This file deals with preservation of `projectiveDimension` in (semi) linear equivalences.
+Previously we only know this for linear equivalence within same universe level, now it works with
+all universe level where the ring `R` is small.
+
+## Main Results
+
+* `ModuleCat.hasProjectiveDimensionLE_of_semiLinearEquiv`: a module `N` satisfy
+  `HasProjectiveDimensionLE N n` if it is semi-linear equivalent to a module `M` that
+  `HasProjectiveDimensionLE M n`.
+
+* `ModuleCat.projectiveDimension_eq_of_semiLinearEquiv`: `projectiveDimension` is preserved
+  under arbitrary semi-linear equivalence.
+
+* `ModuleCat.hasProjectiveDimensionLE_of_linearEquiv`: a module `N` satisfy
+  `HasProjectiveDimensionLE N n` if it is linear equivalent to a module `M` that
+  `HasProjectiveDimensionLE M n`.
+
+* `ModuleCat.projectiveDimension_eq_of_linearEquiv`: `projectiveDimension` is preserved
+  under arbitrary linear equivalence.
+
 -/
 
 public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 open CategoryTheory Abelian Module
 
@@ -28,7 +48,7 @@ namespace ModuleCat
 
 section
 
-variable [Small.{v} R] {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [Ring R'] [Small.{v'} R'] (e : R ≃+* R')
 
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
