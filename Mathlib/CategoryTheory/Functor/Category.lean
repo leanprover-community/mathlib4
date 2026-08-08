@@ -114,7 +114,7 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   exact (α.naturality (β.app X)).symm
 
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
-@[implicit_reducible, simps (attr := grind =), to_dual self]
+@[simps (attr := grind =), to_dual self]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
 
