@@ -28,8 +28,10 @@ def f' (_ : FEq (private fooThm)) : Bool := true
 def fα (_ : F (private fooThm)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type of `foo` is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type of `foo` is not a `Prop`.
   Nat : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Unknown constant `_private.MathlibTest.Util.PrivateProof.0.foo`
 
@@ -41,8 +43,10 @@ error: (kernel) declaration has metavariables 'fα''
 def fα' (_ : F (private foo)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type of `fooPub` is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type of `fooPub` is not a `Prop`.
   Nat : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 -/
 #guard_msgs in
 def fαPub' (_ : F (private fooPub)) : Bool := true
@@ -50,8 +54,10 @@ def fαPub' (_ : F (private fooPub)) : Bool := true
 -- Communicate that `private` doesn't work, but also continue elaborating, as shown by the
 -- type mismatch error
 /--
-error: `private` can only wrap proofs; the expected type is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Unknown identifier `foo`
 
@@ -61,8 +67,10 @@ Note: A private declaration `foo` (from the current module) exists but would nee
 def fα'' (_ : F (α := Bool) (private foo)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Application type mismatch: The argument
   fooPub
@@ -111,7 +119,7 @@ def fProofsInPublic (_ : FEq (private fooThm)) : Bool := true
 /--
 @ +1:30...37
 warning: `private` is unnecessary, since the resulting expression is just a free variable:
-  h
+  h : 1 = 1
 -/
 #guard_msgs (positions := true) in
 def fLocal (h : 1 = 1) : FEq (private h) := true
