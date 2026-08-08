@@ -205,7 +205,7 @@ class WeakPseudoEMetricSpace
     (uniformSpaceOfEDist edist edist_self edist_comm edist_triangle).toTopologicalSpace ≤ τ
   /-- The ambient topology on `α` matches the `edist` topology on eballs. -/
   topology_eq_on_restrict :
-    ∀ (x : α) (r : ℝ≥0∞), IsOpen ((Metric.eball x ⊤) ↓∩ (Metric.eball x r))
+    ∀ (x : α) (r : ℝ≥0∞), IsOpen (Metric.eball x ⊤ ↓∩ Metric.eball x r)
 
 @[ext]
 protected theorem WeakPseudoEMetricSpace.ext
