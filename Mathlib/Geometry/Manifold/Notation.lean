@@ -518,22 +518,22 @@ where
           trace[Elab.DiffGeo.MDiff] "`{H}` is a Euclidean quadrant"
           mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
         | _ =>
-        trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
-        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-          match_expr type with
-          | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
-            else return none
-          | _ => return none
-        if let some (inst, K) := a then
-          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
-          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
-        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
-          assuming it is a non-trivially normed field"
-        -- Return the trivial model with corners: this will work if `H` is a normed field.
-        let eT : Term ← Term.exprToSyntax H
-        let iTerm : Term ← ``(𝓘($eT))
-        Term.elabTerm iTerm none
+          trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
+          let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+            match_expr type with
+            | NormedSpace K E _ _ =>
+              if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+              else return none
+            | _ => return none
+          if let some (inst, K) := a then
+            trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+            return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+          trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+            assuming it is a non-trivially normed field"
+          -- Return the trivial model with corners: this will work if `H` is a normed field.
+          let eT : Term ← Term.exprToSyntax H
+          let iTerm : Term ← ``(𝓘($eT))
+          Term.elabTerm iTerm none
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
