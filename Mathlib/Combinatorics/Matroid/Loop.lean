@@ -663,7 +663,10 @@ lemma closure_inter_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
 
 lemma closure_union_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
     M.closure (X ∪ K) = M.closure X ∪ K := by
-  rw [← closure_union_closure_left_eq, subset_antisymm_iff, and_iff_left (M.subset_closure _),
+  rw [← closure_union_closure_left_eq, subset_antisymm_iff,
+    and_iff_left <| M.subset_closure _ (by
+      have := hK.trans (show M.coloops ⊆ M.E by aesop_mat)
+      aesop_mat),
     ← sdiff_eq_empty, eq_empty_iff_forall_notMem]
   refine fun e ⟨hecl, he⟩ ↦ he (.inl ?_)
   obtain ⟨C, hCss, hC, heC⟩ := (mem_closure_iff_exists_isCircuit he).1 hecl
