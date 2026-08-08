@@ -8,7 +8,7 @@ module
 public import Mathlib.Geometry.Convex.Cone.Face.Basic
 
 /-!
-## Face
+# Face
 
 This file defines the concept of a face of a pointed cone. It also defines the complete lattice
 structure on the collection of all faces of such a cone.

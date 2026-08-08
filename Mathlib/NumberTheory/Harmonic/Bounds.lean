@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
+# Bounds on harmonic numbers
 
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
 

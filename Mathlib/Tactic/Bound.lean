@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
-## The `bound` tactic
+# The `bound` tactic
 
 `bound` is an `aesop` wrapper that proves inequalities by straightforward recursion on structure,
 assuming that intermediate terms are nonnegative or positive as needed.  It also has some support
@@ -30,7 +30,7 @@ them via `have` before calling `bound`.
 
 See `MathlibTest/Bound/bound.lean` for tests.
 
-### Calc usage
+## Calc usage
 
 Since `bound` requires the inequality proof to exactly match the structure of the expression, it is
 often useful to iterate between `bound` and `rw / simp` using `calc`.  Here is an example:
@@ -46,7 +46,7 @@ lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
     _ ≥ 2 * abs z := by bound
 ```
 
-### Aesop rules
+## Aesop rules
 
 `bound` uses threes types of aesop rules: `apply`, `forward`, and closing `tactic`s.  To register a
 lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically converted into either a
@@ -67,7 +67,7 @@ inequalities.  Another example is `HasFPowerSeriesOnBall.r_pos`, so that `bound`
 power series present in the context have positive radius of convergence.  Custom `@[bound_forward]`
 rules that similarly expose inequalities inside structures are often useful.
 
-### Guessing apply rules
+## Guessing apply rules
 
 There are several cases where there are two standard ways to recurse down an inequality, and it is
 not obvious which is correct without more information.  For example, `a ≤ min b c` is registered as
@@ -82,7 +82,7 @@ Currently the two types of guessing rules are
 1. `min` and `max` rules, for both `≤` and `<`
 2. `pow` and `rpow` monotonicity rules which branch on `1 ≤ a` or `a ≤ 1`.
 
-### Closing tactics
+## Closing tactics
 
 We close numerical goals with `norm_num` and `linarith`.
 -/

@@ -9,6 +9,8 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
 /-!
+# The `inhabit` tactic
+
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.
 -/

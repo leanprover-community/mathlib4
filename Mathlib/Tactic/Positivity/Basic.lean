@@ -16,7 +16,7 @@ public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Tactic.Positivity.Core
 
 /-!
-## `positivity` core extensions
+# `positivity` core extensions
 
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-## The Frobenius operator
+# The Frobenius operator
 
 If `R` has characteristic `p`, then there is a ring endomorphism `frobenius R p`
 that raises `r : R` to the power `p`.
@@ -29,7 +29,7 @@ We therefore have to define the polynomials by hand, and check that they have th
 In case `R` has characteristic `p`, we show in `frobenius_eq_map_frobenius`
 that `WittVector.frobeniusFun` is equal to `WittVector.map (frobenius R p)`.
 
-### Main definitions and results
+## Main definitions and results
 
 * `frobeniusPoly`: the polynomials that describe the coefficients of `frobeniusFun`;
 * `frobeniusFun`: the Frobenius endomorphism on Witt vectors;

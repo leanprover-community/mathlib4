@@ -8,7 +8,7 @@ module
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 
 /-!
-## Low degree continuous cohomology
+# Low degree continuous cohomology
 
 In this file we show that the zeroth continuous cohomology is isomorphic to the
 invariants of the representation.

@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-## The Verschiebung operator
+# The Verschiebung operator
 
 ## References
 

@@ -13,7 +13,7 @@ public import Mathlib.Data.Int.Cast.Basic
 public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 
 /-!
-## The `Result` type for `norm_num`
+# The `Result` type for `norm_num`
 
 We set up predicates `IsNat`, `IsInt`, and `IsRat`,
 stating that an element of a ring is equal to the "normal form" of a natural number, integer,

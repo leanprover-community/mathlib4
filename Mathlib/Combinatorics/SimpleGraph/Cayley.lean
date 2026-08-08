@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-### Definition of Cayley graphs
+# Definition of Cayley graphs
 
 This file defines and proves several fact about Cayley graphs.
 A Cayley graph over type `M` with generators `s : Set M` is a graph in which two vertices `u ≠ v`

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (tactic dependency)
 
 /-!
+# The `name_poly_vars` command
+
 The command `name_poly_vars` names variables in
 `MvPolynomial (Fin n) R` for the appropriate value of `n`.
 The notation introduced by this command is local.

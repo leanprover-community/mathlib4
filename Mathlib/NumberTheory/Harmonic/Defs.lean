@@ -9,6 +9,7 @@ public import Mathlib.Data.Rat.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
+# Harmonic numbers
 
 This file defines the harmonic numbers.
 

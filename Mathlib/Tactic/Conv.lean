@@ -10,6 +10,8 @@ public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Command
 
 /-!
+# Additional `conv` tactics
+
 Additional `conv` tactics.
 -/
 
