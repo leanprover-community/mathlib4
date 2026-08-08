@@ -91,7 +91,7 @@ theorem cmpLE_eq_gt [LT α] [Std.LawfulOrderLT α] [Std.Total (α := α) (· ≤
 @[simp]
 theorem cmpLE_eq_eq [Std.Refl (α := α) (· ≤ ·)] [Std.Antisymm (α := α) (· ≤ ·)] {x y : α} :
     cmpLE x y = .eq ↔ x = y := by
-  refine Iff.trans ?_ (antisymm_iff (r := (· ≤ ·)))
+  refine Iff.trans ?_ Std.le_antisymm_iff
   rw [cmpLE]
   (repeat' split) <;> simp [*]
 
