@@ -187,15 +187,15 @@ theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reach
   : G.edgeReachability u v ≠ 0 := by
   rw [Order.one_le_iff_ne_zero.symm]
   have : G.IsEdgeReachable 1 u v := isEdgeReachable_one.mpr h
-  simp only [ le_iSup_iff , edgeReachability]
+  simp only [le_iSup_iff, edgeReachability]
   intro b h'
   specialize h' 1
   grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
 
-theorem le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
+theorem IsEdgeReachable.le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
   le_iSup₂ (α := ℕ∞) k h
 
-theorem le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
+theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
