@@ -269,7 +269,7 @@ lemma LatinRectangle.row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintyp
 
 /-- The number of columns that do not contain a given entry x is equal to n-k. -/
 lemma LatinRectangle.card_symbolsNotIn_eq {k n : Type*} [Fintype n]
-    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
+    [Fintype k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
   ∀ x, (Finset.card {j : n | x ∈ (symbolsNotIn A) j}) = Fintype.card n - Fintype.card k := by
     classical
     intro x
