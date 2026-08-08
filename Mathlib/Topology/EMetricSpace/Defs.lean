@@ -221,8 +221,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   edist_comm := edist_comm
   edist_triangle := edist_triangle
   topology_le := by rw [uniformSpace_edist]
-  topology_eq_on_restrict x r :=
-    Metric.isOpen_eball.preimage_val
+  topology_eq_on_restrict x r := Metric.isOpen_eball.preimage_val
 
 export WeakPseudoEMetricSpace (edist_self edist_comm edist_triangle)
 
