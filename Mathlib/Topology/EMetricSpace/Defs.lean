@@ -179,6 +179,13 @@ theorem EMetric.mem_nhdsWithin_iff : s ∈ 𝓝[t] x ↔ ∃ ε > 0, eball x ε 
 theorem EMetric.isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
 
+@[simp] theorem Metric.isOpen_eball {r : ℝ≥0∞} : IsOpen (eball x r) := by
+  apply EMetric.isOpen_iff.mpr fun y hy ↦ ?_
+  refine ⟨r - edist x y, by simp_all [PseudoEMetricSpace.edist_comm], fun a ha ↦ ?_⟩
+  simp only [mem_eball, PseudoEMetricSpace.edist_comm y x] at hy ha ⊢
+  grw [PseudoEMetricSpace.edist_triangle a y x, PseudoEMetricSpace.edist_comm y x,
+    ← tsub_add_cancel_of_le hy.le, (ENNReal.add_lt_add_iff_right (LT.lt.ne_top hy)).mpr ha]
+
 end
 
 /-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
@@ -214,31 +221,8 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   edist_comm := edist_comm
   edist_triangle := edist_triangle
   topology_le := by rw [uniformSpace_edist]
-  topology_eq_on_restrict x r := by
-    -- This is an easy consequence of later lemmas for `PseudoEMetricSpace`
-    -- However we don't use them here, since they can be generalised to `WeakPseudoEMetricSpace`,
-    -- which however first requires this instance.
-    suffices IsOpen (Metric.eball x r) from this.preimage_val
-    rw [EMetric.isOpen_iff]
-    intro y hy
-    refine ⟨r - edist x y, by simp_all [edist_comm], ?_⟩
-    unfold Metric.eball at hy ⊢
-    simp only [mem_ofPred_eq, ofPred_subset_ofPred] at hy ⊢
-    intro a ha
-    rw [edist_comm] at hy
-    have : edist x y ≠ ∞ := by
-      contrapose! hy
-      rw [hy]
-      exact le_top
-    calc
-      _ ≤ edist a y + edist y x := PseudoEMetricSpace.edist_triangle a y x
-      _ = edist a y + edist x y := by nth_rw 1 [edist_comm x y]
-      _ < (r - edist x y) + edist x y := by
-        refine (ENNReal.add_lt_add_iff_right ?_).mpr ha
-        contrapose! hy
-        rw [hy]
-        exact le_top
-      _ = r := tsub_add_cancel_of_le hy.le
+  topology_eq_on_restrict x r :=
+    Metric.isOpen_eball.preimage_val
 
 export WeakPseudoEMetricSpace (edist_self edist_comm edist_triangle)
 
@@ -719,9 +703,6 @@ end EMetric
 
 namespace Metric
 variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
-
-@[simp] theorem isOpen_eball : IsOpen (eball x ε) :=
-  EMetric.isOpen_iff.2 fun _ => exists_eball_subset_eball
 
 theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
   isOpen_compl_iff.1 <| EMetric.isOpen_iff.2 fun _y hy =>
