@@ -250,7 +250,7 @@ instance {n : ℕ∞ω} [ContMDiffConstSMul I ω Γ M] : ContMDiffConstSMul I n 
 
 @[to_additive]
 instance [ContinuousConstSMul Γ M] : ContMDiffConstSMul I 0 Γ M :=
-  ⟨sorry⟩
+  ⟨fun γ ↦ contMDiff_zero_iff.2 (continuous_const_smul γ)⟩
 
 /-- If an action is Cⁿ for some `n`, it is also continuous. This has to be a theorem instead of an
 instance because `ContMDiffSMul` depends on parameters `I`, `I'` and `n` that `ContinuousSMul`
