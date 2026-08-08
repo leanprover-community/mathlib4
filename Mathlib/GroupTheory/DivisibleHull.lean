@@ -261,7 +261,7 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     ring_nf
 
 instance : LE (DivisibleHull M) where
-  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
+  le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) (private lift_aux)
 
 @[simp]
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
@@ -397,7 +397,7 @@ def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Archim
 
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
-noncomputable
+@[no_expose] noncomputable
 def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
   apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
   · ext a
@@ -412,11 +412,12 @@ def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (Divisib
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
-    archimedeanClassOrderIso M a = ArchimedeanClass.orderHom (coeOrderAddMonoidHom M) a := rfl
+    archimedeanClassOrderIso M a = ArchimedeanClass.orderHom (coeOrderAddMonoidHom M) a := (rfl)
 
 @[simp]
 theorem archimedeanClassOrderIso_symm_apply (m : M) (s : ℕ+) :
-    (archimedeanClassOrderIso M).symm (ArchimedeanClass.mk (mk m s)) = ArchimedeanClass.mk m := rfl
+    (archimedeanClassOrderIso M).symm (ArchimedeanClass.mk (mk m s)) = ArchimedeanClass.mk m :=
+  (rfl)
 
 end OrderedGroup
 
