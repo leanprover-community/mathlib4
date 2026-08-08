@@ -10,7 +10,7 @@ public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Util.Qq
 
 /-!
-## `norm_num` plugin for `^`.
+# `norm_num` plugin for `^`.
 -/
 
 public meta section

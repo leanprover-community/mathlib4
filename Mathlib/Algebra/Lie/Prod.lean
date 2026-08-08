@@ -6,7 +6,7 @@ Authors: Leonid Ryvkin
 module
 public import Mathlib.Algebra.Lie.Ideal
 
-/-! ### Products of Lie algebras
+/-! # Products of Lie algebras
 
 This file defines the Lie algebra structure the Product of two Lie algebras
 
