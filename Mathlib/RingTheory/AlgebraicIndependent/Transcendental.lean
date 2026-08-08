@@ -101,11 +101,8 @@ open AlgebraicIndependent
 theorem AlgebraicIndependent.option_iff_transcendental (hx : AlgebraicIndependent R x) (a : A) :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
       Transcendental (adjoin R (range x)) a := by
-  rw [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
-    ← AlgHom.coe_toRingHom, ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin,
-    RingHom.coe_comp]
-  exact Injective.of_comp_iff' (Polynomial.aeval a)
-    (mvPolynomialOptionEquivPolynomialAdjoin hx).bijective
+  simp [algebraicIndependent_iff_injective_aeval, transcendental_iff_injective,
+    ← hx.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin]
 
 theorem AlgebraicIndependent.option_iff {a : A} :
     AlgebraicIndependent R (fun o : Option ι ↦ o.elim a x) ↔
