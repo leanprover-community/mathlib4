@@ -47,11 +47,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
   Adjunction.mk' {
-    homEquiv := typeToCatObjectsAdjHomEquiv
+    homEquiv := private typeToCatObjectsAdjHomEquiv
     unit := { app := fun _ ↦ ↾Discrete.mk }
     counit := {
-      app C := (typeToCatObjectsAdjCounitApp C).toCatHom
-      naturality := fun _ _ _ ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
+      app C := private (typeToCatObjectsAdjCounitApp C).toCatHom
+      naturality := private fun _ _ _ ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
             cat_disch) } }
