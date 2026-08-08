@@ -678,22 +678,18 @@ set_option backward.isDefEq.respectTransparency false in
 
 end map
 
-section
+section reindex
 
-variable (R M)
-
-variable (s) in
+variable (R M) in
 /-- Re-index the components of the tensor power by `e`. -/
-def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
-  let f := domDomCongrLinearEquiv' R s (⨂[R] (i : ι₂), s (e.symm i)) _ e
-  let g := domDomCongrLinearEquiv' R s (⨂[R] (i : ι), s i) _ e
+def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, M i) ≃ₗ[R] ⨂[R] i : ι₂, M (e.symm i) :=
+  let f := domDomCongrLinearEquiv' R M (⨂[R] (i : ι₂), M (e.symm i)) _ e
+  let g := domDomCongrLinearEquiv' R M (⨂[R] (i : ι), M i) _ e
   LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
-end
-
 @[simp]
-theorem reindex_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
-    reindex R s e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
+theorem reindex_tprod (e : ι ≃ ι₂) (f : Π i, M i) :
+    reindex R M e (tprod R f) = tprod R fun i ↦ f (e.symm i) := by
   dsimp [reindex]
   exact liftAux_tprod _ f
 
@@ -703,30 +699,30 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
     (domDomCongrLinearEquiv' R s _ _ e).symm (tprod R) :=
   MultilinearMap.ext <| reindex_tprod e
 
-theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) (fun i ↦ s (e.symm i)) E) :
-    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R s _ _ e).symm φ) := by
+theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap σ (fun i ↦ M (e.symm i)) N) :
+    lift φ ∘ₛₗ (reindex R M e).1 = lift ((domDomCongrLinearEquiv' S M N σ e).symm.1 φ) := by
   ext; simp [reindex]
 
 @[simp]
-theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) s E) :
-    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R s _ _ e φ) := by
+theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap σ M N) :
+    lift φ ∘ₛₗ (reindex R M e).symm.1 = lift (domDomCongrLinearEquiv' S M N σ e φ) := by
   ext; simp [reindex]
 
 theorem lift_reindex
-    (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
-    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R s _ _ e).symm φ) x :=
+    (e : ι ≃ ι₂) (φ : MultilinearMap σ (fun i ↦ M (e.symm i)) N) (x : ⨂[R] i, M i) :
+    lift φ (reindex R M e x) = lift ((domDomCongrLinearEquiv' S M N σ e).symm φ) x :=
   LinearMap.congr_fun (lift_comp_reindex e φ) x
 
 @[simp]
 theorem lift_reindex_symm
-    (e : ι ≃ ι₂) (φ : MultilinearMap (.id R) s E) (x : ⨂[R] i, s (e.symm i)) :
-    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R s _ _ e φ) x :=
+    (e : ι ≃ ι₂) (φ : MultilinearMap σ M N) (x : ⨂[R] i, M (e.symm i)) :
+    lift φ (reindex R M e |>.symm x) = lift (domDomCongrLinearEquiv' S M N σ e φ) x :=
   LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
-    (reindex R s e).trans (reindex R _ e') = reindex R s (e.trans e') := by
+    (reindex R M e).trans (reindex R _ e') = reindex R M (e.trans e') := by
   apply LinearEquiv.toLinearMap_injective
   ext f
   simp only [LinearEquiv.trans_apply, LinearEquiv.coe_coe, reindex_tprod,
@@ -734,50 +730,52 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     reindex_comp_tprod]
   congr
 
-theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :
-    reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
-  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
+theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, M i) :
+    reindex R _ e' (reindex R M e x) = reindex R M (e.trans e') x :=
+  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R M (e.trans e')) x
 
 /-- This lemma is impractical to state in the dependent case. -/
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
-    (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
+    (reindex S (fun _ ↦ N) e).symm = reindex S (fun _ ↦ N) e.symm := by
   ext x
   simp [reindex]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
+theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
   ext
   simp [reindex, domDomCongrLinearEquiv']
 
-variable {t : ι → Type*}
-variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
+variable [CommSemiring R₁] [CommSemiring R₂] {σ₁₂ : R₁ →+* R₂}
+variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, Module R₁ (M₁ i)]
+variable [∀ i, AddCommMonoid (M₂ i)] [∀ i, Module R₂ (M₂ i)]
 
 /-- Re-indexing the components of the tensor product by an equivalence `e` is compatible
 with `PiTensorProduct.map`. -/
-theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
-    map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R t e ∘ₗ map f := by
+theorem map_comp_reindex_eq (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (e : ι ≃ ι₂) :
+    map (fun i ↦ f (e.symm i)) ∘ₛₗ (reindex R₁ M₁ e).1 = (reindex R₂ M₂ e).1 ∘ₛₗ map f := by
   ext m
   simp only [LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
-theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
-    map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R t e (map f x) :=
+theorem map_reindex (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (e : ι ≃ ι₂) (x : ⨂[R₁] i, M₁ i) :
+    map (fun i ↦ f (e.symm i)) (reindex R₁ M₁ e x) = reindex R₂ M₂ e (map f x) :=
   DFunLike.congr_fun (map_comp_reindex_eq _ _) _
 
-theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
-    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
+theorem map_comp_reindex_symm (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (e : ι ≃ ι₂) :
+    map f ∘ₛₗ (reindex R₁ M₁ e).symm.1 =
+      (reindex R₂ M₂ e).symm.1 ∘ₛₗ map (fun i => f (e.symm i)) := by
   ext m
-  apply LinearEquiv.injective (reindex R t e)
+  apply LinearEquiv.injective (reindex R₂ M₂ e)
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
     comp_apply, ← map_reindex, LinearEquiv.apply_symm_apply, map_tprod]
 
-theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :
-    map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
+theorem map_reindex_symm (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (e : ι ≃ ι₂) (x : ⨂[R₁] i, M₁ (e.symm i)) :
+    map f ((reindex R₁ M₁ e).symm x) = (reindex R₂ M₂ e).symm (map (fun i ↦ f (e.symm i)) x) :=
   DFunLike.congr_fun (map_comp_reindex_symm _ _) _
 
-variable (ι)
+end reindex
 
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
