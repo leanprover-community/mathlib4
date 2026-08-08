@@ -454,7 +454,7 @@ private lemma weierstrassPExcept_add_coe_aux
     rw [L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept,
       L.eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept, L.derivWeierstrassPExcept_add_coe]
     · simpa using hx
-    · simp only [Set.mem_compl_iff, Set.mem_sdiff, SetLike.mem_coe, mem_singletond,
+    · simp only [Set.mem_compl_iff, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton, not_and,
         Decidable.not_not, eq_sub_iff_add_eq] at hx ⊢
       exact fun H ↦ hx (by simpa using sub_mem H l.2)
   · simp [hl]
