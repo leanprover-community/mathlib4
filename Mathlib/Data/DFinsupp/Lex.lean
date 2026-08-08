@@ -152,7 +152,7 @@ instance Colex.total_le : @Std.Total (Colex (Π₀ i, α i)) (· ≤ ·) :=
   Lex.total_le (ι := ιᵒᵈ)
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
+@[no_expose] instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
@@ -163,7 +163,7 @@ instance Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
   Lex.decidableLE (ι := ιᵒᵈ)
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
+@[no_expose] instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 set_option backward.isDefEq.respectTransparency false in
