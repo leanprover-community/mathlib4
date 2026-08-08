@@ -222,7 +222,8 @@ lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
     (h_card : ∀ j ∈ s, n ≤ Finset.card (B j))
     (h_ub : ∀ x ∈ s.biUnion B, Finset.card {j ∈ s | x ∈ B j} ≤ n) :
     Finset.card s ≤ Finset.card (s.biUnion B) := by
-  have h_sum : Finset.card s * n ≤ Finset.card (s.biUnion B) * n := calc
+  refine Nat.le_of_mul_le_mul_right ?_ hn
+  calc
     Finset.card s * n = ∑ j ∈ s, n := by simp
     _ ≤ ∑ j ∈ s, Finset.card (B j) := Finset.sum_le_sum h_card
     _ = ∑ j ∈ s, Finset.card ((s.biUnion B).bipartiteAbove (fun j x ↦ x ∈ B j) j) := by
@@ -230,15 +231,11 @@ lemma card_le_card_biUnion_of_card_le_card [DecidableEq β]
       intro j hj
       rw [Finset.bipartiteAbove]
       congr 1
-      ext x
-      simp only [Finset.mem_filter, Finset.mem_biUnion]
-      exact ⟨fun hx ↦ ⟨⟨j, hj, hx⟩, hx⟩, fun hx ↦ hx.2⟩
+      grind
     _ = ∑ x ∈ s.biUnion B, Finset.card (s.bipartiteBelow (fun j x ↦ x ∈ B j) x) :=
       Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (fun j x ↦ x ∈ B j)
-    _ = ∑ x ∈ s.biUnion B, Finset.card {j ∈ s | x ∈ B j} := rfl
     _ ≤ ∑ x ∈ s.biUnion B, n := Finset.sum_le_sum h_ub
     _ = Finset.card (s.biUnion B) * n := by simp
-  exact Nat.le_of_mul_le_mul_right h_sum hn
 
 end Bipartite
 
