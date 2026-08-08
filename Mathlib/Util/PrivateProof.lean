@@ -25,6 +25,11 @@ This postpones until the expected type is available (`<= ty`). `withSynthesize` 
 `elabTermEnsuringType` mirror `by exact`'s behavior. We avoid elaborating an actual `by exact`
 since this would let through a public term under `backward.proofsInPublic`, which we want to ignore.
 
+We use `withSynthesize (postpone := .partial)` because `postpone := .yes` allows nested `by`'s
+within the wrapped term to escape, and thus they may still error when useing private definitions
+(if used to construct data within the wrapped proof), and `postpone := .no` can cause timing
+friction that `by exact` avoids.
+
 `private%` was considered, but this interferes with the parsing of antiquotations like
 `$[private%$tk]` (for e.g. `private` modifiers on declarations).
 -/
@@ -60,21 +65,24 @@ elab_rules : term <= ty
     -- If definitely not a prop, log an error and proceed. We log errors at the (ambient) term
     -- instead of the `private` token, since the term is "at fault".
     if ← notM (isProp ty) <&&> return !(← instantiateMVars <|← inferType ty).hasMVar then
-      logError m!"`private` can only wrap proofs; the expected type is not a `Prop`.\
-        {indentD ty} : {← inferType ty}"
+      logError m!"`private` can only wrap proofs, but \
+        the expected type is not a `Prop`.\
+        {indentD ty} : {← inferType ty}\n\n\
+        Use `private_decl%` to wrap a non-proof term in an auxiliary definition."
       Term.elabTerm t ty (implicitLambda := false)
     else
-      let e ← instantiateMVars <|← withoutExporting do withSynthesize do
+      let e ← instantiateMVars <|← withoutExporting do withSynthesize (postpone := .partial) do
         Term.elabTermEnsuringType t ty (implicitLambda := false)
       if !(← isProp ty) then
         let knownToBe? := if (← instantiateMVars ty).hasMVar then " known to be" else ""
-        logError m!"`private` can only wrap proofs; \
+        logError m!"`private` can only wrap proofs, but \
           the expected type of `{e}` is not{knownToBe?} a `Prop`.\
-          {indentD ty} : {← inferType ty}"
+          {indentD ty} : {← inferType ty}\n\n\
+          Use `private_decl%` to wrap a non-proof term in an auxiliary definition."
         return e
       else if e.isFVar then
         logWarningAt tk m!"`private` is unnecessary, since the resulting expression is just a free \
-          variable:{indentD e}"
+          variable:{indentD e} : {ty}"
         return e
       else
         mkAuxTheorem ty e (zetaDelta := true) (cache := !e.hasSorry)

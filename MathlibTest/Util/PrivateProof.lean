@@ -1,6 +1,10 @@
 module
 
 import Mathlib.Util.PrivateProof
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.Lattice
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finset.Lattice.Fold
 
 public section
 
@@ -28,8 +32,10 @@ def f' (_ : FEq (private fooThm)) : Bool := true
 def fα (_ : F (private fooThm)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type of `foo` is not a `Prop`.
-  Nat : Type
+error: `private` can only wrap proofs, but the expected type of `foo` is not a `Prop`.
+  ℕ : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Unknown constant `_private.MathlibTest.Util.PrivateProof.0.foo`
 
@@ -41,8 +47,10 @@ error: (kernel) declaration has metavariables 'fα''
 def fα' (_ : F (private foo)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type of `fooPub` is not a `Prop`.
-  Nat : Type
+error: `private` can only wrap proofs, but the expected type of `fooPub` is not a `Prop`.
+  ℕ : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 -/
 #guard_msgs in
 def fαPub' (_ : F (private fooPub)) : Bool := true
@@ -50,8 +58,10 @@ def fαPub' (_ : F (private fooPub)) : Bool := true
 -- Communicate that `private` doesn't work, but also continue elaborating, as shown by the
 -- type mismatch error
 /--
-error: `private` can only wrap proofs; the expected type is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Unknown identifier `foo`
 
@@ -61,13 +71,15 @@ Note: A private declaration `foo` (from the current module) exists but would nee
 def fα'' (_ : F (α := Bool) (private foo)) : Bool := true
 
 /--
-error: `private` can only wrap proofs; the expected type is not a `Prop`.
+error: `private` can only wrap proofs, but the expected type is not a `Prop`.
   Bool : Type
+
+Use `private_decl%` to wrap a non-proof term in an auxiliary definition.
 ---
 error: Application type mismatch: The argument
   fooPub
 has type
-  Nat
+  ℕ
 but is expected to have type
   Bool
 in the application
@@ -90,7 +102,7 @@ error: Type mismatch
 has type
   1 = 1
 but is expected to have type
-  ∀ {x : Nat}, 1 = 1
+  ∀ {x : ℕ}, 1 = 1
 -/
 #guard_msgs in
 @[expose] def fImplicit' : {_ : Nat} → 1 = 1 := @(private fooThm)
@@ -103,6 +115,28 @@ def gImplicit (_ : FEq (private implicitThm)) : Bool := true
 
 end implicitLambda
 
+section synthesisTiming
+
+private theorem usePriv : Nat → 1 = 1 := fun _ => rfl
+
+-- Make sure nested non-prop `by`s can use the private scope
+-- This fails under `withSynthesize (postpone := .yes)`
+def fNestedBy (_ : FEq (private usePriv (by exact foo))) : Bool := true
+
+-- Example from `Mathlib.Combinatorics.SetFamily.AhlswedeZhang`
+-- TODO: minimize
+variable {α} [SemilatticeSup α] {s t : Finset α} {a : α}
+
+private theorem sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
+  fun ⟨b, hb, hab⟩ ↦ ⟨b, Finset.mem_filter.2 ⟨hb, hab⟩⟩
+
+-- Make sure synthetic mvars can be postponed
+-- This fails under `withSynthesize (postpone := .no)`
+@[expose] def truncatedSup [DecidableLE α] [OrderTop α] (s : Finset α) (a : α) : α :=
+  if h : a ∈ lowerClosure s then {b ∈ s | a ≤ b}.sup' (private sup_aux h) id else ⊤
+
+end synthesisTiming
+
 -- unlike `by exact`, `private` ignores `backward.proofsInPublic`
 set_option backward.proofsInPublic true in
 def fProofsInPublic (_ : FEq (private fooThm)) : Bool := true
@@ -111,30 +145,10 @@ def fProofsInPublic (_ : FEq (private fooThm)) : Bool := true
 /--
 @ +1:30...37
 warning: `private` is unnecessary, since the resulting expression is just a free variable:
-  h
+  h : 1 = 1
 -/
 #guard_msgs (positions := true) in
 def fLocal (h : 1 = 1) : FEq (private h) := true
-
--- Synthetic metavariables created while elaborating the term (here, a nested `by`) are synthesized
--- before we abstract, so that the proof ends up *inside* the auxiliary theorem. Otherwise the
--- pending metavariable is abstracted into a parameter and the auxiliary theorem would instead get
--- type `2 = 2 → 2 = 2`. (Note `2 = 2` is used so as not to hit the `mkAuxLemma` cache populated by
--- other aux lemmas in this file.)
-private theorem barThm : 2 = 2 := rfl
-
-@[expose] def FEq2 (_ : 2 = 2) := Bool
-
-def fNested (_ : FEq2 (private (id (by exact barThm)))) : Bool := true
-
--- Ensure we have `fNested : ∀ (_ : FEq2 <constant>), _` and not e.g.
--- `fNested : ∀ (_ : FEq2 (<constant> args), _`.
--- (We use meta code in case e.g. `#check fNested._proof_1` is not stable.)
-open Lean in
-run_cmd do
-  let .defnInfo { type .. } ← getConstInfo ``fNested | throwError "not a def"
-  let_expr FEq2 auxThm := type.bindingDomain! | throwError "Wrong shape!{indentD type}"
-  unless auxThm.isConst do throwError "Expected constant; got{indentD auxThm}"
 
 set_option backward.privateInPublic true in
 /--
