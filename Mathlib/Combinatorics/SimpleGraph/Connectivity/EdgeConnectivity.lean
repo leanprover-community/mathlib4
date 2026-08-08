@@ -192,10 +192,10 @@ theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reach
   grind [isEdgeReachable_one, Nat.cast_one, iSup_le_iff]
 
 theorem le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
-  le_iSup₂_of_le k h le_rfl
+  le_iSup₂ (α := ℕ∞) k h
 
 theorem le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
-  le_iSup₂_of_le k h le_rfl
+  le_iSup₂ (α := ℕ∞) k h
 
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
   simpa [edgeConnectivity, IsEdgeConnected, IsEdgeReachable] using ENat.iSup_natCast
