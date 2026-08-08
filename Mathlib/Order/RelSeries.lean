@@ -924,8 +924,7 @@ theorem isMax_of_isMaxChain_range [r.IsIrrefl] [r.IsTrans] (h : IsMaxChain (· ~
   fun t hst ↦ (range_injective r <| h.right t.isChain_range <| range_monotone r hst).ge
 
 proof_wanted isMaxChain_range_iff [r.IsIrrefl] [r.IsTrans] :
-    IsMaxChain (· ~[r] ·) (.range p) ↔ IsMax p :=
-  ⟨isMax_of_isMaxChain_range, ❰isMaxChain_range_of_isMax❱⟩
+    IsMaxChain (· ~[r] ·) (.range p) ↔ IsMax p
 
 end RelSeries
 
