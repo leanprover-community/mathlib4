@@ -23,6 +23,13 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
+attribute [mfld_simps] id_comp comp_id
+
+theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
+  rfl
+
+/- ### Dependent composition -/
+
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
@@ -43,6 +50,8 @@ theorem dcomp_apply : dcomp @f g i = f (g i) := rfl
 @[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
 
 end DComp
+
+/- ### The product of functions -/
 
 /-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
 `g i` may depend on `i`. -/
@@ -126,6 +135,35 @@ theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) 
 
 end Bicomp
 
+/- ### The diagonal map -/
+
+/-- The diagonal map into `Prod`. -/
+@[inline] protected def diag {α} : α → α × α := fun a : α ↦ (a, a)
+
+section Diag
+
+variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
+
+theorem diag_def : Function.diag = fun a : α ↦ (a, a) := rfl
+
+@[simp, grind =] theorem diag_apply : Function.diag a = (a, a) := rfl
+
+theorem diag_injective : Injective (α := α) Function.diag := fun _ _ ↦ congrArg Prod.fst
+
+@[simp] theorem prod_id_id : Function.prod (@id α) id = Function.diag := rfl
+@[simp] theorem fst_comp_diag : Prod.fst ∘ Function.diag = @id α := rfl
+@[simp] theorem snd_comp_diag : Prod.snd ∘ Function.diag = @id α := rfl
+
+@[simp] theorem diag_comp : Function.diag ∘ f = Function.prod f f := rfl
+
+@[simp] theorem map_comp_diag : Prod.map f g ∘ Function.diag = Function.prod f g := rfl
+
+@[simp] theorem swap_comp_diag : Prod.swap ∘ Function.diag = Function.diag (α := α) := rfl
+
+end Diag
+
+/- ### `onFun` function -/
+
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
@@ -164,10 +202,7 @@ theorem injective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip 
 theorem surjective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Surjective :=
   (⟨dflip ·, rfl⟩)
 
-attribute [mfld_simps] id_comp comp_id
-
-theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
-  rfl
+/- ### Bijective functions -/
 
 /-- A function is called bijective if it is both injective and surjective. -/
 def Bijective (f : α → β) :=
@@ -193,6 +228,8 @@ end Function
 namespace Function
 
 variable {α : Type u₁} {β : Type u₂}
+
+/- ### Fixed points of functions -/
 
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
@@ -221,6 +258,8 @@ end Function
 namespace Pi
 
 variable {ι : Sort*} {α β : ι → Sort*}
+
+/- ### `Pi.map` function -/
 
 /-- Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i`
 by applying `f i` to `i`-th component. -/
