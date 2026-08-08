@@ -274,7 +274,7 @@ end Truncated
 section Truncation
 
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible]
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
 
