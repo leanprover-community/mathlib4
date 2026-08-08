@@ -82,10 +82,10 @@ variable (x y : ℤ) [K.HasTotal (up ℤ)]
 instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + x)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a + x, b⟩, by
-        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton] at h ⊢
         lia⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a - x, b), by
-        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton] at h ⊢
         lia⟩
       left_inv := by
         rintro ⟨⟨a, b⟩, h⟩
@@ -104,10 +104,10 @@ instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
 instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
   hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + y)) _
     { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a, b + y⟩, by
-        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton] at h ⊢
         lia⟩
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a, b - y), by
-        simp only [Set.mem_preimage, π_def, Set.mem_singleton_iff] at h ⊢
+        simp only [Set.mem_preimage, π_def, Set.mem_singleton] at h ⊢
         lia⟩
       left_inv _ := by simp
       right_inv _ := by simp }

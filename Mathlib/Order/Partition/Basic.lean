@@ -231,7 +231,7 @@ lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup
   simpa [top_def]
 
 @[simp] lemma mem_top_iff {a : α} : a ∈ (⊤ : Partition s) ↔ a = s ∧ a ≠ ⊥ := by
-  rw [top_def, mem_removeBot, mem_singleton_iff]
+  rw [top_def, mem_removeBot, mem_singleton]
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by simp
 

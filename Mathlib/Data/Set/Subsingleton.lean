@@ -42,7 +42,8 @@ theorem Subsingleton.anti (ht : t.Subsingleton) (hst : s ⊆ t) : s.Subsingleton
   ht (hst hx) (hst hy)
 
 theorem Subsingleton.eq_singleton_of_mem (hs : s.Subsingleton) {x : α} (hx : x ∈ s) : s = {x} :=
-  ext fun _ => ⟨fun hy => hs hx hy ▸ mem_singleton _, fun hy => (eq_of_mem_singleton hy).symm ▸ hx⟩
+  ext fun _ => ⟨fun hy => hs hx hy ▸ mem_singleton_self _,
+    fun hy => (eq_of_mem_singleton hy).symm ▸ hx⟩
 
 @[simp]
 theorem subsingleton_empty : (∅ : Set α).Subsingleton := fun _ => False.elim
@@ -178,7 +179,7 @@ theorem Nontrivial.mono (hs : s.Nontrivial) (hst : s ⊆ t) : t.Nontrivial :=
   ⟨x, hst hx, y, hst hy, hxy⟩
 
 theorem nontrivial_pair {x y} (hxy : x ≠ y) : ({x, y} : Set α).Nontrivial :=
-  ⟨x, mem_insert _ _, y, mem_insert_of_mem _ (mem_singleton _), hxy⟩
+  ⟨x, mem_insert _ _, y, mem_insert_of_mem _ (mem_singleton_self _), hxy⟩
 
 theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.Nontrivial :=
   (nontrivial_pair hxy).mono h
@@ -237,9 +238,9 @@ theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h => h.ne_empt
 
 @[simp]
 theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H => by
-  rw [nontrivial_iff_exists_ne (mem_singleton x)] at H
+  rw [nontrivial_iff_exists_ne (mem_singleton_self x)] at H
   let ⟨y, hy, hya⟩ := H
-  exact hya (mem_singleton_iff.1 hy)
+  exact hya (mem_singleton.1 hy)
 
 theorem Nontrivial.ne_singleton {x} (hs : s.Nontrivial) : s ≠ {x} := fun H => by
   rw [H] at hs
@@ -314,7 +315,7 @@ lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
   Eq.symm <| eq_univ_of_forall fun x => by
-    rw [mem_insert_iff, mem_singleton_iff]
+    rw [mem_insert_iff, mem_singleton]
     exact Classical.propComplete x
 
 @[simp]

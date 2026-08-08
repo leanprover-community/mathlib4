@@ -761,7 +761,7 @@ theorem BijOn.insert_iff (ha : a ∉ s) (hfa : f a ∉ t) :
     BijOn f (insert a s) (insert (f a) t) ↔ BijOn f s t where
   mp h := by
     have := congrArg (· \ {f a}) (image_insert_eq ▸ h.image_eq)
-    simp only [mem_singleton_iff, insert_sdiff_of_mem] at this
+    simp only [mem_singleton, insert_sdiff_of_mem] at this
     rw [sdiff_singleton_eq_self hfa, sdiff_singleton_eq_self] at this
     · exact ⟨by simp [← this, mapsTo_iff_image_subset], h.injOn.mono (subset_insert ..),
         by simp [← this, surjOn_image]⟩
@@ -1221,7 +1221,7 @@ theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha 
 
 lemma apply_eq_of_range_eq_singleton {f : α → β} {b : β} (h : range f = {b}) (a : α) :
     f a = b := by
-  simpa only [h, mem_singleton_iff] using mem_range_self (f := f) a
+  simpa only [h, mem_singleton] using mem_range_self (f := f) a
 
 end Function
 

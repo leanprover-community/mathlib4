@@ -358,7 +358,7 @@ end IsTopologicalAddGroup
 /-- The union of all bounded set is the whole space. -/
 theorem sUnion_isVonNBounded_eq_univ : ⋃₀ Set.ofPred (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
-    Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+    Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, mem_singleton_self _⟩
 
 variable (𝕜 E)
 

@@ -99,7 +99,7 @@ theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Fini
 
 theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
   ext1 y
-  rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
+  rw [mem_star, mem_singleton, mem_singleton, star_eq_iff_star_eq, eq_comm]
 
 protected theorem star_mul [Mul α] [StarMul α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
   simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,

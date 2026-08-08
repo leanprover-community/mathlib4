@@ -482,7 +482,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       intro h
       obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
       apply hb
-      simp only [← hb', Set.mem_singleton_iff]
+      simp only [← hb', Set.mem_singleton]
     suffices (fixingSubgroup (stabilizer G a) t).index *
       (Nat.card α - 1 - k).factorial =
         (Nat.card α - 1).factorial by

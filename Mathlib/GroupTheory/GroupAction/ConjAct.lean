@@ -226,7 +226,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
+  simp only [mem_centralizer_iff, Set.mem_singleton, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
@@ -298,7 +298,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
-      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+      exact Units.ext <| (u.1.2 x <| Set.mem_singleton_self _).symm⟩
     map_mul' := map_mul _ }
 
 end Units

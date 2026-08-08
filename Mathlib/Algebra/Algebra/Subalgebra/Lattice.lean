@@ -533,7 +533,7 @@ variable {α : Type*}
 /-- Supporting class for coercions `xₖ : R[x₁, ..., xₙ]`. -/
 class CoeAdjoinAux (x : α) (s : Set α) : Prop where mem : x ∈ s
 
-scoped instance (x : α) : CoeAdjoinAux x {x} := ⟨Set.mem_singleton x⟩
+scoped instance (x : α) : CoeAdjoinAux x {x} := ⟨Set.mem_singleton_self x⟩
 
 scoped instance (x : α) (s : Set α) : CoeAdjoinAux x (insert x s) := ⟨Set.mem_insert x s⟩
 
@@ -742,7 +742,7 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
   | mem a ha => exact subset_adjoin ⟨a, ⟨Set.subset_union_left ha, rfl⟩⟩
   | algebraMap r =>
     have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
-      subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
+      subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton_self 1, rfl⟩⟩
     convert! Subalgebra.smul_mem (adjoin R (f '' (s ∪ { 1 }))) this r
     rw [algebraMap_eq_smul_one]
     exact f.map_smul _ _
@@ -803,7 +803,7 @@ variable (R)
 
 @[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ R[x] :=
-  Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
+  Algebra.subset_adjoin (Set.mem_singleton.mpr rfl)
 
 end Semiring
 

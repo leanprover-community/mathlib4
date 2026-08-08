@@ -255,7 +255,7 @@ variable {α : Type*} [PartialOrder α] {s : Set α} {x y : α}
 protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
     obtain rfl := hs.eq hx hy (hz.1.trans hz.2)
-    rw [Icc_self, mem_singleton_iff] at hz
+    rw [Icc_self, mem_singleton] at hz
     rwa [hz]⟩
 
 lemma ordConnected_inter_Icc_of_subset (h : Ioo x y ⊆ s) : OrdConnected (s ∩ Icc x y) :=

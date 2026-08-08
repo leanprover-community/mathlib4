@@ -138,7 +138,7 @@ def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 
 @[grind =]
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
-  rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
+  rw [edge, fromEdgeSet_adj, Set.mem_singleton, Sym2.eq_iff]
 
 lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
   grind

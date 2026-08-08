@@ -192,7 +192,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     refine hs.biUnion fun z hz => ?_
     by_cases! h : ∃ w, exp w = z
     · rcases h with ⟨w, rfl⟩
-      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.ofPred_exists]
+      simp only [Set.preimage, Set.mem_singleton, exp_eq_exp_iff_exists_int, Set.ofPred_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
     · simp [Set.preimage, h]
 

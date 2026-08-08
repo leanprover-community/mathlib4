@@ -1085,7 +1085,7 @@ theorem analyticAt_iff_analytic_fun_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] 
     · exact (h₁f.inv h₂f).fun_smul hprod
     · filter_upwards [h₁f.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.2 h₂f)]
       intro y hy
-      rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff] at hy
+      rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton] at hy
       simp [hy]
 
 /-- A function is analytic at a point iff it is analytic after scalar

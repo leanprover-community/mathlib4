@@ -126,7 +126,7 @@ theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen 
     ∃ f : StrongDual ℝ E, ∀ a ∈ s, f a < f x :=
   let ⟨f, _s, hs, hx⟩ :=
     geometric_hahn_banach_open hs₁ hs₂ (convex_singleton x) (disjoint_singleton_right.2 disj)
-  ⟨f, fun a ha => lt_of_lt_of_le (hs a ha) (hx x (mem_singleton _))⟩
+  ⟨f, fun a ha => lt_of_lt_of_le (hs a ha) (hx x (mem_singleton_self _))⟩
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : StrongDual ℝ E, ∀ b ∈ t, f x < f b :=
@@ -189,7 +189,7 @@ theorem geometric_hahn_banach_of_nonempty_interior_point
   obtain ⟨f, u, hfne, hA', hx'⟩ :=
     geometric_hahn_banach_of_nonempty_interior hA (convex_singleton x)
       (disjoint_singleton_right.2 hxA) hAint (singleton_nonempty x)
-  exact ⟨f, hfne, fun a ha => (hA' a ha).trans (hx' x (mem_singleton _))⟩
+  exact ⟨f, hfne, fun a ha => (hA' a ha).trans (hx' x (mem_singleton_self _))⟩
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -226,14 +226,14 @@ theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClo
   let ⟨f, _u, v, ha, hst, hb⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
       (disjoint_singleton_left.2 disj)
-  ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
+  ⟨f, v, hst.trans' <| ha x <| mem_singleton_self _, hb⟩
 
 theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (disj : x ∉ s) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a < u) ∧ u < f x :=
   let ⟨f, s, _t, ha, hst, hb⟩ :=
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
       (disjoint_singleton_right.2 disj)
-  ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
+  ⟨f, s, ha, hst.trans <| hb x <| mem_singleton_self _⟩
 
 /-- See also `SeparatingDual.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
@@ -355,14 +355,14 @@ theorem geometric_hahn_banach_point_closed (ht₁ : Convex ℝ t) (ht₂ : IsClo
   let ⟨f, _u, v, ha, hst, hb⟩ :=
     geometric_hahn_banach_compact_closed (convex_singleton x) isCompact_singleton ht₁ ht₂
       (disjoint_singleton_left.2 disj)
-  ⟨f, v, hst.trans' <| ha x <| mem_singleton _, hb⟩
+  ⟨f, v, hst.trans' <| ha x <| mem_singleton_self _, hb⟩
 
 theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (disj : x ∉ s) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < re (f x) :=
   let ⟨f, s, _t, ha, hst, hb⟩ :=
     geometric_hahn_banach_closed_compact hs₁ hs₂ (convex_singleton x) isCompact_singleton
       (disjoint_singleton_right.2 disj)
-  ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
+  ⟨f, s, ha, hst.trans <| hb x <| mem_singleton_self _⟩
 
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : StrongDual 𝕜 E, re (f x) < re (f y) := by

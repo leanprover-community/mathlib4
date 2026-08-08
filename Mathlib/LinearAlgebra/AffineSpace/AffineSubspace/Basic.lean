@@ -136,7 +136,7 @@ variable (k V) {p₁ p₂ : P}
 @[simp]
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   ext x
-  rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,
+  rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton_self p)) _,
     direction_affineSpan]
   simp
 
@@ -146,7 +146,7 @@ theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p�
   simp [← mem_coe]
 
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
-  default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
+  default := ⟨p, mem_affineSpan _ (Set.mem_singleton_self _)⟩
   uniq := fun x ↦ Subtype.ext ((mem_affineSpan_singleton _ _).1 x.property)
 
 @[simp]
@@ -294,7 +294,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i₀ -ᵥ p i) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_left_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -307,7 +307,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
       Submodule.span k (Set.range fun i : { x // x ≠ i₀ } => p i -ᵥ p i₀) := by
   rw [← Set.image_univ, vectorSpan_image_eq_span_vsub_set_right_ne k _ (Set.mem_univ i₀)]
   congr with v
-  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
+  simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton, Subtype.exists]
   constructor
   · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
@@ -332,9 +332,9 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
   convert!
     ext_of_direction_eq _
-      ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
+      ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton_self _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,
-    vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ (Set.mem_singleton _) : p ∈ _),
+    vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ (Set.mem_singleton_self _) : p ∈ _),
     eq_top_iff, ← h]
   apply Submodule.span_mono
   rintro v ⟨v', rfl⟩
@@ -475,7 +475,7 @@ theorem direction_affineSpan_insert {s : AffineSubspace k P} {p₁ p₂ : P} (hp
     Submodule.span k {p₂ -ᵥ p₁} ⊔ s.direction := by
   rw [sup_comm, ← Set.union_singleton, ← coe_affineSpan_singleton k V p₂]
   change (s ⊔ affineSpan k {p₂}).direction = _
-  rw [direction_sup hp₁ (mem_affineSpan k (Set.mem_singleton _)), direction_affineSpan]
+  rw [direction_sup hp₁ (mem_affineSpan k (Set.mem_singleton_self _)), direction_affineSpan]
   simp
 
 /-- Given a point `p₁` in an affine subspace `s`, and a point `p₂`, a point `p` is in the span of

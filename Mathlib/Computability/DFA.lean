@@ -163,7 +163,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
-    rw [Set.mem_singleton_iff] at ha
+    rw [Set.mem_singleton] at ha
     rw [List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
@@ -182,7 +182,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   rcases hy with ⟨ab, hab, c', hc', rfl⟩
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
-  rw [Set.mem_singleton_iff] at ha' hc'
+  rw [Set.mem_singleton] at ha' hc'
   subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]

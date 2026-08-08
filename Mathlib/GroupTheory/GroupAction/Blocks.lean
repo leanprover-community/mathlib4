@@ -606,7 +606,7 @@ instance (a : X) : BoundedOrder (BlockMem G a) where
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Subtype.mk_le_mk, subset_univ]
-  bot := ⟨{a}, Set.mem_singleton a, IsBlock.singleton⟩
+  bot := ⟨{a}, Set.mem_singleton_self a, IsBlock.singleton⟩
   bot_le := by
     rintro ⟨B, ha, hB⟩
     simp only [Subtype.mk_le_mk, Set.singleton_subset_iff]
@@ -631,7 +631,7 @@ instance [Nontrivial X] (a : X) : Nontrivial (BlockMem G a) := by
   simp only [coe_top, coe_bot] at h
   obtain ⟨b, hb⟩ := exists_ne a
   apply hb
-  rw [← Set.mem_singleton_iff, h]
+  rw [← Set.mem_singleton, h]
   apply Set.mem_univ
 
 end BlockMem

@@ -155,7 +155,7 @@ instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
   WithTop.canLift
 
 theorem notMem_range_coe_iff {x : OnePoint X} : x ∉ range some ↔ x = ∞ := by
-  rw [← mem_compl_iff, compl_range_coe, mem_singleton_iff]
+  rw [← mem_compl_iff, compl_range_coe, mem_singleton]
 
 theorem infty_notMem_range_coe : ∞ ∉ range ((↑) : X → OnePoint X) :=
   notMem_range_coe_iff.2 rfl
@@ -552,7 +552,7 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
   simp only [continuous_iff_continuousAt, ContinuousAt, not_forall]
   use CofiniteTopology.of ↑(default : X)
   simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq, Equiv.symm_apply_eq,
-    Set.compl_def, Set.mem_singleton_iff] using (finite_singleton _).infinite_compl
+    Set.compl_def, Set.mem_singleton] using (finite_singleton _).infinite_compl
 
 instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where

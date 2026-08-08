@@ -200,7 +200,7 @@ lemma borelMarkovFromReal_apply (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω] 
         else (Measure.dirac (range_nonempty (embeddingReal Ω)).choose).comap (embeddingReal Ω) := by
   classical
   rw [borelMarkovFromReal, comapRight_apply, piecewise_apply, deterministic_apply]
-  simp only [mem_preimage, mem_singleton_iff]
+  simp only [mem_preimage, mem_singleton]
   split_ifs <;> rfl
 
 lemma borelMarkovFromReal_apply' (Ω : Type*) [Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]

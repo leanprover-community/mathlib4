@@ -197,7 +197,7 @@ theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus �
 
 @[simp]
 theorem zeroLocus_singleton_one : zeroLocus 𝒜 ({1} : Set A) = ∅ :=
-  zeroLocus_empty_of_one_mem 𝒜 (Set.mem_singleton (1 : A))
+  zeroLocus_empty_of_one_mem 𝒜 (Set.mem_singleton_self (1 : A))
 
 @[simp]
 theorem zeroLocus_univ : zeroLocus 𝒜 (Set.univ : Set A) = ∅ :=

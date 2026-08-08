@@ -204,7 +204,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
   intro b hb
-  rw [mem_singleton_iff.1 hb]
+  rw [mem_singleton.1 hb]
   nth_rw 1 [← enum_typein r x]
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ

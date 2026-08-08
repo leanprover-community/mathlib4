@@ -634,7 +634,7 @@ alias Indep.notMem_closure_diff_of_mem := Indep.notMem_closure_sdiff_of_mem
 lemma Indep.closure_insert_sdiff_eq_of_mem_closure (hI : M.Indep I) (hf : f ∈ M.closure I)
     (he : e ∈ M.closure (insert f I \ {e})) : M.closure (insert f I \ {e}) = M.closure I := by
   apply subset_antisymm <;> apply closure_subset_closure_of_subset_closure
-  · simp only [subset_def, mem_sdiff, mem_insert_iff, mem_singleton_iff]
+  · simp only [subset_def, mem_sdiff, mem_insert_iff, mem_singleton]
     rintro a (rfl | haI)
     exacts [hf, M.subset_closure _ hI.subset_ground haI]
   · intro a haI

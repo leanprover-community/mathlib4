@@ -30,7 +30,7 @@ instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconne
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
   by_contra! ⟨x, y, hxy⟩
-  rw [Ne, ← mem_singleton_iff, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
+  rw [Ne, ← mem_singleton, (isClopen_discrete _).eq_univ <| singleton_nonempty y] at hxy
   exact hxy (mem_univ x)
 
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)

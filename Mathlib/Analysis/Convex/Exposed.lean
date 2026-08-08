@@ -196,7 +196,7 @@ theorem mem_exposedPoints_iff_exposed_singleton : x ∈ A.exposedPoints 𝕜 ↔
         eq_singleton_iff_unique_mem.2
           ⟨⟨hxA, fun y hy => (hl y hy).1⟩, fun z hz => (hl z hz.1).2 (hz.2 x hxA)⟩⟩
   rintro h
-  obtain ⟨l, hl⟩ := h ⟨x, mem_singleton _⟩
+  obtain ⟨l, hl⟩ := h ⟨x, mem_singleton_self _⟩
   rw [eq_comm, eq_singleton_iff_unique_mem] at hl
   exact
     ⟨hl.1.1, l, fun y hy =>

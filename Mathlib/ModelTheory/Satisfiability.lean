@@ -299,7 +299,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
     ⟨fun h1 h2 =>
       (Sentence.realize_not _).1
         (realize_sentence_of_mem (T ∪ {Formula.not φ})
-          (Set.subset_union_right (Set.mem_singleton _)))
+          (Set.subset_union_right (Set.mem_singleton_self _)))
         (h1 (h2.some.subtheoryModel Set.subset_union_left)),
       fun h M => ?_⟩
   contrapose h
@@ -307,7 +307,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
   refine
     ⟨{  Carrier := M
         is_model := ⟨fun ψ hψ => hψ.elim (realize_sentence_of_mem _) fun h' => ?_⟩ }⟩
-  rw [Set.mem_singleton_iff.1 h']
+  rw [Set.mem_singleton.1 h']
   exact h
 
 theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type*)

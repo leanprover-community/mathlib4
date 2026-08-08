@@ -209,7 +209,7 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
       ⟨0, fun _ hx ↦ toReal_nonpos hx.le⟩
   refine ENNReal.continuous_ofReal.continuousAt.comp' <| continuousOn_toReal.continuousAt
     <| (toFinite _).isClosed.compl_mem_nhds ?_
-  simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
+  simp_all only [mem_compl_iff, mem_singleton, mem_insert_iff, or_self, not_false_eq_true]
 
 @[fun_prop]
 lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}

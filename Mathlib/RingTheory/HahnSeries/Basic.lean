@@ -490,7 +490,7 @@ theorem embDomain_single {f : Γ ↪o Γ'} {g : Γ} {r : R} :
   rw [embDomain_notin_image_support, coeff_single_of_ne h]
   by_cases hr : r = 0
   · simp [hr]
-  rwa [support_single_of_ne hr, Set.image_singleton, Set.mem_singleton_iff]
+  rwa [support_single_of_ne hr, Set.image_singleton, Set.mem_singleton]
 
 theorem embDomain_injective {f : Γ ↪o Γ'} :
     Function.Injective (embDomain f : R⟦Γ⟧ → R⟦Γ'⟧) := fun x y xy => by

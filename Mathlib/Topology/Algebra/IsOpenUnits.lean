@@ -56,7 +56,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     refine ⟨Units.isEmbedding_val₀, ?_⟩
     convert! (isClosed_singleton (X := M) (x := 0)).isOpen_compl
     ext
-    simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
+    simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton]
     exact isUnit_iff_ne_zero
 
 /-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical

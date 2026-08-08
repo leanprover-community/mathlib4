@@ -631,7 +631,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
       rfl
     simp only [ENNReal.rpow_zero, le_iInf_iff]
     intro t hst _
-    rcases mem_iUnion.1 (hst (mem_singleton x)) with ⟨m, hm⟩
+    rcases mem_iUnion.1 (hst (mem_singleton_self x)) with ⟨m, hm⟩
     have A : (t m).Nonempty := ⟨x, hm⟩
     calc
       (1 : ℝ≥0∞) = ⨆ h : (t m).Nonempty, 1 := by simp only [A, ciSup_pos]
@@ -882,7 +882,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
   -- it suffices to check that the two measures coincide on products of rational intervals
   refine (pi_eq_generateFrom (fun _ => Real.borel_eq_generateFrom_Ioo_rat.symm)
     (fun _ => Real.isPiSystem_Ioo_rat) (fun _ => Real.finiteSpanningSetsInIooRat _) ?_).symm
-  simp only [mem_iUnion, mem_singleton_iff]
+  simp only [mem_iUnion, mem_singleton]
   -- fix such a product `s` of rational intervals, of the form `Π (a i, b i)`.
   intro s hs
   choose a b H using hs

@@ -358,7 +358,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     rcases (nontrivial_bcubes h v).exists_ne i with ⟨i', hi', h2i'⟩
     exact ⟨i', hi', h2i'⟩
   rcases Set.exists_min_image s (w <| cs ·) (Set.toFinite _) hs with ⟨i', ⟨hi', h2i'⟩, h3i'⟩
-  rw [mem_singleton_iff] at h2i'
+  rw [mem_singleton] at h2i'
   let x := c.b j.succ + c.w - (cs i').w
   have hx : x < (cs i).b j.succ := by
     dsimp only [x]; rw [← bi, add_sub_assoc, add_lt_iff_neg_left, sub_lt_zero]

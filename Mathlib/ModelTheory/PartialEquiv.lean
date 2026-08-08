@@ -446,7 +446,7 @@ theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
   · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
     refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
       (fg_closure_singleton _).sup f_FG⟩,
-      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton_self m),
       ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
     rw [PartialEquiv.toEmbedding] at eq_f'
     simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,

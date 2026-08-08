@@ -286,7 +286,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
 
 lemma signedInfDist_singleton :
     (affineSpan ℝ ({q} : Set P)).signedInfDist p = signedDist (p -ᵥ q) q := by
-  simpa using signedInfDist_eq_signedDist_of_mem (mem_affineSpan ℝ (Set.mem_singleton q))
+  simpa using signedInfDist_eq_signedDist_of_mem (mem_affineSpan ℝ (Set.mem_singleton_self q))
 
 end AffineSubspace
 

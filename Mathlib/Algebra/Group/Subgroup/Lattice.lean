@@ -468,7 +468,7 @@ the element. -/
 theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n : ℤ, x ^ n = y := by
   refine
     ⟨fun hy => closure_induction ?_ ?_ ?_ ?_ hy, fun ⟨n, hn⟩ =>
-      hn ▸ zpow_mem (subset_closure <| mem_singleton x) n⟩
+      hn ▸ zpow_mem (subset_closure <| mem_singleton_self x) n⟩
   · intro y hy
     rw [eq_of_mem_singleton hy]
     exact ⟨1, zpow_one x⟩

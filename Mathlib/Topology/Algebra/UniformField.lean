@@ -138,13 +138,13 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   have : f '' c '' {0}ᶜ ⊆ {1} := by
     rw [image_image]
     rintro _ ⟨z, z_ne, rfl⟩
-    rw [mem_singleton_iff]
+    rw [mem_singleton]
     rw [mem_compl_singleton_iff] at z_ne
     dsimp [f]
     rw [hatInv_extends z_ne, ← coe_mul]
     rw [mul_inv_cancel₀ z_ne, coe_one]
   replace fxclo := closure_mono this fxclo
-  rwa [closure_singleton, mem_singleton_iff] at fxclo
+  rwa [closure_singleton, mem_singleton] at fxclo
 
 instance instField : Field (hat K) where
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]

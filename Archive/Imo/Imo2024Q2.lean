@@ -186,9 +186,9 @@ def solutionSet : Set (ℕ × ℕ) := {(1, 1)}
 
 theorem result (a b : ℕ) : Condition a b ↔ (a, b) ∈ solutionSet := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [solutionSet, Set.mem_singleton_iff, Prod.mk.injEq]
+  · simp only [solutionSet, Set.mem_singleton, Prod.mk.injEq]
     exact ⟨h.a_eq_one, h.b_eq_one⟩
-  · simp only [solutionSet, Set.mem_singleton_iff, Prod.mk.injEq] at h
+  · simp only [solutionSet, Set.mem_singleton, Prod.mk.injEq] at h
     rcases h with ⟨rfl, rfl⟩
     rw [Condition]
     refine ⟨by decide, by decide, 2, 1, ?_⟩

@@ -485,7 +485,7 @@ theorem _root_.MeromorphicOn.exists_ecanonicalDecomp (h₁f : MeromorphicOn f (c
       meromorphicOn := by simp_all
       analyticOnNhd _ _ := by fun_prop
       ne_zero := by
-        simp only [hR.symm, closedBall_zero, mem_singleton_iff, ne_eq, forall_eq]
+        simp only [hR.symm, closedBall_zero, mem_singleton, ne_eq, forall_eq]
         apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁f 0 _) _
         <;> simp_all
       eventuallyEq := by

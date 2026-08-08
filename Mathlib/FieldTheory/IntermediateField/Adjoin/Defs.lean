@@ -555,7 +555,7 @@ section AdjoinSimple
 variable (α : E)
 
 theorem mem_adjoin_simple_self : α ∈ F⟮α⟯ :=
-  subset_adjoin F {α} (Set.mem_singleton α)
+  subset_adjoin F {α} (Set.mem_singleton_self α)
 
 /-- generator of `F⟮α⟯` -/
 def AdjoinSimple.gen : F⟮α⟯ :=

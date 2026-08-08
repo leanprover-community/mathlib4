@@ -769,7 +769,7 @@ variable (K x y)
 theorem mem_adjoin_pair_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
 
 theorem mem_adjoin_pair_right : y ∈ K⟮x, y⟯ :=
-  subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton y))
+  subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton_self y))
 
 /-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
 def AdjoinPair.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoin_pair_left K x y⟩

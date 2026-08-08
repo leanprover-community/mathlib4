@@ -38,7 +38,7 @@ lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlg
     rw [map_eq_zero_iff φ hφ, ← cfc_zero ℝ a, cfc_eq_cfc_iff_eqOn] at this
     exact zero_ne_one <| calc
       0 = f x := (this hx).symm
-      _ = 1 := h_eqOn_x <| Set.mem_singleton x
+      _ = 1 := h_eqOn_x <| Set.mem_singleton_self x
   /- Finally, `φ (f a) = f (φ a) = 0`, where the last equality follows since `f = 0` on
   `spectrum ℝ (φ a)`. -/
   calc φ (cfc f a) = cfc f (φ a) := StarAlgHomClass.map_cfc φ f a

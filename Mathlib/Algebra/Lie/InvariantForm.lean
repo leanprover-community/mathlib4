@@ -106,7 +106,7 @@ lemma orthogonal_disjoint
   rw [eq_bot_iff, ← lie_eq_self_of_isAtom_of_nonabelian I hI (hL I hI),
       LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [LieSubmodule.bot_coe, Set.mem_singleton_iff]
+  simp only [LieSubmodule.bot_coe, Set.mem_singleton]
   apply hΦ_nondeg.1
   intro z
   rw [hΦ_inv, neg_eq_zero]
@@ -198,7 +198,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro I hI
   apply (orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI).mono_right
   apply sSup_le
-  simp only [Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_singleton_iff, and_imp]
+  simp only [Set.mem_sdiff, Set.mem_ofPred_eq, Set.mem_singleton, and_imp]
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩

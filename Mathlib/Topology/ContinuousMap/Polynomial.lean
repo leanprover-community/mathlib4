@@ -209,7 +209,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
 theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by
   refine le_antisymm ?_
-    (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
+    (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton.1 h).symm⟩)
   rintro - ⟨p, -, rfl⟩
   rw [AlgHom.coe_toRingHom]
   refine p.induction_on (fun r => ?_) (fun f g hf hg => ?_) fun n r hn => ?_
@@ -218,14 +218,14 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
   · rw [map_add]
     exact add_mem hf hg
   · rw [pow_succ, ← mul_assoc, map_mul]
-    exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
+    exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton_self _)
 
 theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
     (φ ψ : C(s, R) →ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     polynomialFunctions s ≤ AlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.eq_adjoin_X s]
-  exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
+  exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton.1 hx).symm ▸ h
 
 open StarAlgebra
 
@@ -238,6 +238,6 @@ theorem polynomialFunctions.starClosure_le_equalizer {A : Type*} [StarRing R] [C
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.starClosure_eq_adjoin_X s]
-  exact StarAlgHom.adjoin_le_equalizer φ ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
+  exact StarAlgHom.adjoin_le_equalizer φ ψ fun x hx => (Set.mem_singleton.1 hx).symm ▸ h
 
 end

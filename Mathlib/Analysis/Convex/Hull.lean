@@ -122,7 +122,7 @@ theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
 @[simp]
 theorem convexHull_pair [IsOrderedRing 𝕜] (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
-    (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
+    (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton_self _)
   rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 
@@ -139,7 +139,7 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
   constructor
   · rintro hsx hx
     rw [hsx.convexHull_eq] at hx
-    exact hx.2 (mem_singleton _)
+    exact hx.2 (mem_singleton_self _)
   rintro hx
   suffices h : s \ {x} = convexHull 𝕜 (s \ {x}) by
     rw [h]

@@ -174,7 +174,7 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4] at hg'
     rcases hg' with hg' | hg'
     · convert! one_pow _
-      simpa only [Set.mem_singleton_iff, Subgroup.mk_eq_one] using hg'
+      simpa only [Set.mem_singleton, Subgroup.mk_eq_one] using hg'
     · convert! pow_orderOf_eq_one g
       rw [← Equiv.Perm.lcm_cycleType, hg']
       simp
@@ -212,7 +212,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     refine le_antisymm ?_ comm_le
     intro g hg
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hg
+      Set.mem_union, Set.mem_singleton, Set.mem_ofPred_eq] at hg
     rcases hg with ⟨rfl⟩ | hg
     · exact Subgroup.one_mem _
     · rw [← hg, ← Equiv.Perm.isConj_iff_cycleType_eq, isConj_iff] at hk22
@@ -227,7 +227,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
       simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-    Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hk2
+    Set.mem_union, Set.mem_singleton, Set.mem_ofPred_eq] at hk2
   exact hk2.resolve_left hk'
 
 end alternatingGroup

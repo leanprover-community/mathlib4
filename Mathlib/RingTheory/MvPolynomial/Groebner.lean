@@ -249,7 +249,7 @@ theorem div_single {b : MvPolynomial σ R}
   obtain ⟨g, r, hgr, h1, h2⟩ := div_set (B := {b}) (m := m) (by simp [hb]) f
   specialize h1 ⟨b, by simp⟩
   set q := g ⟨b, by simp⟩
-  simp only [Set.mem_singleton_iff, forall_eq] at h2
+  simp only [Set.mem_singleton, forall_eq] at h2
   simp only at h1
   refine ⟨q, r, ?_, h1, h2⟩
   rw [hgr]

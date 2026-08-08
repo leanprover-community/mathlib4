@@ -561,7 +561,7 @@ variable (b : B) (a : F)
 
 theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := by
   apply TopologicalSpace.GenerateOpen.basic
-  simp only [exists_prop, mem_iUnion, mem_singleton_iff]
+  simp only [exists_prop, mem_iUnion, mem_singleton]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
   simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
@@ -583,11 +583,11 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     rw [continuousOn_open_iff (Z.open_source' i)]
     intro s s_open
     apply TopologicalSpace.GenerateOpen.basic
-    simp only [exists_prop, mem_iUnion, mem_singleton_iff]
+    simp only [exists_prop, mem_iUnion, mem_singleton]
     exact ⟨i, s, s_open, rfl⟩
   continuousOn_invFun := by
     refine continuousOn_isOpen_of_generateFrom fun t ht ↦ ?_
-    simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
+    simp only [exists_prop, mem_iUnion, mem_singleton] at ht
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsPartialEquiv Z j).source ∩ localTrivAsPartialEquiv Z j ⁻¹' s := ht
     rw [ts]

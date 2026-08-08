@@ -97,7 +97,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
-  rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton_iff]
+  rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton]
 
 /-- `k` has characteristic 2. -/
 instance K.charP : CharP K 2 := by

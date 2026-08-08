@@ -41,7 +41,7 @@ instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) :
   refine ⟨Set.Ioo (g ^ (-1 : ℤ)) (g ^ (1 : ℤ)), isOpen_Ioo, ?_⟩
   ext ⟨_, ⟨n, rfl⟩⟩
   constructor
-  · simp only [Set.mem_preimage, Set.mem_Ioo, Set.mem_singleton_iff, and_imp]
+  · simp only [Set.mem_preimage, Set.mem_Ioo, Set.mem_singleton, and_imp]
     intro hn hn'
     rw [zpow_lt_zpow_iff_right ha] at hn hn'
     simp only [Subtype.ext_iff, show n = 0 by lia, zpow_zero, coe_one]

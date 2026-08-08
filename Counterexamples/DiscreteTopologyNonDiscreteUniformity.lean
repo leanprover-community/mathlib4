@@ -133,7 +133,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
 lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) = {n} := by
   ext m
   constructor
-  · zify [zpow_natCast, mem_ball, dist_def, mem_singleton_iff]
+  · zify [zpow_natCast, mem_ball, dist_def, mem_singleton]
     apply Int.eq_of_pow_sub_le one_lt_two
   · intro H
     rw [H, mem_ball, dist_self]

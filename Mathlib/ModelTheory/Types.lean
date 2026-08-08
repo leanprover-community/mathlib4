@@ -106,7 +106,7 @@ theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
-      simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
+      simp only [model_iff, mem_insert_iff, mem_singleton, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
     refine h (p.isMaximal.1.mono ?_)
     rw [insert_subset_iff, singleton_subset_iff]

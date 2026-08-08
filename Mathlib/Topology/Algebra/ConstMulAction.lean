@@ -538,7 +538,7 @@ variable (Γ : Type*) {T : Type*}
 variable [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
 
 @[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
-  simp_rw [← mem_singleton_iff, ← singleton_inter_nonempty, ← image_singleton]
+  simp_rw [← mem_singleton, ← singleton_inter_nonempty, ← image_singleton]
   exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
 
 variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)

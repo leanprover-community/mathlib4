@@ -30,10 +30,10 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     Basis (Fin (minpoly K x).natDegree) K (K[(x : S)]) := by
   have hST : Function.Injective (algebraMap (K[(x : S)]) S) := Subtype.coe_injective
   have hx' :
-    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : K[(x : S)]) := by
+    IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton_self x)⟩ : K[(x : S)]) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert! hx
-  apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
+  apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton_self x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : K[x])
     rwa [← minpoly.algebraMap_eq hST] at this
@@ -54,7 +54,7 @@ a version over a more general base ring. -/
 @[simps gen dim]
 noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
     PowerBasis K K[(x : S)] where
-  gen := ⟨x, subset_adjoin (Set.mem_singleton x)⟩
+  gen := ⟨x, subset_adjoin (Set.mem_singleton_self x)⟩
   dim := (minpoly K x).natDegree
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]

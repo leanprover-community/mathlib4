@@ -1141,7 +1141,7 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
   simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply,
     MonoidHom.domRestrict_apply, mem_comap]
-  exact subset_normalClosure (Set.mem_singleton _)
+  exact subset_normalClosure (Set.mem_singleton_self _)
 
 end IsConj
 

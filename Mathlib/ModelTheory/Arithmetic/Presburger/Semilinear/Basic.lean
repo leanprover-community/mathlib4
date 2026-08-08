@@ -87,7 +87,7 @@ private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
     intro x hx y hy hxy z hz
     rw [le_iff_exists_add] at hxy
     rcases hxy with ⟨y, rfl⟩
-    simp only [AddSemigroupIdeal.mem_closure'', mem_sdiff, SetLike.mem_coe, mem_singleton_iff,
+    simp only [AddSemigroupIdeal.mem_closure'', mem_sdiff, SetLike.mem_coe, mem_singleton,
       g] at hz ⊢
     rcases hz with ⟨y', z, ⟨hz₁, hz₂⟩, rfl⟩
     rw [hf _ hx] at hz₁
@@ -113,7 +113,7 @@ private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
       rwa [SetLike.mem_coe, hf _ hx]
     apply ha.2 hx (hg _ ha.1 _ hx le_self_add) at hy
     simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_sdiff, SetLike.mem_coe,
-      Set.notMem_singleton_iff] at hy
+      Set.notMem_singleton] at hy
     rcases hy with ⟨w, u, ⟨hu₁, hu₂⟩, rfl⟩
     induction w using WellQuasiOrderedLE.to_wellFoundedLT.induction (α := M) generalizing u with
       | _ w ih
@@ -126,7 +126,7 @@ private theorem exists_isSemilinearSet_setOfPred_le {s : Set M} (hs : IsSlice s)
       rwa [SetLike.mem_coe, hf _ hxu, add_assoc, add_comm u w]
     apply ha.2 hxu (hg _ ha.1 _ hxu (le_add_right le_self_add)) at hw₂
     simp only [g, AddSemigroupIdeal.mem_closure'', Set.mem_sdiff, SetLike.mem_coe,
-      Set.notMem_singleton_iff] at hw₂
+      Set.notMem_singleton] at hw₂
     rcases hw₂ with ⟨w', u', ⟨hu'₁, hu'₂⟩, rfl⟩
     rw [add_assoc]
     apply ih
@@ -652,7 +652,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
       refine ⟨i, ((- hs.floor x i).toNat - 1) • i.1, ?_,
         ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1, ?_,
         ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.1)) _
+      · exact nsmul_mem (mem_closure_of_mem (mem_singleton_self i.1)) _
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
         simpa [Subtype.val_inj] using hj
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
@@ -676,8 +676,10 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset
+          (notMem_sdiff_of_mem (mem_singleton_self i.1)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset
+          (notMem_sdiff_of_mem (mem_singleton_self i.1)) hz',
           hs.floor_base, add_assoc x, ← succ_nsmul', hs.floor_add_nsmul_self,
           ← eq_neg_iff_add_eq_zero] at heq
         simpa [heq] using neg_one_lt_zero.trans_le (Nat.cast_nonneg _)
@@ -715,7 +717,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
       refine ⟨i, hi, ((hs.floor x i).toNat - 1) • i.1, ?_,
           ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1, ?_,
           ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-      · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.1)) _
+      · exact nsmul_mem (mem_closure_of_mem (mem_singleton_self i.1)) _
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
         simpa [Subtype.val_inj] using hj
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
@@ -738,8 +740,10 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
       · rw [mem_closure_singleton] at hy
         rcases hy with ⟨n, rfl⟩
         apply congr_arg (hs.floor · i) at heq
-        rw [hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz,
-          hs.floor_add_of_mem_closure sdiff_subset (notMem_sdiff_of_mem (mem_singleton i.1)) hz',
+        rw [hs.floor_add_of_mem_closure sdiff_subset
+          (notMem_sdiff_of_mem (mem_singleton_self i.1)) hz,
+          hs.floor_add_of_mem_closure sdiff_subset
+          (notMem_sdiff_of_mem (mem_singleton_self i.1)) hz',
           add_assoc hs.base, ← succ_nsmul', hs.floor_add_nsmul_self, hs.floor_base, zero_add] at heq
         simp [heq]
   · refine .biUnion (toFinite _) fun i hi => .proj' ?_

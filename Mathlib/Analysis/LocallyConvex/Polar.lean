@@ -109,7 +109,7 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 @[simp]
 theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_antisymm
   (fun _ hy => hy _ rfl)
-  (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton_iff.mp hb]; exact hy))
+  (fun y hy => (polar_mem_iff _ _ _).mp (fun _ hb => by rw [Set.mem_singleton.mp hb]; exact hy))
 
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
   simp only [polar_singleton, Set.mem_ofPred_eq]

@@ -208,7 +208,7 @@ instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
 
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
   local_compact_nhds a _U hU := ⟨nhdsKer {a},
-    isOpen_nhdsKer.mem_nhds <| subset_nhdsKer <| mem_singleton _,
+    isOpen_nhdsKer.mem_nhds <| subset_nhdsKer <| mem_singleton_self _,
       nhdsKer_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.nhdsKer⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=

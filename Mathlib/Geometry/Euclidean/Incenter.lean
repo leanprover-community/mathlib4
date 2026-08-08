@@ -636,7 +636,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i j : Fin (n + 1)) :
     s.excenter signs ∉ line[ℝ, s.points i, s.points j] := by
   by_cases hij : i = j
-  · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
+  · simp only [hij, Set.mem_singleton, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
     exact h.excenter_ne_point j
   · convert!
@@ -1173,7 +1173,7 @@ variable {s} in
     s.touchpointWeights signs i i = 0 := by
   refine s.independent.eq_zero_of_affineCombination_mem_affineSpan
     (s.sum_touchpointWeights signs i) ?_ (Finset.mem_univ _)
-    (Set.notMem_compl_iff.2 (Set.mem_singleton _))
+    (Set.notMem_compl_iff.2 (Set.mem_singleton_self _))
   rw [s.affineCombination_touchpointWeights]
   convert! s.touchpoint_mem_affineSpan _ _
   simp

@@ -219,7 +219,7 @@ private def multicofork (hf : horn.IsCompatible f) :
     · rintro ⟨⟨a, b⟩, hab⟩
       grind
     · rintro ⟨⟨⟨a, ha⟩, ⟨b, hb⟩⟩, hab : a < b⟩
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at ha hb
+      simp only [Set.mem_compl_iff, Set.mem_singleton] at ha hb
       dsimp
       rw [homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred_assoc _ _ hab,
         homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred_assoc _ _ hab,

@@ -535,7 +535,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
   ext ⟨Z, v⟩; constructor
   · rintro ⟨⟩; rfl
   · intro h
-    rw [Set.mem_singleton_iff, Sigma.ext_iff] at h
+    rw [Set.mem_singleton, Sigma.ext_iff] at h
     obtain ⟨rfl, h⟩ := h; subst h; constructor
 
 @[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :

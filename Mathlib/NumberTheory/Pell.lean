@@ -301,7 +301,7 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
-      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton, true_or,
         x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
@@ -615,7 +615,7 @@ theorem eq_zpow_or_neg_zpow {a₁ : Solution₁ d} (h : IsFundamental a₁) (a :
   · exact ⟨n, Or.inl (mod_cast hn)⟩
   · exact ⟨-n, Or.inl (by simp [hn])⟩
   · exact ⟨n, Or.inr (by simp [hn])⟩
-  · rw [Set.mem_singleton_iff] at hb
+  · rw [Set.mem_singleton] at hb
     rw [hb]
     exact ⟨-n, Or.inr (by simp [hn])⟩
 

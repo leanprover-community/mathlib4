@@ -377,7 +377,7 @@ theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [
 theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, {x} ∈ 𝓝 x := by
   simp only [discreteTopology_iff_isOpen_singleton,
-    isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
+    isOpen_iff_mem_nhds, mem_singleton, forall_eq]
 
 /-- This lemma characterizes discrete topological spaces as those whose singletons are
 neighbourhoods. -/
@@ -959,11 +959,12 @@ variable {α : Type*}
 
 @[simp]
 theorem isOpen_singleton_true : IsOpen ({True} : Set Prop) :=
-  TopologicalSpace.GenerateOpen.basic _ (mem_singleton _)
+  TopologicalSpace.GenerateOpen.basic _ (mem_singleton_self _)
 
 @[simp]
 theorem nhds_true : 𝓝 True = pure True :=
-  le_antisymm (le_pure_iff.2 <| isOpen_singleton_true.mem_nhds <| mem_singleton _) (pure_le_nhds _)
+  le_antisymm (le_pure_iff.2 <| isOpen_singleton_true.mem_nhds <|
+    mem_singleton_self _) (pure_le_nhds _)
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=

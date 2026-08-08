@@ -378,7 +378,7 @@ theorem closure_sUnion_irreducibleComponents_sdiff_singleton
       exact hX.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
     · rw [Set.inter_compl_nonempty_iff]
       exact mt (mem_of_subset_sUnion_irreducibleComponents Z hZ _ hX.sdiff Set.sdiff_subset)
-        (Set.notMem_sdiff_of_mem (Set.mem_singleton Z))
+        (Set.notMem_sdiff_of_mem (mem_singleton_self Z))
 
 /-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
 theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible t)

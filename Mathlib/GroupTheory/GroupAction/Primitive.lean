@@ -172,7 +172,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
       intro g
-      rw [← Set.mem_singleton_iff]; rw [← H]
+      rw [← Set.mem_singleton]; rw [← H]
       exact mem_orbit a g
     · intro x; rw [← MulAction.mem_orbit_iff, H]; exact Set.mem_univ x
   { isTrivialBlock_of_isBlock {B} hB := by
@@ -295,7 +295,7 @@ instance (priority := 100) IsPreprimitive.isQuasiPreprimitive [IsPreprimitive M 
     apply ha
     simp only [mem_fixedPoints]
     intro n
-    rw [← Set.mem_singleton_iff]
+    rw [← Set.mem_singleton]
     suffices orbit N a = {a} by rw [← this]; use n
     ext b
     rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
@@ -377,7 +377,7 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
   suffices b ∉ B by
     rw [Set.mem_iInter] at this
     simpa only [Set.mem_iInter, not_forall, exists_prop] using this
-  suffices B = {a} by rw [this]; rw [Set.mem_singleton_iff]; exact Ne.symm h
+  suffices B = {a} by rw [this]; rw [Set.mem_singleton]; exact Ne.symm h
   -- B is a block hence is a trivial block
   rcases isTrivialBlock_of_isBlock (G := G) (IsBlock.of_subset a hfA) with hyp | hyp
   · -- B.subsingleton

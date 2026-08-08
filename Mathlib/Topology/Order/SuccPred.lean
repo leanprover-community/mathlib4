@@ -42,7 +42,7 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   nontriviality α
   refine ⟨fun h ha ↦ ?_, fun ha ↦ ?_⟩
   · obtain ⟨l, u, h₁, h₂⟩ := mem_nhds_iff_exists_Ioo_subset' (by simpa using ha.not_isMin)
-      (by simpa only [not_isMax_iff] using not_isMax a) |>.mp (h.mem_nhds (mem_singleton a))
+      (by simpa only [not_isMax_iff] using not_isMax a) |>.mp (h.mem_nhds (mem_singleton_self a))
     refine ha.isSuccPrelimit l ?_
     rw [← succ_eq_iff_covBy]
     simp only [mem_Ioo, subset_singleton_iff] at h₁ h₂

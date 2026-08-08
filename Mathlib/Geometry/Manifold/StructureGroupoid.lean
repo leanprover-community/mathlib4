@@ -199,14 +199,14 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
   members := {OpenPartialHomeomorph.refl H} ∪ { e : OpenPartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
     rcases he with he | he
-    · simpa only [mem_singleton_iff.1 he, refl_trans]
+    · simpa only [mem_singleton.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
       have : e ≫ₕ e' ∈ { e : OpenPartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
     rcases (mem_union _ _ _).1 he with E | E
-    · simp [mem_singleton_iff.mp E]
+    · simp [mem_singleton.mp E]
     · right
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using! E
   id_mem' := mem_union_left _ rfl
@@ -240,7 +240,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
     · left
       have : e = e' := by
         refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
-          rw [Set.mem_singleton_iff.1 he] <;> rfl
+          rw [Set.mem_singleton.1 he] <;> rfl
       rwa [← this]
     · right
       have he : e.toPartialEquiv.source = ∅ := he

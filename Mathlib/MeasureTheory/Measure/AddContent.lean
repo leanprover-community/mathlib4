@@ -436,7 +436,7 @@ noncomputable def AddContent.onIoc (f : α → G) :
       have UI' : ⋃₀ ↑I' = Ioc u u' := by
         have : (Ioc u' v ∪ ⋃₀ ↑I') \ Ioc u' v = ⋃₀ ↑I' := by
           refine Disjoint.sup_sdiff_cancel_left ?_
-          simp only [coe_erase, disjoint_sUnion_right, Set.mem_sdiff, mem_singleton_iff, and_imp,
+          simp only [coe_erase, disjoint_sUnion_right, Set.mem_sdiff, Set.mem_singleton, and_imp,
             I']
           intro u hu hu'
           exact (h'I hu tI hu').symm

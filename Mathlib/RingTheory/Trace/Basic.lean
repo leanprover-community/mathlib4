@@ -105,7 +105,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
-  · exact subset_adjoin K _ (Set.mem_singleton x)
+  · exact subset_adjoin K _ (Set.mem_singleton_self x)
 
 theorem trace_gen_eq_sum_roots (x : L) (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =

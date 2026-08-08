@@ -73,7 +73,7 @@ theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected 
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
   refine ⟨⟨?_⟩⟩
   rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
+  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton] at ha hb
   obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
     first | rfl | (apply Adj.reachable; simp)
 
@@ -358,7 +358,7 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet u = {p.snd} := by
   have hadj1 := p.toSubgraph_adj_snd hnp
   ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   grind [getVert_eq_start_iff]
 
@@ -374,7 +374,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u v} (hp : p.IsP
   have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
-  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
@@ -414,7 +414,7 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.neighborSet u = {p.snd, p.penultimate} := by
   have hadj1 := p.toSubgraph_adj_snd hpc.not_nil
   ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   grind [getVert_endpoint_iff, add_tsub_cancel_right]
 
@@ -424,7 +424,7 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
   have hadj1 := ((show i - 1 + 1 = i by lia) ▸
     p.toSubgraph_adj_getVert (by lia : (i - 1) < p.length)).symm
   ext v
-  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
     Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩

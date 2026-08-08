@@ -47,7 +47,7 @@ variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 instance : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id
       top := singleton
-      top_mem := mem_singleton
+      top_mem := mem_singleton_self
       inter := fun s t _ _ ↦ s ∩ t
       inter_mem := fun _s _t _a ↦ id
       inter_sub := fun _s _t _a _ha ↦ Subset.rfl }⟩

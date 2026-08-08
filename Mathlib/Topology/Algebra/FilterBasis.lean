@@ -326,10 +326,10 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
         rintro a ⟨x, -, m, rfl, rfl⟩
-        simp only [smul_zero, mem_singleton_iff]
+        simp only [smul_zero, mem_singleton]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
-        rw [mem_singleton_iff] at h
+        rw [mem_singleton] at h
         use {0}, rfl
         simp [h]
       smul_right' := by
