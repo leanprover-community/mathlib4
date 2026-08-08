@@ -194,7 +194,7 @@ theorem edgeReachability_of_Reachable (G : SimpleGraph V) (u v : V) (h : G.Reach
 theorem le_edgeReachability (h : G.IsEdgeReachable k u v) : k ≤ G.edgeReachability u v :=
   le_iSup₂ (α := ℕ∞) k h
 
-theorem le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
+theorem IsEdgeConnected.le_edgeConnectivity (h : G.IsEdgeConnected k) : k ≤ G.edgeConnectivity :=
   le_iSup₂ (α := ℕ∞) k h
 
 theorem edgeConnectivity_eq_top_of_subsingleton [Subsingleton V] : G.edgeConnectivity = ⊤ := by
