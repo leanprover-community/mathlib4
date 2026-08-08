@@ -153,7 +153,6 @@ instance : LinearOrder String where
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT
-  compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
