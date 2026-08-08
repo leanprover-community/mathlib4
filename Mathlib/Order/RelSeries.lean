@@ -1118,6 +1118,16 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
 
+@[simp]
+theorem toList_range (n : ℕ) : (range n).toList = .range (n + 1) := by
+  simp [RelSeries.toList, range, List.ofFn_eq_pmap, -List.ofFn_succ]
+
+theorem range_strictMono : StrictMono range :=
+  fun _ _ h ↦ ⟨by simp [h.le], by simp [h]⟩
+
+theorem range_injective : range.Injective :=
+  range_strictMono.injective
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
 in a bidirectionally well-founded order. -/
