@@ -1,0 +1,44 @@
+name: Add comment
+on:
+  pull_request:
+    types:
+      - labeled
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  add-comment:
+    if: github.event.label.name == 'test-ci'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+
+      - name: Checkout master branch
+        uses: adomani/get_mathlib4_with_cache@v1
+
+      - id: mathlib_stats
+        run: |
+          git checkout origin/adomani/periodic_reports_dev_custom_action scripts/mathlib_stats.sh scripts/count_decls.lean
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
+
+          printf '%s\n' "$(./scripts/mathlib_stats.sh)"
+
+      - name: Add comment
+        run: gh pr comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: ${{ steps.mathlib_stats.outputs.summary }}
+
+      - name: Post report on Zulip
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib4'
+          type: 'stream'
+          topic: 'Mathlib weekly change report'
+          content: ${{ steps.mathlib_stats.outputs.summary }}
