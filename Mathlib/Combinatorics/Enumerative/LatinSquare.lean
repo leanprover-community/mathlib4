@@ -366,6 +366,81 @@ lemma LatinRectangle.card_symbolsNotIn_le {k n : Type*} [Fintype n]
   rw [hx] at h'
   exact h' h_sub
 
+/-- Extend LatinRectangle given a valid extension map -/
+@[instance_reducible]
+noncomputable def LatinRectangle.extendRow {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n)
+    {k' : Type*} [Fintype k'] [DecidableEq k']
+    (ι : k ↪ k') (h₂ : Fintype.card k' = Fintype.card k + 1)
+    (f : n → α) (hf_inj : Function.Injective f) (hf_valid : ∀ j, f j ∈ symbolsNotIn A j) :
+    LatinRectangle k' n α := 
+  let M' : k' → n → α := fun i j =>
+    if hif : i ∈ (Finset.image ι Finset.univ)
+    then A.M (Function.invFun ι i) j
+    else f j
+  {
+    M := M'
+    card_eq := A.card_eq
+    row_injective := by
+      simp only [Matrix.row, M']
+      intro y
+      split_ifs
+      · rename_i if_h₁
+        rw [Finset.mem_image] at if_h₁
+        obtain ⟨a1', ha1' ⟩ := if_h₁
+        simp only [Finset.mem_univ, true_and] at ha1'
+        rw [<- ha1']
+        have h₁' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₁'
+        rw [h₁']
+        have h := A.row_injective
+        simp only [Matrix.row] at h
+        apply h
+      · have h_card : Fintype.card n = Fintype.card α := A.card_eq.symm
+        exact (Fintype.bijective_iff_injective_and_card f).mpr ⟨hf_inj, h_card⟩
+    col_injective := by
+      intro y
+      simp only [Function.Injective, Matrix.col, Matrix.transpose,
+                 Finset.mem_image, Finset.mem_univ, true_and,
+                 dite_eq_ite, Matrix.of_apply, M']
+      intro a1 a2
+      split_ifs
+      all_goals rename_i if_h₁ if_h₂
+      · obtain ⟨a1', ha1' ⟩ := if_h₁
+        have h₁' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₁'
+        rw [<- ha1',h₁']
+        obtain ⟨a2', ha2' ⟩ := if_h₂
+        have h₂' := Function.leftInverse_invFun ι.inj'
+        simp only [Function.Embedding.toFun_eq_coe] at h₂'
+        rw [<- ha2',h₂']
+        have h := A.col_injective
+        unfold Function.Injective at h
+        intro hM
+        apply h at hM
+        congr
+      · intro h
+        have hfy := hf_valid y
+        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
+                   Finset.mem_image, Matrix.col_apply, true_and, not_exists] at hfy
+        have hfyi := hfy (Function.invFun ι a1)
+        contradiction
+      · intro h
+        have hfy := hf_valid y
+        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
+                   Finset.mem_image, Matrix.col_apply, true_and, not_exists] at hfy
+        have hfyi := hfy (Function.invFun ι a2)
+        have h_symm := h.symm
+        contradiction
+      · have h := Fintype.existsUnique_notMem_image_of_injective_of_card_eq_add_one
+          ι.toFun ι.inj' h₂
+        simp only [Finset.mem_image] at h
+        intro _
+        exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
+          (by simpa using if_h₁) (by simpa using if_h₂)
+    card_le := by lia
+  }
+
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
 theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
     [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n)
@@ -387,97 +462,23 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
     if hif : i ∈ (Finset.image ι Finset.univ)
     then A.M (Function.invFun ι i) j
     else (f' ⟨j, by simp⟩ )
-  let A' : LatinRectangle k' n α := {
-    M := M'
-    card_eq := A.card_eq
-    row_injective := by
-      simp only [Matrix.row, M']
-      intro y
-      split_ifs
-      · rename_i if_h₁
-        rw [Finset.mem_image] at if_h₁
-        obtain ⟨a1', ha1' ⟩ := if_h₁
-        simp only [Finset.mem_univ, true_and] at ha1'
-        rw [<- ha1']
-        have h₁' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h₁'
-        rw [h₁']
-        have h := A.row_injective
-        simp only [Matrix.row] at h
-        apply h
-      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
-        have h₂ := A.card_eq.symm
-        have h₃pre : Fintype.card ↥(Finset.univ : Finset n) = Fintype.card α := by simp[h₂]
-        have h₃ : (Function.Injective f') ∧ (Fintype.card Finset.univ = Fintype.card α) :=
-                  ⟨hf.1, h₃pre⟩
-        rw [<-Fintype.bijective_iff_injective_and_card] at h₃
-        simp only [Function.Bijective]
-        constructor
-        · simp only [Function.Injective]
-          intro a1 a2 h
-          apply hf.1 at h
-          simp only [Subtype.mk.injEq] at h
-          exact h
-        · simp only [Function.Surjective]
-          intro b
-          simp only [B, symbolsNotIn] at hf
-          unfold Function.Bijective Function.Surjective at h₃
-          replace h₃ := h₃.2
-          specialize h₃ b
-          simp only [Subtype.exists, Finset.mem_univ, exists_true_left] at h₃
-          exact h₃
-    col_injective := by
-      intro y
-      simp only [Function.Injective, Matrix.col, Matrix.transpose,
-                 Finset.mem_image, Finset.mem_univ, true_and,
-    dite_eq_ite, Matrix.of_apply, M']
-      intro a1 a2
-      split_ifs
-      all_goals rename_i if_h₁ if_h₂
-      · obtain ⟨a1', ha1' ⟩ := if_h₁
-        have h₁' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h₁'
-        rw [<- ha1',h₁']
-        obtain ⟨a2', ha2' ⟩ := if_h₂
-        have h₂' := Function.leftInverse_invFun ι.inj'
-        simp only [Function.Embedding.toFun_eq_coe] at h₂'
-        rw [<- ha2',h₂']
-        have h := A.col_injective
-        unfold Function.Injective at h
-        intro hM
-        apply h at hM
-        congr
-      · simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
-        intro h
-        have hfy := hf.2 y
-        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
-                   Finset.mem_image, Matrix.col_apply, true_and, not_exists, B] at hfy
-        have hfyi := hfy (Function.invFun (⇑ι) a1)
-        contradiction
-      · intro h
-        simp only [Subtype.forall, Finset.mem_univ, forall_true_left] at hf
-        have hfy := hf.2 y
-        simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ,
-                   Finset.mem_image, Matrix.col_apply, true_and, not_exists, B]  at hfy
-        have hfyi := (hfy (Function.invFun (⇑ι) a2))
-        have h := h.symm
-        contradiction
-      · rename_i if_h₁ if_h₂
-        have h := Fintype.existsUnique_notMem_image_of_injective_of_card_eq_add_one
-          ι.toFun ι.inj' h₂
-        simp only [Finset.mem_image] at h
-        intro _
-        exact ExistsUnique.unique (y₁ := a1) (y₂ := a2) h
-          (by simpa using if_h₁) (by simpa using if_h₂)
-    card_le := by lia
-  }
+  let f : n → α := fun j ↦ f' ⟨j, Finset.mem_univ j⟩
+  have hf_inj : Function.Injective f := by 
+    intro a b hab
+    apply hf.1 at hab
+    simp only [Subtype.mk.injEq] at hab
+    exact hab
+  have hf_valid : ∀ j, f j ∈ symbolsNotIn A j := by
+    intro j
+    exact hf.2 ⟨j, Finset.mem_univ j⟩
+  let A' : LatinRectangle k' n α := LatinRectangle.extendRow A h ι h₂ f hf_inj hf_valid
   use A'
   unfold IsSubrect
   unfold LatinRectangle.M
   use ι
   use (Equiv.refl n)
   ext
-  simp only [A', M']
+  simp only [A', LatinRectangle.extendRow]
   unfold Matrix.submatrix
   simp only [Finset.mem_image, Finset.mem_univ, EmbeddingLike.apply_eq_iff_eq, true_and, exists_eq,
     reduceDIte, Equiv.refl_toEmbedding, Function.Embedding.refl_apply, Matrix.of_apply]
