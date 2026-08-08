@@ -537,13 +537,11 @@ omit [NormedSpace ℝ F] in
 lemma lintegral_enorm_convolution_integrand_le_enorm_mul_eLpNorm_mul_eLpNorm {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
-  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀)]
-  have hg' : AEStronglyMeasurable (g ∘ fun h ↦ x₀ - h) μ :=
-    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀))
-  have hL' : ∀ᵐ (x : G) ∂μ, ‖L (f x) (g (x₀ - x))‖ ≤ ‖L‖ * ‖f x‖ * ‖g (x₀ - x)‖ :=
-    .of_forall fun _ ↦ L.le_opNorm₂ ..
-  simpa [eLpNorm, eLpNorm']
-    using! eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm hf hg' (L ·) ‖L‖₊ hL' (hpqr := hpq)
+  rw [← eLpNorm_comp_measurePreserving hg (μ.measurePreserving_sub_left x₀),
+    ← eLpNorm_one_eq_lintegral_enorm]
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm'_of_enorm hf
+    (hg.comp_quasiMeasurePreserving (quasiMeasurePreserving_sub_left μ x₀)) (L ·) ‖L‖₊
+    (.of_forall fun _ ↦ L.le_opENorm₂ ..)
 
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
