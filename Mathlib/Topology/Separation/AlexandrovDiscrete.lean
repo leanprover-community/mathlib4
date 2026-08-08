@@ -12,7 +12,7 @@ public import Mathlib.Topology.AlexandrovDiscrete
 # T1 Alexandrov-discrete topology is discrete
 -/
 
-@[expose] public section
+public section
 
 open Filter
 

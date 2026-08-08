@@ -17,7 +17,7 @@ These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/B
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.lean`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

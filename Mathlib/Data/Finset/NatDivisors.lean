@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa, Yury Kudryashov
+Authors: Damiano Testa, Yury Kudryashov, Lawrence Wu
 -/
 module
 
@@ -47,3 +47,25 @@ lemma Multiset.nat_divisors_prod (s : Multiset ℕ) : divisors s.prod = (s.map d
 lemma Finset.nat_divisors_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ) :
     divisors (∏ i ∈ s, f i) = ∏ i ∈ s, divisors (f i) :=
   map_prod Nat.divisorsHom f s
+
+/-- Products of divisors taken from coprime naturals are unique. -/
+theorem Nat.Coprime.mul_injOn_divisors {m n : ℕ} (hmn : m.Coprime n) :
+    Set.InjOn (fun p : ℕ × ℕ ↦ p.1 * p.2) ↑(divisors m ×ˢ divisors n) := by
+  rintro ⟨dm₁, dn₁⟩ h₁ ⟨dm₂, dn₂⟩ h₂ hd
+  simp only [Finset.mem_coe, Finset.mem_product, mem_divisors] at *
+  suffices dm₁ = dm₂ from Prod.ext this <| by
+    rwa [this, Nat.mul_right_inj (by simp [·] at h₂)] at hd
+  exact dvd_antisymm
+    (hmn.coprime_dvd_left h₁.1.1 |>.coprime_dvd_right h₂.2.1
+      |>.dvd_of_dvd_mul_right (hd ▸ dm₁.dvd_mul_right dn₁))
+    (hmn.coprime_dvd_left h₂.1.1 |>.coprime_dvd_right h₁.2.1
+      |>.dvd_of_dvd_mul_right (hd ▸ dm₂.dvd_mul_right dn₂))
+
+/-- A variant of `Nat.divisors_mul` with a more structured RHS. -/
+theorem Nat.Coprime.divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    divisors (m * n) = (divisors m ×ˢ divisors n).attach.map
+      ⟨fun p => p.val.1 * p.val.2,
+        fun i j hxy => Subtype.ext <| hmn.mul_injOn_divisors i.prop j.prop hxy⟩ := calc
+  _ = ((divisors m ×ˢ divisors n).attach.image Subtype.val).image fun p ↦ p.1 * p.2 := by
+    rw [Finset.attach_image_val, ← Finset.mul_def, Nat.divisors_mul]
+  _ = _ := by rw [Finset.map_eq_image, Finset.image_image]; rfl

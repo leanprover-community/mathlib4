@@ -63,7 +63,6 @@ lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
@@ -155,11 +154,8 @@ unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
 
-lemma forget_obj {R : SemiRingCat} : (forget SemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : SemiRingCat} (f : R ⟶ S) :
-    (forget SemiRingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
   inferInstanceAs <| Semiring R.carrier
@@ -232,7 +228,6 @@ lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
@@ -328,11 +323,8 @@ unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
 
-lemma forget_obj {R : RingCat} : (forget RingCat).obj R = R := rfl
-
-lemma forget_map {R S : RingCat} (f : R ⟶ S) :
-    (forget RingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
   inferInstanceAs <| Ring R.carrier
@@ -410,7 +402,6 @@ lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
@@ -503,11 +494,8 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-lemma forget_obj {R : CommSemiRingCat} : (forget CommSemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : CommSemiRingCat} (f : R ⟶ S) :
-    (forget CommSemiRingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
   inferInstanceAs <| CommSemiring R.carrier
@@ -586,7 +574,6 @@ lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
@@ -673,7 +660,8 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
@@ -682,10 +670,6 @@ An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to
 unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
   R ≟ R' ⊢
   (forget CommRingCat).obj R ≟ CommRingCat.carrier R'
-
-lemma forget_map {R S : CommRingCat} (f : R ⟶ S) :
-    (forget CommRingCat).map f = f :=
-  rfl
 
 instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
   inferInstanceAs <| CommRing R.carrier

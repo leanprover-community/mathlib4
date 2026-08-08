@@ -246,7 +246,6 @@ lemma exists_set_encard_eq_coveringNumber (h : coveringNumber ε A ≠ ⊤) :
     simp_rw [iInf_subtype, iInf_and]
     rfl
 
-open Classical in
 /-- A finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
 It is defined as the empty set if no such finite cover exists. -/
 noncomputable
@@ -385,13 +384,12 @@ See `Isometry.coveringNumber_image` for the version in an `EMetricSpace`, in whi
 a consequence of being an isometry. -/
 lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_inj : Set.InjOn f A) :
     coveringNumber ε (f '' A) = coveringNumber ε A := by
-  classical
   refine le_antisymm ?_ ?_
   · simp only [coveringNumber, le_iInf_iff]
     intro C hC_subset hC_cover
     refine (iInf_le _ (C.image f)).trans ?_
     simp only [Set.image_subset_iff]
-    have : ↑C ⊆ f ⁻¹' (f '' A) := hC_subset.trans (Set.subset_preimage_image f A)
+    have : ↑C ⊆ f ⁻¹' f '' A := hC_subset.trans (Set.subset_preimage_image f A)
     refine (iInf_le _ this).trans ?_
     rw [hf.isCover_image_iff]
     refine (iInf_le _ hC_cover).trans ?_

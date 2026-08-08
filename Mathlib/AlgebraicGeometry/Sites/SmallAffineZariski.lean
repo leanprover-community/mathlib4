@@ -119,6 +119,7 @@ def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
 lemma mem_grothendieckTopology {U : X.AffineZariskiSite} {S : Sieve U} :
     S ∈ grothendieckTopology X U ↔
       ∀ x ∈ U.toOpens, ∃ (V : _) (f : V ⟶ U), S.arrows f ∧ x ∈ V.toOpens := by
+  rw [grothendieckTopology, Functor.mem_inducedTopology_iff_of_isCoverDense]
   apply forall₂_congr fun x hxU ↦ ⟨?_, ?_⟩
   · rintro ⟨V, f, ⟨W, g, h, hg, rfl⟩, hxV⟩
     exact ⟨W, g, hg, h.le hxV⟩
@@ -127,7 +128,7 @@ lemma mem_grothendieckTopology {U : X.AffineZariskiSite} {S : Sieve U} :
 
 instance : (toOpensFunctor X).IsDenseSubsite
     (grothendieckTopology X) (Opens.grothendieckTopology X) where
-  functorPushforward_mem_iff := Iff.rfl
+  functorPushforward_mem_iff := by simp [grothendieckTopology]
 
 /-- The presieve associated to a set of sections.
 This is a surjection, see `presieveOfSections_surjective`. -/
@@ -254,6 +255,8 @@ This is closely related to the notion of quasi-coherent `𝒪ₓ`-algebras, and 
 together once the theory of quasi-coherent `𝒪ₓ`-algebras are developed.
 -/
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- `X` is the colimit of its affine opens. See `isColimit_cocone` below. -/
 @[simps] noncomputable def cocone :
@@ -262,6 +265,7 @@ variable (X) in
   ι.app U := U.2.fromSpec
   ι.naturality {U V} f := by dsimp; rw [V.2.map_fromSpec U.2]; simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F} :
@@ -289,6 +293,7 @@ lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ
 
 @[deprecated (since := "2026-02-01")] alias PreservesLocalization := NatTrans.Coequifibered
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The relative gluing data associated to a quasi-coherent `𝒪ₓ` algebra. -/
 def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
@@ -326,12 +331,13 @@ lemma opensRange_relativeGluingData_map (F : X.AffineZariskiSiteᵒᵖ ⥤ CommR
 @[deprecated (since := "2026-02-01")]
 alias PreservesLocalization.opensRange_map := opensRange_relativeGluingData_map
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[deprecated Cover.RelativeGluingData.toBase_preimage_eq_opensRange_ι (since := "2026-02-01")]
 lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)
     (H : α.Coequifibered) (U : X.AffineZariskiSite) :
     (relativeGluingData H).toBase ⁻¹ᵁ U.1 = ((relativeGluingData H).cover.f U).opensRange := by
-  simpa using (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
+  simpa using! (relativeGluingData H).toBase_preimage_eq_opensRange_ι U
 
 @[deprecated (since := "2026-02-01")]
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
@@ -355,12 +361,12 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert (inferInstance : IsIso e.hom)
+    convert! (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)

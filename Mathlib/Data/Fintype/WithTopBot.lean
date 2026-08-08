@@ -12,13 +12,13 @@ public import Mathlib.Order.TypeTags
 # Fintype instances for `WithTop α` and `WithBot α`
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
 @[to_dual]
 instance [Fintype α] : Fintype (WithTop α) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option α)
 
 @[to_dual]
 instance [Finite α] : Finite (WithTop α) :=

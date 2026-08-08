@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
@@ -87,6 +88,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive]
+instance [LE α] [IsBotOneClass α] : IsBotOneClass (WithTop α) where
+  isBot_one x := by cases x <;> simp
+
 end One
 
 section Add
@@ -126,6 +131,7 @@ lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithTop α) := by
   rintro (_ | b) (_ | c)
@@ -259,8 +265,10 @@ instance addMonoid : AddMonoid (WithTop α) where
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0
     | ⊤, _n + 1 => ⊤
-  nsmul_zero a := by cases a <;> simp [zero_nsmul]
-  nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
+  nsmul_zero a := by simp_rw [HSMul.hSMul, SMul.smul]; cases a <;> simp [zero_nsmul]
+  nsmul_succ n a := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
 @[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
@@ -484,6 +492,7 @@ lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithBot α) := by
   rintro (_ | b) (_ | c)
@@ -629,8 +638,17 @@ end AddMonoid
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   inferInstanceAs <| AddCommMonoid (WithTop α)
 
-instance natCast [NatCast α] : NatCast (WithBot α) :=
-  ⟨fun n ↦ (n : α)⟩
+section NatCast
+variable [NatCast α]
+
+instance : NatCast (WithBot α) where natCast n := (n : α)
+
+@[to_dual (attr := simp)] lemma unbotD_natCast (d : α) (n : ℕ) : unbotD d n = n := rfl
+
+@[to_dual (attr := simp)]
+lemma unbotD_ofNat (d : α) (n : ℕ) [n.AtLeastTwo] : unbotD d ofNat(n) = ofNat(n) := rfl
+
+end NatCast
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
@@ -708,3 +726,37 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 
 end WithBot
+
+namespace AddEquiv
+
+variable {γ : Type*} [Add α] [Add β] [Add γ] (e e₁ : α ≃+ β) (e₂ : β ≃+ γ)
+
+/-- A `AddEquiv` version of `Equiv.withBotCongr`. -/
+@[to_dual (attr := simps! apply) /-- A `AddEquiv` version of `Equiv.withTopCongr`. -/]
+def withBotCongr : WithBot α ≃+ WithBot β where
+  __ := e.toEquiv.withBotCongr
+  map_add' := e.toAddHom.withBotMap.map_add'
+
+@[to_dual (attr := simp)]
+lemma coe_withBotCongr : e.withBotCongr = WithBot.map e := rfl
+
+@[to_dual (attr := simp)]
+lemma withBotCongr_toEquiv : e.withBotCongr = (e : α ≃ β).withBotCongr := rfl
+
+@[to_dual (attr := simp)]
+lemma withBotCongr_toAddHom : e.withBotCongr = (e : AddHom α β).withBotMap := rfl
+
+@[to_dual (attr := simp)]
+lemma withBotCongr_refl : (AddEquiv.refl α).withBotCongr = AddEquiv.refl _ :=
+  AddEquiv.ext <| congr_fun WithBot.map_id
+
+@[to_dual (attr := simp)]
+theorem withBotCongr_symm : e.withBotCongr.symm = e.symm.withBotCongr := rfl
+
+@[to_dual (attr := simp)]
+theorem withBotCongr_trans :
+    (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr := by
+  ext x
+  simp
+
+end AddEquiv

@@ -18,10 +18,8 @@ multiplication of bounded sets remain bounded.
 
 public section
 
-
 open Metric Set
-
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 E : Type*}
 
@@ -40,7 +38,6 @@ section DivisionRing
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
   obtain rfl | hc := eq_or_ne c 0

@@ -55,7 +55,7 @@ variable [Nontrivial R]
 theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
   suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
-    convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by simp))
+    convert! (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by simp))
   rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
   exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by simp))
 
@@ -134,7 +134,7 @@ theorem real_roots_Phi_ge (hab : b < a) : 2 ≤ Fintype.card ((Φ ℚ a b).rootS
   obtain ⟨x, y, hxy, hx, hy⟩ := real_roots_Phi_ge_aux a b hab
   have key : ↑({x, y} : Finset ℝ) ⊆ (Φ ℚ a b).rootSet ℝ := by
     simp [Set.insert_subset, mem_rootSet_of_ne q_ne_zero, hx, hy]
-  convert Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
+  convert! Fintype.card_le_of_embedding (Set.embeddingOfSubset _ _ key)
   simp only [Finset.coe_sort_coe, Fintype.card_coe, Finset.card_singleton,
     Finset.card_insert_of_notMem (mt Finset.mem_singleton.mp hxy)]
 
@@ -155,8 +155,8 @@ theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) 
   have h_irred := irreducible_Phi a b p hp hpa hpb hp2b
   apply mt (isSolvable_gal_of_irreducible · h_irred hx)
   intro h
-  refine Equiv.Perm.not_solvable _ (le_of_eq ?_)
-    (solvable_of_surjective (gal_Phi a b hab h_irred).2)
+  refine Equiv.Perm.not_isSolvable _ (le_of_eq ?_)
+    (Group.isSolvable_of_surjective (gal_Phi a b hab h_irred).2)
   rw_mod_cast [Cardinal.mk_fintype, complex_roots_Phi a b h_irred.separable]
 
 theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : x ∉ solvableByRad ℚ ℂ := by

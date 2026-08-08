@@ -32,14 +32,14 @@ private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f
 
 namespace IsNonarchimedean
 
-variable {R α : Type*} [CommRing R]
+variable {R α β F : Type*} [CommRing R] [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
+    [ZeroHomClass F β ℝ] {v : F} {l : α → β}
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero
---       for emtpy iSups), which are not known there.
+--       for empty iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
-lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
-    [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
+lemma apply_sum_le (hv : IsNonarchimedean v) {s : Finset α} :
     v (∑ i ∈ s, l i) ≤ ⨆ i : s, v (l i) := by
   classical
   induction s using Finset.induction with
@@ -52,6 +52,12 @@ lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [Nonn
     · rcases isEmpty_or_nonempty s with hs | hs
       · simpa using Real.iSup_nonneg_of_nonnegHomClass v _
       exact ciSup_le fun i ↦ Finite.le_ciSup_of_le (⟨i.val, Finset.mem_insert_of_mem i.prop⟩) le_rfl
+
+/-- The ultrametric triangle inequality for finite sums. -/
+lemma apply_sum_univ_le [Fintype α] (hv : IsNonarchimedean v) :
+    v (∑ i, l i) ≤ ⨆ i, v (l i) := by
+  grw [hv.apply_sum_le, ← cbiSup_eq_of_forall (by grind)]
+  simp
 
 end IsNonarchimedean
 
@@ -74,7 +80,6 @@ lemma AbsoluteValue.iSup_abv_linearMap_apply_le (v : AbsoluteValue K ℝ) (A : �
   simp only [map_mul]
   grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
-    dsimp only
     gcongr
     · exact Real.iSup_nonneg_of_nonnegHomClass v _
     · exact Finite.le_ciSup_of_le (j, i) le_rfl
@@ -142,12 +147,10 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_comm (iSup _), ← mul_assoc]
     exact v.iSup_abv_linearMap_apply_le A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
-    rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-      (by fun_prop (disch := assumption))]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
-    · fun_prop (disch := assumption)
-    · exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
+    rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
+    refine finprod_le_finprod (by fun_prop)
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (by fun_prop) fun v ↦ ?_
+    exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
 open Real in
 /-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
@@ -185,7 +188,7 @@ variable {K : Type*} [Field K] {ι : Type*}
 -- The "local" version of the height bound for (archimedean) absolute values.
 lemma AbsoluteValue.eval_mvPolynomial_le [Finite ι] (v : AbsoluteValue K ℝ)
     {p : MvPolynomial ι K} {N : ℕ} (hp : p.IsHomogeneous N) (x : ι → K) :
-    v (p.eval x) ≤ p.sum (fun _ c ↦ v c) * (⨆ i, v (x i)) ^ N := by
+    v (p.eval x) ≤ (AddMonoidAlgebra.coeff p).sum (fun _ c ↦ v c) * (⨆ i, v (x i)) ^ N := by
   rw [eval_eq, sum_def, Finset.sum_mul]
   grw [AbsoluteValue.sum_le]
   simp_rw [v.map_mul, v.map_prod, v.map_pow]
@@ -225,12 +228,12 @@ open AdmissibleAbsValues
 /-- The constant in the (upper) height bound on values of `p`. -/
 @[expose] noncomputable
 def mulHeightBound (p : ι' → MvPolynomial ι K) : ℝ :=
-  (archAbsVal.map fun v ↦ ⨆ j, (p j).sum (fun _ c ↦ v c)).prod *
+  (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
     ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1
 
 lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
     mulHeightBound p =
-     (archAbsVal.map fun v ↦ ⨆ j, (p j).sum (fun _ c ↦ v c)).prod *
+     (archAbsVal.map fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum (fun _ c ↦ v c)).prod *
         ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
   rfl
 
@@ -238,10 +241,9 @@ variable (K ι ι') in
 lemma max_mulHeightBound_zero_one_eq_one :
     max (mulHeightBound (0 : ι' → MvPolynomial ι K)) 1 = 1 := by
   simp only [mulHeightBound_eq, Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero,
-    Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right]
-  set_option backward.isDefEq.respectTransparency false in -- temporary measure
-  simp only [Finsupp.sum_zero_index] -- singling this out for needing the above
-  simp only [Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate, zero_pow_eq]
+    Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right, AddMonoidAlgebra.coeff_zero,
+    Finsupp.sum_zero_index, Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate,
+    sup_eq_right, zero_pow_eq]
   rcases isEmpty_or_nonempty ι'
   · split_ifs
     · simpa using finprod_zero_le_one
@@ -270,12 +272,13 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
   gcongr
   · exact finprod_nonneg fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   · exact prod_map_nonneg fun v _ ↦ iSup_nonneg fun _ ↦ sum_nonneg fun _ _ ↦ by positivity
-  · have H (v : AbsoluteValue K ℝ) (j : ι') : v (constantCoeff (p j)) ≤ sum (p j) fun _ c ↦ v c :=
+  · have H (v : AbsoluteValue K ℝ) (j : ι') :
+        v (constantCoeff (p j)) ≤ (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c :=
       single_eval_le_sum _ v.map_zero (fun _ ↦ by positivity) _
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
   · have := (Function.ne_iff.mp h).nonempty
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
     refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
     rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
@@ -302,10 +305,11 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   rcases eq_or_ne (fun j ↦ eval x (p j)) 0 with h₀ | h₀
   · grw [← le_max_right]
     simpa [h₀, mulHeight_zero] using one_le_pow₀ <| one_le_mulHeight x
-  have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c :=
+  have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c :=
     iSup_nonneg (fun j ↦ sum_nonneg' <| fun s ↦ by positivity)
   -- The following four statements are used in the `gcongr`s below.
-  have H₁ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c)).prod :=
+  have H₁ :
+     0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c)).prod :=
     prod_map_nonneg fun v _ ↦ H₀ v
   have H₂ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ i, v (x i))).prod :=
     prod_map_nonneg fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
@@ -328,19 +332,18 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     grw [v.eval_mvPolynomial_le (hp j) x]
     gcongr
     · exact HH₁ v
-    · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
+    · exact HH₂ (fun j ↦ (AddMonoidAlgebra.coeff <| p j).sum fun _ c ↦ v c) j
   · -- nonarchimedean part: reduce to "local" statement `eval_mvPolynomial_le`
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
       gcongr
       · exact HH₁ v.val
-      · grw [le_max_left (iSup ..) 1]
-        exact HH₂ (fun j ↦ max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1) j
+      · grw [← HH₂, ← le_max_left]
     · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
 
 /-- Let `K` be a field with an admissible family of absolute values (giving rise
@@ -391,8 +394,9 @@ If
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 A similar statement holds for the logarithmic height.
 
 Note that we only require the polynomial relations `∑ j, q (k, j) * p j = X k ^ (M + N)`
@@ -428,8 +432,9 @@ open AdmissibleAbsValues
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`. -/
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`. -/
 theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
@@ -458,8 +463,9 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by a positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 
 The difference to `mulHeight_eval_ge` is that the constant is not made explicit. -/
 theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -479,6 +485,7 @@ open Real in
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by an (explicit)
 constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
 theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -500,6 +507,7 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by a
 constant plus `N` times the logarithmic height of `x`.
 
@@ -531,9 +539,9 @@ namespace Height
 variable [AdmissibleAbsValues K]
 
 lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
-    mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
+    mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
-  convert mulHeight_comp_equiv finProdFinEquiv _ with i
+  convert! mulHeight_comp_equiv finProdFinEquiv _ with i
   fin_cases i <;> simp [finProdFinEquiv]
 
 open MvPolynomial
@@ -563,7 +571,7 @@ lemma mulHeight_sym2_le :
     grind
   rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
   grw [← le_max_left C 1]
-  convert hC _ with i
+  convert! hC _ with i
   fin_cases i <;> simp [p]
 
 lemma mulHeight_sym2_ge :
@@ -578,7 +586,7 @@ lemma mulHeight_sym2_ge :
   simp only [pow_one] at hC
   refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
   rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
-  convert hC p fun j ↦ ?H  with i
+  convert! hC p fun j ↦ ?H with i
   case H => fin_cases j <;> simp [p, q, Fin.sum_univ_three] <;> ring
   fin_cases i <;> simp [p]
 

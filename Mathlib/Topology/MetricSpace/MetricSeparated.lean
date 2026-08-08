@@ -63,11 +63,13 @@ lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated �
 
 lemma isSeparated_insert :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
-  pairwise_insert_of_symmetric fun _ _ ↦ by simp [edist_comm]
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+  pairwise_insert_of_symm
 
 lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
-  pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ by simp [edist_comm]) hx
+  have : Std.Symm (α := X) (ε < edist · ·) := by simp [symm_def, edist_comm]
+  pairwise_insert_of_symm_of_notMem hx
 
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
@@ -122,7 +124,7 @@ protected theorem disjoint (h : AreSeparated s t) : Disjoint s t :=
 theorem subset_compl_right (h : AreSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
   h.disjoint.le_bot ⟨hs, ht⟩
 
-@[mono]
+@[gcongr, mono]
 theorem mono {s' t'} (hs : s ⊆ s') (ht : t ⊆ t') :
     AreSeparated s' t' → AreSeparated s t := fun ⟨r, r0, hr⟩ =>
   ⟨r, r0, fun x hx y hy => hr x (hs hx) y (ht hy)⟩

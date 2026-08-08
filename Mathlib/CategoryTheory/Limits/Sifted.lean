@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.IsConnected
+public import Mathlib.CategoryTheory.Products.Associator
 /-!
 # Sifted categories
 
@@ -34,13 +35,13 @@ preserves finite products. We achieve this characterization in this file.
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
 
-@[expose] public section
+public section
 
 universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 section
 
@@ -65,10 +66,11 @@ namespace IsSifted
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Being sifted is preserved by equivalences of categories -/
 lemma isSifted_of_equiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
   letI : Final (diag D) := by
-    letI : D × D ≌ C × C := Equivalence.prod e e
+    let : D × D ≌ C × C := Equivalence.prod e e
     have sq : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
                                         exact Iso.prod (e.counitIso.app c) (e.counitIso.app c))
@@ -97,11 +99,12 @@ instance [IsSifted C] : IsConnected C :=
         · rfl)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A category with binary coproducts is sifted or empty. -/
 instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
-    haveI : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
+    have : _root_.Nonempty <| StructuredArrow (c₁, c₂) (diag C) :=
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
@@ -116,6 +119,20 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
 /-- A nonempty category with binary coproducts is sifted. -/
 instance isSifted_of_hasBinaryCoproducts_and_nonempty [_root_.Nonempty C] [HasBinaryCoproducts C] :
     IsSifted C where
+
+section Prod
+
+variable {D : Type u₁} [Category.{v₁} D]
+
+instance [IsSiftedOrEmpty C] [IsSiftedOrEmpty D] :
+    IsSiftedOrEmpty (C × D) :=
+  let e : (C × C) × (D × D) ≌ (C × D) × (C × D) := prod.prodμ ..
+  final_of_natIso (Iso.refl ((Functor.diag C).prod (Functor.diag D) ⋙ e.functor))
+
+/-- The product of two sifted categories is sifted. -/
+instance prod_isSifted [IsSifted C] [IsSifted D] : IsSifted (C × D) where
+
+end Prod
 
 end IsSifted
 
@@ -146,13 +163,15 @@ open scoped MonoidalCategory.ExternalProduct
 variable (X Y : C ⥤ Type u)
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Through the isomorphisms `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` and
 `externalProductCompDiagIso`, the comparison map `colimit.pre (X ⊠ Y) (diag C)` identifies with the
 product comparison map for the colimit functor. -/
 lemma factorization_prodComparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre (X ⊠ Y) (diag C) ≫
-        (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <| curriedTensor <| Type u).hom =
+        (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <|
+          curriedTensor <| Type u).hom =
     CartesianMonoidalCategory.prodComparison colim X Y := by
   apply colimit.hom_ext
   intro j
@@ -220,7 +239,8 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
       HasColimit.isoOfNatIso <| isoWhiskerLeft _ <| .refl _
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso <| .refl _
     _ ≅ (colimit _) ⊗ (colimit _) := CartesianMonoidalCategory.prodComparisonIso colim _ _
-    _ ≅ PUnit ⊗ PUnit := (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
+    _ ≅ PUnit ⊗ PUnit :=
+      (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
     _ ≅ PUnit := λ_ _
 
 lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts

@@ -18,7 +18,7 @@ instance on `DFinsupp π`.
 As an application, `σ →₀ R` has a `Small.{v}` instance if `σ` and `R` have one.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

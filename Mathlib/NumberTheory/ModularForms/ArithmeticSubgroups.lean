@@ -5,10 +5,9 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -71,6 +70,20 @@ instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ ⊓ Γ') where
 
 instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ' ⊓ Γ) where
   det_eq hg := HasDetOne.det_eq hg.2
+
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetOne Γ] (g : ConjAct <| GL n R) :
+    HasDetOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetOne.det_eq hh
+
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetPlusMinusOne Γ] (g : ConjAct <| GL n R) :
+    HasDetPlusMinusOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetPlusMinusOne.det_eq hh
 
 end det_typeclasses
 
@@ -135,11 +148,18 @@ end Subgroup
 
 namespace Matrix.SpecialLinearGroup
 
+/-- The image of `SL(n, ℤ)` in `GL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
-  (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
+  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.1).toHomeomorph.discreteTopology
+
+/-- The image of `SL(n, ℤ)` in `SL(n, ℝ)` is discrete. -/
+instance discreteSpecialLinearGroupIntRangeSL :
+    DiscreteTopology (SpecialLinearGroup.map (Int.castRingHom ℝ) (n := n)).range := by
+  refine (Topology.IsEmbedding.toHomeomorph ?_).discreteTopology
+  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.1
 
 lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
-  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
+  isClosedEmbedding_mapGL Real.isClosedEmbedding_intCast
 
 end Matrix.SpecialLinearGroup
 
@@ -214,9 +234,9 @@ variable {R : Type*} [CommRing R]
   rintro g (hg | hg)
   · exact HasDetPlusMinusOne.det_eq hg
   · by_cases hn : Even (Fintype.card n)
-    · convert HasDetPlusMinusOne.det_eq hg using 1 <;>
+    · convert! HasDetPlusMinusOne.det_eq hg using 1 <;>
         simp [Units.ext_iff, det_neg, hn]
-    · convert (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
+    · convert! (HasDetPlusMinusOne.det_eq hg).symm using 1 <;>
         simp [Units.ext_iff, det_neg, Nat.not_even_iff_odd.mp hn, neg_eq_iff_eq_neg]
 
 lemma Subgroup.hasDetOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} (hn : Even (Fintype.card n)) :

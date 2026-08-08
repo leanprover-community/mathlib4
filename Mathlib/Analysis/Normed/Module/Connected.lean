@@ -71,7 +71,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c + x} ∩ s = ∅ := by
@@ -81,7 +81,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
+    apply countable_ofPred_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c - x} ∩ s = ∅ := by
@@ -91,22 +91,22 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     rw [sub_eq_add_neg _ x]
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne _ htt'.symm
-    convert hy.units_smul ![-1, 1]
+    convert! hy.units_smul ![-1, 1]
     simp [← List.ofFn_inj]
   obtain ⟨t, ht⟩ : Set.Nonempty ({t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty}
       ∪ {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty})ᶜ := ((A.union B).dense_compl ℝ).nonempty
   let z := c + t • y
-  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
+  simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_ofPred_eq, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert ht.2
+    convert! ht.2
     exact Ia.symm
   have JB : JoinedIn sᶜ b z := by
     apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
-    convert ht.1
+    convert! ht.1
     exact Ib.symm
   exact JA.trans JB.symm
 

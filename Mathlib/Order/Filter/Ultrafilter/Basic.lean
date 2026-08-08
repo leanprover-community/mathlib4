@@ -39,10 +39,11 @@ theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finit
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
   simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_exists_mem_iff {is : Set β} {P : β → α → Prop} (his : is.Finite) :
     (∀ᶠ i in f, ∃ a ∈ is, P a i) ↔ ∃ a ∈ is, ∀ᶠ i in f, P a i := by
   simp only [Filter.Eventually, Ultrafilter.mem_coe]
-  convert f.finite_biUnion_mem_iff his (s := P) with i
+  convert! f.finite_biUnion_mem_iff his (s := P) with i
   aesop
 
 lemma eventually_exists_iff [Finite β] {P : β → α → Prop} :
@@ -77,13 +78,10 @@ namespace Filter
 
 open Ultrafilter
 
+@[to_dual]
 lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
     (atTop : Filter α) = pure x :=
   { top := x, le_top := hx : OrderTop α }.atTop_eq
-
-lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
-    (atBot : Filter α) = pure x :=
-  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 
 /-- The `tendsto` relation can be checked on ultrafilters. -/
 theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :

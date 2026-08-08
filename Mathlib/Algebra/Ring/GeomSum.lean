@@ -117,7 +117,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :
@@ -152,7 +152,7 @@ lemma geom_sum₂_mul_of_ge (hxy : y ≤ x) (n : ℕ) :
 lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
-  convert geom_sum₂_mul_of_ge hxy n using 3
+  convert! geom_sum₂_mul_of_ge hxy n using 3
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
@@ -226,7 +226,7 @@ theorem dvd_pow_pow_sub_self_of_dvd {r : R} {p a b : ℕ} (h : a ∣ b) :
   rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
     ← mul_sub_one, ← mul_sub_one]
   refine mul_dvd_mul_left _ <| dvd_pow_sub_one_of_dvd <| Int.natCast_dvd_natCast.mp ?_
-  rw [Nat.cast_sub (hp a), Nat.cast_sub (hp b), Nat.cast_pow, Nat.cast_pow]
+  push_cast [hp a, hp b]
   exact dvd_pow_sub_one_of_dvd h
 
 lemma geom_sum_mul (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
@@ -284,7 +284,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by
@@ -302,10 +302,6 @@ variable [CommRing R]
 theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
     (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
   grind [geom_sum_mul]
-
-@[deprecated (since := "2025-10-31")]
-protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
-  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
 
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=

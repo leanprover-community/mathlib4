@@ -92,7 +92,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     { toFun := stoneCechExtend f.hom.2
       continuous_toFun := continuous_stoneCechExtend f.hom.2 }
   left_inv := by
-    rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
@@ -100,7 +100,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
       apply continuous_stoneCechUnit
   right_inv := by
-    rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext
     exact congr_fun (stoneCechExtend_extends hf) _
 
@@ -144,7 +144,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j } =
             ⋂ (i : J) (j : J) (f : i ⟶ j), { u | F.map f (u i) = u j } := by
           ext1
-          simp only [Set.mem_iInter, Set.mem_setOf_eq]
+          simp only [Set.mem_iInter, Set.mem_ofPred_eq]
         rw [this]
         apply isClosed_iInter
         intro i
@@ -192,8 +192,8 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_isClosed hC hD hCD
-    haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
-    haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
+    have : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
+    have : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
     let g : Y ⟶ Z := ofHom _
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
@@ -208,7 +208,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget CompHaus).epi_of_epi_map
 
 end CompHaus

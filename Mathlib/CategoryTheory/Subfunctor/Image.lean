@@ -37,11 +37,12 @@ def range (p : F' ⟶ F) : Subfunctor F where
   obj U := Set.range (p.app U)
   map := by
     rintro U V i _ ⟨x, rfl⟩
-    exact ⟨_, FunctorToTypes.naturality  _ _ p i x⟩
+    exact ⟨_, NatTrans.naturality_apply p i x⟩
 
 variable (F) in
 lemma range_id : range (𝟙 F) = ⊤ := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma range_ι (G : Subfunctor F) : range G.ι = G := by aesop
 
@@ -51,13 +52,14 @@ section lift
 
 variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
-@[simps!]
+@[simps! app]
 def lift : F' ⟶ G.toFunctor where
-  app U x := ⟨f.app U x, hf U (by simp)⟩
+  app U := ↾fun x => ⟨f.app U x, hf U (by simp)⟩
   naturality _ _ g := by
     ext x
-    simpa [Subtype.ext_iff] using FunctorToTypes.naturality _ _ f g x
+    simpa [Subtype.ext_iff, -NatTrans.naturality_apply] using NatTrans.naturality_apply f g x
 
 @[reassoc (attr := simp)]
 theorem lift_ι : lift f hf ≫ G.ι = f := rfl
@@ -77,17 +79,19 @@ def toRange :
 @[reassoc (attr := simp)]
 lemma toRange_ι : toRange p ≫ (range p).ι = p := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma range_toRange : range (toRange p) = ⊤ := by
   ext i ⟨x, hx⟩
   dsimp at hx ⊢
   simp only [Set.mem_range, Set.mem_univ, iff_true]
-  simp only [Set.mem_range] at hx
+  simp only [Set.range] at hx
   obtain ⟨y, rfl⟩ := hx
   exact ⟨y, rfl⟩
 
@@ -126,7 +130,7 @@ def image : Subfunctor F' where
   obj i := (f.app i) '' (G.obj i)
   map := by
     rintro Δ Δ' φ _ ⟨x, hx, rfl⟩
-    exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
+    exact ⟨F.map φ x, G.map φ hx, by apply NatTrans.naturality_apply⟩
 
 lemma image_top : (⊤ : Subfunctor F).image f = range f := by aesop
 
@@ -149,7 +153,7 @@ section preimage
 def preimage (G : Subfunctor F) (p : F' ⟶ F) : Subfunctor F' where
   obj n := p.app n ⁻¹' (G.obj n)
   map f := (Set.preimage_mono (G.map f)).trans (by
-    simp only [Set.preimage_preimage, FunctorToTypes.naturality _ _ p f]
+    simp only [Set.preimage_preimage, NatTrans.naturality_apply]
     rfl)
 
 @[simp]
@@ -190,33 +194,6 @@ lemma preimage_image_of_epi (G : Subfunctor F) (p : F' ⟶ F) [hp : Epi p] :
     exact ⟨y, hx, rfl⟩
 
 end preimage
-
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range := range
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_id := range_id
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_ι := range_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.lift := lift
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.lift_ι := lift_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange := toRange
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange_ι := toRange_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toRange_app_val := toRange_app_val
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_toRange := range_toRange
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.epi_iff_range_eq_top := epi_iff_range_eq_top
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_eq_top := range_eq_top
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_comp_le := range_comp_le
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image := image
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_top := image_top
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_iSup := image_iSup
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_comp := image_comp
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.range_comp := range_comp
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage := preimage
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_id := preimage_id
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_comp := preimage_comp
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.image_le_iff := image_le_iff
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.fromPreimage := fromPreimage
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.fromPreimage_ι := fromPreimage_ι
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_eq_top_iff := preimage_eq_top_iff
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.preimage_image_of_epi :=
-  preimage_image_of_epi
 
 end Subfunctor
 

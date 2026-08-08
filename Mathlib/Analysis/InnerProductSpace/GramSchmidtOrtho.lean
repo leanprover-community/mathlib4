@@ -39,7 +39,7 @@ and outputs a set of orthogonal vectors which have the same span.
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -53,6 +53,8 @@ noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).starProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
+
+variable [WellFoundedLT ι]
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
@@ -115,7 +117,7 @@ theorem gramSchmidt_inv_triangular (v : ι → E) {i j : ι} (hij : i < j) :
   rw [gramSchmidt_def'' 𝕜 v]
   simp only [inner_add_right, inner_sum, inner_smul_right]
   set b : ι → E := gramSchmidt 𝕜 v
-  convert zero_add (0 : 𝕜)
+  convert! zero_add (0 : 𝕜)
   · exact gramSchmidt_orthogonal 𝕜 v hij.ne'
   apply Finset.sum_eq_zero
   rintro k hki'
@@ -175,7 +177,7 @@ theorem gramSchmidt_of_orthogonal {f : ι → E} (hf : Pairwise (⟪f ·, f ·�
     intro j hj
     rw [Submodule.starProjection_apply, Submodule.coe_eq_zero]
     suffices span 𝕜 (f '' Set.Iic j) ⟂ 𝕜 ∙ f i by
-      apply orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
+      apply orthogonalProjectionOnto_apply_of_mem_orthogonal
       rw [mem_orthogonal_singleton_iff_inner_left, ← mem_orthogonal_singleton_iff_inner_right]
       exact this (gramSchmidt_mem_span 𝕜 f (le_refl j))
     rw [isOrtho_span]
@@ -362,14 +364,18 @@ theorem gramSchmidtOrthonormalBasis_inv_triangular' {i j : ι} (hij : i < j) :
 /-- Given an indexed family `f : ι → E` of vectors in an inner product space `E`, for which the
 size of the index set is the dimension of `E`, the matrix of coefficients of `f` with respect to the
 orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-triangular. -/
-theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
-    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
+theorem gramSchmidtOrthonormalBasis_inv_isUpperTriangular :
+    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).IsUpperTriangular := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
+
+@[deprecated (since := "2026-07-30")]
+alias gramSchmidtOrthonormalBasis_inv_blockTriangular :=
+  gramSchmidtOrthonormalBasis_inv_isUpperTriangular
 
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
-  convert Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
+  convert! Matrix.det_of_isUpperTriangular (gramSchmidtOrthonormalBasis_inv_isUpperTriangular h f)
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 
 end OrthonormalBasis

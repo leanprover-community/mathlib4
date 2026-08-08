@@ -46,6 +46,7 @@ set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, false ∈ p k
 
+set_option linter.defProp false in
 set_option backward.privateInPublic true in
 private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFounded (lbp p) :=
   ⟨by
@@ -178,6 +179,7 @@ theorem of_eq_tot {f : ℕ →. ℕ} {g : ℕ → ℕ} (hf : Nat.Partrec f) (H :
     Nat.Partrec g :=
   hf.of_eq fun n => eq_some_iff.2 (H n)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
   induction hf with
   | zero => exact zero
@@ -201,6 +203,7 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec f := by
 protected theorem some : Nat.Partrec some :=
   of_primrec Primrec.id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem none : Nat.Partrec fun _ => none :=
   (of_primrec (Nat.Primrec.const 1)).rfind.of_eq fun _ =>
     eq_none_iff.2 fun _ ⟨h, _⟩ => by simp at h
@@ -211,6 +214,7 @@ theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partre
   ((prec hg hh).comp (pair Partrec.some hf)).of_eq fun a =>
     ext fun s => by simp [Seq.seq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ppred : Nat.Partrec fun n => ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
@@ -236,6 +240,7 @@ def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f 
 
 /-- Computable functions `α → σ` between `Primcodable` types:
   a function is computable if and only if it is partially recursive (as a partial function) -/
+@[wikidata Q1148456]
 def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 
@@ -397,6 +402,7 @@ theorem const' (s : Part σ) : Partrec fun _ : α => s :=
   haveI := Classical.dec s.Dom
   Decidable.Partrec.const' s
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f) (hg : Partrec₂ g) :
     Partrec fun a => (f a).bind (g a) :=
   (hg.comp (Nat.Partrec.some.pair hf)).of_eq fun n => by
@@ -436,7 +442,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
-  ⟨fun h => by simpa using Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
+  ⟨fun h => by simpa using! Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
     fun h => h.comp Primrec.unpair.to_comp⟩
 
 theorem unpaired' {f : ℕ → ℕ →. ℕ} : Nat.Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
@@ -490,6 +496,7 @@ variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Computable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => Nat.rfind (p a) :=
   (Nat.Partrec.rfind <|
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
@@ -551,6 +558,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
   ⟨fun h => encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Computable₂ fun a n => (decode (α := β) n).bind (f a)) ↔ Computable₂ f :=
   ⟨fun hf =>
@@ -578,7 +586,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
 
 theorem map_decode_iff {f : α → β → σ} :
     (Computable₂ fun a n => (decode (α := β) n).map (f a)) ↔ Computable₂ f := by
-  convert (bind_decode_iff (f := fun a => Option.some ∘ f a)).trans option_some_iff
+  convert! (bind_decode_iff (f := fun a => Option.some ∘ f a)).trans option_some_iff
   apply Option.map_eq_bind
 
 theorem nat_rec {f : α → ℕ} {g : α → σ} {h : α → ℕ × σ → σ} (hf : Computable f) (hg : Computable g)
@@ -608,7 +616,7 @@ theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : C
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Computable f) (hg : Computable₂ g) :
     Computable fun a => (f a).map (g a) := by
-  convert option_bind hf (option_some.comp₂ hg)
+  convert! option_bind hf (option_some.comp₂ hg)
   apply Option.map_eq_bind
 
 theorem option_getD {f : α → Option β} {g : α → β} (hf : Computable f) (hg : Computable g) :
@@ -676,6 +684,7 @@ theorem option_some_iff {f : α →. σ} : (Partrec fun a => (f a).map Option.so
   ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by simp [Part.bind_assoc, bind_some_eq_map],
     fun hf => hf.map (option_some.comp snd).to₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem optionCasesOn_right {o : α → Option β} {f : α → σ} {g : α → β →. σ} (ho : Computable o)
     (hf : Computable f) (hg : Partrec₂ g) :
     @Partrec _ σ _ _ fun a => Option.casesOn (o a) (Part.some (f a)) (g a) :=
@@ -726,7 +735,18 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
         rcases am with ⟨a₂, am₂, fa₂⟩
         exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `obtain`/`specialize`. It is not yet clear whether this is due to defeq abuse
+    in Mathlib or a problem in the new canonicalizer; a minimization would help. The original
+    proof was:
+    ```
     have := h₁ (Nat.lt_succ_self _)
+    grind [mem_unique, PFun.mem_fix_iff]
+    ```
+    -/
+    obtain ⟨c, hc⟩ := h₁ (Nat.lt_succ_self _)
+    specialize this _ _ hc
     grind [mem_unique, PFun.mem_fix_iff]
   · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
         ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
@@ -740,8 +760,13 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+      #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+      (replacing grind's canonicalizer with a type-directed normalizer),
+      the `clear_value F` was not required here. -/
+      clear_value F
       grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
   let F : α → ℕ →. σ ⊕ α := fun a n =>
     n.rec (some (Sum.inr a)) fun _ IH => IH.bind fun s => Sum.casesOn s (fun _ => Part.some s) f

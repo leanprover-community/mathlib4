@@ -16,7 +16,7 @@ This file contains definitions that build on top of the group action definitions
 `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists LinearMap
 

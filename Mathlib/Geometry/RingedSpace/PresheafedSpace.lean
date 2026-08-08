@@ -145,6 +145,7 @@ theorem id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem id_c_app (X : PresheafedSpace C) (U) :
     (𝟙 X : X ⟶ X).c.app U = X.presheaf.map (𝟙 U) := by
@@ -177,6 +178,8 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
@@ -198,6 +201,7 @@ section Iso
 
 variable {X Y : PresheafedSpace C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of `PresheafedSpace`s is a homeomorphism of the underlying space, and a
 natural transformation between the sheaves.
@@ -220,6 +224,7 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
@@ -229,7 +234,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom_inv_id := by
     ext U
     rw [NatTrans.comp_app]
-    simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
+    simpa using! congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
   inv_hom_id := by
     ext U
     dsimp
@@ -283,7 +288,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
 set_option backward.isDefEq.respectTransparency false in
 instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
-  haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor
   intro Z g₁ g₂ eq
   ext1
@@ -295,7 +300,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.injective
-    haveI :
+    have :
       IsIso (hf.isOpenMap.adjunction.counit.app (unop (op (hf.functor.obj V)))) :=
         NatIso.isIso_app_of_isIso
           (whiskerLeft hf.functor hf.isOpenMap.adjunction.counit) V
@@ -309,6 +314,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 
+set_option backward.defeqAttrib.useBackward true in
 theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.isOpenEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
@@ -387,6 +393,7 @@ variable {D : Type*} [Category* D]
 
 namespace Functor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
 giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
@@ -425,6 +432,7 @@ end Functor
 
 namespace NatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation induces a natural transformation between the `map_presheaf` functors.
 -/

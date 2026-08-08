@@ -132,9 +132,6 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
 theorem factorization_eq_zero_of_not_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
 
-@[deprecated (since := "2025-10-24")]
-alias factorization_eq_zero_of_non_prime := factorization_eq_zero_of_not_prime
-
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
   factorization_eq_zero_of_not_prime _ not_prime_zero
