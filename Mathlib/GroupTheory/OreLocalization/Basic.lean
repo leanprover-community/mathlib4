@@ -216,6 +216,7 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
 @[to_additive]
 private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R) (huv : u * r₁ = v * s₂) :
     oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) = v • r₂ /ₒ (u * s₁) := by
+  -- Porting note: `assoc_rw` was not ported yet
   have h₀ := ore_eq r₁ s₂; set v₀ := oreNum r₁ s₂; set u₀ := oreDenom r₁ s₂
   rcases oreCondition (u₀ : R) u with ⟨r₃, s₃, h₃⟩
   have :=
