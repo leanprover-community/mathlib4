@@ -777,11 +777,13 @@ theorem map_reindex_symm (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (e : ι �
 
 end reindex
 
+variable (ι) {s}
+
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
-  toFun := lift (constOfIsEmpty _ _ 1)
+  toFun := lift (constOfIsEmpty (.id R) s 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
     refine x.induction_on ?_ ?_
@@ -832,13 +834,13 @@ theorem subsingletonEquiv_symm_apply (x : s i₀) :
     (subsingletonEquiv i₀).symm x = tprod R (fun i ↦ update (0 : (j : ι) → s j) i₀ x i) := rfl
 
 @[simp]
-lemma subsingletonEquiv_symm_apply' (x : M) :
-  (subsingletonEquiv (s := fun _ ↦ M) i₀).symm x = (tprod R fun _ ↦ x) := by
+lemma subsingletonEquiv_symm_apply' (x : N) :
+  (subsingletonEquiv (s := fun _ ↦ N) i₀).symm x = (tprod S fun _ ↦ x) := by
   simp [LinearEquiv.symm_apply_eq, subsingletonEquiv_apply_tprod]
 
 end subsingleton
 
-variable (R M)
+variable (R)
 
 section tmulEquivDep
 
@@ -882,22 +884,25 @@ end tmulEquivDep
 
 section tmulEquiv
 
+variable [Module R N]
+
+variable (N) in
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type.
 
 See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
 def tmulEquiv :
-    (⨂[R] (_ : ι), M) ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
-  tmulEquivDep R (fun _ ↦ M)
+    (⨂[R] (_ : ι), N) ⊗[R] (⨂[R] (_ : ι₂), N) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), N :=
+  tmulEquivDep R (fun _ ↦ N)
 
 @[simp]
-theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
-    tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] (⨂ₜ[R] i, b i)) = ⨂ₜ[R] i, Sum.elim a b i := by
+theorem tmulEquiv_apply (a : ι → N) (b : ι₂ → N) :
+    tmulEquiv R N ((⨂ₜ[R] i, a i) ⊗ₜ[R] (⨂ₜ[R] i, b i)) = ⨂ₜ[R] i, Sum.elim a b i := by
   simp [tmulEquiv, Sum.elim]
 
 @[simp]
-theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :
-    (tmulEquiv R M).symm (⨂ₜ[R] i, a i) =
+theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → N) :
+    (tmulEquiv R N).symm (⨂ₜ[R] i, a i) =
       (⨂ₜ[R] i, a (Sum.inl i)) ⊗ₜ[R] (⨂ₜ[R] i, a (Sum.inr i)) := by
   simp [tmulEquiv]
 
