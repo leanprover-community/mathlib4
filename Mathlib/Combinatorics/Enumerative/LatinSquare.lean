@@ -268,7 +268,7 @@ lemma LatinRectangle.row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintyp
   exact hrow
 
 /-- The number of columns that do not contain a given entry x is equal to n-k. -/
-lemma LatinRectangle.forall_card_in_eq_card {k n : Type*} [Fintype n]
+lemma LatinRectangle.card_symbolsNotIn_eq {k n : Type*} [Fintype n]
     [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
   ∀ x, (Finset.card {j : n | x ∈ (symbolsNotIn A) j}) = Fintype.card n - Fintype.card k := by
     classical
@@ -350,6 +350,22 @@ lemma LatinRectangle.forall_card_in_eq_card {k n : Type*} [Fintype n]
     simp [h_union_card, h_As_card, h_intersect] at h_card
     lia
 
+
+open Classical in
+/-- At most n-k columns that do not contain a given entry x -/
+lemma LatinRectangle.card_symbolsNotIn_le {k n : Type*} [Fintype n]
+    [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
+    ∀ x, ∀ (t : Finset n),
+    (Finset.card {j : n | j ∈ t ∧ x ∈ (symbolsNotIn A) j}) ≤ Fintype.card n - Fintype.card k := by
+  let B := symbolsNotIn A
+  intro x t
+  have h_sub : ({j | j ∈ t ∧ x ∈ B j} : Finset n) ⊆ ({j | x ∈ B j} : Finset n) := by
+    simp [Finset.subset_iff]
+  have h' := Finset.card_le_card (s := {j | j ∈ t ∧ x ∈ B j}) (t := {j | x ∈ B j})
+  have hx := LatinRectangle.card_symbolsNotIn_eq (n := n) (k := k) (α := α) A h
+  rw [hx] at h'
+  exact h' h_sub
+
 /-- A non-square `LatinRectangle k n α` can be extended by one row to a new Latin rectangle. -/
 theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [Fintype n]
     [Fintype k] [Nonempty k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n)
@@ -359,17 +375,9 @@ theorem LatinRectangle.exists_isSubrect_of_card_eq_card_add_one {k n : Type*} [F
   let B := symbolsNotIn A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) :=
     LatinRectangle.card_symbols_not_in A j
-  have exactly_n_minus_k_cols_without_x := LatinRectangle.forall_card_in_eq_card (n := n) (k := k)
+  have exactly_n_minus_k_cols_without_x := LatinRectangle.card_symbolsNotIn_eq (n := n) (k := k)
     (α := α) A h
-  have pre_property_H : ∀ x, ∀ (t : Finset n),
-    (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ Fintype.card n - Fintype.card k := by
-    intro x t
-    have h : ({j | j ∈ t ∧ x ∈ B j} : Finset n) ⊆ ({j | x ∈ B j} : Finset n) := by
-      simp [Finset.subset_iff]
-    have h' := Finset.card_le_card (s := {j | j ∈ t ∧ x ∈ B j}) (t := {j | x ∈ B j})
-    have hx := exactly_n_minus_k_cols_without_x x
-    rw [hx] at h'
-    exact h' h
+  have pre_property_H := LatinRectangle.card_symbolsNotIn_le (n := n) (k := k) (α := α) A h
   let halls := hallMatchingsOn.nonempty (B)
     (forall_finset_card_le_card_biUnion h Bj_size pre_property_H) (Finset.univ)
   set f := Classical.choice halls with hx
