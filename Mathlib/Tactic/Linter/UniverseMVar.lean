@@ -5,6 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
+meta import all Lean.Elab.BuiltinCommand
 meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
@@ -25,15 +26,29 @@ public register_option linter.universeMVarInVariable : Bool :=
 
 namespace universeMVarInVariableLinter
 
-open Parser.Term in
-/- Returns `True` if the binder has no type annotation (this happens e.g when
-updating a binder annotation) -/
-private def isTypelessBinder : TSyntax ``Parser.Term.bracketedBinder → Bool
-  | `(bracketedBinderF|($_*))
-  | `(bracketedBinderF|{$_*})
-  | `(bracketedBinderF|⦃$_*⦄)
-  | `(bracketedBinderF|[$_]) => False
-  | _ => True
+open Meta Term Parser.Term
+
+/-- Open scopes and remove the binders that are binder updates. -/
+private def pruneUpdate (binder : TSyntax ``Parser.Term.bracketedBinder) :
+    CommandElabM (Array (TSyntax ``Parser.Term.bracketedBinder)) := do
+  let some (binderIds, binderInfo) := typelessBinder? binder | return #[binder]
+  let varDecls := (← getScope).varDecls
+  let mut binderIds := binderIds
+  -- Go through declarations in reverse to respect shadowing
+  for varDecl in varDecls.reverse do
+    let ids ← match varDecl with
+      | `(bracketedBinderF|($ids* $[: $_]? $(_)?)) => pure ids
+      | `(bracketedBinderF|{$ids* $[: $_]?}) => pure ids
+      | `(bracketedBinderF|⦃$ids* $[: $_]?⦄) => pure ids
+      | `(bracketedBinderF|[$id : $_]) => pure #[⟨id⟩]
+      | _ => continue
+    binderIds := binderIds.filter fun id' => ¬ containsId ids id'
+  binderIds.mapM fun binderId =>
+    match binderInfo with
+      | .default => `(bracketedBinderF| ($binderId))
+      | .implicit => `(bracketedBinderF| {$binderId})
+      | .strictImplicit => `(bracketedBinderF| {{$binderId}})
+      | .instImplicit => throwUnsupportedSyntax
 
 open Meta Term in
 /-- Lint on `variable (foo : Bar)`, and emits a warning if `Bar` has
@@ -42,13 +57,13 @@ def universeMVarInVariable : Linter where run := withSetOptionIn fun stx => do
   match stx with
   | `(variable $[$x:bracketedBinder]*)
   | `(variable $[$x:bracketedBinder]* in $t) =>
-    for binder in x do
-      if !(isTypelessBinder binder) then
-      runTermElabM <| fun f ↦ elabBinder binder fun s => do
-        let v ← instantiateMVars <| ← inferType s
-        if v.hasLevelMVar then
-          logLint linter.universeMVarInVariable binder
-            m!"type of variable contains universe metavariable! {v}"
+    let y ← x.flatMapM pruneUpdate
+    runTermElabM <| fun f ↦ elabBindersEx y fun b => do
+      for (stx, e) in b do
+      let v ← instantiateMVars <| ← inferType e
+      if v.hasLevelMVar then
+        logLint linter.universeMVarInVariable stx
+          m!"type of variable contains universe metavariable! {v}"
   | _ => return
 
 initialize addLinter universeMVarInVariable
