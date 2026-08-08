@@ -197,7 +197,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have hA : A ∈ s := IsG2.pairingIn_mem_zero_one_three P j i (P.root.injective.ne_iff.mpr hij.symm)
     (b.root_ne_neg_of_ne hj hi hij.symm)
   subst s
-  simp only [mem_insert_iff, mem_singleton h₀ h₁ h₂ h₃ hA
+  simp only [mem_insert_iff, mem_singleton] at h₀ h₁ h₂ h₃ hA
   rcases hA with hA | hA | hA | hA | hA <;> rw [hA] at h₀ h₁ h₂ h₃ <;> lia
 
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/

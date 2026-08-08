@@ -213,7 +213,7 @@ theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
     IntegrableOn f {x} μ ↔ ‖f x‖ₑ = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
-    simp only [mem_singletona]
+    simp only [mem_singleton.1 ha]
   rw [IntegrableOn, integrable_congr this, integrable_const_iff_enorm, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
   exact hfx

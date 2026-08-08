@@ -74,7 +74,7 @@ lemma meromorphicOrderAt_eq_top_iff :
   simp only [meromorphicOrderAt, hf, ↓reduceDIte, sub_eq_top_iff, ENat.map_eq_top_iff,
     WithTop.natCast_ne_top, or_false]
   by_cases h : analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
-  · simp only [h, eventually_nhdsWithin_iff, mem_compl_iff, mem_singletonue_iff]
+  · simp only [h, eventually_nhdsWithin_iff, mem_compl_iff, mem_singleton, true_iff]
     rw [analyticOrderAt_eq_top] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
@@ -714,7 +714,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
           apply Filter.Eventually.frequently
           rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
           use t' \ {z.1}, fun y h₁y h₂y ↦ h₁t' y h₁y.1 h₁y.2, h₂t'.sdiff isClosed_singleton, hw,
-            mem_singleton.2 (Subtype.coe_ne_coe.mpr h₁w)
+            mem_singleton.not.2 (Subtype.coe_ne_coe.mpr h₁w)
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
     intro z hz
@@ -725,7 +725,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     rw [meromorphicOrderAt_eq_top_iff, eventually_nhdsWithin_iff, eventually_nhds_iff] at hz
     obtain ⟨t', h₁t', h₂t', h₃t'⟩ := hz
     use Subtype.val ⁻¹' t'
-    simp only [mem_compl_iff, mem_singletonOpen_induced h₂t', mem_preimage,
+    simp only [mem_compl_iff, mem_singleton, isOpen_induced h₂t', mem_preimage,
       h₃t', and_self, and_true]
     intro w hw
     simp only [mem_ofPred_eq]
@@ -738,7 +738,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     constructor
     · exact h₂t'.sdiff isClosed_singleton
     · apply (mem_sdiff w).1
-      exact ⟨hw, mem_singleton.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+      exact ⟨hw, mem_singleton.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 @[deprecated (since := "2026-07-09")]
 alias isClopen_setOf_meromorphicOrderAt_eq_top := isClopen_setOfPred_meromorphicOrderAt_eq_top

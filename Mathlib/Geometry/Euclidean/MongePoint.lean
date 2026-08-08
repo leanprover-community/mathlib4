@@ -338,7 +338,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
       (s.points i₁ -ᵥ ·) '' s.points '' (Set.univ \ {i₁}) := by
     rw [Set.image_image]
     ext x
-    simp_rw [Set.mem_iUnion, Set.mem_image, mem_singletonm_sdiff_singleton]
+    simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton, Set.mem_sdiff_singleton]
     constructor
     · rintro ⟨i, rfl⟩
       use i, ⟨Set.mem_univ _, i.property.symm⟩
@@ -525,7 +525,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
   have hui : ({i₃}ᶜ : Set _) = {i₁, i₂} := by grind
   rw [hui, Set.image_insert_eq, Set.image_singleton]
-  exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (mem_singleton_self _))
+  exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _)
+    (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))
 
 /-- Suppose we are given a triangle `t₁`, and replace one of its
 vertices by its orthocenter, yielding triangle `t₂` (with vertices not
@@ -622,7 +623,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     · rw [← h₃,
         dist_reflection_eq_of_mem _
           (mem_affineSpan ℝ
-            (Set.mem_image_of_mem _ (Set.mem_insert_of_mem _ (mem_singleton_self _))))]
+            (Set.mem_image_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))))]
       exact t.dist_circumcenter_eq_circumradius _
   · use t.circumcenter, t.circumcenter_mem_affineSpan
     intro p₁ hp₁

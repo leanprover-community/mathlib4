@@ -518,7 +518,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
   by_cases hc : Collinear ℝ ({p₁, p₂, p₄} : Set P)
   · by_cases he : p₁ = p₄
     · rw [he, Set.insert_eq_self.2
-        (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (mem_singleton_self _)))]
+        (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _)))]
       by_cases hl : Collinear ℝ ({p₂, p₃, p₄} : Set P); · exact Or.inr hl
       rw [or_iff_left hl]
       let t : Affine.Triangle ℝ P := ⟨![p₂, p₃, p₄], affineIndependent_iff_not_collinear_set.2 hl⟩
@@ -531,7 +531,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
     refine Or.inr ?_
     rw [Set.insert_comm p₁ p₂] at hc
     rwa [Set.insert_comm p₁ p₂, hc'.collinear_insert_iff_of_ne (Set.mem_insert _ _)
-      (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (mem_singleton_self _))) he]
+      (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))) he]
   · exact Or.inl (cospherical_of_two_zsmul_oangle_eq_of_not_collinear h hc)
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral
