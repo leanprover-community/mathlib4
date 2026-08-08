@@ -925,7 +925,9 @@ instance [Module.IsTorsionFree S N₂] : Module.IsTorsionFree S (MultilinearMap 
 
 variable (S)
 
-/-- `LinearMap.compMultilinearMap` as an `S`-linear map. -/
+/-- `LinearMap.compMultilinearMap` as an `S`-linear map.
+
+See also `LinearMap.compMultilinearMapₛₗ`. -/
 @[simps]
 def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul N₂ N₂' S R₂]
     (g : N₂ →ₗ[R₂] N₂') : MultilinearMap σ₁₂ M₁ N₂ →ₗ[S] MultilinearMap σ₁₂ M₁ N₂' where
@@ -935,8 +937,8 @@ def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul N₂ N₂' 
 
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
-This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence,
-and the multilinear version of `LinearEquiv.congrRight`. -/
+This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence, and a multilinear version
+of `LinearEquiv.congrRight`: see also `LinearEquiv.multilinearMapCongrRightₛₗ`. -/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.multilinearMapCongrRight [LinearMap.CompatibleSMul N₂ N₂' S R₂]
     [LinearMap.CompatibleSMul N₂' N₂ S R₂] (g : N₂ ≃ₗ[R₂] N₂') :
@@ -1123,8 +1125,32 @@ section
 
 variable [Semiring R₁] [CommSemiring R₂] [CommSemiring R₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₃]
-variable [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [Module R₃ N₃]
+variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)]
+variable [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)]
+variable [AddCommMonoid N₂] [AddCommMonoid N₃] [Module R₂ N₂] [Module R₃ N₃]
+
+/-- `LinearMap.compMultilinearMap` as a semilinear map.
+
+See also `LinearMap.compMultilinearMapₗ`. -/
+@[simps]
+def _root_.LinearMap.compMultilinearMapₛₗ (g : N₂ →ₛₗ[σ₂₃] N₃) :
+    MultilinearMap σ₁₂ M₁ N₂ →ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃ where
+  toFun := g.compMultilinearMap
+  map_add' := g.compMultilinearMap_add
+  map_smul' := g.compMultilinearMap_smulₛₗ
+
+/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+
+This is `LinearMap.compMultilinearMap` as a `σ₂₃`-linear equivalence, and a multilinear version
+of `LinearEquiv.congrRight`: see also `LinearEquiv.multilinearMapCongrRight`. -/
+@[simps! apply symm_apply]
+def _root_.LinearEquiv.multilinearMapCongrRightₛₗ {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂]
+    [RingHomInvPair σ₃₂ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂] (g : N₂ ≃ₛₗ[σ₂₃] N₃) :
+    MultilinearMap σ₁₂ M₁ N₂ ≃ₛₗ[σ₂₃] MultilinearMap σ₁₃ M₁ N₃ where
+  __ := g.toLinearMap.compMultilinearMapₛₗ
+  invFun := g.symm.toLinearMap.compMultilinearMapₛₗ
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
