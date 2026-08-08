@@ -385,13 +385,13 @@ def fromCompletion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] F where
   norm_map' := f.isometry.completion_extension.norm_map_of_map_zero
     f.toContinuousLinearMap.fromCompletion.map_zero
 
-theorem fromCompletion_eq (x : E) : f.fromCompletion x = f x :=
+theorem fromCompletion_apply_coe (x : E) : f.fromCompletion x = f x :=
   ContinuousLinearMap.fromCompletion_apply_coe f.toContinuousLinearMap x
 
 @[simp low]
 theorem coe_fromCompletion : f.fromCompletion = Completion.extension f := by
   refine Completion.ext f.fromCompletion.continuous Completion.continuous_extension fun a => ?_
-  rw [fromCompletion_eq, Completion.extension_coe f.isometry.uniformContinuous]
+  rw [fromCompletion_apply_coe, Completion.extension_coe f.isometry.uniformContinuous]
 
 @[simp]
 theorem toContinuousLinearMap_fromCompletion :
@@ -417,13 +417,13 @@ def completion : UniformSpace.Completion E →ₛₗᵢ[σ₁₂] UniformSpace.C
       (isClosed_eq (f.toContinuousLinearMap.completion.continuous.norm) continuous_norm) <| by
     simp [UniformSpace.Completion.norm_coe]
 
-theorem completion_eq (x : E) : f.completion x = f x :=
+theorem completion_apply_coe (x : E) : f.completion x = f x :=
   ContinuousLinearMap.completion_apply_coe f.toContinuousLinearMap x
 
 @[simp low]
 theorem coe_completion : f.completion = Completion.map f := by
   refine Completion.ext f.completion.continuous Completion.continuous_map fun a => ?_
-  rw [completion_eq, Completion.map_coe f.isometry.uniformContinuous]
+  rw [completion_apply_coe, Completion.map_coe f.isometry.uniformContinuous]
 
 @[simp]
 theorem toContinuousLinearMap_completion :
