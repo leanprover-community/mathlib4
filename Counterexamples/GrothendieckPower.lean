@@ -195,7 +195,7 @@ def aw : WitnessRing := ⟨aEnd, Subring.subset_closure (Set.mem_insert _ _)⟩
 
 /-- The element `bEnd`, as an element of `WitnessRing`. -/
 def bw : WitnessRing :=
-  ⟨bEnd, Subring.subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))⟩
+  ⟨bEnd, Subring.subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton_self _))⟩
 
 @[simp] theorem aw_cube : aw ^ 3 = 0 := Subtype.ext aEnd_cube
 
