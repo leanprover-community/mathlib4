@@ -89,7 +89,7 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
       (Circle.isOpen_centeredArc (π / 2)))
   have hVeq : V = ({1} : Set (PontryaginDual A)) := by
     ext ψ
-    rw [mem_singleton
+    rw [Set.mem_singleton]
     refine ⟨fun hψ ↦ ?_, ?_⟩
     · ext1 a
       refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_

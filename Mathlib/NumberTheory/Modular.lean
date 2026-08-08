@@ -301,8 +301,8 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
   refine ⟨g, g.2, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => g 1) ⁻¹' {cd} := by
-    rw [Set.mem_preimage, mem_singleton
-    exact Eq.trans hg1.symm (mem_singleton.mem_preimage.mp g.2))
+    rw [Set.mem_preimage, Set.mem_singleton]
+    exact Eq.trans hg1.symm (Set.mem_singleton.mp (Set.mem_preimage.mp g.2))
   exact hg ⟨g1, this⟩
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by

@@ -187,7 +187,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
     fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) :=
   ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
-      simp only [Fiber.mk, Set.mem_preimage, mem_singleton
+      simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton]
       convert! map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by fun_prop }

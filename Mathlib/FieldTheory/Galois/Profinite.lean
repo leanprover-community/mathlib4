@@ -208,7 +208,7 @@ set_option backward.privateInPublic true in
 `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField` -/
 private noncomputable def toAlgEquivAux [IsGalois k K]
     (g : limit (asProfiniteGaloisGroupFunctor k K)) : K → K :=
-  fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [mem_singleton
+  fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [Set.mem_singleton])⟩).val
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

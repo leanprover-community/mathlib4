@@ -136,7 +136,7 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     · refine IsClopen.isOpen ?_
       convert! C.2
       ext x
-      simp only [Set.mem_preimage, mem_singleton_eq_true_eq]
+      simp only [Set.mem_preimage, Set.mem_singleton, decide_eq_true_eq]
   · intro a b h
     by_contra hn
     obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn

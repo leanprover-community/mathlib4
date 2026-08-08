@@ -241,7 +241,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
         exact zero_ne_one.symm
       convert! Valued.locally_const this
       ext x
-      rw [Valuation.map_one, mem_preimage, mem_singletonm_ofPred_eq]
+      rw [Valuation.map_one, mem_preimage, mem_singleton, mem_ofPred_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
       rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
@@ -401,13 +401,13 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
     replace hy₂ : v y = γ₀ := by
-      simp only [mem_preimage, extension_extends, mem_singletonrestrict_def] at hy₂
+      simp only [mem_preimage, extension_extends, mem_singleton, v.restrict_def] at hy₂
       apply_fun embedding at hy₂
       simpa [heq] using hy₂
     rwa [← hy₂]
   · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
     replace hy₁ : v y = γ₀ := by
-      simp only [mem_preimage, extension_extends, mem_singletonrestrict_def] at hy₁
+      simp only [mem_preimage, extension_extends, mem_singleton, v.restrict_def] at hy₁
       apply_fun embedding at hy₁
       simpa [heq] using hy₁
     rw [← hy₁] at hx

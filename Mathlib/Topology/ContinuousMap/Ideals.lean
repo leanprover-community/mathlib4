@@ -144,7 +144,7 @@ theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
 @[simp]
 theorem mem_idealOfSet_compl_singleton (x : X) (f : C(X, R)) :
     f ∈ idealOfSet R ({x}ᶜ : Set X) ↔ f x = 0 := by
-  simp only [mem_idealOfSet, compl_compl, mem_singleton_eq]
+  simp only [mem_idealOfSet, compl_compl, Set.mem_singleton, forall_eq]
 
 variable (X R)
 
@@ -312,7 +312,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
   exact
     ⟨⟨fun x => g x, continuous_ofReal.comp (map_continuous g)⟩, by
       simpa only [coe_mk, ofReal_eq_zero] using! fun x hx => hgs (subset_closure hx), by
-      simpa only [coe_mk, hgx (mem_singleton_self x), Pi.one_apply, RCLike.ofReal_one] using!
+      simpa only [coe_mk, hgx (Set.mem_singleton_self x), Pi.one_apply, RCLike.ofReal_one] using!
         one_ne_zero⟩
 
 theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
@@ -412,7 +412,8 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
     use (⟨fun (x : ℝ) => (x : 𝕜), RCLike.continuous_ofReal⟩ : C(ℝ, 𝕜)).comp f
     simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne,
       RCLike.ofReal_inj] using
-      ((fx (mem_singleton_self x)).symm ▸ (fy (mem_singleton_self y)).symm ▸ zero_ne_one : f x ≠ f y)
+      ((fx (Set.mem_singleton_self x)).symm ▸ (fy (Set.mem_singleton_self y)).symm ▸
+        zero_ne_one : f x ≠ f y)
   · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
     refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => ?_⟩
     simpa only [RingHom.mem_ker, continuousMapEval_apply_apply, mem_idealOfSet_compl_singleton,

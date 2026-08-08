@@ -344,7 +344,7 @@ theorem isOrtho_span {s t : Set E} :
     span 𝕜 s ⟂ span 𝕜 t ↔ ∀ ⦃u⦄, u ∈ s → ∀ ⦃v⦄, v ∈ t → ⟪u, v⟫ = 0 := by
   simp_rw [span_eq_iSup_of_singleton_spans s, span_eq_iSup_of_singleton_spans t, isOrtho_iSup_left,
     isOrtho_iSup_right, isOrtho_iff_le, span_le, Set.subset_def, SetLike.mem_coe,
-    mem_orthogonal_singleton_iff_inner_left, mem_singleton_eq]
+    mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton, forall_eq]
 
 theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) :
     U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) := by

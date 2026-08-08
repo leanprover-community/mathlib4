@@ -85,7 +85,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
     obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le this
     exact ⟨n, by simp [hn]⟩
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
-  simp only [hcn, mem_insert_iff, mem_singleton this ⊢
+  simp only [hcn, mem_insert_iff, mem_singleton] at this ⊢
   norm_cast at this ⊢
   lia
 
@@ -129,7 +129,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
       ({(1, 1), (1, 2), (1, 3), (1, 4), (-1, -1), (-1, -2), (-1, -3), (-1, -4)} : Set (ℤ × ℤ)) := by
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
     aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
-  simp only [mem_insert_iff, mem_singletonod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at h
+  simp only [mem_insert_iff, mem_singleton, Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at h
   have h' := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases h with hij' | hij' | hij' | hij' | hij' | hij' | hij' | hij' <;>
@@ -205,7 +205,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       have aux₃ : P.coxeterWeightIn ℤ i j ≠ 0 := by
         simpa only [ne_eq, P.coxeterWeightIn_eq_zero_iff] using h.ne'
       simp_all
-    simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton
+    simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton,
       Prod.mk.injEq] at this
     lia
   · -- The case where the two roots are linearly dependent
@@ -214,7 +214,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       replace hli : P.pairingIn ℤ i j * P.pairingIn ℤ j i = 4 :=
         (P.coxeterWeightIn_eq_four_iff_not_linearIndependent ℤ).mpr hli
       aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
-    simp only [mem_insert_iff, mem_singletonod.mk.injEq] at this
+    simp only [mem_insert_iff, mem_singleton, Prod.mk.injEq] at this
     rcases this with hij | hij | hij
     · rw [(P.pairingIn_one_four_iff ℤ i j).mp hij, two_smul, sub_add_cancel_right]
       exact neg_root_mem P i

@@ -562,7 +562,7 @@ lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0
   intro f hf
   induction hf using adjoin_induction with
   | mem f hf =>
-    obtain rfl := mem_singleton
+    obtain rfl := Set.mem_singleton.mp hf
     rfl
   | add f g _ _ hf hg => exact add_mem hf hg
   | zero => exact zero_mem _

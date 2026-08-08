@@ -544,7 +544,7 @@ theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) :
     exists_seq_strictMono_tendsto' hb
   replace u_lt_a n : u n < a := (u_lt_a n).2
   have A : {a} = ⋂ n, Ioc (u n) a := by
-    refine Subset.antisymm (fun x hx => by simp [mem_singletonx, u_lt_a]) fun x hx => ?_
+    refine Subset.antisymm (fun x hx => by simp [mem_singleton.1 hx, u_lt_a]) fun x hx => ?_
     replace hx : ∀ (i : ℕ), u i < x ∧ x ≤ a := by simpa using hx
     have : a ≤ x := le_of_tendsto' u_lim fun n => (hx n).1.le
     simp [le_antisymm this (hx 0).2]
