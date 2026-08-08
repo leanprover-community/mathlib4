@@ -636,7 +636,7 @@ where
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
       -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
       let euclE ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
-      mkAppOptM ``modelWithCornersSelf #[mkConst `Real, none, euclE, none, none]
+      mkAppOptM ``modelWithCornersSelf #[q(ℝ), none, euclE, none, none]
     else throwError "`{e}` is not the complex unit circle"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
@@ -701,7 +701,7 @@ where
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
         -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
         let euclE ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
-        mkAppOptM ``modelWithCornersSelf #[mkConst `Real, none, euclE, none, none]
+        mkAppOptM ``modelWithCornersSelf #[q(ℝ), none, euclE, none, none]
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
