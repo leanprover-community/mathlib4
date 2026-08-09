@@ -79,7 +79,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
 namespace Prime
 
 theorem emultiplicity_one {p : ℕ} (hp : p.Prime) : emultiplicity p 1 = 0 :=
-  emultiplicity_of_one_right hp.prime.not_unit
+  emultiplicity_of_one_right hp.prime.not_isUnit
 
 theorem emultiplicity_mul {p m n : ℕ} (hp : p.Prime) :
     emultiplicity p (m * n) = emultiplicity p m + emultiplicity p n :=
@@ -93,7 +93,7 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
   (Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
 
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
-  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
+  _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_isUnit n
 
 /-- **Legendre's Theorem**
 
@@ -165,20 +165,18 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
 and `n - 1`. -/
 theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
     multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
-  rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
+  rw [← ENat.natCast_inj, ← (Nat.finiteMultiplicity_iff.2
       ⟨hp.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
   induction n with
   | zero => simp [hp.emultiplicity_one]
   | succ n h =>
-    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
+    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.natCast_add]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
 theorem pow_dvd_factorial_iff {p : ℕ} {n r b : ℕ} (hp : p.Prime) (hbn : log p n < b) :
     p ^ r ∣ n ! ↔ r ≤ ∑ i ∈ Ico 1 b, n / p ^ i := by
-  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hp.emultiplicity_factorial hbn,
-    pow_dvd_iff_le_emultiplicity]
+  rw [← ENat.natCast_le_natCast, ← hp.emultiplicity_factorial hbn, pow_dvd_iff_le_emultiplicity]
 
 theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
     emultiplicity p n ! ≤ (n / (p - 1) : ℕ) := by

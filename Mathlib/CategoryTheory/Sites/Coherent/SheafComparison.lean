@@ -36,7 +36,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Limits Functor regularTopology
+open Limits CategoryTheory.Functor regularTopology
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
@@ -258,6 +258,7 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
     IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is

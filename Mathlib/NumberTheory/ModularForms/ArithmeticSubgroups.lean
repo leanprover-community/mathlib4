@@ -71,6 +71,20 @@ instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ ⊓ Γ') where
 instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ' ⊓ Γ) where
   det_eq hg := HasDetOne.det_eq hg.2
 
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetOne Γ] (g : ConjAct <| GL n R) :
+    HasDetOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetOne.det_eq hh
+
+open scoped Pointwise in
+instance (Γ : Subgroup (GL n R)) [HasDetPlusMinusOne Γ] (g : ConjAct <| GL n R) :
+    HasDetPlusMinusOne (g • Γ) where
+  det_eq {h} hh := by
+    rw [mem_pointwise_smul_iff_inv_smul_mem] at hh
+    simpa [ConjAct.smul_def] using HasDetPlusMinusOne.det_eq hh
+
 end det_typeclasses
 
 section SL2Z_in_GL2R

@@ -692,7 +692,7 @@ open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
     Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y⁻¹ * x‖ := by
-  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_ofPred, eventually_iff]
 
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
@@ -873,6 +873,14 @@ theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by
 theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
   rw [mem_ball', dist_eq_norm_div]
 
+/-- A scaled ball is a ball. -/
+@[to_additive setOf_sub_mem_ball_eq_ball /-- A translated ball is a ball. -/]
+theorem setOf_div_mem_ball_eq_ball'' :
+    {x | x / a ∈ ball 1 r} = Metric.ball a r := by
+  ext x
+  rw [mem_ball_iff_norm'']
+  simp
+
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_div]
@@ -881,9 +889,26 @@ theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r :
 theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
   rw [mem_closedBall', dist_eq_norm_div]
 
+/-- A scaled closed ball is a closed ball. -/
+@[to_additive setOf_sub_mem_closedBall_eq_closedBall
+  /-- A translated closed ball is a closed ball. -/]
+theorem setOf_div_mem_closedBall_eq_closedBall'' :
+    {x | x / a ∈ closedBall 1 r} = Metric.closedBall a r := by
+  ext x
+  rw [mem_closedBall_iff_norm'']
+  simp
+
 -- Higher priority to fire before `mem_sphere`.
 @[to_additive (attr := simp high) mem_sphere_iff_norm]
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
+
+/-- A scaled sphere is a sphere. -/
+@[to_additive setOf_sub_mem_sphere_eq_sphere /-- A translated sphere is a sphere. -/]
+theorem setOf_div_mem_sphere_eq_sphere'' :
+    {x | x / a ∈ sphere 1 r} = Metric.sphere a r := by
+  ext x
+  rw [mem_sphere_iff_norm']
+  simp
 
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by

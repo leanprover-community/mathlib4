@@ -99,6 +99,7 @@ def dgoToHomologicalComplex :
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         simp only [dite_true, Category.assoc, eqToHom_f', reassoc_of% this] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor from homological complexes to differential graded objects.
 -/
 @[simps]
@@ -110,6 +111,7 @@ def homologicalComplexToDGO :
       d := fun i => X.d i _ }
   map {X Y} f := { f := f.f }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
 -/
@@ -133,6 +135,7 @@ def dgoEquivHomologicalComplexCounitIso :
     { hom := { f := fun i => 𝟙 (X.X i) }
       inv := { f := fun i => 𝟙 (X.X i) } })
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of differential graded objects in `V` is equivalent
 to the category of homological complexes in `V`.
