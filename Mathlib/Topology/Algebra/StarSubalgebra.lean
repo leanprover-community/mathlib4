@@ -152,7 +152,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
   have : DenseRange (Set.inclusion (le_topologicalClosure S)) := by simp [-SetLike.coe_sort_coe]
   refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
-  simpa only using DFunLike.congr_fun h x
+  simpa only using! DFunLike.congr_fun h x
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     {S : StarSubalgebra R A} [FunLike F S.topologicalClosure B]
@@ -162,7 +162,7 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     φ = ψ := by
   have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
-    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
+    simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using! h
   rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
   apply congrArg _ this
 
@@ -257,13 +257,14 @@ theorem induction_on {x y : A}
   | mul u v hu_mem hv_mem hu hv =>
     exact mul u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     [FunLike F (elemental R a) B] [AlgHomClass F R _ B] [StarHomClass F _ B]
     {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
   refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
-  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
+  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using! h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]
 

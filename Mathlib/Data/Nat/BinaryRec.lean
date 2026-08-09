@@ -91,7 +91,7 @@ def binaryRec {motive : Nat → Sort u} (zero : motive 0) (bit : ∀ b n, motive
   else
     let x := bit (1 &&& n != 0) (n >>> 1) (binaryRec zero bit (n >>> 1))
     congrArg motive n.bit_testBit_zero_shiftRight_one ▸ x
-termination_by if n = 0 then 0 else n.log2.succ
+termination_by if n = 0 then 0 else n.log2.succ -- redundant, but removing causes slowdown
 decreasing_by
   obtain _ | n := n; · exact (n0 rfl).elim
   obtain _ | n := n; · simp

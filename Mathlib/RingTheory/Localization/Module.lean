@@ -53,6 +53,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
   exact mem_map_of_mem mem_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (f ∘ v) := by
   rw [linearIndependent_iff'ₛ] at hv ⊢
@@ -71,6 +72,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   simpa only [map_mul, (IsLocalization.map_units Rₛ s).mul_right_inj, hfg.1 ⟨i, hi⟩, hfg.2 ⟨i, hi⟩,
     Algebra.smul_def, (IsLocalization.map_units Rₛ a).mul_right_inj] using this
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι → M}
     (hv : LinearIndependent R v) (h : ∀ s : S, IsRegular (s : R)) : LinearIndependent R (f ∘ v) :=
   hv.map_injOn _ <| by
@@ -87,6 +89,7 @@ theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
 
+set_option backward.isDefEq.respectTransparency false in
 include f in
 lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : LinearIndependent R v) :
     ∃ w : ι → M, LinearIndependent R w := by
@@ -236,7 +239,7 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]
 def LinearEquiv.extendScalarsOfIsLocalization (f : M ≃ₗ[R] N) : M ≃ₗ[A] N :=
-  .ofLinear (LinearMap.extendScalarsOfIsLocalization S A f)
+  .ofLinearMap (LinearMap.extendScalarsOfIsLocalization S A f)
     (LinearMap.extendScalarsOfIsLocalization S A f.symm)
     (by ext; simp) (by ext; simp)
 
@@ -274,7 +277,7 @@ def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
 @[simps!]
 noncomputable
 def mapEquiv (e : M ≃ₗ[R] N) : M' ≃ₗ[Rₛ] N' :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (IsLocalizedModule.mapExtendScalars S f g Rₛ e)
     (IsLocalizedModule.mapExtendScalars S g f Rₛ e.symm)
     (by

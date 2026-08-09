@@ -40,7 +40,6 @@ namespace Con
 section Mul
 variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
 
-
 /-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
 @[to_additive (attr := simps) /-- The natural homomorphism from an additive magma to its quotient by
 an additive congruence relation. -/]
@@ -182,6 +181,7 @@ theorem comap_eq {f : N →* M} : comap f f.map_mul c = ker (c.mk'.comp f) :=
 
 variable (c) (f : M →* P)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c` induced by a
 homomorphism constant on `c`'s equivalence classes. -/
 @[to_additive /-- The homomorphism on the quotient of an `AddMonoid` by an additive congruence

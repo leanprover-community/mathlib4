@@ -271,12 +271,12 @@ theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) : HasStrictDerivAt (-
 @[to_fun]
 theorem derivWithin.neg : derivWithin (-f) s x = -derivWithin f s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
-  · simp only [derivWithin, fderivWithin_neg hsx, ContinuousLinearMap.neg_apply]
+  · simp only [derivWithin, fderivWithin_neg hsx, neg_apply]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[to_fun]
 theorem deriv.neg : deriv (-f) x = -deriv f x := by
-  simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
+  simp only [deriv, fderiv_neg, neg_apply]
 
 @[to_fun (attr := simp)]
 theorem deriv.neg' : (deriv (-f)) = fun x ↦ -deriv f x :=
@@ -421,7 +421,7 @@ theorem deriv_sub_const_fun (c : F) : deriv (f · - c) = deriv f := by
 
 theorem HasDerivAtFilter.const_sub (c : F) (hf : HasDerivAtFilter f f' L) :
     HasDerivAtFilter (fun x ↦ c - f x) (-f') L := by
-  simpa only [sub_eq_add_neg] using hf.neg.const_add c
+  simpa only [sub_eq_add_neg] using! hf.neg.const_add c
 
 theorem HasDerivWithinAt.const_sub (c : F) (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (fun x ↦ c - f x) (-f') s x :=

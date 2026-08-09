@@ -135,7 +135,7 @@ end Karoubi
 
 /-- The obvious fully faithful functor `toKaroubi` sends an object `X : C` to the obvious
 formal direct factor of `X` given by `𝟙 X`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toKaroubi : C ⥤ Karoubi C where
   obj X := ⟨X, 𝟙 X, by rw [comp_id]⟩
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
@@ -219,6 +219,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
@@ -260,6 +261,7 @@ theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
   simp only [comp_f, id_f, P.idem, decompId_i, decompId_p]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
@@ -282,6 +284,7 @@ theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=
   map_zsmul (inclusionHom P Q) n f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X : Karoubi C`, then `X` is a retract of `((toKaroubi C).obj X.X)`. -/
 @[simps]
 def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where

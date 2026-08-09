@@ -87,7 +87,7 @@ instance total [LE β] [@Std.Total β (· ≤ ·)] : @Std.Total β* (· ≤ ·) 
   ⟨fun f g =>
     inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 
-open Classical in
+open scoped Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
 noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _

@@ -165,10 +165,10 @@ theorem WCovBy.Icc_eq (h : a ⩿ b) : Icc a b = {a, b} := by
   exact h.le_and_le_iff
 
 theorem WCovBy.Ico_subset (h : a ⩿ b) : Ico a b ⊆ {a} := by
-  rw [← Icc_diff_right, h.Icc_eq, diff_singleton_subset_iff, pair_comm]
+  rw [← Icc_sdiff_right, h.Icc_eq, sdiff_singleton_subset_iff, pair_comm]
 
 theorem WCovBy.Ioc_subset (h : a ⩿ b) : Ioc a b ⊆ {b} := by
-  rw [← Icc_diff_left, h.Icc_eq, diff_singleton_subset_iff]
+  rw [← Icc_sdiff_left, h.Icc_eq, sdiff_singleton_subset_iff]
 
 end PartialOrder
 
@@ -233,6 +233,8 @@ end LT
 section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
+
+@[simp] lemma covBy_irrefl : ¬ a ⋖ a := by simp [CovBy]
 
 @[to_dual self]
 theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
@@ -382,6 +384,19 @@ theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
 theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
   h.wcovBy.Icc_eq
 
+@[to_dual]
+theorem Set.Ico_eq_singleton_iff : Ico a b = {c} ↔ a = c ∧ a ⋖ b where
+  mp h := by
+    simp_rw [Set.ext_iff, mem_Ico, mem_singleton_iff] at h
+    have ⟨hac, hcb⟩ := (h c).mpr rfl
+    obtain rfl := (h a).mp ⟨le_refl a, hac.trans_lt hcb⟩
+    exact ⟨rfl, ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hcd.le, hdb⟩).symm⟩⟩
+  mpr := fun ⟨rfl, hcov⟩ ↦ hcov.Ico_eq
+
+@[to_dual Ioc_eq_singleton_right_iff]
+lemma Set.Ico_eq_singleton_left_iff : Ico a b = {a} ↔ a ⋖ b := by
+  simp [Ico_eq_singleton_iff]
+
 end PartialOrder
 
 section LinearOrder
@@ -406,6 +421,26 @@ theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
 @[to_dual]
 theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
   subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
+
+@[to_dual none]
+theorem Set.Ioo_eq_singleton_iff : Ioo a b = {c} ↔ a ⋖ c ∧ c ⋖ b where
+  mp h := by
+    simp_rw [Set.ext_iff, mem_Ioo, mem_singleton_iff] at h
+    have ⟨hac, hcb⟩ := (h c).mpr rfl
+    exact ⟨⟨hac, fun d had hdc ↦ hdc.ne ((h d).mp ⟨had, hdc.trans hcb⟩)⟩,
+      ⟨hcb, fun d hcd hdb ↦ hcd.ne ((h d).mp ⟨hac.trans hcd, hdb⟩).symm⟩⟩
+  mpr := fun ⟨hac, hcb⟩ ↦ by
+    rw [← Ioc_union_Ico_eq_Ioo hac.lt hcb.lt, hac.Ioc_eq, hcb.Ico_eq, union_self]
+
+@[to_dual]
+theorem Set.Ioi_eq_singleton_iff : Ioi a = {b} ↔ IsTop b ∧ a ⋖ b where
+  mp h := by
+    simp_rw [Set.ext_iff, mem_Ioi, mem_singleton_iff] at h
+    have hb : a < b := (h b).mpr rfl
+    exact ⟨fun c ↦ not_lt.mp fun hc ↦ hc.ne.symm ((h c).mp (hb.trans hc)),
+      ⟨hb, fun c hac hcb ↦ hcb.ne ((h c).mp hac)⟩⟩
+  mpr := fun ⟨hb, hab⟩ ↦ by
+    cases b, hb using IsTop.rec; rwa [← Ioc_top, Ioc_eq_singleton_right_iff]
 
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
@@ -462,7 +497,7 @@ variable {s t : Set α} {a : α}
   by_cases h : x ∈ t
   · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine Or.inl (subset_antisymm ?_ hst)
-    rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
+    rwa [← sdiff_singleton_eq_self h, sdiff_singleton_subset_iff]
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s

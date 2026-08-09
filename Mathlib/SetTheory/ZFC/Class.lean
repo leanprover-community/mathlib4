@@ -31,9 +31,9 @@ universe u
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation_for_order]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
@@ -208,8 +208,10 @@ theorem coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (x : Class.{u}) ∩ y :=
   ext fun _ => ZFSet.mem_inter
 
 @[simp, norm_cast]
-theorem coe_diff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
+theorem coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (x : Class.{u}) \ y :=
   ext fun _ => ZFSet.mem_sdiff
+
+@[deprecated (since := "2026-06-03")] alias coe_diff := coe_sdiff
 
 @[simp, norm_cast]
 theorem coe_powerset (x : ZFSet.{u}) : ↑x.powerset = powerset.{u} x :=
@@ -315,6 +317,7 @@ end Class
 
 namespace ZFSet
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=

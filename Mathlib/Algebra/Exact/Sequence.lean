@@ -48,8 +48,23 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
   simp_rw [← smul_eq_mul]
   refine Fin.sum_neg_one_pow_eq_zero _ (fun i ↦ finrank k (f i).range) ?_ (fun i ↦ ?_) ?_
   · aesop
-  · grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
-  · grind [finrank_top]
+  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
+      ```
+      grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
+      ```
+      -/
+    have hrn := (f i.succ).finrank_range_add_finrank_ker
+    have hker : finrank k ↥(LinearMap.ker (f i.succ)) =
+        finrank k ↥(LinearMap.range (f i.castSucc)) :=
+      congrArg (fun S : Submodule k (V i.succ.castSucc) => finrank k ↥S)
+        (h_exact i).linearMap_ker_eq
+    omega
+  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
+      ```
+      grind [finrank_top]
+      ```
+      -/
+    rw [surj, finrank_top, Fin.succ_last]
 
 /- An unrolled version of `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. This is an auxiliary
 lemma en route to `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`. -/
@@ -69,16 +84,16 @@ private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V
     (surj : Surjective f₄) :
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
       finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
-  letI Vs := ![V₀, V₁, V₂, V₃, V₄, V₅]
-  letI (i : Fin 6) : AddCommGroup (Vs i) := match i with
+  let Vs := ![V₀, V₁, V₂, V₃, V₄, V₅]
+  let (i : Fin 6) : AddCommGroup (Vs i) := match i with
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
-  letI (i : Fin 6) : Module k (Vs i) := match i with
+  let (i : Fin 6) : Module k (Vs i) := match i with
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
   have (i : Fin 6) : FiniteDimensional k (Vs i) := match i with
   | 0 => ‹_› | 1 => ‹_› | 2 => ‹_› | 3 => ‹_› | 4 => ‹_› | 5 => ‹_›
-  letI fs (i : Fin 5) : Vs i.castSucc →ₗ[k] Vs i.succ := match i with
+  let fs (i : Fin 5) : Vs i.castSucc →ₗ[k] Vs i.succ := match i with
   | 0 => f₀ | 1 => f₁ | 2 => f₂ | 3 => f₃ | 4 => f₄
-  simpa [Fin.sum_univ_six] using Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
+  simpa [Fin.sum_univ_six] using! Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
     (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
 
 /-- This is an unrolled, universe-polymorphic version of
