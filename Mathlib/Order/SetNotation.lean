@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
+Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Yuyang Zhao
 -/
 module
 
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Notation3
 
 /-!
@@ -15,9 +16,6 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 
 ## Main definitions
 
-- `SupSet α`: typeclass introducing the operation `SupSet.sSup` (exported to the root namespace);
-  `sSup s` is the supremum of the set `s`;
-- `InfSet`: similar typeclass for infimum of a set;
 - `iSup f`, `iInf f`: supremum and infimum of an indexed family of elements,
   defined as `sSup (Set.range f)` and `sInf (Set.range f)`, respectively;
 - `Set.sUnion s`, `Set.sInter s`: same as `sSup s` and `sInf s`,
@@ -39,21 +37,6 @@ open Set
 
 universe u v
 variable {α : Type u} {ι : Sort v}
-
-/-- Class for the `sSup` operator -/
-class SupSet (α : Type*) where
-  /-- Supremum of a set -/
-  sSup : Set α → α
-
-/-- Class for the `sInf` operator -/
-@[to_dual existing]
-class InfSet (α : Type*) where
-  /-- Infimum of a set -/
-  sInf : Set α → α
-
-export SupSet (sSup)
-
-export InfSet (sInf)
 
 /-- Indexed supremum -/
 @[to_dual /-- Indexed infimum -/]
