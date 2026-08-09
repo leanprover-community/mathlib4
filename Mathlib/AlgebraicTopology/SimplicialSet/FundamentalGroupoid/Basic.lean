@@ -229,7 +229,7 @@ abbrev FundamentalGroupoid : Type u :=
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-@[implicit_reducible]
+@[implicit_reducible, simps]
 def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
@@ -288,6 +288,12 @@ end
 section
 
 variable {D : Type*} [Category* D] {F G : FundamentalGroupoid X ⥤ D}
+
+@[ext]
+lemma natTrans_ext {f g : F ⟶ G}
+    (h : ∀ (x : X _⦋0⦌), f.app (mk x) = g.app (mk x)) : f = g := by
+  ext
+  apply h
 
 open MorphismProperty in
 /-- Constructor for natural transformations for functors from the
@@ -368,17 +374,24 @@ lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
   (isoCatMapFundamentalGroupoid f).toEquivalence.isEquivalence_functor
 
 variable (X) in
+/-- The identity morphism of a simplicial set acts by the
+identity functor on the fundamental groupoid. -/
 @[simps! hom_app inv_app]
 def mapFundamentalGroupoidId :
     mapFundamentalGroupoid (𝟙 X) ≅ 𝟭 _ :=
   FundamentalGroupoid.natIsoMk (fun x ↦ Iso.refl _)
 
+/-- The composition of two morphisms of simplicial sets acts
+on the fundamental groupoid by the composition of the
+corresponding functors. -/
 @[simps! hom_app inv_app]
 def mapFundamentalGroupoidComp (f : X ⟶ Y) (g : Y ⟶ Z) :
     mapFundamentalGroupoid f ⋙ mapFundamentalGroupoid g ≅
       mapFundamentalGroupoid (f ≫ g) :=
   FundamentalGroupoid.natIsoMk (fun x ↦ Iso.refl _)
 
+/-- Two identical morphisms induce isomorphic functors
+on the fundamental groupoid. -/
 @[simps!]
 def congrMapFundamentalGroupoid {f g : X ⟶ Y} (h : f = g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=

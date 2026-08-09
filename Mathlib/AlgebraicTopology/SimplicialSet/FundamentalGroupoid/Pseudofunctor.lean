@@ -9,7 +9,11 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.FundamentalGroupoid.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 
 /-!
-# ...
+# The fundamental groupoid, as a pseudofunctor
+
+In this file, we define the pseudofunctor
+`SSet.FundamentalGroupoid.pseudofunctor : LocallyDiscrete SSet ⥤ᵖ  Cat`
+which sends a simplicial set to its fundamental groupoid.
 
 -/
 
@@ -23,16 +27,13 @@ namespace SSet
 
 variable {X Y Z T : SSet.{u}}
 
---set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapFundamentalGroupoid_id_comp (f : X ⟶ Y) :
     (mapFundamentalGroupoidComp (𝟙 X) f).inv ≫
       Functor.whiskerRight (mapFundamentalGroupoidId X).hom _ ≫
         (Functor.leftUnitor _).hom =
     (congrMapFundamentalGroupoid (by simp)).hom := by
-  ext x
-  simp
-  sorry
+  cat_disch
 
 @[reassoc]
 lemma mapFundamentalGroupoid_comp_id (f : X ⟶ Y) :
@@ -40,7 +41,7 @@ lemma mapFundamentalGroupoid_comp_id (f : X ⟶ Y) :
       Functor.whiskerLeft _ (mapFundamentalGroupoidId Y).hom ≫
         (Functor.rightUnitor _).hom =
     (congrMapFundamentalGroupoid (by simp)).hom := by
-  sorry
+  cat_disch
 
 @[reassoc]
 lemma mapFundamentalGroupoid_assoc (f₁ : X ⟶ Y) (f₂ : Y ⟶ Z) (f₃ : Z ⟶ T) :
@@ -50,10 +51,12 @@ lemma mapFundamentalGroupoid_assoc (f₁ : X ⟶ Y) (f₂ : Y ⟶ Z) (f₃ : Z �
           Functor.whiskerLeft _ (mapFundamentalGroupoidComp f₂ f₃).hom ≫
             (mapFundamentalGroupoidComp f₁ (f₂ ≫ f₃)).hom =
     (congrMapFundamentalGroupoid (by simp)).hom := by
-  sorry
+  cat_disch
 
 namespace FundamentalGroupoid
 
+/-- The pseudofunctor which sends a simplicial set to its
+fundamental groupoid. -/
 @[simps!]
 def pseudofunctor : LocallyDiscrete SSet.{u} ⥤ᵖ  Cat.{u, u} :=
   LocallyDiscrete.mkPseudofunctor (fun X ↦ .of (FundamentalGroupoid X))
