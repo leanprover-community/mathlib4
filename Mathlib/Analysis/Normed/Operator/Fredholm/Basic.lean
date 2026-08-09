@@ -437,6 +437,16 @@ theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf
   obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
   exact .of_isQuasiInverse (mod_cast hg'.of_comp_right hw)
 
+@[simp]
+theorem _root_.ContinuousLinearEquiv.isFredholm_comp_iff (f : E ≃L[𝕜] F) {f' : F →L[𝕜] G} :
+    IsFredholm (f' ∘L (f : E →L[𝕜] F)) ↔ IsFredholm f' :=
+  f.isFredholm.comp_iff_left
+
+@[simp]
+theorem _root_.ContinuousLinearEquiv.comp_isFredholm_iff {f : E →L[𝕜] F} (f' : F ≃L[𝕜] G) :
+    IsFredholm ((f' : F →L[𝕜] G) ∘L f) ↔ IsFredholm f :=
+  f'.isFredholm.comp_iff_right
+
 end Constructions
 
 end TVS
