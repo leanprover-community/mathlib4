@@ -39,8 +39,8 @@ theorem reflTransGen_of_succ_of_le (r : α → α → Prop) {n m : α} (h : ∀ 
   for all `i` between `n` and `m`. -/
 theorem reflTransGen_of_succ_of_ge (r : α → α → Prop) {n m : α} (h : ∀ i ∈ Ico m n, r (succ i) i)
     (hmn : m ≤ n) : ReflTransGen r n m := by
-  rw [← reflTransGen_swap]
-  exact reflTransGen_of_succ_of_le (swap r) h hmn
+  rw [← reflTransGen_dflip]
+  exact reflTransGen_of_succ_of_le (dflip r) h hmn
 
 /-- For `n < m`, `(n, m)` is in the transitive closure of a relation `~` if `i ~ succ i`
   for all `i` between `n` and `m`. -/

@@ -110,6 +110,31 @@ theorem prod_comp_prod {γ δ} (h : α × β → γ) (k : α × β → δ) :
 
 end Prod
 
+section Bicomp
+
+variable {α β γ δ ε : Sort*}
+
+/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
+If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
+def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
+  f (g a) (h b)
+
+/-- Compose a unary function `f` with a binary function `g`. -/
+def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
+  f (g a b)
+
+-- Suggested local notation:
+local notation f " ∘₂ " g => bicompr f g
+
+theorem uncurry_bicompr {α β γ δ} (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
+  rfl
+
+theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
+    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
+  rfl
+
+end Bicomp
+
 /- ### The diagonal map -/
 
 /-- The diagonal map into `Prod`. -/
@@ -147,15 +172,35 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 @[inherit_doc onFun]
 scoped infixl:2 " on " => onFun
 
-/- ### The argument-reversing map -/
+/-- For a two-argument function `f`, `dflip f` is the same function but taking the arguments
+in the reverse order. `dflip f y x = f x y`. -/
+abbrev dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
 in the reverse order. `swap f y x = f x y`. -/
-abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+@[deprecated dflip (since := "2026-07-30")] abbrev swap := @dflip
 
-theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+theorem dflip_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip f = fun y x => f x y := rfl
 
-theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) = swap (f on g) := rfl
+theorem dflip_dflip {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : dflip (dflip f) = f := rfl
+theorem dflip_comp_dflip {φ : α → β → Sort u₃} : dflip (φ := φ) ∘ dflip = id := rfl
+
+theorem onFun_dflip (f : β → β → φ) (g : α → β) : (dflip f on g) = dflip (f on g) := rfl
+
+@[deprecated onFun_dflip (since := "2026-07-30")] theorem onFun_swap_comm (f : β → β → φ)
+    (g : α → β) : (dflip f on g) = dflip (f on g) := onFun_dflip f g
+
+@[simp] theorem bicompl_dflip (f : φ → δ → ζ) (g : α → φ) (h : β → δ) : bicompl (dflip f) h g =
+    dflip (bicompl f g h) := rfl
+
+@[simp] theorem bicompr_dflip (f : φ → δ) (g : α → β → φ) : bicompr f (dflip g) =
+    dflip (bicompr f g) := rfl
+
+theorem injective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Injective :=
+  fun _ _ h => funext fun _ => funext fun _ => congrFun (congrFun h _) _
+
+theorem surjective_dflip {α β : Sort*} {φ : α → β → Sort u₃} : (dflip (φ := φ)).Surjective :=
+  (⟨dflip ·, rfl⟩)
 
 /- ### Bijective functions -/
 
@@ -169,38 +214,14 @@ theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijecti
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩
 
+theorem bijective_dflip {α β : Sort*} {φ : α → β → Sort u₃} :
+    Function.Bijective (dflip (φ := φ)) := ⟨injective_dflip, surjective_dflip⟩
+
 variable {f : α → β}
 
 theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
-
-/- ### Bicomposition -/
-
-section Bicomp
-
-variable {α β γ δ ε : Sort*}
-
-/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
-If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
-def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
-  f (g a) (h b)
-
-/-- Compose a unary function `f` with a binary function `g`. -/
-def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
-  f (g a b)
-
--- Suggested local notation:
-local notation f " ∘₂ " g => bicompr f g
-
-theorem uncurry_bicompr {α β γ δ} (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
-  rfl
-
-theorem uncurry_bicompl {α β γ δ ε} (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
-    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
-  rfl
-
-end Bicomp
 
 end Function
 
@@ -248,3 +269,21 @@ protected def map (f : ∀ i, α i → β i) : (∀ i, α i) → (∀ i, β i) :
 lemma map_apply (f : ∀ i, α i → β i) (a : ∀ i, α i) (i : ι) : Pi.map f a i = f i (a i) := rfl
 
 end Pi
+
+namespace Std.Commutative
+
+open Function
+
+variable {α} {op : α → α → α}
+
+@[simp] theorem flip_eq [Std.Commutative op] : flip op = op :=
+  funext fun a ↦ funext fun b ↦ comm b a
+
+@[simp] theorem dflip_eq [Std.Commutative op] : dflip op = op := flip_eq
+
+theorem flip_eq_iff : flip op = op ↔ Std.Commutative op :=
+  ⟨fun h ↦ ⟨fun a b ↦ congrFun (congrFun h b) a⟩, fun _ ↦ flip_eq⟩
+
+theorem dflip_eq_iff : dflip op = op ↔ Std.Commutative op := flip_eq_iff
+
+end Std.Commutative

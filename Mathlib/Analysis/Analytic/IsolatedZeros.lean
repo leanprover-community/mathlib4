@@ -89,18 +89,18 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
     simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
+    HasFPowerSeriesAt ((dflip dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction n generalizing f p with
   | zero => exact hp
   | succ n ih => simpa using ih (has_fpower_series_dslope_fslope hp)
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
-    (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by
+    (dflip dslope z₀)^[p.order] f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 
 theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : 𝕜) :
-    f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
+    f z = (z - z₀) ^ p.order • (dflip dslope z₀)^[p.order] f z := by
   refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
   rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
     zero_add, coeff, p.apply_eq_zero_of_lt_order hk, _root_.zero_apply]

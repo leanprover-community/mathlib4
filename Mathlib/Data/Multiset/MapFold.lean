@@ -281,17 +281,17 @@ theorem coe_foldl (f : β → α → β) [RightCommutative f] (b : β) (l : List
     foldl f b l = l.foldl f b :=
   rfl
 
-theorem coe_foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
-    foldr f b l = l.foldl (fun x y => f y x) b :=
+theorem coe_foldr_dflip (f : α → β → β) [LeftCommutative f] (b : β) (l : List α) :
+    foldr f b l = l.foldl (dflip f) b :=
   (congr_arg (foldr f b) (coe_reverse l)).symm.trans foldr_reverse
 
-theorem foldr_swap (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
-    foldr f b s = foldl (fun x y => f y x) b s :=
-  Quot.inductionOn s fun _l => coe_foldr_swap _ _ _
+theorem foldr_dflip (f : α → β → β) [LeftCommutative f] (b : β) (s : Multiset α) :
+    foldr f b s = foldl (dflip f) b s :=
+  Quot.inductionOn s fun _l => coe_foldr_dflip _ _ _
 
-theorem foldl_swap (f : β → α → β) [RightCommutative f] (b : β) (s : Multiset α) :
-    foldl f b s = foldr (fun x y => f y x) b s :=
-  (foldr_swap _ _ _).symm
+theorem foldl_dflip (f : β → α → β) [RightCommutative f] (b : β) (s : Multiset α) :
+    foldl f b s = foldr (dflip f) b s :=
+  (foldr_dflip _ _ _).symm
 
 theorem foldr_induction' (f : α → β → β) [LeftCommutative f] (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
@@ -310,8 +310,8 @@ theorem foldr_induction (f : α → α → α) [LeftCommutative f] (x : α) (p :
 theorem foldl_induction' (f : β → α → β) [RightCommutative f] (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f b a)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldl f x s) := by
-  rw [foldl_swap]
-  exact foldr_induction' (fun x y => f y x) x q p s hpqf px q_s
+  rw [foldl_dflip]
+  exact foldr_induction' (dflip f) x q p s hpqf px q_s
 
 theorem foldl_induction (f : α → α → α) [RightCommutative f] (x : α) (p : α → Prop)
     (s : Multiset α) (p_f : ∀ a b, p a → p b → p (f b a)) (px : p x) (p_s : ∀ a ∈ s, p a) :

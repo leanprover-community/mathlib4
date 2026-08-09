@@ -870,8 +870,8 @@ theorem equiv_pure_of_mem {s : Computation α} {a} (h : a ∈ s) : s ~ pure a :=
 def LiftRel (R : α → β → Prop) (ca : Computation α) (cb : Computation β) : Prop :=
   (∀ {a}, a ∈ ca → ∃ b, b ∈ cb ∧ R a b) ∧ ∀ {b}, b ∈ cb → ∃ a, a ∈ ca ∧ R a b
 
-theorem LiftRel.swap (R : α → β → Prop) (ca : Computation α) (cb : Computation β) :
-    LiftRel (swap R) cb ca ↔ LiftRel R ca cb :=
+theorem LiftRel.dflip (R : α → β → Prop) (ca : Computation α) (cb : Computation β) :
+    LiftRel (dflip R) cb ca ↔ LiftRel R ca cb :=
   @and_comm _ _
 
 theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ c₂ ↔ c₁ ~ c₂ :=
@@ -988,7 +988,7 @@ theorem liftRel_pure_left (R : α → β → Prop) (a : α) (cb : Computation β
 
 @[simp]
 theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : β) :
-    LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.swap, liftRel_pure_left]
+    LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.dflip, liftRel_pure_left]
 
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
     LiftRel R (pure a) (pure b) ↔ R a b := by
@@ -1004,7 +1004,7 @@ theorem liftRel_think_left (R : α → β → Prop) (ca : Computation α) (cb : 
 @[simp]
 theorem liftRel_think_right (R : α → β → Prop) (ca : Computation α) (cb : Computation β) :
     LiftRel R ca (think cb) ↔ LiftRel R ca cb := by
-  rw [← LiftRel.swap R, ← LiftRel.swap R]; apply liftRel_think_left
+  rw [← LiftRel.dflip R, ← LiftRel.dflip R]; apply liftRel_think_left
 
 theorem liftRel_mem_cases {R : α → β → Prop} {ca cb} (Ha : ∀ a ∈ ca, LiftRel R ca cb)
     (Hb : ∀ b ∈ cb, LiftRel R ca cb) : LiftRel R ca cb :=
@@ -1059,14 +1059,14 @@ theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Com
     rw [destruct_think]
     exact ⟨fun ⟨b, h, r⟩ => ⟨b, think_mem h, r⟩, fun ⟨b, h, r⟩ => ⟨b, of_think_mem h, r⟩⟩
 
-theorem LiftRelAux.swap (R : α → β → Prop) (C) (a b) :
-    LiftRelAux (swap R) (swap C) b a = LiftRelAux R C a b := by
+theorem LiftRelAux.dflip (R : α → β → Prop) (C) (a b) :
+    LiftRelAux (dflip R) (dflip C) b a = LiftRelAux R C a b := by
   rcases a with a | ca <;> rcases b with b | cb <;> simp only [LiftRelAux]
 
 @[simp]
 theorem LiftRelAux.ret_right (R : α → β → Prop) (C : Computation α → Computation β → Prop) (b ca) :
     LiftRelAux R C (destruct ca) (Sum.inl b) ↔ ∃ a, a ∈ ca ∧ R a b := by
-  rw [← LiftRelAux.swap, LiftRelAux.ret_left]
+  rw [← LiftRelAux.dflip, LiftRelAux.ret_left]
 
 theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computation β → Prop)
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) (a)
@@ -1085,8 +1085,7 @@ theorem liftRel_rec {R : α → β → Prop} (C : Computation α → Computation
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) :
     LiftRel R ca cb :=
   liftRel_mem_cases (LiftRelRec.lem C (@H) ca cb Hc) fun b hb =>
-    (LiftRel.swap _ _ _).2 <|
-      LiftRelRec.lem (swap C) (fun {_ _} h => cast (LiftRelAux.swap _ _ _ _).symm <| H h) cb ca Hc b
-        hb
+    (LiftRel.dflip _ _ _).2 <| LiftRelRec.lem (dflip C)
+    (fun {_ _} h => cast (LiftRelAux.dflip _ _ _ _).symm <| H h) cb ca Hc b hb
 
 end Computation

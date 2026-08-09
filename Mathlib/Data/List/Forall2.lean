@@ -232,7 +232,7 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
 theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
-    (Function.swap List.flatMap) (Function.swap List.flatMap) :=
+    (Function.dflip List.flatMap) (Function.dflip List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
