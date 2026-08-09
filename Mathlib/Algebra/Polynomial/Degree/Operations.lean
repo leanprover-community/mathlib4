@@ -470,7 +470,7 @@ theorem degree_smul_of_isRightRegular_leadingCoeff (ha : a ≠ 0)
   exact hp.mul_right_eq_zero_iff.ne.mpr ha
 
 theorem degree_lt_degree_mul_X (hp : p ≠ 0) : p.degree < (p * X).degree := by
-  haveI := Nontrivial.of_polynomial_ne hp
+  have := Nontrivial.of_polynomial_ne hp
   have : leadingCoeff p * leadingCoeff X ≠ 0 := by simpa
   rw [degree_mul' this, degree_eq_natDegree hp, degree_X, ← Nat.cast_one, ← Nat.cast_add]
   norm_cast
@@ -718,7 +718,6 @@ lemma leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
   map_dvd leadingCoeffHom hap
 
 lemma degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
-  classical
   obtain rfl | hp := eq_or_ne p 0
   · simp
   · rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]

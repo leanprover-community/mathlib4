@@ -38,7 +38,7 @@ def colon (N : Submodule R M) (S : Set M) : Ideal R where
     (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp))
   zero_mem' := (Set.zero_smul_set_subset S).trans (by simp)
   smul_mem' r := by
-    simp only [Set.mem_setOf_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
+    simp only [Set.mem_ofPred_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
     intro x hx y hy
     exact N.smul_mem _ (hx hy)
 

@@ -53,7 +53,7 @@ section LinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- Linear map from the dual to `Lp` equal to `MemLp.toLp` if `MemLp id p μ` and to 0 otherwise. -/
 noncomputable
 def toLpₗ (μ : Measure E) (p : ℝ≥0∞) :
@@ -224,7 +224,6 @@ section Covariance
 
 variable [NormedSpace ℝ E] [BorelSpace E]
 
-open Classical in
 /-- Continuous bilinear form with value `∫ x, (L₁ x - μ[L₁]) * (L₂ x - μ[L₂]) ∂μ` on `(L₁, L₂)`
 if `MemLp id 2 μ`. If not, we set it to zero. -/
 noncomputable

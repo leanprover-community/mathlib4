@@ -105,7 +105,7 @@ theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :
 
 theorem mem_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) (f : A) :
     f ∈ vanishingIdeal t ↔ ∀ x : ProjectiveSpectrum 𝒜, x ∈ t → f ∈ x.asHomogeneousIdeal := by
-  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
+  rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_ofPred_eq]
 
 @[simp]
 theorem vanishingIdeal_singleton (x : ProjectiveSpectrum 𝒜) :
@@ -126,6 +126,7 @@ theorem gc_ideal :
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _

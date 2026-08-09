@@ -143,7 +143,7 @@ and to `essSup ‖f‖ μ` for `p = ∞`.
 
 This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
-  open Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
+  open scoped Classical in if AEStronglyMeasurable f μ then (eLpNorm f p μ).toReal else 0
 
 end Lp
 
