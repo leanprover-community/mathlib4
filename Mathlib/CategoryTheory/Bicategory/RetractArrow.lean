@@ -88,11 +88,50 @@ def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
       ← cancel_mono ( (F.mapComp r.i₁ (r.r₁ ≫ f')).inv),
       this, dsimp% F.toLax.map₂_leftUnitor_assoc f']
 
+/-- In a bicategory, if a `1`-morphism is a retract of a left adjoint,
+it is also a left adjoint. -/
+@[implicit_reducible, simps]
+def adjunctionLeft {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
+    {g : Y ⟶ X} (adj : Adjunction f g) :
+    Adjunction f' (r.i₂ ≫ g ≫ r.r₁) where
+  unit :=
+    r.id₁.inv ≫ _ ◁ (λ_ _).inv ≫ r.i₁ ◁ adj.unit ▷ r.r₁ ≫
+      _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫ (r.commi.inv ▷ (g ≫ r.r₁)) ≫ (α_ _ _ _).hom
+  counit :=
+    (α_ _ _ _).hom ≫ _ ◁ ((α_ _ _ _).hom ≫ _ ◁ r.commr.inv ≫ (α_ _ _ _).inv) ≫
+      r.i₂ ◁ adj.counit ▷ r.r₂ ≫ _ ◁ (λ_ _).hom ≫ r.id₂.hom
+  left_triangle := by
+    calc
+      _ = r.id₁.inv ▷ f' ⊗≫ ((r.i₁ ◁ adj.unit ⊗≫ r.commi.inv ▷ g) ▷ (r.r₁ ≫ f') ≫
+          ((f' ≫ r.i₂) ≫ g) ◁ r.commr.inv) ⊗≫
+          f' ◁ r.i₂ ◁ adj.counit ▷ r.r₂ ⊗≫ f' ◁ r.id₂.hom := by
+        simp only [whiskerRight_comp, Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc,
+          whiskerLeft_comp, comp_whiskerLeft]
+        bicategory
+      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
+          (r.i₁ ◁ adj.unit) ▷ (f ≫ r.r₂) ⊗≫
+          ((r.commi.inv ▷ (g ≫ f) ≫ ((f' ≫ r.i₂) ◁ adj.counit)) ▷ r.r₂) ⊗≫
+          f' ◁ r.id₂.hom := by
+        rw [← whisker_exchange]
+        bicategory
+      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
+          r.i₁ ◁ (leftZigzag adj.unit adj.counit) ▷ r.r₂ ⊗≫
+          (r.commi.inv ▷ r.r₂) ⊗≫ f' ◁ r.id₂.hom := by
+        rw [← whisker_exchange]
+        bicategory
+      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
+          (r.commi.inv ▷ r.r₂) ⊗≫ f' ◁ r.id₂.hom := by
+        rw [adj.left_triangle]
+        bicategory
+      _ = _ := by
+        simp [bicategoricalComp, r.comm'_assoc]
+  right_triangle := sorry
+
 /-- In a bicategory, a `1`-morphism that is a retract
 of an equivalence is an equivalence. -/
 @[implicit_reducible, simps]
-def equivalence {f' : X' ⟶ Y'} {f : Equivalence X Y} (r : RetractArrow₁ f' f.hom) :
-    Equivalence X' Y' where
+def equivalence {f' : X' ⟶ Y'} {f : X ≌ Y} (r : RetractArrow₁ f' f.hom) :
+    X' ≌ Y' where
   hom := f'
   inv := r.i₂ ≫ f.inv ≫ r.r₁
   unit :=
@@ -103,30 +142,7 @@ def equivalence {f' : X' ⟶ Y'} {f : Equivalence X Y} (r : RetractArrow₁ f' f
       r.i₂ ◁ᵢ f.counit ▷ᵢ r.r₂ ≪≫ _ ◁ᵢ λ_ _ ≪≫ r.id₂
   left_triangle := by
     ext : 1
-    calc
-      _ = r.id₁.inv ▷ f' ⊗≫ ((r.i₁ ◁ f.unit.hom ⊗≫ r.commi.inv ▷ f.inv) ▷ (r.r₁ ≫ f') ≫
-          ((f' ≫ r.i₂) ≫ f.inv) ◁ r.commr.inv) ⊗≫
-          f' ◁ r.i₂ ◁ f.counit.hom ▷ r.r₂ ⊗≫ f' ◁ r.id₂.hom := by
-        simp only [leftZigzagIso_hom, Iso.trans_hom, Iso.symm_hom, whiskerLeftIso_hom,
-          whiskerRightIso_hom]
-        bicategory
-      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
-          (r.i₁ ◁ f.unit.hom) ▷ (f.hom ≫ r.r₂) ⊗≫
-          ((r.commi.inv ▷ (f.inv ≫ f.hom) ≫ ((f' ≫ r.i₂) ◁ f.counit.hom)) ▷ r.r₂) ⊗≫
-          f' ◁ r.id₂.hom := by
-        rw [← whisker_exchange]
-        bicategory
-      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
-          r.i₁ ◁ (leftZigzag f.unit.hom f.counit.hom) ▷ r.r₂ ⊗≫
-          (r.commi.inv ▷ r.r₂) ⊗≫ f' ◁ r.id₂.hom := by
-        rw [← whisker_exchange]
-        bicategory
-      _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
-          (r.commi.inv ▷ r.r₂) ⊗≫ f' ◁ r.id₂.hom := by
-        rw [f.left_triangle_hom]
-        bicategory
-      _ = _ := by
-        simp [bicategoricalComp, r.comm'_assoc]
+    exact (r.adjunctionLeft f.toAdjunction).left_triangle
 
 end RetractArrow₁
 
@@ -136,6 +152,7 @@ open Bicategory
 
 /-- A retract of morphisms in a category `C` induces a retract of
 `1`-morphisms in the bicategory `LocallyDiscrete C`. -/
+@[implicit_reducible, simps]
 def RetractArrow.toLoc {C : Type*} [Category* C] {X Y X' Y' : C}
     {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow f' f) :
     RetractArrow₁ (Quiver.Hom.toLoc f') (Quiver.Hom.toLoc f) where
