@@ -454,7 +454,6 @@ theorem spectralRadius_stochastic_le_one {A : Matrix n n ℝ}
   have h_norm_le_one : ‖L‖ ≤ 1 := by
     apply ContinuousLinearMap.opNorm_le_bound _ (zero_le_one)
     intro v
-    dsimp
     rw [one_mul]
     exact norm_mulVec_le_of_row_stochastic h_stochastic h_nonneg v
   have h_spectral_le_norm : spectralRadius ℝ (Matrix.toLin' A) ≤ ↑‖L‖₊ :=

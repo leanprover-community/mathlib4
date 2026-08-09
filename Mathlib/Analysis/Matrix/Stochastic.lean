@@ -66,8 +66,8 @@ lemma linfty_opNorm_le_one_of_mem_rowStochastic (hM : A ∈ rowStochastic ℝ n)
 theorem spectralRadius_le_one_of_mem_rowStochastic [Nonempty n] (hM : A ∈ rowStochastic ℝ n) :
     spectralRadius ℝ A ≤ 1 := by
   refine (spectrum.spectralRadius_le_nnnorm (𝕜 := ℝ) A).trans ?_
-  rw [← ENNReal.coe_one]
-  exact ENNReal.coe_le_coe.mpr (by simpa using linfty_opNorm_le_one_of_mem_rowStochastic hM)
+  rw [← ENNReal.coe_one, ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm, NNReal.coe_one]
+  exact linfty_opNorm_le_one_of_mem_rowStochastic hM
 
 /-- See `spectralRadius_le_one_of_mem_rowStochastic`. -/
 theorem spectralRadius_le_one_of_row_sum [Nonempty n] (h_row_sum : ∀ i, ∑ j, A i j = 1)
