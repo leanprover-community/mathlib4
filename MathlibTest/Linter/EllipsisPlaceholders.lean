@@ -156,9 +156,18 @@ variable {α : Type u} {β : Type v}
 
 def instFn [Inhabited α] [Inhabited β] (x : α) (y : β) : Nat := 0
 
--- `@`-explicit applications are never rewritten (`..` does not preserve binder slots).
+-- A partial `@` application must not become a full application.
 #guard_msgs(warning, drop info) in
 #check @instFn _ _ _ _
+
+/--
+warning: Replace 2 trailing `_` placeholders with `..`.
+
+Note: This linter can be disabled with `set_option linter.style.ellipsisPlaceholders false`
+-/
+#guard_msgs(warning, drop info) in
+set_option linter.style.ellipsisPlaceholders.minTrailingHoles 2 in
+#check @instFn Nat Nat instInhabitedNat instInhabitedNat _ _
 
 end ExplicitApps
 

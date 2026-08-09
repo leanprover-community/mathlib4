@@ -327,8 +327,6 @@ def traceSkip (msg : MessageData) : CommandElabM Unit := do
 /-- Reject `..` when partial application must be preserved at this site. -/
 def rejectsPartialApplication (ti : TermInfo) (c : AppCandidate) : MetaM Bool := do
   try
-    if isExplicitApp c.stx then
-      return true
     if let some expected := ti.expectedType? then
       if ← isFunctionType expected then
         return true
