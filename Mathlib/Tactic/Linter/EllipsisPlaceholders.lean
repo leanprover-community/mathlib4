@@ -247,11 +247,12 @@ partial def skipImplicitBinders (ty : Expr) (explicit : Bool) : MetaM Expr := do
     return ty
   else
     match ty with
-    | .forallE _ _ body bi =>
+    | .forallE _ domain body bi =>
       if bi.isExplicit then
         return ty
       else
-        skipImplicitBinders body explicit
+        let arg ← mkFreshExprSyntheticOpaqueMVar domain
+        skipImplicitBinders (body.instantiate1 arg) explicit
     | _ => return ty
 
 /-- `@`-prefixed function in an application. -/
@@ -304,21 +305,25 @@ partial def codomainAfterAppArgs (fn : Expr) (explicit : Bool) (args : Array Syn
       while !found do
         ty ← skipImplicitBinders ty explicit
         match ty with
-        | .forallE binderName _ body _ =>
-          ty := body
+        | .forallE binderName domain body _ =>
+          let arg ← mkFreshExprSyntheticOpaqueMVar domain
+          ty := body.instantiate1 arg
           if binderName == name then found := true
         | _ => return ty
       continue
     ty ← skipImplicitBinders ty explicit
     match ty with
-    | .forallE _ _ body _ => ty := body
+    | .forallE _ domain body _ =>
+      let arg ← mkFreshExprSyntheticOpaqueMVar domain
+      ty := body.instantiate1 arg
     | _ => break
   return ty
 
 /-- True when consuming all syntax arguments still leaves a function codomain on the head. -/
 def appArgsLeaveFunctionCodomain (fn : Expr) (explicit : Bool) (args : Array Syntax) :
-    MetaM Bool := do
-  isFunctionType (← codomainAfterAppArgs fn explicit args)
+    MetaM Bool :=
+  withNewMCtxDepth do
+    isFunctionType (← codomainAfterAppArgs fn explicit args)
 
 def traceSkip (msg : MessageData) : CommandElabM Unit := do
   if linter.style.ellipsisPlaceholders.trace.get (← getOptions) then

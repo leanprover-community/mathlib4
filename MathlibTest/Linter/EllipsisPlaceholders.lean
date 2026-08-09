@@ -19,6 +19,7 @@ def pipeWrap (a b : Nat) : Nat := a + b
 def sixArg (a b c d e f : Nat) : Nat := a
 def mixedTail (a b c d e f : Nat) : Nat := a
 def batchFn (a b c d : Nat) : Nat := a
+theorem dependentFour {α : Type} (a b c d : α) : a = a := rfl
 
 def mathlibStyleThree {α β γ : Type u} (_x : α) (_y : β) (_z : γ) : Nat := 0
 def mathlibStyleWithMid {α β γ : Type u} (x : α) (y : β) (_z : γ) : α := x
@@ -44,6 +45,14 @@ Note: This linter can be disabled with `set_option linter.style.ellipsisPlacehol
 -/
 #guard_msgs(warning, drop info) in
 #check ellipsisTestFnFour _ _ _ _
+
+/--
+warning: Replace 4 trailing `_` placeholders with `..`.
+
+Note: This linter can be disabled with `set_option linter.style.ellipsisPlaceholders false`
+-/
+#guard_msgs(warning, drop info) in
+#check dependentFour _ _ _ _
 
 -- Should NOT lint: `?_` anywhere in the hole suffix
 #guard_msgs(warning, drop info) in
