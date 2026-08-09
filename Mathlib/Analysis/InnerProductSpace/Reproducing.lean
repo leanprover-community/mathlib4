@@ -424,8 +424,7 @@ lemma mem_toSubmodule_outerKernel (f : X → V) : f ∈ toSubmodule (outerKernel
   by_cases hf : f = (0 : X → V)
   · simp [hf, zero_mem]
   obtain ⟨x, hx⟩ := Function.ne_iff.mp hf
-  use UniformSpace.Completion.toComplL (𝕜:=𝕜) (Finsupp.single ⟨x, f x⟩ (1/(‖f x‖ ^ 2)))
-  rw [← Finsupp.smul_single_one, map_smul, ← kerFun_OfKernel_apply_eq_toComplL_single]
+  use (1 / (‖f x‖ : 𝕜) ^ 2) • (kerFun (OfKernel (outerKernel 𝕜 f)) x) (f x)
   ext
   simp only [one_div, map_smul, coe_coe, coeCLM_apply, Pi.smul_apply, kerFun_apply,
     OfKernel.kernel_ofKernel, outerKernel_apply, rankOne_apply, inner_self_eq_norm_sq_to_K]
