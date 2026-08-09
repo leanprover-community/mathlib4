@@ -139,7 +139,7 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   classical
@@ -205,7 +205,7 @@ omit [P.IsReduced]
 private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
     ⁅e i, f j⁆ (Sum.inl k) (Sum.inr l) = 0 := by
   classical
-  letI := P.indexNeg
+  let := P.indexNeg
   have aux₁ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root i + P.root l ∧ k = j ∧ x = j) := by
     rintro x - ⟨hl, -, rfl⟩
     exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
@@ -221,7 +221,7 @@ include hij
 private lemma lie_e_f_ne_aux₁ :
     ⁅e i, f j⁆ᵀ (Sum.inr j) = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k)
   · rw [Matrix.transpose_apply, lie_e_f_ne_aux₀, Pi.zero_apply]
@@ -252,7 +252,7 @@ private lemma lie_e_f_ne_aux₁ :
 private lemma lie_e_f_ne_aux₂ :
     letI := P.indexNeg
     ⁅e i, f j⁆ᵀ (Sum.inr (-i)) = 0 := by
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k)
   · rw [Matrix.transpose_apply, lie_e_f_ne_aux₀, Pi.zero_apply]
@@ -265,7 +265,7 @@ private lemma lie_e_f_ne_aux₂ :
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k) (l | l)
   · rw [ne_comm] at hij

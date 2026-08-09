@@ -42,6 +42,7 @@ namespace AffineMap
 variable {𝕜 V : Type*} [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `AffineMap.lineMap` is smooth in all three arguments. -/
 @[fun_prop]
 theorem contDiff_lineMap_uncurry {n : WithTop ℕ∞} :
@@ -49,6 +50,7 @@ theorem contDiff_lineMap_uncurry {n : WithTop ℕ∞} :
   simp only [AffineMap.lineMap_apply_module]
   fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `AffineMap.lineMap` is smooth as a function `𝕜 → V`. -/
 theorem contDiff_lineMap (p₀ p₁ : V) {n : WithTop ℕ∞} :
     ContDiff 𝕜 n (AffineMap.lineMap p₀ p₁ : 𝕜 → V) := by
@@ -63,6 +65,7 @@ variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {f₁ f₂ : E → V} {g : E → 𝕜} {s : Set E} {x : E} {n : WithTop ℕ∞}
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[fun_prop]
 theorem ContDiffWithinAt.lineMap (h₁ : ContDiffWithinAt 𝕜 n f₁ s x)
     (h₂ : ContDiffWithinAt 𝕜 n f₂ s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
@@ -70,16 +73,19 @@ theorem ContDiffWithinAt.lineMap (h₁ : ContDiffWithinAt 𝕜 n f₁ s x)
   simp only [AffineMap.lineMap_apply_module]
   fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ContDiffAt.lineMap (h₁ : ContDiffAt 𝕜 n f₁ x)
     (h₂ : ContDiffAt 𝕜 n f₂ x) (hg : ContDiffAt 𝕜 n g x) :
     ContDiffAt 𝕜 n (fun x ↦ AffineMap.lineMap (f₁ x) (f₂ x) (g x)) x := by
   fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ContDiffOn.lineMap (h₁ : ContDiffOn 𝕜 n f₁ s)
     (h₂ : ContDiffOn 𝕜 n f₂ s) (hg : ContDiffOn 𝕜 n g s) :
     ContDiffOn 𝕜 n (fun x ↦ AffineMap.lineMap (f₁ x) (f₂ x) (g x)) s := by
   fun_prop
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ContDiff.lineMap (h₁ : ContDiff 𝕜 n f₁)
     (h₂ : ContDiff 𝕜 n f₂) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n (fun x ↦ AffineMap.lineMap (f₁ x) (f₂ x) (g x)) := by

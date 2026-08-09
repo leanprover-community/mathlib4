@@ -59,6 +59,7 @@ the adic completion of `M`. -/
 abbrev ofPowSMul (n : ℕ) : AdicCompletion I ↥(I ^ n • ⊤ : Submodule R M)
     →ₗ[AdicCompletion I R] AdicCompletion I M := map I (I ^ n • ⊤ : Submodule R M).subtype
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowSMul_val_apply (h : c = b + a) {x : AdicCompletion I ↥(I ^ a • ⊤ : Submodule R M)} :
     (ofPowSMul I M a x).val c = powSMulQuotInclusion I M h ⊤ (x.val b) := by
   rw [← x.prop (show b ≤ c by lia), map_val_apply]
@@ -148,6 +149,7 @@ private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [Decidable
     sumEquivOfFintype_apply, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {I} in
 @[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
@@ -176,6 +178,7 @@ theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I 
   rcases map_surjective I this x with ⟨x, rfl⟩
   exact ⟨x, by rw [← LinearMap.comp_apply, map_comp, LinearMap.subtype_comp_codRestrict]⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {I} in
 /-- `AdicCompletion I M` is adic complete when `I` is finitely generated. -/
 @[stacks 05GG "(1)"]
