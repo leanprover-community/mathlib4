@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
+# Subalgebras of an algebra of prime dimension
+
 If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prime dimension,
 then there are no non-trivial `F`-subalgebras.
 -/
