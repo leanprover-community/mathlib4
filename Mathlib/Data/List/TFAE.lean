@@ -49,8 +49,8 @@ theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁ ~ l₂) : TFAE l₁ ↔ TF
 theorem tfae_reverse {l : List Prop} : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
 
 theorem tfae_append {l₁ l₂ : List Prop} :
-    TFAE (l₁ ++ l₂) ↔ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) ∧ TFAE l₁ ∧ TFAE l₂ := by
-  simp [tfae_iff_pairwise, pairwise_append, and_rotate]
+    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) := by
+  simp [tfae_iff_pairwise, pairwise_append]
 
 theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
