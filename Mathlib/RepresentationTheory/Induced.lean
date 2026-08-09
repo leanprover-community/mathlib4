@@ -145,15 +145,10 @@ lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
 variable {ρ} in
 /-- Construct an `IntertwiningMap` starting from an induced representation by lifting an
 `IntertwiningMap` with a `res` representation as target. -/
-noncomputable def ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
+noncomputable abbrev ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
     (ind φ ρ).IntertwiningMap σ :=
   ⟨IndV.lift φ ρ (fun h => σ h⁻¹ ∘ₗ f.toLinearMap) fun _ _ _ => by
     simp [IntertwiningMap.isIntertwining], fun g => by ext; simp⟩
-
-@[simp]
-lemma ind.lift_apply_mk {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) (h : H)
-    (a : A) : ind.lift φ f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) := by
-  simp [ind.lift]
 
 end Representation
 
