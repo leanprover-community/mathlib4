@@ -33,7 +33,7 @@ variable {F R K : Type*} [Field F] [CommSemiring R] [Algebra F R] [Field K] [Alg
 variable (F R K) in
 /-- The subalgebra of the `x : R[X]` fixed by `AddMonoidAlgebra.domCongrAut f` for all `f`. -/
 def mapDomainFixed : Subalgebra R R[K] where
-  carrier := {x | ∀ f : Gal(K/F), x.domCongrAut F R f = x}
+  carrier := {x | ∀ f : Gal(K/F), x.domCongr F R f = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by simp
@@ -41,7 +41,7 @@ def mapDomainFixed : Subalgebra R R[K] where
 theorem mem_mapDomainFixed_iff {x : R[K]} :
     x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit Gal(K/F) j → x i = x j := by
   simp? [MulAction.mem_orbit_iff, mapDomainFixed] says
-    simp only [mapDomainFixed, AddMonoidAlgebra.domCongrAut_apply, Subalgebra.mem_mk,
+    simp only [mapDomainFixed, Subalgebra.mem_mk,
       Subsemiring.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq,
       MulAction.mem_orbit_iff, AlgEquiv.smul_def, forall_exists_index]
   refine ⟨fun h i j f hi => ?_, fun h f => ?_⟩
@@ -224,16 +224,17 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
     (x : F[K]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : mapDomainFixed F F K) (_ : y ≠ 0), f y = 0 := by
   classical
-  refine ⟨⟨∏ f : Gal(K/F), x.domCongrAut F _ (f : K ≃+ K), ?_⟩,
+  refine ⟨⟨∏ f : Gal(K/F), x.domCongr F _ (f : K ≃+ K), ?_⟩,
     fun h => absurd (Subtype.mk.inj h) ?_, ?_⟩
   · intro f
     rw [map_prod]
-    simp_rw [← AlgEquiv.trans_apply, ← AlgEquiv.aut_mul, ← map_mul]
+    simp_rw [← AlgEquiv.trans_apply, AddMonoidAlgebra.trans_domCongr_domCongr]
     exact (Group.mulLeft_bijective f).prod_comp fun g ↦ x.domCongrAut F _ (g : K ≃+ K)
   · simpa [prod_eq_zero_iff]
   · dsimp only
-    rw [← mul_prod_erase univ _ (mem_univ 1), show ((1 : Gal(K/F)) : K ≃+ K) = 1 from rfl,
-      map_one, AlgEquiv.one_apply, map_mul, hfx, zero_mul]
+    rw [← mul_prod_erase univ _ (mem_univ .refl),
+      show ((.refl : Gal(K/F)) : K ≃+ K) = .refl _ from rfl, AddMonoidAlgebra.domCongr_refl,
+      AlgEquiv.coe_refl, id_def, map_mul, hfx, zero_mul]
 
 open Classical in
 theorem linearIndependent_exp_aux2_2 {F K S : Type*}
