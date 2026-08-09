@@ -232,20 +232,20 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {Γ : Type*} [SMul Γ M]
+  {Γ : Type*} [SMul Γ M] {n : ℕ∞ω}
 
 @[to_additive]
-protected theorem ContMDiffConstSMul.of_le {n m : ℕ∞ω} (h : n ≤ m)
+protected theorem ContMDiffConstSMul.of_le {m : ℕ∞ω} (h : n ≤ m)
     [ContMDiffConstSMul I m Γ M] : ContMDiffConstSMul I n Γ M  :=
   ⟨fun γ ↦ (contMDiff_const_smul γ).of_le h⟩
 
 @[to_additive]
-instance {n : ℕ∞ω} [ContMDiffConstSMul I ∞ Γ M] [ENat.LEInfty n] :
+instance [ContMDiffConstSMul I ∞ Γ M] [ENat.LEInfty n] :
     ContMDiffConstSMul I n Γ M :=
   .of_le ENat.LEInfty.out
 
 @[to_additive]
-instance {n : ℕ∞ω} [ContMDiffConstSMul I ω Γ M] : ContMDiffConstSMul I n Γ M :=
+instance [ContMDiffConstSMul I ω Γ M] : ContMDiffConstSMul I n Γ M :=
   .of_le le_top
 
 @[to_additive]
@@ -266,7 +266,7 @@ lemma ContMDiffConstSMul.continuousConstSMul (n : ℕ∞ω) [ContMDiffConstSMul 
 
 section
 
-variable {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M] {f : N → M} {s : Set N} {x : N}
+variable [ContMDiffConstSMul I n Γ M] {f : N → M} {s : Set N} {x : N}
 
 /- Let `M` be a charted space being acted on by `Γ : Type*`. Given another charted space `N`, a
 differentiable map `f : N → M`, and `γ : Γ` , then the map `γ • f : N → M` is also differentiable -/
@@ -291,7 +291,7 @@ theorem ContMDiff.const_smul (hf : CMDiff n f) (γ : Γ) :
 end
 
 @[to_additive]
-instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M]
+instance Prod.contMDiffConstSMul [SMul Γ N] [ContMDiffConstSMul I n Γ M]
     [ContMDiffConstSMul I' n Γ N] : ContMDiffConstSMul (I.prod I') n Γ (M × N) where
   contMDiff_const_smul γ := ContMDiff.prodMk
     (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
@@ -299,7 +299,7 @@ instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul 
 /-- If the action on `G` by any element of `Γ` is continuously differentiable and the same holds for
 all elements of `G` acting on `M`, then it is also true for all elements of `Γ` acting on `M`. -/
 lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [ChartedSpace H' G]
-    [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M] {n : ℕ∞ω}
+    [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M]
     [ContMDiffConstSMul I' n Γ G] [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul γ := by
     suffices h : CMDiff n (fun x : M ↦ (γ • (1 : G)) • x) by
@@ -310,7 +310,7 @@ lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [Charted
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
 continuously differentiable . -/
 @[to_additive]
-theorem MulAction.contMDiffConstSMul_compHom {n : ℕ∞ω} {Γ : Type*} [Monoid Γ] [MulAction Γ M]
+theorem MulAction.contMDiffConstSMul_compHom {Γ : Type*} [Monoid Γ] [MulAction Γ M]
     [ContMDiffConstSMul I n Γ M] {Γ' : Type*} [Monoid Γ']
     {f : Γ' →* Γ} :
     letI : MulAction Γ' M := MulAction.compHom _ f
