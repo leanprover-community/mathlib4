@@ -359,14 +359,17 @@ theorem rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (fg : (maximalIdeal R
     grw [Submodule.spanRank_span_le_card, Cardinal.mk_image_le]
   · obtain ⟨s, hs_card, hs_span⟩ :=
       (⊤ : Submodule (ResidueField R) (CotangentSpace R)).exists_span_set_card_eq_spanRank
+    have hs_span' : Submodule.span R s =
+        Submodule.map (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R (maximalIdeal R)))) ⊤ := by
+      rw [Submodule.map_top, Submodule.range_mkQ]
+      change Submodule.span R s = ⊤
+      rw [← Submodule.restrictScalars_span R (ResidueField R)
+        Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top]
     obtain ⟨t, ht_inj, ht_image, ht_span⟩ :=
       Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s
         ((Submodule.fg_top (maximalIdeal R)).mpr fg)
         (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
-        (by rw [Submodule.map_top, Submodule.range_mkQ]
-            change Submodule.span R s = ⊤
-            rw [← Submodule.restrictScalars_span R (ResidueField R)
-              Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top])
+        hs_span'
     rw [← hs_card, ← ht_span, ← ht_image]
     exact le_of_le_of_eq (Submodule.spanRank_span_le_card t)
       (Cardinal.mk_image_eq_of_injOn _ _ ht_inj).symm
