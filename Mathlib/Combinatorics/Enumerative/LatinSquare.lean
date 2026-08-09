@@ -227,16 +227,17 @@ lemma forall_finset_card_le_card_biUnion {α : Type*} [DecidableEq α] {n : Type
     Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
     ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
   intro s
-  have h := Finset.card_le_card_biUnion_of_card_le_card B s (by lia)
-    (n := Fintype.card n - Fintype.card k)
-  apply h
-  · grind
+  apply Finset.card_le_card_biUnion_of_card_le_card
+    (n := Fintype.card n - Fintype.card k) B s (by lia)
+  · intro j _
+    exact (h₂ j).ge
   · intro x _
     have ht : Finset.card {j | j ∈ s ∧ x ∈ B j} = Finset.card {j ∈ s | x ∈ B j} := by
       congr 1
-      grind
-    rw [<-ht]
-    exact (h₃ x s)
+      ext j
+      simp [and_comm]
+    rw [← ht]
+    exact h₃ x s
 
 /-- For a k × n Latin rectangle, the set of entries in each column has cardinality k. -/
 lemma col_card {k n : Type*} [Fintype k] [Fintype n] (A : LatinRectangle k n α) :
@@ -296,14 +297,9 @@ lemma LatinRectangle.card_symbolsNotIn_le {k n : Type*} [Fintype n]
     [Fintype k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
     ∀ x, ∀ (t : Finset n),
     (Finset.card {j : n | j ∈ t ∧ x ∈ (symbolsNotIn A) j}) ≤ Fintype.card n - Fintype.card k := by
-  let B := symbolsNotIn A
   intro x t
-  have h_sub : ({j | j ∈ t ∧ x ∈ B j} : Finset n) ⊆ ({j | x ∈ B j} : Finset n) := by
-    simp [Finset.subset_iff]
-  have h' := Finset.card_le_card (s := {j | j ∈ t ∧ x ∈ B j}) (t := {j | x ∈ B j})
-  have hx := LatinRectangle.card_symbolsNotIn_eq (n := n) (k := k) (α := α) A h
-  rw [hx] at h'
-  exact h' h_sub
+  rw [← A.card_symbolsNotIn_eq h x]
+  exact Finset.card_le_card (by simp [Finset.subset_iff])
 
 /-- Extend LatinRectangle given a valid extension map -/
 @[instance_reducible]
