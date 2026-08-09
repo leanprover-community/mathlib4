@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Compare
 public import Mathlib.Data.Nat.PSub
 public import Batteries.Data.List.Lemmas
+public import Mathlib.Data.Tree.Basic
 
 /-!
 # Ordered sets
@@ -68,7 +69,9 @@ universe u
 
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
   The operations on this type maintain that the tree is balanced
-  and correctly stores subtree sizes at each level. -/
+  and correctly stores subtree sizes at each level.
+
+This is a copy of `BinaryTree` with a cached `size` field for `BinaryTree.numNodes`. -/
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
@@ -165,6 +168,28 @@ O(1). Construct a node with the correct size information, without rebalancing. -
 @[inline, reducible]
 def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   node (size l + size r + 1) l x r
+
+/-- Convert to an `OrdNode` by pre-computing the sizes. -/
+@[simp]
+def _root_.BinaryTree.toOrdNode : BinaryTree α → Ordnode α
+  | .nil => .nil
+  | .node x l r => .node' l.toOrdNode x r.toOrdNode
+
+@[simp]
+theorem size_toOrdNode (b : BinaryTree α) :
+    b.toOrdNode.size = b.numNodes := by
+  induction b with simp [BinaryTree.toOrdNode, *]
+
+/-- Convert to an `BinaryTree`, discarding the cached size information. -/
+@[simp]
+def toBinaryTree : Ordnode α → BinaryTree α
+  | .nil => .nil
+  | .node _ l x r => .node x l.toBinaryTree r.toBinaryTree
+
+@[simp]
+theorem toBinaryTree_toOrdNode (b : BinaryTree α) :
+    toBinaryTree b.toOrdNode = b := by
+  induction b with simp [BinaryTree.toOrdNode, toBinaryTree, * ]
 
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 

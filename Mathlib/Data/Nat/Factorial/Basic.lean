@@ -267,6 +267,7 @@ theorem ascFactorial_of_sub {n k : ℕ} :
     (n - k) * (n - k + 1).ascFactorial k = (n - k).ascFactorial (k + 1) := by
   rw [succ_ascFactorial, ascFactorial_succ]
 
+@[gcongr]
 theorem ascFactorial_le (k : ℕ) {n m : ℕ} (h : n ≤ m) :
     n.ascFactorial k ≤ m.ascFactorial k := by
   induction k with
@@ -418,6 +419,7 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
   rw [factorial_mul_descFactorial h]
   exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm
 
+@[gcongr]
 theorem descFactorial_le (n : ℕ) {k m : ℕ} (h : k ≤ m) :
     k.descFactorial n ≤ m.descFactorial n := by
   induction n with

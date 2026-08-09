@@ -124,7 +124,7 @@ theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S} (ha : Ha
 
 /-- Families of `PowerSeries` that can be substituted, as an `Ideal`. -/
 noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) where
-  carrier := setOf HasSubst
+  carrier := Set.ofPred HasSubst
   add_mem' := HasSubst.add
   zero_mem' := HasSubst.zero
   smul_mem' := HasSubst.smul

@@ -234,21 +234,23 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
   rw [← image_univ]
   exact hf.diam_image univ
 
-theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
+theorem preimage_setOfPred_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
   simp [hf.dist_eq]
 
+@[deprecated (since := "2026-07-09")] alias preimage_setOf_dist := preimage_setOfPred_dist
+
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.closedBall (f x) r = Metric.closedBall x r :=
-  hf.preimage_setOf_dist x (· ≤ r)
+  hf.preimage_setOfPred_dist x (· ≤ r)
 
 theorem preimage_ball (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.ball (f x) r = Metric.ball x r :=
-  hf.preimage_setOf_dist x (· < r)
+  hf.preimage_setOfPred_dist x (· < r)
 
 theorem preimage_sphere (hf : Isometry f) (x : α) (r : ℝ) :
     f ⁻¹' Metric.sphere (f x) r = Metric.sphere x r :=
-  hf.preimage_setOf_dist x (· = r)
+  hf.preimage_setOfPred_dist x (· = r)
 
 theorem mapsTo_ball (hf : Isometry f) (x : α) (r : ℝ) :
     MapsTo f (Metric.ball x r) (Metric.ball (f x) r) :=

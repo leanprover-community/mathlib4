@@ -85,7 +85,7 @@ theorem thickenedIndicatorAux_one_of_mem_closure (δ : ℝ) (E : Set α) {x : α
 
 theorem thickenedIndicatorAux_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_out : x ∉ thickening δ E) : thickenedIndicatorAux δ E x = 0 := by
-  rw [thickening, mem_setOf_eq, not_lt] at x_out
+  rw [thickening, mem_ofPred_eq, not_lt] at x_out
   unfold thickenedIndicatorAux
   apply le_antisymm _ bot_le
   have key := tsub_le_tsub
@@ -148,7 +148,7 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     rcases δseq_lim with ⟨N, hN⟩
     apply tendsto_atTop_of_eventually_const (i₀ := N)
     intro n n_large
-    have key : x ∉ thickening ε E := by simpa only [thickening, mem_setOf_eq, not_lt] using ε_lt.le
+    have key : x ∉ thickening ε E := by simpa only [thickening, mem_ofPred_eq, not_lt] using ε_lt.le
     refine le_antisymm ?_ bot_le
     apply (thickenedIndicatorAux_mono (lt_of_abs_lt (hN n n_large)).le E x).trans
     exact (thickenedIndicatorAux_zero ε_pos E key).le

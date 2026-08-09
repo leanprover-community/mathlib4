@@ -1042,7 +1042,7 @@ def answer : ℕ := 3
 
 /-- The final result, combining upper and lower bounds. -/
 theorem result : IsLeast {k | ∃ s : Strategy 2022, s.ForcesWinIn k} answer := by
-  simp_rw [IsLeast, mem_lowerBounds, Set.mem_setOf, forall_exists_index]
+  simp_rw [IsLeast, mem_lowerBounds, Set.mem_ofPred, forall_exists_index]
   exact ⟨⟨winningStrategy (by simp), winningStrategy_forcesWinIn_three (by simp)⟩,
     fun k s h ↦ h.three_le (by simp)⟩
 

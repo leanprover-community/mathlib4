@@ -14,10 +14,6 @@ public import Mathlib.Order.GaloisConnection.Basic
 This file proves lemmas about `iSup` and `iInf` for functions valued in a conditionally complete
 partial order, as opposed to a conditionally complete lattice.
 
-## TODO
-
-+ Use `@[to_dual]` in the `GaloisConnection` and `OrderIso` sections.
-
 -/
 
 public section
@@ -195,21 +191,25 @@ section Sup
 variable [ConditionallyCompletePartialOrderSup α] [ConditionallyCompletePartialOrderSup β]
     [Nonempty ι] {l : α → β} {u : β → α}
 
+@[to_dual u_csInf_of_directedOn']
 theorem l_csSup_of_directedOn' (gc : GaloisConnection l u) {s : Set α}
     (hd : DirectedOn (· ≤ ·) s) (hne : s.Nonempty) (hbdd : BddAbove s) :
     l (sSup s) = sSup (l '' s) :=
   gc.isLUB_l_image (hd.isLUB_csSup hne hbdd) |>.unique <|
     (hd.mono_comp gc.monotone_l).isLUB_csSup (hne.image l) (gc.monotone_l.map_bddAbove hbdd)
 
+@[to_dual u_csInf_of_directedOn]
 theorem l_csSup_of_directedOn (gc : GaloisConnection l u) {s : Set α} (hd : DirectedOn (· ≤ ·) s)
     (hne : s.Nonempty) (hbdd : BddAbove s) : l (sSup s) = ⨆ x : s, l x := by
-  simpa only [← comp_def, ← sSup_range, range_comp, Subtype.range_coe_subtype, setOf_mem_eq]
+  simpa only [← comp_def, ← sSup_range, range_comp, Subtype.range_coe_subtype, ofPred_mem_eq]
     using gc.l_csSup_of_directedOn' hd hne hbdd
 
+@[to_dual u_ciInf_of_directed]
 theorem l_ciSup_of_directed (gc : GaloisConnection l u) {f : ι → α} (hd : Directed (· ≤ ·) f)
     (hf : BddAbove (range f)) : l (⨆ i, f i) = ⨆ i, l (f i) := by
   rw [iSup, gc.l_csSup_of_directedOn hd.directedOn_range (range_nonempty _) hf, iSup_range']
 
+@[to_dual u_ciInf_set_of_directedOn]
 theorem l_ciSup_set_of_directedOn (gc : GaloisConnection l u) {s : Set γ} {f : γ → α}
     (hd : DirectedOn (· ≤ ·) (f '' s)) (hf : BddAbove (f '' s))
     (hne : s.Nonempty) : l (⨆ i : s, f i) = ⨆ i : s, l (f i) := by
@@ -219,33 +219,6 @@ theorem l_ciSup_set_of_directedOn (gc : GaloisConnection l u) {s : Set γ} {f : 
   simpa [← directedOn_range, ← comp_def, range_comp]
 
 end Sup
-
-section Inf
-
-variable [ConditionallyCompletePartialOrderInf α] [ConditionallyCompletePartialOrderInf β]
-    [Nonempty ι] {l : α → β} {u : β → α}
-
-theorem u_csInf_of_directedOn (gc : GaloisConnection l u) {s : Set β} (hd : DirectedOn (· ≥ ·) s)
-    (hne : s.Nonempty) (hbdd : BddBelow s) :
-    u (sInf s) = ⨅ x : s, u x :=
-  gc.dual.l_csSup_of_directedOn hd hne hbdd
-
-theorem u_csInf_of_directedOn' (gc : GaloisConnection l u) {s : Set β} (hd : DirectedOn (· ≥ ·) s)
-    (hne : s.Nonempty) (hbdd : BddBelow s) :
-    u (sInf s) = sInf (u '' s) :=
-  gc.dual.l_csSup_of_directedOn' hd hne hbdd
-
-theorem u_ciInf_of_directed (gc : GaloisConnection l u) {f : ι → β} (hd : Directed (· ≥ ·) f)
-    (hf : BddBelow (range f)) :
-    u (⨅ i, f i) = ⨅ i, u (f i) :=
-  gc.dual.l_ciSup_of_directed hd hf
-
-theorem u_ciInf_set_of_directedOn (gc : GaloisConnection l u) {s : Set γ} {f : γ → β}
-    (hd : DirectedOn (· ≥ ·) (f '' s)) (hf : BddBelow (f '' s))
-    (hne : s.Nonempty) : u (⨅ i : s, f i) = ⨅ i : s, u (f i) :=
-  gc.dual.l_ciSup_set_of_directedOn hd hf hne
-
-end Inf
 
 end GaloisConnection
 
@@ -257,50 +230,27 @@ variable [ConditionallyCompletePartialOrderSup α] [ConditionallyCompletePartial
   [Nonempty ι]
 
 -- these need to have `directed` in their names.
+@[to_dual]
 theorem map_csSup_of_directedOn (e : α ≃o β) {s : Set α} (hd : DirectedOn (· ≤ ·) s)
     (hne : s.Nonempty) (hbdd : BddAbove s) : e (sSup s) = ⨆ x : s, e x :=
   e.to_galoisConnection.l_csSup_of_directedOn hd hne hbdd
 
+@[to_dual]
 theorem map_csSup_of_directedOn' (e : α ≃o β) {s : Set α} (hd : DirectedOn (· ≤ ·) s)
     (hne : s.Nonempty) (hbdd : BddAbove s) : e (sSup s) = sSup (e '' s) :=
   e.to_galoisConnection.l_csSup_of_directedOn' hd hne hbdd
 
+@[to_dual]
 theorem map_ciSup_of_directed (e : α ≃o β) {f : ι → α} (hd : Directed (· ≤ ·) f)
     (hf : BddAbove (range f)) : e (⨆ i, f i) = ⨆ i, e (f i) :=
   e.to_galoisConnection.l_ciSup_of_directed hd hf
 
+@[to_dual]
 theorem map_ciSup_set_of_directedOn (e : α ≃o β) {s : Set γ} {f : γ → α}
     (hd : DirectedOn (· ≤ ·) (f '' s)) (hf : BddAbove (f '' s)) (hne : s.Nonempty) :
     e (⨆ i : s, f i) = ⨆ i : s, e (f i) :=
   e.to_galoisConnection.l_ciSup_set_of_directedOn hd hf hne
 
 end Sup
-
-section Inf
-
-variable [ConditionallyCompletePartialOrderInf α] [ConditionallyCompletePartialOrderInf β]
-  [Nonempty ι]
-
-theorem map_csInf_of_directedOn (e : α ≃o β) {s : Set α} (hd : DirectedOn (· ≥ ·) s)
-    (hne : s.Nonempty) (hbdd : BddBelow s) :
-    e (sInf s) = ⨅ x : s, e x :=
-  e.dual.map_csSup_of_directedOn hd hne hbdd
-
-theorem map_csInf_of_directedOn' (e : α ≃o β) {s : Set α} (hd : DirectedOn (· ≥ ·) s)
-    (hne : s.Nonempty) (hbdd : BddBelow s) :
-    e (sInf s) = sInf (e '' s) :=
-  e.dual.map_csSup_of_directedOn' hd hne hbdd
-
-theorem map_ciInf_of_directed (e : α ≃o β) {f : ι → α} (hd : Directed (· ≥ ·) f)
-    (hf : BddBelow (range f)) :
-    e (⨅ i, f i) = ⨅ i, e (f i) :=
-  e.dual.map_ciSup_of_directed hd hf
-
-theorem map_ciInf_set_of_directedOn (e : α ≃o β) {s : Set γ} {f : γ → α}
-    (hd : DirectedOn (· ≥ ·) (f '' s)) (hf : BddBelow (f '' s))
-    (hne : s.Nonempty) : e (⨅ i : s, f i) = ⨅ i : s, e (f i) :=
-  e.dual.map_ciSup_set_of_directedOn hd hf hne
-
-end Inf
 
 end OrderIso

@@ -137,19 +137,21 @@ theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ 
     #Z ≤ p.natDegree :=
   (Multiset.card_le_card (Finset.val_le_iff_val_subset.2 h)).trans (Polynomial.card_roots' p)
 
-theorem finite_setOf_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p x } := by
+theorem finite_setOfPred_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p x } := by
   classical
-  simpa only [← Finset.setOf_mem, Multiset.mem_toFinset, mem_roots hp]
+  simpa only [← Finset.setOfPred_mem, Multiset.mem_toFinset, mem_roots hp]
     using p.roots.toFinset.finite_toSet
 
+@[deprecated (since := "2026-07-09")] alias finite_setOf_isRoot := finite_setOfPred_isRoot
+
 theorem eq_zero_of_infinite_isRoot (p : R[X]) (h : Set.Infinite { x | IsRoot p x }) : p = 0 :=
-  not_imp_comm.mp finite_setOf_isRoot h
+  not_imp_comm.mp finite_setOfPred_isRoot h
 
 theorem exists_max_root [LinearOrder R] (p : R[X]) (hp : p ≠ 0) : ∃ x₀, ∀ x, p.IsRoot x → x ≤ x₀ :=
-  Set.exists_upper_bound_image _ _ <| finite_setOf_isRoot hp
+  Set.exists_upper_bound_image _ _ <| finite_setOfPred_isRoot hp
 
 theorem exists_min_root [LinearOrder R] (p : R[X]) (hp : p ≠ 0) : ∃ x₀, ∀ x, p.IsRoot x → x₀ ≤ x :=
-  Set.exists_lower_bound_image _ _ <| finite_setOf_isRoot hp
+  Set.exists_lower_bound_image _ _ <| finite_setOfPred_isRoot hp
 
 theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = eval x q }) :
     p = q := by
