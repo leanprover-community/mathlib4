@@ -6,15 +6,15 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Data.List.Perm
-public import Mathlib.Init
+public import Mathlib.Data.List.Pairwise
 
 /-!
 # The Following Are Equivalent
 
 This file allows to state that all propositions in a list are equivalent. It is used by
 `Mathlib/Tactic/Tfae.lean`.
-`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
+`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `l.Pairwise (· ↔ ·)`, see
+`List.tfae_iff_pairwise`.
 -/
 
 @[expose] public section
@@ -35,30 +35,26 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
+theorem tfae_iff_pairwise {l : List Prop} : TFAE l ↔ l.Pairwise (· ↔ ·) :=
+  ⟨fun h ↦ pairwise_of_reflexive_of_forall_ne fun a ha b hb _ ↦ h a ha b hb,
+    fun h ↦ h.forall_of_forall fun _ _ ↦ Iff.rfl⟩
+
 theorem TFAE.subset {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
 theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
 
+@[simp]
+theorem tfae_reverse {l : List Prop} : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
+
 theorem tfae_append {l₁ l₂ : List Prop} :
-    TFAE (l₁ ++ l₂) ↔ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) ∧ TFAE l₁ ∧ TFAE l₂ where
-  mp h := by
-    refine ⟨fun a ha b hb ↦ h a (mem_append_left l₂ ha) b (mem_append_right l₁ hb), ?_, ?_⟩
-    · exact h.subset (subset_append_left l₁ l₂)
-    · exact h.subset (subset_append_right l₁ l₂)
-  mpr h a ha b hb := by
-    rcases mem_append.1 ha with ha | ha <;> rcases mem_append.1 hb with hb | hb
-    · exact h.2.1 a ha b hb
-    · exact h.1 a ha b hb
-    · exact (h.1 b hb a ha).symm
-    · exact h.2.2 a ha b hb
+    TFAE (l₁ ++ l₂) ↔ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) ∧ TFAE l₁ ∧ TFAE l₂ := by
+  simp [tfae_iff_pairwise, pairwise_append, and_rotate]
 
 theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
-  rw [tfae_append, and_congr_left_iff, and_imp]
-  refine fun h₁ h₂ ↦ ⟨by grind, fun h c hc d hd ↦ ?_⟩
-  rwa [h₁ c hc a ha, ← h₂ b hb d hd]
+  simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h

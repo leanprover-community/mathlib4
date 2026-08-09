@@ -71,6 +71,18 @@ theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b 
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
+theorem pairwise_append_of_mem [Std.Symm R] [IsTrans α R] {a b : α} {l₁ l₂ : List α} (ha : a ∈ l₁)
+    (hb : b ∈ l₂) : (l₁ ++ l₂).Pairwise R ↔ R a b ∧ l₁.Pairwise R ∧ l₂.Pairwise R := by
+  rw [pairwise_append, ← and_rotate, and_congr_left_iff, and_imp]
+  refine fun h₁ h₂ ↦ ⟨fun h ↦ h a ha b hb, ?_⟩
+  refine fun hab x hx y hy ↦ _root_.trans (_root_.trans ?_ hab) ?_
+  · rcases eq_or_ne x a with rfl | h
+    · exact _root_.trans hab (symm hab)
+    · exact h₁.forall hx ha h
+  · rcases eq_or_ne y b with rfl | h
+    · exact _root_.trans (symm hab) hab
+    · exact h₂.forall hb hy h.symm
+
 theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
     R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
   grind +splitIndPred
