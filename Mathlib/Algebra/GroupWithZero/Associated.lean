@@ -249,7 +249,7 @@ lemma Associated.isRelPrime_iff_left [Monoid M] {a b c : M} (assoc : Associated 
   ⟨fun h ↦ isRelPrime_left assoc h, fun h ↦ isRelPrime_left assoc.symm h⟩
 
 lemma Associated.isRelPrime_right [Monoid M] {a b c : M} (assoc : Associated a b)
-    (h : IsRelPrime c a) : IsRelPrime c b:=
+    (h : IsRelPrime c a) : IsRelPrime c b :=
   fun _ hc hb ↦ h hc (assoc.dvd_iff_dvd_right.mpr hb)
 
 lemma Associated.isRelPrime_iff_right [Monoid M] {a b c : M} (assoc : Associated a b) :
