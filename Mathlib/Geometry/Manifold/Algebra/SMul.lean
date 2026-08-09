@@ -296,6 +296,11 @@ instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul 
   contMDiff_const_smul γ := ContMDiff.prodMk
     (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
 
+lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [ChartedSpace H' G]
+    [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M] {n : ℕ∞ω}
+    [ContMDiffConstSMul I' n Γ G] [ContMDiffSMul I' I n G M] : ContMDiffConstSMul I n Γ M where
+  contMDiff_const_smul := sorry
+
 
 end ContMDiffConstSMul
 
