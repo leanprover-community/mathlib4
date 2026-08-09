@@ -40,7 +40,7 @@ theorem kraft_inequality {S : Finset (List α)} (hS : PrefixFree (S : Set (List 
     ∑ w ∈ S, (1 / (Fintype.card α : ℝ)) ^ w.length ≤ 1 := by
   by_cases hε : [] ∈ S
   · have hS' : S = {[]} := by
-      exact_mod_cast hS.epsilon_singleton hε
+      exact_mod_cast hS.eq_singleton_empty_of_empty_mem hε
     simp [hS']
   · exact kraft_mcmillan_inequality (hS.uniquelyDecodable hε)
 
@@ -48,10 +48,7 @@ private lemma sum_kraft_le_one {S : Set (List α)} (hS : PrefixFree S) (F : Fins
     ∑ w ∈ F, (1 / (Fintype.card α : ℝ)) ^ (w : List α).length ≤ 1 := by
   classical
   let T : Finset (List α) := F.image Subtype.val
-  have hTS : (T : Set (List α)) ⊆ S := by
-    intro w hw
-    obtain ⟨w, -, rfl⟩ := Finset.mem_image.mp hw
-    exact w.2
+  have hTS : (T : Set (List α)) ⊆ S := by grind
   calc
     ∑ w ∈ F, (1 / (Fintype.card α : ℝ)) ^ (w : List α).length =
         ∑ w ∈ T, (1 / (Fintype.card α : ℝ)) ^ w.length := by simp [T]
