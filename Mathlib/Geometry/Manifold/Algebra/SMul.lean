@@ -306,7 +306,7 @@ lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [Charted
       rwa [show (fun x : M ↦ (γ • (1 : G)) • x) = fun x : M ↦ γ • x by simp] at h
     exact contMDiff_const_smul (γ • (1 : G))
 
-/-- If the action on `M` by any element of `Γ` is continuously differentiable, then post-composing 
+/-- If the action on `M` by any element of `Γ` is continuously differentiable, then post-composing
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
 continuously differentiable . -/
 @[to_additive]
