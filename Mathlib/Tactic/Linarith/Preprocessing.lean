@@ -145,7 +145,7 @@ def natToInt : GlobalBranchingPreprocessor where
         -- so we just keep the original hypothesis.
         pure ⟨h, o⟩
     withNewMCtxDepth <| AtomM.run .reducible do
-    -- Keyed by atom indices, so this visits the casts in order of first appearance.
+    -- Keyed by atom indices, so the nonnegativity facts are generated in a deterministic order.
     let nonnegs ← l.foldlM (init := (∅ : TreeMap (Nat × Nat) (Expr × Expr × Origin) lexOrd.compare))
       fun es ⟨h, o⟩ => do
         try

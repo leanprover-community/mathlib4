@@ -63,11 +63,8 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
 @[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
 /-
-Lifting a hypothesis to `ℝ` preserves its origin; the nonnegativity facts are tagged with the
-origins of every hypothesis the coercion was found in, as in `natToInt`. See `Linarith.Origin`.
-
-This transform must track provenance itself rather than being lifted with `Linarith.untagged`,
-since its default value is the identity.
+Nonnegativity facts are tagged with the origins of every hypothesis their coercion was found in, as
+in `natToInt`. See the `nnrealToReal` docstring for why this cannot use `Linarith.untagged`.
 -/
 initialize nnrealToRealTransform.set fun l => do
   let l : List TaggedProof ← l.mapM fun ⟨e, o⟩ => do
