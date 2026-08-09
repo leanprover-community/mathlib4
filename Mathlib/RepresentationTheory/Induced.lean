@@ -68,7 +68,7 @@ noncomputable def IndV.mk (h : H) : A →ₗ[k] IndV φ ρ :=
 
 @[ext 10000]
 lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
-    (hfg : ∀ h : H, f ∘ₗ IndV.mk φ ρ h = g ∘ₗ IndV.mk φ ρ h) : f = g :=
+    (hfg : ∀ (h : H), f ∘ₗ (IndV.mk φ ρ h) = g ∘ₗ (IndV.mk φ ρ h)) : f = g :=
   Coinvariants.hom_ext <| TensorProduct.ext <| MonoidAlgebra.lhom_ext' fun h =>
     LinearMap.ext_ring <| hfg h
 
@@ -128,14 +128,15 @@ lemma IndV.lift_apply_mk (f : H → A →ₗ[k] B) (h : H) (a : A)
 /-- Given a group homomorphism `φ : G →* H` and a `G`-representation `A`, this is
 `(k[H] ⊗[k] A)_G` equipped with the `H`-representation defined by sending `h : H` and `⟦h₁ ⊗ₜ a⟧`
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
-noncomputable abbrev ind : Representation k H (IndV φ ρ) where
+noncomputable def ind : Representation k H (IndV φ ρ) where
   toFun h := IndV.lift φ ρ (fun x => IndV.mk φ ρ (x * h⁻¹)) (by simp [mul_assoc])
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
-lemma ind_apply (h₁ h₂ : H) (a : A) :
+@[simp]
+lemma ind_apply_mk (h₁ h₂ : H) (a : A) :
     ind φ ρ h₁ (IndV.mk _ _ h₂ a) = IndV.mk _ _ (h₂ * h₁⁻¹) a := by
-  simp
+  simp [ind]
 
 lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
     ind φ ρ (h⁻¹ * (φ g) * h) (IndV.mk _ _ h a) = IndV.mk _ _ h (ρ g a) := by
@@ -144,10 +145,15 @@ lemma ind_conj_map_apply (g : G) (h : H) (a : A) :
 variable {ρ} in
 /-- Construct an `IntertwiningMap` starting from an induced representation by lifting an
 `IntertwiningMap` with a `res` representation as target. -/
-noncomputable abbrev ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
+noncomputable def ind.lift {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) :
     (ind φ ρ).IntertwiningMap σ :=
   ⟨IndV.lift φ ρ (fun h => σ h⁻¹ ∘ₗ f.toLinearMap) fun _ _ _ => by
     simp [IntertwiningMap.isIntertwining], fun g => by ext; simp⟩
+
+@[simp]
+lemma ind.lift_apply_mk {σ : Representation k H B} (f : IntertwiningMap ρ (σ.comp φ)) (h : H)
+    (a : A) : ind.lift φ f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) := by
+  simp [ind.lift]
 
 end Representation
 
@@ -207,9 +213,9 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u}
   Adjunction.mkOfHomEquiv {
     homEquiv A B := (indResHomEquiv φ A B).toEquiv
     homEquiv_naturality_left_symm _ _ := by
-      change (indResHomEquiv φ _ _).symm (_ ≫ _) = _
+      rw [Equiv.symm_apply_eq]
       ext; simp [indResHomEquiv]
-    homEquiv_naturality_right := by intros; rfl}
+    homEquiv_naturality_right _ _ := by ext; simp}
 
 open Finsupp
 
