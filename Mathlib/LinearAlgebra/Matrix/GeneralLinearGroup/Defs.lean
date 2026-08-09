@@ -287,7 +287,7 @@ lemma toGL_range :
 
 /-- `Matrix.SpecialLinearGroup` is eqquivalent to `GeneralLinearGroup.det.ker` -/
 noncomputable def toGLKerEquiv :
-  SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
+    SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
   (MonoidHom.ofInjective toGL_injective).trans (MulEquiv.subgroupCongr toGL_range)
     (MulEquiv.subgroupCongr toGL_range)
 
