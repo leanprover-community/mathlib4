@@ -105,8 +105,6 @@ def adjunctionLeft {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
       _ = r.id₁.inv ▷ f' ⊗≫ ((r.i₁ ◁ adj.unit ⊗≫ r.commi.inv ▷ g) ▷ (r.r₁ ≫ f') ≫
           ((f' ≫ r.i₂) ≫ g) ◁ r.commr.inv) ⊗≫
           f' ◁ r.i₂ ◁ adj.counit ▷ r.r₂ ⊗≫ f' ◁ r.id₂.hom := by
-        simp only [whiskerRight_comp, Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc,
-          whiskerLeft_comp, comp_whiskerLeft]
         bicategory
       _ = r.id₁.inv ▷ f' ⊗≫ r.i₁ ◁ r.commr.inv ⊗≫
           (r.i₁ ◁ adj.unit) ▷ (f ≫ r.r₂) ⊗≫
@@ -125,7 +123,14 @@ def adjunctionLeft {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
         bicategory
       _ = _ := by
         simp [bicategoricalComp, r.comm'_assoc]
-  right_triangle := sorry
+  right_triangle := by
+    calc
+      _ = (r.i₂ ≫ g ≫ r.r₁) ◁ (r.id₁.inv ⊗≫ r.i₁ ◁ adj.unit ▷ r.r₁ ⊗≫
+          r.commi.inv ▷ (g ≫ r.r₁)) ⊗≫
+          (r.i₂ ◁ g ◁ r.commr.inv ⊗≫ r.i₂ ◁ adj.counit ▷ r.r₂ ⊗≫ r.id₂.hom) ▷
+            (r.i₂ ≫ g ≫ r.r₁) := by
+        bicategory
+      _ = _ := sorry
 
 /-- In a bicategory, a `1`-morphism that is a retract
 of an equivalence is an equivalence. -/
