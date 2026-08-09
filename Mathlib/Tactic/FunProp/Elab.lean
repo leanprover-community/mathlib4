@@ -60,9 +60,11 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 -/
 syntax "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
+/-- Tactic to prove function properties: do not use `fun_prop'`, but `fun_prop`. -/
 syntax (name := funPropTacStx')
   "fun_prop'" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
+/-- Tactic to prove function properties -/
 macro_rules
   | `(tactic| fun_prop $cfg:optConfig $[$d]? $[[$names,*]]?) =>
     `(tactic| (
