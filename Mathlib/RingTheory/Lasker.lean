@@ -63,7 +63,6 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
-  classical
   refine ⟨(s.image fun J ↦ {I ∈ s | (I.colon .univ).radical = (J.colon .univ).radical}).image
     fun t ↦ t.inf id, ?_, ?_, ?_⟩
   · ext
@@ -197,7 +196,7 @@ lemma comap_localized₀_eq_ite
     simp_rw [mem_localized₀, IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower]
     exact ⟨y • x, hy1 (Set.smul_mem_smul_set (Set.mem_univ x)), ⟨y, hy2⟩, rfl⟩
 
-open LocalizedModule IsLocalizedModule in
+open LocalizedModule Submodule.IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 lemma comap_localized₀_eq_iInf
     {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)
@@ -277,7 +276,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
     smul_mem' x y h := by simp [smul_comm _ x, N.smul_mem x h] }
   have hf : Monotone f := by
     intro n m hnm x hx
-    simpa [hnm, smul_smul, ← pow_add] using N.smul_mem (a ^ (m - n)) hx
+    simpa [hnm, smul_smul, ← pow_add] using! N.smul_mem (a ^ (m - n)) hx
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
   specialize @h (f n) (N + a ^ n • ⊤) ?_
@@ -292,7 +291,7 @@ lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrima
   replace hn : f n = f (n + 1) := hn (n + 1) n.le_succ
   rw [← h, hn]
   rw [← h] at hab
-  simpa [f, pow_succ, mul_smul] using hab
+  simpa [f, pow_succ, mul_smul] using! hab
 
 variable (R M) in
 /-- The Lasker--Noether theorem: every submodule in a Noetherian module admits a decomposition into

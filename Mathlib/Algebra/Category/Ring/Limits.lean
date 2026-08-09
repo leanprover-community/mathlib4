@@ -86,8 +86,9 @@ def limitCone : Cone F where
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
       naturality _ _ f := by
         ext
-        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
+        simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
@@ -319,7 +320,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
         naturality _ _ f := by
           ext
-          simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+          simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -446,7 +447,7 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality _ _ f := by
             ext
-            simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
+            simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
     createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t

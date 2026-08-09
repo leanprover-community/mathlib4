@@ -22,6 +22,7 @@ variable (𝕜 E : Type*) [RCLike 𝕜] [PseudoEMetricSpace E]
 
 namespace RCLike
 
+set_option backward.isDefEq.respectTransparency false in
 /-- On a star subalgebra of bounded continuous functions, the operations "restrict scalars to ℝ"
 and "forget that a bounded continuous function is a bounded" commute. -/
 theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
@@ -32,7 +33,7 @@ theorem restrict_toContinuousMap_eq_toContinuousMapStar_restrict
     (ofRealAm.compLeftContinuous ℝ continuous_ofReal) := by
   ext g
   simp only [Subalgebra.mem_map, Subalgebra.mem_comap, Subalgebra.mem_restrictScalars,
-    StarSubalgebra.mem_toSubalgebra, toContinuousMapₐ_apply, StarSubalgebra.mem_map]
+    StarSubalgebra.mem_toSubalgebra, StarSubalgebra.mem_map]
   constructor
   · intro ⟨x, hxA, hxg⟩
     use (@ofRealAm 𝕜 _).compLeftContinuousBounded ℝ lipschitzWith_ofReal x, hxA

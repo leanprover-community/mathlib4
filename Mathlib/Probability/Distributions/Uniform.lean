@@ -11,6 +11,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
+
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
 ## Uniform distributions
@@ -73,7 +74,7 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
   apply zero_ne_one' ℝ≥0∞
   calc
     0 = (0 : Measure E) Set.univ := rfl
-    _ = _ := by rw [hu, smul_apply, restrict_apply MeasurableSet.univ,
+    _ = _ := by rw [hu, Measure.smul_apply, restrict_apply MeasurableSet.univ,
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
@@ -235,6 +236,7 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
@@ -262,7 +264,7 @@ theorem toOuterMeasure_uniformOfFinset_apply :
       tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
     _ = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ :=
       Finset.sum_congr rfl fun x hx => by
-        have this : x ∈ s ∧ x ∈ t := by simpa using hx
+        have : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true]
     _ = #{x ∈ s | x ∈ t} / #s := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]

@@ -34,7 +34,7 @@ variable [NormedAlgebra 𝕜 𝔸] {f : 𝕜 → 𝔸} {f' : 𝔸} {x : 𝕜} {s
 theorem HasStrictDerivAt.fun_pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
-  simpa using h.hasStrictFDerivAt.pow' n |>.hasStrictDerivAt
+  simpa using! h.hasStrictFDerivAt.pow' n |>.hasStrictDerivAt
 
 theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
     HasStrictDerivAt (f ^ n)
@@ -44,7 +44,7 @@ theorem HasStrictDerivAt.pow' (h : HasStrictDerivAt f f' x) (n : ℕ) :
 theorem HasDerivWithinAt.fun_pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) s x := by
-  simpa using h.hasFDerivWithinAt.pow' n |>.hasDerivWithinAt
+  simpa using! h.hasFDerivWithinAt.pow' n |>.hasDerivWithinAt
 
 theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (f ^ n)
@@ -53,7 +53,7 @@ theorem HasDerivWithinAt.pow' (h : HasDerivWithinAt f f' s x) (n : ℕ) :
 theorem HasDerivAt.fun_pow' (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (fun x ↦ f x ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) * f' * f x ^ i) x := by
-  simpa using h.hasFDerivAt.pow' n |>.hasDerivAt
+  simpa using! h.hasFDerivAt.pow' n |>.hasDerivAt
 
 theorem HasDerivAt.pow' (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n)
@@ -108,7 +108,7 @@ theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
 @[to_fun]
 theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := by
-  simpa using h.hasFDerivAt.pow n |>.hasDerivAt
+  simpa using! h.hasFDerivAt.pow n |>.hasDerivAt
 
 @[to_fun (attr := simp) derivWithin_fun_pow]
 theorem derivWithin_pow (h : DifferentiableWithinAt 𝕜 f s x) (n : ℕ) :
@@ -128,11 +128,11 @@ variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by
-  simpa using (hasStrictDerivAt_id x).pow n
+  simpa using! (hasStrictDerivAt_id x).pow n
 
 theorem hasDerivWithinAt_pow (n : ℕ) (x : 𝕜) :
     HasDerivWithinAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) s x := by
-  simpa using (hasDerivWithinAt_id x s).pow n
+  simpa using! (hasDerivWithinAt_id x s).pow n
 
 theorem hasDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasDerivAt (fun x : 𝕜 => x ^ n) ((n : 𝕜) * x ^ (n - 1)) x := by

@@ -52,7 +52,7 @@ structure ImportState where
 /--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
-private initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
+initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => minImportsRef.set {}

@@ -44,7 +44,15 @@ theorem eval_T_real_mem_Icc (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
   grind [T_real_cos, cos_mem_Icc]
 
 theorem abs_eval_T_real_le_one (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
-    |(T ℝ n).eval x| ≤ 1 := by grind [eval_T_real_mem_Icc]
+    |(T ℝ n).eval x| ≤ 1 := by
+  #adaptation_note /-- Before nightly-2026-04-07, this was just
+  `grind [eval_T_real_mem_Icc]`. `grind`'s e-matching now keeps the
+  `Polynomial.eval` produced by the lemma (which uses `instCommSemiring.toSemiring`)
+  and the `Polynomial.eval` propagated by abs unfolding (which uses `Real.semiring`)
+  as distinct atoms, even though they are `rfl`-equal, so the contradiction is
+  never found. -/
+  have h := eval_T_real_mem_Icc n (Set.mem_Icc.mpr (abs_le.mp hx))
+  exact abs_le.mpr (Set.mem_Icc.mp h)
 
 theorem one_le_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).eval x := by
   rw [← cosh_arcosh hx]

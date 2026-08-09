@@ -9,6 +9,7 @@ import Mathlib.Tactic.Common
 -- set_option trace.simps.verbose true
 -- set_option pp.universes true
 set_option autoImplicit true
+set_option backward.defeqAttrib.useBackward true
 
 open Lean Meta Elab Term Command Simps
 
@@ -976,6 +977,7 @@ instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
 structure NeedsPropClass (n : ℕ) [PropClass n] where
   (t : True)
 
+set_option linter.defProp false in
 @[simps] def test_PropClass : NeedsPropClass 1 :=
   { t := trivial }
 

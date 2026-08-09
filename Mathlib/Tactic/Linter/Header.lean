@@ -8,7 +8,6 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Std.Sync.Mutex
-public meta import Init
 public import Lean.Parser.Module
 public import Mathlib.Tactic.Linter.DirectoryDependency
 
@@ -24,7 +23,9 @@ Authors ...
 -/
 
 import statements*
+
 module doc-string*
+
 remaining file
 ```
 It emits a warning if
@@ -174,11 +175,13 @@ The input is the copyright string, the output is an array of `Syntax × String` 
 The linter checks that
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
 * the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
-* the second line is `Released under Apache 2.0 license as described in the file LICENSE.`;
+* the second line equals `expectedLicense` (determined by the `linter.style.header.license` option,
+  defaults to the Mathlib default);
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
+public def copyrightHeaderChecks (copyright : String) (expectedLicense : String) :
+    Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
@@ -239,7 +242,6 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
         "If an authors line spans multiple lines, \
         each line but the last must end with a trailing comma")
     output := output.append (authorsLineChecks authorsLine authorsStart)
-    let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
       output := output.push (toSyntax copyright license,
         s!"Second copyright line should be \"{expectedLicense}\"")
@@ -298,6 +300,12 @@ public register_option linter.style.header : Bool := {
   descr := "enable the header style linter"
 }
 
+/-- The text required by `linter.style.header` as the second line of the header. -/
+public register_option linter.style.header.license : String := {
+  defValue := "Released under Apache 2.0 license as described in the file LICENSE."
+  descr := "The text required as the second line of the copyright header."
+}
+
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
@@ -305,8 +313,10 @@ namespace Style.header
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
-    | `Mathlib.Tactic =>
-      Linter.logLint linter.style.header i "Files in mathlib cannot import the whole tactic folder."
+    | `Mathlib.Tactic | `Lean | `Lean.Meta | `Lean.Elab | `Lean.Elab.Tactic | `Std =>
+      Linter.logLint linter.style.header i
+        s!"Files in mathlib cannot import the whole `{i.getId}` folder. \
+        Doing so would cause imports to be unnecessarily slow."
     | `Mathlib.Tactic.Replace =>
       if mainModule != `Mathlib.Tactic then
         Linter.logLint linter.style.header i
@@ -363,7 +373,8 @@ The set of files outside the `Mathlib` package to run the header style linter on
 because they are files that test the linter.
 -/
 def headerTestFiles : NameSet := .ofList
-  [`MathlibTest.Header, `MathlibTest.HeaderFail, `MathlibTest.VersoHeader, `MathlibTest.DirectoryDependencyLinter.Test]
+  [`MathlibTest.Linter.Header.Basic, `MathlibTest.Linter.Header.Fail, `MathlibTest.Linter.Header.Verso,
+  `MathlibTest.DirectoryDependencyLinter.Test]
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -414,6 +425,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   let imports := getImports upToStx
+  let afterImports := firstNonImport? upToStx
+  -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
+  -- directory dependency, etc.) since they are just import-redirect stubs.
+  if let some (.node _ ``Lean.Parser.Command.deprecated_module _) := afterImports then return
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck imports
@@ -423,19 +438,21 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
     Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
-  let some afterImports := firstNonImport? upToStx | return
-  if afterImports.isOfKind ``Lean.Parser.Command.eoi then return
+  if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
-    for (stx, m) in copyrightHeaderChecks copyright do
+    let expectedLicense := linter.style.header.license.get (← getOptions)
+    for (stx, m) in copyrightHeaderChecks copyright expectedLicense do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
-  | (.node _ ``Lean.Parser.Command.moduleDoc _) => return
-  | rest =>
+    | none => return
+    | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+    | some (.node _ ``Lean.Parser.Command.eoi _) => return
+    | some rest =>
     Linter.logLint linter.style.header rest
       m!"The module doc-string for a file should be the first command after the imports.\n\
        Please, add a module doc-string before `{stx}`."

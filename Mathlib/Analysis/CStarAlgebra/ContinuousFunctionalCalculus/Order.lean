@@ -374,11 +374,11 @@ lemma le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
 
 lemma one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
     1 ≤ (↑a⁻¹ : A) ↔ a ≤ 1 := by
-  simpa using CStarAlgebra.le_inv_iff (a := 1) (by simp) ha
+  simpa using! CStarAlgebra.le_inv_iff (a := 1) (by simp) ha
 
 lemma inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
     (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
-  simpa using CStarAlgebra.inv_le_iff ha (b := 1) (by simp)
+  simpa using! CStarAlgebra.inv_le_iff ha (b := 1) (by simp)
 
 lemma inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
   CStarAlgebra.inv_le_one_iff_one_le (zero_le_one.trans ha) |>.mpr ha
@@ -482,11 +482,12 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert! this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
-    simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
+    simp only [Set.mem_image, Set.mem_ofPred_eq, Set.mem_inter_iff, Set.mem_range,
+      ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
   simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
+    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.ofPred_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 

@@ -162,7 +162,7 @@ noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S s := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
-    Subtype.range_coe_subtype, Set.setOf_mem_eq]
+    Subtype.range_coe_subtype, Set.ofPred_mem_eq]
 
 variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
@@ -223,6 +223,7 @@ end Localization
 
 variable {ι' : Type*} {T} [CommRing T] [Algebra R T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps -isSimp σ]
@@ -230,14 +231,14 @@ noncomputable
 def comp [Algebra S T] [IsScalarTower R S T]
     (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
-  σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
+  σ' x := (AddMonoidAlgebra.coeff <| Q.σ x).sum fun n r ↦
+    rename .inr (P.σ r) * monomial (n.mapDomain .inl) 1
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
       rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
-    conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
-    simp only [map_finsuppSum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
-      aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
-      one_mul, single_eq_monomial]
+    conv_rhs => rw [← Q.aeval_val_σ s, (Q.σ s).as_sum]
+    simp [aeval_rename, this, aeval_monomial, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
+      Finsupp.sum, MvPolynomial.finsupp_support_eq_support, MvPolynomial.coeff]
 
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
@@ -280,6 +281,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     use (a + b)
     rw [map_add, ha, hb]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The forwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -291,11 +293,13 @@ noncomputable def baseChangeFromBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeFromBaseChange_apply (x : P.toExtension.baseChange.Ring) :
     dsimp% (P.baseChangeFromBaseChange T).toRingHom x = MvPolynomial.algebraTensorAlgEquiv R T x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -307,6 +311,7 @@ noncomputable def baseChangeToBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
     dsimp% (P.baseChangeToBaseChange T).toRingHom x =
@@ -520,7 +525,7 @@ def toComp (Q : Generators S T ι') (P : Generators R S ι) : Hom P (Q.comp P) w
   aeval_val i := by simp
 
 lemma toComp_toAlgHom (Q : Generators S T ι') (P : Generators R S ι) :
-    (Q.toComp P).toAlgHom = rename Sum.inr := rfl
+    (Q.toComp P).toAlgHom = rename Sum.inr := by rw [rename_eq_aeval]; rfl
 
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[X, Y] → S[X]`. -/
@@ -544,8 +549,11 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) 
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
   convert! rename_monomial _ _ _
-  ext f (i₁ | i₂) <;>
-    simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
+  · ext f (i₁ | i₂)
+    simp [rename_eq_aeval]
+    rfl
+  · ext f (i₁ | i₂) <;>
+      simp [Finsupp.mapDomain_of_notMem_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
 @[simp]
 lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
@@ -554,6 +562,7 @@ lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p
     (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
   DFunLike.congr_fun this p
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma toAlgHom_ofComp_surjective (Q : Generators S T ι') (P : Generators R S ι) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
   intro p
@@ -582,6 +591,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/
@@ -593,10 +603,12 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   toRingHom_algebraMap x := by simp
   algebraMap_toRingHom x := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -613,6 +625,7 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
@@ -629,19 +642,16 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
     (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
--- FIXME: `simpNF` times out synthesizing
--- `FaithfulSMul (P.ofAlgEquiv e).toExtension.Ring T`.
-@[simp, nolint simpNF]
+@[simp]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
@@ -649,9 +659,10 @@ lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R
     AlgHomClass.toRingHom_toAlgHom, AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot,
     ← ker_eq_ker_aeval_val]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
-  letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
+  let : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
   apply le_antisymm
   · rw [Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
@@ -666,7 +677,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (coeff (e.symm v) x) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
       simpa only [AlgHom.toRingHom_eq_coe, Finset.sum_map, Equiv.coe_toEmbedding,
-        EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using this
+        EquivLike.coe_coe, AddEquiv.symm_apply_apply, support_sum_monomial_coeff] using! this
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
@@ -726,7 +737,7 @@ to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
 noncomputable
 def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.comp P).ker := by
-  refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
+  refine ⟨(AddMonoidAlgebra.coeff x.1).sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
     -- so that the term has type `(Q.comp P).Ring` and not `MvPolynomial (Q.ι ⊕ P.ι) R`
     refine rename ?_ (P.σ r) * monomial ?_ 1
@@ -740,6 +751,7 @@ def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker)
     simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
       coeff]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
@@ -747,7 +759,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x
   refine Finset.sum_congr rfl fun j _ ↦ ?_
   simp only [map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
-  rw [rename, ← AlgHom.comp_apply, comp_aeval]
+  rw [rename_eq_aeval, ← AlgHom.comp_apply, comp_aeval]
   simp only [ofComp_val, Sum.elim_inr, Function.comp_apply,
     Sum.elim_inl, monomial_eq, Hom.toAlgHom_X]
   congr 1
@@ -789,3 +801,16 @@ lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
 end Hom
 
 end Algebra.Generators
+
+namespace Algebra.Extension
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- The canonical homomorphism of extensions from the universal extension `R[S] → S`
+(given by `Generators.self R S`) to any extension `P` defined via the designated section `P.σ`. -/
+@[simps!]
+noncomputable
+def defaultHom (P : Extension.{w} R S) : (Generators.self R S).toExtension.Hom P :=
+  .ofAlgHom (MvPolynomial.aeval P.σ) (by dsimp; ext; simp)
+
+end Algebra.Extension

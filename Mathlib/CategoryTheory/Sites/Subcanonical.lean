@@ -24,7 +24,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite Functor
+open Opposite CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 
@@ -44,6 +44,8 @@ theorem yonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type v)} (x : F.obj.obj
     (Y : Cᵒᵖ) (f : Y.unop ⟶ X) : dsimp% (J.yonedaEquiv.symm x).hom.app Y f = F.obj.map f.op x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- See also `yonedaEquiv_naturality'` for a more general version. -/
 lemma yonedaEquiv_naturality {X Y : C} {F : Sheaf J (Type v)} (f : J.yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.obj.map g.op (J.yonedaEquiv f) = J.yonedaEquiv (J.yoneda.map g ≫ f) := by
@@ -68,6 +70,7 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : J.yonedaEquiv (J.yoneda.m
   rw [yonedaEquiv_apply]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J (Type v))
     (x : F.obj.obj ⟨X⟩) : J.yoneda.map f ≫ J.yonedaEquiv.symm x = J.yonedaEquiv.symm
       ((F.obj.map f.op) x) := by
@@ -109,8 +112,11 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+    using! congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Yoneda lemma for sheaves. -/
 @[simps! +dsimpLhs hom_app_app_hom_apply_down inv_app_app]
 def yonedaOpCompCoyoneda :
@@ -137,6 +143,7 @@ theorem uliftYonedaEquiv_symm_app_apply {X : C} {F : Sheaf J (Type (max v v'))}
     dsimp% (J.uliftYonedaEquiv.symm x).hom.app Y ⟨f⟩ = F.obj.map f.op x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- See also `uliftYonedaEquiv_naturality'` for a more general version. -/
 lemma uliftYonedaEquiv_naturality {X Y : C} {F : Sheaf J (Type (max v v'))}
@@ -206,8 +213,11 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     f = g := by
   ext X x
   simpa only [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
-    using congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
+    using! congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
 @[simps! +dsimpLhs -isSimp]
 def uliftYonedaOpCompCoyoneda :
@@ -241,6 +251,7 @@ instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
     inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
   exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Let `{ Xᵢ ⟶ Y }` be a family of pairwise disjoint maps that form a cover in `J`. Then its

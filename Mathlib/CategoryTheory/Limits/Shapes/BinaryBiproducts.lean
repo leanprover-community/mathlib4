@@ -89,7 +89,7 @@ instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+/-- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
 -- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
 the underlying structure. -/
 @[ext]
@@ -141,13 +141,14 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
   map_surjective t :=
    ⟨{ hom := F.preimage t.hom
-      winl := F.map_injective (by simpa using t.winl)
-      winr := F.map_injective (by simpa using t.winr)
-      wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
+      winl := F.map_injective (by simpa using! t.winl)
+      winr := F.map_injective (by simpa using! t.winr)
+      wfst := F.map_injective (by simpa using! t.wfst)
+      wsnd := F.map_injective (by simpa using! t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -239,11 +240,13 @@ def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) w
 abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
   toBiconeFunctor.obj b
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
 cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
@@ -296,12 +299,16 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
 abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
   toBinaryBiconeFunctor.obj b
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
 cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
 colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
@@ -318,6 +325,8 @@ structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
 attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
 obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
 def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)
@@ -717,6 +726,7 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
     rcases j with ⟨⟨⟩⟩
   all_goals simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Binary biproducts are unique up to isomorphism. This already follows because bilimits are
 limits, but in the case of biproducts we can give an isomorphism with particularly nice
 definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
@@ -901,6 +911,7 @@ section
 
 variable (P Q) [HasBinaryBiproduct P Q]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
 def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
   biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit

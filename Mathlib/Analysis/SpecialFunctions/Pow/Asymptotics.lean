@@ -81,6 +81,12 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_neg <| tendsto_id (α := ℝ)).mpr ?_
   exact (log_neg_iff hb₀).mpr hb₁
 
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
+    Tendsto (b ^ · : ℝ → ℝ) atTop atTop := by
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine tendsto_exp_atTop.comp <| (tendsto_const_mul_atTop_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  exact log_pos hb
+
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
@@ -310,7 +316,7 @@ theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠
 /-- If `a ≤ 1`, then `x = O(x ^ a)` as `x → 0`, `x ≥ 0`. -/
 theorem IsBigO.id_rpow_of_le_one {a : ℝ} (ha : a ≤ 1) :
     (id : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) := by
-  simpa using rpow_rpow_nhdsGE_zero_of_le ha (by simp)
+  simpa using! rpow_rpow_nhdsGE_zero_of_le ha (by simp)
 
 end Asymptotics
 

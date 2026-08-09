@@ -57,6 +57,10 @@ lemma add_apply (g₁ g₂ : ι →₀ M) (a : ι) : (g₁ + g₂) a = g₁ a + 
 
 lemma support_add [DecidableEq ι] : (g₁ + g₂).support ⊆ g₁.support ∪ g₂.support := support_zipWith
 
+/-- The support of a sum is the union of the supports when the supports are disjoint.
+
+In the case where the coefficients satisfy `CanonicallyOrderedAdd`, there is also
+`Finsupp.support_add_eq_union`, which holds without any disjointness assumption. -/
 lemma support_add_eq [DecidableEq ι] (h : Disjoint g₁.support g₂.support) :
     (g₁ + g₂).support = g₁.support ∪ g₂.support :=
   le_antisymm support_zipWith fun a ha => by
@@ -86,7 +90,6 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 @[simp↓ high] lemma uniqueAddEquiv_symm_apply_apply (i : ι) [Subsingleton ι] (m : M) (j : ι) :
     (uniqueAddEquiv i).symm m j = m := by simp [Subsingleton.elim j i]
 
-set_option linter.deprecated false in
 /-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
 is isomorphic to `M`. -/
 @[simps!, deprecated uniqueAddEquiv (since := "2026-05-06")]
@@ -134,7 +137,7 @@ def embDomain.addMonoidHom (f : ι ↪ F) : (ι →₀ M) →+ F →₀ M where
     by_cases h : b ∈ Set.range f
     · rcases h with ⟨a, rfl⟩
       simp
-    · simp only [coe_add, Pi.add_apply, embDomain_notin_range _ _ _ h, add_zero]
+    · simp only [coe_add, Pi.add_apply, embDomain_of_notMem_range _ _ _ h, add_zero]
 
 @[simp]
 lemma embDomain_add (f : ι ↪ F) (v w : ι →₀ M) :
@@ -173,7 +176,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   refine subset_trans Finsupp.support_add <| union_subset_iff.mpr ⟨?_, ?_⟩ <;>
   exact subset_trans Finsupp.support_single_subset (by simp)
 
-set_option linter.deprecated false in
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated uniqueAddEquiv_symm_apply (since := "2026-05-06")]
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
@@ -267,7 +270,6 @@ protected lemma induction {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (z
 lemma induction₂ {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ (a b) (f : ι →₀ M),
       a ∉ f.support → b ≠ 0 → motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction zero ?_
   convert! add_single using 7
   apply (addCommute_of_disjoint _).eq
@@ -313,7 +315,6 @@ The lemma `induction_on_max` swaps the argument order in the sum. -/
 lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
     (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
       motive f → motive (f + single a b)) : motive f := by
-  classical
   refine f.induction_on_max zero ?_
   convert! add_single using 7 with _ _ _ H
   have := fun c hc ↦ (H c hc).ne

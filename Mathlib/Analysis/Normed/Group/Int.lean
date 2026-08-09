@@ -56,6 +56,6 @@ theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖
 
 @[to_additive nnnorm_zsmul_le]
 theorem nnnorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using norm_zpow_le_mul_norm n a
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using! norm_zpow_le_mul_norm n a
 
 end
