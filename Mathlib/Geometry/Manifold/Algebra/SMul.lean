@@ -301,6 +301,17 @@ lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [Charted
     [ContMDiffConstSMul I' n Γ G] [ContMDiffSMul I' I n G M] : ContMDiffConstSMul I n Γ M where
   contMDiff_const_smul := sorry
 
+/-- If the action on `M` by any element of `Γ` is continuously differentiable, then post-composing 
+this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
+continuously differentiable . -/
+@[to_additive]
+theorem MulAction.contMDiffConstSMul_compHom {n : ℕ∞ω} {Γ : Type*} [Monoid Γ] [MulAction Γ M]
+    [ContMDiffConstSMul I n Γ M] {Γ' : Type*} [Monoid Γ']
+    {f : Γ' →* Γ} :
+    letI : MulAction Γ' M := MulAction.compHom _ f
+    ContMDiffConstSMul I n Γ' M := by
+  let _ : MulAction Γ' M := MulAction.compHom _ f
+  exact ⟨fun g ↦ ContMDiff.const_smul contMDiff_id (f g)⟩
 
 end ContMDiffConstSMul
 
