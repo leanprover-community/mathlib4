@@ -54,7 +54,7 @@ variable {B₃ : LinearMap.BilinForm R M₃} {B₄ : LinearMap.BilinForm R M₄}
 
 instance instFunLike : FunLike (B₁ →bᵢ B₂) M₁ M₂ where
   coe f := f.toLinearMap
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
 
 instance instLinearMapClass : LinearMapClass (B₁ →bᵢ B₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add

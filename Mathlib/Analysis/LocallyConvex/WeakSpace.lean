@@ -30,6 +30,7 @@ variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [LocallyConvexSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (𝕜) in
 /-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
 the closure of `s` and the weak closure of `s` coincide. More precisely, the topological closure
@@ -57,7 +58,6 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
 
-set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 theorem toWeakSpace_closedConvexHull_eq {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) = closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
@@ -91,7 +91,7 @@ theorem LinearEquiv.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e :
     (he₂ : ∀ f : StrongDual 𝕜 E, Continuous (e.symm.dualMap f)) :
     e '' (closure s) = closure (e '' s) := by
   refine le_antisymm ((e : E →ₗ[𝕜] F).image_closure_of_convex hs he₁) ?_
-  simp only [Set.le_eq_subset, ← Set.image_subset_image_iff e.symm.injective]
+  simp only [← Set.image_subset_image_iff e.symm.injective]
   simpa [Set.image_image]
     using (e.symm : F →ₗ[𝕜] E).image_closure_of_convex (hs.linear_image (e : E →ₗ[𝕜] F)) he₂
 

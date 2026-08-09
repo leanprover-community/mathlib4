@@ -59,6 +59,7 @@ instance IsLocalization.op : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty Cᵒᵖ)
     [L.IsLocalization W] : L.unop.IsLocalization W.unop :=
   have : CatCommSq (opOpEquivalence C).functor L.op L.unop
@@ -76,8 +77,6 @@ lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     L.op.IsLocalization W.op ↔ L.IsLocalization W :=
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
-
-@[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
 
 end Functor
 

@@ -57,7 +57,7 @@ lemma mulSingle_ne_one_iff : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
 @[to_additive]
 lemma apply_mulSingle (f' : ∀ i, M i → N i) (hf' : ∀ i, f' i 1 = 1) (i : ι) (x : M i) (j : ι) :
     f' j (mulSingle i x j) = mulSingle i (f' i x) j := by
-  simpa only [Pi.one_apply, hf', mulSingle] using Function.apply_update f' 1 i x j
+  simpa only [Pi.one_apply, hf', mulSingle] using! Function.apply_update f' 1 i x j
 
 @[to_additive apply_single₂]
 lemma apply_mulSingle₂ (f' : ∀ i, M i → N i → O i) (hf' : ∀ i, f' i 1 1 = 1) (i : ι)

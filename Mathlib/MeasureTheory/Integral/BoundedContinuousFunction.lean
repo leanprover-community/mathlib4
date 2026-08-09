@@ -73,7 +73,7 @@ theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
 
 theorem toReal_lintegral_coe_eq_integral [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) (μ : Measure X) :
     (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
+  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using!
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
   · exact Eventually.of_forall (by simp)

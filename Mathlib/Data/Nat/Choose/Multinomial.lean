@@ -264,13 +264,13 @@ variable [Semiring R]
 
 open scoped Function -- required for scoped `on` notation
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
-  classical
   induction s using Finset.cons_induction generalizing n with
   | empty => cases n <;> simp
   | cons a s has ih => ?_
@@ -326,7 +326,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       convert! @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
+      have : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)
@@ -411,7 +411,6 @@ theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {
 
 namespace List
 
-open Nat
 
 lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List α) :
     l.toFinsupp.sum (fun _ a ↦ a) = l.sum := by
@@ -500,5 +499,29 @@ theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
 theorem multinomial_nsmul_singleton (k n : ℕ) :
     (k • {n} : Multiset ℕ).multinomial = Nat.multinomial (Finset.range k) (fun _ ↦ n) := by
   simp [multinomial_nsmul]
+
+theorem multinomial_pos (m : Multiset ℕ) : 0 < m.multinomial := by
+  induction m using Multiset.induction_on with
+  | empty => simp
+  | cons x m h =>
+    simp only [multinomial_cons, h, mul_pos_iff_of_pos_right]
+    exact Nat.choose_pos (Nat.le_add_right x m.sum)
+
+section PositivityExtension
+
+open Mathlib.Meta.Positivity Qq in
+/--
+Positivity extension for `Multiset.multinomial`.
+-/
+@[positivity multinomial (_ : Multiset ℕ)]
+meta def evalMultinomial : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(multinomial $a) =>
+    assertInstancesCommute
+    return .positive q(multinomial_pos $a)
+  | _, _, _ => throwError "not multinomial"
+
+end PositivityExtension
 
 end Multiset

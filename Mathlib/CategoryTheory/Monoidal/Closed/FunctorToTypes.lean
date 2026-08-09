@@ -37,6 +37,7 @@ variable (F : C ⥤ Type (max w v u))
 def functorHomEquiv (G H : C ⥤ Type (max w v u)) : (G ⟶ F.functorHom H) ≃ (F ⊗ G ⟶ H) :=
   (Functor.functorHomEquiv F H G).trans (homObjEquiv F H G)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A right adjoint of `tensorLeft F`. -/
 @[simps! obj_obj obj_map map_app]
@@ -51,6 +52,7 @@ def rightAdj : (C ⥤ Type (max w v u)) ⥤ C ⥤ Type (max w v u) where
 
 @[deprecated "Use `(rightAdj F).map instead" (since := "2026-04-08")] alias rightAdj_map := rightAdj
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] types_tensorObj_def in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
