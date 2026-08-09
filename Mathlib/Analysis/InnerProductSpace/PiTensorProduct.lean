@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2025 Monica Omar. All rights reserved.
+Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Monica Omar
+Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 /-!
@@ -46,8 +44,7 @@ lemma inner_def (x y : ⨂[𝕜] i, E i) :
       (map fun _ ↦ innerₛₗ 𝕜)) x y := rfl
 
 variable (𝕜) in
-@[simp]
-theorem inner_tmul (x y : Π i, E i) :
+@[simp] theorem inner_tprod (x y : Π i, E i) :
     inner 𝕜 (⨂ₜ[𝕜] i, x i) (⨂ₜ[𝕜] i, y i) = ∏ i, inner 𝕜 (x i) (y i) := by
   simp [inner_def]
 
@@ -63,7 +60,7 @@ private lemma inner_add_right (x y z : ⨂[𝕜] i, E i) :
 
 @[simp]
 theorem inner_map_map (f : Π i, E i →ₗᵢ[𝕜] F i) (x y : ⨂[𝕜] i, E i) :
-    inner 𝕜 (map (fun i ↦ (f i).1) x) (map (fun i ↦ (f i).1) y) = inner 𝕜 x y :=
+    inner 𝕜 (map (fun i ↦ (f i).toLinearMap) x) (map (fun i ↦ (f i).toLinearMap) y) = inner 𝕜 x y :=
   x.induction_on
     (y.induction_on (by simp [inner_def]) (by simp_all [inner_add_right]))
     (by simp_all [inner_add_left])
@@ -111,8 +108,7 @@ private theorem inner_self {κ : ι → Type*} [∀ i, Fintype (κ i)]
 open Submodule in
 omit [Fintype ι] in
 theorem exists_finite_submodule_of_setFinite (s : Set (⨂[𝕜] i, E i)) (hs : s.Finite) :
-    ∃ M : Π i, Submodule 𝕜 (E i),
-      (∀ i, Module.Finite 𝕜 (M i)) ∧ s ⊆ (mapIncl M).range := by
+    ∃ M : Π i, Submodule 𝕜 (E i), (∀ i, Module.Finite 𝕜 (M i)) ∧ s ⊆ (mapIncl M).range := by
   simp_rw [Module.Finite.iff_fg]
   induction s, hs using Set.Finite.induction_on with
   | empty => exact ⟨fun _ ↦ ⊥, fun _ ↦ fg_bot, Set.empty_subset _⟩
