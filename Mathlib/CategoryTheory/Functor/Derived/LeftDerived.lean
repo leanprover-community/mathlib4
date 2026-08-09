@@ -187,7 +187,7 @@ section
 
 variable (F) [F.HasLeftDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the left derived functor `D ⥤ H` of `F`, i.e. the right Kan extension
 of `F` along `L`. -/
 noncomputable def totalLeftDerived : D ⥤ H :=
