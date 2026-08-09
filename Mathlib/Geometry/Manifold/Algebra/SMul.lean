@@ -298,8 +298,11 @@ instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul 
 
 lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [ChartedSpace H' G]
     [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M] {n : ℕ∞ω}
-    [ContMDiffConstSMul I' n Γ G] [ContMDiffSMul I' I n G M] : ContMDiffConstSMul I n Γ M where
-  contMDiff_const_smul := sorry
+    [ContMDiffConstSMul I' n Γ G] [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
+  contMDiff_const_smul γ := by
+    suffices h : CMDiff n (fun x : M ↦ (γ • (1 : G)) • x) by
+      rwa [show (fun x : M ↦ (γ • (1 : G)) • x) = fun x : M ↦ γ • x by simp] at h
+    exact contMDiff_const_smul (γ • (1 : G))
 
 /-- If the action on `M` by any element of `Γ` is continuously differentiable, then post-composing 
 this action with any homomorphism `f : Γ' →* Γ` makes again the action on `M` by any element of `Γ'`
