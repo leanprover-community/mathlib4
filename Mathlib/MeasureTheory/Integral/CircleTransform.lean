@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Data.Complex.Basic
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!

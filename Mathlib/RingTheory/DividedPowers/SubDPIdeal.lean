@@ -261,7 +261,7 @@ See [P. Berthelot, *Cohomologie cristalline des schémas de caractéristique $p$
 (Proposition 1.6.1 (i))][Berthelot-1974] -/
 def prod (J : Ideal A) : SubDPIdeal hI where
   carrier := I • J
-  isSubideal := mul_le_right
+  isSubideal := mul_le_left
   dpow_mem m hm x hx := by
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
@@ -269,7 +269,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
       exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
-      rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]
+      rw [hI.dpow_add' (mul_le_left hx) (mul_le_left hy)]
       apply Submodule.sum_mem (I • J)
       intro k _
       by_cases hk0 : k = 0
@@ -345,6 +345,7 @@ instance : SupSet (SubDPIdeal hI) :=
 
 theorem sSup_carrier_def (S : Set (SubDPIdeal hI)) : (sSup S).carrier = sSup ((toIdeal) '' S) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (SubDPIdeal hI) := by
   refine Function.Injective.completeLattice (fun J : SubDPIdeal hI ↦ (J : Set.Iic I))
     (fun J J' h ↦ by simpa only [SubDPIdeal.ext_iff, Subtype.mk.injEq] using h)
@@ -429,7 +430,7 @@ theorem span_carrier_eq_dpow_span {S : Set A} (hS : S ⊆ I) :
   · rw [le_iInf₂_iff]
     intro K hK
     have : S ≤ K := by
-      simp only [Set.mem_insert_iff, Set.mem_setOf_eq] at hK
+      simp only [Set.mem_insert_iff, Set.mem_ofPred_eq] at hK
       rcases hK with rfl | hKS
       exacts [hS, hKS]
     rw [span_le]
@@ -492,7 +493,7 @@ def dpEqualizer : Ideal A where
 theorem mem_dpEqualizer_iff {x : A} :
     x ∈ dpEqualizer hI hI' ↔ x ∈ I ∧ ∀ n : ℕ, hI.dpow n x = hI'.dpow n x := by
   simp [dpEqualizer, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
-    Set.mem_setOf_eq]
+    Set.mem_ofPred_eq]
 
 theorem dpEqualizer_is_dp_ideal_left :
     DividedPowers.IsSubDPIdeal hI (dpEqualizer hI hI') :=

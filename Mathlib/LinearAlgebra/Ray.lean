@@ -176,6 +176,7 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
     Or.imp (fun hy => by rw [hy, map_zero]) fun ⟨r₁, r₂, hr₁, hr₂, h⟩ =>
       ⟨r₁, r₂, hr₁, hr₂, by rw [← f.map_smul, ← f.map_smul, h]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
 theorem _root_.Function.Injective.sameRay_map_iff
@@ -463,6 +464,19 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
   calc
     u⁻¹ • v = (u * u) • u⁻¹ • v := Eq.symm <| (u⁻¹ • v).units_smul_of_pos _ (by exact this)
     _ = u • v := by rw [mul_smul, smul_inv_smul]
+
+/-- Two scalar multiples of a common vector whose coefficients have nonnegative product
+lie on a common ray. -/
+theorem sameRay_smul_smul_of_mul_nonneg {v : M} {c₁ c₂ : R} (h : 0 ≤ c₁ * c₂) :
+    SameRay R (c₁ • v) (c₂ • v) := by
+  rcases eq_or_ne c₁ 0 with hc₁ | hc₁
+  · rw [hc₁, zero_smul]; exact SameRay.zero_left _
+  rcases eq_or_ne c₂ 0 with hc₂ | hc₂
+  · rw [hc₂, zero_smul]; exact SameRay.zero_right _
+  have hpos : 0 < c₁ * c₂ := h.lt_of_ne (mul_ne_zero hc₁ hc₂).symm
+  rcases mul_pos_iff.mp hpos with ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩
+  · exact Or.inr (Or.inr ⟨c₂, c₁, h₂, h₁, by module⟩)
+  · exact Or.inr (Or.inr ⟨-c₂, -c₁, neg_pos.2 h₂, neg_pos.2 h₁, by module⟩)
 
 section
 

@@ -8,8 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
-
 # Reindexed basis
+
 This file introduces an equivalence between the set of embeddings of `K` into `ℂ` and the
 index set of the chosen basis of the ring of integers of `K`.
 
@@ -42,7 +42,7 @@ abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
 
 theorem basisMatrix_eq_embeddingsMatrixReindex :
     basisMatrix K = Algebra.embeddingsMatrixReindex ℚ ℂ
-      (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom := by
+      (integralBasis K ∘ (equivReindex K)) (RingHom.equivRatAlgHom K ℂ) := by
   ext; simp [Algebra.embeddingsMatrixReindex]
 
 open ComplexConjugate in
@@ -58,7 +58,7 @@ theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
   rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]
   exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
-    (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom).symm
+    (integralBasis K ∘ (equivReindex K)) (RingHom.equivRatAlgHom K ℂ)).symm
 
 instance [DecidableEq (K →+* ℂ)] : Invertible (basisMatrix K) := invertibleOfIsUnitDet _
     (Ne.isUnit (det_of_basisMatrix_non_zero K))
