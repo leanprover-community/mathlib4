@@ -9,7 +9,6 @@ module
 public import Mathlib.Order.Antichain
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.Preorder.Finite
-public import Mathlib.Order.UpperLower.Closure
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finset.Powerset
@@ -24,10 +23,6 @@ together with the order-theoretic lemmas they rest on.
 
 ## Main declarations
 
-* `IsAntichain.upperClosure_inter_lowerClosure`: an antichain is the intersection of its upper and
-  lower closures.
-* `IsMaxAntichain.upperClosure_union_lowerClosure`: the upper and lower closures of a maximal
-  antichain cover the order.
 * `exists_injOn_mem_of_inter_subsingleton`: if a family covers `A` and each member meets `A` in at
   most one point, a member containing `a` can be chosen for each `a ∈ A`, injectively in `a`.
 * `IsAntichain.exists_injOn_mem_chains`, `IsChain.exists_injOn_mem_antichains`: weak duality in
@@ -70,39 +65,6 @@ open Finset
 
 variable {α : Type*}
 
-/-! ### Closures of antichains -/
-
-/-- An antichain is the intersection of its upper and lower closures. -/
-theorem IsAntichain.upperClosure_inter_lowerClosure [PartialOrder α] {A : Set α}
-    (hA : IsAntichain (· ≤ ·) A) :
-    (upperClosure A : Set α) ∩ (lowerClosure A : Set α) = A := by
-  refine Set.Subset.antisymm (fun p hp => ?_)
-    (fun p hp => ⟨subset_upperClosure hp, subset_lowerClosure hp⟩)
-  obtain ⟨e₁, he₁, h₁⟩ := mem_upperClosure.mp (SetLike.mem_coe.mp hp.1)
-  obtain ⟨e₂, he₂, h₂⟩ := mem_lowerClosure.mp (SetLike.mem_coe.mp hp.2)
-  obtain rfl : e₁ = e₂ := hA.eq he₁ he₂ (h₁.trans h₂)
-  have : p = e₁ := le_antisymm h₂ h₁
-  rwa [this]
-
-/-- The upper and lower closures of a maximal antichain cover the whole order. -/
-theorem IsMaxAntichain.upperClosure_union_lowerClosure [Preorder α] {A : Set α}
-    (hA : IsMaxAntichain (· ≤ ·) A) :
-    (upperClosure A : Set α) ∪ (lowerClosure A : Set α) = Set.univ := by
-  refine Set.eq_univ_of_forall fun p => ?_
-  by_contra hp
-  rw [Set.mem_union, not_or] at hp
-  have h₁ : ∀ a ∈ A, ¬a ≤ p := fun a ha hle =>
-    hp.1 (SetLike.mem_coe.mpr (mem_upperClosure.mpr ⟨a, ha, hle⟩))
-  have h₂ : ∀ a ∈ A, ¬p ≤ a := fun a ha hle =>
-    hp.2 (SetLike.mem_coe.mpr (mem_lowerClosure.mpr ⟨a, ha, hle⟩))
-  have hpA : p ∉ A := fun h => h₁ p h le_rfl
-  have hins : IsAntichain (· ≤ ·) (insert p A) :=
-    hA.isAntichain.insert (fun b hb _ => h₁ b hb) (fun b hb _ => h₂ b hb)
-  have : p ∈ A := by
-    rw [hA.2 hins (Set.subset_insert p A)]
-    exact Set.mem_insert p A
-  exact hpA this
-
 /-! ### Weak duality, injection form
 
 These hold for an arbitrary relation, an arbitrary index type, and arbitrary (possibly infinite)
@@ -127,8 +89,7 @@ theorem IsAntichain.exists_injOn_mem_chains {r : α → α → Prop} {ι : Type*
     (hchains : ∀ i ∈ C, IsChain r (c i)) :
     ∃ f : α → ι, Set.MapsTo f A C ∧ Set.InjOn f A ∧ ∀ a ∈ A, a ∈ c (f a) :=
   exists_injOn_mem_of_inter_subsingleton hcover fun i hi =>
-    subsingleton_of_isChain_of_isAntichain
-      (IsChain.mono Set.inter_subset_right (hchains i hi)) (hA.subset Set.inter_subset_left)
+    inter_subsingleton_of_isAntichain_of_isChain hA (hchains i hi)
 
 /-- A chain injects into any cover of it by antichains, each element landing in an antichain that
 contains it (the injective form of weak duality for Mirsky's theorem). -/
@@ -137,8 +98,7 @@ theorem IsChain.exists_injOn_mem_antichains {r : α → α → Prop} {ι : Type*
     (hantis : ∀ i ∈ C, IsAntichain r (c i)) :
     ∃ f : α → ι, Set.MapsTo f A C ∧ Set.InjOn f A ∧ ∀ a ∈ A, a ∈ c (f a) :=
   exists_injOn_mem_of_inter_subsingleton hcover fun i hi =>
-    subsingleton_of_isChain_of_isAntichain
-      (IsChain.mono Set.inter_subset_left hA) ((hantis i hi).subset Set.inter_subset_right)
+    inter_subsingleton_of_isChain_of_isAntichain hA (hantis i hi)
 
 /-! ### Weak duality, cardinality form
 
@@ -284,9 +244,7 @@ theorem chainCover_glue [PartialOrder α] [DecidableEq α] {s A : Finset α}
   have hKmem : ∀ a ∈ A, a ∈ K a := fun a ha => Finset.mem_union_left _ ((hf₁ a ha).1)
   have hKinj : Set.InjOn K (A : Set α) := by
     intro a ha b hb hab
-    refine subsingleton_of_isChain_of_isAntichain
-      (IsChain.mono Set.inter_subset_right (hKchain a (Finset.mem_coe.mp ha)))
-      (hA.subset Set.inter_subset_left)
+    refine inter_subsingleton_of_isAntichain_of_isChain hA (hKchain a (Finset.mem_coe.mp ha))
       ⟨ha, Finset.mem_coe.mpr (hKmem a (Finset.mem_coe.mp ha))⟩ ⟨hb, ?_⟩
     rw [hab]
     exact Finset.mem_coe.mpr (hKmem b (Finset.mem_coe.mp hb))
