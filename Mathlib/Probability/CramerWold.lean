@@ -10,9 +10,9 @@ public import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 public import Mathlib.MeasureTheory.Measure.LevyConvergence
 
 /-!
-# Cramèr-Wold Device
+# Cramèr-Wold Theorem
 
-We prove one direction of the Cramér-Wold device.
+We prove one direction of the Cramér-Wold theorem.
 
 ## Main statement
 
@@ -53,7 +53,7 @@ lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measura
     exact charFun_map_eq_integral_map_inner P (hXn n) t
   · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner Q hX t)
 
-/-- **Cramér-Wold device (one direction only)**
+/-- **Cramér-Wold theorem (one direction only)**
 
 Convergence in distribution of all 1-dimensional scalar projections of a sequence of
 random variables in a finite-dimensional real inner product space implies the
