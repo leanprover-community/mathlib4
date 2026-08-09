@@ -597,8 +597,9 @@ theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ :
   classical
   ext d
   rcases eq_or_ne d d₀ with rfl | hd
-  · rw [coeff_monomial, if_pos rfl]
-  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial, if_neg fun e ↦ hd e.symm]
+  · rw [coeff_monomial, ite_eq_left rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial,
+      ite_eq_right fun e ↦ hd e.symm]
 
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
