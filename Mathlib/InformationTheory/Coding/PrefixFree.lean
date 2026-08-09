@@ -23,9 +23,9 @@ empty word is uniquely decodable.
 
 * `InformationTheory.PrefixFree.epsilon_singleton`: a prefix-free code containing the empty word
   is the singleton containing the empty word.
-* `InformationTheory.PrefixFree.uniquely_decodable`: a prefix-free code not containing the empty
+* `InformationTheory.PrefixFree.uniquelyDecodable`: a prefix-free code not containing the empty
   word is uniquely decodable.
-* `InformationTheory.PrefixFree.uniquely_decodable_of_nontrivial`: a nontrivial finite prefix-free
+* `InformationTheory.PrefixFree.uniquelyDecodable_of_nontrivial`: a nontrivial finite prefix-free
   code is uniquely decodable.
 -/
 
@@ -90,7 +90,7 @@ theorem PrefixFree.uniquelyDecodable {S : Set (List α)} (hS : PrefixFree S) (h�
 theorem PrefixFree.uniquelyDecodable_of_nontrivial {S : Finset (List α)}
     (hS : PrefixFree (S : Set (List α))) (hS' : S.Nontrivial) :
     UniquelyDecodable (S : Set (List α)) := by
-  apply hS.uniquely_decodable
+  apply hS.uniquelyDecodable
   intro hε
   have hS_eq := hS.epsilon_singleton hε
   rw [Finset.coe_eq_singleton] at hS_eq
