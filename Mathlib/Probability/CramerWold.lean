@@ -29,19 +29,12 @@ open scoped Topology
 
 public section
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
 variable {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω} [IsProbabilityMeasure P]
   {Ω' : Type*} [MeasurableSpace Ω'] {Q : Measure Ω'} [IsProbabilityMeasure Q]
   {X : Ω' → E} {Xn : ℕ → Ω → E}
-
-private lemma charFun_map_eq_integral_map_inner {α : Type*} {mα : MeasurableSpace α}
-  (μ : Measure α) {Y : α → E} (hY : Measurable Y) (t : E) :
-  charFun (μ.map Y) t = charFun (μ.map (⟪Y ·, t⟫)) (1 : ℝ) := by
-  rw [charFun_apply, charFun_apply_real, integral_map, integral_map]
-  · simp
-  all_goals fun_prop
 
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
   (hconv : ∀ t : E, TendstoInDistribution (⟪Xn · ·, t⟫) atTop (⟪X ·, t⟫) (fun _ ↦ P) Q) (t : E) :
@@ -52,6 +45,8 @@ lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measura
   · ext n
     exact charFun_map_eq_integral_map_inner P (hXn n) t
   · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner Q hX t)
+
+variable [FiniteDimensional ℝ E]
 
 /-- **Cramér-Wold theorem (one direction only)**
 
