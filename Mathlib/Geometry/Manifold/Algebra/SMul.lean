@@ -296,6 +296,8 @@ instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul 
   contMDiff_const_smul γ := ContMDiff.prodMk
     (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
 
+/-- If the action on `G` by any element of `Γ` is continuously differentiable and the same holds for
+all elements of `G` acting on `M`, then it is also true for all elements of `Γ` acting on `M`. -/
 lemma IsScalarTower.contMDiffConstSMul (G : Type*) [TopologicalSpace G] [ChartedSpace H' G]
     [Monoid G] [SMul Γ G] [MulAction G M] [IsScalarTower Γ G M] {n : ℕ∞ω}
     [ContMDiffConstSMul I' n Γ G] [ContMDiffConstSMul I n G M] : ContMDiffConstSMul I n Γ M where
