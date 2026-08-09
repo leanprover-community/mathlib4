@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Retract
 
 /-!
 # Retracts of 1-morphisms in bicategories
@@ -21,7 +23,9 @@ equivalence, then `f'` is also an equivalence.
 
 universe w v u
 
-namespace CategoryTheory.Bicategory
+namespace CategoryTheory
+
+namespace Bicategory
 
 variable {C : Type u} [Bicategory.{w, v} C] {X Y X' Y' : C}
 
@@ -46,7 +50,7 @@ structure RetractArrow₁ (f' : X' ⟶ Y') (f : X ⟶ Y) where
   commr : f ≫ r₂ ≅ r₁ ≫ f'
   comm : commi.hom ▷ r₂ ≫ (α_ _ _ _).hom ≫ i₁ ◁ commr.hom =
     (α_ _ _ _).hom ≫ f' ◁ id₂.hom ≫ (ρ_ _).hom ≫ (λ_ _).inv ≫
-      id₁.inv ▷ f' ≫ (α_ _ _ _).hom
+      id₁.inv ▷ f' ≫ (α_ _ _ _).hom := by cat_disch
 
 namespace RetractArrow₁
 
@@ -62,6 +66,27 @@ lemma comm' {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f) :
     ← cancel_epi (r.commi.hom ▷ r.r₂)]
   nth_rw 2 [r.comm_assoc]
   simp
+
+/-- If a `1`-morphism is a retract of another, it stays so
+after the applicaton of a pseudofunctor. -/
+@[implicit_reducible, simps]
+def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
+    {D : Type*} [Bicategory D] (F : C ⥤ᵖ D) :
+    RetractArrow₁ (F.map f') (F.map f) where
+  i₁ := F.map r.i₁
+  i₂ := F.map r.i₂
+  r₁ := F.map r.r₁
+  r₂ := F.map r.r₂
+  id₁ := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.id₁ ≪≫ F.mapId _
+  id₂ := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.id₂ ≪≫ F.mapId _
+  commi := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.commi ≪≫ F.mapComp _ _
+  commr := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.commr ≪≫ F.mapComp _ _
+  comm := by
+    have := congr_arg (fun f ↦ F.map₂ f) r.comm
+    simp at this
+    simp [← cancel_mono (F.map r.i₁ ◁ (F.mapComp r.r₁ f').inv),
+      ← cancel_mono ( (F.mapComp r.i₁ (r.r₁ ≫ f')).inv),
+      this, dsimp% F.toLax.map₂_leftUnitor_assoc f']
 
 /-- In a bicategory, a `1`-morphism that is a retract
 of an equivalence is an equivalence. -/
@@ -105,4 +130,22 @@ def equivalence {f' : X' ⟶ Y'} {f : Equivalence X Y} (r : RetractArrow₁ f' f
 
 end RetractArrow₁
 
-end CategoryTheory.Bicategory
+end Bicategory
+
+open Bicategory
+
+/-- A retract of morphisms in a category `C` induces a retract of
+`1`-morphisms in the bicategory `LocallyDiscrete C`. -/
+def RetractArrow.toLoc {C : Type*} [Category* C] {X Y X' Y' : C}
+    {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow f' f) :
+    RetractArrow₁ (Quiver.Hom.toLoc f') (Quiver.Hom.toLoc f) where
+  i₁ := Quiver.Hom.toLoc r.i.left
+  i₂ := Quiver.Hom.toLoc r.i.right
+  r₁ := Quiver.Hom.toLoc r.r.left
+  r₂ := Quiver.Hom.toLoc r.r.right
+  id₁ := eqToIso (by simp [← Quiver.Hom.comp_toLoc])
+  id₂ := eqToIso (by simp [← Quiver.Hom.comp_toLoc])
+  commi := eqToIso (by simp [← Quiver.Hom.comp_toLoc])
+  commr := eqToIso (by simp [← Quiver.Hom.comp_toLoc])
+
+end CategoryTheory
