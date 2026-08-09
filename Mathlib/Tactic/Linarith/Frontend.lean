@@ -306,8 +306,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
           pure <|
             withTraceNode `linarith (fun _ => return m!" running on preferred type {t}") do
               let (pf, idxs) ←
-                proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g
-                  (vs.map (·.proof))
+                proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (vs.map (·.proof))
               return (pf, idxs.foldl (fun o j => o.union vs[j]!.origin) [])
         else
           pure failure
@@ -393,11 +392,9 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
 
     linarithTraceProofs "linarith is running on the following hypotheses:" hyps
     let usedIdxs ← runLinarith cfg target_type g hyps
-    -- Report the hypotheses in the order they were supplied, which for local hypotheses is the
-    -- order they appear in the context.
+    -- Sort so that hypotheses are reported in the order they appear in the context.
     let used := (usedIdxs.mergeSort (· ≤ ·)).filterMap (hyps[·]?)
-    -- Drop the fvar introduced by `applyContrLemma`: it is the negated goal, not a hypothesis the
-    -- user could name in a `linarith only [...]` suggestion.
+    -- The negated goal introduced by `applyContrLemma` is not a nameable hypothesis; drop it.
     return used.filter (some · != new_var)
 
 /--
@@ -565,8 +562,7 @@ elab_rules : tactic
         let st ← saveState
         try
           let attributed ← Linarith.linarithUsedHyps o.isSome args.toList cfg g
-          -- Provenance is an over-approximation of what is needed but is not guaranteed to be
-          -- sufficient: see `Linarith.Origin`. Check before trusting it.
+          -- Provenance is not guaranteed to be sufficient (see `Linarith.Origin`); verify it.
           st.restore
           let used₀ ←
             try
@@ -580,9 +576,8 @@ elab_rules : tactic
               let locals ← if o.isSome then pure [] else
                 (← getLocalHyps).toList.filterM fun h => do isProp (← inferType h)
               let candidates := (args.toList ++ locals).eraseDups
-              -- `minimize` scans from the front and drops greedily, so put the hypotheses we could
-              -- not attribute first: they are the likeliest to be redundant, and discarding them
-              -- early makes the remaining `linarith` calls cheaper.
+              -- Put unattributed hypotheses first: `minimize` drops greedily from the front,
+              -- and they are the likeliest to be redundant.
               let (attr, rest) := candidates.partition (attributed.contains ·)
               pure (rest ++ attr)
           let used ←
@@ -590,7 +585,6 @@ elab_rules : tactic
               minimize cfg st g used₀ 0
             else
               pure used₀
-          -- Check that all used hypotheses are fvars (not arbitrary terms)
           if let some t := used.find? (·.fvarId?.isNone) then
             throwError
               "linarith? cannot suggest the term argument {t}; only named hypotheses are supported"
