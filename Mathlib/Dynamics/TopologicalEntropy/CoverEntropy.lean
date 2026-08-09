@@ -227,9 +227,9 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   simp only [Nat.cast_inj]
   have : Nonempty {s : Finset X // IsDynCoverOf T F U n s} := by
     by_contra h
-    apply ENat.coe_ne_top k
+    apply ENat.natCast_ne_top k
     rw [k_min, coverMincard, iInf₂_eq_top]
-    simp only [ENat.coe_ne_top, imp_false]
+    simp only [ENat.natCast_ne_top, imp_false]
     rw [nonempty_subtype, not_exists] at h
     exact h
   have key := ciInf_mem fun s : {s : Finset X // IsDynCoverOf T F U n s} ↦ (s.val.card : ℕ∞)
@@ -417,7 +417,7 @@ lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X]
   apply (coverEntropyEntourage_antitone T F V_U).trans_lt
   apply (s_cover.coverEntropyEntourage_le_log_card_div F_inv one_ne_zero).trans_lt
   rw [Nat.cast_one, div_one, log_lt_top_iff, ← ENat.toENNReal_top]
-  exact_mod_cast (ENat.coe_ne_top (Finset.card s)).lt_top
+  exact_mod_cast (ENat.natCast_ne_top (Finset.card s)).lt_top
 
 /-! ### Cover entropy -/
 

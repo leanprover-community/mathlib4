@@ -656,6 +656,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     NonUnitalAlgHomClass F R A B :=
   { }
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
@@ -757,6 +758,14 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
 
 @[simp]
 theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := rfl
+
+lemma symm_apply_eq (e : A ≃⋆ₐ[R] B) {x y} :
+    e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+lemma eq_symm_apply (e : A ≃⋆ₐ[R] B) {x y} :
+    y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩

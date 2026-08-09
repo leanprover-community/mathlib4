@@ -323,7 +323,7 @@ Q282331:
 
 Q282649:
   title: Pentagonal number theorem
-  url: https://github.com/wwylele/PentagonalNumberTheorem
+  decl: PowerSeries.WithPiTopology.hasProd_one_sub_X_pow
   authors: Weiyi Wang
   comment: Formal power series only. Missing power series over complex numbers.
   date: 2025-08-24
@@ -548,7 +548,7 @@ Q544369:
 
 Q550402:
   title: Dirichlet's theorem on arithmetic progressions
-  decl: Nat.infinite_setOf_prime_and_eq_mod
+  decl: Nat.infinite_setOfPred_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 
 Q552367:
@@ -3654,9 +3654,9 @@ Q7245073:
 Q7249519:
   title: Prokhorov's theorem
   decls:
-    - isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
-    - isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le
-    - isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le
+    - isCompact_setOfPred_finiteMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOfPred_probabilityMeasure_mass_eq_compl_isCompact_le
     - isCompact_closure_of_isTightMeasureSet
 
 Q7255475:

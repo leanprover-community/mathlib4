@@ -20,7 +20,7 @@ public import Mathlib.Order.SuccPred.WithBot
 * `Polynomial.degree`: the degree of a polynomial, where `0` has degree `⊥`
 * `Polynomial.natDegree`: the degree of a polynomial, where `0` has degree `0`
 * `Polynomial.leadingCoeff`: the leading coefficient of a polynomial
-* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 0
+* `Polynomial.Monic`: a polynomial is monic if its leading coefficient is 1
 * `Polynomial.nextCoeff`: the next coefficient after the leading coefficient
 
 ## Main results
@@ -365,6 +365,7 @@ theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = 
 theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤ n :=
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
   apply sup_mono
   simpa using Finset.erase_subset ..
@@ -536,7 +537,7 @@ theorem natDegree_sub_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n)
     natDegree (p - q) ≤ max m n :=
   (p.natDegree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
-theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
+theorem degree_sub_lt_left (hd : degree p = degree q) (hp0 : p ≠ 0)
     (hlc : leadingCoeff p = leadingCoeff q) : degree (p - q) < degree p :=
   have hp : monomial (natDegree p) (leadingCoeff p) + p.erase (natDegree p) = p :=
     monomial_add_erase _ _
@@ -552,6 +553,13 @@ theorem degree_sub_lt (hd : degree p = degree q) (hp0 : p ≠ 0)
     _ ≤ max (degree (erase (natDegree q) p)) (degree (erase (natDegree q) q)) :=
       (degree_neg (erase (natDegree q) q) ▸ degree_add_le _ _)
     _ < degree p := max_lt_iff.2 ⟨hd' ▸ degree_erase_lt hp0, hd.symm ▸ degree_erase_lt hq0⟩
+
+@[deprecated (since := "2026-06-30")] alias degree_sub_lt := degree_sub_lt_left
+
+theorem degree_sub_lt_right (hd : degree p = degree q) (hq0 : q ≠ 0)
+    (hlc : p.leadingCoeff = q.leadingCoeff) : degree (p - q) < degree q := by
+  rw [← degree_neg, neg_sub]
+  exact degree_sub_lt_left hd.symm hq0 hlc.symm
 
 theorem degree_X_sub_C_le (r : R) : (X - C r).degree ≤ 1 :=
   (degree_sub_le _ _).trans (max_le degree_X_le (degree_C_le.trans zero_le_one))

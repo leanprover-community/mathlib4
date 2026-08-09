@@ -59,6 +59,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem shift_top (c : P) (r : k) : shift ⊤ c r = ⊤ := by
   simp [shift, AffineEquiv.surjective]
@@ -230,6 +231,7 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     intro j
     by_cases hji : j = i <;> aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A parallel cross-section of a simplex is the image of the base under a homothety. -/
 theorem closedInterior_inter_shift_eq_homothety {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :
