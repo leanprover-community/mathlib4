@@ -156,4 +156,28 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (⨂[𝕜] i,
 
 noncomputable instance instInnerProductSpace : InnerProductSpace 𝕜 (⨂[𝕜] i, E i) := .ofCore _
 
+@[simp] theorem norm_tprod (x : Π i, E i) :
+    ‖⨂ₜ[𝕜] i, x i‖ = ∏ i, ‖x i‖ := by
+  apply (sq_eq_sq₀ (norm_nonneg _) (Finset.prod_nonneg fun _ _ ↦ norm_nonneg _)).mp
+  simpa only [inner_self_eq_norm_sq_to_K, ← RCLike.ofReal_pow, RCLike.ofReal_re,
+    ← RCLike.ofReal_prod, Finset.prod_pow] using congr(RCLike.re $(inner_tprod 𝕜 x x))
+
+@[simp] theorem nnnorm_tprod (x : Π i, E i) :
+    ‖⨂ₜ[𝕜] i, x i‖₊ = ∏ i, ‖x i‖₊ := by simp [← NNReal.coe_inj]
+
+@[simp] theorem enorm_tprod (x : Π i, E i) :
+    ‖⨂ₜ[𝕜] i, x i‖ₑ = ∏ i, ‖x i‖ₑ := by simp [enorm_eq_nnnorm]
+
+theorem dist_tprod_le (x y : Π i, E i) :
+    dist (⨂ₜ[𝕜] i, x i) (⨂ₜ[𝕜] i, y i) ≤ ∏ i, ‖x i‖ + ∏ i, ‖y i‖ := by
+  grw [dist_eq_norm, norm_sub_le]; simp
+
+theorem nndist_tprod_le (x y : Π i, E i) :
+    nndist (⨂ₜ[𝕜] i, x i) (⨂ₜ[𝕜] i, y i) ≤ ∏ i, ‖x i‖₊ + ∏ i, ‖y i‖₊ := by
+  grw [nndist_eq_nnnorm, nnnorm_sub_le]; simp
+
+theorem edist_tprod_le (x y : Π i, E i) :
+    edist (⨂ₜ[𝕜] i, x i) (⨂ₜ[𝕜] i, y i) ≤ ∏ i, ‖x i‖ₑ + ∏ i, ‖y i‖ₑ := by
+  grw [edist_eq_enorm_sub, enorm_sub_le]; simp
+
 end PiTensorProduct
