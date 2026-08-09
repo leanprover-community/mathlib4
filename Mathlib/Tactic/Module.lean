@@ -20,6 +20,9 @@ the respective equalities of the `R`-coefficients of each atom.  The `module` ta
 then runs the `ring` tactic on each of these coefficient-wise equalities, failing if this does not
 resolve them.
 
+This file also contains the scalar-normalization engine (`normalizeScalar`, `qNF.rebuild` and
+`eval`) which backs the `module_nf` tactic defined in `Mathlib.Tactic.ModuleNF`.
+
 The scalar type `R` is not pre-determined: instead it starts as `ℕ` (when each atom is initially
 given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
 encountered.  However, to permit this, it is assumed that there is a "linear order" on all the
@@ -75,6 +78,15 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
   rfl
+
+theorem eval_nil [Add M] [Zero M] [SMul R M] : NF.eval ([] : NF R M) = 0 := by
+  simp [eval]
+
+theorem eval_cons_eq [AddCommMonoid M] [Semiring R] [Module R M] {r r' : R} (x : M)
+    {l : NF R M} {e : M} (hr : r = r') (h : l.eval = e) :
+    ((r, x) ::ᵣ l).eval = r' • x + e := by
+  subst hr h
+  exact NF.eval_cons (r, x) l
 
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
@@ -575,21 +587,24 @@ the `algebraMap` operations which (which proliferate in the constructed scalar g
 familiar forms: `ℕ`, `ℤ` and `ℚ` casts. -/
 def algebraMapThms : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
 
-/-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
-These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
-get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
-most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
-(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
-def postprocess (mvarId : MVarId) : MetaM MVarId := do
+/-- A `Simp.Context` containing `push_cast` and `algebraMapThms` lemmas. -/
+def postprocessCtx : MetaM Simp.Context := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems ← NormCast.pushCastExt.getTheorems
   -- augment this list with the `algebraMapThms` lemmas, which handle `algebraMap` operations
   for thm in algebraMapThms do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
-  -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
+  Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+
+/-- Postprocessing for the scalar goals constructed in the `match_scalars` and `module` tactics.
+These goals feature a proliferation of `algebraMap` operations (because the scalars start in `ℕ` and
+get successively bumped up by `algebraMap`s as new semirings are encountered), so we reinterpret the
+most commonly occurring `algebraMap`s (those out of `ℕ`, `ℤ` and `ℚ`) into their standard forms
+(`ℕ`, `ℤ` and `ℚ` casts) and then try to disperse the casts using the various `push_cast` lemmas. -/
+def postprocess (mvarId : MVarId) : MetaM MVarId := do
+  -- run `simp` with these lemmas, and (importantly) *no* simprocs
+  let (some r, _) ← simpTarget mvarId (← postprocessCtx) (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r
 
@@ -599,6 +614,40 @@ the respective equalities of the `R`-coefficients of each atom. -/
 def matchScalars (g : MVarId) : MetaM (List MVarId) := do
   let mvars ← AtomM.run .instances (matchScalarsAux g)
   mvars.mapM postprocess
+
+/-- Normalize a scalar produced by `Mathlib.Tactic.Module.parse`. This performs
+the same processing as `Mathlib.Tactic.Module.postprocess` and then normalizes
+with `ring_nf` if it's applicable. -/
+def normalizeScalar (postCtx : Simp.Context) (e : Expr) : AtomM Simp.Result := do
+  let (r, _) ← Simp.main e postCtx (methods := Simp.mkDefaultMethodsCore {})
+  let some r' ← RingNF.evalExpr? r.expr | return r
+  r.mkEqTrans (← RingNF.cleanup {} r')
+
+/-- Rebuild the reified list `l` as an expression `c₁' • x₁ + (c₂' • x₂ + ... + 0)`
+with normalized scalars and a proof that it equals `NF.eval l`. -/
+def qNF.rebuild {M : Q(Type v)} {R : Q(Type u)} (iM : Q(AddCommMonoid $M))
+    (iR : Q(Semiring $R)) (iRM : Q(Module $R $M)) (postCtx : Simp.Context) (l : qNF R M) :
+    AtomM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) :=
+  match l with
+  | [] => pure ⟨q(0), q(NF.eval_nil (R := $R) (M := $M))⟩
+  | ((r, x), _) :: t => do
+    let res ← normalizeScalar postCtx r
+    have r' : Q($R) := res.expr
+    let hr : Q($r = $r') ← res.getProof
+    let ⟨e, pfT⟩ ← qNF.rebuild iM iR iRM postCtx t
+    pure ⟨q($r' • $x + $e), (q(NF.eval_cons_eq $x $hr $pfT) :)⟩
+
+/-- Normalize an expression in an `AddCommMonoid` into the form `c₁ • x₁ + (c₂ • x₂ + ... + 0)`
+with normalized scalars by chaining `parse` and `qNF.rebuild`. -/
+def eval {M : Q(Type v)} (iM : Q(AddCommMonoid $M)) (postCtx : Simp.Context) (e : Q($M)) :
+    AtomM Simp.Result := do
+  let ⟨_, _, iR, iRM, l, pf⟩ ← parse iM e
+  if let [((_, x), _)] := l then
+    -- a single atom with unit coefficient is already in normal form
+    if ← withTransparency (← read).red <| isDefEq x e then
+      return { expr := e }
+  let ⟨e, pf_rebuild⟩ ← qNF.rebuild iM iR iRM postCtx l
+  return { expr := e, proof? := some (← mkEqTrans pf pf_rebuild) }
 
 /-- Given a goal parseable as a linear combination `⊢ a • x + ... + b • y = c • x + ... + d • y`,
 `match_scalars` splits up the goal into equalities of the scalars for each respective atom. This
