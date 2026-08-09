@@ -399,7 +399,7 @@ theorem HasFDerivAt.comp_hasDerivAt_of_eq
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa using (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
+  simpa using! (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt_of_eq (hl : HasStrictFDerivAt l l' y)
     (hf : HasStrictDerivAt f f' x) (hy : y = f x) :

@@ -70,7 +70,7 @@ instance UnivLE.zero : UnivLE.{0, u} := ⟨inferInstance⟩
 /-- This is redundant as an instance given the below. -/
 theorem UnivLE.succ [UnivLE.{u, v}] : UnivLE.{u, v + 1} := @UnivLE.trans _ ⟨inferInstance⟩
 
-/- This is the crucial instance that subsumes `univLE_max`. -/
+/-- This is the crucial instance that subsumes `univLE_max`. -/
 instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max ‹_›
 
 -- order doesn't matter

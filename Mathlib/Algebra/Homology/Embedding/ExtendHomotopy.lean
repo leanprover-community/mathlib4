@@ -34,6 +34,7 @@ namespace extend
 
 variable (e : c.Embedding c') (φ : ∀ i j, K.X i ⟶ L.X j)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `Homotopy.extend` -/
 noncomputable def homAux (i' j' : Option ι) : extend.X K i' ⟶ extend.X L j' :=
   match i', j' with
@@ -41,6 +42,7 @@ noncomputable def homAux (i' j' : Option ι) : extend.X K i' ⟶ extend.X L j' :
   | _, none => 0
   | some i, some j => φ i j
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homAux_eq (i' j' : Option ι) (i j : ι) (hi : i' = some i) (hj : j' = some j) :
     homAux φ i' j' = (extend.XIso K hi).hom ≫ φ i j ≫ (extend.XIso L hj).inv := by
   subst hi hj
@@ -222,7 +224,12 @@ lemma HomologicalComplex.homotopyEquivalences_extendMap_iff
     (e : ComplexShape.Embedding c c') [e.IsRelIff] :
     homotopyEquivalences C c' (extendMap f e) ↔
       homotopyEquivalences C c f := by
-  simp [← HomotopyCategory.inverseImage_quotient_isomorphisms,
+  #adaptation_note /-- Prior to nightly-2026-05-07, `dsimp%` was used directly inline as the last
+  argument to the original `simp`; it now reports `made no progress` so we apply
+  `NatIso.isIso_map_iff` via a `change` + `rw` after the rest of the simp set has done its work. -/
+  simp only [← HomotopyCategory.inverseImage_quotient_isomorphisms,
     MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff,
-    ← isIso_iff_of_reflects_iso _ (e.extendHomotopyFunctor C),
-    dsimp% NatIso.isIso_map_iff (e.extendHomotopyFunctorFactors C) f]
+    ← isIso_iff_of_reflects_iso _ (e.extendHomotopyFunctor C)]
+  change _ ↔ IsIso ((HomotopyCategory.quotient C c ⋙ e.extendHomotopyFunctor C).map f)
+  rw [NatIso.isIso_map_iff (e.extendHomotopyFunctorFactors C) f]
+  rfl

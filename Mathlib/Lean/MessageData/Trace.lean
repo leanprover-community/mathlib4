@@ -7,7 +7,6 @@ module
 
 import Mathlib.Init
 public import Lean.Message
-public import Std.Data.HashSet.Basic
 
 /-!
 # Utilities for analyzing `MessageData`
@@ -41,7 +40,6 @@ def traceResultOf (headerStr : String) : Option TraceResult :=
   else if headerStr.startsWith "💥️" then some .error
   else none
 
-set_option linter.deprecated false in
 /-- Strip the leading status emoji and space from a trace header string,
 leaving just the semantic content for comparison across trace runs.
 

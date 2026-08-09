@@ -71,11 +71,10 @@ theorem e0_mul_e0 : e0 Q * e0 Q = -1 :=
 theorem v_sq_scalar (m : M) : v Q m * v Q m = algebraMap _ _ (Q m) :=
   (ι_sq_scalar _ _).trans <| by simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans ?_)
-  dsimp [QuadraticMap.polar]
-  simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero,
-    add_sub_cancel_right, sub_self, map_zero]
+  simp [QuadraticMap.polar]
 
 theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by
   rw [neg_eq_iff_eq_neg]
@@ -105,6 +104,7 @@ end EquivEven
 
 open EquivEven
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
@@ -117,6 +117,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [LinearMap.codRestrict_apply]
     simp [← mul_assoc, v_sq_scalar]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   simp only [toEven, CliffordAlgebra.lift_ι_apply, ← even_toSubmodule]
   rw [LinearMap.codRestrict_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
@@ -225,10 +226,10 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
   even.lift Q <|
     { bilin := -(even.ι Q' :).bilin
       contract := fun m => by
-        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
+        simp_rw [LinearMap.neg_apply, EvenHom.contract, h, neg_apply, map_neg, neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
-        simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,
-          QuadraticMap.neg_apply, smul_neg, neg_smul] }
+        simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h, neg_apply, smul_neg,
+          neg_smul] }
 
 @[simp]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :

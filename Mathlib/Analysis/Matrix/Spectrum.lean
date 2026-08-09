@@ -81,7 +81,7 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
   simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
+    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using!
       congr(⇑$((isSymmetric_toEuclideanLin_iff.mpr hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
@@ -170,6 +170,7 @@ lemma roots_charpoly_eq_eigenvalues :
   · simp
   · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma roots_charpoly_eq_eigenvalues₀ :
     A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
   rw [hA.roots_charpoly_eq_eigenvalues]

@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 
 /-!
 # Cofibrations and fibrations in the category of simplicial sets
@@ -99,9 +99,37 @@ instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
   rw [fibration_iff] at hf
   exact hf _ (horn_ι_mem_J _ _)
 
+instance : (fibrations SSet.{u}).IsMultiplicative := by
+  rw [fibrations_eq]
+  infer_instance
+
+instance : (fibrations SSet.{u}).IsStableUnderRetracts := by
+  rw [fibrations_eq]
+  infer_instance
+
+instance : (cofibrations SSet.{u}).IsMultiplicative := by
+  rw [cofibrations_eq]
+  infer_instance
+
+instance : (cofibrations SSet.{u}).IsStableUnderRetracts := by
+  rw [cofibrations_eq]
+  infer_instance
+
+instance {X Y : SSet.{u}} (f : X ⟶ Y) [IsIso f] : Fibration f := by
+  rw [fibration_iff]
+  apply rlp_of_isIso
+
 end
 
 end modelCategoryQuillen
+
+open modelCategoryQuillen in
+lemma rlp_monomorphisms :
+    (MorphismProperty.monomorphisms SSet.{u}).rlp = I.rlp :=
+  le_antisymm (antitone_rlp I_le_monomorphisms)
+    (fun _ _ _ hp _ _ i _ ↦
+      transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp.{u} I ℕ i
+        ⟨(relativeCellComplexOfMono i).transfiniteCompositionOfShape' (fun _ ↦ ⟨_⟩)⟩  _ hp)
 
 namespace horn.IsCompatible
 

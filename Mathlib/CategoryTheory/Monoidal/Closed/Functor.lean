@@ -62,7 +62,6 @@ def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L
   prodComparisonNatTrans L (F.obj A) ≫
     Functor.whiskerLeft _ ((curriedTensor C).map (h.counit.app _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
 Frobenius morphism is an isomorphism.
 -/
@@ -99,12 +98,12 @@ theorem coev_expComparison (A B : C) :
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem uncurry_expComparison (A B : C) :
     MonoidalClosed.uncurry ((expComparison F A).natTrans.app B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by
   rw [uncurry_eq, expComparison_ev]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The exponential comparison map is natural in `A`. -/
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     (expComparison F A).whiskerBottom (MonoidalClosed.pre (F.map f)) =
@@ -135,6 +134,8 @@ class MonoidalClosedFunctor : Prop where
 
 attribute [instance] MonoidalClosedFunctor.comparison_iso
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A).natTrans = (expComparison F A).natTrans := by

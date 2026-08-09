@@ -54,7 +54,7 @@ variable {α : Type*} {𝒜 : Set (Set α)} {s t : Set α}
 /-! ### Definition and basic properties of an algebra of sets -/
 
 /-- An algebra of sets is a family of sets containing the empty set and closed by complement and
-union. Consequently it is also closed by difference (see `IsSetAlgebra.diff_mem`) and intersection
+union. Consequently it is also closed by difference (see `IsSetAlgebra.sdiff_mem`) and intersection
 (see `IsSetAlgebra.inter_mem`). -/
 structure IsSetAlgebra (𝒜 : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ 𝒜
@@ -74,14 +74,16 @@ theorem inter_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t �
     h𝒜.compl_mem (h𝒜.union_mem (h𝒜.compl_mem s_mem) (h𝒜.compl_mem t_mem))
 
 /-- An algebra of sets is closed by difference. -/
-theorem diff_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t ∈ 𝒜) :
+theorem sdiff_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t ∈ 𝒜) :
     s \ t ∈ 𝒜 := h𝒜.inter_mem s_mem (h𝒜.compl_mem t_mem)
+
+@[deprecated (since := "2026-06-03")] alias diff_mem := sdiff_mem
 
 /-- An algebra of sets is a ring of sets. -/
 theorem isSetRing (h𝒜 : IsSetAlgebra 𝒜) : IsSetRing 𝒜 where
   empty_mem := h𝒜.empty_mem
   union_mem := h𝒜.union_mem
-  diff_mem := fun _ _ ↦ h𝒜.diff_mem
+  sdiff_mem := fun _ _ ↦ h𝒜.sdiff_mem
 
 /-- An algebra of sets is closed by finite unions. -/
 theorem biUnion_mem {ι : Type*} (h𝒜 : IsSetAlgebra 𝒜) {s : ι → Set α} (S : Finset ι)
@@ -198,7 +200,7 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
       exact hA a.1 a.2 (f a).1 (f a).2
     · ext x
       simp only [u_eq, compl_iUnion, compl_iInter, mem_iInter, mem_iUnion, mem_compl_iff,
-        exists_prop, Subtype.exists, mem_setOf_eq, iUnion_exists, iUnion_iUnion_eq',
+        exists_prop, Subtype.exists, mem_ofPred_eq, iUnion_exists, iUnion_iUnion_eq',
         iInter_exists]
       constructor <;> intro hx
       · choose f hf using hx
@@ -228,9 +230,9 @@ theorem countable_generateSetAlgebra (h : 𝒜.Countable) :
     exact this ▸ h.image compl
   let f : Set (Set (Set α)) → Set α := fun A ↦ ⋃ a ∈ A, ⋂ t ∈ a, t
   let 𝒞 := {a | a.Finite ∧ a ⊆ ℬ}
-  have count_𝒞 : 𝒞.Countable := countable_setOf_finite_subset (countable_coe_iff.1 count_ℬ)
+  have count_𝒞 : 𝒞.Countable := countable_ofPred_finite_subset (countable_coe_iff.1 count_ℬ)
   let 𝒟 := {A | A.Finite ∧ A ⊆ 𝒞}
-  have count_𝒟 : 𝒟.Countable := countable_setOf_finite_subset (countable_coe_iff.1 count_𝒞)
+  have count_𝒟 : 𝒟.Countable := countable_ofPred_finite_subset (countable_coe_iff.1 count_𝒞)
   have : generateSetAlgebra 𝒜 ⊆ f '' 𝒟 := by
     intro s s_mem
     rcases mem_generateSetAlgebra_elim s_mem with ⟨A, A_fin, mem_A, hA, rfl⟩

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Linear recurrence
@@ -48,6 +49,7 @@ open Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
+@[wikidata Q364089]
 structure LinearRecurrence (R : Type*) [CommSemiring R] where
   /-- Order of the linear recurrence -/
   order : ℕ

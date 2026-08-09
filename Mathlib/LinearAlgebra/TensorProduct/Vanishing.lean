@@ -88,7 +88,7 @@ theorem VanishesTrivially.of_fintype {κ} [Fintype κ] (a : ι → κ → R) (y 
     (hay : ∀ i, n i = ∑ j, a i j • y j) (ham : ∀ j, ∑ i, a i j • m i = 0) :
     VanishesTrivially R m n :=
   have e := (Fintype.equivFin κ).symm
-  ⟨Fintype.card κ, (a · ∘ e), y ∘ e, by simpa only [← e.sum_comp] using hay, by
+  ⟨Fintype.card κ, (a · ∘ e), y ∘ e, by simpa only [← e.sum_comp] using! hay, by
     rwa [← e.forall_congr_right] at ham⟩
 
 theorem _root_.Equiv.vanishesTrivially_comp {κ} [Fintype κ] (e : κ ≃ ι) :
