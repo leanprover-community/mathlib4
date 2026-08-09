@@ -35,6 +35,7 @@ namespace Mathlib.CrossRef
 
 /-- The supported external databases -/
 inductive Database where
+  | dlmf
   | kerodon
   | lmfdb
   | stacks
@@ -45,6 +46,7 @@ namespace Database
 
 /-- The base URL for an external database's tag pages. Always ends with `/`. -/
 def url : Database → String
+  | .dlmf => "https://dlmf.nist.gov/"
   | .kerodon => "https://kerodon.net/tag/"
   | .lmfdb => "https://www.lmfdb.org/knowledge/show/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
@@ -52,6 +54,7 @@ def url : Database → String
 
 /-- The display label used in docstring links and trace output. -/
 def label : Database → String
+  | .dlmf => "DLMF"
   | .kerodon => "Kerodon Tag"
   | .lmfdb => "LMFDB"
   | .stacks => "Stacks Tag"
@@ -59,6 +62,7 @@ def label : Database → String
 
 /-- A lowercase short name for the given database. Useful when exporting to JSON. -/
 def shortName : Database → String
+  | .dlmf => "dlmf"
   | .kerodon  => "kerodon"
   | .lmfdb    => "lmfdb"
   | .stacks   => "stacks"
@@ -207,7 +211,26 @@ def lmfdbIdNoAntiquot : Parser := {
 def lmfdbIdParser : Parser :=
   withAntiquot (mkAntiquot "lmfdbId" lmfdbIdKind) lmfdbIdNoAntiquot
 
+/-! # DLMF parser -/
+
+/-- `dlmfId` is the node kind of DLMF identifiers: TODO SPECIFY -/
+abbrev dlmfIdKind : SyntaxNodeKind := `dlmfId
+
+/-- The main parser for DLMF identifiers: TODO SPECIFY -/
+def dlmfIdFn : ParserFn := sorry
+
+@[inherit_doc dlmfIdFn]
+def dlmfIdNoAntiquot : Parser := {
+  fn   := dlmfIdFn
+  info := mkAtomicInfo "dlmfId"
+}
+
+@[inherit_doc dlmfIdFn]
+def dlmfIdParser : Parser :=
+  withAntiquot (mkAntiquot "dlmfId" dlmfIdKind) dlmfIdNoAntiquot
+
 end Mathlib.CrossRef
+
 
 open Mathlib.CrossRef
 
@@ -226,6 +249,11 @@ def Lean.TSyntax.getLmfdbId (stx : TSyntax lmfdbIdKind) : CoreM String := do
   let some val := Syntax.isLit? lmfdbIdKind stx | throwError "Malformed LMFDB id"
   return val
 
+/-- Extract the underlying identifier as a string from a `dlmfId` node. -/
+def Lean.TSyntax.getDlmfId (stx : TSyntax dlmfIdKind) : CoreM String := do
+  let some val := Syntax.isLit? dlmfIdKind stx | throwError "Malformed DLMF id"
+  return val
+
 namespace Lean.PrettyPrinter
 
 namespace Formatter
@@ -242,6 +270,10 @@ namespace Formatter
 @[combinator_formatter lmfdbIdNoAntiquot] def lmfdbIdNoAntiquot.formatter :=
   visitAtom lmfdbIdKind
 
+/-- The formatter for DLMF identifier syntax. -/
+@[combinator_formatter dlmfIdNoAntiquot] def dlmfIdNoAntiquot.formatter :=
+  visitAtom dlmfIdKind
+
 end Formatter
 
 namespace Parenthesizer
@@ -254,6 +286,9 @@ namespace Parenthesizer
 
 /-- The parenthesizer for LMFDB identifier syntax. -/
 @[combinator_parenthesizer lmfdbIdNoAntiquot] def lmfdbIdAntiquot.parenthesizer := visitToken
+
+/-- The parenthesizer for DLMF identifier syntax. -/
+@[combinator_parenthesizer dlmfIdNoAntiquot] def dlmfIdAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
 
@@ -334,6 +369,26 @@ initialize Lean.registerBuiltinAttribute {
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
+
+-- /-! ### DLMF attribute -/
+
+-- /-- The `dlmf` attribute.
+-- Use it as `@[dlmf foo.bar "Optional comment"]` to associate a Mathlib declaration with
+-- the corresponding [DLMF](https://dlmf.nist.gov) item.
+-- -/
+-- syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
+
+-- initialize Lean.registerBuiltinAttribute {
+--   name := `dlmfTag
+--   descr := "Apply a DLMF identifier to a declaration."
+--   add := fun decl stx _attrKind => do
+--     let (id, comment) ← match stx with
+--       | `(attr| dlmf $id $[$comment]?) => pure (id, comment)
+--       | _ => throwUnsupportedSyntax
+--     addCrossRefDoc .dlmf decl (← id.getDlmfId) ((comment.map (·.getString)).getD "")
+--   -- docstrings are immutable once an asynchronous elaboration task has been started
+--   applicationTime := .beforeElaboration
+-- }
 
 end Mathlib.CrossRef
 
