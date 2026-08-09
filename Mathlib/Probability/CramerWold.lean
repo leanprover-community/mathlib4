@@ -55,7 +55,7 @@ lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measura
 
 /-- **Cramér-Wold theorem (one direction only)**
 
-Convergence in distribution of all 1-dimensional scalar projections of a sequence of
+Convergence in distribution of all scalar projections of a sequence of
 random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
 theorem tendstoInDistribution_of_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
