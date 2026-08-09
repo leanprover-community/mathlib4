@@ -414,6 +414,10 @@ protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
 
 end IsMaxAntichain
 
+theorem maximal_isAntichain_iff : Maximal (IsAntichain r) s ↔ IsMaxAntichain r s where
+  mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
+  mpr h := ⟨h.isAntichain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
+
 end General
 
 /-! ### Weak antichains -/
