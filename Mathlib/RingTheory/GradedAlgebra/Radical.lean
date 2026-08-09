@@ -42,7 +42,7 @@ open GradedRing DirectSum SetLike Finset
 
 variable {ι σ A : Type*}
 variable [CommRing A]
-variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
+variable [AddCommMonoid ι] [LinearOrder ι] [DecidableEq ι] [IsOrderedCancelAddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)

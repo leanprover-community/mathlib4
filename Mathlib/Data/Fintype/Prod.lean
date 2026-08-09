@@ -61,7 +61,7 @@ theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
   card_product _ _
 
 /-- The number of strictly ordered pairs `(a, b)` in `α` is `(Fintype.card α).choose 2`. -/
-lemma Fintype.card_product_filter_lt [Fintype α] [LinearOrder α] :
+lemma Fintype.card_product_filter_lt [Fintype α] [LinearOrder α] [DecidableLT α] :
     #{x : α × α | x.1 < x.2} = (Fintype.card α).choose 2 := by
   simpa using Finset.card_product_filter_lt (s := univ)
 

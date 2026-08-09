@@ -246,7 +246,7 @@ variable [LinearOrder α] [Group α] {a b : α}
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
-@[to_additive] lemma oneLePart_eq_ite_lt : a⁺ᵐ = if 1 < a then a else 1 := by
+@[to_additive] lemma oneLePart_eq_ite_lt [DecidableLT α] : a⁺ᵐ = if 1 < a then a else 1 := by
   grind [oneLePart_eq_ite]
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
@@ -264,7 +264,7 @@ variable [MulLeftMono α]
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
-@[to_additive] lemma leOnePart_eq_ite_lt : a⁻ᵐ = if a < 1 then a⁻¹ else 1 := by
+@[to_additive] lemma leOnePart_eq_ite_lt [DecidableLT α] : a⁻ᵐ = if a < 1 then a⁻¹ else 1 := by
   grind [leOnePart_eq_ite, inv_one]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_leOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=

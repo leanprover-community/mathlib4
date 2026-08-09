@@ -256,7 +256,9 @@ variable (ι) in
 @[to_dual /-- If `ι` has a bot element, then `WithBot ι` is homeomorphic to `ι ⊕ Unit`. -/]
 noncomputable
 def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
-  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
+  toFun x :=
+    let : DecidableEq ι := decidableEqOfDecidableLE
+    if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
   invFun x := match x with
     | Sum.inl i => (i : WithTop ι)
     | Sum.inr () => ⊤
@@ -270,6 +272,7 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
       have : {⊤} = Set.Ioi ((⊤ : ι) : WithTop ι) := by ext; simp
       rw [this]
       exact isOpen_Ioi
+    let : DecidableEq ι := decidableEqOfDecidableLE
     refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩

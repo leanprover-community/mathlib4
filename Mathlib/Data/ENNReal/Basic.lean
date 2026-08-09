@@ -160,6 +160,8 @@ noncomputable instance : AddCommMonoid ℝ≥0∞ :=
 noncomputable instance : LinearOrder ℝ≥0∞ :=
   inferInstanceAs (LinearOrder (WithTop ℝ≥0))
 
+deriving noncomputable instance DecidableEq, DecidableLT for ENNReal
+
 instance : IsOrderedAddMonoid ℝ≥0∞ :=
   inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
 

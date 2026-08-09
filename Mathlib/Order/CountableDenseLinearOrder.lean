@@ -66,10 +66,11 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
 set_option backward.isDefEq.respectTransparency false in
-lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
+lemma exists_orderEmbedding_insert [DecidableEq α] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
     [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
+  classical
   let Slt := {x ∈ S.attach | x.val < a}.image f
   let Sgt := {x ∈ S.attach | a < x.val}.image f
   obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
@@ -104,7 +105,7 @@ variable (α β)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
 A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
 of pairs which should be identified. -/
-def PartialIso : Type _ :=
+def PartialIso [DecidableLT α] [DecidableLT β] : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
       cmp (Prod.fst p) (Prod.fst q) = cmp (Prod.snd p) (Prod.snd q) }
@@ -112,9 +113,10 @@ deriving Preorder
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
+instance [DecidableLT α] [DecidableLT β] : Inhabited (PartialIso α β) :=
+  ⟨⟨∅, fun _p h _q ↦ (Finset.notMem_empty _ h).elim⟩⟩
 
-variable {α β}
+variable {α β} [DecidableLT α] [DecidableLT β]
 
 /-- For each `a`, we can find a `b` in the codomain, such that `a`'s relation to
 the domain of `f` is `b`'s relation to the image of `f`.
@@ -127,6 +129,7 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
   by_cases h : ∃ b, (a, b) ∈ f.val
   · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
+  classical
   have :
     ∀ x ∈ {p ∈ f.val | p.fst < a}.image Prod.snd,
       ∀ y ∈ {p ∈ f.val | a < p.fst}.image Prod.snd, x < y := by
@@ -153,16 +156,10 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
 
 /-- A partial isomorphism between `α` and `β` is also a partial isomorphism between `β` and `α`. -/
 protected def comm : PartialIso α β → PartialIso β α :=
-  Subtype.map (Finset.image (Equiv.prodComm _ _)) fun f hf p hp q hq ↦
+  Subtype.map (Finset.map (Equiv.prodComm _ _).toEmbedding) fun _ hf p hp q hq ↦
     Eq.symm <|
-      hf ((Equiv.prodComm α β).symm p)
-        (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hp
-          rwa [← Finset.mem_coe])
-        ((Equiv.prodComm α β).symm q)
-        (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hq
-          rwa [← Finset.mem_coe])
+      hf ((Equiv.prodComm α β).symm p) (Finset.mem_map_equiv.mp hp)
+        ((Equiv.prodComm α β).symm q) (Finset.mem_map_equiv.mp hq)
 
 variable (β)
 
@@ -173,6 +170,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
   isCofinal f := by
     obtain ⟨b, a_b⟩ := exists_across f a
+    classical
     refine
       ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
         Finset.subset_insert _ _⟩
@@ -194,11 +192,12 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
   isCofinal f := by
     rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
-    · change (a, b) ∈ f'.val.image _
-      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
-    · change _ ⊆ f'.val.image _
-      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
-        Finset.coe_subset]
+    · change (a, b) ∈ f'.val.map _
+      rwa [Finset.mem_map_equiv]
+    · change _ ⊆ f'.val.map _
+      intro x hx
+      rw [Finset.mem_map_equiv, Equiv.prodComm_symm]
+      exact hl (Finset.mem_map_of_mem _ hx)
 
 variable {α}
 
@@ -229,6 +228,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
   obtain ⟨a, ha⟩ := exists_between hxy
   have : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
+  classical
   let our_ideal : Ideal (PartialIso α _) :=
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ _ a)
@@ -247,6 +247,7 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
     Nonempty (α ≃o β) := by
   cases nonempty_encodable α
   cases nonempty_encodable β
+  classical
   let to_cofinal : α ⊕ β → Cofinal (PartialIso α β) := fun p ↦
     Sum.recOn p (definedAtLeft β) (definedAtRight α)
   let our_ideal : Ideal (PartialIso α β) := idealOfCofinals default to_cofinal

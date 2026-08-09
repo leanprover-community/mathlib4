@@ -36,11 +36,11 @@ universe u
 
 namespace Profinite.NobelingProof
 
-variable {I : Type u} (C : Set (I → Bool)) [LinearOrder I]
+variable {I : Type u} (C : Set (I → Bool))
 
 section Fin
 
-variable (s : Finset I)
+variable [LinearOrder I] [DecidableEq I] (s : Finset I)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection `C → π C (· ∈ s)`. -/
 noncomputable
@@ -64,15 +64,15 @@ instance : Fintype (π C (· ∈ s)) := by
   · exact congrFun h ⟨i, hi⟩
   · simp only [Proj, if_neg hi]
 
-open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
 noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
-  toFun := fun y ↦ if y = x then 1 else 0
+  toFun y := open Classical in if y = x then 1 else 0
   isLocallyConstant :=
     haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
+omit [LinearOrder I] in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -225,7 +225,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
 
 end Fin
 
-theorem fin_comap_jointlySurjective
+theorem fin_comap_jointlySurjective [DecidableEq I]
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap ⟨(ProjRestrict C (· ∈ s)),
@@ -236,10 +236,11 @@ theorem fin_comap_jointlySurjective
   exact ⟨(Opposite.unop J), g, h⟩
 
 /-- The good products span all of `LocallyConstant C ℤ` if `C` is closed. -/
-theorem GoodProducts.span [WellFoundedLT I] (hC : IsClosed C) :
+theorem GoodProducts.span [LinearOrder I] [WellFoundedLT I] (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
+  classical
   obtain ⟨K, f', rfl⟩ : ∃ K f', f = πJ C K f' := fin_comap_jointlySurjective C hC f
   refine Submodule.span_mono ?_ <| Submodule.apply_mem_span_image_of_mem_span (πJ C K) <|
     spanFin C K (Submodule.mem_top : f' ∈ ⊤)

@@ -109,6 +109,7 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
     [CommGroup G'] [LinearOrder G'] [IsOrderedMonoid G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
     closure ({x} : Set G) ≃*o closure ({y} : Set G') :=
+  let : DecidableEq G := decidableEqOfDecidableLE
   if hx : x = 1 then by
     refine ⟨⟨⟨fun _ ↦ ⟨1, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨1, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
     · intro ⟨a, ha⟩
@@ -306,6 +307,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
+  classical
   exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -317,6 +319,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     Nonempty (G ≃*o ℤᵐ⁰) ↔ ¬ DenselyOrdered G := by
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
+  classical
   refine Nonempty.congr ?_ ?_ <;> intro f
   · refine ⟨MulEquiv.withZero.symm (withZeroUnitsEquiv.trans f), ?_⟩
     intros
@@ -418,6 +421,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete_of_ne_zero
     {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤᵐ⁰) := by
+  classical
   suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
     Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
     rw [this, LinearOrderedCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discrete]
@@ -510,7 +514,8 @@ lemma WithZero.mulArchimedean_iff {α} [CommGroup α] [PartialOrder α] :
 lemma Units.mulArchimedean_iff {G₀} [LinearOrderedCommGroupWithZero G₀] :
     MulArchimedean G₀ˣ ↔ MulArchimedean G₀ := by
   constructor <;> intro _
-  · exact OrderMonoidIso.withZeroUnits.mulArchimedean
+  · classical
+    exact OrderMonoidIso.withZeroUnits.mulArchimedean
   · infer_instance
 
 section LocallyFiniteOrder

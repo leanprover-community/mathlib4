@@ -119,6 +119,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
   intro c
   rw [Submodule.disjoint_def']
   intro a ha b hb hab
+  classical
   obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp' _ b).mp hb
   obtain hf' := congr(ArchimedeanClass.mk $hf)
   contrapose! hf' with h0
@@ -197,7 +198,7 @@ noncomputable
 def hahnCoeff : seed.baseDomain →ₗ[K] (⨁ _ : FiniteArchimedeanClass M, R) :=
   (DirectSum.lmap seed.coeff') ∘ₗ (DirectSum.decomposeLinearEquiv _).toLinearMap
 
-theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
+theorem hahnCoeff_apply [DecidableEq M] {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
     (h : x.val = f.sum fun c ↦ (seed.stratum c).subtype) (c : FiniteArchimedeanClass M) :
     seed.hahnCoeff x c = seed.coeff c (f c) := by
   suffices seed.baseDomain.subtype.submoduleComap
@@ -224,12 +225,15 @@ a partial linear map from `HahnEmbedding.Seed.baseDomain` to `HahnSeries`. -/
 noncomputable
 def baseEmbedding : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧ where
   domain := seed.baseDomain
-  toFun := (toLexLinearEquiv _ _).toLinearMap ∘ₗ (HahnSeries.ofFinsuppLinearMap _) ∘ₗ
-    (finsuppLequivDFinsupp K).symm.toLinearMap ∘ₗ seed.hahnCoeff
+  toFun :=
+    let : DecidableEq R := decidableEqOfDecidableLE
+    (toLexLinearEquiv _ _).toLinearMap ∘ₗ (HahnSeries.ofFinsuppLinearMap _) ∘ₗ
+      (finsuppLequivDFinsupp K).symm.toLinearMap ∘ₗ seed.hahnCoeff
 
 theorem domain_baseEmbedding : seed.baseEmbedding.domain = seed.baseDomain := rfl
 
-theorem coeff_baseEmbedding {x : seed.baseEmbedding.domain} {f : Π₀ c, seed.stratum c}
+theorem coeff_baseEmbedding [DecidableEq M]
+    {x : seed.baseEmbedding.domain} {f : Π₀ c, seed.stratum c}
     (h : x.val = f.sum fun c ↦ (seed.stratum c).subtype) (c : FiniteArchimedeanClass M) :
     (ofLex ((baseEmbedding seed) x)).coeff c = seed.coeff c (f c) := by
   simpa [baseEmbedding] using! seed.hahnCoeff_apply h c
@@ -268,6 +272,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
   -- decompose `x` to sum of `stratum`
   have hmem : x.val ∈ seed.baseEmbedding.domain := x.prop
   simp_rw [seed.domain_baseEmbedding] at hmem
+  classical
   obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp' _ _).mp hmem
   have hfpos : 0 < (f.sum fun _ x ↦ x.val) := by
     rw [hf]
@@ -336,6 +341,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   -- decompose `x` to `stratum`
   have hmem : x.val ∈ seed.baseEmbedding.domain := x.prop
   simp_rw [seed.domain_baseEmbedding] at hmem
+  classical
   obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp' _ _).mp hmem
   -- Truncating in the codomain is the same as truncating away some submodule
   let f' : Π₀ (i : FiniteArchimedeanClass M), seed.stratum i :=
@@ -403,6 +409,7 @@ theorem apply_of_mem_stratum {x : f.val.domain} {c : FiniteArchimedeanClass M}
   have heq : (⟨x.val, hx'⟩ : seed.baseEmbedding.domain).val = x.val := rfl
   rw [← f.prop.baseEmbedding_le.2 heq]
   let fx : Π₀ c, seed.stratum c := DFinsupp.single c ⟨x.val, hx⟩
+  classical
   have hfx : x.val = fx.sum fun c ↦ (seed.stratum c).subtype := by
     simp [fx, DFinsupp.sum_single_index]
   apply_fun ofLex

@@ -302,6 +302,9 @@ instance total_le : @Std.Total (UpperSet α) (· ≤ ·) := ⟨fun s t => t.uppe
 noncomputable instance instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _
 
+noncomputable instance instDecidableEq : DecidableEq (UpperSet α) := Classical.decRel _
+noncomputable instance instDecidableLT : DecidableLT (UpperSet α) := Classical.decRel _
+
 noncomputable instance instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
   { completelyDistribLattice, instLinearOrder with }
 
@@ -312,6 +315,14 @@ instance _root_.LowerSet.total_le : @Std.Total (LowerSet α) (· ≤ ·) :=
 @[to_dual existing]
 noncomputable instance _root_.LowerSet.instLinearOrder : LinearOrder (LowerSet α) := by
   classical exact Lattice.toLinearOrder _
+
+@[to_dual existing]
+noncomputable instance _root_.LowerSet.instDecidableEq : DecidableEq (LowerSet α) :=
+  Classical.decRel _
+
+@[to_dual existing]
+noncomputable instance _root_.LowerSet.instDecidableLT : DecidableLT (LowerSet α) :=
+  Classical.decRel _
 
 @[to_dual existing]
 noncomputable instance _root_.LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=

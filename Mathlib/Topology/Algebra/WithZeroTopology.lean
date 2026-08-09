@@ -48,7 +48,8 @@ A subset `U` is open if `0 ∉ U` or if there is an invertible element γ₀ suc
 scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 
-theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
+theorem nhds_eq_update [DecidableEq Γ₀] :
+    (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
   rw [nhds_nhdsAdjoint, sup_of_le_right]
   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
 
@@ -57,6 +58,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ
 -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
+  classical
   rw [nhds_eq_update, update_self]
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and

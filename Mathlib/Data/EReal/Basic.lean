@@ -35,7 +35,8 @@ noncomputable section
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
-  Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
+  Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, DecidableEq, DecidableLT,
+  CompleteLinearOrder, DenselyOrdered,
   ZeroLEOneClass, IsOrderedAddMonoid
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/

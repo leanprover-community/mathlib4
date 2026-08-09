@@ -65,7 +65,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
 
 section Units
 
-variable {α : Type*} [LinearOrderedCommGroupWithZero α]
+variable {α : Type*} [LinearOrderedCommGroupWithZero α] [DecidablePred (α := α) (· = 0)]
 
 open WithZero
 

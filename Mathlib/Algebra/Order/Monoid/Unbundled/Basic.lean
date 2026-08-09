@@ -1355,13 +1355,13 @@ theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s)
   fun _ hx _ hy h => mul_lt_mul_of_lt_of_le (hf hx hy h) (hg hx hy h.le)
 
 @[to_additive (attr := simp) cmp_add_left]
-theorem cmp_mul_left' {α : Type*} [Mul α] [LinearOrder α] [MulLeftStrictMono α]
+theorem cmp_mul_left' {α : Type*} [Mul α] [LinearOrder α] [DecidableLT α] [MulLeftStrictMono α]
     (a b c : α) :
     cmp (a * b) (a * c) = cmp b c :=
   (strictMono_id.const_mul' a).cmp_map_eq b c
 
 @[to_additive (attr := simp) cmp_add_right]
-theorem cmp_mul_right' {α : Type*} [Mul α] [LinearOrder α]
+theorem cmp_mul_right' {α : Type*} [Mul α] [LinearOrder α] [DecidableLT α]
     [MulRightStrictMono α] (a b c : α) :
     cmp (a * c) (b * c) = cmp a b :=
   (strictMono_id.mul_const' c).cmp_map_eq a b

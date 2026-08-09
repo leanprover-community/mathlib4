@@ -80,6 +80,7 @@ instance : IsStrictOrderedRing ℤ[X] :=
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
+    classical
     simp_rw [← not_lt, not_iff_not]
     constructor
     · split_ifs with h

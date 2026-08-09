@@ -435,11 +435,11 @@ theorem Units.inv_neg
     neg_of_mul_pos_right (u.mul_inv.symm ▸ zero_lt_one) h.le
   ⟨this, this⟩
 
-theorem cmp_mul_pos_left [PosMulStrictMono R]
+theorem cmp_mul_pos_left [DecidableLT R] [PosMulStrictMono R]
     (ha : 0 < a) (b c : R) : cmp (a * b) (a * c) = cmp b c :=
   (strictMono_mul_left_of_pos ha).cmp_map_eq b c
 
-theorem cmp_mul_pos_right [MulPosStrictMono R]
+theorem cmp_mul_pos_right [DecidableLT R] [MulPosStrictMono R]
     (ha : 0 < a) (b c : R) : cmp (b * a) (c * a) = cmp b c :=
   (strictMono_mul_right_of_pos ha).cmp_map_eq b c
 
@@ -551,12 +551,12 @@ theorem lt_of_mul_lt_mul_of_nonpos_right [ExistsAddOfLE R] [MulPosMono R]
     (h : a * c < b * c) (hc : c ≤ 0) : b < a :=
   (antitone_mul_right hc).reflect_lt h
 
-theorem cmp_mul_neg_left [ExistsAddOfLE R] [PosMulStrictMono R]
+theorem cmp_mul_neg_left [DecidableLT R] [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightReflectLT R] [AddRightStrictMono R]
     {a : R} (ha : a < 0) (b c : R) : cmp (a * b) (a * c) = cmp c b :=
   (strictAnti_mul_left ha).cmp_map_eq b c
 
-theorem cmp_mul_neg_right [ExistsAddOfLE R] [MulPosStrictMono R]
+theorem cmp_mul_neg_right [DecidableLT R] [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightReflectLT R] [AddRightStrictMono R]
     {a : R} (ha : a < 0) (b c : R) : cmp (b * a) (c * a) = cmp c b :=
   (strictAnti_mul_right ha).cmp_map_eq b c

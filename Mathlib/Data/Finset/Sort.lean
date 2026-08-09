@@ -184,6 +184,7 @@ is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` 
 the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s` to avoid
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
+  let : DecidableEq α := decidableEqOfDecidableLE
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
     (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
 
@@ -199,8 +200,10 @@ theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : 
     ↑(orderIsoOfFin s h i) = orderEmbOfFin s h i :=
   rfl
 
-theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
-    ↑((s.orderIsoOfFin h).symm x) = s.sort.idxOf ↑x :=
+theorem orderIsoOfFin_symm_apply [DecidableEq α]
+    (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
+    ↑((s.orderIsoOfFin h).symm x) = s.sort.idxOf ↑x := by
+  cases Subsingleton.elim ‹_› decidableEqOfDecidableLE
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
@@ -221,7 +224,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
-theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+theorem image_orderEmbOfFin_univ [DecidableEq α] (s : Finset α) {k : ℕ} (h : s.card = k) :
     Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
   apply Finset.coe_injective
   simp
@@ -229,6 +232,7 @@ theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
 @[simp]
 theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
     Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  classical
   simp [map_eq_image]
 
 @[simp]
@@ -259,6 +263,7 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
+  classical
   rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
     ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_

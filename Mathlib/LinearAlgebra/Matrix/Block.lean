@@ -367,7 +367,8 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
 /-! ### Invertible -/
 
 
-theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
+theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one
+    [LinearOrder α] [DecidableLT α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :
     ((M⁻¹.toBlock (fun i => b i < k) fun i => b i < k) *
         M.toBlock (fun i => b i < k) fun i => b i < k) =
@@ -385,7 +386,8 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
 
 /-- The inverse of an upper-left subblock of a block-triangular matrix `M` is the upper-left
 subblock of `M⁻¹`. -/
-theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
+theorem BlockTriangular.inv_toBlock
+    [LinearOrder α] [DecidableLT α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) :
     (M.toBlock (fun i => b i < k) fun i => b i < k)⁻¹ =
       M⁻¹.toBlock (fun i => b i < k) fun i => b i < k :=
@@ -393,7 +395,8 @@ theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockT
 
 /-- An upper-left subblock of an invertible block-triangular matrix is invertible. -/
 @[instance_reducible]
-def BlockTriangular.invertibleToBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
+def BlockTriangular.invertibleToBlock
+    [LinearOrder α] [DecidableLT α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) : Invertible (M.toBlock (fun i => b i < k) fun i => b i < k) :=
   invertibleOfLeftInverse _ ((⅟M).toBlock (fun i => b i < k) fun i => b i < k) <| by
     simpa only [invOf_eq_nonsing_inv] using hM.toBlock_inverse_mul_toBlock_eq_one k
@@ -404,6 +407,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     (M⁻¹.toBlock (fun i => k ≤ b i) fun i => b i < k) = 0 := by
   let p i := b i < k
   let q i := ¬b i < k
+  classical
   have h_sum : M⁻¹.toBlock q p * M.toBlock p p + M⁻¹.toBlock q q * M.toBlock q p = 0 := by
     rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_disjoint]
     rw [disjoint_iff_inf_le]
@@ -422,6 +426,7 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
 /-- The inverse of a block-triangular matrix is block-triangular. -/
 theorem blockTriangular_inv_of_blockTriangular [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) : BlockTriangular M⁻¹ b := by
+  classical
   suffices ∀ hs : Finset α, univ.image b = hs → BlockTriangular M⁻¹ b by exact this _ rfl
   intro s hs
   induction s using Finset.strongInduction generalizing m with | H s ih =>

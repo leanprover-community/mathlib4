@@ -54,7 +54,7 @@ structure Decomposition (A : Matrix m n R) where
   L_lowerTriangular : L.IsLowerTriangular
   L_diag_ne_zero (i : m) : L.diag i ≠ 0
 
-theorem Decomposition.rank_eq {A : Matrix m n R} (cert : Decomposition A) :
+theorem Decomposition.rank_eq [DecidableEq n] {A : Matrix m n R} (cert : Decomposition A) :
     A.rank = #{i | cert.pivot i ≠ ⊤} := by
   rw [← cert.isPivotedBy.rank_eq,
     cert.L.rank_mul_eq_right_of_isLowerTriangular _ cert.L_lowerTriangular cert.L_diag_ne_zero]

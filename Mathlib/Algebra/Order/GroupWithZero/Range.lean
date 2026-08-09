@@ -41,6 +41,7 @@ lemma monoidWithZeroHom_strictMono :
 lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
   intro x y hxy
   rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
+  classical
   simpa using! (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=

@@ -263,8 +263,12 @@ instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) :=
   open scoped Classical in
-  -- TODO: why does `inferInstanceAs` not work here?
-  fast_instance% (inferInstance : LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)))
+  inferInstanceAs% LinearOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·))
+
+@[to_additive]
+noncomputable instance : DecidableEq (MulArchimedeanClass M) := Classical.decRel _
+@[to_additive]
+noncomputable instance : DecidableLT (MulArchimedeanClass M) := Classical.decRel _
 
 @[to_additive]
 theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
@@ -761,6 +765,7 @@ instance [Nontrivial M] : Nonempty (FiniteMulArchimedeanClass M) := by
 def lift {α : Type*} (f : {a : M // a ≠ 1} → α)
     (h : ∀ (a b : {a : M // a ≠ 1}), mk a.val a.prop = mk b.val b.prop → f a = f b) :
     FiniteMulArchimedeanClass M → α := fun ⟨A, hA⟩ ↦ by
+  let : DecidableEq M := decidableEqOfDecidableLE
   refine (MulArchimedeanClass.lift
     (fun b ↦ if h : b = 1 then ⊤ else WithTop.some (f ⟨b, h⟩)) (fun a b h' ↦ ?_) A).untop ?_
   · split_ifs with ha hb hb

@@ -44,7 +44,7 @@ assert_not_exists Field
 
 deriving instance Nontrivial,
   Add, Sub, LE, LT, Bot,
-  Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
+  Preorder, LinearOrder, DecidableEq, DecidableLT, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
   ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors

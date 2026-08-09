@@ -905,7 +905,7 @@ end DivisionRing
 section Ordered
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup V]
+  [DecidableLT k] [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
 /-- Given an affinely independent family of points, suppose that an affine combination lies in

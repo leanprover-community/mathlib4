@@ -110,15 +110,14 @@ instance Colex.partialOrder [PartialOrder N] : PartialOrder (Colex (α →₀ N)
     (DFunLike.coe_injective (F := Finsupp α N))
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
-  __ := Lex.partialOrder
-  __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
+instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) :=
+  fast_instance% by classical
+    exact LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
 /-- The linear order on `Finsupp`s obtained by the colexicographic ordering. -/
-instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) where
-  lt := (· < ·)
-  le := (· ≤ ·)
-  __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
+instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) :=
+  fast_instance% by classical
+    exact LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :

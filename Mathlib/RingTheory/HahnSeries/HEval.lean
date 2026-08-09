@@ -55,6 +55,7 @@ theorem powerSeriesFamily_of_not_orderTop_pos {x : V⟦Γ⟧} (hx : ¬ 0 < x.ord
     (f : PowerSeries R) :
     powerSeriesFamily x f = powerSeriesFamily 0 f := by
   ext n g
+  classical
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
 
 theorem powerSeriesFamily_of_orderTop_pos {x : V⟦Γ⟧} (hx : 0 < x.orderTop)
@@ -106,6 +107,7 @@ theorem support_powerSeriesFamily_subset {x : V⟦Γ⟧} (a b : PowerSeries R) (
     simp [hc]
   · simp only [coeff_support, Set.Finite.toFinset_subset, support_subset_iff]
     intro n hn
+    classical
     by_cases hz : n = 0
     · have : g = 0 ∧ (a.constantCoeff * b.constantCoeff) • (1 : V) ≠ 0 := by
         simpa [hz, h] using hn
@@ -167,6 +169,7 @@ variable `X` to a positive order element `x` and extending to infinite sums. -/
 def heval : PowerSeries R →ₐ[R] R⟦Γ⟧ where
   toFun f := (powerSeriesFamily x f).hsum
   map_one' := by
+    classical
     simp only [hsum, smulFamily_toFun, coeff_one, powers_toFun, ite_smul, one_smul, zero_smul]
     ext g
     simp only
@@ -182,6 +185,7 @@ def heval : PowerSeries R →ₐ[R] R⟦Γ⟧ where
   commutes' r := by
     simp only [algebraMap_eq]
     ext g
+    classical
     simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
     rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
@@ -191,13 +195,15 @@ theorem heval_mul {a b : PowerSeries R} : heval x (a * b) = heval x a * heval x 
 
 theorem heval_C (r : R) : heval x (C r) = r • 1 := by
   ext g
-  simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
+  classical
+    simp only [heval_apply, coeff_hsum, smulFamily_toFun, powers_toFun, HahnSeries.coeff_smul,
     HahnSeries.coeff_one, smul_eq_mul, mul_ite, mul_one, mul_zero]
   rw [finsum_eq_single _ 0 (fun n hn ↦ by simp [coeff_C_of_ne_zero hn])]
   by_cases hg : g = 0 <;> simp
 
 theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
+  classical
   simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
   ext g
   rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ by simp [hn])]
@@ -217,6 +223,7 @@ theorem coeff_heval_zero (f : PowerSeries R) :
     (heval x f).coeff 0 = PowerSeries.constantCoeff f := by
   rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily x f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
+  classical
   · simp
   · intro n hn
     simp only [coeff_apply, smulFamily_toFun, HahnSeries.coeff_smul, smul_eq_mul]

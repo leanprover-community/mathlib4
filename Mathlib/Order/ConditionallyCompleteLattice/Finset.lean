@@ -70,7 +70,7 @@ end ConditionallyCompleteLattice
 
 variable (f : ι → α)
 
-theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
+theorem Finset.ciSup_eq_max'_image [DecidableEq α] {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
     (h' : (s.image f).Nonempty := by exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨆ i ∈ s, f i = (s.image f).max' h' := by
   classical
@@ -88,7 +88,7 @@ theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ �
     refine ⟨i, ?_⟩
     simp [hi]
 
-theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅)
+theorem Finset.ciInf_eq_min'_image [DecidableEq α] {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅)
     (h' : (s.image f).Nonempty := by exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
@@ -97,12 +97,12 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
   simp only [image_image]
   congr
 
-theorem Finset.ciSup_mem_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
+theorem Finset.ciSup_mem_image [DecidableEq α] {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
     ⨆ i ∈ s, f i ∈ s.image f := by
   rw [ciSup_eq_max'_image _ h]
   exact max'_mem (image f s) _
 
-theorem Finset.ciInf_mem_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅) :
+theorem Finset.ciInf_mem_image [DecidableEq α] {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅) :
     ⨅ i ∈ s, f i ∈ s.image f := by
   rw [ciInf_eq_min'_image _ h]
   exact min'_mem (image f s) _
@@ -111,12 +111,14 @@ theorem Set.Finite.ciSup_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s
     ⨆ i ∈ s, f i ∈ f '' s := by
   lift s to Finset ι using hs
   simp only [Finset.mem_coe] at h
+  classical
   simpa using Finset.ciSup_mem_image f h
 
 theorem Set.Finite.ciInf_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s, f x ≤ sInf ∅) :
     ⨅ i ∈ s, f i ∈ f '' s := by
   lift s to Finset ι using hs
   simp only [Finset.mem_coe] at h
+  classical
   simpa using Finset.ciInf_mem_image f h
 
 theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
@@ -293,12 +295,12 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] (f : ι → α)
 
-theorem Finset.Nonempty.ciSup_eq_max'_image {s : Finset ι} (h : s.Nonempty)
+theorem Finset.Nonempty.ciSup_eq_max'_image [DecidableEq α] {s : Finset ι} (h : s.Nonempty)
     (h' : (s.image f).Nonempty := h.image f) :
     ⨆ i ∈ s, f i = (s.image f).max' h' :=
   s.ciSup_eq_max'_image _ (h.imp (by simp)) _
 
-theorem Finset.Nonempty.ciSup_mem_image {s : Finset ι} (h : s.Nonempty) :
+theorem Finset.Nonempty.ciSup_mem_image [DecidableEq α] {s : Finset ι} (h : s.Nonempty) :
     ⨆ i ∈ s, f i ∈ s.image f :=
   s.ciSup_mem_image _ (h.imp (by simp))
 

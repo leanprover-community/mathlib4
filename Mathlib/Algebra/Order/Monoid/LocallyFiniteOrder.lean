@@ -58,6 +58,7 @@ lemma Finset.card_Ico_mul_right [ExistsMulOfLE M] (a b c : M) :
 lemma card_Ico_one_mul [ExistsMulOfLE M] (a b : M)
     (ha : 1 ≤ a) (hb : 1 ≤ b) :
     #(Ico 1 (a * b)) = #(Ico 1 a) + #(Ico 1 b) := by
+  classical
   have : Ico 1 b ∪ Ico (1 * b) (a * b) = Ico 1 (a * b) := by
     simp [Ico_union_Ico, ha, hb, Right.one_le_mul ha hb]
   rw [← this, Finset.card_union, Finset.card_Ico_mul_right]
@@ -195,6 +196,7 @@ is isomorphic to `ℤᵐ⁰`. -/
 noncomputable
 def LocallyFiniteOrder.orderMonoidWithZeroEquiv (G : Type*) [LinearOrderedCommGroupWithZero G]
     [LocallyFiniteOrder Gˣ] [Nontrivial Gˣ] : G ≃*o ℤᵐ⁰ :=
+  let : DecidableEq G := decidableEqOfDecidableLE
   OrderMonoidIso.withZeroUnits.symm.trans (LocallyFiniteOrder.orderMonoidEquiv _).withZero
 
 open scoped WithZero in
@@ -202,8 +204,9 @@ open scoped WithZero in
 noncomputable
 def LocallyFiniteOrder.orderMonoidWithZeroHom (G : Type*) [LinearOrderedCommGroupWithZero G]
     [LocallyFiniteOrder Gˣ] : G →*₀o ℤᵐ⁰ where
-  __ := (WithZero.map' (orderMonoidHom Gˣ)).comp
-    OrderMonoidIso.withZeroUnits.symm.toMonoidWithZeroHom
+  __ :=
+    let : DecidableEq G := decidableEqOfDecidableLE
+    (WithZero.map' (orderMonoidHom Gˣ)).comp OrderMonoidIso.withZeroUnits.symm.toMonoidWithZeroHom
   monotone' a b h := by have := (orderMonoidHom Gˣ).monotone'; aesop
 
 lemma LocallyFiniteOrder.orderMonoidWithZeroHom_strictMono {G : Type*}

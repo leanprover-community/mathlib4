@@ -102,6 +102,8 @@ instance : LinearOrder SignType where
   le_trans := by decide
   toDecidableLE := instDecidableLE
 
+instance : DecidableLT SignType := decidableLTOfDecidableLE
+
 instance : BoundedOrder SignType where
   top := 1
   le_top := LE.of_pos
@@ -299,7 +301,7 @@ end Preorder
 
 section LinearOrder
 
-variable [Zero α] [LinearOrder α] {a : α}
+variable [Zero α] [LinearOrder α] [DecidableLT α] {a : α}
 
 /-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
 lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableLT β]

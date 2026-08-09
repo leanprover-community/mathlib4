@@ -53,6 +53,7 @@ private lemma exists_perm_eq_zero_implies_eq_zero {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
+  classical
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
     have (i : _) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
@@ -93,6 +94,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ • σ.permMatrix R = M := by
   rcases isEmpty_or_nonempty n
   case inl => exact ⟨1, by simp, Subsingleton.elim _ _⟩
+  classical
   set d : ℕ := #{i : n × n | M i.1 i.2 ≠ 0} with ← hd
   clear_value d
   induction d using Nat.strongRecOn generalizing M s

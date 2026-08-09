@@ -86,7 +86,7 @@ deriving instance
   for NNReal
 
 noncomputable section
-deriving instance LinearOrder for NNReal
+deriving instance LinearOrder, DecidableEq, DecidableLT for NNReal
 end
 
 example : (0 : ℝ≥0) = ⊥ := by with_reducible_and_instances rfl
@@ -969,6 +969,7 @@ variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
   obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
+  classical
   set u : Γ₀ˣ := if g < 1 then g else g⁻¹ with hu
   have hfu : f u < 1 := by
     rw [hu]

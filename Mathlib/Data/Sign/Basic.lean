@@ -95,7 +95,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [DecidableLT α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -133,7 +133,7 @@ end LinearOrderedRing
 
 section LinearOrderedAddCommGroup
 
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [DecidableLT α]
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by

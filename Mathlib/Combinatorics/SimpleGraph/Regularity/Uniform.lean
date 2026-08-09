@@ -61,7 +61,10 @@ random-like. -/
 def IsUniform (s t : Finset α) : Prop :=
   ∀ ⦃s'⦄, s' ⊆ s → ∀ ⦃t'⦄, t' ⊆ t → (#s : 𝕜) * ε ≤ #s' →
     (#t : 𝕜) * ε ≤ #t' → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
-deriving Decidable
+
+instance (s t : Finset α) : Decidable (G.IsUniform ε s t) :=
+  letI : DecidableLT 𝕜 := decidableLTOfDecidableLE
+  inferInstanceAs (Decidable (∀ ⦃_⦄, _))
 
 variable {G ε}
 
@@ -199,17 +202,30 @@ namespace Finpartition
 /-- The pairs of parts of a partition `P` which are not `ε`-dense in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-dense with itself. -/
 def sparsePairs (ε : 𝕜) : Finset (Finset α × Finset α) :=
+  let : DecidableLT 𝕜 := decidableLTOfDecidableLE
   P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε
+
+omit [IsStrictOrderedRing 𝕜] in
+lemma sparsePairs_def [DecidableLT 𝕜] (ε : 𝕜) :
+    P.sparsePairs G ε = P.parts.offDiag.filter fun (u, v) ↦ G.edgeDensity u v < ε := by
+  unfold sparsePairs
+  congr!
+
+attribute [eqns sparsePairs_def] sparsePairs
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp]
 lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
     (u, v) ∈ P.sparsePairs G ε ↔ u ∈ P.parts ∧ v ∈ P.parts ∧ u ≠ v ∧ G.edgeDensity u v < ε := by
+  classical
   rw [sparsePairs, mem_filter, mem_offDiag, and_assoc, and_assoc]
 
 omit [IsStrictOrderedRing 𝕜] in
-lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
-  monotone_filter_right _ fun _ _ ↦ h.trans_lt'
+lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') :
+    P.sparsePairs G ε ⊆ P.sparsePairs G ε' := by
+  classical
+  rw [sparsePairs, sparsePairs]
+  exact monotone_filter_right _ fun _ _ ↦ h.trans_lt'
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
@@ -285,7 +301,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
   calc
     _ ≤ ∑ UV ∈ P.sparsePairs G ε, (#(G.interedges UV.1 UV.2) : 𝕜) := mod_cast card_biUnion_le
     _ ≤ ∑ UV ∈ P.sparsePairs G ε, ε * (#UV.1 * #UV.2) := ?_
-    _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
+    _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by
+      gcongr; classical rw [sparsePairs]; apply filter_subset
     _ = ε * ∑ UV ∈ P.parts.offDiag, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
     _ ≤ _ := ?_
   · gcongr with ⟨U, V⟩ hUV

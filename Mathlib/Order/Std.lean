@@ -265,8 +265,6 @@ def LinearOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Linear
   { toPartialOrder := .ofStd _ args.toPartialOrderArgs
     le_total := args.isLinearOrder.le_total
     toDecidableLE := args.decidableLE
-    toDecidableEq := args.decidableEq
-    toDecidableLT := args.decidableLT
     toMin := args.min
     toMax := args.max
     min_def _ _ := Std.min_eq_if
@@ -278,10 +276,12 @@ def LinearOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Linear
         · rfl
       case _ h => rw [if_pos (Std.le_of_lt (Std.not_le.mp h))]
     toOrd := args.ord
-    compare_eq_compareOfLessAndEq a b := by
+    compare_eq_cmpLE a b := by
       let := args.ord
       have := args.lawfulOrderOrd
-      rw [compareOfLessAndEq]
+      let := args.decidableLT
+      let := args.decidableEq
+      rw [← compareOfLessAndEq_eq_cmpLE, compareOfLessAndEq]
       split_ifs
       case _ => rwa [Std.compare_eq_lt]
       case _ => rwa [Std.compare_eq_iff_eq]

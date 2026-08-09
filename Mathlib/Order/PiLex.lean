@@ -179,7 +179,7 @@ theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
     exact ⟨j, hl, hj⟩, (h.le i).lt_of_ne hi⟩
 
 @[simp]
-theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a := by
+theorem lt_toLex_update_self_iff [DecidableEq ι] : toLex x < toLex (update x i a) ↔ x i < a := by
   refine ⟨?_, fun h => toLex_strictMono <| lt_update_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
@@ -190,7 +190,7 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
   rwa [update_self] at h
 
 @[simp]
-theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
+theorem toLex_update_lt_self_iff [DecidableEq ι] : toLex (update x i a) < toLex x ↔ a < x i := by
   refine ⟨?_, fun h => toLex_strictMono <| update_lt_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
@@ -202,12 +202,12 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
+theorem le_toLex_update_self_iff [DecidableEq ι] : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
   simp_rw [le_iff_lt_or_eq, lt_toLex_update_self_iff, toLex_inj, eq_update_self_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
+theorem toLex_update_le_self_iff [DecidableEq ι] : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
   simp_rw [le_iff_lt_or_eq, toLex_update_lt_self_iff, toLex_inj, update_eq_self_iff]
 
 end Lex
@@ -225,22 +225,22 @@ theorem toColex_strictMono : StrictMono (@toColex (∀ i, β i)) :=
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem lt_toColex_update_self_iff : toColex x < toColex (update x i a) ↔ x i < a :=
+theorem lt_toColex_update_self_iff [DecidableEq ι] : toColex x < toColex (update x i a) ↔ x i < a :=
   lt_toLex_update_self_iff (ι := ιᵒᵈ)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem toColex_update_lt_self_iff : toColex (update x i a) < toColex x ↔ a < x i :=
+theorem toColex_update_lt_self_iff [DecidableEq ι] : toColex (update x i a) < toColex x ↔ a < x i :=
   toLex_update_lt_self_iff (ι := ιᵒᵈ)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem le_toColex_update_self_iff : toColex x ≤ toColex (update x i a) ↔ x i ≤ a :=
+theorem le_toColex_update_self_iff [DecidableEq ι] : toColex x ≤ toColex (update x i a) ↔ x i ≤ a :=
   le_toLex_update_self_iff (ι := ιᵒᵈ)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
-theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a ≤ x i :=
+theorem toColex_update_le_self_iff [DecidableEq ι] : toColex (update x i a) ≤ toColex x ↔ a ≤ x i :=
   toLex_update_le_self_iff (ι := ιᵒᵈ)
 
 end Colex

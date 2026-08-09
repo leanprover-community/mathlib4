@@ -292,6 +292,7 @@ lemma induction_on_max (f : ι →₀ M) (zero : motive 0)
     (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
       motive f → motive (single a b + f)) : motive f := by
   suffices ∀ (s) (f : ι →₀ M), f.support = s → motive f from this _ _ rfl
+  classical
   refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by

@@ -517,11 +517,11 @@ noncomputable instance instField : Field ℝ where
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : DivisionRing ℝ := by infer_instance
 
-noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
+noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := Classical.propDecidable _
 
 noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
 
-noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
+noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := Classical.propDecidable _
 
 /-- Show an underlying Cauchy sequence for real numbers.
 

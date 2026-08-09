@@ -206,6 +206,7 @@ include ho
 theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) ↔
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (π C (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
+  classical
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
     simp only [Finset.sup_lt_iff ho.bot_lt, List.mem_toFinset]

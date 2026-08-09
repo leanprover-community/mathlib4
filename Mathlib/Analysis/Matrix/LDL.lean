@@ -65,7 +65,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
 
-noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
+noncomputable instance LDL.invertibleLowerInv [DecidableEq n] : Invertible (LDL.lowerInv hS) := by
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)
@@ -83,7 +83,7 @@ noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
   ⟪star (LDL.lowerInv hS i), S *ᵥ star (LDL.lowerInv hS i)⟫ₑ
 
 /-- The diagonal matrix `D` of the LDL decomposition. -/
-noncomputable def LDL.diag : Matrix n n 𝕜 :=
+noncomputable def LDL.diag [DecidableEq n] : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
@@ -93,7 +93,8 @@ theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 
 
 /-- Inverse statement of **LDL decomposition**: we can conjugate a positive definite matrix
 by some lower triangular matrix and get a diagonal matrix. -/
-theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.lowerInv hS)ᴴ := by
+theorem LDL.diag_eq_lowerInv_conj [DecidableEq n] :
+    LDL.diag hS = LDL.lowerInv hS * S * (LDL.lowerInv hS)ᴴ := by
   ext i j
   by_cases hij : i = j
   · simp only [diag, diagEntries, EuclideanSpace.inner_toLp_toLp, star_star, hij,
@@ -107,12 +108,12 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
     rfl
 
 /-- The lower triangular matrix `L` of the LDL decomposition. -/
-noncomputable def LDL.lower :=
+noncomputable def LDL.lower [DecidableEq n] :=
   (LDL.lowerInv hS)⁻¹
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix. -/
-theorem LDL.lower_conj_diag : LDL.lower hS * LDL.diag hS * (LDL.lower hS)ᴴ = S := by
+theorem LDL.lower_conj_diag [DecidableEq n] : LDL.lower hS * LDL.diag hS * (LDL.lower hS)ᴴ = S := by
   rw [LDL.lower, conjTranspose_nonsing_inv, Matrix.mul_assoc,
     Matrix.inv_mul_eq_iff_eq_mul_of_invertible (LDL.lowerInv hS),
     Matrix.mul_inv_eq_iff_eq_mul_of_invertible]

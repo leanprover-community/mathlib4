@@ -482,7 +482,7 @@ def restrict : Valuation R (ValueGroup₀ (.ofClass v)) where
         split_ifs with hx
         · simpa [hx, ← Units.val_le_val] using map_add_le _ (hx ▸ zero_le) (le_rfl (a := v y))
         · simp [hx, ← Units.val_le_val]
-    · simp only [ne_eq, not_or, Decidable.not_not] at H
+    · simp only [ne_eq, not_or, not_not] at H
       simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply,
         MonoidWithZeroHom.coe_ofClass, H, ↓reduceDIte, max_self, nonpos_iff_eq_zero]
       replace H : v (x + y) = 0 :=
@@ -821,6 +821,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 `valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
 noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ (.ofClass v)) :
     ValueGroup₀ (.ofClass w) :=
+  let : DecidableEq Γ₀ := decidableEqOfDecidableLE
   if hx : x = 0 then 0 else
     haveI c := (x.zero_or_exists_mk'.resolve_left hx).choose
     valueGroup.mk (.ofClass w) c.1.1 c.1.2 (h.eq_zero.ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)

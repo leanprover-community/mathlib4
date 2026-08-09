@@ -142,6 +142,7 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
 protected def stream (v : K) : Stream' <| Option (IntFractPair K)
   | 0 => some (IntFractPair.of v)
   | n + 1 =>
+    let : DecidableEq K := decidableEqOfDecidableLE
     (IntFractPair.stream v n).bind fun ap_n =>
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 

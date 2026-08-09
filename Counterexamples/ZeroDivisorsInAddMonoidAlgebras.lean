@@ -165,6 +165,9 @@ def val : F → ℕ
 instance : LinearOrder F :=
   LinearOrder.lift' val (by boom)
 
+instance : DecidableLT F :=
+  fun x y ↦ inferInstanceAs (Decidable (x.val < y.val))
+
 @[simp]
 theorem z01 : (0 : F) < 1 := by decide
 

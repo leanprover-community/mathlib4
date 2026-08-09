@@ -27,15 +27,10 @@ This file provides basic results about orderings and comparison in linear orders
 
 variable {α β : Type*}
 
-/-- Like `cmp`, but uses a `≤` on the type instead of `<`. Given two elements `x` and `y`, returns a
-three-way comparison result `Ordering`. -/
-def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
-  if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
-
-theorem cmpLE_swap {α} [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x y : α) :
-    (cmpLE x y).swap = cmpLE y x := by
-  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
-  cases not_or_intro xy yx (total_of _ _ _)
+theorem Std.LawfulLECmp.eq_cmpLE {cmp} [LE α] [DecidableLE α] [LawfulLECmp cmp] (x y : α) :
+    cmp x y = cmpLE x y := by
+  simp_rw [cmpLE, ← isLE_iff_le (cmp := cmp) (x := x), ← isGE_iff_ge (cmp := cmp)]
+  cases cmp x y <;> decide
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [@Std.Total α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
     (x y : α) : cmpLE x y = cmp x y := by
@@ -119,10 +114,11 @@ theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
   cases o
   exacts [Iff.rfl, eq_comm, Iff.rfl]
 
-theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
+theorem cmp_compares [LinearOrder α] [DecidableLT α] (a b : α) : (cmp a b).Compares a b := by
   obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_gt]
 
-theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h : o.Compares a b) :
+theorem Ordering.Compares.cmp_eq [LinearOrder α] [DecidableLT α]
+    {a b : α} {o : Ordering} (h : o.Compares a b) :
     cmp a b = o :=
   (cmp_compares a b).inj h
 
@@ -157,11 +153,9 @@ def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
-    toDecidableLE := H,
-    toDecidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
-    toDecidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
+    toDecidableLE := H }
 
-variable [LinearOrder α] (x y : α)
+variable [LinearOrder α] [DecidableLT α] (x y : α)
 
 @[simp]
 theorem cmp_eq_lt_iff : cmp x y = Ordering.lt ↔ x < y :=
@@ -178,7 +172,7 @@ theorem cmp_eq_gt_iff : cmp x y = Ordering.gt ↔ y < x :=
 @[simp]
 theorem cmp_self_eq_eq : cmp x x = Ordering.eq := by rw [cmp_eq_eq_iff]
 
-variable {x y} {β : Type*} [LinearOrder β] {x' y' : β}
+variable {x y} {β : Type*} [LinearOrder β] [DecidableLT β] {x' y' : β}
 
 theorem cmp_eq_cmp_symm : cmp x y = cmp x' y' ↔ cmp y x = cmp y' x' :=
   ⟨fun h => by rwa [← cmp_swap x', ← cmp_swap, swap_inj],

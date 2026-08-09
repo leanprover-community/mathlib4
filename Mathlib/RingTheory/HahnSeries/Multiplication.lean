@@ -972,6 +972,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     let a : Γ := this.min hyz
     have ha : y.coeff a ≠ z.coeff a := this.min_mem hyz
     refine ⟨x.order + a, ?_⟩
+    classical
     rwa [coeff_mul, coeff_mul, sum_subset subset_union_left,
       sum_subset (s₁ := antidiagonal _ _ _) subset_union_right,
       sum_eq_sum_iff_single (i := (x.order, a)), mul_right_inj' (coeff_order_eq_zero.not.2 hx)]
@@ -994,6 +995,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     let a : Γ := this.min hyz
     have ha : y.coeff a ≠ z.coeff a := this.min_mem hyz
     refine ⟨a + x.order, ?_⟩
+    classical
     rwa [coeff_mul, coeff_mul, sum_subset subset_union_left,
       sum_subset (s₁ := antidiagonal _ _ _) subset_union_right,
       sum_eq_sum_iff_single (i := (a, x.order)), mul_left_inj' (coeff_order_eq_zero.not.2 hx)]

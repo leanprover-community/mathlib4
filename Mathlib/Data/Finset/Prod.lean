@@ -367,7 +367,7 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
 
 /-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
-lemma card_product_filter_lt [LinearOrder α] :
+lemma card_product_filter_lt [LinearOrder α] [DecidableLT α] :
     #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
   set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
   set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}

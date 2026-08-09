@@ -68,18 +68,14 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   toDecidableLE : DecidableLE α
-  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
-  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
-  compare a b := compareOfLessAndEq a b
+  compare a b := cmpLE a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
+  compare_eq_cmpLE : ∀ a b, compare a b = cmpLE a b := by
+    cmpLE_rfl
 
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily

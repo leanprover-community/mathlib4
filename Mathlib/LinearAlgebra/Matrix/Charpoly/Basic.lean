@@ -192,7 +192,8 @@ lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a :
   ext i j : 1
   simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
 
-lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+lemma BlockTriangular.charpoly {α : Type*} {b : n → α}
+    [LinearOrder α] [DecidableEq α] (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 

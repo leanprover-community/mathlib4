@@ -79,7 +79,7 @@ end RelIso
 
 namespace OrderIso
 
-variable [LinearOrder α] {x y : α}
+variable [LinearOrder α] [DecidableLT α] {x y : α}
 
 variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less than `x` and elements

@@ -143,8 +143,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 
 /-- The lexicographical preorder on a sigma type. -/
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
-  { Sigma.Lex.LE, Sigma.Lex.LT with
-    le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
+  { le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
     lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
@@ -160,19 +159,18 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
 /-- The lexicographical partial order on a sigma type. -/
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
-  { Lex.preorder with
-    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
+  { le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
 
 
 
 /-- The lexicographical linear order on a sigma type. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
-  { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
-    toDecidableEq := Sigma.instDecidableEqSigma
-    toDecidableLE := Lex.decidable _ _
-    toDecidableLT := Lex.decidable _ _ }
+  { le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    toDecidableLE :=
+      letI : DecidableEq ι := decidableEqOfDecidableLE
+      letI : DecidableLT ι := decidableLTOfDecidableLE
+      inferInstanceAs (DecidableRel (Lex (· < ·) fun _ ↦ (· ≤ ·))) }
 
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :

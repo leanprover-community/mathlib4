@@ -83,6 +83,7 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       refine map'_strictMono ?_
       intro a b h
       simpa [← Units.val_lt_val, ← NNReal.coe_lt_coe, rf] using he h
+    classical
     exact ⟨{
       hom' := withZeroUnitsEquiv.toMonoidWithZeroHom.comp <| (map' (rf.comp e)).comp
         withZeroUnitsEquiv.symm.toMonoidWithZeroHom
@@ -257,7 +258,8 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
       rw [← (valuation R).nonempty_rankOne_iff_mulArchimedean] at h'
       obtain ⟨f⟩ := h'
       exact isRankLeOne_of_rankOne
-    · refine ⟨⟨{ emb := 1, strictMono := ?_ }⟩⟩
+    · classical
+      refine ⟨⟨{ emb := 1, strictMono := ?_ }⟩⟩
       intro a b
       contrapose! H
       obtain ⟨H, H'⟩ := H

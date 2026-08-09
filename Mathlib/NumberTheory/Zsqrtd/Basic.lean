@@ -794,8 +794,7 @@ instance linearOrder : LinearOrder (ℤ√d) :=
     le_total := fun a b => by
       have t := (b - a).nonneg_total
       rwa [neg_sub] at t
-    toDecidableLE := Zsqrtd.decidableLE
-    toDecidableEq := inferInstance }
+    toDecidableLE := Zsqrtd.decidableLE }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by

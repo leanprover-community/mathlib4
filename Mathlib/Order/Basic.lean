@@ -397,11 +397,11 @@ lemma min_rec' (p : α → Prop) (ha : p a) (hb : p b) : p (min a b) :=
   min_rec (fun _ ↦ ha) fun _ ↦ hb
 
 @[to_dual max_def_lt']
-lemma min_def_lt (a b : α) : min a b = if a < b then a else b := by
+lemma min_def_lt [DecidableLT α] (a b : α) : min a b = if a < b then a else b := by
   rw [min_comm, min_def, ← ite_not]; simp only [not_le]
 
 @[to_dual min_def_lt']
-lemma max_def_lt (a b : α) : max a b = if a < b then b else a := by
+lemma max_def_lt [DecidableLT α] (a b : α) : max a b = if a < b then b else a := by
   rw [max_comm, max_def, ← ite_not]; simp only [not_le]
 
 end MinMaxRec
@@ -460,17 +460,15 @@ lemma PartialOrder.toPreorder_injective : Function.Injective (@PartialOrder.toPr
 lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun
   | { le := A_le, lt := A_lt,
-      toDecidableLE := A_decidableLE, toDecidableEq := A_decidableEq, toDecidableLT := A_decidableLT
+      toDecidableLE := A_decidableLE,
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
-      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
+      compare := A_compare, compare_eq_cmpLE := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
-      toDecidableLE := B_decidableLE, toDecidableEq := B_decidableEq, toDecidableLT := B_decidableLT
+      toDecidableLE := B_decidableLE,
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
-      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
+      compare := B_compare, compare_eq_cmpLE := B_compare_canonical, .. } => by
     rintro ⟨⟩
     obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
-    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
-    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -691,21 +689,19 @@ abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α
 
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
-    [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
+    [DecidableLE α] (f : α → β)
     (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (min : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (max : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
     (compare : ∀ x y, compare (f x) (f y) = compare x y) :
     LinearOrder α where
   toPartialOrder := hf.partialOrder _ le lt
   toDecidableLE := ‹_›
-  toDecidableEq := ‹_›
-  toDecidableLT := ‹_›
   le_total _ _ := by simp only [← le, le_total]
   min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
   max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
-  compare_eq_compareOfLessAndEq _ _ := by
-    simp_rw [← compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, ← lt,
-      hf.eq_iff]
+  compare_eq_cmpLE _ _ := by
+    simp_rw [← compare, LinearOrder.compare_eq_cmpLE, cmpLE]
+    congr! <;> exact le
 
 /-!
 ### Lifts of order instances
@@ -740,7 +736,8 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =
       @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
-  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  classical
+  have h := compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h
@@ -764,8 +761,6 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
   letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
   letI _instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
   letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => rfl)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
@@ -793,8 +788,6 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
   letI _instLE : LT α := ⟨fun a b ↦ f a < f b⟩
   letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => (compare_f _ _).symm)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective

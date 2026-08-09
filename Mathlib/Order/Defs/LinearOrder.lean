@@ -41,19 +41,19 @@ def maxDefault [LE α] [DecidableLE α] (a b : α) :=
 def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
-/-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
+/-- This attempts to prove that a given instance of `compare` is equal to `cmpLE` by
 introducing the arguments and trying the following approaches in order:
 
 1. seeing if `rfl` works
-2. seeing if the `compare` at hand is nonetheless essentially `compareOfLessAndEq`, but, because of
-   implicit arguments, requires us to unfold the defs and split the `if`s in the definition of
-   `compareOfLessAndEq`
+2. seeing if the `compare` at hand is nonetheless essentially `cmpLE`, but, because of implicit
+   arguments, requires us to unfold the defs and split the `if`s in the definition of `cmpLE`
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
    (useful when `compare` is defined via a `match` statement, as it is for `Bool`)
 -/
-macro "compareOfLessAndEq_rfl" : tactic =>
+macro "cmpLE_rfl" : tactic =>
   `(tactic| (intro a b; first | rfl |
-    (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
+    (exact compareOfLessAndEq_eq_cmpLE a b) |
+    (simp only [compare, cmpLE]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
@@ -63,28 +63,22 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   protected le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableLE : DecidableLE α
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
   protected min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
   protected max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
-  compare a b := compareOfLessAndEq a b
+  compare a b := cmpLE a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
+  compare_eq_cmpLE : ∀ a b, compare a b = cmpLE a b := by
+    cmpLE_rfl
 
 attribute [to_dual existing] LinearOrder.toMax
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [instance_reducible, instance 900] LinearOrder.toDecidableLT
 attribute [instance_reducible, instance 900] LinearOrder.toDecidableLE
-attribute [instance_reducible, instance 900] LinearOrder.toDecidableEq
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
@@ -119,8 +113,7 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 @[simp, push, to_dual self] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 @[to_dual eq_or_lt_of_not_gt]
-lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
-  if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
+lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a := (lt_trichotomy a b).resolve_left h
 
 @[to_dual self]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
@@ -204,26 +197,19 @@ lemma lt_min (h₁ : a < b) (h₂ : a < c) : a < min b c := by
 section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq_eq_lt]
+  rw [LinearOrder.compare_eq_cmpLE, cmpLE_eq_lt]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq_eq_eq le_refl not_le]
+  rw [LinearOrder.compare_eq_cmpLE, cmpLE_eq_eq]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq,
-    compareOfLessAndEq_eq_gt le_antisymm le_total not_le]
+  rw [LinearOrder.compare_eq_cmpLE, cmpLE_eq_gt]
 
-lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
-  cases h : compare a b
-  · simpa using le_of_lt <| compare_lt_iff_lt.1 h
-  · simpa using le_of_eq <| compare_eq_iff_eq.1 h
-  · simpa using compare_gt_iff_gt.1 h
+lemma compare_le_iff_le : (compare a b).isLE ↔ a ≤ b := by
+  rw [LinearOrder.compare_eq_cmpLE, isLE_cmpLE]
 
-lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
-  cases h : compare a b
-  · simpa using compare_lt_iff_lt.1 h
-  · simpa using le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · simpa using le_of_lt <| compare_gt_iff_gt.1 h
+lemma compare_ge_iff_ge : (compare a b).isGE ↔ b ≤ a := by
+  rw [LinearOrder.compare_eq_cmpLE, isGE_cmpLE]
 
 lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
   cases o <;> simp only [Ordering.Compares]
@@ -231,26 +217,35 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+theorem cmp_eq_compare [DecidableLT α] (a b : α) : cmp a b = compare a b := by
   refine ((compare_iff ..).2 ?_).symm
   unfold cmp cmpUsing; split_ifs with h1 h2
   · exact h1
   · exact h2
   · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
 
-theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
-  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+theorem compare_eq_compareOfLessAndEq [DecidableLT α] [DecidableEq α] (a b : α) :
+    compare a b = compareOfLessAndEq a b := by
+  rw [compare_iff, compareOfLessAndEq]
+  split_ifs with h1 h2
+  · exact h1
+  · exact h2
+  · exact (lt_or_gt_of_ne h2).resolve_left h1
 
-instance : Std.LawfulBCmp (compare (α := α)) where
+theorem cmp_eq_compareOfLessAndEq [DecidableLT α] [DecidableEq α] (a b : α) :
+    cmp a b = compareOfLessAndEq a b := by
+  rw [cmp_eq_compare, compare_eq_compareOfLessAndEq]
+
+instance [DecidableEq α] : Std.LawfulBCmp (compare (α := α)) where
   eq_swap {a b} := by
     cases _ : compare b a <;>
       simp_all [Ordering.swap, compare_eq_iff_eq, compare_lt_iff_lt, compare_gt_iff_gt]
   isLE_trans h₁ h₂ := by
-    simp only [← Ordering.ne_gt_iff_isLE, compare_le_iff_le] at *
+    simp only [compare_le_iff_le] at *
     exact le_trans h₁ h₂
   compare_eq_iff_beq := by simp [compare_eq_iff_eq]
   eq_lt_iff_lt := by simp [compare_lt_iff_lt]
-  isLE_iff_le := by simp [← Ordering.ne_gt_iff_isLE, compare_le_iff_le]
+  isLE_iff_le := by simp [compare_le_iff_le]
 
 end Ord
 

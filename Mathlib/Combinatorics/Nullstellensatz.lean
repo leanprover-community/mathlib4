@@ -263,6 +263,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
       isRegular_one]),
     Alon.degree_P, map_add, degree_degLexDegree, degree_single, ht'] at this
+  classical
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq

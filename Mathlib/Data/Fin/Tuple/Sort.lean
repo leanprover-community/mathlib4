@@ -33,28 +33,23 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 namespace Tuple
 
 variable {n : ℕ}
-variable {α : Type*} [LinearOrder α]
+variable {α : Type*}
 
 /-- `graph f` produces the finset of pairs `(f i, i)`
 equipped with the lexicographic order.
 -/
 def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
-  Finset.univ.image fun i => (f i, i)
+  Finset.univ.map { toFun i := (f i, i), inj' _ _ h := congr(($h).snd) }
 
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
-  rw [graph, Finset.card_image_of_injective]
-  · exact Finset.card_fin _
-  · intro _ _
-    -- Porting note: proof was `simp`
-    rw [Prod.ext_iff]
-    simp
+  rw [graph, Finset.card_map]
+  exact Finset.card_fin _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
@@ -69,6 +64,8 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
 @[simp]
 theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=
   rfl
+
+variable [LinearOrder α]
 
 /-- `graphEquiv₂ f` is an equivalence between `Fin n` and `graph f` that respects the order.
 -/

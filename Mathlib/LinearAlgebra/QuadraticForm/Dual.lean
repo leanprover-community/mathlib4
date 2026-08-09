@@ -169,6 +169,7 @@ lemma LinearMap.BilinForm.linearIndependent_of_pairwise_le_zero {ι R M : Type*}
     (hn : Pairwise fun i j ↦ B (v i) (v j) ≤ 0) :
     LinearIndependent R v := by
   refine linearIndependent_iff'.mpr fun s c hc ↦ ?_
+  classical
   set x := ∑ i ∈ s with 0 < c i, c i • v i with hx
   set y := ∑ i ∈ s with 0 < -c i, (-c i) • v i with hy
   replace hc : x = y := by

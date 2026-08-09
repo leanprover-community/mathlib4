@@ -62,7 +62,7 @@ deriving instance CommSemiring for NNRat
 
 deriving instance AddCancelCommMonoid for NNRat
 
-deriving instance LinearOrder for NNRat
+deriving instance LinearOrder, DecidableEq, DecidableLT for NNRat
 
 deriving instance Sub for NNRat
 

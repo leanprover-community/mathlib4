@@ -122,6 +122,7 @@ theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
 theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
     {p q : σ →₀ ℕ} (hp : lexOrder φ = toLex p) (hq : lexOrder ψ = toLex q) :
     coeff (p + q) (φ * ψ) = coeff p φ * coeff q ψ := by
+  classical
   rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨p, q⟩ (by simp)]
   rintro ⟨u, v⟩ h h'
   simp only [Finset.mem_antidiagonal] at h
@@ -138,6 +139,7 @@ theorem le_lexOrder_mul (φ ψ : MvPowerSeries σ R) :
     lexOrder φ + lexOrder ψ ≤ lexOrder (φ * ψ) := by
   rw [le_lexOrder_iff]
   intro d hd
+  classical
   rw [coeff_mul]
   apply Finset.sum_eq_zero
   rintro ⟨u, v⟩ h

@@ -202,10 +202,11 @@ theorem prod_add_one {f : ι → R} (s : Finset ι) :
   classical simp only [prod_add, prod_const_one, mul_one]
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
-theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
+theorem prod_add_ordered [LinearOrder ι] [DecidableLT ι] (s : Finset ι) (f g : ι → R) :
     ∏ i ∈ s, (f i + g i) =
       (∏ i ∈ s, f i) +
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j + g j)) * ∏ j ∈ s with i < j, f j := by
+  classical
   refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
@@ -223,7 +224,7 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
-theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+theorem prod_one_add_ordered [LinearOrder ι] [DecidableLT ι] (s : Finset ι) (f : ι → R) :
     ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
   rw [prod_add_ordered]
   simp
@@ -261,7 +262,7 @@ lemma prod_sub [DecidableEq ι] (f g : ι → R) (s : Finset ι) :
   simp [sub_eq_neg_add, prod_add, prod_neg, mul_right_comm]
 
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
-lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
+lemma prod_sub_ordered [LinearOrder ι] [DecidableLT ι] (s : Finset ι) (f g : ι → R) :
     ∏ i ∈ s, (f i - g i) =
       (∏ i ∈ s, f i) -
         ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
@@ -271,7 +272,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
 a partition of unity from a collection of “bump” functions. -/
-theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+theorem prod_one_sub_ordered [LinearOrder ι] [DecidableLT ι] (s : Finset ι) (f : ι → R) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 - f j) := by
   rw [prod_sub_ordered]
   simp

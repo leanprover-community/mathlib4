@@ -124,6 +124,12 @@ def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
+@[no_expose]
+instance (o : Ordinal) : DecidableEq o.ToType := Classical.decRel _
+
+@[no_expose]
+instance (o : Ordinal) : DecidableLT o.ToType := Classical.decRel _
+
 instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
   o.out.wo.toIsWellFounded
 
@@ -334,6 +340,9 @@ instance : LinearOrder Ordinal :=
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     toDecidableLE := Classical.decRel _ }
+
+instance : DecidableEq Ordinal := Classical.decRel _
+instance : DecidableLT Ordinal := Classical.decRel _
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=

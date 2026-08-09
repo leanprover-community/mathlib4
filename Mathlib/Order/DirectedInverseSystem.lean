@@ -339,7 +339,7 @@ local postfix:max "⁺" => succ -- Note: conflicts with `PosPart` notation
 
 section Succ
 
-variable [SuccOrder ι]
+variable [SuccOrder ι] [DecidableEq ι]
 variable (equiv : ∀ j : Iic i, F j ≃ piLT X j) (e : F i⁺ ≃ F i × X i) (hi : ¬ IsMax i)
 
 /-- Extend a family of bijections to `piLT` by one step. -/
@@ -372,7 +372,7 @@ end Succ
 
 section Lim
 
-variable {equiv : ∀ j : Iio i, F j ≃ piLT X j} (nat : IsNatEquiv f equiv)
+variable [DecidableEq ι] {equiv : ∀ j : Iio i, F j ≃ piLT X j} (nat : IsNatEquiv f equiv)
 
 /-- A natural family of bijections below a limit ordinal
 induces a bijection at the limit ordinal. -/
@@ -453,7 +453,8 @@ theorem pEquivOn_apply_eq (h : IsLowerSet (s ∩ t))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Extend a partial family of bijections by one step. -/
-def pEquivOnSucc [InverseSystem f] (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
+def pEquivOnSucc [DecidableEq ι] [InverseSystem f]
+    (hi : ¬IsMax i) (e : PEquivOn f equivSucc (Iic i))
     (H : ∀ ⦃i⦄ (hi : ¬ IsMax i) x, (equivSucc hi x).1 = f (le_succ i) x) :
     PEquivOn f equivSucc (Iic i⁺) where
   equiv := piEquivSucc e.equiv (equivSucc hi) hi
@@ -476,7 +477,7 @@ noncomputable def pEquivOnGlue : PEquivOn f equivSucc (Iio i) where
     by rw [piLTLim_symm_apply hi ⟨_, k.2.2⟩ (by exact k.2.1)]; apply (e _).compat
 
 /-- Extend `pEquivOnGlue` by one step, obtaining a partial family over a right-closed interval. -/
-noncomputable def pEquivOnLim [InverseSystem f]
+noncomputable def pEquivOnLim [DecidableEq ι] [InverseSystem f]
     (equivLim : F i ≃ limit f i) (H : ∀ x l, (equivLim x).1 l = f l.2.le x) :
     PEquivOn f equivSucc (Iic i) where
   equiv := piEquivLim (pEquivOnGlue hi e).nat equivLim hi
@@ -487,7 +488,7 @@ noncomputable def pEquivOnLim [InverseSystem f]
 
 end Unique
 
-variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f]
+variable [WellFoundedLT ι] [SuccOrder ι] [InverseSystem f] [DecidableEq ι]
   (equivSucc : ∀ i, ¬IsMax i → {e : F i⁺ ≃ F i × X i // ∀ x, (e x).1 = f (le_succ i) x})
   (equivLim : ∀ i, IsSuccPrelimit i → {e : F i ≃ limit f i // ∀ x l, (e x).1 l = f l.2.le x})
 

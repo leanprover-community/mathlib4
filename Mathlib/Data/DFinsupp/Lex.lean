@@ -137,6 +137,10 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     (h_lt : ∀ {f g}, toLex f < toLex g → P (toLex f) (toLex g))
     (h_eq : ∀ {f g}, toLex f = toLex g → P (toLex f) (toLex g))
     (h_gt : ∀ {f g}, toLex g < toLex f → P (toLex f) (toLex g)) : ∀ f g, P f g :=
+  let : DecidableEq ι := decidableEqOfDecidableLE
+  let : DecidableLT ι := decidableLTOfDecidableLE
+  let : ∀ i, DecidableEq (α i) := fun i ↦ decidableEqOfDecidableLE
+  let : ∀ i, DecidableLT (α i) := fun i ↦ decidableLTOfDecidableLE
   Lex.rec fun f ↦ Lex.rec fun g ↦ match (motive := ∀ y, (f.neLocus g).min = y → _) _, rfl with
   | ⊤, h => h_eq (neLocus_eq_empty.mp <| Finset.min_eq_top.mp h)
   | (wit : ι), h => by
@@ -179,13 +183,11 @@ instance Colex.decidableLT : DecidableLT (Colex (Π₀ i, α i)) :=
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   le_total := total_of _
-  toDecidableLT := decidableLT
   toDecidableLE := decidableLE
 
 /-- The linear order on `DFinsupp`s obtained by the colexicographic ordering. -/
 instance Colex.linearOrder : LinearOrder (Colex (Π₀ i, α i)) where
   le_total := total_of _
-  toDecidableLT := decidableLT
   toDecidableLE := decidableLE
 
 end LinearOrder

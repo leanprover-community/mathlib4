@@ -424,12 +424,10 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
+instance [DecidableLE α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
-    toDecidableLE := Subtype.decidableLE
-    toDecidableLT := Subtype.decidableLT
-    toDecidableEq := Subtype.instDecidableEq }
+    toDecidableLE := Subtype.decidableLE }
 
 end PartialOrder
 
