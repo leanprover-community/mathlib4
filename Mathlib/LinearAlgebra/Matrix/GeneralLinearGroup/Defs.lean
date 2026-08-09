@@ -285,7 +285,8 @@ lemma toGL_range :
     (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
       Units.ext rfl⟩⟩
 
-/-- `Matrix.SpecialLinearGroup` is eqquivalent to `GeneralLinearGroup.det.ker` -/
+/-- toGLKerEquiv is the multiplicative equivalence between SpecialLinearGroup n R and the kernel of
+GeneralLinearGroup.det : GL n R →* Rˣ, induced by the inclusion toGL. -/
 noncomputable def toGLKerEquiv :
     SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker :=
   (MonoidHom.ofInjective toGL_injective).trans (MulEquiv.subgroupCongr toGL_range)
