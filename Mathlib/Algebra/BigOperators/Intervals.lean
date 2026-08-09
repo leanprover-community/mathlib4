@@ -149,7 +149,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
       exact hkm
     simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
-@[to additive]
+@[to_additive]
 theorem prod_range_reflect (f : ℕ → M) (n : ℕ) :
     (∏ j ∈ range n, f (n - 1 - j)) = ∏ j ∈ range n, f j := by
   cases n
