@@ -311,7 +311,7 @@ theorem MulAction.contMDiffConstSMul_compHom {n : ℕ∞ω} {Γ : Type*} [Monoid
     letI : MulAction Γ' M := MulAction.compHom _ f
     ContMDiffConstSMul I n Γ' M := by
   let _ : MulAction Γ' M := MulAction.compHom _ f
-  exact ⟨fun g ↦ ContMDiff.const_smul contMDiff_id (f g)⟩
+  exact ⟨fun g ↦ contMDiff_id.const_smul (f g)⟩
 
 end ContMDiffConstSMul
 
