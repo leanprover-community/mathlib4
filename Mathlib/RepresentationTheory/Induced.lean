@@ -174,7 +174,8 @@ noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the induced `H`-representation `ind φ A`, with action on maps induced by left tensoring. -/
-noncomputable abbrev indFunctor : Rep.{w} k G ⥤ Rep k H where
+@[implicit_reducible, simps obj map]
+noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
   map_id _ := by ext; simp
