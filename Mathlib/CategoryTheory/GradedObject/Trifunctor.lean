@@ -263,6 +263,8 @@ end
 
 section
 
+universe v
+
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
   {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
 
@@ -278,7 +280,7 @@ structure BifunctorComp₁₂IndexData where
   q : I₁₂ × I₃ → J
   hpq (i : I₁ × I₂ × I₃) : q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
 
-variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
+variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData.{_, _, _, _, v} r)
   (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
 
 /-- Given bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂`, `G : C₁₂ ⥤ C₃ ⥤ C₄`, graded objects
@@ -446,6 +448,8 @@ end
 
 section
 
+universe w
+
 variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
   {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
 
@@ -461,7 +465,7 @@ structure BifunctorComp₂₃IndexData where
   q : I₁ × I₂₃ → J
   hpq (i : I₁ × I₂ × I₃) : q ⟨i.1, p i.2⟩ = r i
 
-variable {r} (ρ₂₃ : BifunctorComp₂₃IndexData r)
+variable {r} (ρ₂₃ : BifunctorComp₂₃IndexData.{_, _, _, _, w} r)
   (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
 
 /-- Given bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄`, `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃`, graded objects

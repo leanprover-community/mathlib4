@@ -271,7 +271,7 @@ namespace cyclotomicCharacter
 
 local notation "χ" => cyclotomicCharacter.toFun
 
-variable (p : ℕ) [Fact p.Prime] (g : L ≃+* L) [∀ i, HasEnoughRootsOfUnity L (p ^ i)]
+variable (p : ℕ) [Fact p.Prime] (g : L ≃+* L) [∀ i : ℕ, HasEnoughRootsOfUnity L (p ^ i)]
 
 open modularCyclotomicCharacter in
 theorem toFun_apply :

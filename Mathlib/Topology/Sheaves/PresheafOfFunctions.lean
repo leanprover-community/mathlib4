@@ -29,7 +29,9 @@ open CategoryTheory TopologicalSpace Opposite
 
 namespace TopCat
 
-variable (X : TopCat)
+universe u
+
+variable (X : TopCat.{u})
 
 /-- The presheaf of dependently typed functions on `X`, with fibres given by a type family `T`.
 There is no requirement that the functions are continuous, here.

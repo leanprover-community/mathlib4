@@ -488,7 +488,7 @@ lemma Semifield.isCoprime_iff {R : Type*} [Semifield R] {m n : R} :
 
 namespace IsRelPrime
 
-variable {R} [CommRing R] {x y : R}
+variable {R : Type*} [CommRing R] {x y : R}
 
 theorem add_mul_left_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h

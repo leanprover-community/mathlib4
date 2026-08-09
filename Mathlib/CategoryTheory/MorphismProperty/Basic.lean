@@ -733,7 +733,7 @@ def pi {J : Type w} {C : J → Type u} [∀ j, Category.{v} (C j)]
     (W : ∀ j, MorphismProperty (C j)) : MorphismProperty (∀ j, C j) :=
   fun _ _ f => ∀ j, (W j) (f j)
 
-variable {C} [Category.{v} C]
+variable {C : Type*} [Category.{v} C]
 
 /-- The morphism property on `J ⥤ C` which is defined objectwise
 from `W : MorphismProperty C`. -/

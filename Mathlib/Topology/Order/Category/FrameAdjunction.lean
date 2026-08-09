@@ -93,7 +93,9 @@ end pt_definition
 
 section locale_top_adjunction
 
-variable (X : Type*) [TopologicalSpace X] (L : Locale)
+universe v
+
+variable (X : Type*) [TopologicalSpace X] (L : Locale.{v})
 
 /-- The unit of the adjunction between locales and topological spaces, which associates with
 a point `x` of the space `X` a point of the locale of opens of `X`. -/

@@ -237,7 +237,7 @@ end
 
 section
 
-variable {G : C ⥤ Cat}
+variable {G : C ⥤ Cat.{v₂, u₂}}
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -293,7 +293,7 @@ if possible, and we should prefer `mapIdIso` to `map_id_eq` whenever we can. -/
 def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck <| F) :=
   eqToIso congr(($map_id_eq).toCatHom)
 
-variable {H : C ⥤ Cat}
+variable {H : C ⥤ Cat.{v₂, u₂}}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

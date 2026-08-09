@@ -25,11 +25,13 @@ a presentation of `B` as a `A`-module (and some additional data).
 
 namespace Module
 
+universe w₀ w₁ w₀' w₁'
+
 variable {B : Type*} [Ring B] {M : Type*} [AddCommGroup M] [Module B M]
   [DecidableEq B]
-  (presM : Presentation B M) [DecidableEq presM.G]
+  (presM : Presentation.{w₀, w₁} B M) [DecidableEq presM.G]
   {A : Type*} [CommRing A] [Algebra A B] [Module A M] [IsScalarTower A B M]
-  (presB : Presentation A B)
+  (presB : Presentation.{w₀', w₁'} A B)
 
 namespace Presentation
 

@@ -762,7 +762,7 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
 
 end Under
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (P : MorphismProperty D) (Q : MorphismProperty C) [Q.IsMultiplicative] (F : C ⥤ D) (X : D)
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the

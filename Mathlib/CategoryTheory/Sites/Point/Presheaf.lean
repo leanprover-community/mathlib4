@@ -52,7 +52,7 @@ noncomputable def pointBotFunctor :
 
 section
 
-variable (X : C) (A : Type*) [Category A] [HasColimitsOfSize.{w, w} A]
+variable (X : C) (A : Type*) [Category* A] [HasColimitsOfSize.{w, w} A]
 
 instance :
     IsIso ((pointBot.{w} X).toPresheafFiberNatTrans (A := A) X

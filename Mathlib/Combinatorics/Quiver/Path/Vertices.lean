@@ -22,7 +22,9 @@ namespace Quiver.Path
 
 open List
 
-variable {V : Type*} [Quiver V]
+universe v
+
+variable {V : Type*} [Quiver.{v} V]
 
 /-- The end vertex of a path. A path `p : Path a b` has `p.end = b`. -/
 def «end» {a : V} : ∀ {b : V}, Path a b → V

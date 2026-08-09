@@ -789,7 +789,7 @@ section
 
 open HomologicalComplex CategoryTheory
 
-variable {C : Type*} [Category* C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
   [DecidableRel c.Rel] {K L : HomologicalComplex C c} {f g : K ⟶ L}
 
 set_option backward.defeqAttrib.useBackward true in

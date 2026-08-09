@@ -29,7 +29,9 @@ they are def-eqs, perhaps constructing it from specified `MorphismProperty`s.
 
 namespace CategoryTheory.Bicategory
 
-variable {B : Type*} (C : Type*) [Bicategory C] (F : B → C)
+universe w v
+
+variable {B : Type*} (C : Type*) [Bicategory.{w, v} C] (F : B → C)
 
 /-- `InducedBicategory B C`, where `F : B → C`, is a typeclass synonym for `B`. This is given
 a bicategory structure where the 1-morphisms `X ⟶ Y` are the 1-morphisms in `C` from `F X` to

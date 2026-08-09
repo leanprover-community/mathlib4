@@ -42,7 +42,7 @@ For the Flypitch project:
 
 @[expose] public section
 
-universe u v u' v' w w'
+universe u v u' v' w w' u₁ v₁ u₂ v₂
 
 open Cardinal
 
@@ -729,7 +729,8 @@ end Equiv
 
 section SumStructure
 
-variable (L₁ L₂ : Language) (S : Type*) [L₁.Structure S] [L₂.Structure S]
+variable (L₁ : Language.{u₁, v₁}) (L₂ : Language.{u₂, v₂}) (S : Type*)
+  [L₁.Structure S] [L₂.Structure S]
 
 instance sumStructure : (L₁.sum L₂).Structure S where
   funMap := Sum.elim funMap funMap
@@ -804,7 +805,7 @@ namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
-variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
+variable {L : Language.{u, v}} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/
 @[simps!, instance_reducible]

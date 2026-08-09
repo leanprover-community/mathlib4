@@ -171,7 +171,7 @@ end Submodule
 
 section
 
-variable {R V} [Semiring R] [AddCommMonoid V] [Module R V]
+variable {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R V] :
     Module.Finite R (ι →₀ V) :=

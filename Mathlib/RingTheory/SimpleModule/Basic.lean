@@ -322,7 +322,7 @@ theorem of_surjective (f : M →ₗ[R] N) (hf : Function.Surjective f) : IsSemis
 
 section
 
-variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N' : Type*} [AddCommGroup N'] [Module S N']
   {σ : R →+* S} (l : M' →ₛₗ[σ] N')
 
 theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective

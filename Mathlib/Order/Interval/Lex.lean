@@ -23,7 +23,7 @@ public section
 
 namespace NonemptyInterval
 
-variable {α}
+variable {α : Type*}
 
 section LELT
 variable [LT α] [LE α]

@@ -827,7 +827,7 @@ end CategoryTheory.NonPreadditiveAbelian
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 /-- A preadditive category `C` with finite products is abelian when this
 structure is nonempty for any morphism `f` in `C`, see `Abelian.mk'`. -/

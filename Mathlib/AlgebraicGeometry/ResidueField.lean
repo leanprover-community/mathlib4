@@ -30,7 +30,7 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory TopologicalSpace Opposite IsLocalRing
 
@@ -293,7 +293,7 @@ end fromResidueField
 
 section Spec
 
-variable (R : CommRingCat) (x : Spec R)
+variable (R : CommRingCat.{v}) (x : Spec R)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/

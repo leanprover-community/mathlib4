@@ -31,7 +31,7 @@ section HasZeroMorphisms
 
 namespace IsComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] {n : ℕ} {S : ComposableArrows C (n + 3)}
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] {n : ℕ} {S : ComposableArrows C (n + 3)}
   (hS : S.IsComplex) (k : ℕ)
 
 section
@@ -100,7 +100,7 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C] {n : ℕ} {S : ComposableArrows C (n + 3)}
+variable {C : Type*} [Category* C] [Preadditive C] {n : ℕ} {S : ComposableArrows C (n + 3)}
 
 namespace IsComplex
 
@@ -138,7 +138,7 @@ end Preadditive
 
 section Balanced
 
-variable {C : Type*} [Category C] [Preadditive C] [Balanced C] {n : ℕ}
+variable {C : Type*} [Category* C] [Preadditive C] [Balanced C] {n : ℕ}
   {S : ComposableArrows C (n + 3)} (hS : S.Exact)
 
 namespace Exact

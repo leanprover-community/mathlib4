@@ -48,7 +48,7 @@ namespace CategoryTheory.Abelian
 
 open CategoryTheory.Limits
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace Preradical
 

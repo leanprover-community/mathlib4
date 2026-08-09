@@ -28,7 +28,7 @@ variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
 namespace SSet
 
-variable (X : SSet) (R : C)
+variable (X : SSet.{w}) (R : C)
 
 /-- Given a simplicial set `X`, this is the morphism from
 `0`-chains with coefficients in `R` to coproduct of copies

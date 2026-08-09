@@ -555,7 +555,7 @@ end Localization
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T] (P : SubmersivePresentation R S ι σ)
+variable (T : Type*) [CommRing T] [Algebra R T] (P : SubmersivePresentation R S ι σ)
 
 variable {R S ι σ} in
 /-- If `P` is a submersive presentation of `S` over `R` and `T` is an `R`-algebra, we

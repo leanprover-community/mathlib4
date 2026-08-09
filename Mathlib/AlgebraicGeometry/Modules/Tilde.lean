@@ -388,7 +388,7 @@ instance : (tilde.functor R).Additive :=
 
 section
 
-variable {M N : ModuleCat R} (f g : M ⟶ N)
+variable {M N : ModuleCat.{u} R} (f g : M ⟶ N)
 
 @[simp] lemma tilde.map_zero : tilde.map (0 : M ⟶ N) = 0 :=
   (tilde.functor R).map_zero _ _

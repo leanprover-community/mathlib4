@@ -19,13 +19,13 @@ are (co)limit (co)cones. We also show that such (co)cones exist, and that `Discr
 @[expose] public section
 
 
-universe v' v
+universe v' v w
 
 open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-variable {J : Type v} [Category.{v'} J] {F : J ⥤ Discrete PUnit}
+variable {J : Type v} [Category.{v'} J] {F : J ⥤ Discrete PUnit.{w + 1}}
 
 /-- A trivial cone for a functor into `PUnit`. `punitConeIsLimit` shows it is a limit. -/
 def punitCone : Cone F :=

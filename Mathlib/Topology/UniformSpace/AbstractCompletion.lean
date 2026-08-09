@@ -388,7 +388,7 @@ end Extension₂
 
 section Map₂
 
-variable (pkg' : AbstractCompletion β)
+variable (pkg' : AbstractCompletion.{vβ} β)
 
 local notation "hatβ" => pkg'.space
 

@@ -28,7 +28,8 @@ open Function Algebra
 
 section
 
-variable {ι R S A : Type*} {x : ι → A} (S)
+variable {ι R S A : Type*} {x : ι → A}
+variable (S)
 variable [CommRing R] [CommRing S] [CommRing A]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [NoZeroDivisors S] (hx : AlgebraicIndependent R x)

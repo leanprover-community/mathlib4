@@ -45,7 +45,7 @@ namespace Cardinal
 
 universe u
 variable {α : Type u}
-variable (g : Ordinal → α)
+variable (g : Ordinal.{u} → α)
 
 open Cardinal Ordinal SuccOrder Function Set
 

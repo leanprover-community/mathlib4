@@ -56,7 +56,7 @@ open OreLocalization
 
 namespace OreLocalization
 
-variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
+variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X : Type*) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive (attr := instance_reducible) AddOreLocalization.oreEqv
@@ -105,7 +105,7 @@ macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $S $R)
 attribute [local instance] oreEqv
 
 variable {R S}
-variable {X} [MulAction R X]
+variable {X : Type*} [MulAction R X]
 
 /-- The division in the Ore localization `X[S⁻¹]`, as a fraction of an element of `X` and `S`. -/
 @[to_additive /-- The subtraction in the Ore localization,

@@ -32,13 +32,13 @@ Shapiro's lemma for group cohomology: `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A)` for
 
 @[expose] public section
 
-universe u
+universe u w
 
 namespace groupCohomology
 
 open CategoryTheory Finsupp TensorProduct Rep
 
-variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep k S)
+variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G} (A : Rep.{w} k S)
 
 set_option backward.defeqAttrib.useBackward true in
 -- Note: this proof breaks if `resCoindHomEquiv.{u}` is replaced with `resCoindHomEquiv`.

@@ -199,7 +199,9 @@ end
 
 section Iso
 
-variable {X Y : PresheafedSpace C}
+universe u
+
+variable {X Y : PresheafedSpace.{_, _, u} C}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

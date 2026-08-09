@@ -94,7 +94,7 @@ end
 
 section
 
-variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
+variable {ι' : Type*} [Category* ι'] (F : ι' ⥤ ι)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -164,7 +164,9 @@ def equiv {C : Type _} [Category* C] (r : HomRel C) : Quotient r ≃ C where
 
 noncomputable section
 
-variable {G : Type*} [Groupoid G] (r : HomRel G)
+universe v
+
+variable {G : Type*} [Groupoid.{v} G] (r : HomRel G)
 
 /-- Inverse of a map in the quotient category of a groupoid. -/
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
@@ -234,7 +236,7 @@ theorem compClosure.congruence :
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 
-variable {D : Type _} [Category* D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 /-- The induced functor on the quotient category. -/
 @[implicit_reducible]

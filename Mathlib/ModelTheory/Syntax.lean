@@ -61,13 +61,13 @@ For the Flypitch project:
 @[expose] public section
 
 
-universe u v w u' v'
+universe u v w u' v' u'' v''
 
 namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) {L' : Language}
+variable (L : Language.{u, v}) {L' : Language.{u'', v''}}
 variable {M : Type w} {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder

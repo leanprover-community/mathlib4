@@ -26,13 +26,15 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
   If `X` is geometrically integral over a field, then it is integral.
 -/
 
+universe u
+
 public section
 
 open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+variable {X Y Z S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is integral. -/

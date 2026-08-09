@@ -22,7 +22,7 @@ is a limit if it is so after applying the functors `Fᵢ`.
 namespace CategoryTheory.JointlyReflectIsomorphisms
 open Category Limits
 
-variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category (D i)]
+variable {C : Type*} [Category* C] {I : Type*} {D : I → Type*} [∀ i, Category* (D i)]
   {F : ∀ i, C ⥤ D i} (hF : JointlyReflectIsomorphisms F)
   {J : Type*} [Category* J] {G : J ⥤ C}
 

@@ -27,7 +27,7 @@ the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuo
 
 @[expose] public section
 
-universe u w
+universe u w p
 
 open CategoryTheory Limits FintypeCat Functor
 
@@ -114,9 +114,10 @@ lemma functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functo
 
 section Limit
 
-variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
+variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
+variable (G : Profinite.{p} ⥤ C) in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
@@ -125,15 +126,17 @@ Whiskering this cone with `Profinite.Extend.functor c` gives `G.mapCone c` as we
 example below.
 -/
 @[simps]
-def cone (S : Profinite) :
+def cone (S : Profinite.{p}) :
     Cone (StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G) where
   pt := G.obj S
   π := {
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by simp [← map_comp]) }
 
+variable (G : Profinite.{max u w} ⥤ C) in
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
+variable (G : Profinite.{max u w} ⥤ C) in
 /--
 If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
 then `cone G c.pt` is a limit cone.
@@ -146,9 +149,10 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C]
 
 set_option backward.defeqAttrib.useBackward true in
+variable (G : (Profinite.{p})ᵒᵖ ⥤ C) in
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on
 `(CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G)` with cocone point `G.obj ⟨S⟩`.
@@ -157,7 +161,7 @@ Whiskering this cocone with `Profinite.Extend.functorOp c` gives `G.mapCocone c.
 the example below.
 -/
 @[simps]
-def cocone (S : Profinite) :
+def cocone (S : Profinite.{p}) :
     Cocone (CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G) where
   pt := G.obj ⟨S⟩
   ι := {
@@ -168,8 +172,10 @@ def cocone (S : Profinite) :
         Category.comp_id] at this
       simp [← map_comp, this]) }
 
+variable (G : (Profinite.{max u w})ᵒᵖ ⥤ C) in
 example : G.mapCocone c.op = (cocone G c.pt).whisker (functorOp c) := rfl
 
+variable (G : (Profinite.{max u w})ᵒᵖ ⥤ C) in
 /--
 If `c` is a limit cone, `G.mapCocone c.op` is a colimit cone and the projection maps in `c`
 are epimorphic, then `cocone G c.pt` is a colimit cone.

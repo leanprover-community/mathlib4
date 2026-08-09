@@ -39,7 +39,7 @@ instance : MorphismProperty.HasPullbacks IsOpenImmersion where
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
 abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} (precoverage @IsOpenImmersion) X
 
-variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{v} X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 instance (i : 𝒰.I₀) : IsOpenImmersion (𝒰.f i) := 𝒰.map_prop i

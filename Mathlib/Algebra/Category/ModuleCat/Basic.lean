@@ -283,7 +283,7 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 
 namespace CategoryTheory.Iso
-variable {X Y : ModuleCat R}
+variable {X Y : ModuleCat.{v} R}
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
 def toLinearEquiv (i : X ≅ Y) : X ≃ₗ[R] Y :=
@@ -534,7 +534,9 @@ def mkOfSMul' {A : AddCommGrpCat} (_ : R →+* End A) := A
 
 section
 
-variable {A : AddCommGrpCat} (φ : R →+* End A)
+universe w
+
+variable {A : AddCommGrpCat.{w}} (φ : R →+* End A)
 
 instance : AddCommGroup (mkOfSMul' φ) :=
   inferInstanceAs <| AddCommGroup A

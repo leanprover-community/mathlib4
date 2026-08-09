@@ -139,7 +139,9 @@ instance : Preadditive (TopModuleCat R) where
 
 section
 
-variable {M₁ M₂ : TopModuleCat R}
+universe w
+
+variable {M₁ M₂ : TopModuleCat.{w} R}
 
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
@@ -199,9 +201,12 @@ open Limits
 
 section Colimit
 
+universe w
+
 variable {R}
 
-variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, (X i).toModuleCat ⟶ M)
+variable {M : ModuleCat.{w} R} {I : Type*} {X : I → TopModuleCat.{w} R}
+  (f : ∀ i, (X i).toModuleCat ⟶ M)
 
 /-- The coinduced topology on `M` from a family of continuous linear maps into `M`, which is the
 finest topology that makes it into a topological module and makes every map continuous. -/
@@ -262,9 +267,12 @@ end Colimit
 
 section Limit
 
+universe w
+
 variable {R}
 
-variable {M : ModuleCat R} {I : Type*} {X : I → TopModuleCat R} (f : ∀ i, M ⟶ (X i).toModuleCat)
+variable {M : ModuleCat.{w} R} {I : Type*} {X : I → TopModuleCat.{w} R}
+  (f : ∀ i, M ⟶ (X i).toModuleCat)
 
 /-- The induced topology on `M` from a family of continuous linear maps from `M`, which is the
 coarsest topology that makes every map continuous. -/

@@ -87,7 +87,7 @@ def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
 
 section
 
-variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
+variable (p : 𝒳 ⥤ 𝒮) [HasFibers.{v₃, u₃} p] (S : 𝒮)
 
 attribute [instance_reducible, instance] category
 
@@ -112,7 +112,7 @@ end
 
 section
 
-variable {p : 𝒳 ⥤ 𝒮} [HasFibers p]
+variable {p : 𝒳 ⥤ 𝒮} [HasFibers.{v₃, u₃} p]
 
 @[simp]
 lemma proj_eq {S : 𝒮} (a : Fib p S) : p.obj ((ι S).obj a) = S := by

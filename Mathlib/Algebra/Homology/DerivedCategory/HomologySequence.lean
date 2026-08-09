@@ -230,7 +230,7 @@ lemma homologyFunctorFactors_hom_app_homologyδOfTriangle
       DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia)]
   simp [Functor.shiftMap, homologyFunctor_shift, homologyδOfTriangle]
 
-variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
+variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang (DerivedCategory C))
 
 include hT
 

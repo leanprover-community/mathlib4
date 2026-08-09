@@ -15,7 +15,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 public section
 
-variable {M} [Monoid M] {F} [DivisionRing F]
+variable {M : Type*} [Monoid M] {F : Type*} [DivisionRing F]
 
 /-- Note that `smul_inv'` refers to the group case, and `smul_inv` has an additional inverse
 on `x`. -/

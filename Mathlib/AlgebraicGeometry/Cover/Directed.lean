@@ -26,7 +26,7 @@ opens of a scheme.
 
 @[expose] public section
 
-universe u
+universe u v
 
 noncomputable section
 
@@ -53,7 +53,7 @@ class LocallyDirected (𝒰 : X.Cover (precoverage P)) [Category* 𝒰.I₀] whe
       pullback.lift (trans hki) (trans hkj) (by simp [w]) y = x
   property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (trans hij) := by infer_instance
 
-variable (𝒰 : X.Cover (precoverage P)) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
+variable (𝒰 : X.Cover.{v} (precoverage P)) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
 
 /-- The transition maps of a directed cover. -/
 def trans {i j : 𝒰.I₀} (hij : i ⟶ j) : 𝒰.X i ⟶ 𝒰.X j := LocallyDirected.trans hij
@@ -149,7 +149,7 @@ def coconeOfLocallyDirected : Cocone 𝒰.functorOfLocallyDirected where
 
 section BaseChange
 
-variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
+variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover.{v} (precoverage P))
     [Category* 𝒰.I₀] [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X)
 
 instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
@@ -198,7 +198,7 @@ end Cover
 
 namespace OpenCover
 
-variable (𝒰 : X.OpenCover) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
+variable (𝒰 : X.OpenCover.{v}) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
 
 instance {i j : 𝒰.I₀} (f : i ⟶ j) : IsOpenImmersion (𝒰.trans f) :=
   𝒰.property_trans f
@@ -286,7 +286,7 @@ section Constructions
 
 section
 
-variable {𝒰 : X.OpenCover} [Preorder 𝒰.I₀]
+variable {𝒰 : X.OpenCover.{v}} [Preorder 𝒰.I₀]
   (hle : ∀ {i j : 𝒰.I₀}, i ≤ j ↔ (𝒰.f i).opensRange ≤ (𝒰.f j).opensRange)
   (H : TopologicalSpace.Opens.IsBasis (Set.range <| fun i ↦ (𝒰.f i).opensRange))
 

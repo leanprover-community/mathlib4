@@ -566,8 +566,9 @@ end algebraMap
 
 section surjective
 
-variable {R S} [CommSemiring R] [Semiring S] [Algebra R S]
-variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [IsScalarTower R S M]
+variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+variable {M N : Type*} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M]
+  [IsScalarTower R S M]
 variable [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/

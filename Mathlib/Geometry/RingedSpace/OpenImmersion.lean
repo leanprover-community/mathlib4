@@ -62,7 +62,7 @@ open CategoryTheory.Limits
 
 namespace AlgebraicGeometry
 
-universe w v v₁ v₂ u
+universe w v v₁ v₂ u u₁
 
 variable {C : Type u} [Category.{v} C]
 
@@ -104,7 +104,7 @@ attribute [instance] IsOpenImmersion.c_iso
 
 section
 
-variable {X Y : PresheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
+variable {X Y : PresheafedSpace.{_, _, u₁} C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor :=
@@ -300,6 +300,12 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
         ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
+end
+
+section
+
+variable {X Y : PresheafedSpace.{_, _, v} C} (f : X ⟶ Y) [H : IsOpenImmersion f]
+
 set_option backward.isDefEq.respectTransparency false in
 instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
   rw [← H.isoRestrict_hom_ofRestrict, PresheafedSpace.stalkMap.comp]
@@ -309,7 +315,7 @@ end
 
 noncomputable section Pullback
 
-variable {X Y Z : PresheafedSpace C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g : Y ⟶ Z)
+variable {X Y Z : PresheafedSpace.{_, _, u₁} C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g : Y ⟶ Z)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -542,7 +548,7 @@ open CategoryTheory.Limits.WalkingCospan
 
 section ToSheafedSpace
 
-variable {X : PresheafedSpace C} (Y : SheafedSpace C)
+variable {X : PresheafedSpace.{_, _, u₁} C} (Y : SheafedSpace.{_, _, u₁} C)
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a SheafedSpace, then so is `X`. -/
 def toSheafedSpace (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f] : SheafedSpace C where
@@ -584,7 +590,7 @@ end ToSheafedSpace
 
 section ToLocallyRingedSpace
 
-variable {X : PresheafedSpace CommRingCat} (Y : LocallyRingedSpace)
+variable {X : PresheafedSpace.{_, _, u₁} CommRingCat.{u₁}} (Y : LocallyRingedSpace.{u₁})
 variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -646,7 +652,7 @@ instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace
 
 noncomputable section Pullback
 
-variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : SheafedSpace.{_, _, u₁} C} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : SheafedSpace.IsOpenImmersion f]
 
 /-- This is often wrapped in parentheses to distinguish with the forgetful functor. -/
@@ -788,7 +794,7 @@ end OfStalkIso
 
 section
 
-variable {X Y : SheafedSpace C} (f : X ⟶ Y) [H : IsOpenImmersion f]
+variable {X Y : SheafedSpace.{_, _, u₁} C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 /-- The functor `Opens X ⥤ Opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev opensFunctor : Opens X ⥤ Opens Y :=
@@ -875,6 +881,12 @@ theorem ofRestrict_invApp {C : Type*} [Category* C] (X : SheafedSpace C) {Y : To
 theorem to_iso [h' : Epi f.hom.base] : IsIso f := by
   have : IsIso (forgetToPresheafedSpace.map f) := PresheafedSpace.IsOpenImmersion.to_iso f.hom
   apply isIso_of_reflects_iso _ (SheafedSpace.forgetToPresheafedSpace)
+
+end
+
+section
+
+variable {X Y : SheafedSpace.{_, _, v} C} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 instance stalk_iso [HasColimits C] (x : X) :
     IsIso (f.hom.stalkMap x) :=
@@ -991,7 +1003,7 @@ instance (X : LocallyRingedSpace) {U : TopCat.{w}} (f : U ⟶ X.toTopCat) (hf : 
 
 noncomputable section Pullback
 
-variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : LocallyRingedSpace.{u₁}} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
 instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g := by
@@ -1219,7 +1231,7 @@ end OfStalkIso
 
 section
 
-variable {X Y : LocallyRingedSpace} (f : X ⟶ Y) [H : IsOpenImmersion f]
+variable {X Y : LocallyRingedSpace.{u₁}} (f : X ⟶ Y) [H : IsOpenImmersion f]
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by

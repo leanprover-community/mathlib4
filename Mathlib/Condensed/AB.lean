@@ -27,7 +27,7 @@ open Condensed CategoryTheory Limits
 namespace Condensed
 
 variable (A J : Type*) [Category* A] [Category* J] [Preadditive A]
-  [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
+  [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.{u}.op) A]
   [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
   [HasWeakSheafify (extensiveTopology Stonean.{u}) A]
 -- One of the `HasWeakSheafify` instances could be deduced from the other using the dense subsite

@@ -41,7 +41,7 @@ abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
 /-- The restriction of `X : Rep k G` associated to a monoid homomorphism `f : H →* G` -/
 abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
-variable (f : H →* G) (M : Rep k G)
+variable (f : H →* G) (M : Rep.{t} k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
 
@@ -141,7 +141,7 @@ end ShortComplex
 
 noncomputable section
 
-variable {G : Type v} [Group G] (A : Rep k G) (S : Subgroup G)
+variable {G : Type v} [Group G] (A : Rep.{t} k G) (S : Subgroup G)
   [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors

@@ -262,9 +262,9 @@ variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 variable {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']
 variable [Module R M] [Module R M']
 variable (f : M →ₗ[R] M') [IsLocalizedModule S f]
-variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+variable {N N' : Type*} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
-variable (Rₛ) [CommSemiring Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
+variable (Rₛ : Type*) [CommSemiring Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
 variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
@@ -295,7 +295,7 @@ section LocalizedModule
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[Rₛ] Nₛ`. -/
 noncomputable

@@ -28,7 +28,7 @@ open Category Limits
 
 namespace Abelian
 
-variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
+variable (C ι : Type*) [Category* C] [Category* ι] [Abelian C]
 
 open ComposableArrows
 

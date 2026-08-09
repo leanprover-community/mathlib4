@@ -33,7 +33,7 @@ open CategoryTheory.Functor
 namespace Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {F : C ⥤ Cat}
+variable {F : C ⥤ Cat.{v₃, u₃}}
 variable {H : Type u₂} [Category.{v₂} H]
 variable (G : Grothendieck F ⥤ H)
 

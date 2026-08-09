@@ -1419,7 +1419,7 @@ theorem set_smul_top_eq_span (s : Set R) :
 lemma smul_le_span (s : Set R) (I : Ideal R) : s • I ≤ Ideal.span s := by
   simp [← Submodule.set_smul_top_eq_span, smul_le_smul_left]
 
-variable {A B} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 open Submodule
 

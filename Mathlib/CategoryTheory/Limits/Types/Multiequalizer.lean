@@ -20,13 +20,13 @@ that `c` is a limit iff the canonical map
 
 @[expose] public section
 
-universe v u
+universe w w' v u
 
 open CategoryTheory Limits
 
 namespace CategoryTheory.Limits
 
-variable {J : MulticospanShape} (I : MulticospanIndex J (Type u))
+variable {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J (Type u))
 
 /-- Given `I : MulticospanIndex J (Type u)`, this is a type which identifies
 to the sections of the functor `I.multicospan`. -/

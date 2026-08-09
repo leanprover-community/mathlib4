@@ -226,7 +226,7 @@ end Limits
 
 section Colimits
 
-variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
+variable [HasCoproducts.{u₂} C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
 
 /-- A helper function, providing the strong epi-mono factorization used construct to colimits. -/
 def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
@@ -262,6 +262,7 @@ def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   desc c := homMk (liftStructOfHasStrongEpiMonoFactorisation F c).l
     (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
 
+variable [HasCoproducts.{w'} C] in
 instance hasColimitsOfSize_of_hasStrongEpiMonoFactorisations :
     HasColimitsOfSize.{w, w'} (MonoOver Y) where
   has_colimits_of_shape _ _ :=

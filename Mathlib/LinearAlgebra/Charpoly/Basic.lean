@@ -134,7 +134,7 @@ end CayleyHamilton
 end LinearMap
 
 section Algebra
-variable {R M} [CommRing R] [Ring M] [Algebra R M]
+variable {R M : Type*} [CommRing R] [Ring M] [Algebra R M]
   [Module.Finite R M] [Module.Free R M]
 
 theorem Algebra.aeval_self_charpoly_lmul (α : M) :

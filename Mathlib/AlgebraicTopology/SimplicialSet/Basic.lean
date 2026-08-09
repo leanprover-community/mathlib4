@@ -193,7 +193,7 @@ abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
 
 section applications
-variable {S : SSet}
+variable {S : SSet.{u}}
 
 lemma δ_comp_δ_apply {n} {i j : Fin (n + 2)} (H : i ≤ j) (x : S _⦋n + 2⦌) :
     S.δ i (S.δ j.succ x) = S.δ j (S.δ i.castSucc x) := congr_hom (S.δ_comp_δ H) x
@@ -245,7 +245,7 @@ lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.suc
 lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _⦋n⦌) :
     S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_hom (S.σ_comp_σ H) x
 
-variable {T : SSet} (f : S ⟶ T)
+variable {T : SSet.{u}} (f : S ⟶ T)
 
 open Opposite
 

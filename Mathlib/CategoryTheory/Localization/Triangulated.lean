@@ -232,7 +232,9 @@ instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.
 
 section
 
-variable [W.HasLocalization]
+universe w
+
+variable [W.HasLocalization.{w}]
 
 instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   rw [Localization.functor_additive_iff W.Q' W]

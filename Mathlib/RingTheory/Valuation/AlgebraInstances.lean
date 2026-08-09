@@ -47,7 +47,7 @@ theorem isIntegral_of_mem_ringOfIntegers' {x : integralClosure v.valuationSubrin
     IsIntegral v.valuationSubring (x : integralClosure v.valuationSubring L) := by
   apply isIntegral_of_mem_ringOfIntegers
 
-variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+variable (E : Type*) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
 -- Shortcut instance with potential performance benefit
 instance : IsScalarTower v.valuationSubring L E := inferInstance

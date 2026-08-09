@@ -40,8 +40,10 @@ We give conditions sufficient to show that this map is injective and/or surjecti
 
 noncomputable section
 
-variable {X : TopCat}
-variable (T : X → Type*)
+universe w v'
+
+variable {X : TopCat.{w}}
+variable (T : X → Type v')
 
 open TopologicalSpace
 
@@ -282,6 +284,8 @@ end subpresheafToTypes
 @[simps]
 def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
+
+variable {T : X → Type w}
 
 /-- Auxiliary definition for `stalkToFiber`. -/
 def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :

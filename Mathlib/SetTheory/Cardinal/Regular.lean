@@ -27,12 +27,11 @@ This file defines regular, singular, and inaccessible cardinals.
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 open Function Cardinal Set Order Ordinal
 
 namespace Cardinal
-variable {c : Cardinal}
 
 /-! ### Regular cardinals -/
 
@@ -44,6 +43,7 @@ structure IsRegular (c : Cardinal) : Prop where
   /-- A cardinal equals its own cofinality. See `IsRegular.cof_eq`. -/
   le_cof_ord : c ≤ c.ord.cof
 
+variable {c : Cardinal.{w}} in
 theorem IsRegular.cof_ord (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
 
@@ -52,12 +52,15 @@ theorem IsRegular.cof_ord (H : c.IsRegular) : c.ord.cof = c :=
 theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
   rw [← ord_aleph, H.cof_ord]
 
+variable {c : Cardinal.{w}} in
 theorem IsRegular.pos (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
 
+variable {c : Cardinal.{w}} in
 theorem IsRegular.nat_lt (H : c.IsRegular) (n : ℕ) : n < c :=
   lt_of_lt_of_le natCast_lt_aleph0 H.aleph0_le
 
+variable {c : Cardinal.{w}} in
 theorem IsRegular.ord_pos (H : c.IsRegular) : 0 < c.ord := by
   rw [Cardinal.lt_ord, card_zero]
   exact H.pos
@@ -66,6 +69,7 @@ theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof := by
   refine ⟨?_, (cof_ord_cof o).ge⟩
   rwa [aleph0_le_cof_iff, one_lt_cof_iff]
 
+variable {c : Cardinal.{w}} in
 /-- If `c` is a regular cardinal, then `c.ord.ToType` has a least element. -/
 lemma IsRegular.ne_zero (H : c.IsRegular) : c ≠ 0 :=
   H.pos.ne'
@@ -195,12 +199,14 @@ theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_of_lt_cof_ord (by rwa [hc.cof_ord])
 
+variable {c : Cardinal.{max u v}} in
 theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c := by
   apply (sum_le_lift_mk_mul_iSup _).trans_lt <|
     mul_lt_of_lt hc.1 hι (lift_iSup_lt_of_lt_cof_ord _ hf)
   rwa [lift_umax, c.lift_id', hc.cof_ord]
 
+variable {c : Cardinal.{u}} in
 theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} (hc : IsRegular c)
     (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
   sum_lt_lift_of_isRegular.{u, u} hc (by rwa [lift_id])
@@ -210,6 +216,7 @@ theorem card_lt_of_card_iUnion_lt {ι : Type u} {α : Type u} {t : ι → Set α
     (h : #(⋃ i, t i) < c) (i : ι) : #(t i) < c :=
   lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset <| subset_iUnion _ _) h
 
+variable {c : Cardinal.{u}} in
 @[simp]
 theorem card_iUnion_lt_iff_forall_of_isRegular {ι : Type u} {α : Type u} {t : ι → Set α}
     (hc : c.IsRegular) (hι : #ι < c) : #(⋃ i, t i) < c ↔ ∀ i, #(t i) < c := by
@@ -226,6 +233,7 @@ theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ 
   have := card_lt_of_card_iUnion_lt h
   simp_all only [iUnion_coe_set, Subtype.forall]
 
+variable {c : Cardinal.{u}} in
 theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β}
     (hc : c.IsRegular) (hs : #s < c) :
     #(⋃ a ∈ s, t a ‹_›) < c ↔ ∀ a (ha : a ∈ s), #(t a ha) < c := by
@@ -290,18 +298,21 @@ structure IsSingular (c : Cardinal) : Prop where
   /-- A singular cardinal is not regular, see `IsSingular.not_isRegular`. -/
   cof_ord_ne : c.ord.cof ≠ c
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.cof_ord_lt (hc : c.IsSingular) : c.ord.cof < c :=
   (cof_ord_le c).lt_of_ne hc.cof_ord_ne
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.natCast_lt (hc : c.IsSingular) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans_le hc.aleph0_le
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.pos (hc : c.IsSingular) : 0 < c :=
   hc.natCast_lt 0
-
+variable {c : Cardinal.{w}} in
 theorem IsSingular.not_isRegular (hc : c.IsSingular) : ¬ c.IsRegular :=
   fun hc' ↦ hc'.le_cof_ord.not_gt hc.cof_ord_lt
-
+variable {c : Cardinal.{w}} in
 theorem IsRegular.not_isSingular (hc : c.IsRegular) : ¬ c.IsSingular :=
   imp_not_comm.1 IsSingular.not_isRegular hc
 
@@ -326,24 +337,29 @@ theorem not_isSingular_succ (c : Cardinal) : ¬ IsSingular (succ c) := by
 theorem not_isRegular_aleph_add_one (o : Ordinal) : ¬ IsSingular (ℵ_ (o + 1)) := by
   simp [← succ_aleph]
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.isSuccLimit (hc : IsSingular c) : IsSuccLimit c := by
   rw [Cardinal.isSuccLimit_iff, isSuccPrelimit_iff_succ_ne]
   refine ⟨hc.pos.ne', ?_⟩
   rintro c rfl
   exact not_isSingular_succ c hc
 
+variable {c : Cardinal.{w}} in
 theorem isRegular_or_isSingular (h : ℵ₀ ≤ c) : c.IsRegular ∨ c.IsSingular := by
   rw [isSingular_iff, ← (cof_ord_le c).lt_iff_ne, ← not_le]
   tauto
 
+variable {c : Cardinal.{w}} in
 theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.IsSingular := by
   have := isRegular_or_isSingular (c := c)
   rw [← not_le]
   tauto
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.of_not_isRegular (h₀ : ℵ₀ ≤ c) (hc : ¬ IsRegular c) : IsSingular c :=
   (isRegular_or_isSingular h₀).resolve_left hc
 
+variable {c : Cardinal.{w}} in
 theorem IsRegular.of_not_isSingular (h₀ : ℵ₀ ≤ c) (hc : ¬ IsSingular c) : IsRegular c :=
   (isRegular_or_isSingular h₀).resolve_right hc
 
@@ -359,6 +375,7 @@ theorem IsSingular.isSuccLimit_of_aleph {o : Ordinal} (hc : IsSingular (ℵ_ o))
 
 theorem isSingular_aleph_omega0 : (ℵ_ ω).IsSingular := by simp [isSingular_aleph_iff]
 
+variable {c : Cardinal.{w}} in
 theorem IsSingular.aleph_omega0_le (hc : IsSingular c) : ℵ_ ω ≤ c := by
   obtain ⟨o, rfl⟩ := mem_range_aleph_iff.2 hc.aleph0_le
   rw [isSingular_aleph_iff] at hc
@@ -376,15 +393,19 @@ structure IsInaccessible (c : Cardinal) : Prop where
   /-- An inaccessible cardinal is a strong limit, see `IsInaccessible.isStrongLimit`. -/
   protected isStrongPrelimit : IsStrongPrelimit c
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.nat_lt (h : IsInaccessible c) (n : ℕ) : n < c :=
   natCast_lt_aleph0.trans h.1
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.pos (h : IsInaccessible c) : 0 < c :=
   aleph0_pos.trans h.1
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.ne_zero (h : IsInaccessible c) : c ≠ 0 :=
   h.pos.ne'
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.isRegular (h : IsInaccessible c) : IsRegular c :=
   ⟨h.aleph0_lt.le, h.le_cof_ord⟩
 
@@ -394,6 +415,7 @@ theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsS
 theorem IsInaccessible.isSuccLimit {c : Cardinal} (h : IsInaccessible c) : IsSuccLimit c :=
   h.isStrongLimit.isSuccLimit
 
+variable {c : Cardinal.{w}} in
 theorem isInaccessible_def : IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.isStrongPrelimit⟩
@@ -402,6 +424,7 @@ theorem isInaccessible_def : IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.isStrongPrelimit⟩
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c := by
   apply (preBeth_strictMono.comp ord_strictMono).le_apply.antisymm'
   apply (isNormal_preBeth.le_iff_forall_le (isSuccLimit_ord hc.aleph0_lt.le)).2
@@ -413,24 +436,30 @@ theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c :
   · rintro ⟨b, hb⟩
     exact hc.isStrongPrelimit <| IH _ hb (hb.trans ha)
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.beth_ord (hc : IsInaccessible c) : ℶ_ c.ord = c := by
   rw [← preBeth_of_omega0_sq_le (le_of_lt _), hc.preBeth_ord]
   rw [lt_ord, pow_two, card_mul, card_omega0, aleph0_mul_aleph0]
   exact hc.aleph0_lt
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c :=
   ((preAleph_le_preBeth _).trans hc.preBeth_ord.le).antisymm
     (preAleph.strictMono.comp ord_strictMono).le_apply
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.preAleph_symm_eq_ord (hc : IsInaccessible c) : preAleph.symm c = c.ord := by
   rw [OrderIso.symm_apply_eq, hc.preAleph_ord]
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
   ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.preOmega_ord (hc : IsInaccessible c) : preOmega c.ord = c.ord := by
   rw [← ord_preAleph, hc.preAleph_ord]
 
+variable {c : Cardinal.{w}} in
 theorem IsInaccessible.omega_ord (hc : IsInaccessible c) : ω_ c.ord = c.ord := by
   rw [← ord_aleph, hc.aleph_ord]
 

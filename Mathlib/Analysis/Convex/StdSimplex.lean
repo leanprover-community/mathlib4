@@ -28,7 +28,7 @@ open Set Convex Bornology
 
 section OrderedSemiring
 
-variable (𝕜) (ι : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [Fintype ι]
+variable (𝕜 : Type*) (ι : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [Fintype ι]
 
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/
@@ -104,7 +104,7 @@ end OrderedSemiring
 
 section OrderedRing
 
-variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable (𝕜 : Type*) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval.
 This bijection sends the zeroth vertex `Pi.single 0 1` to `0` and

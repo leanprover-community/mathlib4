@@ -20,7 +20,8 @@ for other purposes.
 -/
 
 @[expose] public section
-variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
+
+variable {ι : Type*} {π : ι → Sort*} {x : ∀ i, π i} [DecidableEq ι]
   {s t : Finset ι} {y : ∀ i : s, π i} {z : ∀ i : t, π i} {i : ι}
 
 namespace Function
@@ -56,6 +57,9 @@ theorem update_eq_updateFinset {y} :
     exact uniqueElim_default (α := fun j : ({i} : Finset ι) => π j) y
   · simp [hj, updateFinset]
 
+section
+variable {π : ι → Type*}
+
 /-- If one replaces the variables indexed by a finite set `t`, then `f` no longer depends on
 those variables. -/
 theorem _root_.DependsOn.updateFinset {α : Type*} {f : (Π i, π i) → α} {s : Set ι}
@@ -73,6 +77,11 @@ theorem _root_.DependsOn.update {α : Type*} {f : (Π i, π i) → α} {s : Fins
   simp_rw [Function.update_eq_updateFinset, erase_eq, coe_sdiff]
   exact hf.updateFinset _
 
+end
+
+section
+variable {π : ι → Type*} {x : ∀ i, π i} {y : ∀ i : s, π i} {z : ∀ i : t, π i}
+
 theorem updateFinset_updateFinset (hst : Disjoint s t) :
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
@@ -84,10 +93,15 @@ theorem updateFinset_updateFinset (hst : Disjoint s t) :
   · exact piCongrLeft_sumInl (fun b : ↥(s ∪ t) => π b) e y z ⟨i, his⟩ |>.symm
   · exact piCongrLeft_sumInr (fun b : ↥(s ∪ t) => π b) e y z ⟨i, hit⟩ |>.symm
 
+end
+
 lemma updateFinset_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t)
     (x : Π i, π i) (y : Π i : s, π i) (z : Π i : t, π i) :
     updateFinset (updateFinset x s y) t z = updateFinset x t z := by
   grind [updateFinset]
+
+section
+variable {π : ι → Type*} {x : ∀ i, π i} {y : ∀ i : s, π i} {z : ∀ i : t, π i}
 
 lemma restrict_updateFinset_of_subset {s t : Finset ι} (hst : s ⊆ t) (x : Π i, π i)
     (y : Π i : t, π i) : s.restrict (updateFinset x t y) = restrict₂ hst y := by
@@ -110,6 +124,8 @@ theorem update_updateFinset {z} (hi : i ∉ s) :
     Function.update (updateFinset x s y) i z = updateFinset x (s ∪ {i})
       ((Equiv.piFinsetUnion π <| Finset.disjoint_singleton_right.mpr hi) (y, uniqueElim z)) := by
   rw [update_eq_updateFinset, updateFinset_updateFinset]
+
+end
 
 theorem updateFinset_congr (h : s = t) :
     updateFinset x s y = updateFinset x t (fun i ↦ y ⟨i, h ▸ i.prop⟩) := by

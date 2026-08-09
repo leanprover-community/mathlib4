@@ -41,7 +41,7 @@ https://stacks.math.columbia.edu/tag/0CY0
 
 open Topology
 
-variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
+variable {X Y A : Type*} [TopologicalSpace X] [TopologicalSpace A]
 
 protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by

@@ -499,7 +499,9 @@ end aleph
 
 section mul_strictMono
 
-variable {n : ℕ} {a b : Cardinal}
+universe u_1
+
+variable {n : ℕ} {a b : Cardinal.{u_1}}
 
 lemma natCast_mul_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : Cardinal ↦ n * a := by
   match n, hn with

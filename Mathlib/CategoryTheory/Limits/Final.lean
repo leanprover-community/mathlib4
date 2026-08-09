@@ -1077,7 +1077,7 @@ section Grothendieck
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
-variable (F : D ⥤ Cat) (G : C ⥤ D)
+variable (F : D ⥤ Cat.{v₃, u₃}) (G : C ⥤ D)
 
 open CategoryTheory.Functor
 

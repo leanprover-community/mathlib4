@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Push
 
 public section
 
-variable {R}
+variable {R : Type*}
 
 section MulZeroClass
 variable [MulZeroClass R] {a b : R}

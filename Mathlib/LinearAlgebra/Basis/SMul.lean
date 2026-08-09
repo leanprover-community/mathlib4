@@ -31,7 +31,7 @@ namespace Module.Basis
 variable [Semiring R] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 section SMul
-variable {G G'}
+variable {G G' : Type*}
 variable [Group G] [Group G']
 variable [DistribMulAction G M] [DistribMulAction G' M]
 variable [SMulCommClass G R M] [SMulCommClass G' R M]

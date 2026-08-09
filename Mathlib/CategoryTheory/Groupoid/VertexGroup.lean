@@ -35,9 +35,9 @@ namespace CategoryTheory
 
 namespace Groupoid
 
-universe u v
+universe u v w
 
-variable {C : Type u} [Groupoid C]
+variable {C : Type u} [Groupoid.{w} C]
 
 /-- The vertex group at `c`. -/
 @[simps mul one inv]

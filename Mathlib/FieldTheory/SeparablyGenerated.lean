@@ -42,7 +42,7 @@ open scoped IntermediateField
 
 variable {k K ι : Type*} [Field k] [Field K] [Algebra k K] (p : ℕ) (hp : p.Prime)
 variable (H : ∀ s : Finset K,
-  LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K))
+  LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (fun x : K ↦ x ^ p) (s : Set K))
 variable {a : ι → K} (n : ι)
 
 namespace MvPolynomial

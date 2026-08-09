@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {I : Type*} {D : I → Type*} [∀ i, Category (D i)]
+variable {C : Type*} [Category* C] {I : Type*} {D : I → Type*} [∀ i, Category* (D i)]
 
 /-- A family of functors jointly reflects isomorphisms if for every morphism `f : X ⟶ Y`
 such that the image of `f` under all `F i` is an isomorphism, then `f` is an isomorphism. -/

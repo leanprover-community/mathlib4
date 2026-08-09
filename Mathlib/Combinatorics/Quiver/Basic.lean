@@ -84,7 +84,7 @@ to_dual_insert_cast_fun IsThin := fun inst a b ↦ inst b a, fun inst a b ↦ in
 
 section
 
-variable {V : Type*} [Quiver V] {X Y X' Y' : V}
+variable {V : Type*} [Quiver.{v} V] {X Y X' Y' : V}
 
 /-- An arrow in a quiver can be transported across equalities between the source and target
 objects. -/

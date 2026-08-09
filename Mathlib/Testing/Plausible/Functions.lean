@@ -52,7 +52,7 @@ functions are an example of how complicated it can get.
 
 @[expose] public meta section
 
-universe u v
+universe u v w
 
 variable {α : Type u} {β : Type v}
 
@@ -121,7 +121,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       · simp [haA] at h
       · simp
 
-variable [SampleableExt α] [SampleableExt β] [Repr α]
+variable [SampleableExt.{_, u} α] [SampleableExt.{_, w} β] [Repr α]
 
 instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
   proxy := TotalFunction α (SampleableExt.proxy β)

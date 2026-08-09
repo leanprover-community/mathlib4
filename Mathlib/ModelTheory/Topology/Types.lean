@@ -28,9 +28,9 @@ open Set FirstOrder Language Theory CompleteType TopologicalSpace
 
 namespace CompleteType
 
-universe u
+universe u v
 
-variable {L : Language} {T : L.Theory} {α : Type*}
+variable {L : Language.{u, v}} {T : L.Theory} {α : Type*}
 
 public instance : TopologicalSpace (CompleteType T α) :=
   generateFrom (range (T.typesWith))

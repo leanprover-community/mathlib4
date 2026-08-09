@@ -14,7 +14,7 @@ public import Mathlib.Logic.Equiv.Multiset
 
 @[expose] public section
 
-variable {α}
+variable {α : Type*}
 
 open Encodable
 

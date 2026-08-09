@@ -40,7 +40,7 @@ namespace CategoryTheory
 open Category
 
 section
-variable {C : Type*} [EnrichedCategory Cat C]
+variable {C : Type*} [EnrichedCategory Cat.{v', u'} C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
 This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/

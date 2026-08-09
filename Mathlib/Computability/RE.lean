@@ -131,7 +131,7 @@ def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
 
 section decide
 
-variable {α} [Primcodable α]
+variable {α : Type*} [Primcodable α]
 
 protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
     Computable (fun a => decide (p a)) := by

@@ -20,13 +20,15 @@ namespace ContinuousCohomology
 
 open CategoryTheory Functor TopRep ContRepresentation
 
-variable {k G : Type*} [Ring k] [Group G] [TopologicalSpace k]
+universe v w
+
+variable {k : Type*} {G : Type v} [Ring k] [Group G] [TopologicalSpace k]
   [TopologicalSpace G] [IsTopologicalGroup G]
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
 
-variable (X : TopRep k G)
+variable (X : TopRep.{max v w} k G)
 
 lemma cocycles₀IsoAux (σ : (homogeneousCochains X).X 0)
     (hσ : σ ∈ ((homogeneousCochains X).d 0 1).hom.ker) : σ.1 1 ∈ X.ρ.invariants := by

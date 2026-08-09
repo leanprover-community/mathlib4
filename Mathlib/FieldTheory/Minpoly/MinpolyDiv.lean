@@ -26,7 +26,8 @@ See `traceForm_dualBasis_powerBasis_eq`.
 
 open Polynomial Module Algebra
 
-variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
+variable (R K : Type*) {L S : Type*} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S]
+  [Algebra K L]
 variable (x : S)
 
 /-- `minpolyDiv R x : S[X]` for `x : S` is the polynomial `minpoly R x / (X - C x)`. -/

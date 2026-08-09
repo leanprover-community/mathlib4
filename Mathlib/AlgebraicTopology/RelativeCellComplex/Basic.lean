@@ -54,7 +54,7 @@ structure RelativeCellComplex
 
 namespace RelativeCellComplex
 
-variable {basicCell f} (c : RelativeCellComplex basicCell f)
+variable {basicCell f} (c : RelativeCellComplex.{w} basicCell f)
 
 /-- The index type of cells in a relative cell complex. -/
 structure Cells where

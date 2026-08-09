@@ -73,7 +73,7 @@ namespace Matroid
 
 section Rank
 
-variable {κ : Cardinal}
+variable {κ : Cardinal.{u}}
 
 /-- The rank (supremum of the cardinalities of bases) of a matroid `M` as a `Cardinal`.
 See `Matroid.eRank` for a better-behaved `ℕ∞`-valued version. -/

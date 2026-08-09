@@ -50,7 +50,7 @@ category).
 
 @[expose] public section
 
-universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
+universe w t v₁ v₂ v₃ u₁ u₂ u₃ u w₁ w₂
 
 namespace CategoryTheory
 
@@ -61,7 +61,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace PreOneHypercover
 
-variable {X : C} (E : PreOneHypercover X) (F : C ⥤ D)
+variable {X : C} (E : PreOneHypercover.{w₁} X) (F : C ⥤ D)
 
 /-- The image of a 1-pre-hypercover by a functor. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
@@ -151,7 +151,7 @@ namespace GrothendieckTopology
 
 namespace OneHypercover
 
-variable {J : GrothendieckTopology C} {X : C} (E : J.OneHypercover X)
+variable {J : GrothendieckTopology C} {X : C} (E : J.OneHypercover.{w₂} X)
 
 /-- A 1-hypercover in `C` is preserved by a functor `F : C ⥤ D` if the mapped 1-pre-hypercover
 in `D` is a 1-hypercover for the given topology on `D`. -/

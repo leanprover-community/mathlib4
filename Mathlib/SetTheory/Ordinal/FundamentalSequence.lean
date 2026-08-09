@@ -27,7 +27,7 @@ open Cardinal Order Set
 
 namespace Ordinal
 
-variable {a b o : Ordinal}
+variable {a b o : Ordinal.{u}}
 
 /-- A fundamental sequence for `o` is a strictly monotonic function `Iio o.cof.ord → Iio o` with
 cofinal range. We provide `a = o.cof.ord` explicitly to avoid type rewrites. -/

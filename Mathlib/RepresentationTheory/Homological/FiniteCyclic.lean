@@ -92,7 +92,7 @@ end Representation.FiniteCyclicGroup
 
 namespace Rep.FiniteCyclicGroup
 
-variable (k : Type u) {G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : Rep k G) (g : G)
+variable (k : Type u) {G : Type u} [CommRing k] [CommGroup G] [Fintype G] (A : Rep.{v} k G) (g : G)
 
 namespace leftRegular
 

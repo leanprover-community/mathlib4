@@ -29,7 +29,7 @@ constructed via tensor products.
 @[expose] public section
 
 
-universe u v w
+universe u v w u'
 
 noncomputable section
 
@@ -707,7 +707,7 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   infer_instance
 
 section CartesianMonoidalCategory
-variable {S : Scheme}
+variable {S : Scheme.{u'}}
 
 instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
 instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory

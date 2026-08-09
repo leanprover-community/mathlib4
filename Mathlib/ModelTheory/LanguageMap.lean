@@ -35,7 +35,7 @@ For the Flypitch project:
 
 @[expose] public section
 
-universe u v u' v' w w'
+universe u v u' v' w w' u'' v'' u₁ v₁ u₂ v₂ u₃ v₃
 
 namespace FirstOrder
 
@@ -94,7 +94,7 @@ variable (L L')
 @[simps]
 protected def ofIsEmpty [L.IsAlgebraic] [L.IsRelational] : L →ᴸ L' where
 
-variable {L L'} {L'' : Language}
+variable {L L'} {L'' : Language.{u'', v''}}
 
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
@@ -157,7 +157,7 @@ end SumElim
 
 section SumMap
 
-variable {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂)
+variable {L₁ : Language.{u₁, v₁}} {L₂ : Language.{u₂, v₂}} (ψ : L₁ →ᴸ L₂)
 
 /-- The map between two sum-languages induced by maps on the two factors. -/
 @[simps]
@@ -298,7 +298,7 @@ protected def refl : L ≃ᴸ L :=
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
 
-variable {L'' : Language} (e' : L' ≃ᴸ L'') (e : L ≃ᴸ L')
+variable {L'' : Language.{u₃, v₃}} (e' : L' ≃ᴸ L'') (e : L ≃ᴸ L')
 
 /-- The inverse of an equivalence of first-order languages. -/
 @[simps]

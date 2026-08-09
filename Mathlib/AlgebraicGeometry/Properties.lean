@@ -33,7 +33,7 @@ open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat Topol
 
 namespace AlgebraicGeometry
 
-variable (X : Scheme)
+variable (X : Scheme.{u})
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,

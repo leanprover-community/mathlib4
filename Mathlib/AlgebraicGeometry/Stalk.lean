@@ -27,7 +27,7 @@ namespace AlgebraicGeometry
 
 open CategoryTheory Opposite TopologicalSpace IsLocalRing
 
-universe u
+universe u v
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y) {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
 
@@ -204,7 +204,7 @@ end Scheme
 
 section Spec
 
-variable (R : CommRingCat) (x)
+variable (R : CommRingCat.{v}) (x)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma Spec.fromSpecStalk_eq :

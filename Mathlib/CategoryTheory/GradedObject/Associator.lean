@@ -36,13 +36,16 @@ open Category
 
 namespace GradedObject
 
+universe v w
+
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
   [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
   {F : C₁ ⥤ C₂₃ ⥤ C₄} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
   {I₁ I₂ I₃ J : Type*} {r : I₁ × I₂ × I₃ → J}
-  (ρ₁₂ : BifunctorComp₁₂IndexData r) (ρ₂₃ : BifunctorComp₂₃IndexData r)
+  (ρ₁₂ : BifunctorComp₁₂IndexData.{_, _, _, _, v} r)
+  (ρ₂₃ : BifunctorComp₂₃IndexData.{_, _, _, _, w} r)
   (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
   [HasMap (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p]
   [HasMap (((mapBifunctor G ρ₁₂.I₁₂ I₃).obj (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂)).obj X₃) ρ₁₂.q]

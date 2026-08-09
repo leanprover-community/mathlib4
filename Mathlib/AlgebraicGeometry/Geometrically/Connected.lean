@@ -30,9 +30,11 @@ of a geometrically connected scheme over a field.
 
 open CategoryTheory MorphismProperty Limits
 
+universe u
+
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+variable {X Y Z S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that a morphism `f : X ⟶ Y` is geometrically connected if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is connected. -/

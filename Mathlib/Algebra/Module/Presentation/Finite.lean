@@ -26,7 +26,7 @@ variable {A : Type u} [Ring A] {M : Type v} [AddCommGroup M] [Module A M]
 
 namespace Presentation
 
-variable (pres : Presentation A M)
+variable (pres : Presentation.{w₀, w₁} A M)
 
 lemma finite [Finite pres.G] :
     Module.Finite A M :=

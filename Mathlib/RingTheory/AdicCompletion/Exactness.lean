@@ -116,7 +116,8 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P} (hf : Function.Injective f)
 section
 
 variable {k : ℕ}
-  (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
+  (hkn : ∀ n ≥ k, I ^ n • (⊤ : Submodule R N) ⊓ LinearMap.range f =
+    I ^ (n - k) • (I ^ k • (⊤ : Submodule R N) ⊓ LinearMap.range f))
   (x : AdicCauchySequence I N) (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P))
 
 /-- In each step, a preimage is constructed from the preimage of the previous step by

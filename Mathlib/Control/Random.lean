@@ -87,34 +87,42 @@ namespace Random
 
 open Rand
 
-variable [Monad m]
+universe u v w w'
 
+variable {m : Type u → Type w} [Monad m] in
 /-- Generate a random value of type `α`. -/
 def rand (α : Type u) [Random m α] [RandomGen g] : RandGT g m α := Random.random
 
+variable {m : Type u → Type w} [Monad m] in
 /-- Generate a random value of type `α` between `x` and `y` inclusive. -/
 def randBound (α : Type u)
     [Preorder α] [BoundedRandom m α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
     RandGT g m {a // lo ≤ a ∧ a ≤ hi} :=
   (BoundedRandom.randomR lo hi h : RandGT g _ _)
 
+variable {m : Type → Type w} [Monad m] in
 /-- Generate a random `Fin`. -/
 def randFin {n : Nat} [NeZero n] [RandomGen g] : RandGT g m (Fin n) :=
   fun ⟨g⟩ ↦ pure <| randNat g 0 (n - 1) |>.map (Fin.ofNat n) ULift.up
 
+variable {m : Type → Type w} [Monad m] in
 instance {n : Nat} [NeZero n] : Random m (Fin n) where
   random := randFin
 
+variable {m : Type → Type w} [Monad m] in
 /-- Generate a random `Bool`. -/
 def randBool [RandomGen g] : RandGT g m Bool :=
   return (← rand (Fin 2)) == 1
 
+variable {m : Type → Type w} [Monad m] in
 instance : Random m Bool where
   random := randBool
 
+variable {m : Type u → Type w} {m' : Type (max u v) → Type w'} in
 instance {α : Type u} [ULiftable m m'] [Random m α] : Random m' (ULift.{v} α) where
   random := ULiftable.up random
 
+variable {m : Type → Type w} [Monad m] in
 instance : BoundedRandom m Nat where
   randomR lo hi h _ := do
     let z ← rand (Fin (hi - lo + 1))
@@ -123,6 +131,7 @@ instance : BoundedRandom m Nat where
       Nat.add_le_of_le_sub' h (Nat.le_of_lt_add_one z.isLt)
     ⟩
 
+variable {m : Type → Type w} [Monad m] in
 instance : BoundedRandom m Int where
   randomR lo hi h _ := do
     let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs <| hi - lo) (Nat.zero_le _)
@@ -133,11 +142,13 @@ instance : BoundedRandom m Int where
         (Int.ofNat_le.mpr h2)
         (le_of_eq <| Int.natAbs_of_nonneg <| Int.sub_nonneg_of_le h)⟩
 
+variable {m : Type → Type w} [Monad m] in
 instance {n : Nat} : BoundedRandom m (Fin n) where
   randomR lo hi h _ := do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
 
+variable {m : Type u → Type w} {m' : Type (max u v) → Type w'} in
 instance {α : Type u} [Preorder α] [ULiftable m m'] [BoundedRandom m α] [Monad m'] :
     BoundedRandom m' (ULift.{v} α) where
   randomR lo hi h := do

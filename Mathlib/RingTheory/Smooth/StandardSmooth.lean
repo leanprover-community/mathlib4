@@ -133,7 +133,7 @@ lemma IsStandardSmoothOfRelativeDimension.of_algEquiv {T : Type*} [CommRing T] [
 
 section Composition
 
-variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (R S) (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 lemma IsStandardSmooth.trans [IsStandardSmooth R S] [IsStandardSmooth S T] :
     IsStandardSmooth R T where
@@ -164,7 +164,7 @@ lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalizat
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T]
+variable (T : Type*) [CommRing T] [Algebra R T]
 
 instance IsStandardSmooth.baseChange [IsStandardSmooth R S] :
     IsStandardSmooth T (T ⊗[R] S) where

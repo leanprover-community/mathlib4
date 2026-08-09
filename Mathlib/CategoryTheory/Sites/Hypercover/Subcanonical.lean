@@ -36,7 +36,9 @@ noncomputable def glueMorphisms {S T : C} (E : J.OneHypercover S) (f : ∀ i, E.
   (E.isStronglySheafFor
     (Subcanonical.isSheaf_of_isRepresentable (CategoryTheory.yoneda.obj T))).amalgamate f h
 
-variable {S T : C} (E : J.OneHypercover S) (f : ∀ i, E.X i ⟶ T)
+universe w
+
+variable {S T : C} (E : J.OneHypercover.{w} S) (f : ∀ i, E.X i ⟶ T)
   (h : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.p₁ k ≫ f i = E.p₂ k ≫ f j)
 
 @[reassoc (attr := simp)]

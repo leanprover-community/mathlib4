@@ -35,7 +35,9 @@ open CategoryTheory Limits TopologicalSpace Opens
 
 noncomputable section
 
-variable (X : TopCat)
+universe u
+
+variable (X : TopCat.{u})
 
 open TopCat
 

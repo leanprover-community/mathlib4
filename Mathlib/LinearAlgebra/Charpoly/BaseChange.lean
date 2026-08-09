@@ -15,9 +15,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 public section
 
-variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
-    (A) [CommRing A] [Algebra R A]
+    (A : Type*) [CommRing A] [Algebra R A]
 
 @[simp]
 lemma LinearMap.charpoly_baseChange :

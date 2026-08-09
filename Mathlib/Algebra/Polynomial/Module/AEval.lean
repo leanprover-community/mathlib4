@@ -45,8 +45,8 @@ instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [A
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
     AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
 
-variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
-  [Module R M] [IsScalarTower R A M]
+variable {R A M : Type*} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M]
+  [Module A M] [Module R M] [IsScalarTower R A M]
 
 namespace AEval
 

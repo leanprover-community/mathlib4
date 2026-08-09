@@ -21,7 +21,7 @@ open CategoryTheory Limits
 
 namespace SSet
 
-variable {J : Type*} [Category J] [HasColimitsOfShape J (Type u)]
+variable {J : Type*} [Category* J] [HasColimitsOfShape J (Type u)]
   {F : J ⥤ SSet.{u}} {c : Cocone F} (hc : IsColimit c)
 
 section

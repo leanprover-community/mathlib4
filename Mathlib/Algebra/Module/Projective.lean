@@ -214,7 +214,8 @@ end Semiring
 section Ring
 
 variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
+variable {R₀ : Type*} {M : Type*} {N : Type*} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M]
+  [Module R₀ M] [Module R M]
 variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A variant of `Projective.iff_split` allowing for a more flexible selection of the universe

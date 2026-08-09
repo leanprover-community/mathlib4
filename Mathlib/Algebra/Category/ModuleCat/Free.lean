@@ -34,7 +34,9 @@ open CategoryTheory Module
 
 namespace ModuleCat
 
-variable {ι ι' R : Type*} [Ring R] {S : ShortComplex (ModuleCat R)}
+universe w
+
+variable {ι ι' R : Type*} [Ring R] {S : ShortComplex (ModuleCat.{w} R)}
   (hS : S.Exact) (hS' : S.ShortExact) {v : ι → S.X₁}
 
 open CategoryTheory Submodule Set

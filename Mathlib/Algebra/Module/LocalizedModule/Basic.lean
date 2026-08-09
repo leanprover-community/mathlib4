@@ -1152,7 +1152,7 @@ theorem mk'_surjective : Function.Surjective (Function.uncurry <| mk' f : M × S
 
 section liftOfLE
 
-variable {M₁ M₂} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 variable (S₁ S₂ : Submonoid R) (h : S₁ ≤ S₂) (f₁ : M →ₗ[R] M₁) (f₂ : M →ₗ[R] M₂)
 variable [IsLocalizedModule S₁ f₁] [IsLocalizedModule S₂ f₂]
 
@@ -1219,7 +1219,7 @@ lemma injective_of_map_zero {M M' N : Type*} [AddCommGroup M] [AddCommGroup M']
   apply H
   simpa [sub_eq_zero]
 
-variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
+variable {N N' : Type*} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]
 
 /-- A linear map `M →ₗ[R] N` gives a map between localized modules `Mₛ →ₗ[R] Nₛ`. -/
@@ -1284,9 +1284,9 @@ lemma iso_localizedModule_eq_refl : iso S (mkLinearMap S M) = refl R (LocalizedM
   rw [← toLinearMap_inj, univ (iso S f) ((eq_toLinearMap_symm_comp f f).1 (iso_symm_comp S f).symm)]
   exact Eq.symm <| univ (refl R (LocalizedModule S M)) (by simp)
 
-variable {M₀ M₀'} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
+variable {M₀ M₀' : Type*} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
 variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
-variable {M₁ M₁'} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
+variable {M₁ M₁' : Type*} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 
 /-- Formula for `IsLocalizedModule.map` when each localized module is a `LocalizedModule`. -/
@@ -1310,11 +1310,11 @@ end IsLocalizedModule
 
 namespace IsLocalizedModule
 
-variable {M₀ M₀'} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
+variable {M₀ M₀' : Type*} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
 variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
-variable {M₁ M₁'} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
+variable {M₁ M₁' : Type*} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
-variable {M₂ M₂'} [AddCommMonoid M₂] [AddCommMonoid M₂'] [Module R M₂] [Module R M₂']
+variable {M₂ M₂' : Type*} [AddCommMonoid M₂] [AddCommMonoid M₂'] [Module R M₂] [Module R M₂']
 variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
 
 /-- Localization of composition is the composition of localization -/

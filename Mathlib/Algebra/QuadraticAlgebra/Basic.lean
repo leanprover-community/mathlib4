@@ -304,7 +304,7 @@ end norm
 
 section field
 
-variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ 2 ≠ a + b * r)]
+variable [Field K] {a b : K} [Hab : Fact (∀ r, r ^ (2 : ℕ) ≠ a + b * r)]
 
 lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra K a b} :
     norm z = 0 ↔ z = 0 := by

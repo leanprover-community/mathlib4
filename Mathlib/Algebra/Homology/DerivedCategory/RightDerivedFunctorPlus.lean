@@ -22,12 +22,14 @@ the definiton of `Functor.rightDerived`
 
 @[expose] public section
 
+universe w w'
+
 namespace CategoryTheory
 
 namespace Functor
 
 variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
-  [HasDerivedCategory C] [HasDerivedCategory D]
+  [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D]
   (F : C ⥤ D) [F.Additive] [EnoughInjectives C]
 
 /-- The right derived functor `DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`

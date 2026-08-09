@@ -855,7 +855,8 @@ variable (R : Type*) [Semiring R] [MulSemiringAction M R]
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
-variable {R S N'}
+variable {R S}
+variable {N' : Type*}
 variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}

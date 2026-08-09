@@ -24,7 +24,7 @@ Properly develop the material in the context of lattices.
 open LinearMap (BilinForm)
 open Module
 
-variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
+variable {R S M : Type*} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
 
 namespace LinearMap

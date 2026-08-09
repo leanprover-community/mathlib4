@@ -32,7 +32,7 @@ variable {C D : Type*} [Category* C] [Category* D]
   {K : GrothendieckTopology D}
   (Φ : Point.{w} K) (F : C ⥤ D) [RepresentablyFlat F] {J : GrothendieckTopology C}
   (hF : CoverPreserving J K F)
-  [InitiallySmall (F ⋙ Φ.fiber).Elements]
+  [InitiallySmall.{w} (F ⋙ Φ.fiber).Elements]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then

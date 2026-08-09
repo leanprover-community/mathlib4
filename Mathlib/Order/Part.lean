@@ -48,7 +48,9 @@ lemma Antitone.partMap (hg : Antitone g) : Antitone fun x ↦ (g x).map f := by
 end map
 
 section seq
-variable {β γ : Type _} {f : α → Part (β → γ)} {g : α → Part β}
+universe v
+
+variable {β γ : Type v} {f : α → Part (β → γ)} {g : α → Part β}
 
 lemma Monotone.partSeq (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x <*> g x := by
   simpa only [seq_eq_bind_map] using! hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap

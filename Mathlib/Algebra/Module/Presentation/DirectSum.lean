@@ -21,7 +21,7 @@ a presentation of `ι →₀ M`.
 
 @[expose] public section
 
-universe w' w₀ w₁ w v u
+universe w' w₀ w₁ w₀' w₁' w v u
 
 namespace Module
 
@@ -123,7 +123,7 @@ lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (p
 section
 
 variable {N : Type v} [AddCommGroup N] [Module A N]
-  (pres : Presentation A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
+  (pres : Presentation.{w₀', w₁'} A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
 
 /-- The obvious presentation of the module `ι →₀ N` that is deduced from a presentation
 of the module `N`. -/

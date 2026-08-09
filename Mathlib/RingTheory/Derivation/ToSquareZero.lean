@@ -68,7 +68,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
     simp only [this]
     ring
 
-variable (hI : I ^ 2 = ⊥)
+variable (hI : I ^ (2 : ℕ) = ⊥)
 
 theorem derivationToSquareZeroOfLift_apply [IsScalarTower R A B] (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) (x : A) :

@@ -80,7 +80,9 @@ attribute [instance] MonomialOrder.addCommMonoidSyn MonomialOrder.linearOrderSyn
 
 namespace MonomialOrder
 
-variable {σ : Type*} (m : MonomialOrder σ)
+universe u
+
+variable {σ : Type*} (m : MonomialOrder.{_, u} σ)
 
 @[deprecated (since := "2026-07-07")] alias acm := MonomialOrder.addCommMonoidSyn
 

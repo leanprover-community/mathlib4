@@ -75,7 +75,7 @@ protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R
 
 end Equiv
 
-variable (A) [Semiring A] [Module R A] [AddCommMonoid α] [AddCommMonoid β] [Module A β]
+variable (A : Type*) [Semiring A] [Module R A] [AddCommMonoid α] [AddCommMonoid β] [Module A β]
 
 /-- Transport a module instance via an isomorphism of the underlying abelian groups.
 This has better definitional properties than `Equiv.module` since here

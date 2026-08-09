@@ -34,7 +34,7 @@ public import Mathlib.RingTheory.Localization.Defs
 
 @[expose] public section
 
-universe w u v
+universe w u v w' w''
 
 open TensorProduct MvPolynomial
 
@@ -150,7 +150,7 @@ def localization (P : Extension.{w} R S) : Extension R S' where
 
 end Localization
 
-variable {T} [CommRing T] [Algebra R T]
+variable {T : Type*} [CommRing T] [Algebra R T]
 
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
@@ -183,8 +183,9 @@ instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
 
 end Construction
 
-variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Extension R' S')
-variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Extension R'' S'')
+variable {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Extension.{w'} R' S')
+variable {R'' S'' : Type*} [CommRing R''] [CommRing S''] [Algebra R'' S'']
+  (P'' : Extension.{w''} R'' S'')
 
 section Hom
 

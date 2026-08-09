@@ -380,7 +380,7 @@ namespace PresheafedSpace.IsOpenImmersion
 
 section ToScheme
 
-variable {X : PresheafedSpace CommRingCat.{u}} (Y : Scheme.{u})
+variable {X : PresheafedSpace.{u, _, u} CommRingCat.{u}} (Y : Scheme.{u})
 variable (f : X ⟶ Y.toPresheafedSpace) [H : PresheafedSpace.IsOpenImmersion f]
 
 set_option backward.isDefEq.respectTransparency false in

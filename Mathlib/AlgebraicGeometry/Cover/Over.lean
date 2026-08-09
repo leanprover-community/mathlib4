@@ -22,7 +22,7 @@ We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 @[expose] public section
 
-universe v u
+universe v u w
 
 noncomputable section
 
@@ -61,7 +61,7 @@ instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 section
 
-variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
+variable {X W : Scheme.{u}} (𝒰 : X.Cover.{v} (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
   [𝒰.Over S] [f.IsOver S]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -196,7 +196,8 @@ instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
 end
 
 variable [P.IsStableUnderComposition]
-variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
+variable {X : Scheme.{u}} (𝒰 : X.Cover.{v} (precoverage P))
+  (𝒱 : ∀ x, (𝒰.X x).Cover.{w} (precoverage P))
   [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S]
 
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=

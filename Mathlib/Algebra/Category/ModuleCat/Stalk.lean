@@ -26,13 +26,16 @@ of the scalar action and `TopCat.Presheaf.germ`.
 
 open CategoryTheory LinearMap Opposite TopologicalSpace
 
-universe w₀ w u v
+universe w₀ w u v w' v'
 
 namespace CategoryTheory.Limits
 
 open IsFiltered
 
-variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C ⥤ Ab)
+section Smul
+
+variable {C : Type w₀} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat.{w'})
+    (M : C ⥤ Ab.{v'})
     [∀ i, Module (R.obj i) (M.obj i)]
     (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
@@ -56,6 +59,13 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
         (rightToMax U₁ V) (rightToMax U₂ V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
     simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
+
+end Smul
+
+variable {C : Type w₀} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat.{max w₀ w})
+    (M : C ⥤ Ab.{max w₀ v})
+    [∀ i, Module (R.obj i) (M.obj i)]
+    (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

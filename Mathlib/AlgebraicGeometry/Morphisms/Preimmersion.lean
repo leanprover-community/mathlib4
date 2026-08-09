@@ -111,7 +111,7 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   exact IsEmbedding.subtypeVal.comp ((TopCat.pullbackHomeoPreimage _ f.continuous _
     g.isEmbedding).isEmbedding.comp this)
 
-variable {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance [IsPreimmersion g] : IsPreimmersion (Limits.pullback.fst f g) :=

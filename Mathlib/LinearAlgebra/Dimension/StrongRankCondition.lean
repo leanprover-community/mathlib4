@@ -548,7 +548,7 @@ protected theorem _root_.Submodule.finrank_eq_rank [Module.Finite R M] (N : Subm
 
 end Module
 
-variable {M'} [AddCommMonoid M'] [Module R M']
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=

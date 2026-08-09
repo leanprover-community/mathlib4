@@ -50,7 +50,7 @@ noncomputable section
 
 open scoped Topology NNReal
 
-variable {R : Type _} [CommRing R] (f : R → ℝ) {c : ℝ}
+variable {R : Type*} [CommRing R] (f : R → ℝ) {c : ℝ}
 
 section seminormFromBounded
 

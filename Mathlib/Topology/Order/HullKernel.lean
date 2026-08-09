@@ -55,7 +55,7 @@ lower topology, hull-kernel topology, Jacobson topology, structure topology, pri
 
 @[expose] public section
 
-variable {α}
+variable {α : Type*}
 
 open TopologicalSpace
 open Topology

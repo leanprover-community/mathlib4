@@ -30,7 +30,7 @@ open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
 
 namespace AlgebraicGeometry
 
-variable (X : Scheme)
+variable (X : Scheme.{u})
 
 /-- The function field of an irreducible scheme is the local ring at its generic point.
 Despite the name, this is a field only when the scheme is integral. -/

@@ -789,7 +789,7 @@ end Localization
 
 namespace OreLocalization
 
-variable (R) [CommMonoid R] (S : Submonoid R)
+variable (R : Type*) [CommMonoid R] (S : Submonoid R)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
 protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.monoidOf S

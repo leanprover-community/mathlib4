@@ -31,7 +31,9 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+universe u
+
+variable {X Y Z S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- A morphism is scheme-theoretically dominant if its kernel is trivial. -/
 @[mk_iff]

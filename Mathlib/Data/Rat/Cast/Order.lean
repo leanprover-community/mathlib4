@@ -144,7 +144,7 @@ end Rat
 
 namespace NNRat
 
-variable {K} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] {p q : ℚ≥0}
+variable {K : Type*} [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] {p q : ℚ≥0}
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff₀, ← Nat.cast_mul, ← Nat.cast_mul,

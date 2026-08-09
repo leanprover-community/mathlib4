@@ -82,7 +82,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
       AddMemClass.mk_add_mk, sub_mul, neg_sub]
     ring
 
-variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
+variable (hf' : (RingHom.ker (algebraMap P S)) ^ (2 : ℕ) = ⊥)
   (hg : (IsScalarTower.toAlgHom R P S).comp g = AlgHom.id R S)
 include hf' hg
 
@@ -148,7 +148,7 @@ lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algeb
   exact congr_arg Subtype.val (LinearMap.congr_fun hl.symm ⟨x - y, by simp [RingHom.mem_ker, h]⟩)
 
 variable [Algebra R S] [IsScalarTower R P S]
-variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
+variable (hf' : (RingHom.ker (algebraMap P S)) ^ (2 : ℕ) = ⊥)
 include hf'
 
 /--
@@ -213,7 +213,7 @@ lemma toAlgHom_comp_sectionOfRetractionKerToTensor :
 end ofRetraction
 
 variable [Algebra R S] [IsScalarTower R P S]
-variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥) (hf : Surjective (algebraMap P S))
+variable (hf' : (RingHom.ker (algebraMap P S)) ^ (2 : ℕ) = ⊥) (hf : Surjective (algebraMap P S))
 
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,

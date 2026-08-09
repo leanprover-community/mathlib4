@@ -306,7 +306,7 @@ lemma ρ_mul (g1 g2 : G) : A.ρ (g1 * g2) = A.ρ g1 ∘ₗ A.ρ g2 := by ext; si
 section Commutative
 
 variable {G : Type v} [CommMonoid G]
-variable (A : Rep k G)
+variable (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
 morphism `A ⟶ A` for any `g : G`. -/
@@ -410,7 +410,7 @@ theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
     (leftRegularHom A x).hom (.single g r) = r • A.ρ g x := by
   simp [leftRegularHom]
 
-variable (A : Rep k G)
+variable (A : Rep.{w} k G)
 
 /-- Given a `k`-linear `G`-representation `(V, ρ)`, this is the representation defined by
 restricting `ρ` to a `G`-invariant `k`-submodule of `V`. -/
@@ -897,7 +897,7 @@ noncomputable section Finsupp
 
 open Finsupp
 
-variable (α : Type u') (A : Rep k G)
+variable (α : Type u') (A : Rep.{w'} k G)
 
 variable {k G} in
 /-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
@@ -912,18 +912,21 @@ abbrev free : Rep k G := Rep.of (Representation.free k G α)
 
 variable {α}
 
+variable (A : Rep.{max u v u'} k G) in
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
 abbrev freeLift (f : α → A) :
     free k G α ⟶ A := Rep.ofHom (Representation.freeLift A.ρ f)
 
 variable (α) in
+variable (A : Rep.{max u v u'} k G) in
 /-- The natural linear equivalence between functions `α → A` and representation morphisms
 `(α →₀ k[G]) ⟶ A`. -/
 abbrev freeLiftLEquiv :
     (free k G α ⟶ A) ≃ₗ[k] (α → A) :=
   homLinearEquiv _ _ ≪≫ₗ Representation.freeLiftLEquiv A.ρ α
 
+variable (A : Rep.{max u v u'} k G) in
 lemma free_ext (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (.single 1 1)) = g.hom (single i (.single 1 1))) : f = g := by
   exact (freeLiftLEquiv k G α A).injective (funext_iff.2 h)
