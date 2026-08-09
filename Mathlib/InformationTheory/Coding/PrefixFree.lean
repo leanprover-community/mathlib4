@@ -51,7 +51,7 @@ lemma PrefixFree.mono {S T : Set (List α)} (hS : PrefixFree S) (hTS : T ⊆ S) 
   fun _ hx _ hy ↦ hS _ (hTS hx) _ (hTS hy)
 
 /-- A prefix-free code not containing the empty word is uniquely decodable. -/
-theorem PrefixFree.uniquely_decodable {S : Set (List α)} (hS : PrefixFree S) (hε : [] ∉ S) :
+theorem PrefixFree.uniquelyDecodable {S : Set (List α)} (hS : PrefixFree S) (hε : [] ∉ S) :
     UniquelyDecodable S := by
   intro L₁ L₂ hL₁ hL₂ hflatten
   induction L₁ generalizing L₂ with
@@ -87,7 +87,7 @@ theorem PrefixFree.uniquely_decodable {S : Set (List α)} (hS : PrefixFree S) (h
           · exact List.append_cancel_left hflatten
 
 /-- A nontrivial finite prefix-free code is uniquely decodable. -/
-theorem PrefixFree.uniquely_decodable_of_nontrivial {S : Finset (List α)}
+theorem PrefixFree.uniquelyDecodable_of_nontrivial {S : Finset (List α)}
     (hS : PrefixFree (S : Set (List α))) (hS' : S.Nontrivial) :
     UniquelyDecodable (S : Set (List α)) := by
   apply hS.uniquely_decodable
