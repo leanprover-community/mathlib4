@@ -456,7 +456,7 @@ theorem Convex.openSegment_intrinsicInterior_intrinsicClosure_subset_intrinsicIn
     openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 C := by
   rcases mem_intrinsicInterior.1 hx with ⟨xA, hxA, rfl⟩
   rcases mem_intrinsicClosure.1 hy with ⟨yA, hyA, rfl⟩
-  letI : Nonempty (affineSpan 𝕜 C) := ⟨xA⟩
+  let : Nonempty (affineSpan 𝕜 C) := ⟨xA⟩
   let A := (affineSpan 𝕜 C).subtype.comp (AffineEquiv.vaddConst 𝕜 xA).toAffineMap
   rw [intrinsicInterior, ← (vaddConst xA).image_interior_preimage_comp]
   intro _ hz
