@@ -57,6 +57,7 @@ theorem altitude_def {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma altitude_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).altitude = s.altitude ∘ e.symm := by
   ext i

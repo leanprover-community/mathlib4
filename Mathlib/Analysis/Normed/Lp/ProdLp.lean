@@ -218,7 +218,6 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
 from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
-  classical
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [prod_edist_eq_card, edist_comm]
   · simp only [prod_edist_eq_sup, edist_comm]
@@ -770,6 +769,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
 
 section L1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_norm_eq_of_L1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖x.fst‖ + ‖x.snd‖ := by
   simp [prod_norm_eq_add]
@@ -790,6 +790,7 @@ theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     push_cast
     exact prod_dist_eq_of_L1 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     edist x y = edist x.fst y.fst + edist x.snd y.snd := by
   simp [prod_edist_eq_add]
@@ -1195,8 +1196,6 @@ def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
     WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
   __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
   norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
-
-@[deprecated (since := "2025-12-22")] alias _root_.LinearIsometry.withLpProdCongr := withLpProdCongr
 
 /-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
 def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where

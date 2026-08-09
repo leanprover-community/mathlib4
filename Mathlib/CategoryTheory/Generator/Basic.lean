@@ -105,7 +105,6 @@ section Equivalence
 
 variable {P}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsSeparating.of_equivalence
     (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
@@ -737,6 +736,7 @@ lemma isCoseparator_of_isLimit_fan {β : Type w} {f : β → C}
   obtain ⟨b⟩ := h
   classical simpa using huv (hc.lift (Fan.mk _ (Pi.single b g))) =≫ c.proj b
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isCoseparator_iff_of_isLimit_fan {β : Type w} {f : β → C}
     {c : Fan f} (hc : IsLimit c) :
     IsCoseparator c.pt ↔ ObjectProperty.IsCoseparating (.ofObj f) := by

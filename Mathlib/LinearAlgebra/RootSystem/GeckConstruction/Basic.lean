@@ -283,7 +283,6 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
 
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
     ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
-  classical
   calc ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
                       _ = e i * (f j * ω b) - f j * (e i * ω b) := by rw [mul_assoc, mul_assoc]
                       _ = e i * (ω b * e j) - f j * (ω b * f i) := by rw [← ω_mul_e, ← ω_mul_f]

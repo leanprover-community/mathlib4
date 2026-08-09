@@ -250,6 +250,7 @@ theorem let_defeq_test (b : Nat) (eq : 1 = b) (f : (n : Nat) → n = 1 → Nat) 
   exact test_sorry
 
 -- Test definitional equalities that get broken by rewriting.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -260,6 +261,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)
@@ -272,6 +274,7 @@ example (b : Bool) (h : true = b)
   exact test_sorry
 
 -- As above.
+set_option backward.isDefEq.respectTransparency false in
 example (b : Bool) (h : true = b)
     (s : Bool → Prop)
     (q : (c : Bool) → s c → Prop)

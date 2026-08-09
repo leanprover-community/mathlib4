@@ -122,6 +122,7 @@ section Module
 
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If an `R`-algebra `A` is epi, then the scalar multiplication `A ⊗[R] M → M` is injective, for
 any `A`-module `M`. -/
 lemma injective_lift_lsmul :

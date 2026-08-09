@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.RingTheory.Norm.Basic
 
@@ -218,6 +217,7 @@ def autAdjoinRootXPowSubC :
 
 variable {n}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma autAdjoinRootXPowSubC_root (η) :
     autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]

@@ -143,6 +143,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]

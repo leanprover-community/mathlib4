@@ -53,7 +53,7 @@ public section
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
@@ -100,6 +100,7 @@ lemma HasExactColimitsOfShape.domain_of_functor {D : Type*} (J : Type*) [Categor
       exact Cone.ext ((preservesColimitNatIso F).symm.app _)
         fun i ↦ (preservesColimitNatIso F).inv.naturality _ } } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 /--
@@ -517,7 +518,6 @@ lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProd
 
 section EpiMono
 
-open Functor
 
 section
 

@@ -1226,7 +1226,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       obtain ⟨i, hi⟩ := mem_iUnion.1 <| ht' hx₂
       refine ⟨i, ?_, hi⟩
       by_contra h
-      simp only [mem_setOf_eq, not_lt] at h
+      simp only [mem_ofPred_eq, not_lt] at h
       exact mem_iInter₂.1 hx₁ i h hi
     have hle₂ : ν (tᶜ ∩ s) ≤ ∑' (n : {k | ν (t' k) < μ (t' k)}), ν (t' n) :=
       (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
@@ -1240,11 +1240,11 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         intro n hn; simpa
       · rw [Subtype.forall]
         intro n hn
-        rw [mem_setOf_eq] at hn
+        rw [mem_ofPred_eq] at hn
         simp [le_of_lt hn]
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
-      rw [mem_setOf_eq] at hk₁ hk₂
+      rw [mem_ofPred_eq] at hk₁ hk₂
       exact False.elim <| hk₂.not_ge hk₁
 
 @[simp]

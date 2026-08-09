@@ -47,6 +47,7 @@ def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} (precoverage P) X.left) 
     Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOver S) (fun i ↦ (𝒰.f i).asOver S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The presieve defined by a `P`-cover of `S`-schemes with `Q`. -/
 def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S]
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
@@ -229,6 +230,7 @@ alias smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology :=
 
 variable {P Q}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
       ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left),
@@ -257,6 +259,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     · rintro - - ⟨i⟩
       exact hf i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty P] (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),

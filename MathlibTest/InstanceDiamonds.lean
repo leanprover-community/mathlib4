@@ -66,6 +66,7 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 
@@ -153,7 +154,7 @@ the domain is a group. -/
 example {k : Type _} [Semiring k] [Nontrivial kˣ] :
     (Finsupp.comapSMul : SMul kˣ (kˣ →₀ k)) ≠ Finsupp.smulZeroClass.toSMul := by
   obtain ⟨u : kˣ, hu⟩ := exists_ne (1 : kˣ)
-  haveI : Nontrivial k := Units.val_injective.nontrivial
+  have : Nontrivial k := Units.val_injective.nontrivial
   intro h
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u

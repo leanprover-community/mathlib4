@@ -199,7 +199,6 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
 
 lemma EssFiniteType.of_comp [h : EssFiniteType R T] : EssFiniteType S T := by
   rw [essFiniteType_iff] at h ⊢
-  classical
   obtain ⟨σ, hσ⟩ := h
   use σ
   intro x
