@@ -9,6 +9,7 @@ public import Mathlib.Data.Finite.Defs
 public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
+# The category of finite groups
 
 ## Main definitions and results
 

@@ -8,14 +8,14 @@ module
 public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
-## Counit morphisms for multivariate polynomials
+# Counit morphisms for multivariate polynomials
 
 One may consider the ring of multivariate polynomials `MvPolynomial A R` with coefficients in `R`
 and variables indexed by `A`. If `A` is not just a type, but an algebra over `R`,
 then there is a natural surjective algebra homomorphism `MvPolynomial A R →ₐ[R] A`
 obtained by `X a ↦ a`.
 
-### Main declarations
+## Main declarations
 
 * `MvPolynomial.ACounit R A` is the natural surjective algebra homomorphism
   `MvPolynomial A R →ₐ[R] A` obtained by `X a ↦ a`
