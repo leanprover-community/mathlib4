@@ -13,8 +13,6 @@ public import Mathlib.Data.List.Pairwise
 
 This file allows to state that all propositions in a list are equivalent. It is used by
 `Mathlib/Tactic/Tfae.lean`.
-`TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `l.Pairwise (· ↔ ·)`, see
-`List.tfae_iff_pairwise`.
 -/
 
 @[expose] public section
