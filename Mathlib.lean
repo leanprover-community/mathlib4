@@ -2235,6 +2235,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Module.TransferInstance
@@ -2279,7 +2280,6 @@ public import Mathlib.Analysis.Normed.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Ring.WithAbs
-public import Mathlib.Analysis.Normed.Seminorm.Basic
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
