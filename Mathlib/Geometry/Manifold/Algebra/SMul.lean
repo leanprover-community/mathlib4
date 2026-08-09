@@ -322,7 +322,14 @@ end ContMDiffConstSMul
 
 section Diffeomorph
 
-variable [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'}
+  {G : Type*} [TopologicalSpace G] [ChartedSpace H G]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
+  [Group G] [MulAction G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M] (g : G)
 
 variable (I I' n) in
 /-- The diffeomorphism given by scalar multiplication by an element of a group `G` acting
