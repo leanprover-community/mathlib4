@@ -5,7 +5,7 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 
 /-!
@@ -25,8 +25,8 @@ empty word is uniquely decodable.
   the empty word is the singleton containing the empty word.
 * `InformationTheory.PrefixFree.uniquelyDecodable`: a prefix-free code not containing the empty
   word is uniquely decodable.
-* `InformationTheory.PrefixFree.uniquelyDecodable_of_nontrivial`: a nontrivial finite prefix-free
-  code is uniquely decodable.
+* `InformationTheory.PrefixFree.uniquelyDecodable_of_nontrivial`: a nontrivial prefix-free code is
+  uniquely decodable.
 -/
 
 @[expose] public section
@@ -83,14 +83,10 @@ theorem PrefixFree.uniquelyDecodable {S : Set (List α)} (hS : PrefixFree S) (h�
       · grind
       · exact List.append_cancel_left hflatten
 
-/-- A nontrivial finite prefix-free code is uniquely decodable. -/
-theorem PrefixFree.uniquelyDecodable_of_nontrivial {S : Finset (List α)}
-    (hS : PrefixFree (S : Set (List α))) (hS' : S.Nontrivial) :
-    UniquelyDecodable (S : Set (List α)) := by
-  apply hS.uniquelyDecodable
-  intro hε
-  have hS_eq := hS.eq_singleton_empty_of_empty_mem hε
-  rw [Finset.coe_eq_singleton] at hS_eq
-  exact hS'.ne_singleton hS_eq
+/-- A nontrivial prefix-free code is uniquely decodable. -/
+theorem PrefixFree.uniquelyDecodable_of_nontrivial {S : Set (List α)} (hS : PrefixFree S)
+    (hS' : S.Nontrivial) : UniquelyDecodable S :=
+  hS.uniquelyDecodable fun hε ↦
+    hS'.ne_singleton (hS.eq_singleton_empty_of_empty_mem hε)
 
 end InformationTheory
