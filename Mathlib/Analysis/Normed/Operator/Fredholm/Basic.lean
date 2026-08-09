@@ -372,6 +372,10 @@ end DefTFAE
 
 section Constructions
 
+/-!
+## Constructions of Fredholm operators
+-/
+
 theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
     IsFredholm (e : E →L[𝕜] F) where
   isStrictMap := e.isHomeomorph.isStrictMap
