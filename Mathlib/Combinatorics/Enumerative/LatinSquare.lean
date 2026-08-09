@@ -267,88 +267,27 @@ lemma LatinRectangle.row_entry_to_column_entry {k n : Type*} [Fintype k] [Fintyp
   rw [forall_existsUnique_iff] at hrow
   exact hrow
 
-/-- The number of columns that do not contain a given entry x is equal to n-k. -/
+
+
+/-- The number of columns that do c not contain a given entry x is equal to n-k. -/
 lemma LatinRectangle.card_symbolsNotIn_eq {k n : Type*} [Fintype n]
-    [Fintype k] (A : LatinRectangle k n α) (h : Fintype.card k < Fintype.card n) :
+    [Fintype k] (A : LatinRectangle k n α) (_ : Fintype.card k < Fintype.card n) :
   ∀ x, (Finset.card {j : n | x ∈ (symbolsNotIn A) j}) = Fintype.card n - Fintype.card k := by
-    classical
-    intro x
-    let B := symbolsNotIn A
-    set As : Finset (n) := {j | ∃ i, LatinRectangle.col A j i = x} with hA -- column indices with x
-    set Bs : Finset (n) := {j | x ∈ B j} with hB -- column indices without x
-    set Cs : Finset (k) := {i | ∃ j, LatinRectangle.row A i j = x} with hC -- row indices with x
-    set Ds : Finset (k × n) := {(i, j) | A.M i j = x}
-    have h := LatinRectangle.row_entry_to_column_entry A x
-    obtain ⟨f, hf⟩ := h
-    have f_inj : Function.Injective f := by
-      unfold Function.Injective
-      intro a1 a2 h₁
-      have h₁' := h₁.symm
-      have h₁'' := h₁
-      rw [<- hf] at h₁ h₁'
-      rw [h₁''] at h₁'
-      rw [<- h₁'] at h₁
-      have hinj := A.col_injective
-      specialize hinj (f a2)
-      simp only [Function.Injective, Matrix.col] at hinj
-      exact hinj h₁
-    set f' : k ↪ n := ⟨f, f_inj⟩ with hf'
-    have h_Cs_card : Finset.card Cs = Fintype.card k := by
-      unfold Cs
-      obtain ⟨f, hf⟩ := LatinRectangle.row_entry_to_column_entry A x
-      simp [hf]
-    let g : Cs -> As := fun x => ⟨f' x, by
-      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, ↑x, by
-        simp [Matrix.col_apply, hf]
-        rfl⟩⟩
-    have ginj : Function.Injective g := by
-      simp [Function.Injective,g]
-    have gsurj : Function.Surjective g := by
-      have As_is_f_image : As = Finset.image f Finset.univ := by
-        ext b
-        simp [As, Finset.mem_image, Matrix.col_apply, hf]
-      unfold Function.Surjective
-      unfold g
-      simp only [Subtype.exists, Subtype.forall, Subtype.mk.injEq, exists_prop]
-      rw [As_is_f_image]
-      simp only [f']
-      intro x'
-      rw [Finset.mem_image]
-      intro ha
-      have h := A.row_injective
-      obtain ⟨a, ha⟩ := ha
-      use a
-      refine ⟨ ?_, ha.2 ⟩
-      exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, (h a).2 x⟩
-    have gbij : Function.Bijective g := ⟨ginj,gsurj⟩
-    let As_to_Cs : Cs ≃ As := Equiv.ofBijective g gbij
-    have h_As_card : Finset.card As = Fintype.card k := by
-      rw [<- h_Cs_card]
-      exact Finset.card_eq_of_equiv As_to_Cs.symm
-    have h_intersect : As ∩ Bs = ∅ := by
-      ext a
-      simp only [Finset.mem_inter, Matrix.col_apply, symbolsNotIn, Finset.mem_sdiff,
-                 Finset.mem_univ, Finset.mem_image, true_and, not_exists, Finset.mem_filter,
-                 Finset.notMem_empty, iff_false, not_and, not_forall, Decidable.not_not, As, Bs, B]
-      intro haAs
-      have hInA : ∃ i, A.col a i = x := (Finset.mem_filter.mp haAs).2
-      grind
-    have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by
-      have hunion : As ∪ Bs = Finset.univ := by
-        ext a
-        simp only [Finset.mem_union, Finset.mem_univ, iff_true]
-        by_cases h : ∃ i, A.col a i = x
-        · exact Or.inl (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩)
-        · exact Or.inr (Finset.mem_filter.mpr ⟨Finset.mem_univ _, by
-            simp only [symbolsNotIn, Finset.mem_sdiff, Finset.mem_univ, Finset.mem_image,
-                       Matrix.col_apply, true_and, not_exists, B]
-            simp only [Matrix.col_apply, not_exists] at h
-            exact h
-            ⟩)
-      rw [hunion, Finset.card_univ]
-    have h_card := Finset.card_union As Bs
-    simp [h_union_card, h_As_card, h_intersect] at h_card
-    lia
+  classical
+  intro x
+  obtain ⟨f, hf⟩ := A.row_entry_to_column_entry x
+  have h₁ : Finset.filter (fun j => x ∈ (symbolsNotIn A) j) Finset.univ =
+      (Finset.image f Finset.univ)ᶜ := by
+    ext j
+    simp [symbolsNotIn, hf, eq_comm]
+  have hf_inj : Function.Injective f := by
+    intro a₁ a₂ heq
+    have ha₁ : A.M a₁ (f a₂) = x := by
+      rw [←heq]
+      exact hf.mpr rfl
+    have ha₂ : A.M a₂ (f a₂) = x := hf.mpr rfl
+    exact A.col_injective (f a₂) (ha₁.trans ha₂.symm)
+  rw [h₁, Finset.card_compl, Finset.card_image_of_injective Finset.univ hf_inj, Finset.card_univ]
 
 
 open Classical in
