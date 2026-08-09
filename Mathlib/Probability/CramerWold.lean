@@ -32,19 +32,18 @@ public section
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 
-variable {Ω : Type*} [MeasurableSpace Ω] {P : Measure Ω} [IsProbabilityMeasure P]
-  {Ω' : Type*} [MeasurableSpace Ω'] {Q : Measure Ω'} [IsProbabilityMeasure Q]
-  {X : Ω' → E} {Xn : ℕ → Ω → E}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
+  {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {P' : Measure Ω'} [IsProbabilityMeasure P']
 
 lemma tendsto_charFun_of_tendsto_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
-  (hconv : ∀ t : E, TendstoInDistribution (⟪Xn · ·, t⟫) atTop (⟪X ·, t⟫) (fun _ ↦ P) Q) (t : E) :
-  Tendsto (fun n ↦ charFun (P.map (Xn n)) t) atTop (𝓝 (charFun (Q.map X) t)) := by
+  (hconv : ∀ t : E, TendstoInDistribution (⟪Xn · ·, t⟫) atTop (⟪X ·, t⟫) (fun _ ↦ P) P') (t : E) :
+  Tendsto (fun n ↦ charFun (P.map (Xn n)) t) atTop (𝓝 (charFun (P'.map X) t)) := by
   let f : ℝ →ᵇ ℂ := innerProbChar (1 : ℝ)
   convert (ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ).mp (hconv t).tendsto
     (innerProbChar (1 : ℝ)) using 1
   · ext n
     exact charFun_map_eq_integral_map_inner P (hXn n) t
-  · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner Q hX t)
+  · exact congr_arg 𝓝 (charFun_map_eq_integral_map_inner P' hX t)
 
 variable [FiniteDimensional ℝ E]
 
@@ -54,8 +53,8 @@ Convergence in distribution of all scalar projections of a sequence of
 random variables in a finite-dimensional real inner product space implies the
 convergence in distribution of the sequence itself. -/
 theorem tendstoInDistribution_of_inner (hX : Measurable X) (hXn : ∀ n, Measurable (Xn n))
-    (h : ∀ t, TendstoInDistribution (⟪Xn · ·, t⟫) atTop (⟪X ·, t⟫) (fun _ ↦ P) Q) :
-    TendstoInDistribution Xn atTop X (fun _ ↦ P) Q where
+    (h : ∀ t, TendstoInDistribution (⟪Xn · ·, t⟫) atTop (⟪X ·, t⟫) (fun _ ↦ P) P') :
+    TendstoInDistribution Xn atTop X (fun _ ↦ P) P' where
   forall_aemeasurable n := (hXn n).aemeasurable
   tendsto :=
     ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr (tendsto_charFun_of_tendsto_inner hX hXn h)
