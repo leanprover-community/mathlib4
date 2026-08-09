@@ -154,7 +154,6 @@ theorem IsCountablyCompact.elim_finite_subcover_image (hA : IsCountablyCompact A
     (hAU : A ⊆ ⋃ i ∈ b, U i) : ∃ t ⊆ b, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
   have := hb.to_subtype
   obtain ⟨t, ht⟩ := hA.elim_finite_subcover (fun (i : b) ↦ hUo i i.prop) (by simpa using hAU)
-  classical
   simp only [Subtype.forall', biUnion_eq_iUnion] at hUo hAU
   replace hb := hb.to_subtype
   obtain ⟨d, hd⟩ := hA.elim_finite_subcover hUo hAU
@@ -339,7 +338,7 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
         hx.frequently.mp (by simp)
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
-        rw [eventually_iff, mem_cofinite, compl_setOf] at hx
+        rw [eventually_iff, mem_cofinite, compl_ofPred] at hx
         exact hfin.inter_of_finite_sdiff (hx.image x |>.subset (by grind))
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]

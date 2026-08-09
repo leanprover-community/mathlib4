@@ -72,9 +72,7 @@ theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -
 theorem coeff_sub (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p - q) = coeff m p - coeff m q :=
   Finsupp.sub_apply _ _ _
 
-@[simp]
-theorem support_neg : (-p).support = p.support :=
-  Finsupp.support_neg p
+@[simp] lemma support_neg : (-p).support = p.support := by ext; simp
 
 theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).support ⊆ p.support ∪ q.support :=
@@ -82,12 +80,44 @@ theorem support_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
 
 variable {σ} (p)
 
+/-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
+removes `d` from the support. -/
+theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
+    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    d ∉ (p - (monomial d c - monomial d' c)).support := by
+  classical
+  rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
+    if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
+
+/-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
+leaves the support inside `p.support.erase d ∪ {d'}`. -/
+theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →₀ ℕ) (c : R)
+    (hdd' : d ≠ d') (hc : coeff d p = c) :
+    (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
+  classical
+  intro x hx
+  have hd_not := notMem_support_sub_monomial_sub_monomial p d d' c hdd' hc
+  rcases Finset.mem_union.mp (support_sub σ p _ hx) with hp | hdelta
+  · by_cases hxd : x = d
+    · exact absurd (hxd ▸ hx) hd_not
+    exact Finset.mem_union_left _ (Finset.mem_erase.mpr ⟨hxd, hp⟩)
+  rcases Finset.mem_union.mp (support_sub σ _ _ hdelta) with h1 | h2
+  · rw [support_monomial] at h1
+    split_ifs at h1
+    · exact absurd h1 (Finset.notMem_empty _)
+    exact absurd ((Finset.mem_singleton.mp h1) ▸ hx) hd_not
+  rw [support_monomial] at h2
+  split_ifs at h2
+  · exact absurd h2 (Finset.notMem_empty _)
+  exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
+
 section Degrees
 
 @[simp]
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
   simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le

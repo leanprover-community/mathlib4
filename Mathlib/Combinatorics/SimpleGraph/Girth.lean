@@ -16,8 +16,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 ## TODO
 
-- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
-  non-zero.
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` when `G` is not acyclic
+- Prove that `G.girth ≤ 2 * G.diam + 1` when the diameter is non-zero
 
 -/
 
@@ -43,6 +43,17 @@ lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCy
 lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
   le_egirth.mp le_rfl a w h
 
+lemma Walk.IsCircuit.egirth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
+    G.egirth ≤ w.length := by
+  classical
+  by_contra! hlg
+  let w' : G.Walk a a := w.cycleBypass
+  have hwc' : w'.IsCycle := hwc.isCycle_cycleBypass
+  have hwlg' : w'.length < G.egirth := by
+    grw [w.length_cycleBypass_le_length]
+    exact hlg
+  exact not_le_of_gt hwlg' (SimpleGraph.egirth_le_length hwc')
+
 @[simp]
 lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
 
@@ -57,14 +68,27 @@ lemma exists_egirth_eq_length :
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
-  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma', ENat.iInf_coe_ne_top,
-      ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
+  · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma',
+      ENat.iInf_natCast_ne_top, ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
-  simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
+  simpa using fun _ _ h ↦ h.three_le_length
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
+  classical
+  refine le_antisymm ?_ three_le_egirth
+  obtain ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
+  obtain ⟨x, y, z, hxy, hxz, hyz, -⟩ := s.card_eq_three.mp hcard.symm
+  set w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil with hw
+  have : w.IsCycle :=
+    { edges_nodup := by aesop
+      ne_nil := by aesop
+      support_nodup := by aesop }
+  grw [egirth_le_length this]
+  simp [hw]
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
@@ -91,7 +115,7 @@ noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
 lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
-  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
@@ -104,15 +128,22 @@ protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat (egirth_anti hab) <| egirth_eq_top.not.mpr h
 
+lemma Walk.IsCircuit.girth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
+    G.girth ≤ w.length :=
+  ENat.natCast_le_natCast.mp <| G.egirth.natCast_toNat_le_self.trans <| hwc.egirth_le_length
+
 lemma exists_girth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨by tauto, fun h ↦ ?_⟩
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
-  simp_all only [girth, ENat.toNat_coe]
+  simp_all only [girth, ENat.toNat_natCast]
   tauto
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
+  simp [girth, egirth_top h]
 
 lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
   ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
