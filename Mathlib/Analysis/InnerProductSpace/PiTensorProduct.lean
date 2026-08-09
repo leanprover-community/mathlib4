@@ -87,4 +87,77 @@ theorem inner_of_subsingleton [Subsingleton ι] (i₀ : ι) (x y : ⨂[𝕜] i, 
       (by simp_all [inner_add_right, _root_.inner_add_right]))
     (by simp_all [inner_add_left, _root_.inner_add_left])
 
+open scoped Classical in
+private theorem inner_self {κ : ι → Type*} [∀ i, Fintype (κ i)]
+    (b : Π i, OrthonormalBasis (κ i) 𝕜 (E i)) (x : ⨂[𝕜] i, E i) :
+    inner 𝕜 x x = ∑ s, ‖(Basis.piTensorProduct fun i ↦ (b i).toBasis).repr x s‖ ^ 2 := by
+  let b' := Basis.piTensorProduct fun i ↦ (b i).toBasis
+  have hx : x = ∑ s, b'.repr x s • ⨂ₜ[𝕜] i, b i (s i) := by
+    nth_rw 1 [← b'.sum_repr x]
+    simp [b', Basis.piTensorProduct_apply]
+  conv_lhs => rw [hx]
+  have hprod (s s' : Π i, κ i) : ∏ i, ite (s i = s' i) (1 : 𝕜) 0 = ite (s = s') 1 0 := by
+    rcases eq_or_ne s s' with rfl | hs
+    · simp only [↓reduceIte, Finset.prod_const_one]
+    · obtain ⟨j, hj⟩ := Function.ne_iff.mp hs
+      simp only [hs, ↓reduceIte]
+      exact Finset.prod_eq_zero_iff.mpr ⟨j, Finset.mem_univ j, by simp [hj]⟩
+  trans ∑ s, ‖b'.repr x s‖ ^ 2
+  · simp [inner_def, OrthonormalBasis.inner_eq_ite, hprod, RCLike.mul_conj]
+  simp_rw [map_sum, map_pow]
+  congr
+
+-- TODO: Move this to an appropriate file and generalize to CommSemiring
+open Submodule in
+omit [Fintype ι] in
+theorem exists_finite_submodule_of_setFinite (s : Set (⨂[𝕜] i, E i)) (hs : s.Finite) :
+    ∃ M : Π i, Submodule 𝕜 (E i),
+      (∀ i, Module.Finite 𝕜 (M i)) ∧ s ⊆ (mapIncl M).range := by
+  simp_rw [Module.Finite.iff_fg]
+  induction s, hs using Set.Finite.induction_on with
+  | empty => exact ⟨fun _ ↦ ⊥, fun _ ↦ fg_bot, Set.empty_subset _⟩
+  | @insert x s hx _ ih =>
+    obtain ⟨M', hM', hsM'⟩ := ih
+    refine x.induction_on (fun r u ↦ ?_) fun y z hy hz ↦ ?_
+    · refine ⟨fun i ↦ M' i ⊔ 𝕜 ∙ u i, fun i ↦ (hM' i).sup (fg_span_singleton _), ?_⟩
+      apply Set.insert_subset
+      · exact ⟨r • ⨂ₜ[𝕜] i, ⟨u i, mem_sup_right (mem_span_singleton_self _)⟩, by simp⟩
+      · exact fun y hy ↦ range_mapIncl_mono (fun _ ↦ le_sup_left) (hsM' hy)
+    · obtain ⟨My', hMy', hys⟩ := hy
+      obtain ⟨Mz', hMz', hzs⟩ := hz
+      refine ⟨fun i ↦ My' i ⊔ Mz' i, fun i ↦ (hMy' i).sup (hMz' i), ?_⟩
+      refine Set.insert_subset (add_mem ?_ ?_) fun w hw ↦ ?_
+      · exact range_mapIncl_mono (fun _ ↦ le_sup_left) (hys <| Set.mem_insert y s)
+      · exact range_mapIncl_mono (fun _ ↦ le_sup_right) (hzs <| Set.mem_insert z s)
+      · exact range_mapIncl_mono (fun _ ↦ le_sup_right) (hzs <| Set.mem_insert_of_mem z hw)
+
+noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (⨂[𝕜] i, E i) :=
+  letI : InnerProductSpace.Core 𝕜 (⨂[𝕜] i, E i) :=
+  { conj_inner_symm x y := x.induction_on
+      (fun _ _ ↦ y.induction_on
+        (by simp_all [inner_def, mul_left_comm])
+        (by simp_all [inner_add_left, inner_add_right]))
+      (by simp_all [inner_def])
+    add_left _ _ _ := LinearMap.map_add₂ _ _ _ _
+    smul_left _ _ _ := LinearMap.map_smulₛₗ₂ _ _ _ _
+    definite x hx := by
+      obtain ⟨M, hM, hxM⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
+      let b := fun i ↦ stdOrthonormalBasis 𝕜 (M i)
+      obtain ⟨y, hy⟩ := Set.singleton_subset_iff.mp hxM
+      suffices y = 0 by exact hy ▸ this ▸ map_zero _
+      simp only [← hy, inner_mapIncl_mapIncl, inner_self b, RCLike.ofReal_eq_zero,
+        Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ sq_nonneg _), Finset.mem_univ, sq_eq_zero_iff,
+        norm_eq_zero, forall_const] at hx
+      apply (Basis.piTensorProduct fun i ↦ (b i).toBasis).ext_elem_iff.mpr
+      simpa only [map_zero, Finsupp.coe_zero, Pi.zero_apply]
+    re_inner_nonneg x := by
+      obtain ⟨M, hM, hxM⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
+      let b := fun i ↦ stdOrthonormalBasis 𝕜 (M i)
+      obtain ⟨y, hy⟩ := Set.singleton_subset_iff.mp hxM
+      rw [← hy, inner_mapIncl_mapIncl, inner_self b, RCLike.ofReal_re]
+      exact Finset.sum_nonneg fun _ _ ↦ sq_nonneg _}
+  this.toNormedAddCommGroup
+
+noncomputable instance instInnerProductSpace : InnerProductSpace 𝕜 (⨂[𝕜] i, E i) := .ofCore _
+
 end PiTensorProduct
