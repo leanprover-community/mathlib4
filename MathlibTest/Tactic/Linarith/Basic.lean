@@ -754,7 +754,7 @@ example (a : ℚ) (h : a < 0) : a ≤ 0 := by
 
 /--
 info: Try this:
-  [apply] linarith only [h₂, h₁]
+  [apply] linarith only [h₁, h₂]
 -/
 #guard_msgs in
 example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b < a) : False := by
@@ -778,7 +778,7 @@ example (a b c d : ℚ) (h₁ : a < 0) (h₂ : b ≤ c) (h₃ : c ≤ d) : a ≤
 
 /--
 info: Try this:
-  [apply] linarith only [h₂, h₁]
+  [apply] linarith only [h₁, h₂]
 -/
 #guard_msgs in
 example (a b c d : ℚ) (h₁ : a ≤ b) (h₂ : b < a)
@@ -787,7 +787,7 @@ example (a b c d : ℚ) (h₁ : a ≤ b) (h₂ : b < a)
 
 /--
 info: Try this:
-  [apply] linarith only [h₄, h₂, h₁]
+  [apply] linarith only [h₁, h₂, h₄]
 -/
 #guard_msgs in
 example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
@@ -795,11 +795,100 @@ example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄
 
 /--
 info: Try this:
-  [apply] linarith only [h₄, h₂, h₁]
+  [apply] linarith only [h₁, h₂, h₄]
 -/
 #guard_msgs in
 example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
   linarith? -minimize only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [hu, hv]
+-/
+#guard_msgs in
+example (x y u v : ℚ) (hu : u < v) (hv : v < u) : x < y := by
+  linarith?
+
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+example (a u v : ℚ) (gu : u < v) (h : a < 0) : a ≤ 0 := by
+  linarith?
+
+/--
+info: Try this:
+  [apply] linarith only [hu, hv]
+-/
+#guard_msgs in
+example (u v : ℚ) (hu : u < v) (hv : v < u) : False := by
+  linarith?
+
+-- `splitHypotheses` turns one hypothesis into two facts
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+example (a b c : ℚ) (h : a < b ∧ b < c) (junk : c < c + 1) : a < c := by
+  linarith?
+
+-- `natToInt` adds nonnegativity facts that come from no hypothesis at all
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+example (m n : ℕ) (h : m < n) (junk : n < n + 5) : m + 1 ≤ n := by
+  linarith?
+
+-- an equality goal runs `linarith` twice
+/--
+info: Try this:
+  [apply] linarith only [h₂, h₁]
+-/
+#guard_msgs in
+example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b ≤ a) (junk : a < a + 1) : a = b := by
+  linarith?
+
+-- `splitNe` case splits on the `≠` hypothesis; the facts introduced in each branch are
+-- attributed back to it
+/--
+info: Try this:
+  [apply] linarith only [hne, hle]
+-/
+#guard_msgs in
+example (a b : ℚ) (hne : a ≠ b) (hle : a ≥ b) (junk : (0:ℚ) < 1) : b < a := by
+  linarith? +splitNe
+
+-- the goal alone suffices
+/--
+info: Try this:
+  [apply] linarith only []
+-/
+#guard_msgs in
+example (a : ℚ) : a ≤ a := by
+  linarith?
+
+-- A term argument that the certificate actually needs cannot be rendered as a named hypothesis,
+-- so `linarith?` reports the limitation rather than a suggestion.
+/--
+error: linarith? cannot suggest the term argument mul_pos ha hb; only named hypotheses are supported
+-/
+#guard_msgs in
+example (a b : ℚ) (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
+  linarith? [mul_pos ha hb]
+
+-- A redundant term argument is fine, including under `splitNe`: the check for term arguments
+-- happens after minimization, which drops the unused `mul_pos ha ha`.
+/--
+info: Try this:
+  [apply] linarith only [hne, hle]
+-/
+#guard_msgs in
+example (a b : ℚ) (ha : 0 < a) (hne : a ≠ b) (hle : a ≥ b) : b < a := by
+  linarith? +splitNe [mul_pos ha ha]
 
 /-!
 From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
