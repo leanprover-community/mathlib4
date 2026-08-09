@@ -112,7 +112,7 @@ lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toNNReal
+  continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toNNReal
   continuous_invFun := continuous_coe.subtype_mk _
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
