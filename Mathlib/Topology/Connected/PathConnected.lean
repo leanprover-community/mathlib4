@@ -78,6 +78,9 @@ theorem Joined.symm {x y : X} (h : Joined x y) : Joined y x :=
 theorem Joined.trans {x y z : X} (hxy : Joined x y) (hyz : Joined y z) : Joined x z :=
   ⟨hxy.somePath.trans hyz.somePath⟩
 
+theorem Joined.map (h : Joined x y) {f : X → Y} (hf : Continuous f) : Joined (f x) (f y) :=
+  ⟨h.somePath.map hf⟩
+
 @[to_additive]
 theorem Joined.mul {M : Type*} [Mul M] [TopologicalSpace M] [ContinuousMul M]
     {a b c d : M} (hs : Joined a b) (ht : Joined c d) : Joined (a * c) (b * d) :=
@@ -238,18 +241,17 @@ theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : Joine
 theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
   h.specializes.joinedIn hx hy
 
-theorem JoinedIn.map_continuousOn (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
+theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : ContinuousOn f F) :
     JoinedIn (f '' F) (f x) (f y) :=
   let ⟨γ, hγ⟩ := h
   ⟨γ.map' <| hf.mono (range_subset_iff.mpr hγ), fun t ↦ mem_image_of_mem _ (hγ t)⟩
 
-theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
-    JoinedIn (f '' F) (f x) (f y) :=
-  h.map_continuousOn hf.continuousOn
+@[deprecated (since := "2026-08-08")]
+alias JoinedIn.map_continuousOn := JoinedIn.map
 
 theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
     (hy : y ∈ F) : JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
-  refine ⟨?_, (.map · hf.continuous)⟩
+  refine ⟨?_, (.map · hf.continuous.continuousOn)⟩
   rintro ⟨γ, hγ⟩
   choose γ' hγ'F hγ' using hγ
   have h₀ : x ⤳ γ' 0 := by rw [← hf.specializes_iff, hγ', γ.source]
@@ -295,7 +297,7 @@ theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
 
 theorem Continuous.mapsTo_pathComponent {f : X → Y} (hf : Continuous f) (x : X) :
     MapsTo f (pathComponent x) (pathComponent (f x)) :=
-  fun _ hy ↦ ⟨(Joined.somePath hy).map hf⟩
+  fun _ hy ↦ hy.map hf
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z
@@ -441,7 +443,8 @@ theorem IsPathConnected.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [
     {s : Set G} (hs : IsPathConnected s) :
     IsPathConnected s⁻¹ :=
   let ⟨a, ha_mem, ha⟩ := hs
-  ⟨a⁻¹, inv_mem_inv.mpr ha_mem, fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv⟩
+  ⟨a⁻¹, inv_mem_inv.mpr ha_mem,
+    fun x hx ↦ by simpa using ha (mem_inv.mp hx) |>.map continuous_inv.continuousOn⟩
 
 /-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
@@ -464,10 +467,12 @@ theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
 
 /-- A homeomorphism maps path components onto path components. -/
 theorem Homeomorph.image_pathComponent (h : X ≃ₜ Y) (x : X) :
-    h '' pathComponent x = pathComponent (h x) :=
-  (h.continuous.mapsTo_pathComponent x).image_subset.antisymm fun y hy ↦
-    ⟨h.symm y, by simpa using h.symm.continuous.mapsTo_pathComponent (h x) hy,
-      h.apply_symm_apply y⟩
+    h '' pathComponent x = pathComponent (h x) := by
+  apply (h.continuous.mapsTo_pathComponent x).image_subset.antisymm
+  intro y hy
+  refine ⟨h.symm y, ?_, ?_⟩
+  · simpa using h.symm.continuous.mapsTo_pathComponent (h x) hy
+  · exact h.apply_symm_apply y
 
 theorem Homeomorph.preimage_pathComponent (h : X ≃ₜ Y) (y : Y) :
     h ⁻¹' pathComponent y = pathComponent (h.symm y) := by
@@ -606,9 +611,9 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 
-theorem Homeomorph.pathConnectedSpace [PathConnectedSpace Y] (h : X ≃ₜ Y) :
-    PathConnectedSpace X :=
-  h.symm.surjective.pathConnectedSpace h.symm.continuous
+theorem Homeomorph.pathConnectedSpace [PathConnectedSpace X] (h : X ≃ₜ Y) :
+    PathConnectedSpace Y :=
+  h.surjective.pathConnectedSpace h.continuous
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
