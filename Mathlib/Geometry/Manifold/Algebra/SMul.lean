@@ -290,6 +290,12 @@ theorem ContMDiff.const_smul (hf : CMDiff n f) (γ : Γ) :
 
 end
 
+@[to_additive]
+instance Prod.contMDiffConstSMul [SMul Γ N] {n : ℕ∞ω} [ContMDiffConstSMul I n Γ M]
+    [ContMDiffConstSMul I' n Γ N] : ContMDiffConstSMul (I.prod I') n Γ (M × N) where
+  contMDiff_const_smul γ := ContMDiff.prodMk
+    (ContMDiff.const_smul contMDiff_fst γ) (ContMDiff.const_smul contMDiff_snd γ)
+
 
 end ContMDiffConstSMul
 
