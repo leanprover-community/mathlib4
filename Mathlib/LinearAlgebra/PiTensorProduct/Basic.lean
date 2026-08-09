@@ -514,6 +514,24 @@ theorem lift_comp_map (φ : MultilinearMap σ₂₃ M₂ N₃) :
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_tprod, lift.tprod, MultilinearMap.compLinearMap_apply]
 
+lemma range_map_mono {R₁'} [CommSemiring R₁'] {σ₁₂' : R₁' →+* R₂} [RingHomSurjective σ₁₂]
+    [RingHomSurjective σ₁₂'] {M₁' : ι → Type*} [∀ i, AddCommMonoid (M₁' i)]
+    [∀ i, Module R₁' (M₁' i)] {f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i} {g : Π i, M₁' i →ₛₗ[σ₁₂'] M₂ i}
+    (h : ∀ i, (f i).range ≤ (g i).range) : (map f).range ≤ (map g).range := by
+  intro x ⟨y, hy⟩
+  rw [← hy]
+  refine y.induction_on (fun r u ↦ ?_) ?_
+  · have hfg := fun i ↦ h i <| LinearMap.mem_range_self (f i) (u i)
+    let v : (i : ι) → M₁' i := fun i ↦ Classical.choose (hfg i)
+    have hv : ∀ i, g i (v i) = f i (u i) := fun i ↦ Classical.choose_spec (hfg i)
+    obtain ⟨r', hr⟩ := σ₁₂'.surjective (σ₁₂ r)
+    exact ⟨r' • tprod R₁' v, by simp [hv, hr]⟩
+  · exact fun z w hz hw ↦ map_add (map f) z w ▸ add_mem hz hw
+
+lemma range_mapIncl_mono {p q : Π i, Submodule R (M i)} (h : ∀ i, p i ≤ q i) :
+    LinearMap.range (mapIncl p) ≤ LinearMap.range (mapIncl q) :=
+  range_map_mono (by simp [h])
+
 attribute [local ext high] ext
 
 @[simp]
