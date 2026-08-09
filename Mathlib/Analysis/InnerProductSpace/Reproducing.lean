@@ -420,10 +420,10 @@ lemma kerFun_OfKernel_apply_eq_toComplL_single (x : X) (v : V) :
     kerFun (OfKernel K) x v = UniformSpace.Completion.toComplL (𝕜:=𝕜) (.single ⟨x, v⟩ 1) := by
   simp [kerFun, coeCLM]
 
-lemma mem_toSubmodule_outerKernel (f : X → V) (hf : ∃ x, f x ≠ 0) :
-    f ∈ toSubmodule (outerKernel 𝕜 f) := by
-  let hx := Classical.choose_spec hf
-  set x : X := Classical.choose hf
+lemma mem_toSubmodule_outerKernel (f : X → V) : f ∈ toSubmodule (outerKernel 𝕜 f) := by
+  by_cases hf : f = (0 : X → V)
+  · simp [hf, zero_mem]
+  obtain ⟨x, hx⟩ := Function.ne_iff.mp hf
   use UniformSpace.Completion.toComplL (𝕜:=𝕜) (Finsupp.single ⟨x, f x⟩ (1/(‖f x‖ ^ 2)))
   rw [← Finsupp.smul_single_one, map_smul, ← kerFun_OfKernel_apply_eq_toComplL_single]
   ext
