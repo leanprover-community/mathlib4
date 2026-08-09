@@ -383,7 +383,7 @@ theorem _root_.ContinuousLinearEquiv.isFredholm (e : E ≃L[𝕜] F) :
   closedComplemented_ker := by simp
 
 protected theorem IsFredholm.id : IsFredholm (.id 𝕜 E) :=
-    ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
+  ContinuousLinearEquiv.refl 𝕜 E |>.isFredholm
 
 theorem IsInvertible.isFredholm {f : E →L[𝕜] F} (hf : f.IsInvertible) :
     IsFredholm f := by
