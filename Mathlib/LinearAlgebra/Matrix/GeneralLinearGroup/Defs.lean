@@ -279,7 +279,7 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
 
 lemma toGL_range :
-  (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
+    (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
   ext A
   exact ⟨by rintro ⟨_, rfl⟩; simp, fun hA => ⟨⟨_,
     (by simpa [GeneralLinearGroup.val_det_apply] using congrArg Units.val hA)⟩,
