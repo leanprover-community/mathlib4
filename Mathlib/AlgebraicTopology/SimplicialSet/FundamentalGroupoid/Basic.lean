@@ -219,7 +219,7 @@ end SSet.Truncated
 
 namespace SSet
 
-variable {X Y : SSet.{u}}
+variable {X Y Z : SSet.{u}}
 
 variable (X) in
 /-- The fundamental groupoid of a simplicial set `X`. -/
@@ -229,7 +229,8 @@ abbrev FundamentalGroupoid : Type u :=
 namespace FundamentalGroupoid
 
 /-- Constructor for objects of the fundamental groupoid of a simplicial set `X`. -/
-abbrev mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
+@[implicit_reducible]
+def mk (x : X _⦋0⦌) : FundamentalGroupoid X := Truncated.FundamentalGroupoid.mk x
 
 lemma mk_surjective : Function.Surjective (mk (X := X)) :=
   Truncated.FundamentalGroupoid.mk_surjective
@@ -284,6 +285,39 @@ lemma desc_map_homMk {x y : X _⦋0⦌} (e : Edge x y) :
 
 end
 
+section
+
+variable {D : Type*} [Category* D] {F G : FundamentalGroupoid X ⥤ D}
+
+open MorphismProperty in
+/-- Constructor for natural transformations for functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natTransMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ⟶ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ app y = app x ≫ G.map (homMk e) := by cat_disch) : F ⟶ G where
+  app x := app x.pt
+  naturality := by
+    let φ (x : FundamentalGroupoid X) := app x.pt
+    intro _ _ f
+    change naturalityProperty φ f
+    induction f with
+    | homMk e => exact naturality e
+    | inv f hf => exact (naturalityProperty.stableUnderInverse φ) (asIso f) hf
+    | comp f g hf hg => exact comp_mem _ _ _ hf hg
+
+/-- Constructor for natural isomorphisms for functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natIsoMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ≅ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ (app y).hom =
+        (app x).hom ≫ G.map (homMk e) := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (fun x ↦ app x.pt)
+    (fun f ↦ (natTransMk _ naturality).naturality f)
+
+end
+
 lemma functor_ext {D : Type*} [Groupoid D] {F G : FundamentalGroupoid X ⥤ D}
     (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x))
     (h₂ : ∀ {x y : X _⦋0⦌} (e : Edge x y), F.map (homMk e) =
@@ -332,5 +366,22 @@ lemma isEquivalence_mapFundamentalGroupoid (f : X ⟶ Y)
     (hf : IsIso ((truncation 2).map f) := by infer_instance) :
     (mapFundamentalGroupoid f).IsEquivalence :=
   (isoCatMapFundamentalGroupoid f).toEquivalence.isEquivalence_functor
+
+variable (X) in
+@[simps! hom_app inv_app]
+def mapFundamentalGroupoidId :
+    mapFundamentalGroupoid (𝟙 X) ≅ 𝟭 _ :=
+  FundamentalGroupoid.natIsoMk (fun x ↦ Iso.refl _)
+
+@[simps! hom_app inv_app]
+def mapFundamentalGroupoidComp (f : X ⟶ Y) (g : Y ⟶ Z) :
+    mapFundamentalGroupoid f ⋙ mapFundamentalGroupoid g ≅
+      mapFundamentalGroupoid (f ≫ g) :=
+  FundamentalGroupoid.natIsoMk (fun x ↦ Iso.refl _)
+
+@[simps!]
+def congrMapFundamentalGroupoid {f g : X ⟶ Y} (h : f = g) :
+    mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
+  eqToIso (by rw[h])
 
 end SSet
