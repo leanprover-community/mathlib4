@@ -92,7 +92,7 @@ lemma eq_re_of_norm_eq (h : ‖z‖ = z.re) : z = z.re := by
   have : z.im ^ 2 = 0 := by
     have := norm_sq_eq_re_sq_add_im_sq z
     rw [h, sq, sq] at this; linarith
-  exact Complex.ext (by simp [hre]) (sq_eq_zero.mp this)
+  exact Complex.ext (by simp) (sq_eq_zero.mp this)
 
 lemma eq_coe_re_of_mul_eq_norm_mul {z w : ℂ} (h : re (z * star w) = ‖z‖ * ‖w‖) :
     (z * star w) = ↑(re (z * star w)) :=
