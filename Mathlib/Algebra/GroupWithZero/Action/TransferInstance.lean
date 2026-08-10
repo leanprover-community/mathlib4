@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Action.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer algebraic structures across `Equiv`s or `AddEquiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
@@ -48,14 +48,14 @@ end Equiv
 namespace AddEquiv
 
 variable (M) in
-/-- Transfer `DistribSMul` across an `Equiv` -/
+/-- Transfer `DistribSMul` across an `AddEquiv` -/
 protected abbrev distribSMul [AddZeroClass A] [AddZeroClass B] [DistribSMul M B] (e : A ≃+ B) :
     DistribSMul M A where
   __ := e.smulZeroClass M e.map_zero
   smul_add := by simp [e.smul_def, smul_add]
 
 variable (M) in
-/-- Transfer `DistribMulAction` across an `Equiv` -/
+/-- Transfer `DistribMulAction` across an `AddEquiv` -/
 protected abbrev distribMulAction [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M B]
     (e : A ≃+ B) : DistribMulAction M A where
   __ := e.distribSMul M

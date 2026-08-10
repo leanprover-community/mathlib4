@@ -547,13 +547,13 @@ variable {R A B : Type*} [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
 
 variable (R) in
-/-- Transfer `CoalgebraStruct` across an `Equiv`. -/
+/-- Transfer `CoalgebraStruct` across a `LinearEquiv`. -/
 abbrev coalgebraStruct [CoalgebraStruct R B] (e : A ≃ₗ[R] B) : CoalgebraStruct R A where
   comul := TensorProduct.map e.symm e.symm ∘ₗ comul ∘ₗ e.toLinearMap
   counit := counit ∘ₗ e.toLinearMap
 
 variable (R) in
-/-- Transfer `Coalgebra` across an `Equiv`. -/
+/-- Transfer `Coalgebra` across a `LinearEquiv`. -/
 abbrev coalgebra [Coalgebra R B] (e : A ≃ₗ[R] B) : Coalgebra R A where
   __ := e.coalgebraStruct R
   rTensor_counit_comp_comul := by
@@ -575,7 +575,7 @@ abbrev coalgebra [Coalgebra R B] (e : A ≃ₗ[R] B) : Coalgebra R A where
     simpa [LinearMap.comp_assoc, -coassoc_apply] using! coassoc_apply (R := R) (A := B) _
 
 variable (R) in
-/-- Transfer `Coalgebra.IsCocomm` across an `Equiv`. -/
+/-- Transfer `Coalgebra.IsCocomm` across a `LinearEquiv`. -/
 lemma coalgebraIsCocomm [Coalgebra R B] [IsCocomm R B] (e : A ≃ₗ[R] B) :
     letI := e.coalgebra R
     IsCocomm R A :=

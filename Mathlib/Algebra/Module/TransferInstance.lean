@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer algebraic structures across `Equiv`s or `AddEquiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/

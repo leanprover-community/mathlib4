@@ -13,7 +13,7 @@ public import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
-# Transfer topological algebraic structures across `Equiv`s
+# Transfer topological algebraic structures across `AddEquiv`s or `ContinuousLinearEquiv`s
 
 In this file, we construct a continuous linear equivalence `α ≃L[R] β` from an equivalence `α ≃ β`,
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
@@ -34,7 +34,7 @@ variable (e : α ≃ β)
 variable [AddCommMonoid α] [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
 
 variable (R) in
-/-- An equivalence `e : α ≃ β` gives a continuous linear equivalence `α ≃L[R] β`
+/-- An additive equivalence `e : α ≃+ β` gives a continuous linear equivalence `α ≃L[R] β`
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
 `R`-module structure on `β` back along `e`.
 
