@@ -194,7 +194,7 @@ theorem hasDensity_empty (A : Set α := Set.univ) : HasDensity (∅ : Set α) 0 
 open scoped Classical in
 /-- The universal set has density `1` relative to `A` if the reference denominator is eventually
 positive. -/
-theorem hasDensity_univ [(atTop : Filter α).NeBot] (A : Set α)
+theorem hasDensity_univ (A : Set α)
     (hA : ∀ᶠ b in atTop, 0 < #{x ∈ Finset.Iio b | x ∈ A}) :
     HasDensity (Set.univ : Set α) 1 A := by
   refine tendsto_const_nhds.congr' ?_
