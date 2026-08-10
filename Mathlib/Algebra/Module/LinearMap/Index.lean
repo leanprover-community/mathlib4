@@ -144,6 +144,14 @@ public lemma index_codRestrict {T : Submodule k N} [FiniteDimensional k (N ⧸ T
     Submodule.quotEquivOfEq _ _ T.range_subtype |>.symm.finiteDimensional
   have : FiniteDimensional k T.subtype.ker :=
     LinearEquiv.ofEq _ _ T.ker_subtype |>.symm.finiteDimensional
+  have : FiniteDimensional k (T ⧸ (f.codRestrict T hf).range) :=
+    .of_injective (Submodule.mapQ _ f.range T.subtype (by rintro _ ⟨x, rfl⟩; simp)) <| by
+      rw [← LinearMap.ker_eq_bot, Submodule.mapQ]
+      refine Submodule.ker_liftQ_eq_bot _ _ _ ?_
+      rw [ker_comp]
+      rintro _ ⟨x, rfl⟩; simp)
+  have : FiniteDimensional k (f.codRestrict T hf).ker :=
+    LinearEquiv.ofEq _ _ (f.ker_codRestrict T hf) |>.symm.finiteDimensional
   conv_lhs => rw [← f.subtype_comp_codRestrict T hf, index_comp]
   rw [domRestrict, index_comp, S.index_subtype, sub_eq_add_neg]
 
