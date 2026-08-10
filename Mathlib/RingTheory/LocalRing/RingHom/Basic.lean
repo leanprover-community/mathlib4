@@ -104,7 +104,7 @@ theorem map_maximalIdeal_lt_top (f : R →+* S) [IsLocalHom f] : (maximalIdeal R
 
 end
 
-theorem of_surjective [CommSemiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (f : R →+* S)
+theorem of_surjective [Semiring R] [IsLocalRing R] [Semiring S] [Nontrivial S] (f : R →+* S)
     [IsLocalHom f] (hf : Function.Surjective f) : IsLocalRing S :=
   of_isUnit_or_isUnit_of_isUnit_add (by
     intro a b hab
@@ -156,7 +156,7 @@ end IsLocalRing
 
 namespace RingEquiv
 
-protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Semiring B]
+protected theorem isLocalRing {A B : Type*} [Semiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective

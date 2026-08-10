@@ -111,7 +111,7 @@ public section
 
 universe u v
 
-open Finset NNReal ENNReal
+open Finset NNReal
 open scoped BigOperators
 
 noncomputable section

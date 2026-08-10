@@ -203,7 +203,7 @@ variable (X : Type u₄) [Category.{v₄} X]
 
 variable (F G) in
 /-- The data of a categorical commutative square over a cospan `F, G` with cone point `X` is
-that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSqOver T L F G`.
+that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSq T L F G`.
 Note that this is *exactly* what an object of
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)` is,
 so `CatCommSqOver F G X` is in equivalent to

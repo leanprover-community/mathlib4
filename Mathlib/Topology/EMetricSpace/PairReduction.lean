@@ -387,7 +387,7 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
     exact Finset.card_le_one_iff.mp hJ_card hs ht
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
-    Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.coeFn_mk,
+    Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.sectR_apply,
     Prod.mk.injEq, exists_eq_right_right] at h'
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
   grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]

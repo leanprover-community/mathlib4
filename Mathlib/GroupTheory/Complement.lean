@@ -653,13 +653,15 @@ noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement'
   { h.leftQuotientEquiv.symm with
     map_mul' := fun _ _ ↦ rfl }
 
-theorem IsComplement.card_mul (h : IsComplement S T) :
-    Nat.card S * Nat.card T = Nat.card G :=
-  (Nat.card_prod _ _).symm.trans (Nat.card_eq_of_bijective _ h)
-
-theorem IsComplement'.card_mul (h : IsComplement' H K) :
+theorem IsComplement'.card_mul_card (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=
-  IsComplement.card_mul h
+  IsComplement.card_mul_card h
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement.card_mul := IsComplement.card_mul_card
+
+@[deprecated (since := "2026-08-06")]
+alias IsComplement'.card_mul := IsComplement'.card_mul_card
 
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
@@ -675,7 +677,7 @@ theorem isComplement'_of_card_mul_and_disjoint [Finite G]
 
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
-  ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
+  ⟨fun h => ⟨h.card_mul_card, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
 
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)

@@ -69,11 +69,11 @@ lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/

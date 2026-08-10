@@ -36,7 +36,9 @@ open CategoryTheory Simplicial
 namespace SSet
 
 /-- The covariant involution of the category of simplicial sets that
-is induced by `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`. -/
+is induced by `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
+This functor is purposely not made `implicit_reducible` so as to avoid
+confusion between `X.op _⦋n⦌` and `X _⦋n⦌`: use the bijection `opObjEquiv`. -/
 def opFunctor : SSet.{u} ⥤ SSet.{u} := SimplicialObject.opFunctor
 
 /-- The image of a simplicial set by the involution `opFunctor : SSet ⥤ SSet`. -/
@@ -55,22 +57,24 @@ lemma op_map (X : SSet.{u}) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) (x : X.o
       opObjEquiv.symm (X.map (SimplexCategory.rev.map f.unop).op (opObjEquiv x)) :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma op_δ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X _⦋n + 1⦌) :
+lemma op_δ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X.op _⦋n + 1⦌) :
     X.op.δ i x = opObjEquiv.symm (X.δ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.δ, op_map]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X _⦋n⦌) :
+lemma op_σ (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X.op _⦋n⦌) :
     X.op.σ i x = opObjEquiv.symm (X.σ i.rev (opObjEquiv x)) := by
   simp [SimplicialObject.σ, op_map]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+lemma δ_opObjEquiv (X : SSet.{u}) {n : ℕ} (i : Fin (n + 2)) (x : X.op _⦋n + 1⦌) :
+    X.δ i (opObjEquiv x) = opObjEquiv (X.op.δ i.rev x) := by
+  simp
+
+lemma σ_opObjEquiv (X : SSet.{u}) {n : ℕ} (i : Fin (n + 1)) (x : X.op _⦋n⦌) :
+    X.σ i (opObjEquiv x) = opObjEquiv (X.op.σ i.rev x) := by
+  simp
+
 attribute [local simp] op_map in
 /-- The functor `opFunctor : SSet ⥤ SSet` is an involution. -/
 @[simps!]
