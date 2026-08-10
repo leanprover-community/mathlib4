@@ -120,9 +120,12 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
     · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
     · exact .of_nonneg h
 
-lemma inr_nonneg (a : A) (ha : 0 ≤ a) : 0 ≤ (a : A⁺¹) := inr_nonneg_iff.mpr ha
+alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
-lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹)) : 0 ≤ a := inr_nonneg_iff.mp ha
+open Unitization
+lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : A⁺¹) := ha.inr
+
+lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹) := by cfc_tac) : 0 ≤ a := inr_nonneg_iff.mp ha
 
 lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
     (hf : ∀ x, IsSelfAdjoint (f x))
@@ -139,8 +142,6 @@ lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
   intro x hx y hy a b ha hb hab
   rw [← inr_le_inr_iff _ _]
   simpa using hf₂.2 hx hy ha hb hab
-
-alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
@@ -463,7 +464,7 @@ instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A whe
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-lemma norm_le_norm_of_nonneg_of_le {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
+lemma norm_le_norm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
@@ -474,9 +475,15 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by
   exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
     IsSelfAdjoint.le_algebraMap_norm_self _
 
-theorem nnnorm_le_nnnorm_of_nonneg_of_le {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
+@[deprecated (since := "2026-08-10")]
+alias norm_le_norm_of_nonneg_of_le := norm_le_norm_of_le_of_nonneg
+
+theorem nnnorm_le_nnnorm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ ‖b‖₊ :=
-  norm_le_norm_of_nonneg_of_le hab
+  norm_le_norm_of_le_of_nonneg hab
+
+@[deprecated (since := "2026-08-10")]
+alias nnnorm_le_nnnorm_of_nonneg_of_le := nnnorm_le_nnnorm_of_le_of_nonneg
 
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by

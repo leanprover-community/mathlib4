@@ -233,7 +233,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_self_mul_star, pow_two]
     _ ≤ ‖‖x‖ ^ 2 • ⟪y, y⟫‖ := by
-                refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_mul_inner_swap_le ?_
+                refine CStarAlgebra.norm_le_norm_of_le_of_nonneg inner_mul_inner_swap_le ?_
                 rw [← star_inner x]
                 exact mul_star_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]
