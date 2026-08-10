@@ -25,7 +25,7 @@ which will be used in the definition of homotopy groups of Kan complexes.
 
 universe u
 
-open HomotopicalAlgebra CategoryTheory Simplicial Limits
+open CategoryTheory Simplicial
 
 namespace SSet
 
