@@ -86,7 +86,8 @@ end AddEquiv
 @[deprecated (since := "2026-08-10")] alias Equiv.linearEquiv_apply := AddEquiv.linearEquiv_apply
 @[deprecated (since := "2026-08-10")]
 alias Equiv.linearEquiv_symm_apply := AddEquiv.linearEquiv_symm_apply
-@[deprecated (since := "2026-08-10")] alias Equiv.moduleIsTorsionFree := AddEquiv.moduleIsTorsionFree
+@[deprecated (since := "2026-08-10")]
+alias Equiv.moduleIsTorsionFree := AddEquiv.moduleIsTorsionFree
 
 variable [Module R α] (A : Type*) [Semiring A] [Module R A] [Module A β]
 
