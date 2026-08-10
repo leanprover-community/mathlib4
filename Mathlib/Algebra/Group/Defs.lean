@@ -14,7 +14,7 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.CrossRefAttribute
 
@@ -1117,7 +1117,7 @@ theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mu
 
 @[to_additive]
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
