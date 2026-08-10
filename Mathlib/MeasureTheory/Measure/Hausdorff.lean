@@ -990,6 +990,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
     apply (e.isOpenMap U hU).measure_pos (μ := volume)
     simpa
 
+section MeasurePreserving
 variable (ι X)
 
 theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι] (d : ℝ) :
@@ -1001,6 +1002,8 @@ theorem hausdorffMeasure_measurePreserving_piFinTwo (α : Fin 2 → Type*)
     [∀ i, SecondCountableTopology (α i)] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) μH[d] μH[d] :=
   (IsometryEquiv.piFinTwo α).measurePreserving_hausdorffMeasure _
+
+end MeasurePreserving
 
 /-- In the space `ℝ`, the Hausdorff measure coincides exactly with the Lebesgue measure. -/
 @[simp]
@@ -1122,5 +1125,51 @@ theorem hausdorffMeasure_orthogonalProjectionOnto_le [RCLike 𝕜]
   hausdorffMeasure_orthogonalProjectionOnto_le
 
 end Geometric
+
+/-! ### Bound of one-dimensional Hausdorff measure -/
+
+/-- On a connected set, the distance between two points is at most the one-dimensional Hausdorff
+measure of the set. Combining with `MeasureTheory.hausdorffMeasure_affineSegment`, this says the
+segment between two points is a set connecting them with the smallest one-dimensional Hausdorff
+measure. -/
+theorem edist_le_hausdorffMeasure {s : Set X} (hs : IsPreconnected s) {x y : X} (hx : x ∈ s)
+    (hy : y ∈ s) : edist x y ≤ μH[1] s := by
+  by_cases htop : μH[1] s = ∞
+  · simp [htop]
+  -- We'd like to use `LipschitzWith.hausdorffMeasure_image_le` with function
+  -- `fun z ↦ edist x z`. However, `ENNReal` is not a `EMetricSpace` so this doesn't apply directly.
+  -- As a work-around, we truncate this function by a constant larger than `μH[1] s`.
+  let f (z : X) : ℝ := (min (edist x z) (μH[1] s + 1)).toReal
+  have hftop (z : X) : min (edist x z) (μH[1] s + 1) ≠ ∞ := fun h ↦ by
+    have : μH[1] s + 1 = ∞ := (min_eq_top.mp h).2
+    simp [htop] at this
+  have hfle (p q : X) (hqp : edist q p ≠ ∞) : f p ≤ f q + (edist q p).toReal := by
+    rw [← ENNReal.toReal_add (hftop q) hqp]
+    apply ENNReal.toReal_mono (by simp [hftop q, hqp])
+    rw [min_add]
+    exact min_le_min (edist_triangle x q p) (by simp)
+  have hlip : LipschitzWith 1 f := by
+    refine LipschitzWith.of_edist_le fun p q ↦ ?_
+    by_cases h : edist p q = ∞
+    · simp [h]
+    rw [edist_dist, Real.dist_eq]
+    refine ENNReal.ofReal_le_of_le_toReal (abs_sub_le_iff.mpr ⟨?_, ?_⟩)
+    · exact sub_left_le_of_le_add <| edist_comm p q ▸ hfle p q (edist_comm p q ▸ h)
+    · exact sub_left_le_of_le_add <| hfle q p h
+  have hminle : min (edist x y) (μH[1] s + 1) ≤ μH[1] s := calc
+    min (edist x y) (μH[1] s + 1) = ENNReal.ofReal (f y) := by
+      simp [f, ENNReal.ofReal_toReal (hftop y)]
+    _ = volume (Icc 0 (f y)) := by simp
+    _ ≤ volume (f '' s) := by
+      refine measure_mono <| (hs.image f hlip.continuous.continuousOn).Icc_subset ?_ ?_
+      · exact ⟨x, hx, by simp [f]⟩
+      · exact ⟨y, hy, rfl⟩
+    _ = μH[1] (f '' s) := by rw [hausdorffMeasure_real]
+    _ ≤ μH[1] s := by simpa using hlip.hausdorffMeasure_image_le zero_le_one s
+  refine (min_le_iff.mp hminle).resolve_right (not_le_of_gt ?_)
+  exact ENNReal.lt_add_right htop (by simp)
+
+theorem ediam_le_hausdorffMeasure {s : Set X} (hs : IsPreconnected s) : ediam s ≤ μH[1] s :=
+  ediam_le_iff.mpr (fun _ hx _ hy ↦ edist_le_hausdorffMeasure hs hx hy)
 
 end MeasureTheory
