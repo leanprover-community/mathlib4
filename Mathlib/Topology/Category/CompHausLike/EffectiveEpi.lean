@@ -53,7 +53,7 @@ def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Sur
           (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
           (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
           (by ext; exact hab))
-        a⟩) by assumption
+        a⟩) from this
     apply ConcreteCategory.ext
     rw [hom_ofHom, ← Equiv.symm_apply_eq
       (IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv]

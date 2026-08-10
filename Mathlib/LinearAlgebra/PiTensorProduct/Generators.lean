@@ -123,7 +123,7 @@ lemma ext_of_span_eq_top
         congr
         ext ⟨x, hx⟩
         congr
-        rw [Function.subtypeNeLift_of_neq _ _ _ _ (by assumption)]
+        rw [Function.subtypeNeLift_of_neq _ _ _ _ hx]
         rfl
       simpa only [lift.equiv_symm_apply, this] using h (Function.subtypeNeLift i₀ j g₀)
     · exact Set.ncard_compl_of_ncard_eq_add _ (by simpa)

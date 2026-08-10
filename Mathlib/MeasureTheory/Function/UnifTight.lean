@@ -301,7 +301,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       = eLpNorm (Eᶜ.indicator (f n) - Eᶜ.indicator g) p μ := by
         rw [(Eᶜ.indicator_sub' _ _)]
     _ ≤ eLpNorm (Eᶜ.indicator (f n)) p μ + eLpNorm (Eᶜ.indicator g) p μ := by
-        apply eLpNorm_sub_le (by assumption) (by assumption) hp
+        apply eLpNorm_sub_le hmfnEc hmgEc hp
     _ ≤ ε / 3 + ε / 3 := add_le_add hfnEcε hgEcε
   -- finally, combine interior and exterior estimates
   calc
@@ -309,7 +309,7 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
       = eLpNorm (Eᶜ.indicator (f n - g) + E.indicator (f n - g)) p μ := by
         congr; exact (E.indicator_compl_add_self _).symm
     _ ≤ eLpNorm (indicator Eᶜ (f n - g)) p μ + eLpNorm (indicator E (f n - g)) p μ := by
-        apply eLpNorm_add_le (by assumption) (by assumption) hp
+        apply eLpNorm_add_le hmfngEc hmfngE hp
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [ENNReal.add_thirds]
 
