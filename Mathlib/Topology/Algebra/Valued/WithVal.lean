@@ -273,13 +273,13 @@ instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
-  fast_instance% (equiv v).module S
+  fast_instance% (equiv v).toAddEquiv.module S
 
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
 
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
-def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
+def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).toAddEquiv.linearEquiv R
 
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
 
