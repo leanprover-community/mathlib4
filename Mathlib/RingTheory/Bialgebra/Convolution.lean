@@ -108,14 +108,14 @@ variable [Semiring A] [Bialgebra R A]
 
 /-- Pre- and post-composing the convolution by `f` agree on linear maps it intertwines. -/
 lemma convCompLeft_eq_convCompRight (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
-    (hg : g ∘ₗ f.toLinearMap = f.toLinearMap ∘ₗ g') :
+    (hg : ∀ a, f (g' a) = g (f a)) :
     f.toCoalgHom.convCompLeft (toConv g) = f.toAlgHom.convCompRight (toConv g') :=
-  WithConv.ext hg
+  WithConv.ext <| LinearMap.ext fun a ↦ (hg a).symm
 
 /-- Pre- and post-composing the convolution by `f` agree on the identity. -/
-lemma convCompLeft_toConv_id (f : A →ₐc[R] C) :
+lemma convCompLeft_id_eq_convCompRight_id (f : A →ₐc[R] C) :
     f.toCoalgHom.convCompLeft (toConv .id) = f.toAlgHom.convCompRight (toConv .id) :=
-  f.convCompLeft_eq_convCompRight (g' := .id) (by simp)
+  f.convCompLeft_eq_convCompRight (g' := .id) fun _ ↦ rfl
 
 end Semiring
 

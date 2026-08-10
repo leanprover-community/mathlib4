@@ -244,6 +244,11 @@ def convCompRight (h : A →ₐ[R] B) : WithConv (C →ₗ[R] A) →ₐ[R] WithC
   map_add' f g := WithConv.ext (by ext; simp)
   commutes' r := WithConv.ext (by ext; simp)
 
+/-- Post-composition by an injective algebra homomorphism is injective on convolutions. -/
+lemma convCompRight_injective {h : A →ₐ[R] B} (hh : Function.Injective h) :
+    Function.Injective (convCompRight h (C := C)) := fun _ _ e ↦
+  WithConv.ext <| (LinearMap.cancel_left hh).1 congr(($e).ofConv)
+
 end AlgHom
 
 namespace CoalgHom
