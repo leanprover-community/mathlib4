@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 public import Mathlib.RingTheory.TensorProduct.Basic
 

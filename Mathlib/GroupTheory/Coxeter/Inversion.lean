@@ -5,8 +5,8 @@ Authors: Mitchell Lee, Óscar Álvarez
 -/
 module
 
-public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.Data.List.GetD
+public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.Tactic.Group
 
 /-!

@@ -5,8 +5,8 @@ Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Density
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Density
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!

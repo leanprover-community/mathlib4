@@ -6,10 +6,10 @@ Authors: Violeta Hernández Palacios, Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Prod.Lex
-public import Mathlib.Order.SuccPred.Limit
-public import Mathlib.Topology.Order.Basic
-public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.Completion
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.UpperLower.CompleteLattice
+public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Algebra.Order.Field.Basic
 

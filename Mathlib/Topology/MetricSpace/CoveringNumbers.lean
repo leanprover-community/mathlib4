@@ -8,8 +8,8 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 public import Mathlib.Topology.EMetricSpace.Diam
-public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
 # Covering numbers

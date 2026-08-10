@@ -12,8 +12,8 @@ public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.Fin.Tuple.Finset
-public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # The Schwartz-Zippel lemma

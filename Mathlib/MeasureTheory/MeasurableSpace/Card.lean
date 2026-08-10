@@ -6,9 +6,9 @@ Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.Ordinal
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinal of sigma-algebras

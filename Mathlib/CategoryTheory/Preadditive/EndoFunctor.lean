@@ -5,9 +5,9 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Preadditive structure on algebras over a monad

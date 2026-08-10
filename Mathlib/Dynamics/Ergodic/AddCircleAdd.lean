@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
 
 /-!
 # Ergodicity of an irrational rotation

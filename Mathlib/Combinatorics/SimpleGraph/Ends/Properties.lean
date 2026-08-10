@@ -5,8 +5,8 @@ Authors: Anand Rao, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
 
 /-!
 # Properties of the ends of graphs

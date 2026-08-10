@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Simplicial complexes from affinely independent points

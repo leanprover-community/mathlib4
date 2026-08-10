@@ -5,10 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Taylor's formula with an integral remainder in higher dimensions

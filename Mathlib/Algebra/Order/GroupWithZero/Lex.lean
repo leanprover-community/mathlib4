@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.ProdHom
 public import Mathlib.Algebra.Order.Group.Equiv
-public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Order.Monoid.Lex
 public import Mathlib.Data.Prod.Lex
 
 /-!

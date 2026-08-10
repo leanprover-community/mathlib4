@@ -5,8 +5,8 @@ Authors: Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Isomorphisms of categories

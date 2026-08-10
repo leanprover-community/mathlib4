@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!

@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Functoriality of the symmetry of equivalences

@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # A basis for `TensorAlgebra R M`

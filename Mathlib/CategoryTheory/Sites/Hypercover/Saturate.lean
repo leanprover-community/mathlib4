@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.Sites.Hypercover.Homotopy
 public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
-public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 /-!
 # Saturation of a `0`-hypercover

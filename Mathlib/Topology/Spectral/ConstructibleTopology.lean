@@ -5,10 +5,10 @@ Authors: Johan Commelin, Jiedong Jiang, Christian Merten
 -/
 module
 
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.WithTopology
-public import Mathlib.Topology.JacobsonSpace
-public import Mathlib.Data.Set.Card
 
 /-!
 # Constructible topology

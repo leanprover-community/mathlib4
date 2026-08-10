@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Order.PartialSups
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Continuity of `partialSups`
