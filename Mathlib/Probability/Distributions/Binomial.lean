@@ -36,7 +36,7 @@ Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, 
 one to prove the second. Note that results concerning `Bin(R, n, p)` may require
 `[MeasurableSingletonClass R]` and/or `[CharZero R]`.
 
-When refering to `Bin(n, p)` in names, use `binomial`. When refering to `Bin(R, n, p)`,
+When referring to `Bin(n, p)` in names, use `binomial`. When referring to `Bin(R, n, p)`,
 use `map_cast_binomial`.
 
 ## Notation
@@ -188,7 +188,20 @@ variable {X : Ω → ℝ}
 /-- **Expectation of a binomial random variable**.
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
+theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
+  rw [hX.integral_eq, integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
+  cases n with norm_num | succ n
+  calc
+    _ = p * ∑ x ∈ Finset.range (n + 1), (n + 1).choose (x + 1) * (x + 1) *
+        p.val ^ x * (1 - p) ^ (n - x) := by grind [Finset.mul_sum]
+    _ = p * ∑ x ∈ Finset.range (n + 1), n.choose x * (n + 1) * p.val ^ x * (1 - p) ^ (n - x) := by
+      congrm p * ∑ x ∈ Finset.range (n + 1), ?_ * p.val ^ x * (1 - p) ^ (n - x)
+      norm_cast
+      rw [← Nat.add_one_mul_choose_eq n x, mul_comm]
+    _ = p * (n + 1) * ∑ x ∈ Finset.range (n + 1), n.choose x * p.val ^ x * (1 - p) ^ (n - x) := by
+      rw [mul_assoc, Finset.mul_sum (a := (n : ℝ) + 1)]
+      group
+    _ = p * (n + 1) := by grind [add_pow p.val (1 - p) n, one_pow]
 
 /-- **Variance of a binomial random variable**.
 
