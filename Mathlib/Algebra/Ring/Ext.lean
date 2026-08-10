@@ -373,7 +373,7 @@ namespace NonUnitalCommSemiring
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro ⟨⟩ ⟨⟩ h; congr; exact congrArg (·.toNonUnitalNonAssocSemiring) h
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -407,7 +407,7 @@ namespace NonUnitalCommRing
 
 theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro ⟨⟩ ⟨⟩ h; congr; exact congrArg (·.toNonUnitalNonAssocRing) h
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
