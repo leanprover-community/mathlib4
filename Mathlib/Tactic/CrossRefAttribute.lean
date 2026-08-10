@@ -473,4 +473,16 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
   traceCrossRefs .lmfdb (tk.isSome)
 
+/-- The `#dlmf_tags` command retrieves all declarations that have the `dlmf` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#dlmf_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
+-/
+elab (name := dlmfTags) "#dlmf_tags" tk:("!")? : command =>
+  traceCrossRefs .dlmf (tk.isSome)
+
 end Mathlib.CrossRef
