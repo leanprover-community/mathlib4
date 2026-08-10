@@ -20,6 +20,8 @@ This file allows to state that all propositions in a list are equivalent. It is 
 
 namespace List
 
+variable {a b : Prop} {l l₁ l₂ : List Prop}
+
 /-- TFAE: The Following (propositions) Are Equivalent.
 
 The `tfae_have` and `tfae_finish` tactics can be useful in proofs with `TFAE` goals.
@@ -33,45 +35,43 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
-theorem tfae_iff_pairwise {l : List Prop} : TFAE l ↔ l.Pairwise (· ↔ ·) :=
-  ⟨fun h ↦ pairwise_of_reflexive_of_forall_ne fun a ha b hb _ ↦ h a ha b hb,
-    fun h ↦ h.forall_of_forall fun _ _ ↦ Iff.rfl⟩
+theorem tfae_iff_pairwise : TFAE l ↔ l.Pairwise (· ↔ ·) :=
+  ⟨pairwise_of_forall_mem_list, Pairwise.forall_of_forall fun _ _ ↦ .rfl⟩
 
-theorem TFAE.subset {l₁ l₂ : List Prop} (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
+theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
-theorem tfae_congr {l₁ l₂ : List Prop} (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
+theorem tfae_congr (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
   ⟨fun h ↦ h.subset hp.symm.subset, fun h ↦ h.subset hp.subset⟩
 
 @[simp]
-theorem tfae_reverse {l : List Prop} : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
+theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
 
-theorem tfae_append {l₁ l₂ : List Prop} :
+theorem tfae_append :
     TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) := by
   simp [tfae_iff_pairwise, pairwise_append]
 
-theorem tfae_append_of_mem {a b} {l₁ l₂ : List Prop} (ha : a ∈ l₁) (hb : b ∈ l₂) :
+theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
     TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
   simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
 
-theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
 
-theorem tfae_append_singleton_of_mem {a b} {l : List Prop} (h : b ∈ l) :
+theorem tfae_append_singleton_of_mem (h : b ∈ l) :
     TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
 
-theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
+theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
 
 @[simp]
-theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by
-  simp [tfae_cons_cons]
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp [tfae_cons_cons]
 
 theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
 
-theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.IsChain (· → ·) (a :: b :: l))
+theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
   induction l generalizing a b with
   | nil => simp_all [tfae_cons_cons, iff_def]
@@ -81,7 +81,7 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.IsChain (· → ·) 
     have := IH ⟨bc, ch⟩ (ab ∘ h_last)
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
 
-theorem TFAE.out {l} (h : TFAE l) (n₁ n₂ : Nat) {a b}
+theorem TFAE.out (h : TFAE l) (n₁ n₂ : Nat) {a b}
     (h₁ : l[n₁]? = some a := by rfl)
     (h₂ : l[n₂]? = some b := by rfl) :
     a ↔ b :=
@@ -125,7 +125,7 @@ theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.ma
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem hp₁)
     (p₂ a) (mem_map_of_mem hp₂)
 
-theorem tfae_not_iff {l : List Prop} : TFAE (l.map Not) ↔ TFAE l := by
+theorem tfae_not_iff : TFAE (l.map Not) ↔ TFAE l := by
   classical
   simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     Decidable.not_iff_not]
