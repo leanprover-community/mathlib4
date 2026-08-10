@@ -367,6 +367,12 @@ lemma outerKernel_apply (f : X → V) (x y) :
   coe_inj.mp rfl
 
 omit [CompleteSpace V] in
+@[simp]
+lemma outerKernel_zero : outerKernel 𝕜 (0 : X → V) = 0 := by
+  ext
+  simp
+
+omit [CompleteSpace V] in
 variable (𝕜) in
 lemma outerKernel_inner (f : X → V) (x₁ x₂ : X) (v₁ v₂ : V) :
     ⟪outerKernel 𝕜 f x₂ x₁ v₁, v₂⟫_𝕜 = conj ⟪f x₁, v₁⟫_𝕜 * ⟪f x₂, v₂⟫_𝕜 := by
