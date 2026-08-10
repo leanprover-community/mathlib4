@@ -349,26 +349,6 @@ lemma stdSimplex.yonedaEquiv_σ_comp
     yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   (yonedaEquiv_naturality ..).symm
 
-lemma stdSimplex.δ_comp_yonedaEquiv_symm
-    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
-    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
-  yonedaEquiv_symm_naturality_left ..
-
-lemma stdSimplex.σ_comp_yonedaEquiv_symm
-    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
-    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
-  yonedaEquiv_symm_naturality_left ..
-
-lemma stdSimplex.yonedaEquiv_δ_comp
-    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
-    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
-  (yonedaEquiv_naturality ..).symm
-
-lemma stdSimplex.yonedaEquiv_σ_comp
-    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
-    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
-  (yonedaEquiv_naturality ..).symm
-
 namespace Subcomplex
 
 variable {X : SSet.{u}}
