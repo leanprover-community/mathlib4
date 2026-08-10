@@ -676,7 +676,7 @@ lemma aeval_derivative_mem_differentIdeal
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
   refine SetLike.le_def.mp ?_ (Ideal.mem_span_singleton_self _)
   rw [← conductor_mul_differentIdeal A K L x hx]
-  exact Ideal.mul_le_left
+  exact Ideal.mul_le_right
 
 end IsIntegrallyClosed
 section
@@ -762,7 +762,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
       simp at hx
   let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_left)
+      exact Ideal.mul_le_right)
   let K := FractionRing A
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
@@ -815,7 +815,7 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
     ¬ P ∣ differentIdeal A B := by
   let : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
       rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_left)
+      exact Ideal.mul_le_right)
   have : IsScalarTower A (A ⧸ p) (B ⧸ Q) := .of_algebraMap_eq' rfl
   have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
     Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
@@ -843,7 +843,7 @@ theorem not_dvd_differentIdeal_of_isCoprime
     refine ‹p.IsMaximal›.eq_of_le ?_ ?_
     · simpa using ‹P.IsMaximal›.ne_top
     · rw [← Ideal.map_le_iff_le_comap, ← hP]
-      exact Ideal.mul_le_right
+      exact Ideal.mul_le_left
   exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 lemma dvd_differentIdeal_of_not_isSeparable

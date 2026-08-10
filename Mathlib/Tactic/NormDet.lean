@@ -6,7 +6,7 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-meta import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
 public meta import Mathlib.Tactic.Determinant.Bird.Cert
 
 /-!
@@ -31,12 +31,16 @@ private def normalizeBirdDet (e : Expr) : MetaM Simp.Result := do
 private def normalizeDetFromEntries {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (rα : Q(CommRing $α))
   (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
     MetaM Simp.Result := do
-  let arrayExpr : Q(Array $α) ← mkArrayLit α entries.toList
-  let hA ← mkDecideProofQ q(Array.size $arrayExpr = $n * $n)
-  have : $arrayExpr =Q Array.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat := ⟨⟩
-  let ofArrayEqA := q(Matrix.ofArray_ofFn $A)
+  let xs : Q(List $α) ← mkListLit α entries.toList
+  let arrayExpr : Q(Array $α) := q(List.toArray $xs)
+  -- `List.ofFn` is exposed (unlike `Array.ofFn`) and so this reduction can be
+  -- checked by the kernel
+  have : (List.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) =Q $xs := ⟨⟩
+  let hlist : Q(List.ofFn (fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) = $xs) := q(rfl)
+  let hArray := q($hlist ▸ List.toArray_ofFn)
   let birdDet := q(BirdDet.birdDet $n $arrayExpr)
-  let detEqBirdDet := q($ofArrayEqA ▸ BirdDet.det_eq_birdDet $arrayExpr $hA)
+  let detEqBirdDet := q($hArray ▸ Matrix.ofArray_ofFn $A ▸ BirdDet.det_eq_birdDet
+    (Array.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) Array.size_ofFn)
   let birdDetNorm ← normalizeBirdDet birdDet
   let detEqBirdDetRes : Simp.Result := ⟨birdDet, some detEqBirdDet, true⟩
   detEqBirdDetRes.mkEqTrans birdDetNorm
