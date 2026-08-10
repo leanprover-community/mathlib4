@@ -452,8 +452,11 @@ theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : �
   rcases Hle hJ₁ with ⟨J₂, hJ₂, hle⟩
   exact ⟨_, Finset.mem_image_of_mem _ hJ₂, inf_le_inf_left _ <| WithBot.coe_le_coe.2 hle⟩
 
-theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
+theorem restrict_monotone : Monotone fun π : Prepartition I => restrict π J :=
   fun _ _ => restrict_mono
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_restrict := restrict_monotone
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality

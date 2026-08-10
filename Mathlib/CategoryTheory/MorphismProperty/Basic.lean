@@ -132,9 +132,12 @@ lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).op = P.op.inverseImage F.op := rfl
 
 @[gcongr]
-lemma monotone_inverseImage (F : C ⥤ D) :
+lemma inverseImage_monotone (F : C ⥤ D) :
     Monotone (fun P : MorphismProperty D ↦ P.inverseImage F) :=
   fun _ _ h _ _ _ hf ↦ h _ hf
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_inverseImage := inverseImage_monotone
 
 @[simp]
 lemma inverseImage_id (P : MorphismProperty C) : P.inverseImage (𝟭 C) = P :=
@@ -153,8 +156,11 @@ lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X 
     (P.strictMap F) (F.map f) := ⟨hf⟩
 
 @[gcongr]
-lemma monotone_strictMap (F : C ⥤ D) : Monotone (fun P : MorphismProperty C ↦ P.strictMap F) :=
+lemma strictMap_monotone (F : C ⥤ D) : Monotone (fun P : MorphismProperty C ↦ P.strictMap F) :=
   fun _ _ h _ _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_strictMap := strictMap_monotone
 
 @[simp]
 lemma strictMap_id (P : MorphismProperty C) :

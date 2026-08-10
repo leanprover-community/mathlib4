@@ -205,7 +205,7 @@ lemma map'_predAbove {n : ℕ} (i : Fin (n + 1)) (x : Fin (n + 2)) :
             Fin.castSucc_castPred]
   · simp [map'_last]
 
-lemma monotone_map' (f : Fin (n + 1) →o Fin (m + 1)) :
+lemma map'_monotone (f : Fin (n + 1) →o Fin (m + 1)) :
     Monotone (map' f) := by
   intro x y hxy
   exact Finset.min'_subset _ (fun z hz ↦ by
@@ -213,6 +213,9 @@ lemma monotone_map' (f : Fin (n + 1) →o Fin (m + 1)) :
     · simp only [castSucc_mem_finset_iff] at hz ⊢
       exact hxy.trans hz
     · simp)
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_map' := map'_monotone
 
 end II
 
@@ -225,7 +228,7 @@ def II : CosimplicialObject SimplexCategoryᵒᵖ where
   obj n := op ⦋n.len + 1⦌
   map f := op (Hom.mk
     { toFun := II.map' f.toOrderHom
-      monotone' := II.monotone_map' _ })
+      monotone' := II.map'_monotone _ })
   map_id n := Quiver.Hom.unop_inj (by
     ext x : 3
     exact II.map'_id x)

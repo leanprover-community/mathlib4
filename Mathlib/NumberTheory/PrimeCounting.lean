@@ -25,8 +25,8 @@ The main definitions for this file are
   (this was previously in `Mathlib.NumberTheory.SmoothNumbers`)
 - `Nat.primesLE`: The finset of primes less than or equal to n
 
-We then prove that these are monotone in `Nat.monotone_primeCounting` and
-`Nat.monotone_primeCounting'`. The last main theorem `Nat.primeCounting'_add_le` is an upper
+We then prove that these are monotone in `Nat.primeCounting_monotone` and
+`Nat.primeCounting'_monotone`. The last main theorem `Nat.primeCounting'_add_le` is an upper
 bound on `π'` which arises by observing that all numbers greater than `k` and not coprime to `k`
 are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to `n` are prime.
 
@@ -69,11 +69,17 @@ theorem primeCounting_eq_primeCounting'_succ (n : ℕ) : π n = π' (n + 1) := r
 theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by
   cases n <;> rfl
 
-theorem monotone_primeCounting' : Monotone primeCounting' :=
+theorem primeCounting'_monotone : Monotone primeCounting' :=
   count_monotone Prime
 
-theorem monotone_primeCounting : Monotone primeCounting :=
-  monotone_primeCounting'.comp (monotone_id.add_const _)
+@[deprecated (since := "2026-08-10")]
+alias monotone_primeCounting' := primeCounting'_monotone
+
+theorem primeCounting_monotone : Monotone primeCounting :=
+  primeCounting'_monotone.comp (monotone_id.add_const _)
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_primeCounting := primeCounting_monotone
 
 @[simp]
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
@@ -95,7 +101,7 @@ theorem surjective_primeCounting : Function.Surjective π := by
 open Filter
 
 theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
-  apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  apply tendsto_atTop_atTop_of_monotone' primeCounting'_monotone
   simp [Set.range_eq_univ.mpr surjective_primeCounting']
 
 theorem tendsto_primeCounting : Tendsto π atTop atTop :=

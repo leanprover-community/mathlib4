@@ -145,12 +145,18 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
 
 variable [Preorder M] [CanonicallyOrderedMul M]
 
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
+@[to_additive] lemma prod_take_monotone (L : List M) : Monotone fun i ↦ (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
   rcases lt_or_ge n L.length with h | h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_sum_take := sum_take_monotone
+
+@[to_additive existing, deprecated (since := "2026-08-10")]
+alias monotone_prod_take := prod_take_monotone
 
 /-- See also `List.single_le_prod`. -/
 @[to_additive /-- See also `List.single_le_sum`. -/]

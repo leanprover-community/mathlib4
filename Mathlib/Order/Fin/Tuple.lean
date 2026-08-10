@@ -117,8 +117,11 @@ variable {f : Fin (n + 1) → α} {a : α}
 lemma monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
   simpa only [monotone_iff_forall_lt] using! @liftFun_vecCons α n (· ≤ ·) _ f a
 
-@[simp] lemma monotone_vecEmpty : Monotone ![a]
+@[simp] lemma vecEmpty_monotone : Monotone ![a]
   | ⟨0, _⟩, ⟨0, _⟩, _ => le_refl _
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_vecEmpty := vecEmpty_monotone
 
 @[simp] lemma strictMono_vecEmpty : StrictMono ![a]
   | ⟨0, _⟩, ⟨0, _⟩, h => (irrefl _ h).elim

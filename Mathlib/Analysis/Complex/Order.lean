@@ -125,9 +125,12 @@ lemma neg_re_eq_norm {z : ℂ} : -z.re = ‖z‖ ↔ z ≤ 0 := by
 @[simp]
 lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
 
-lemma monotone_ofReal : Monotone ofReal := by
+lemma ofReal_monotone : Monotone ofReal := by
   intro x y hxy
   simp only [real_le_real, hxy]
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_ofReal := ofReal_monotone
 
 end Complex
 

@@ -174,8 +174,11 @@ lemma galoisConnection_morphismProperty_precoverage :
     GaloisConnection (Precoverage.morphismProperty (C := C)) MorphismProperty.precoverage :=
   @Precoverage.morphismProperty_le_iff_le_precoverage _ _
 
-lemma monotone_morphismProperty : Monotone (Precoverage.morphismProperty (C := C)) :=
+lemma morphismProperty_monotone : Monotone (Precoverage.morphismProperty (C := C)) :=
   Precoverage.galoisConnection_morphismProperty_precoverage.monotone_l
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_morphismProperty := morphismProperty_monotone
 
 lemma le_precoverage_morphismProperty : K ≤ K.morphismProperty.precoverage :=
   galoisConnection_morphismProperty_precoverage.le_u_l _

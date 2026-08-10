@@ -340,11 +340,17 @@ lemma galoisConnection_pushforward_pullback :
     GaloisConnection (pushforward f) (pullback f) :=
   pushforward_le_iff_le_pullback f
 
-lemma monotone_pushforward : Monotone (pushforward f) :=
+lemma pushforward_monotone : Monotone (pushforward f) :=
   (galoisConnection_pushforward_pullback f).monotone_l
 
-lemma monotone_pullback : Monotone (pullback f) :=
+@[deprecated (since := "2026-08-10")]
+alias monotone_pushforward := pushforward_monotone
+
+lemma pullback_monotone : Monotone (pullback f) :=
   (galoisConnection_pushforward_pullback f).monotone_u
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_pullback := pullback_monotone
 
 lemma pushforward_pullback_le (R : Presieve X) : (R.pullback f).pushforward f ≤ R :=
   (galoisConnection_pushforward_pullback f).l_u_le _

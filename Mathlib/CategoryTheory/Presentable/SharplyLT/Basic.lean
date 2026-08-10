@@ -197,11 +197,14 @@ lemma hasCardinalLT_transfiniteIterate_φ (j : κ₁.ord.ToType) :
 
 include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in
-lemma monotone_transfiniteIterate_φ :
+lemma transfiniteIterate_φ_monotone :
     Monotone (fun (j : κ₁.ord.ToType) ↦ transfiniteIterate (φ Y m) j A) :=
   have := Cardinal.nonempty_ord_toType (c := κ₁) (IsRegular.ne_zero Fact.out)
   letI := WellFoundedLT.toOrderBot κ₁.ord.ToType
   monotone_transfiniteIterate _ _ (le_φ _ hY' _)
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_transfiniteIterate_φ := transfiniteIterate_φ_monotone
 
 omit [PartialOrder X] [Fact κ₂.IsRegular] in
 lemma subset_iUnion : A ⊆ ⋃ (j : κ₁.ord.ToType), transfiniteIterate (φ Y m) j A := by
@@ -222,7 +225,7 @@ lemma isCardinalFiltered_iUnion :
       simpa only [Set.mem_iUnion] using (f k).prop
     choose a ha using this
     obtain ⟨⟨z, hz⟩, hz'⟩ := this (IsCardinalFiltered.max a hK) (fun k ↦
-      ⟨(f k).val, monotone_transfiniteIterate_φ Y hY' m A
+      ⟨(f k).val, transfiniteIterate_φ_monotone Y hY' m A
           (leOfHom (IsCardinalFiltered.toMax a hK k)) (ha k)⟩) hK
     exact ⟨⟨z, Set.subset_iUnion _ _ hz⟩, hz'⟩
   intro K j f hK

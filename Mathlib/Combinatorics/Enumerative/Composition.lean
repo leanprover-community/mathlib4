@@ -246,8 +246,11 @@ theorem sizeUpTo_strict_mono {i : ℕ} (h : i < c.length) : c.sizeUpTo i < c.siz
   rw [c.sizeUpTo_succ h]
   simp
 
-theorem monotone_sizeUpTo : Monotone c.sizeUpTo :=
-  monotone_sum_take _
+theorem sizeUpTo_monotone : Monotone c.sizeUpTo :=
+  sum_take_monotone _
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_sizeUpTo := sizeUpTo_monotone
 
 /-- The `i`-th boundary of a composition, i.e., the leftmost point of the `i`-th block. We include
 a virtual point at the right of the last block, to make for a nice equiv with
@@ -295,7 +298,7 @@ def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAddOrderEmb <| c.sizeUpTo i).trans <| Fin.castLEOrderEmb <|
     calc
       c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ i.2).symm
-      _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
+      _ ≤ c.sizeUpTo c.length := sum_take_monotone _ i.2
       _ = n := c.sizeUpTo_length
 
 @[simp]
@@ -380,7 +383,7 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
   apply lt_irrefl (x : ℕ)
   calc
     (x : ℕ) < c.sizeUpTo (i₁ : ℕ).succ := (c.mem_range_embedding_iff.1 hx₁).2
-    _ ≤ c.sizeUpTo (i₂ : ℕ) := monotone_sum_take _ A
+    _ ≤ c.sizeUpTo (i₂ : ℕ) := sum_take_monotone _ A
     _ ≤ x := (c.mem_range_embedding_iff.1 hx₂).1
 
 theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index j)) := by

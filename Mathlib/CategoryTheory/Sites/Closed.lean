@@ -123,8 +123,11 @@ theorem pullback_close {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
     apply hg
 
 @[gcongr, mono]
-theorem monotone_close {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
+theorem close_monotone {X : C} : Monotone (J₁.close : Sieve X → Sieve X) :=
   (J₁.closureOperator _).monotone
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_close := close_monotone
 
 @[simp]
 theorem close_close {X : C} (S : Sieve X) : J₁.close (J₁.close S) = J₁.close S :=

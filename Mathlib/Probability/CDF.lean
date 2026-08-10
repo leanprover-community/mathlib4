@@ -67,7 +67,10 @@ lemma cdf_nonneg (x : ℝ) : 0 ≤ cdf μ x := condCDF_nonneg _ _ _
 lemma cdf_le_one (x : ℝ) : cdf μ x ≤ 1 := condCDF_le_one _ _ _
 
 /-- The cdf is monotone. -/
-lemma monotone_cdf : Monotone (cdf μ) := (condCDF _ _).mono
+lemma cdf_monotone : Monotone (cdf μ) := (condCDF _ _).mono
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_cdf := cdf_monotone
 
 /-- The cdf tends to 0 at -∞. -/
 lemma tendsto_cdf_atBot : Tendsto (cdf μ) atBot (𝓝 0) := tendsto_condCDF_atBot _ _

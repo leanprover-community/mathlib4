@@ -625,8 +625,11 @@ theorem mem_range_gamma : o ∈ range Γ_ ↔ veblen o 0 = o :=
 theorem strictMono_gamma : StrictMono gamma :=
   isNormal_gamma.strictMono
 
-theorem monotone_gamma : Monotone gamma :=
+theorem gamma_monotone : Monotone gamma :=
   isNormal_gamma.monotone
+
+@[deprecated (since := "2026-08-10")]
+alias monotone_gamma := gamma_monotone
 
 @[simp]
 theorem gamma_lt_gamma : Γ_ a < Γ_ b ↔ a < b :=

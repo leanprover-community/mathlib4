@@ -1147,7 +1147,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
         take (sum (take i b.blocks)) a.blocks =
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
         rw [take_take, min_eq_left]
-        apply monotone_sum_take _ (Nat.le_succ _)
+        apply sum_take_monotone _ (Nat.le_succ _)
       rw [this, getElem_map, getElem_splitWrtComposition, ←
         take_append_drop (sum (take i b.blocks)) (take (sum (take (Nat.succ i) b.blocks)) a.blocks),
         sum_append]
