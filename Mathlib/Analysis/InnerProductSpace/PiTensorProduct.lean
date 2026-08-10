@@ -180,4 +180,107 @@ theorem edist_tprod_le (x y : Π i, E i) :
     edist (⨂ₜ[𝕜] i, x i) (⨂ₜ[𝕜] i, y i) ≤ ∏ i, ‖x i‖ₑ + ∏ i, ‖y i‖ₑ := by
   grw [edist_eq_enorm_sub, enorm_sub_le]; simp
 
+section isometries
+
+noncomputable def mapIsometry (f : Π i, E i →ₗᵢ[𝕜] F i) : (⨂[𝕜] i, E i) →ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
+  map (fun i ↦ (f i).toLinearMap) |>.isometryOfInner <| inner_map_map _
+
+@[simp] lemma mapIsometry_apply (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i) :
+    mapIsometry f x = map (fun i ↦ (f i).toLinearMap) x := rfl
+
+@[simp] lemma toLinearMap_mapIsometry (f : Π i, E i →ₗᵢ[𝕜] F i) :
+    (mapIsometry f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := rfl
+
+@[simp] lemma norm_map (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i) :
+    ‖map (fun i ↦ (f i).toLinearMap) x‖ = ‖x‖ := (mapIsometry f).norm_map x
+
+@[simp] lemma nnnorm_map (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i) :
+    ‖map (fun i ↦ (f i).toLinearMap) x‖₊ = ‖x‖₊ := (mapIsometry f).nnnorm_map x
+
+@[simp] lemma enorm_map (f : Π i, E i →ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i) :
+    ‖map (fun i ↦ (f i).toLinearMap) x‖ₑ = ‖x‖ₑ := (mapIsometry f).enorm_map x
+
+@[simp] lemma mapIsometry_id :
+    mapIsometry (fun i ↦ (.id : E i →ₗᵢ[𝕜] E i)) = .id := by ext; simp
+
+noncomputable def congrIsometry (f : Π i, E i ≃ₗᵢ[𝕜] F i) : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i, F i :=
+  congr (fun i ↦ (f i).toLinearEquiv) |>.isometryOfInner <|
+    inner_map_map (fun i ↦ (f i).toLinearIsometry)
+
+@[simp] lemma congrIsometry_apply (f : Π i, E i ≃ₗᵢ[𝕜] F i) (x : ⨂[𝕜] i, E i) :
+    congrIsometry f x = congr (fun i ↦ (f i).toLinearEquiv) x := rfl
+
+lemma congrIsometry_symm (f : Π i, E i ≃ₗᵢ[𝕜] F i) :
+    (congrIsometry f).symm = congrIsometry (fun i ↦ (f i).symm) := rfl
+
+@[simp] lemma toLinearEquiv_congrIsometry (f : Π i, E i ≃ₗᵢ[𝕜] F i) :
+    (congrIsometry f).toLinearEquiv = congr (fun i ↦ (f i).toLinearEquiv) := rfl
+
+@[simp] lemma congrIsometry_refl :
+    congrIsometry (fun i ↦ .refl 𝕜 (E i)) = .refl 𝕜 (⨂[𝕜] i, E i) :=
+  LinearIsometryEquiv.toLinearEquiv_inj.mp <| LinearEquiv.toLinearMap_inj.mp <| by ext; simp
+
+noncomputable def mapInclIsometry (p : Π i, Submodule 𝕜 (E i)) : (⨂[𝕜] i, p i) →ₗᵢ[𝕜] ⨂[𝕜] i, E i :=
+  mapIsometry fun i ↦ (p i).subtypeₗᵢ
+
+@[simp] lemma mapInclIsometry_apply (p : Π i, Submodule 𝕜 (E i)) (x : ⨂[𝕜] i, p i) :
+    mapInclIsometry p x = mapIncl p x := rfl
+
+@[simp] lemma toLinearMap_mapInclIsometry (p : Π i, Submodule 𝕜 (E i)) :
+    (mapInclIsometry p).toLinearMap = mapIncl p := rfl
+
+section reindex
+
+variable {ι₂} [Fintype ι₂]
+
+variable (𝕜 E) in
+noncomputable def reindexIsometry (e : ι ≃ ι₂) :
+    (⨂[𝕜] i : ι, E i) ≃ₗᵢ[𝕜] ⨂[𝕜] i : ι₂, E (e.symm i) :=
+  (reindex 𝕜 E e).isometryOfInner fun x y ↦ x.induction_on
+    (y.induction_on
+      (fun _ u _ v ↦ by
+        simp [inner_smul_left, inner_smul_right, Equiv.prod_comp _ fun i ↦ inner 𝕜 (v i) (u i)])
+      (by simp_all [inner_add_right]))
+    (by simp_all [inner_add_left])
+
+@[simp] lemma reindexIsometry_apply (e : ι ≃ ι₂) (x : ⨂[𝕜] i : ι, E i) :
+    reindexIsometry 𝕜 E e x = reindex 𝕜 E e x := rfl
+
+@[simp] lemma reindexIsometry_refl : reindexIsometry 𝕜 E (.refl ι) = .refl 𝕜 _ := by
+  ext
+  rw [reindexIsometry_apply, reindex_refl]
+  congr
+
+end reindex
+
+section isEmpty
+
+variable (ι) [IsEmpty ι]
+
+noncomputable def isEmptyIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] 𝕜 :=
+  isEmptyEquiv ι |>.isometryOfInner <| by simp [mul_comm]
+
+@[simp] lemma isEmptyIsometry_apply (x : ⨂[𝕜] i, E i) : isEmptyIsometry ι x = isEmptyEquiv ι x :=
+  rfl
+
+end isEmpty
+
+section subsingleton
+
+variable [Subsingleton ι] (i₀ : ι)
+
+noncomputable def subsingletonIsometry : (⨂[𝕜] i, E i) ≃ₗᵢ[𝕜] E i₀ :=
+  subsingletonEquiv i₀ |>.isometryOfInner <| fun x y ↦ x.induction_on
+    (y.induction_on
+      (by simp [inner_smul_right, inner_smul_left, Fintype.prod_subsingleton _ i₀])
+      (by simp_all [_root_.inner_add_right]))
+    (by simp_all [_root_.inner_add_left])
+
+@[simp] lemma subsingletonIsometry_apply (x : ⨂[𝕜] i, E i) :
+    subsingletonIsometry i₀ x = subsingletonEquiv i₀ x := rfl
+
+end subsingleton
+
+end isometries
+
 end PiTensorProduct
