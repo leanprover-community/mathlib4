@@ -1210,15 +1210,13 @@ theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
 end DivisionMonoid
 
 /-- Commutative `SubtractionMonoid`. -/
-class SubtractionCommMonoid (G : Type u) extends SubNegMonoid G,
-    SubtractionMonoid G, AddCommMonoid G
+class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 @[to_additive SubtractionCommMonoid]
-class DivisionCommMonoid (G : Type u) extends DivInvMonoid G,
-    DivisionMonoid G, CommMonoid G
+class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 

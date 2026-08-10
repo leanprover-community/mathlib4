@@ -219,8 +219,7 @@ attribute [instance 100] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiri
 In other words, it is a type with the following structures: additive commutative monoid
 (`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
 multiplication by zero law (`MulZeroClass`). -/
-class NonUnitalCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α,
-    NonUnitalSemiring α, CommSemigroup α
+class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 
 /-- A non-associative commutative semiring is a `NonAssocSemiring` with commutative
 multiplication. -/
@@ -396,8 +395,7 @@ class NonUnitalNonAssocCommRing (α : Type u)
   extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
 
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalNonAssocRing α,
-    NonUnitalRing α, NonUnitalNonAssocCommRing α
+class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 
 /-- A non-associative commutative ring is a `NonAssocRing` with commutative multiplication. -/
 class NonAssocCommRing (α : Type u)
