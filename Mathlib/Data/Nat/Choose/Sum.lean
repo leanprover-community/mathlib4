@@ -118,6 +118,9 @@ theorem choose_middle_le_pow (n : ℕ) : (2 * n + 1).choose n ≤ 4 ^ n := by
     single_le_sum (fun x _ ↦ by lia) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 
+theorem two_mul_choose_self_le_pow (n : ℕ) : (2 * n).choose n ≤ 4 ^ n :=
+  (choose_le_succ (2 * n) n).trans (choose_middle_le_pow n)
+
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * (2 * n).choose n :=
   calc
