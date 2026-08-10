@@ -94,9 +94,9 @@ namespace HopfAlgebra
 section Construction
 variable [Semiring A] [Bialgebra R A] {s : Set A}
 
-/-- Upgrade a bialgebra to a Hopf algebra from a candidate antipode — packaged as an algebra
-homomorphism into the opposite algebra — that is a two-sided convolution inverse of the
-identity pointwise on an algebra-generating set. -/
+/-- Build a Hopf algebra structure on a bialgebra `A` from an algebra homomorphism into
+`Aᵐᵒᵖ` that is a two-sided convolution inverse of the identity at every element of an
+algebra-generating set. -/
 noncomputable abbrev ofGenerators (S : A →ₐ[R] Aᵐᵒᵖ) (adjoin_eq_top : adjoin R s = ⊤)
     (S_convMul_id : ∀ p ∈ s,
       (toConv ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) *
