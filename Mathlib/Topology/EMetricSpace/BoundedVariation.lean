@@ -410,6 +410,17 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
     ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
+theorem Iic_add_Icc (f : α → E) {s : Set α} {a b : α} (hab : a ≤ b) (ha : a ∈ s) :
+    eVariationOn f (s ∩ Iic a) + eVariationOn f (s ∩ Icc a b) = eVariationOn f (s ∩ Iic b) := by
+  rw [← eVariationOn.union f (s := s ∩ Iic a) (t := s ∩ Icc a b) ⟨⟨ha, le_rfl⟩, fun _ h ↦ h.2⟩
+    ⟨⟨ha, le_rfl, hab⟩, fun _ h ↦ h.2.1⟩, ← inter_union_distrib_left, Iic_union_Icc_eq_Iic hab]
+
+theorem Icc_add_Ici (f : α → E) {s : Set α} {a b : α} (hab : a ≤ b) (hb : b ∈ s) :
+    eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Ici b) = eVariationOn f (s ∩ Ici a) := by
+  rw [← eVariationOn.union f (s := s ∩ Icc a b) (t := s ∩ Ici b)
+    ⟨⟨hb, hab, le_rfl⟩, fun _ h ↦ h.2.2⟩ ⟨⟨hb, le_rfl⟩, fun _ h ↦ h.2⟩,
+    ← inter_union_distrib_left, Icc_union_Ici_eq_Ici hab]
+
 theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
     (hn : ∀ i, 0 < i → i < n → E i ∈ s) :
     ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (E i) (E (i + 1))) =

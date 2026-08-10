@@ -8363,6 +8363,7 @@ public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Topology.EMetricSpace.HausdorffMeasureBoundedVariation
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.EMetricSpace.PairReduction
