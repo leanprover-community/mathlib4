@@ -45,6 +45,9 @@ theorem tfae_congr (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
 @[simp]
 theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
 
+theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
+  fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
+
 theorem TFAE.out (h : TFAE l) (n₁ n₂ : Nat) {a b}
     (h₁ : l[n₁]? = some a := by rfl)
     (h₂ : l[n₂]? = some b := by rfl) :
