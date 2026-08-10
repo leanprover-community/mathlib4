@@ -14,6 +14,10 @@ public import Mathlib.RingTheory.Coalgebra.Primitive
 This file defines primitive elements in a bialgebra and collects the facts about them that need
 the multiplication of `A`.
 
+## Main declarations
+
+* `Bialgebra.IsPrimitiveElem a`: `a` is primitive, i.e. `ε a = 0` and `Δ a = 1 ⊗ₜ a + a ⊗ₜ 1`.
+
 ## TODO
 
 * Show that the primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.

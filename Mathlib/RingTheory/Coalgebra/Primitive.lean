@@ -15,8 +15,8 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 
 ## Main declarations
 
-* `Coalgebra.IsSkewPrimitiveElem`: Predicate for an element to be `(g, h)`-skew-primitive.
-* `Coalgebra.skewPrimitiveSubmodule`: The submodule of `(g, h)`-skew-primitive elements.
+* `Coalgebra.IsSkewPrimitiveElem g h a`: `a` is `(g, h)`-skew-primitive.
+* `Coalgebra.skewPrimitiveSubmodule R g h`: the `(g, h)`-skew-primitive elements as a submodule.
 
 ## TODO
 
