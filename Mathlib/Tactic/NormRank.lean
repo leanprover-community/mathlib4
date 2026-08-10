@@ -21,7 +21,6 @@ such as the `⟨a, b⟩` pairs of `ℤ√d`. The simproc `norm_rank` rewrites su
 
 - `eval_rank`: the tactic.
 - `norm_rank`: the simproc, for use in `simp` sets.
-- `norm_rank_throw`: the throwing variant of `norm_rank`, used by `eval_rank`.
 -/
 
 public meta section
@@ -71,22 +70,20 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
     trace[Tactic.evalRank] "{ex.toMessageData}"
     return .continue
 
-/-- The throwing variant of `norm_rank`: a failure of a committed attempt surfaces as an
-error naming its cause. Used by `eval_rank`. -/
-simproc_decl norm_rank_throw (Matrix.rank _) := fun e => normRankCore e
-
 /-- `eval_rank` reduces `Matrix.rank` of a closed matrix literal to a literal and tries to
 close the goal. Rank terms the method skips are reported under `trace.Tactic.evalRank`. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
   let ctx ← Simp.mkContext (config := { failIfUnchanged := false })
     (congrTheorems := ← getSimpCongrTheorems)
-  let simprocs ← ({} : Simp.Simprocs).add ``norm_rank_throw (post := true)
+  let some keys ← Simp.getSimprocDeclKeys? ``norm_rank
+    | throwError "internal error: no discrimination keys registered for `norm_rank`"
+  let simprocs := ({} : Simp.Simprocs).addCore keys `evalRank (post := true) (.inl normRankCore)
   match ← simpGoal goal ctx #[simprocs] with
   | (none, _) => return
   | (some (_, goal'), _) =>
     if goal' == goal then
-      throwError "eval_rank made no progress\n\
-        `set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons"
+      throwError "eval_rank made no progress.\n\
+        Additional information may be available using `set_option trace.Tactic.evalRank true`."
     Tactic.replaceMainGoal [goal']
     Tactic.evalTactic (← `(tactic| try lia))

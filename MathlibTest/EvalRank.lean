@@ -198,8 +198,8 @@ set_option trace.Tactic.evalRank true
 /-! ### No closed matrix literal in the goal -/
 
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] not a closed matrix literal
       A
@@ -208,8 +208,8 @@ trace: [Tactic.evalRank] not a closed matrix literal
 example (A : Matrix (Fin 2) (Fin 2) ℚ) : A.rank = 2 := by eval_rank
 
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] not a closed matrix literal
       !![a, 1; 1, a]
@@ -220,8 +220,8 @@ example (a : ℚ) : Matrix.rank (R := ℚ) !![a, 1; 1, a] = 2 := by eval_rank
 /-! ### Out of scope for the Bareiss method -/
 
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] expected the element type to be a commutative ring
       !![1, 2; 3, 4]
@@ -230,8 +230,8 @@ trace: [Tactic.evalRank] expected the element type to be a commutative ring
 example : Matrix.rank (R := ℕ) !![1, 2; 3, 4] = 2 := by eval_rank
 
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] expected the element type to be a domain
       !![1, 2; 3, 4]
@@ -245,8 +245,8 @@ Rejected today; extensions of the tactic could support these inputs. -/
 
 -- Requires a more general cert checker that works for rational literals in types like ℝ
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] equality in the element type does not reduce in the kernel
       ℝ
@@ -258,8 +258,8 @@ example : Matrix.rank (R := ℝ) !![1, 2; 3, 4] = 2 := by eval_rank
 -- Requires computable polynomial ops in the kernel
 open Polynomial in
 /--
-error: eval_rank made no progress
-`set_option trace.Tactic.evalRank true` shows the skipped rank terms and the reasons
+error: eval_rank made no progress.
+Additional information may be available using `set_option trace.Tactic.evalRank true`.
 ---
 trace: [Tactic.evalRank] equality in the element type does not reduce in the kernel
       ℚ[X]
