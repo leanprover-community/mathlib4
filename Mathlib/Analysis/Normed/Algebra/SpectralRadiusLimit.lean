@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.Subadditive
 public import Mathlib.Data.Fintype.Order
 
@@ -28,17 +29,21 @@ basic properties.
 
 @[expose] public section
 
+-- #42623
 theorem Finite.ciInf_le_iff {ι α : Type*} [Finite ι] [Nonempty ι]
     [ConditionallyCompleteLinearOrder α] {a : α}
     {f : ι → α} : ⨅ i, f i ≤ a ↔ ∃ x, f x ≤ a :=
   ⟨fun h ↦ (exists_eq_ciInf_of_finite).imp fun _ hi ↦ hi.trans_le h,
     fun ⟨i, h⟩ ↦ (ciInf_le f i).trans h⟩
 
+-- #42623
 theorem Finite.lt_ciInf_iff {ι α : Type*} [Finite ι] [Nonempty ι]
     [ConditionallyCompleteLinearOrder α] {a : α}
     {f : ι → α} : a < ⨅ i, f i ↔ ∀ x, a < f x := by
   contrapose!
   exact Finite.ciInf_le_iff
+
+open Filter
 
 open scoped Topology
 
@@ -50,10 +55,10 @@ variable [SeminormedRing A]
 
 /-- The limit `‖a ^ k‖ ^ (1 / k)` of an element `a` in a normed ring. -/
 noncomputable def spectralRadiusLim (a : A) : ℝ :=
-  Filter.atTop.limUnder fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹
+  atTop.limUnder fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹
 
 theorem tendsto_spectralRadiusLim (a : A) :
-    Filter.atTop.Tendsto (fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹) (𝓝 (spectralRadiusLim a)) := by
+    atTop.Tendsto (fun k : ℕ ↦ ‖a ^ k‖ ^ (k : ℝ)⁻¹) (𝓝 (spectralRadiusLim a)) := by
   have h : Submultiplicative fun k ↦ ‖a ^ k‖ :=
     fun m n ↦ by simpa [pow_add] using norm_mul_le (a ^ m) (a ^ n)
   exact tendsto_nhds_limUnder ⟨h.lim, h.tendsto_lim fun n ↦ norm_nonneg (a ^ n)⟩
@@ -81,8 +86,7 @@ example (a : A) : 0 ≤ spectralRadiusLim a := by
   positivity
 
 theorem spectralRadiusLim_le_norm (a : A) : spectralRadiusLim a ≤ ‖a‖ := by
-  refine le_of_tendsto (tendsto_spectralRadiusLim a)
-    (Filter.eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩)
+  refine le_of_tendsto (tendsto_spectralRadiusLim a) (eventually_atTop.mpr ⟨1, fun n hn ↦ ?_⟩)
   grw [norm_pow_le' a hn, ← Real.rpow_natCast_mul (by positivity),
     mul_inv_cancel₀ (by positivity), Real.rpow_one]
 
@@ -106,7 +110,7 @@ theorem spectralRadiusLim_le_norm_pow (a : A) {n : ℕ} (hn : n ≠ 0) :
 
 theorem exists_le_spectralRadiusLim (a : A) (ε : ℝ) (hε0 : 0 < ε) :
     ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * (spectralRadiusLim a + ε) ^ n := by
-  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_le_const
+  obtain ⟨n, hn⟩ := eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_le_const
     ((lt_add_iff_pos_right (spectralRadiusLim a)).mpr hε0))
   refine ⟨max 1 (⨆ k : Set.Iic n, ‖a ^ k.val‖ / (spectralRadiusLim a + ε) ^ k.val),
     by positivity, fun k ↦ ?_⟩
@@ -118,7 +122,7 @@ theorem exists_le_spectralRadiusLim (a : A) (ε : ℝ) (hε0 : 0 < ε) :
 
 theorem exists_spectralRadiusLim_le (a : A) (ε : ℝ) (hε0 : 0 < ε) (hε : ε < spectralRadiusLim a) :
     ∃ C > 0, ∀ n, C * (spectralRadiusLim a - ε) ^ n ≤ ‖a ^ n‖ := by
-  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_const_le
+  obtain ⟨n, hn⟩ := eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_const_le
     (sub_lt_self (spectralRadiusLim a) hε0))
   refine ⟨min 1 (⨅ k : Set.Iic n, ‖a ^ k.val‖ / (spectralRadiusLim a - ε) ^ k.val), ?_, fun k ↦ ?_⟩
   · have h : 0 < spectralRadiusLim a := hε0.trans hε
@@ -134,7 +138,7 @@ theorem exists_spectralRadiusLim_le (a : A) (ε : ℝ) (hε0 : 0 < ε) (hε : ε
     · grw [min_le_left, one_mul, hn k hk.le, ← Real.rpow_mul_natCast (by positivity),
         inv_mul_cancel₀ (by simp; grind), Real.rpow_one] <;> positivity
 
-theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
+theorem Commute.spectralRadiusLim_add_le {a b : A} (h : Commute a b) :
     spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b := by
   suffices ∀ ε > 0, ε / 3 < spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
       (spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3) from
@@ -144,25 +148,24 @@ theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
   obtain ⟨Cy, hCy, hy⟩ := exists_le_spectralRadiusLim b (ε / 3) (by positivity)
   obtain ⟨Cxy, hCxy, hxy⟩ := exists_spectralRadiusLim_le (a + b) (ε / 3) (by positivity) hε
   let C := Cx * Cy * ‖(1 : A)‖
-  have h (n : ℕ) : Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
+  replace h (n : ℕ) : Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
       C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n := by
     specialize hxy n
-    grw [hc.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
+    grw [h.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
     grind [Finset.mul_sum, _root_.add_pow]
+  have hC : 0 < C := hCxy.trans_le (by simpa using h 0)
   replace h (n : ℕ) (hn : n ≠ 0) : Cxy ^ (n⁻¹ : ℝ) * (spectralRadiusLim (a + b) - ε / 3) ≤
       C ^ (n⁻¹ : ℝ) * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) := by
-    rw [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, _root_.mul_pow, _root_.mul_pow,
-      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
-      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
-    exact h n
-  replace h : ∀ᶠ (n : ℕ) in Filter.atTop, Cxy ^ (n⁻¹ : ℝ) * (spectralRadiusLim (a + b) - ε / 3) ≤
-      C ^ (n⁻¹ : ℝ) * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) :=
-    Filter.eventually_atTop.mpr ⟨1, fun n hn ↦ h n (by grind)⟩
-  refine le_of_tendsto_of_tendsto ?_ ?_ h
-  · have : Filter.atTop.Tendsto (fun n : ℕ ↦ Cxy ^ (n : ℝ)⁻¹) (𝓝 1) := by
-      sorry
-    sorry
-  · sorry
+    specialize h n
+    rwa [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, _root_.mul_pow, _root_.mul_pow,
+      ← Cxy.rpow_mul_natCast (by positivity), ← C.rpow_mul_natCast (by positivity),
+      inv_mul_cancel₀ (by simpa), Cxy.rpow_one, C.rpow_one]
+  suffices ∀ C > (0 : ℝ), Tendsto (fun n : ℕ ↦ C ^ (n : ℝ)⁻¹) atTop (𝓝 1) from
+    le_of_tendsto_of_tendsto (by simpa using (this Cxy hCxy).mul_const _)
+      (by simpa using (this C hC).mul_const _) (eventually_atTop.mpr ⟨1, fun n hn ↦ h n (by grind)⟩)
+  intro C hC
+  rw [← C.rpow_zero]
+  exact (C.continuous_const_rpow hC.ne').continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
 
 theorem Commute.spectralRadiusLim_mul_le {a b : A} (h : Commute a b) :
     spectralRadiusLim (a * b) ≤ spectralRadiusLim a * spectralRadiusLim b := by
