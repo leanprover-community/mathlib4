@@ -54,7 +54,7 @@ def elabLetImplDetail : TermElab := fun stx expectedType? =>
         withLCtx lctx (← getLocalInstances) do
           let body ← elabTermEnsuringType body expectedType?
           let body ← instantiateMVars body
-          mkLetFVars #[x] body (usedLetOnly := false)
+          pure <| (← body.abstractM #[x]).instantiate1 val
     pure result
   | _ => throwUnsupportedSyntax
 
