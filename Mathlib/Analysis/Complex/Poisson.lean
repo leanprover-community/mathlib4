@@ -162,7 +162,7 @@ theorem re_circleAverage_herglotzRieszKernel_smul {g : ℂ → ℝ}
     simp only [CircleIntegrable, intervalIntegrable_iff] at hg ⊢
     exact Complex.ofRealCLM.integrable_comp hg
   have h₂ : CircleIntegrable (fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R :=
-    h₁.smul_of_continuousOn (continuousOn_herglotzRieszKernel_sphere hw)
+    h₁.continuousOn_smul (continuousOn_herglotzRieszKernel_sphere hw)
   calc (circleAverage (fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R).re
       = circleAverage (Complex.reCLM ∘ fun ζ ↦ herglotzRieszKernel 0 w ζ • (g ζ : ℂ)) 0 R :=
         (Complex.reCLM.circleAverage_comp_comm h₂).symm
@@ -334,7 +334,7 @@ theorem hasDerivAt_circleAverage_herglotzRieszKernel_smul (hg : CircleIntegrable
   -- Integrability of the integrand at `w`
   case int =>
     have h₁ : CircleIntegrable (herglotzRieszKernel 0 w • f) 0 R :=
-      hg.smul_of_continuousOn (continuousOn_herglotzRieszKernel_sphere hw)
+      hg.continuousOn_smul (continuousOn_herglotzRieszKernel_sphere hw)
     simpa only [CircleIntegrable, Pi.smul_apply'] using h₁
   -- Measurability of the differentiated integrand
   case meas2 =>
