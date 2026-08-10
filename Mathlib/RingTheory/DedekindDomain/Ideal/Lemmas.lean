@@ -267,7 +267,7 @@ lemma mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal A) :
   by_cases hI : I = 0
   · simp [hI]
   refine (le_iInf fun i ↦ mul_mono_right (iInf_le _ _)).antisymm ?_
-  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_right
+  have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans mul_le_left
   obtain ⟨K, hK⟩ := dvd_iff_le.mpr H
   grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]

@@ -662,12 +662,12 @@ lemma symm_symm_apply (f : r ≃r s) (b : α) : f.symm.symm b = f b := rfl
 
 lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLike.apply_eq_iff_eq f
 
-lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y := by
-  conv_lhs => rw [← apply_symm_apply f y]
-  rw [apply_eq_iff_eq]
-
 lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
 lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
+
+@[deprecated eq_symm_apply (since := "2026-07-26")]
+lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y :=
+  f.eq_symm_apply.symm
 
 @[simp] lemma symm_symm (e : r ≃r s) : e.symm.symm = e := rfl
 
