@@ -88,6 +88,20 @@ theorem eqOn_union : EqOn f₁ f₂ (s₁ ∪ s₂) ↔ EqOn f₁ f₂ s₁ ∧ 
 theorem EqOn.union (h₁ : EqOn f₁ f₂ s₁) (h₂ : EqOn f₁ f₂ s₂) : EqOn f₁ f₂ (s₁ ∪ s₂) :=
   eqOn_union.2 ⟨h₁, h₂⟩
 
+theorem EqOn.inter {f : α → β} (h₁ : EqOn f₁ f s₁) (h₂ : EqOn f f₂ s₂) :
+    EqOn f₁ f₂ (s₁ ∩ s₂) := fun _ hx => (h₁ hx.1).trans (h₂ hx.2)
+
+/-- Two functions agree on `s₁ ∩ s₂` iff some function agrees with the first on `s₁` and with
+the second on `s₂`. -/
+theorem eqOn_inter : EqOn f₁ f₂ (s₁ ∩ s₂) ↔ ∃ f, EqOn f₁ f s₁ ∧ EqOn f f₂ s₂ := by
+  refine ⟨fun h => ?_, fun ⟨f, h₁, h₂⟩ => h₁.inter h₂⟩
+  classical
+  refine ⟨fun x => if x ∈ s₁ then f₁ x else f₂ x, fun x hx => by simp [hx], fun x hx => ?_⟩
+  show (if x ∈ s₁ then f₁ x else f₂ x) = f₂ x
+  split_ifs with hxs
+  · exact h ⟨hxs, hx⟩
+  · rfl
+
 theorem EqOn.comp_left (h : s.EqOn f₁ f₂) : s.EqOn (g ∘ f₁) (g ∘ f₂) := fun _ ha =>
   congr_arg _ <| h ha
 
