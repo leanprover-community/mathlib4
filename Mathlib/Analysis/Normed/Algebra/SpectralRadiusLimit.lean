@@ -45,14 +45,16 @@ theorem tendsto_spectralRadiusLim (a : A) :
     fun m n ↦ by simpa [pow_add] using norm_mul_le (a ^ m) (a ^ n)
   exact tendsto_nhds_limUnder ⟨h.lim, h.tendsto_lim fun n ↦ norm_nonneg (a ^ n)⟩
 
-theorem exists_le_spectralRadiusLim (a : A) (ε : ℝ) (hε : 0 < ε) :
+theorem exists_le_spectralRadiusLim (a : A) (ε : ℝ) (hε0 : 0 < ε) :
     ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * (spectralRadiusLim a + ε) ^ n := by
-  have := tendsto_spectralRadiusLim a
+  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_le_const
+    ((lt_add_iff_pos_right (spectralRadiusLim a)).mpr hε0))
   sorry
 
-theorem exists_spectralRadiusLim_le (a : A) (ε : ℝ) (hε : 0 < ε) (hε' : ε ≤ spectralRadiusLim a) :
+theorem exists_spectralRadiusLim_le (a : A) (ε : ℝ) (hε0 : 0 < ε) (hε : ε < spectralRadiusLim a) :
     ∃ C > 0, ∀ n, C * (spectralRadiusLim a - ε) ^ n ≤ ‖a ^ n‖ := by
-  have := tendsto_spectralRadiusLim a
+  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp ((tendsto_spectralRadiusLim a).eventually_const_le
+    (sub_lt_self (spectralRadiusLim a) hε0))
   sorry
 
 @[bound]
@@ -64,13 +66,13 @@ theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
     spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b := by
   have := spectralRadiusLim_nonneg a
   have := spectralRadiusLim_nonneg b
-  suffices ∀ ε > 0, ε / 3 ≤ spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
+  suffices ∀ ε > 0, ε / 3 < spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
       (spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3) from
     le_of_forall_pos_le_add fun ε hε ↦ by grind [spectralRadiusLim_nonneg]
   intro ε hε0 hε
   obtain ⟨Cx, hCx, hx⟩ := exists_le_spectralRadiusLim a (ε / 3) (by positivity)
   obtain ⟨Cy, hCy, hy⟩ := exists_le_spectralRadiusLim b (ε / 3) (by positivity)
-  obtain ⟨Cxy, hCxy, hxy⟩ := exists_spectralRadiusLim_le (a + b) (ε / 3) (by positivity) sorry
+  obtain ⟨Cxy, hCxy, hxy⟩ := exists_spectralRadiusLim_le (a + b) (ε / 3) (by positivity) hε
   let C := Cx * Cy * ‖(1 : A)‖
   have h (n : ℕ) : Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
       C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n := by
