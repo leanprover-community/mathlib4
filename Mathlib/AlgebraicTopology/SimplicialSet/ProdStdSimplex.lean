@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-public import Mathlib.Order.Fin.InsertNth
-public import Mathlib.Order.Fin.Prod
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.Fin.InsertNth
+import Mathlib.Order.Fin.Prod
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Binary product of standard simplices
@@ -40,7 +40,7 @@ variable {p q : ℕ}
 /-- `n`-simplices in `Δ[p] ⊗ Δ[q]` identify to order preserving maps
 `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
 def objEquiv {n : ℕ} :
-    (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌ ≃ (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)) where
+    (Δ[p] : SSet.{u}) _⦋n⦌ ⊗ Δ[q]  _⦋n⦌ ≃ (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)) where
   toFun := fun ⟨x, y⟩ ↦ OrderHom.prod
       (stdSimplex.objEquiv x).toOrderHom
       (stdSimplex.objEquiv y).toOrderHom
@@ -53,15 +53,15 @@ def objEquiv {n : ℕ} :
 
 @[simp]
 lemma objEquiv_apply_symm_apply {n : ℕ} (f : (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1))) :
-    dsimp% objEquiv (objEquiv.{u}.symm f) = f := rfl
+    objEquiv (objEquiv.{u}.symm f) = f := rfl
 
 @[simp]
 lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    dsimp% (objEquiv x i).1 = x.1 i := rfl
+    (objEquiv x i).1 = x.1 i := rfl
 
 @[simp]
 lemma objEquiv_apply_snd {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    dsimp% (objEquiv x i).2 = x.2 i := rfl
+    (objEquiv x i).2 = x.2 i := rfl
 
 lemma objEquiv_naturality {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌)
     (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
@@ -73,7 +73,7 @@ lemma objEquiv_map_apply {n m : ℕ}
       objEquiv ((Δ[p] ⊗ Δ[q]).map f.op x) i = objEquiv x (f.toOrderHom i) :=
   rfl
 
-lemma objEquiv_δ_apply {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n + 1⦌) (i : Fin (n + 2))
+lemma objEquiv_δ_apply {n : ℕ} (x : (Δ[p] : SSet.{u}) _⦋n + 1⦌ ⊗ Δ[q] _⦋n + 1⦌) (i : Fin (n + 2))
     (j : Fin (n + 1)) :
     dsimp% objEquiv ((Δ[p] ⊗ Δ[q]).δ i x) j = objEquiv x (i.succAbove j) := rfl
 
@@ -181,7 +181,6 @@ lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
     (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) (hd : d < p + q) :
     ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate (d + 1)),
