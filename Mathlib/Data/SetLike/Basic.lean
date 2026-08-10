@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
