@@ -730,7 +730,8 @@ theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s �
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The generators of `FreeAddGroup α` generate `FreeAddGroup α`. That
+is, the additive subgroup closure of the set of generators equals `⊤`. -/]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← range_lift_eq_closure, lift_of_eq_id]
