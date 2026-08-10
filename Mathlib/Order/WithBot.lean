@@ -307,77 +307,94 @@ end Equiv
 section LE
 variable [LE α]
 
-/-- Auxiliary definition for the order on `WithBot`. -/
+/-- The order on `WithBot`. -/
 @[mk_iff le_def_aux]
 protected inductive WithBot.LE : WithBot α → WithBot α → Prop
   | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
   | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
+
+set_option linter.translate.warnInvalid false in
+/-- The order on `WithTop`. -/
+@[mk_iff le_def_aux, to_dual (reorder := 3 4)]
+protected inductive WithTop.LE : WithTop α → WithTop α → Prop
+  | protected le_top (x : WithTop α) : WithTop.LE x ⊤
+  | protected coe_le_coe {a b : α} : a ≤ b → WithTop.LE a b
 
 /-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
 
 Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
 see `le_iff_forall`. The definition as an inductive predicate is preferred since it
 cannot be accidentally unfolded too far. -/
-instance (priority := 10) WithBot.instLE : LE (WithBot α) where le := WithBot.LE
-
+@[to_dual
 /-- The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
 
 Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b`,
 see `le_iff_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
-@[to_dual existing]
-instance (priority := 10) WithTop.instLE : LE (WithTop α) where le a b := WithBot.LE (α := αᵒᵈ) b a
+cannot be accidentally unfolded too far. -/]
+instance (priority := 10) WithBot.instLE : LE (WithBot α) where le := WithBot.LE
 
 lemma WithBot.le_def {x y : WithBot α} : x ≤ y ↔ x = ⊥ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
-  le_def_aux ..
+  le_def_aux x y
+
+lemma WithTop.le_def {x y : WithTop α} : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
+  le_def_aux x y
 
 @[to_dual existing le_def]
-lemma WithTop.le_def' {x y : WithTop α} : x ≤ y ↔ y = ⊤ ∨ ∃ b a : α, a ≤ b ∧ y = b ∧ x = a :=
-  WithBot.le_def
+lemma WithBot.le_def' {x y : WithBot α} : x ≤ y ↔ x = ⊥ ∨ ∃ b a : α, a ≤ b ∧ y = b ∧ x = a := by
+  grind [le_def]
 
-@[to_dual le_def']
-lemma WithTop.le_def {x y : WithTop α} : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b := by
-  grind [WithTop.le_def']
+@[to_dual existing le_def]
+lemma WithTop.le_def' {x y : WithTop α} : x ≤ y ↔ y = ⊤ ∨ ∃ b a : α, a ≤ b ∧ y = b ∧ x = a := by
+  grind [le_def]
 
 end LE
 
 section LT
 variable [LT α]
 
-/-- Auxiliary definition for the order on `WithBot`. -/
+/-- The order on `WithBot`. -/
 @[mk_iff lt_def_aux]
 protected inductive WithBot.LT [LT α] : WithBot α → WithBot α → Prop
   | protected bot_lt (b : α) : WithBot.LT ⊥ b
   | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
+
+set_option linter.translate.warnInvalid false in
+/-- The order on `WithTop`. -/
+@[mk_iff lt_def_aux, to_dual (reorder := 3 4)]
+protected inductive WithTop.LT [LT α] : WithTop α → WithTop α → Prop
+  | protected bot_lt (a : α) : WithTop.LT a ⊤
+  | protected coe_lt_coe {a b : α} : a < b → WithTop.LT a b
 
 /-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
 
 Equivalently, `x < y` can be defined as `∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b`,
 see `lt_iff_exists`. The definition as an inductive predicate is preferred since it
 cannot be accidentally unfolded too far. -/
-instance (priority := 10) WithBot.instLT : LT (WithBot α) where lt := WithBot.LT
-
+@[to_dual
 /-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
 
 Equivalently, `x < y` can be defined as `∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b`,
 see `le_if_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
-@[to_dual existing]
-instance (priority := 10) WithTop.instLT : LT (WithTop α) where lt a b := WithBot.LT (α := αᵒᵈ) b a
+cannot be accidentally unfolded too far. -/]
+instance (priority := 10) WithBot.instLT : LT (WithBot α) where lt := WithBot.LT
 
 lemma WithBot.lt_def {x y : WithBot α} :
     x < y ↔ (x = ⊥ ∧ ∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = a ∧ y = b :=
   (lt_def_aux ..).trans <| by simp
 
+lemma WithTop.lt_def {x y : WithTop α} :
+    x < y ↔ (∃ a : α, x = a) ∧ y = ⊤ ∨ ∃ a b : α, a < b ∧ x = a ∧ y = b :=
+  (lt_def_aux ..).trans <| by simp
+
+@[to_dual existing lt_def]
+lemma WithBot.lt_def' {x y : WithBot α} :
+    x < y ↔ (∃ b : α, y = b) ∧ x = ⊥ ∨ ∃ b a : α, a < b ∧ y = b ∧ x = a := by
+  grind [lt_def]
+
 @[to_dual existing lt_def]
 lemma WithTop.lt_def' {x y : WithTop α} :
-    x < y ↔ (y = ⊤ ∧ ∃ a : α, x = a) ∨ ∃ b a : α, a < b ∧ y = b ∧ x = a :=
-  WithBot.lt_def
-
-@[to_dual lt_def']
-lemma WithTop.lt_def {x y : WithTop α} :
-    x < y ↔ (∃ a : α, x = ↑a) ∧ y = ⊤ ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b := by
-  grind [WithTop.lt_def']
+    x < y ↔ (y = ⊤ ∧ ∃ a : α, x = a) ∨ ∃ b a : α, a < b ∧ y = b ∧ x = a := by
+  grind [lt_def]
 
 end LT
 
