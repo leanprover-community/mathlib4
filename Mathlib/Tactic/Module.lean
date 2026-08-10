@@ -273,13 +273,13 @@ appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then co
 meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) ::ᵣ add iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      ((a₁, x₁), k₁) :: add iR t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ + $a₂), x₁), k₁) ::ᵣ add iR t₁ t₂
+      ((q($a₁ + $a₂), x₁), k₁) :: add iR t₁ t₂
     else
-      ((a₂, x₂), k₂) ::ᵣ add iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      ((a₂, x₂), k₂) :: add iR (((a₁, x₁), k₁) :: t₁) t₂
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -292,15 +292,15 @@ meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Mo
   match l₁, l₂ with
   | [], l => (q(zero_add (NF.eval $(l.toNF))):)
   | l, [] => (q(add_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.add_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkAddProof iRM t₁ t₂
       (q(NF.add_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkAddProof iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let pf := mkAddProof iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -320,13 +320,13 @@ that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respect
 def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l.onScalar q(Neg.neg)
   | l, [] => l
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) ::ᵣ sub iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      ((a₁, x₁), k₁) :: sub iR t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ - $a₂), x₁), k₁) ::ᵣ sub iR t₁ t₂
+      ((q($a₁ - $a₂), x₁), k₁) :: sub iR t₁ t₂
     else
-      ((q(-$a₂), x₂), k₂) ::ᵣ sub iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      ((q(-$a₂), x₂), k₂) :: sub iR (((a₁, x₁), k₁) :: t₁) t₂
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -339,15 +339,15 @@ def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M
   match l₁, l₂ with
   | [], l => (q(NF.zero_sub_eq_eval $(l.toNF)):)
   | l, [] => (q(sub_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
-      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
+      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.sub_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkSubProof iR iM iRM t₁ t₂
       (q(NF.sub_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
+      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.sub_eq_eval₃ ($a₂, $x₂) $pf):)
 
 variable {iM : Q(AddCommMonoid $M)}
