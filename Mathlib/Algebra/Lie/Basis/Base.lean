@@ -264,7 +264,7 @@ def equivOfRootSystemEquiv {L₂ : Type*} [LieRing L₂] [LieAlgebra K L₂] [Fi
   letI b := (rootSystem H).nonempty_base.some
   letI B₁ := (exists_basis_of_base b).choose
   letI B₂ := (exists_basis_of_base (b.map e)).choose
-  have hA : B₁.A.reindex (b.support_map_equiv e) (b.support_map_equiv e) = B₂.A := by
+  have hA : B₁.A.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) = B₂.A := by
     have hB₁ : B₁.A = _ := (exists_basis_of_base b).choose_spec.1
     have hB₂ : B₂.A = _ := (exists_basis_of_base (b.map e)).choose_spec.1
     simp [hB₁, hB₂, b.cartanMatrix_of_equiv e]

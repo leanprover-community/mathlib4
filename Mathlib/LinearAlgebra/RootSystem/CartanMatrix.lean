@@ -383,11 +383,11 @@ lemma cartanMatrix_of_equiv {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
     {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
     (e : P.Equiv P₂) :
     (b.map e).cartanMatrix =
-      b.cartanMatrix.reindex (b.support_map_equiv e) (b.support_map_equiv e) := by
+      b.cartanMatrix.reindex (b.supportMapEquiv e) (b.supportMapEquiv e) := by
   ext ⟨i, -⟩ ⟨j, -⟩
   apply FaithfulSMul.algebraMap_injective ℤ R
   simp only [cartanMatrix, cartanMatrixIn_def, reindex_apply, submatrix_apply,
-    support_map_equiv_symm_apply_coe, algebraMap_pairingIn]
+    supportMapEquiv_symm_apply_coe, algebraMap_pairingIn]
   suffices ∀ i j, P₂.pairing (e.indexEquiv i) (e.indexEquiv j) = P.pairing i j by
     simpa using this (e.indexEquiv.symm i) (e.indexEquiv.symm j)
   simp
