@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Bolton Bailey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bolton Bailey
+-/
 module
 
 public import Mathlib.Computability.TuringMachine.Computable

@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Tristan Figueroa-Reid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tristan Figueroa-Reid
+-/
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular

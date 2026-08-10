@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
 module
 
 public import Mathlib.RingTheory.Congruence.Basic
