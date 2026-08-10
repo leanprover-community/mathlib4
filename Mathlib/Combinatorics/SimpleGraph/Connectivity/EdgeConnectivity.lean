@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.CompletePartialOrder
@@ -213,6 +214,44 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
+
+theorem notEdgeReachable_degree_plus_one [Fintype <| G.neighborSet u] [DecidableEq V] (huv : u ≠ v)
+    : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
+  intro h
+  unfold IsEdgeReachable at h
+  have this2:= @h (G.incidenceSet u) 
+  have : (G.incidenceSet u).encard = G.degree u := by
+    grind [card_incidenceSet_eq_degree, Set.coe_fintypeCard , Set.coe_ncard_eq_encard]
+
+  rw [this] at this2 
+
+  have := this2 (by simp only [Nat.cast_add, Nat.cast_one] ; exact ENat.natCast_lt_succ )
+  rcases this with ⟨p⟩
+  cases p with
+  | nil =>
+      exact huv rfl
+  | cons h p =>{
+      have h' := deleteEdges_adj.mp h
+      exact h'.2 (by grind [mem_incidenceSet])
+  }
+
+theorem edgeReachability_le_degree_left
+[Fintype <| G.neighborSet u] [DecidableEq V] (huv : u ≠ v)
+  : G.edgeReachability u v ≤ G.degree u := by
+  simp only [edgeReachability, iSup_le_iff, Nat.cast_le]
+  intro i h
+  have this2 : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
+    exact notEdgeReachable_degree_plus_one huv
+  by_contra
+  simp only [ge_iff_le, not_le] at this
+  apply this2
+  exact IsEdgeReachable.anti this h
+
+theorem edgeReachability_le_degree_right [Fintype <| G.neighborSet v] [DecidableEq V]
+(huv : u ≠ v)
+: G.edgeReachability u v ≤ G.degree v := by
+  rw [edgeReachability_comm]
+  exact edgeReachability_le_degree_left (id (Ne.symm huv))
 
 /-!
 ### 2-reachability
