@@ -30,9 +30,6 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 ## TODO
 
-* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
-  agree then the antipodes must also agree).
-
 * If `A` is commutative then `antipode` is an algebra homomorphism.
 
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
