@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
-public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 
 /-!
 # Pointed simplices
