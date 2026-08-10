@@ -354,6 +354,20 @@ lemma map_iInf_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
     g (⨅ i, f i) = ⨆ i, g (f i) :=
   map_iInf_of_monotone (β := βᵒᵈ) f hg
 
+theorem ciInf_le_iff {a : α} {f : ι → α} : ⨅ i, f i ≤ a ↔ ∃ x, f x ≤ a :=
+  ⟨fun h ↦ (exists_eq_ciInf_of_finite).imp fun _ hi ↦ hi.trans_le h,
+    fun ⟨i, h⟩ ↦ (ciInf_le f i).trans h⟩
+
+theorem lt_ciInf_iff {a : α} {f : ι → α} : a < ⨅ i, f i ↔ ∀ x, a < f x := by
+  contrapose!
+  exact Finite.ciInf_le_iff
+
+theorem le_ciSup_iff {a : α} {f : ι → α} : a ≤ ⨆ i, f i ↔ ∃ x, a ≤ f x :=
+  ciInf_le_iff (α := αᵒᵈ)
+
+theorem ciSup_lt_iff {a : α} {f : ι → α} : ⨆ i, f i < a ↔ ∀ x, f x < a :=
+  lt_ciInf_iff (α := αᵒᵈ)
+
 end CCLO
 
 end Finite
