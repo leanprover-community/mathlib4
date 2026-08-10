@@ -185,9 +185,6 @@ theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
 @[simp]
 theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp [tfae_cons_cons]
 
-theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
-  fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
-
 theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
   induction l generalizing a b with
