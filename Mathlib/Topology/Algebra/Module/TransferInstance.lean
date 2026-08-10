@@ -59,6 +59,12 @@ lemma toLinearEquiv_continuousLinearEquiv (e : α ≃+ β) :
 
 end AddEquiv
 
+@[deprecated (since := "2026-08-10")]
+alias Equiv.continuousLinearEquiv := AddEquiv.continuousLinearEquiv
+
+@[deprecated (since := "2026-08-10")]
+alias Equiv.toLinearEquiv_continuousLinearEquiv := AddEquiv.toLinearEquiv_continuousLinearEquiv
+
 section ContinuousLinearEquiv
 
 variable [Semiring R]

@@ -52,8 +52,6 @@ protected abbrev module : Module R α where
   zero_smul := by simp [e.smul_def, zero_smul]
   add_smul := by simp [e.smul_def, add_smul]
 
-@[deprecated (since := "2026-07-30")] alias _root_.Equiv.module := AddEquiv.module
-
 variable (R) in
 /-- When `α` is equipped with the `A`-module structure transferred via `e : α ≃+ β`,
 this isomorphism is `A`-linear. -/
@@ -82,6 +80,13 @@ protected lemma moduleIsTorsionFree [Module.IsTorsionFree R β] :
   (e.linearEquiv R).injective.moduleIsTorsionFree _ (by simp)
 
 end AddEquiv
+
+@[deprecated (since := "2026-08-10")] alias Equiv.module := AddEquiv.module
+@[deprecated (since := "2026-08-10")] alias Equiv.linearEquiv := AddEquiv.linearEquiv
+@[deprecated (since := "2026-08-10")] alias Equiv.linearEquiv_apply := AddEquiv.linearEquiv_apply
+@[deprecated (since := "2026-08-10")]
+alias Equiv.linearEquiv_symm_apply := AddEquiv.linearEquiv_symm_apply
+@[deprecated (since := "2026-08-10")] alias Equiv.moduleIsTorsionFree := AddEquiv.moduleIsTorsionFree
 
 variable [Module R α] (A : Type*) [Semiring A] [Module R A] [Module A β]
 

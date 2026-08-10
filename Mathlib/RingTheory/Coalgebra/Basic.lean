@@ -583,3 +583,7 @@ lemma coalgebraIsCocomm [Coalgebra R B] [IsCocomm R B] (e : A ≃ₗ[R] B) :
   { comm_comp_comul := by ext; simp [comul, ← TensorProduct.map_comm] }
 
 end LinearEquiv
+
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebraStruct := LinearEquiv.coalgebraStruct
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebra := LinearEquiv.coalgebra
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebraIsCocomm := LinearEquiv.coalgebraIsCocomm
