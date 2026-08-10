@@ -82,6 +82,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization
+open Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -122,7 +123,6 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
 
 alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
-open Unitization
 lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : A⁺¹) := ha.inr
 
 lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹) := by cfc_tac) : 0 ≤ a := inr_nonneg_iff.mp ha
