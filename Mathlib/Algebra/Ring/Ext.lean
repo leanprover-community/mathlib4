@@ -222,7 +222,7 @@ TODO consider relocating these lemmas. -/
   have : inst₁.toNatCast = inst₂.toNatCast := congrArg (·.toNatCast) this
   have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext : 1; exact h_add
   -- Extract equality of necessary substructures from h_group
-  injection h_group with h_group; injection h_group
+  injection h_group with h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
     | ofNat n => rewrite [Int.ofNat_eq_natCast, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
