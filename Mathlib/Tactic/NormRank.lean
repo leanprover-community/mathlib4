@@ -74,9 +74,11 @@ simproc_decl norm_rank (Matrix.rank _) := fun e => do
 close the goal. Rank terms the method skips are reported under `trace.Tactic.evalRank`. -/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
+  -- disable the generic no progress error from `simp`
   let ctx ← Simp.mkContext (config := { failIfUnchanged := false })
     (congrTheorems := ← getSimpCongrTheorems)
   let some keys ← Simp.getSimprocDeclKeys? ``norm_rank
+    -- this should be unreachable
     | throwError "internal error: no discrimination keys registered for `norm_rank`"
   let simprocs := ({} : Simp.Simprocs).addCore keys `evalRank (post := true) (.inl normRankCore)
   match ← simpGoal goal ctx #[simprocs] with
