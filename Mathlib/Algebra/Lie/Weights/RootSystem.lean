@@ -91,11 +91,6 @@ lemma chainLength_smul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     (chainLength α β : K) • x = ⁅coroot α, x⁆ := by
   rw [Nat.cast_smul_eq_nsmul, chainLength_nsmul _ _ hx]
 
--- TODO Rename and think about right API [probably just drop this lemma]
-lemma chainLength_smul' {x} (hx : x ∈ rootSpace H (chainBot α β)) :
-    (chainLength (-α) β : K) • x = -⁅coroot α, x⁆ := by
-  simp [chainLength_smul (-α) β (x := x) (by simpa only [Weight.coe_neg, chainTop_neg])]
-
 lemma apply_coroot_eq_cast' :
     β (coroot α) = ↑(chainLength α β - 2 * chainTopCoeff α β : ℤ) := by
   by_cases hα : α.IsZero
