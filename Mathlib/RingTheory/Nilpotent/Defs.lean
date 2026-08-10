@@ -138,7 +138,7 @@ end NilpotencyClass
 
 @[simp]
 theorem isReduced_mulOpposite_iff [MonoidWithZero R] : IsReduced Rᵐᵒᵖ ↔ IsReduced R := by
-  simp [isReduced_iff, isNilpotent_op]
+  simp [isReduced_iff]
 
 instance [MonoidWithZero R] [IsReduced R] : IsReduced Rᵐᵒᵖ :=
   isReduced_mulOpposite_iff.mpr ‹_›
