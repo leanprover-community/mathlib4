@@ -284,7 +284,7 @@ def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a
 
 /-- The adjunction induced by an equivalence in a bicategory. -/
 @[implicit_reducible, simps]
-def toAdjunction (e : a ≌ b) : e.hom ⊣ e.inv where
+def adj (e : a ≌ b) : e.hom ⊣ e.inv where
   unit := e.unit.hom
   counit := e.counit.hom
   left_triangle := e.left_triangle_hom
