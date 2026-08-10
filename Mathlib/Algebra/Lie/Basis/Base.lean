@@ -173,7 +173,7 @@ lemma lieSpan_range_union_eq_top_of_mem_rootSpace [IsKilling K L] (b : (rootSyst
   refine fun α ↦ b.induction_add (p := fun α ↦
     rootSpace H α ≤ S.toSubmodule ∧ rootSpace H (-α : Weight K H L) ≤ S.toSubmodule) α ?_ ?_ ?_
   · rintro β hβ
-    simpa [← neg_root_eq_reflection] using hβ.symm
+    simpa [rootSystem_reflectionPerm_self_eq_neg] using hβ.symm
   · rintro β hβ
     set β' : b.support := ⟨β, hβ⟩
     have hβp : β.val.IsNonZero := H.isNonZero_coe_root β

@@ -478,8 +478,8 @@ instance : (rootSystem H).IsReduced where
 
 variable {H}
 
-lemma neg_root_eq_reflection (i : H.root) :
-    -i = (rootSystem H).reflectionPerm i i := by
+lemma rootSystem_reflectionPerm_self_eq_neg (i : H.root) :
+    (rootSystem H).reflectionPerm i i = - i := by
   apply (rootSystem H).root.injective
   rw [RootPairing.root_reflectionPerm, RootPairing.reflection_apply_self]
   simp
