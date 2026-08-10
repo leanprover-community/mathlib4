@@ -32,6 +32,8 @@ open CategoryTheory Limits
 
 section
 
+universe w
+
 variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
@@ -42,7 +44,7 @@ lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
   dsimp
   infer_instance
 
-variable [(HomologicalComplex.quasiIso C c).HasLocalization]
+variable [(HomologicalComplex.quasiIso C c).HasLocalization.{w}]
 
 /-- The category of homological complexes up to quasi-isomorphisms. -/
 abbrev HomologicalComplexUpToQuasiIso := (HomologicalComplex.quasiIso C c).Localization'
@@ -163,8 +165,10 @@ class ComplexShape.QFactorsThroughHomotopy {ι : Type*} (c : ComplexShape ι)
 
 namespace HomologicalComplexUpToQuasiIso
 
+universe w
+
 variable {C c}
-variable [(HomologicalComplex.quasiIso C c).HasLocalization] [c.QFactorsThroughHomotopy C]
+variable [(HomologicalComplex.quasiIso C c).HasLocalization.{w}] [c.QFactorsThroughHomotopy C]
 
 lemma Q_map_eq_of_homotopy {K L : HomologicalComplex C c} {f g : K ⟶ L} (h : Homotopy f g) :
     Q.map f = Q.map g :=
@@ -336,9 +340,11 @@ variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 section
 
+universe w₁ w₂
+
 variable [Preadditive C] [Preadditive D]
   [CategoryWithHomology C] [CategoryWithHomology D]
-  [(HomologicalComplex.quasiIso D c).HasLocalization]
+  [(HomologicalComplex.quasiIso D c).HasLocalization.{w₁}]
   [F.Additive] [F.PreservesHomology]
 
 /-- The localizer morphism which expresses that `F.mapHomologicalComplex c` preserves
@@ -354,7 +360,7 @@ lemma mapHomologicalComplex_upToQuasiIso_Q_inverts_quasiIso :
       (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q) := by
   apply (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism c).inverts
 
-variable [(HomologicalComplex.quasiIso C c).HasLocalization]
+variable [(HomologicalComplex.quasiIso C c).HasLocalization.{w₂}]
 
 /-- The functor `HomologicalComplexUpToQuasiIso C c ⥤ HomologicalComplexUpToQuasiIso D c`
 induced by a functor `F : C ⥤ D` which preserves homology. -/

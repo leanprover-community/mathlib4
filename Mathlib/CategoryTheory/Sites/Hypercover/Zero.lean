@@ -280,7 +280,7 @@ def Hom.id (E : PreZeroHypercover S) : Hom E E where
   s₀ := _root_.id
   h₀ _ := 𝟙 _
 
-variable {G : PreZeroHypercover S}
+variable {G : PreZeroHypercover.{w''} S}
 
 /-- Composition of refinement morphisms of pre-`0`-hypercovers. -/
 @[simps]

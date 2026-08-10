@@ -241,7 +241,7 @@ end Localization
 
 section BaseChange
 
-variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
+variable (T : Type*) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
 
 lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =

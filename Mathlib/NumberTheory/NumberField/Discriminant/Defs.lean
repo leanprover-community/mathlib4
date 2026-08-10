@@ -90,7 +90,8 @@ alias _root_.NumberField.discr_rat := numberField_discr
 
 end Rat
 
-variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Fintype ι']
+variable {ι ι' : Type*} (K : Type*) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι]
+  [Fintype ι']
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
 `∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then

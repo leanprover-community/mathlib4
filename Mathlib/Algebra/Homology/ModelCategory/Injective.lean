@@ -36,7 +36,7 @@ open CategoryTheory HomotopicalAlgebra Limits
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 /-- The weak equivalences in the category `CochainComplex.Plus C` of bounded
 below cochain complexes are quasi-isomorphisms. -/

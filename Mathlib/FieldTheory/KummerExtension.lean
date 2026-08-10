@@ -164,7 +164,7 @@ The main result is the description of the Galois group: `autAdjoinRootXPowSubCEq
 -/
 
 variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty)
-variable (a : K) (H : Irreducible (X ^ n - C a))
+variable (a : K) (H : Irreducible ((X : Polynomial K) ^ n - C a))
 
 set_option quotPrecheck false in
 scoped[KummerExtension] notation3 "K[" n "√" a "]" => AdjoinRoot (Polynomial.X ^ n - Polynomial.C a)
@@ -303,7 +303,8 @@ end AdjoinRoot
 section IsSplittingField
 
 variable {a}
-variable {L : Type*} [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)]
+variable {L : Type*} [Field L] [Algebra K L]
+variable [IsSplittingField K L ((X : Polynomial K) ^ n - C a)]
 
 include hζ in
 lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
@@ -463,7 +464,7 @@ end IsSplittingField
 
 section IsCyclic
 
-variable {L} [Field L] [Algebra K L] [FiniteDimensional K L]
+variable {L : Type*} [Field L] [Algebra K L] [FiniteDimensional K L]
 variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 
 open Module

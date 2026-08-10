@@ -133,7 +133,9 @@ end
 
 section
 
-variable {I B : Type*} [Category* I] [Bicategory B] [Strict B] (F : I ⥤ B)
+universe w v
+
+variable {I B : Type*} [Category* I] [Bicategory.{w, v} B] [Strict B] (F : I ⥤ B)
 
 attribute [local simp]
   Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso

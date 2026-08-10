@@ -192,11 +192,17 @@ instance : (ModuleCat.isFG K).IsMonoidalClosed where
   prop_ihom {X Y} (_ : Module.Finite _ _) (_ : Module.Finite _ _) :=
     ((inferInstance : Module.Finite K (X →ₗ[K] Y))).equiv ModuleCat.homLinearEquiv.symm
 
-variable (V W : FGModuleCat K)
+variable (V W : FGModuleCat.{u} K)
 
 @[simp]
 theorem ihom_obj : (ihom V).obj W = FGModuleCat.of K (V.obj ⟶ W.obj) :=
   rfl
+
+section Dual
+
+universe u'
+
+variable (V : FGModuleCat.{u'} K)
 
 /-- The dual module is the dual in the rigid monoidal category `FGModuleCat K`. -/
 def FGModuleCatDual : FGModuleCat K :=
@@ -204,6 +210,9 @@ def FGModuleCatDual : FGModuleCat K :=
 
 @[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ModuleCat.of K (Module.Dual K V) :=
   rfl
+
+end Dual
+
 @[simp] lemma FGModuleCatDual_coe : (FGModuleCatDual K V : Type u) = Module.Dual K V := rfl
 
 open CategoryTheory.MonoidalCategory

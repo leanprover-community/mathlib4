@@ -23,9 +23,11 @@ variable (R : Type) [CommRing R]
 
 namespace InternalProjectivityProof
 
+universe u
+
 section
 
-variable {X Y : LightProfinite} (y : Y) (f : X ⟶ Y)
+variable {X Y : LightProfinite.{u}} (y : Y) (f : X ⟶ Y)
 
 def LightProfinite.fibre : LightProfinite :=
   haveI : CompactSpace (f ⁻¹' {y}) :=

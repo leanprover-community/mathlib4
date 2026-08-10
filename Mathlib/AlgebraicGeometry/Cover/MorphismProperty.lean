@@ -51,7 +51,7 @@ abbrev Cover (K : Precoverage Scheme.{u}) := Precoverage.ZeroHypercover.{v} K
 
 variable {K}
 
-variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover K) (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover.{v} K) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :

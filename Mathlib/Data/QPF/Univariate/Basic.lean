@@ -59,7 +59,7 @@ class QPF (F : Type u → Type v) extends Functor F where
 
 namespace QPF
 
-variable {F : Type u → Type v} [q : QPF F]
+variable {F : Type u → Type v} [q : QPF.{u, u', v} F]
 
 open Functor (Liftp Liftr)
 
@@ -171,6 +171,8 @@ theorem recF_eq' {α : Type _} (g : F α → α) (a : q.P.A) (f : q.P.B a → q.
     recF g ⟨a, f⟩ = g (abs (q.P.map (recF g) ⟨a, f⟩)) :=
   rfl
 
+variable {F : Type u → Type v} [q : QPF.{u, u, v} F]
+
 /-- two trees are equivalent if their F-abstractions are -/
 inductive Wequiv : q.P.W → q.P.W → Prop
   | ind (a : q.P.A) (f f' : q.P.B a → q.P.W) : (∀ x, Wequiv (f x) (f' x)) → Wequiv ⟨a, f⟩ ⟨a, f'⟩
@@ -229,7 +231,7 @@ attribute [local instance] Wsetoid
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type u} [q : QPF.{u, u, u} F]
 
 /-- recursor of a type defined by a qpf -/
 def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
@@ -327,7 +329,7 @@ Construct the final coalgebra to a qpf.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type u} [q : QPF.{u, u', u} F]
 
 open Functor (Liftp Liftr)
 
@@ -338,6 +340,8 @@ def corecF {α : Type _} (g : α → F α) : α → q.P.M :=
 theorem corecF_eq {α : Type _} (g : α → F α) (x : α) :
     PFunctor.M.dest (corecF g x) = q.P.map (corecF g) (repr (g x)) := by
   rw [corecF, PFunctor.M.dest_corec]
+
+variable {F : Type u → Type u} [q : QPF.{u, u, u} F]
 
 -- Equivalence
 /-- A pre-congruence on `q.P.M` *viewed as an F-coalgebra*. Not necessarily symmetric. -/
@@ -460,8 +464,10 @@ Composition of qpfs.
 -/
 namespace QPF
 
-variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
-variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
+universe u''
+
+variable {F₂ : Type u → Type u} [q₂ : QPF.{u, u, u} F₂]
+variable {F₁ : Type u → Type u} [q₁ : QPF.{u, u'', u} F₁]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- composition of qpfs gives another qpf -/
@@ -516,7 +522,7 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type u} [q : QPF.{u, u', u} F]
 variable {G : Type u → Type u} [Functor G]
 variable {FG_abs : ∀ {α}, F α → G α}
 variable {FG_repr : ∀ {α}, G α → F α}
@@ -541,7 +547,7 @@ Support.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type u} [q : QPF.{u, u', u} F]
 
 open Functor (Liftp Liftr supp)
 

@@ -141,7 +141,7 @@ theorem of_eq :
 
 section UniversalProperty
 
-variable {V' : Type u'} [Groupoid V']
+variable {V' : Type u'} [Groupoid.{v'} V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
 def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=

@@ -18,7 +18,7 @@ public import Mathlib.Order.Interval.Set.Defs
 assert_not_exists RelIso Ring
 
 namespace Submonoid
-variable (α) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]
+variable (α : Type*) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]
   [NeZero (1 : α)] {a : α}
 
 /-- The submonoid of positive elements. -/

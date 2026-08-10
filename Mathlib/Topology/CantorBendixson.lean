@@ -58,7 +58,7 @@ Cantor-Bendixson derivative sequence of a closed set.
 
 open Filter Set Cardinal OrdinalApprox Function
 
-universe u
+universe u v
 
 namespace CantorBendixson
 
@@ -73,7 +73,7 @@ def iteratedDerivedSet (s : Set X) : Ordinal → Set X :=
 @[inherit_doc CantorBendixson.iteratedDerivedSet]
 scoped[CantorBendixson] notation:max s "ᵈ[" a "]" => iteratedDerivedSet s a
 
-variable {s t : Set X} {a b : Ordinal}
+variable {s t : Set X} {a : Ordinal.{u}} {b : Ordinal.{v}}
 
 @[simp]
 theorem iteratedDerivedSet_zero :

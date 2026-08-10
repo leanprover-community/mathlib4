@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
   {κ : Type*} (c : ℤ → ComplexShape κ) (r₀ : ℤ)
 
 /-- Given an abelian category `C`, a sequence of complex shapes `c : ℤ → ComplexShape κ`

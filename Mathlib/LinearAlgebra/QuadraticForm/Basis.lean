@@ -129,7 +129,7 @@ lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
   · simp [toBilin_apply]
   · simp [h.ne', h.not_gt, toBilin_apply]
 
-variable (S) [CommSemiring S] [Algebra S R]
+variable (S : Type*) [CommSemiring S] [Algebra S R]
 variable [Module S N] [IsScalarTower S R N]
 
 @[simp]

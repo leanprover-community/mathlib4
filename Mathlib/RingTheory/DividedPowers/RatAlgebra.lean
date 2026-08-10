@@ -194,7 +194,7 @@ end OfInvertibleFactorial
 namespace OfSquareZero
 
 variable {A : Type*} [CommSemiring A] {I : Ideal A} [DecidablePred (fun x ↦ x ∈ I)]
-  (hI2 : I ^ 2 = 0)
+  (hI2 : I ^ (2 : ℕ) = 0)
 
 /-- If `I^2 = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=

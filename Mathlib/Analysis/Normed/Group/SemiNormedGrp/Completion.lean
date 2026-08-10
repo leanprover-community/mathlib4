@@ -70,7 +70,7 @@ theorem completion.map_normNoninc {V W : SemiNormedGrp} {f : V ⟶ W} (hf : f.ho
     (NormedAddGroupHom.norm_completion f.hom).le.trans <|
       NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.1 hf
 
-variable (V W : SemiNormedGrp)
+variable (V W : SemiNormedGrp.{u})
 
 /-- Given a normed group hom `V ⟶ W`, this defines the associated morphism
 from the completion of `V` to the completion of `W`.

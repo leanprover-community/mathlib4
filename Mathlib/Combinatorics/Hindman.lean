@@ -104,7 +104,7 @@ section Aliases
 /-! Since the constructors for `FS` and `FP` cheat using the `Set M = M → Prop` defeq,
 we provide match patterns that preserve the defeq correctly in their type. -/
 
-variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+variable {M : Type*} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
 
 set_option linter.defProp false in
 /-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/

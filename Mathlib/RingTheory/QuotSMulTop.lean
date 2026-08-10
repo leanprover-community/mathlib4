@@ -27,7 +27,7 @@ module, commutative algebra
 
 open scoped Pointwise
 
-variable {R} [CommRing R] (r : R) (M : Type*) {M' M''}
+variable {R : Type*} [CommRing R] (r : R) (M : Type*) {M' M'' : Type*}
     [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
     [AddCommGroup M''] [Module R M'']
 

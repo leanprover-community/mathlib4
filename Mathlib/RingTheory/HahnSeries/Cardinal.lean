@@ -25,7 +25,9 @@ open Cardinal
 
 namespace HahnSeries
 
-variable {Γ R S α : Type*}
+universe u
+
+variable {Γ : Type u} {R S α : Type*}
 
 /-! ### Cardinality function -/
 
@@ -146,7 +148,7 @@ end LinearOrder
 
 /-! ### Substructures -/
 
-variable (κ : Cardinal)
+variable (κ : Cardinal.{u})
 
 section AddMonoid
 variable [PartialOrder Γ] [AddMonoid R] [hκ : Fact (ℵ₀ ≤ κ)]

@@ -26,7 +26,7 @@ namespace CategoryTheory
 
 open Category CategoryTheory.Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   {A : Type*} [AddMonoid A] [HasShift D A] [HasShift E A]
   (F : SingleFunctors C E A) (G : D ⥤ E) [G.CommShift A]
   [G.Full] [G.Faithful] (Φ : A → C ⥤ D) (hΦ : ∀ a, Φ a ⋙ G ≅ F.functor a)

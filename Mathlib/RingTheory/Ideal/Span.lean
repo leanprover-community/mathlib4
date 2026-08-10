@@ -351,7 +351,7 @@ end Ideal
 
 namespace IsIdempotentElem
 
-variable {R} [CommRing R] {e : R} (he : IsIdempotentElem e)
+variable {R : Type*} [CommRing R] {e : R} (he : IsIdempotentElem e)
 include he
 
 theorem ker_toSpanSingleton_eq_span :

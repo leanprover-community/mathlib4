@@ -135,7 +135,7 @@ end ReflPrefunctor
 
 namespace Cat
 
-variable (V : Type*) [ReflQuiver V]
+variable (V : Type*) [ReflQuiver.{v₁} V]
 
 /-- The hom relation that identifies the specified reflexivity arrows with the nil paths -/
 inductive FreeReflRel : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
@@ -345,7 +345,7 @@ lemma FreeRefl.lift_spec {D : Type*} [Category* D] (F : V ⥤rq D) :
     Cat.toFreeRefl V ⋙rq (Cat.FreeRefl.lift F).toReflPrefunctor = F :=
   ReflPrefunctor.ext (fun v ↦ by simp) (by simp)
 
-variable {V} {W : Type*} [ReflQuiver W] (F : V ⥤rq W)
+variable {V} {W : Type*} [ReflQuiver.{v₂} W] (F : V ⥤rq W)
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A refl prefunctor `V ⥤rq W` induces a functor `FreeRefl V ⥤ FreeRefl W` defined using
 `freeMap` and the quotient functor. -/
@@ -395,7 +395,7 @@ open Category
 
 namespace adj
 
-variable {V W : Type*} [ReflQuiver W] [ReflQuiver V]
+variable {V W : Type*} [ReflQuiver.{v₂} W] [ReflQuiver.{v₁} V]
   {C D : Type*} [Category* C] [Category* D]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -435,7 +435,7 @@ lemma adj_unit_app (V) [ReflQuiver V] :
 lemma adj_counit_app (D : Type u) [Category.{max u v} D] :
     adj.counit.app (Cat.of D) = (Cat.FreeRefl.lift (𝟭rq D)).toCatHom := rfl
 
-variable {V : Type*} [ReflQuiver V]
+variable {V : Type*} [ReflQuiver.{v₁} V]
   {C : Type*} [Category* C]
 
 lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v} V] (C : Type u) [Category.{max u v} C] :

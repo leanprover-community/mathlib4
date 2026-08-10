@@ -36,7 +36,9 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
+universe u v
+
+variable {X Y : Scheme.{u}} {Z : Scheme.{v}} {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
 a field, `X ×[Y] Spec K` is reduced. -/

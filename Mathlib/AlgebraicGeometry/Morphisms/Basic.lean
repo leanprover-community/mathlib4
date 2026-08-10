@@ -133,7 +133,7 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
   exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h _)
 
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtTarget P]
-  {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover)
+  {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : Y.OpenCover.{v})
 
 lemma of_isPullback {UX UY : Scheme.{u}} {iY : UY ⟶ Y} [IsOpenImmersion iY]
     {iX : UX ⟶ X} {f' : UX ⟶ UY} (h : IsPullback iX f' f iY) (H : P f) : P f' :=
@@ -251,7 +251,7 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     exact hf _
 
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
-variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover)
+variable {X Y : Scheme.{u}} {f : X ⟶ Y} (𝒰 : X.OpenCover.{v})
 
 lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
     P (i ≫ f) :=
@@ -487,7 +487,7 @@ class HasAffineProperty (P : MorphismProperty Scheme)
 
 namespace HasAffineProperty
 
-variable (P : MorphismProperty Scheme) {Q} [HasAffineProperty P Q]
+variable (P : MorphismProperty Scheme.{u}) {Q} [HasAffineProperty P Q]
 variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
 instance (Q : AffineTargetMorphismProperty) [Q.IsLocal] :

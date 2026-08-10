@@ -40,7 +40,7 @@ def Hom.toPath {V} [Quiver V] {a b : V} (e : a ⟶ b) : Path a b :=
 
 namespace Path
 
-variable {V : Type u} [Quiver V] {a b c d : V}
+variable {V : Type u} [Quiver.{v} V] {a b c d : V}
 
 lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
   fun h => by injection h
@@ -171,7 +171,7 @@ lemma eq_toPath_comp_of_length_eq_succ (p : Path a b) {n : ℕ}
 
 section Decomposition
 
-variable {V R : Type*} [Quiver V] {a b : V} (p : Path a b)
+variable {V R : Type*} [Quiver.{v} V] {a b : V} (p : Path a b)
 
 lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
@@ -241,7 +241,7 @@ theorem toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
 
 section BoundedPath
 
-variable {V : Type*} [Quiver V]
+variable {V : Type*} [Quiver.{v} V]
 
 /-- A bounded path is a path with a uniform bound on its length. -/
 def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
@@ -313,7 +313,7 @@ end Path
 
 section Reachable
 
-variable {V : Type u} [Quiver V]
+variable {V : Type u} [Quiver.{v} V]
 
 /-- `Reachable a b` holds when there is a directed path from `a` to `b`.
 

@@ -255,7 +255,7 @@ variable (J : Type w) {C J} {X Y : J → C} (f : ∀ i, X i ⟶ Y i)
 
 section
 
-variable [HasCoproduct X] [HasCoproduct Y] [h : ∀ i, Cofibration (f i)]
+variable [HasCoproduct.{w, v, u} X] [HasCoproduct.{w, v, u} Y] [h : ∀ i, Cofibration (f i)]
 
 instance [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)] :
     Cofibration (Limits.Sigma.map f) := by
@@ -273,7 +273,7 @@ end
 
 section
 
-variable [HasProduct X] [HasProduct Y] [h : ∀ i, Fibration (f i)]
+variable [HasProduct.{w, v, u} X] [HasProduct.{w, v, u} Y] [h : ∀ i, Fibration (f i)]
 
 instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)] :
     Fibration (Limits.Pi.map f) := by

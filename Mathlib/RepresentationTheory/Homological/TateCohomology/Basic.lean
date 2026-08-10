@@ -54,9 +54,14 @@ https://github.com/kbuzzard/ClassFieldTheory/ for more information.
 
 universe u v
 
-variable {R G : Type u} [CommRing R] [Group G] [Fintype G] (M : Rep R G) {X Y : Rep R G}
+variable {R G : Type u} [CommRing R] [Group G] [Fintype G] (M : Rep.{max u v} R G)
+  {X Y : Rep.{u} R G}
 
 open CategoryTheory groupCohomology groupHomology
+
+section
+
+variable (M : Rep.{u} R G) {X Y : Rep.{u} R G}
 
 /-- This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
 `m ↦ ∑ g : G, M.ρ g m`. -/
@@ -68,10 +73,16 @@ lemma Rep.tateNorm_eq :
   ext
   simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
+end
+
 @[reassoc (attr := simp), elementwise]
 lemma Rep.norm_comp_d_eq_zero : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
   ext
   simp [Pi.zero_apply _]
+
+section
+
+variable (M : Rep.{u} R G) {X Y : Rep.{u} R G}
 
 lemma Rep.tateNorm_comp_d : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
   simp [tateNorm, eq_d₀₁_comp_inv M]
@@ -244,3 +255,5 @@ def isoGroupHomology (m : ℤ) (n : ℕ) (hmn : m = -(n + 1)) [NeZero n] :
       CochainComplex.ConnectData.homologyMap_map_of_eq_neg_succ (hmn := hmn)]
 
 end TateCohomology
+
+end

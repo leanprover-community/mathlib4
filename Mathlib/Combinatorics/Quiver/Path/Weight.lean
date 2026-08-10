@@ -33,7 +33,9 @@ weights of its edges, where weights are taken from a monoid.
 
 namespace Quiver.Path
 
-variable {V : Type*} [Quiver V] {R : Type*}
+universe v
+
+variable {V : Type*} [Quiver.{v} V] {R : Type*}
 
 section Weight
 

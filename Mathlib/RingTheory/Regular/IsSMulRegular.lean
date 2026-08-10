@@ -30,7 +30,7 @@ public section
 
 section Congr
 
-variable {R S M N} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
+variable {R S M N : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [AddCommMonoid M] [Module R M]
 
 lemma LinearEquiv.isSMulRegular_congr' [AddCommMonoid N] [Module S N]

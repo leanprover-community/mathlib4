@@ -105,7 +105,7 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
 
 section
 
-variable {D : Type*} [Category D] (P : ObjectProperty D) (F : C ⥤ D)
+variable {D : Type*} [Category* D] (P : ObjectProperty D) (F : C ⥤ D)
 
 lemma ind_inverseImage_le [PreservesFilteredColimitsOfSize.{w, w} F] :
     ind.{w} (P.inverseImage F) ≤ (ind.{w} P).inverseImage F := by

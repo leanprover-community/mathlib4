@@ -145,7 +145,7 @@ end StarSubsemiring
 end StarSubsemiring
 section SubStarSemigroup
 
-variable (A) [Mul A] [StarMul A]
+variable (A : Type*) [Mul A] [StarMul A]
 
 namespace SubStarSemigroup
 

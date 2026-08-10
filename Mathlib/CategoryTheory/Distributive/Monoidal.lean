@@ -87,7 +87,7 @@ class IsMonoidalDistrib (C : Type u) [Category.{v} C]
     [MonoidalCategory C] [HasBinaryCoproducts C] extends
   IsMonoidalLeftDistrib C, IsMonoidalRightDistrib C
 
-variable {C} [Category.{v} C] [MonoidalCategory C] [HasBinaryCoproducts C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [HasBinaryCoproducts C]
 
 section IsMonoidalLeftDistrib
 

@@ -317,7 +317,7 @@ section
 
 namespace isSheaf_iff
 
-variable {data : ∀ X, F.OneHypercoverDenseData J₀ J X} {G : Cᵒᵖ ⥤ A}
+variable {data : ∀ X, F.OneHypercoverDenseData.{w} J₀ J X} {G : Cᵒᵖ ⥤ A}
   (hG₀ : Presheaf.IsSheaf J₀ (F.op ⋙ G))
   (hG : ∀ (X : C), IsLimit ((data X).toOneHypercover.multifork G))
   {X : C} (S : J.Cover X)

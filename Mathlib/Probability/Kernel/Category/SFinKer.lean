@@ -255,7 +255,7 @@ lemma deterministic_id_map (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : M
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
   hom_comul := by cat_disch
 
-variable {X Y Z : SFinKer}
+variable {X Y Z : SFinKer.{u}}
 
 instance : Deterministic (α_ X Y Z).hom :=
   deterministic_deterministic ((X ⊗ Y) ⊗ Z)

@@ -685,7 +685,9 @@ open Substructure
 
 namespace LHom
 
-variable {L' : Language} [L'.Structure M]
+universe u' v'
+
+variable {L' : Language.{u', v'}} [L'.Structure M]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Reduces the language of a substructure along a language hom. -/

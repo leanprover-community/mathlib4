@@ -632,7 +632,7 @@ lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := 
 
 section BasicOpen
 
-variable (X : Scheme) {V U : X.Opens} (f g : Γ(X, U))
+variable (X : Scheme.{u}) {V U : X.Opens} (f g : Γ(X, U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
 def basicOpen : X.Opens :=

@@ -97,7 +97,7 @@ noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
 
 namespace PairingCore
 
-variable (h : A.PairingCore)
+variable (h : A.PairingCore.{v})
 
 /-- The type (I) simplices of `h : A.PairingCore`, as a family indexed by `h.ι`. -/
 @[simps!]

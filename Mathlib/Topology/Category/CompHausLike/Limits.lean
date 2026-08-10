@@ -54,7 +54,7 @@ property `P`.
 -/
 abbrev HasExplicitFiniteCoproduct := HasProp P (Σ (a : α), X a)
 
-variable [HasExplicitFiniteCoproduct X]
+variable [HasExplicitFiniteCoproduct.{w, u} X]
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint

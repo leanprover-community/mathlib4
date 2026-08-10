@@ -693,7 +693,7 @@ section SL2Z
 
 open ModularForm CuspForm OnePoint
 
-variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
+variable {k} {F : Type*} {Γ : Subgroup (GL (Fin 2) ℝ)} [FunLike F ℍ ℂ] (f : F)
 
 instance [Γ.IsArithmetic] : Fact (IsCusp ∞ Γ) :=
   ⟨by simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]

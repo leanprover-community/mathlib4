@@ -91,7 +91,7 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
   convert_to! IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
   infer_instance
 
-variable (X : Scheme)
+variable (X : Scheme.{u})
 
 /-- The canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)`.
 This is injective if `X` is quasi-separated, surjective if `X` is affine,

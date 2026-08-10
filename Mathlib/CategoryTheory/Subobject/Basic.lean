@@ -558,7 +558,7 @@ end Limits
 
 section Colimits
 
-variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+variable [HasCoproducts.{w'} C] [HasStrongEpiMonoFactorisations C]
 
 instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
   apply hasColimitsOfSize_thinSkeleton

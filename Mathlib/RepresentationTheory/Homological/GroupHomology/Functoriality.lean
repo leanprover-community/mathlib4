@@ -37,20 +37,24 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 
 @[expose] public section
 
-universe v u
+universe u v
 
 namespace groupHomology
 
 open CategoryTheory Rep Finsupp Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
-  {A : Rep k G} {B : Rep k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
+  {A : Rep.{v} k G} {B : Rep.{v} k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
 
 theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ res f₁ B} {T : Type*}
     (F : (f : G →* H) → (φ : A ⟶ res f B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
+
+section
+
+variable {A : Rep.{u} k G} {B : Rep.{u} k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
@@ -204,6 +208,8 @@ noncomputable def mapIso (e : G ≃* H) (e' : A.V ≃ₗ[k] B.V)
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
     exact groupHomology.map_congr e.coe_monoidHom_comp_coe_monoidHom_symm e'.comp_symm n
 
+end
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the induced map sending `∑ aᵢ·gᵢ : G →₀ A` to `∑ φ(aᵢ)·f(gᵢ) : H →₀ B`. -/
 noncomputable abbrev chainsMap₁ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (H →₀ B) :=
@@ -222,6 +228,10 @@ noncomputable abbrev chainsMap₃ :
     ModuleCat.of k (G × G × G →₀ A) ⟶ ModuleCat.of k (H × H × H →₀ B) :=
   ModuleCat.ofHom <| mapRange.linearMap φ.hom.toLinearMap ∘ₗ
     lmapDomain A k (Prod.map f (Prod.map f f))
+
+section
+
+variable {A : Rep.{u} k G} {B : Rep.{u} k H} (f : G →* H) (φ : A ⟶ res f B) (n : ℕ)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma chainsMap_f_0_comp_chainsIso₀ :
@@ -871,5 +881,7 @@ noncomputable def coinfNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
       HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,
       ← HomologicalComplex.cyclesMap_comp_assoc, ← chainsMap_comp]
     congr 1
+
+end
 
 end groupHomology

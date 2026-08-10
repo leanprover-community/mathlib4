@@ -94,7 +94,7 @@ theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (func
 
 section Limit
 
-variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfinite.{u} ⥤ C)
 
 set_option backward.defeqAttrib.useBackward true in
 /--
@@ -125,7 +125,7 @@ end Limit
 
 section Colimit
 
-variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
+variable {C : Type*} [Category* C] (G : LightProfinite.{u}ᵒᵖ ⥤ C)
 
 set_option backward.defeqAttrib.useBackward true in
 /--

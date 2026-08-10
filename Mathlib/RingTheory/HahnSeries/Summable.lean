@@ -141,7 +141,7 @@ theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
 
 section SMul
 
-variable {M} [SMulZeroClass M R]
+variable {M : Type*} [SMulZeroClass M R]
 
 instance : SMul M (SummableFamily Γ R β) :=
   ⟨fun r t =>

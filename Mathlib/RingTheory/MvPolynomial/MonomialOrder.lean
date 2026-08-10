@@ -103,7 +103,9 @@ open MvPolynomial
 
 open scoped MonomialOrder nonZeroDivisors
 
-variable {σ : Type*} {m : MonomialOrder σ}
+universe u
+
+variable {σ : Type*} {m : MonomialOrder.{_, u} σ}
 
 section Semiring
 

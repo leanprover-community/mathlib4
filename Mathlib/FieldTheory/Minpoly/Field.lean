@@ -324,7 +324,7 @@ end minpoly
 
 section AlgHom
 
-variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
+variable {K L : Type*} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
 
 /-- The minimal polynomial (over `K`) of `σ : L ≃ₐ[K] L` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :

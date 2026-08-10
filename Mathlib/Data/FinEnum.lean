@@ -101,7 +101,8 @@ theorem card_ulift [FinEnum (ULift α)] [FinEnum α] : card (ULift α) = card α
   Fin.equiv_iff_eq.mp ⟨equiv.symm.trans Equiv.ulift |>.trans equiv⟩
 
 section ULift
-variable [FinEnum α] (a : α) (a' : ULift α) (i : Fin (card α))
+universe w
+variable [FinEnum α] (a : α) (a' : ULift.{w} α) (i : Fin (card α))
 
 @[simp] lemma equiv_up : equiv (ULift.up a) = equiv a := rfl
 @[simp] lemma equiv_down : equiv a'.down = equiv a' := rfl

@@ -69,7 +69,7 @@ instance {X} : StochHom.IsStableUnderComonoid X where
 /-- `Stoch` is the wide subcategory of `SFinKer` with Markov-kernel morphisms. -/
 abbrev Stoch := WideSubcategory StochHom
 
-variable {X Y : Stoch} (κ : X ⟶ Y)
+variable {X Y : Stoch.{u}} (κ : X ⟶ Y)
 
 instance [Deterministic κ.hom] : Deterministic κ where
 

@@ -142,7 +142,7 @@ private theorem T_nonneg : 0 ≤ T := norm_nonneg _
 
 private theorem T_pow_nonneg (n : ℕ) : 0 ≤ T ^ n := pow_nonneg T_nonneg _
 
-variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)
+variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ (2 : ℕ))
 include hnorm
 
 private theorem deriv_sq_norm_pos : 0 < ‖F.derivative.aeval a‖ ^ 2 :=
@@ -449,7 +449,7 @@ end Hensel
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
   {F : Polynomial R} {a : ℤ_[p]}
 
-variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)
+variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ (2 : ℕ))
 include hnorm
 
 private theorem a_is_soln (ha : F.aeval a = 0) :

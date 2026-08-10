@@ -34,7 +34,7 @@ If you want this function, you can write `Matrix.vec Aᵀ` instead.
 @[expose] public section
 namespace Matrix
 
-variable {ι l m n p R S}
+variable {ι l m n p R S : Type*}
 
 /-- All the matrix entries, arranged into one column. -/
 @[simp]

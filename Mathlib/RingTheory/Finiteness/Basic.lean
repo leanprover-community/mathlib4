@@ -244,7 +244,7 @@ instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
 
 section
 
-variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
+variable {S : Type*} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P] {σ : R →+* S}
 
 @[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
@@ -404,7 +404,7 @@ namespace Submodule
 
 open Module
 
-variable {R V} [Ring R] [AddCommGroup V] [Module R V]
+variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
 /-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
 instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]

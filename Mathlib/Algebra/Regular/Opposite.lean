@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Opposites
 
 public section
 
-variable {R} [Mul R]
+variable {R : Type*} [Mul R]
 open MulOpposite
 
 @[to_additive (attr := simp)]

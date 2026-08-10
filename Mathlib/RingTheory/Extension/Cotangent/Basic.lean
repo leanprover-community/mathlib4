@@ -339,7 +339,7 @@ defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
 protected def H1Cotangent : Type _ := LinearMap.ker P.cotangentComplex
 
 -- The `SMul` instance exists to avoid a zsmul diamond.
-variable {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
+variable {R₀ : Type*} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
   [IsScalarTower R₀ S P.Cotangent] in
 deriving instance SMul R₀, AddCommGroup, Module R₀ for (P).H1Cotangent
 

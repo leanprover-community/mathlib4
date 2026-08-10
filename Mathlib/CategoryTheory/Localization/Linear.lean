@@ -59,7 +59,9 @@ end
 
 section
 
-variable [W.HasLocalization] [Preadditive W.Localization'] [W.Q'.Additive]
+universe w'
+
+variable [W.HasLocalization.{w'}] [Preadditive W.Localization'] [W.Q'.Additive]
 
 noncomputable instance : Linear R W.Localization' := Localization.linear R W.Q' W
 

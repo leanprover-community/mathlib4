@@ -219,7 +219,8 @@ end IsCoprime
 
 section RelPrime
 
-variable {α I} [CommMonoid α] [DecompositionMonoid α] {x y z : α} {s : I → α} {t : Finset I}
+variable {α : Type*} {I : Type*} [CommMonoid α] [DecompositionMonoid α] {x y z : α} {s : I → α}
+  {t : Finset I}
 
 theorem IsRelPrime.prod_left : (∀ i ∈ t, IsRelPrime (s i) x) → IsRelPrime (∏ i ∈ t, s i) x := by
   classical

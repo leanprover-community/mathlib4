@@ -29,9 +29,11 @@ The main definitions and theorems are:
 
 @[expose] public section
 
+universe v u
+
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C : Type u} [Category.{v} C]
 
 namespace Precoverage
 

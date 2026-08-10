@@ -30,7 +30,7 @@ This file constructs the direct limit of a directed system of first-order embedd
 @[expose] public section
 
 
-universe v w w' u₁ u₂
+universe u u' v w w' u₁ u₂
 
 open FirstOrder
 
@@ -40,7 +40,7 @@ namespace Language
 
 open Structure Set
 
-variable {L : Language} {ι : Type v} [Preorder ι]
+variable {L : Language.{u, u'}} {ι : Type v} [Preorder ι]
 variable {G : ι → Type w} [∀ i, L.Structure (G i)]
 variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 

@@ -42,7 +42,8 @@ namespace LinearMap
 
 section liftBaseChange
 
-variable {R M N} (A) [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
+variable {R M N : Type*} (A : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M]
 variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
 
 /--

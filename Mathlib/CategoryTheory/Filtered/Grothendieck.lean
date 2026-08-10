@@ -17,11 +17,11 @@ We show that if `F : C ⥤ Cat` is such that `C` is filtered and `F.obj c` is fi
 
 public section
 
-universe v u
+universe v u v₂ u₂
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ Cat)
+variable {C : Type u} [Category.{v} C] (F : C ⥤ Cat.{v₂, u₂})
 
 open IsFiltered
 

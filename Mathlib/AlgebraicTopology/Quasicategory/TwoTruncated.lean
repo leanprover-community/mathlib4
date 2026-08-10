@@ -35,6 +35,8 @@ edges and triangles in a 2-truncated simplicial set.
 
 @[expose] public section
 
+universe u v
+
 open CategoryTheory SimplicialObject.Truncated
 
 namespace SSet.Truncated
@@ -87,7 +89,7 @@ abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
   Nonempty (CompStruct (id x) f g)
 
 section homotopy_eqrel
-variable {X : Truncated 2}
+variable {X : Truncated.{u} 2}
 
 /--
 The left homotopy relation is reflexive.
@@ -160,7 +162,7 @@ end homotopy_eqrel
 
 section homotopy_category
 
-variable {A : Truncated 2} [Quasicategory₂ A] {x y z : A _⦋0⦌₂}
+variable {A : Truncated.{v} 2} [Quasicategory₂ A] {x y z : A _⦋0⦌₂}
 
 /--
 Given `CompStruct f g h` and `CompStruct f' g' h'` with the same vertices and edges such

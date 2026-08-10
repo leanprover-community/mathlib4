@@ -41,7 +41,7 @@ directed union, directed supremum, glue, gluing
 
 @[expose] public section
 
-variable {α : Type*} {ι β : Sort _}
+variable {α : Type*} {ι : Sort*} {β : Type*}
 
 namespace Set
 

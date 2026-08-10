@@ -83,7 +83,7 @@ end MulOneClass
 
 section Monoid
 
-variable {M} [Monoid M]
+variable {M : Type*} [Monoid M]
 
 /-- The center of a monoid is commutative. -/
 @[to_additive /-- The center of an additive monoid is additively commutative. -/]

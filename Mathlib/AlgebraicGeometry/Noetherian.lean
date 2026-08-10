@@ -96,7 +96,7 @@ theorem isNoetherianRing_of_away : IsNoetherianRing R := by
 
 end localizationProps
 
-variable {X : Scheme}
+variable {X : Scheme.{u}}
 
 /-- If a scheme `X` has a cover by affine opens whose sections are Noetherian rings,
 then `X` is locally Noetherian. -/

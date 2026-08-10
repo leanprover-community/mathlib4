@@ -130,7 +130,7 @@ end Cat
 namespace Quiv
 
 section
-variable {V W : Quiv} (e : V ≅ W)
+variable {V W : Quiv.{v, u}} (e : V ≅ W)
 
 /-- An isomorphism of quivers defines an equivalence on carrier types. -/
 @[simps]
@@ -167,7 +167,8 @@ def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
 end
 
 section
-variable {V W : Type u} [Quiver V] [Quiver W]
+universe u' v' w'
+variable {V W : Type u'} [Quiver.{v'} V] [Quiver.{w'} W]
   (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
 include he in
@@ -178,6 +179,13 @@ lemma homOfEq_map_homOfEq {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY 
       Quiver.homOfEq (he _ _ f) (by rw [hX, hX']) (by rw [hY, hY']) := by
   subst hX hY hX' hY'
   rfl
+
+end
+
+section
+universe u' v'
+variable {V W : Type u'} [Quiver.{v'} V] [Quiver.{v'} W]
+  (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

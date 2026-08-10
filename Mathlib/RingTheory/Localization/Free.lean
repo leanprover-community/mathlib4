@@ -26,7 +26,8 @@ locus of a finitely presented module is open and its rank is locally constant.
 
 public section
 
-variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {R M N N' : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+  [Module R N]
 variable (S : Submonoid R) [AddCommGroup N'] [Module R N']
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]

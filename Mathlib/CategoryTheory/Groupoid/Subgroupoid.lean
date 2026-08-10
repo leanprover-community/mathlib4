@@ -62,9 +62,9 @@ namespace CategoryTheory
 
 open Set Groupoid
 
-universe u v
+universe u v w
 
-variable {C : Type u} [Groupoid C]
+variable {C : Type u} [Groupoid.{v} C]
 
 /-- A subgroupoid of `C` consists of a choice of arrows for each pair of vertices, closed
 under composition and inverses.
@@ -375,7 +375,7 @@ end GeneratedSubgroupoid
 
 section Hom
 
-variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
+variable {D : Type*} [Groupoid.{w} D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.

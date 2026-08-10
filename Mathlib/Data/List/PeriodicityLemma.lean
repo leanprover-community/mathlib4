@@ -26,7 +26,7 @@ periodicity lemma, Fine-Wilf theorem, period, periodicity
 
 @[expose] public section
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat
 

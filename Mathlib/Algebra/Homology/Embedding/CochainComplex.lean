@@ -382,7 +382,7 @@ end Preadditive
 
 section HasZeroMorphisms
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (φ : K ⟶ L) (e : K ≅ L)
   [∀ (i : ℤ), K.HasHomology i] [∀ (i : ℤ), L.HasHomology i] (n : ℤ)
 

@@ -148,7 +148,7 @@ end
 noncomputable section
 
 variable {C' : Type u₁} [Category.{v₁} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
-  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 variable {M : SheafOfModules.{u} R} (G : M.GeneratingSections)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]

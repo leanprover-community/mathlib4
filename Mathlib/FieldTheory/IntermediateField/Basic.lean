@@ -436,7 +436,7 @@ instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebr
 
 section shortcut_instances
 
-variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+variable {E : Type*} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
 
 instance : Algebra S T := T.algebra
 

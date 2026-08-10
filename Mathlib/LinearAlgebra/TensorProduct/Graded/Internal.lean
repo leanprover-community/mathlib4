@@ -292,7 +292,7 @@ def includeRight : B →ₐ[R] (𝒜 ᵍ⊗[R] ℬ) :=
 lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗ₜ[R] algebraMap R B r :=
   (includeRight 𝒜 ℬ).commutes r |>.symm
 
-variable {C} [Ring C] [Algebra R C]
+variable {C : Type*} [Ring C] [Algebra R C]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor

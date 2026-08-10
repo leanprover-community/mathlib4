@@ -27,7 +27,7 @@ representation `X` of `G`, a topological representation `Y` of `H`, and a morphi
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 open CategoryTheory
 
@@ -39,7 +39,7 @@ variable {k : Type u} {G H K : Type v} [Ring k] [TopologicalSpace k]
   [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
   [Group K] [TopologicalSpace K] [IsTopologicalGroup K]
-  {X : TopRep k G} {Y : TopRep k H} {Z : TopRep k K}
+  {X : TopRep.{max w v} k G} {Y : TopRep.{max w v} k H} {Z : TopRep.{max w v} k K}
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex

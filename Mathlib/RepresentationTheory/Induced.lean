@@ -125,7 +125,7 @@ section Adjunction
 
 open Representation
 
-variable (B : Rep k H)
+variable (B : Rep.{w'} k H)
 
 /-- Given a group homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `H`-representation morphisms `ind φ A ⟶ B` and
@@ -174,7 +174,7 @@ end Adjunction
 
 section
 
-variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : Rep k H)
+variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep.{u} k G) (B : Rep.{u} k H)
 
 open Representation
 

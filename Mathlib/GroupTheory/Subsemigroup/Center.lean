@@ -31,7 +31,7 @@ assert_not_exists RelIso Finset
 
 /-! ### `Set.center` as a `Subsemigroup`. -/
 
-variable (M)
+variable (M : Type*)
 namespace Subsemigroup
 
 section Mul

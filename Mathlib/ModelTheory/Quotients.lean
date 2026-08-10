@@ -28,7 +28,9 @@ namespace FirstOrder
 
 namespace Language
 
-variable (L : Language) {M : Type*}
+universe u v
+
+variable (L : Language.{u, v}) {M : Type*}
 
 open FirstOrder
 

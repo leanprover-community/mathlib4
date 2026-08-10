@@ -64,7 +64,7 @@ end
 noncomputable section
 
 variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
-  [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [HasSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
   {ι σ : Type u}
 
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
@@ -143,7 +143,7 @@ instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
   isFiniteType_relations := inferInstanceAs (σ.relations.ofEpi _).IsFiniteType
 
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
-  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 variable {M : SheafOfModules.{u} R} (P : Presentation M)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
@@ -287,7 +287,7 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 section map
 
 variable {D : Type u₂} [Category.{v₂, u₂} D] {K : GrothendieckTopology D}
-  {S : Sheaf K RingCat.{u}} [∀ (X : D), (K.over X).WEqualsLocallyBijective AddCommGrpCat]
+  {S : Sheaf K RingCat.{u}} [∀ (X : D), (K.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 variable [∀ (X : C), HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ (X : D), HasSheafify (K.over X) AddCommGrpCat.{u}]
@@ -363,10 +363,11 @@ noncomputable section
 open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
-  {R : Sheaf J RingCat.{u}} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  {R : Sheaf J RingCat.{u}} [HasSheafify J AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
 
-variable [∀ X, HasSheafify (J.over X) AddCommGrpCat]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
 data on the trivial cover. -/

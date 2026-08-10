@@ -20,7 +20,9 @@ namespace CategoryTheory.Limits
 
 namespace WalkingMulticospan
 
-variable {J : MulticospanShape} [Fintype J.L] [Fintype J.R]
+universe w w'
+
+variable {J : MulticospanShape.{w, w'}} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMulticospan J) := .ofEquiv _ (proxy_equiv% (WalkingMulticospan J))
 
@@ -48,7 +50,9 @@ end WalkingMulticospan
 
 namespace WalkingMultispan
 
-variable {J : MultispanShape} [Fintype J.L] [Fintype J.R]
+universe w w'
+
+variable {J : MultispanShape.{w, w'}} [Fintype J.L] [Fintype J.R]
 
 instance : Fintype (WalkingMultispan J) := .ofEquiv _ (proxy_equiv% (WalkingMultispan J))
 

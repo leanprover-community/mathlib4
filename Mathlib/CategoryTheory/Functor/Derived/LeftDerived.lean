@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
+variable {C C' D D' H H' : Type*} [Category* C] [Category* C']
   [Category* D] [Category* D'] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)

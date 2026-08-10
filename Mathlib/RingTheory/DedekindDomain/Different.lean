@@ -42,7 +42,7 @@ universe u
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
   Ideal.Quotient.field
 
-variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
+variable (A K : Type*) {L : Type u} {B : Type*} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 

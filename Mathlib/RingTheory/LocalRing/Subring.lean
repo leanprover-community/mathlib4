@@ -19,7 +19,7 @@ public section
 
 namespace IsLocalRing
 
-variable {R S} [Semiring R] [Semiring S]
+variable {R S : Type*} [Semiring R] [Semiring S]
 
 open nonZeroDivisors
 

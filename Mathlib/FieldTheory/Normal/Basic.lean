@@ -260,7 +260,7 @@ end lift
 
 namespace minpoly
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 

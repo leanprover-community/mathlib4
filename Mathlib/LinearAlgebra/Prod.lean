@@ -706,7 +706,7 @@ end prodAssoc
 
 section SkewSwap
 
-variable (R M N)
+variable (R M) (N : Type*)
 variable [Semiring R]
 variable [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N]

@@ -30,7 +30,7 @@ This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to th
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits MorphismProperty
 
@@ -38,7 +38,7 @@ namespace AlgebraicGeometry.Scheme.Cover
 
 variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange] [P.IsMultiplicative]
   {S : Scheme.{u}} {J : Type*} [Category* J] (D : J ⥤ P.Over ⊤ S)
-  (𝒰 : S.OpenCover) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
+  (𝒰 : S.OpenCover.{v}) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
 
 /-- The data required for gluing the colimits of the `Dᵢ : J ⥤ P.Over ⊤ (𝒰.X i)`. -/
 structure ColimitGluingData (D : J ⥤ P.Over ⊤ S) (𝒰 : S.OpenCover)

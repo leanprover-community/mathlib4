@@ -30,7 +30,7 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 
 open Module Topology
 
-universe u
+universe u v
 
 namespace Profinite
 
@@ -99,7 +99,7 @@ def GoodProducts.Basis (hC : IsClosed C) :
 
 end Induction
 
-variable {S : Profinite} {ι : S → I → Bool} (hι : IsClosedEmbedding ι)
+variable {S : Profinite.{v}} {ι : S → I → Bool} (hι : IsClosedEmbedding ι)
 include hι
 
 /--

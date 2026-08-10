@@ -430,7 +430,7 @@ end Functor
 
 namespace Localization
 
-variable {D₁ D₂ : Type _} [Category* D₁] [Category* D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
   (W' : MorphismProperty C) [L₁.IsLocalization W'] [L₂.IsLocalization W']
 
 /-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the

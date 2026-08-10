@@ -1215,7 +1215,7 @@ end ZeroLocus
 
 section Factorization
 
-variable {X : Scheme.{u}} {A : CommRingCat}
+variable {X : Scheme.{u}} {A : CommRingCat.{u}}
 
 /-- Given `f : X ⟶ Spec A` and some ideal `I ≤ ker(A ⟶ Γ(X, ⊤))`,
 this is the lift to `X ⟶ Spec (A ⧸ I)`. -/

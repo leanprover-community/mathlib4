@@ -20,7 +20,9 @@ namespace Quiver.Path
 
 section BoundaryEdges
 
-variable {V : Type*} [Quiver V]
+universe v
+
+variable {V : Type*} [Quiver.{v} V]
 
 /-- A path from a vertex not in `S` to a vertex in `S` must cross the boundary. -/
 theorem exists_notMem_mem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (S : Set V)

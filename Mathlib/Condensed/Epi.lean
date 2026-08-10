@@ -35,10 +35,10 @@ variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
-  [(coherentTopology CompHaus).WEqualsLocallyBijective A]
-  [HasSheafify (coherentTopology CompHaus) A]
+  [(coherentTopology CompHaus.{u}).WEqualsLocallyBijective A]
+  [HasSheafify (coherentTopology CompHaus.{u}) A]
   [(coherentTopology CompHaus.{u}).HasSheafCompose (CategoryTheory.forget A)]
-  [Balanced (Sheaf (coherentTopology CompHaus) A)]
+  [Balanced (Sheaf (coherentTopology CompHaus.{u}) A)]
   [PreservesFiniteProducts (CategoryTheory.forget A)] in
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : ToType (Y.obj.obj ⟨S⟩)),
@@ -51,11 +51,11 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [PreservesFiniteProducts (CategoryTheory.forget A)]
-  [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
-  [(extensiveTopology Stonean).WEqualsLocallyBijective A]
-  [HasSheafify (extensiveTopology Stonean) A]
+  [∀ (X : CompHaus.{u}ᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
+  [(extensiveTopology Stonean.{u}).WEqualsLocallyBijective A]
+  [HasSheafify (extensiveTopology Stonean.{u}) A]
   [(extensiveTopology Stonean.{u}).HasSheafCompose (CategoryTheory.forget A)]
-  [Balanced (Sheaf (extensiveTopology Stonean) A)] in
+  [Balanced (Sheaf (extensiveTopology Stonean.{u}) A)] in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.hom.app (op S.compHaus)) := by
   rw [← (StoneanCompHaus.equivalence A).inverse.epi_map_iff_epi,

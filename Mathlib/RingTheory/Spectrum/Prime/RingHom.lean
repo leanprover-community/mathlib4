@@ -100,7 +100,7 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
 
 section Pi
 
-variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
+variable {ι : Type*} (R : ι → Type*) [∀ i, CommSemiring (R i)]
 
 /--
 The canonical map from a disjoint union of prime spectra of commutative semirings to

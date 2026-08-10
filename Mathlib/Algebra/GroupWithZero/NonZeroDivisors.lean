@@ -377,7 +377,7 @@ end nonZeroSMulDivisors
 
 open scoped nonZeroDivisors
 
-variable {M₀}
+variable {M₀ : Type*}
 
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a b : M₀⁰}

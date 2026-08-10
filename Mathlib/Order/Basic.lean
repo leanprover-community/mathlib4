@@ -1062,7 +1062,9 @@ instance : LinearOrder PEmpty := .ofSubsingleton
 
 namespace PUnit
 
-variable (a b : PUnit)
+universe u
+
+variable (a b : PUnit.{u + 1})
 
 instance instLinearOrder : LinearOrder PUnit := .ofSubsingleton
 

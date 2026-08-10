@@ -34,7 +34,7 @@ https://en.wikipedia.org/wiki/Glaisher%27s_theorem
 
 public section
 
-variable (R) [TopologicalSpace R] [T2Space R]
+variable (R : Type*) [TopologicalSpace R] [T2Space R]
 
 namespace Nat.Partition
 open PowerSeries PowerSeries.WithPiTopology Finset

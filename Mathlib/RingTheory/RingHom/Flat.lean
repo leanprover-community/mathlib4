@@ -200,7 +200,7 @@ section
 
 open CategoryTheory Limits
 
-variable {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T)
+variable {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : R ⟶ T)
 
 lemma CommRingCat.inr_injective_of_flat
     (hf : Function.Injective f) (hg : g.hom.Flat) : Function.Injective (pushout.inr f g) := by

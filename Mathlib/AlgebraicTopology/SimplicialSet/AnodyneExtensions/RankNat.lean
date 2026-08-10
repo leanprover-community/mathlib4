@@ -19,7 +19,7 @@ then there exists a rank function for `P` with values in `ℕ`.
 
 @[expose] public section
 
-universe u
+universe u w
 
 open Simplicial
 
@@ -102,7 +102,7 @@ end Pairing
 
 namespace PairingCore
 
-variable (P : A.PairingCore)
+variable (P : A.PairingCore.{w})
 
 lemma isRegular_iff_nonempty_rankFunction [P.IsProper] :
     P.IsRegular ↔ Nonempty (P.RankFunction ℕ) := by

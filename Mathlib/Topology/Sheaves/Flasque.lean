@@ -75,7 +75,7 @@ instance pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F
     [IsFlasque F] (f : X ⟶ Y) : IsFlasque ((pushforward C f).obj F) :=
   Presheaf.IsFlasque.pushforward_isFlasque F.1 f
 
-variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.obj.obj (op U))
+variable {U : Opens X} {F G : Sheaf AddCommGrpCat.{u} X} (g : F ⟶ G) (s : G.obj.obj (op U))
 
 /-- Given a morphism of sheaves `g: F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised of
 an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. -/

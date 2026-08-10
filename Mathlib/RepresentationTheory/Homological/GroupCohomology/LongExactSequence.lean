@@ -41,7 +41,10 @@ namespace groupCohomology
 open CategoryTheory ShortComplex
 
 variable {k G : Type u} [CommRing k] [Group G]
-  {X : ShortComplex (Rep k G)} (hX : ShortExact X)
+
+section
+
+variable {X : ShortComplex (Rep.{u} k G)} (hX : ShortExact X)
 
 include hX
 
@@ -132,6 +135,14 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using! hx) (j + 1) (by simp)
 
+end
+
+section
+
+variable {X : ShortComplex (Rep.{max u v} k G)} (hX : ShortExact X)
+
+include hX
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
@@ -140,6 +151,14 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
+
+end
+
+section
+
+variable {X : ShortComplex (Rep.{u} k G)} (hX : ShortExact X)
+
+include hX
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem δ₀_apply
@@ -160,6 +179,14 @@ theorem δ₀_apply
       simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
 
+end
+
+section
+
+variable {X : ShortComplex (Rep.{max u v} k G)} (hX : ShortExact X)
+
+include hX
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cocycles₂_of_comp_eq_d₁₂
@@ -168,6 +195,14 @@ theorem mem_cocycles₂_of_comp_eq_d₁₂
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
+
+end
+
+section
+
+variable {X : ShortComplex (Rep.{u} k G)} (hX : ShortExact X)
+
+include hX
 
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
@@ -201,5 +236,7 @@ theorem δ_naturality {X1 X2 : ShortComplex (Rep k G)} (hX1 : X1.ShortExact)
   HomologicalComplex.HomologySequence.δ_naturality
     ((cochainsFunctor k G).mapShortComplex.map F)
     (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
+
+end
 
 end groupCohomology

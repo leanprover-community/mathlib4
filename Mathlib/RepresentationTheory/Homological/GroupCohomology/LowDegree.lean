@@ -54,17 +54,21 @@ The file also contains an identification between the definitions in
 
 @[expose] public section
 
-universe v u
+universe u v
 
 noncomputable section
 
 open CategoryTheory Limits Representation
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G]
 
 namespace groupCohomology
 
+variable (A : Rep.{max u v} k G)
+
 section Cochains
+
+variable (A : Rep.{u} k G)
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
@@ -117,6 +121,10 @@ lemma subtype_comp_d₀₁ : ModuleCat.ofHom (A.ρ.invariants.subtype) ≫ d₀�
   rw [← sub_eq_zero] at hx
   exact hx
 
+section
+
+variable (A : Rep.{v} k G)
+
 /-- The 1st differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G, A) → Fun(G × G, A)`. It sends
 `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
@@ -141,6 +149,12 @@ def d₂₃ : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → 
         rw [map_add, add_sub_add_comm (A.ρ _ _), add_sub_assoc, add_sub_add_comm, add_add_add_comm,
           add_sub_assoc, add_sub_assoc]
     map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
+
+end
+
+section
+
+variable (A : Rep.{u} k G)
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `d₀₁` gives a simpler expression for the 0th differential: that is, the following
@@ -239,11 +253,14 @@ theorem eq_d₂₃_comp_inv :
       d₂₃ A ≫ (cochainsIso₃ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₃_eq A⟩).w
 
+end
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
   ext
   simp [Pi.zero_apply (M := fun _ => A)]
 
+variable (A : Rep.{v} k G) in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₁₂_comp_d₂₃ : d₁₂ A ≫ d₂₃ A = 0 := by
   ext f g
@@ -262,6 +279,7 @@ def shortComplexH0 : ShortComplex (ModuleCat k) :=
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   mk (d₀₁ A) (d₁₂ A) (d₀₁_comp_d₁₂ A)
 
+variable (A : Rep.{v} k G) in
 /-- The short complex `Fun(G, A) --d₁₂--> Fun(G × G, A) --d₂₃--> Fun(G × G × G, A)`. -/
 @[simps! -isSimp f g]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
@@ -270,6 +288,8 @@ def shortComplexH2 : ShortComplex (ModuleCat k) :=
 end Differentials
 
 section Cocycles
+
+variable (A : Rep.{v} k G)
 
 /-- The 1-cocycles `Z¹(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `Fun(G, A) → Fun(G × G, A)` sending `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
@@ -313,6 +333,7 @@ theorem mem_cocycles₁_iff (f : G → A) :
   rw [← add_eq_zero_iff_eq_neg, ← cocycles₁_map_one f, ← mul_inv_cancel g,
     (mem_cocycles₁_iff f).1 f.2 g g⁻¹]
 
+variable {A : Rep.{max u v} k G} in
 theorem d₀₁_apply_mem_cocycles₁ (x : A) :
     d₀₁ A x ∈ cocycles₁ A :=
   d₀₁_comp_d₁₂_apply _ _
@@ -409,6 +430,7 @@ section Coboundaries
 def coboundaries₁ : Submodule k (G → A) :=
   LinearMap.range (d₀₁ A).hom
 
+variable (A : Rep.{v} k G) in
 /-- The 2-coboundaries `B²(G, A)` of `A : Rep k G`, defined as the image of the map
 `Fun(G, A) → Fun(G × G, A)` sending `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
 def coboundaries₂ : Submodule k (G × G → A) :=
@@ -448,6 +470,10 @@ theorem coboundaries₁_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
   simp_rw [coboundaries₁, d₀₁_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
+section
+
+variable {A : Rep.{v} k G}
+
 instance : FunLike (coboundaries₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -475,6 +501,8 @@ abbrev coboundariesToCocycles₂ : coboundaries₂ A →ₗ[k] cocycles₂ A :=
 @[simp]
 lemma coboundariesToCocycles₂_apply (x : coboundaries₂ A) :
     coboundariesToCocycles₂ A x = x.1 := rfl
+
+end
 
 end Coboundaries
 
@@ -742,7 +770,7 @@ open ShortComplex
 
 section CocyclesIso
 
-section cocyclesIso₀
+section
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -754,6 +782,12 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   refine ⟨⟨x, fun g => ?_⟩, rfl⟩
   rw [← sub_eq_zero]
   exact congr_fun hx g
+
+end
+
+variable (A : Rep.{u} k G)
+
+section cocyclesIso₀
 
 /-- The arrow `A --d₀₁--> Fun(G, A)` is isomorphic to the differential
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
@@ -905,6 +939,8 @@ end isoCocycles₂
 end CocyclesIso
 
 section Cohomology
+
+variable (A : Rep.{u} k G)
 
 section H0
 

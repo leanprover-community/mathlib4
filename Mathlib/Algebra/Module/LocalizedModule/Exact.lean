@@ -25,11 +25,11 @@ section
 open IsLocalizedModule Function Submonoid
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-variable {M₀ M₀'} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
+variable {M₀ M₀' : Type*} [AddCommMonoid M₀] [AddCommMonoid M₀'] [Module R M₀] [Module R M₀']
 variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
-variable {M₁ M₁'} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
+variable {M₁ M₁' : Type*} [AddCommMonoid M₁] [AddCommMonoid M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
-variable {M₂ M₂'} [AddCommMonoid M₂] [AddCommMonoid M₂'] [Module R M₂] [Module R M₂']
+variable {M₂ M₂' : Type*} [AddCommMonoid M₂] [AddCommMonoid M₂'] [Module R M₂] [Module R M₂']
 variable (f₂ : M₂ →ₗ[R] M₂') [IsLocalizedModule S f₂]
 
 /-- Localization of modules is an exact functor, proven here for `LocalizedModule`.

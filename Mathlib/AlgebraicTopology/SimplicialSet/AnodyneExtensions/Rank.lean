@@ -111,7 +111,9 @@ end Pairing
 
 namespace PairingCore
 
-variable {X : SSet.{u}} {A : X.Subcomplex} (h : A.PairingCore)
+universe w
+
+variable {X : SSet.{u}} {A : X.Subcomplex} (h : A.PairingCore.{w})
   (α : Type v) [PartialOrder α]
 
 /-- A rank function for `h : A.PairingCore` is a function from the index type `h.ι`

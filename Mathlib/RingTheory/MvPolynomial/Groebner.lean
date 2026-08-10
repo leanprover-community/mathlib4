@@ -54,7 +54,9 @@ open MvPolynomial
 
 open scoped MonomialOrder
 
-variable {σ : Type*} {m : MonomialOrder σ} {R : Type*} [CommRing R]
+universe u
+
+variable {σ : Type*} {m : MonomialOrder.{_, u} σ} {R : Type*} [CommRing R]
 
 variable (m) in
 /-- Delete the leading term in a multivariate polynomial (for some monomial order) -/

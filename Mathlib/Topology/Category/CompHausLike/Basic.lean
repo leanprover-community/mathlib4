@@ -65,7 +65,7 @@ of `CompHaus` and `Profinite` is used in the proof in question, and then proving
 
 @[expose] public section
 
-universe u
+universe u u_1
 
 open CategoryTheory
 
@@ -158,7 +158,7 @@ def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.t
 
 section
 
-variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
+variable {P P' : TopCat.{u_1} → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
 
 /-- If `P` implies `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/

@@ -31,11 +31,12 @@ Noncommutative algebra, simple module, division ring
 
 @[expose] public section
 
-universe u v
+universe u v w w'
 
 open CategoryTheory
 
-variable (R S : Type*) [DivisionRing R] [DivisionRing S] (e : ModuleCat R ≌ ModuleCat S)
+variable (R S : Type*) [DivisionRing R] [DivisionRing S]
+  (e : ModuleCat.{w} R ≌ ModuleCat.{w'} S)
 
 lemma DivisionRing.nonempty_linearEquiv_of_isSimpleModule (N : Type*) [AddCommGroup N]
     [Module S N] [IsSimpleModule S N] : Nonempty (N ≃ₗ[S] S) := by

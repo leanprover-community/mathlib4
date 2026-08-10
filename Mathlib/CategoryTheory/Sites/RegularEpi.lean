@@ -44,7 +44,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)

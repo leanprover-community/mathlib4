@@ -175,7 +175,9 @@ child of the root (or, order-theoretically, at an atom).
 def RootedTree.subtrees (t : RootedTree) : Set (SubRootedTree t) :=
   {x | IsAtom x.root}
 
-variable {t : RootedTree}
+universe u
+
+variable {t : RootedTree.{u}}
 
 lemma SubRootedTree.root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
     r.root ≠ ⊥ := by

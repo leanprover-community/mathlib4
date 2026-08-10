@@ -161,7 +161,7 @@ variable {k : Type u} {G : Type v} {X Y : Type w} [TopologicalSpace k] [CommRing
   [Monoid G] [AddCommGroup X] [Module k X] [TopologicalSpace X]
   [IsTopologicalAddGroup X] [ContinuousSMul k X] [AddCommGroup Y] [Module k Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [ContinuousSMul k Y] {ρ : ContRepresentation k G X}
-  {σ : ContRepresentation k G Y} {A B C : TopRep k G}
+  {σ : ContRepresentation k G Y} {A B C : TopRep.{w} k G}
 
 instance : Module k (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.module k
 

@@ -117,7 +117,7 @@ end
 section functorCategory
 
 variable {C : Type*} [Category* C] {D : Type*} [Category* D]
-  {α : Type*} {I : α → Type*} [∀ i, Category (I i)]
+  {α : Type*} {I : α → Type*} [∀ i, Category* (I i)]
   [HasLimitsOfShape (Discrete α) C]
   (F : ∀ i, I i ⥤ D ⥤ C)
 

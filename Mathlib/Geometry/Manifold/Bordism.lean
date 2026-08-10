@@ -241,7 +241,9 @@ perturbations yield bordant manifolds.)
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
 
-variable (s t : SingularManifold X k I)
+universe u
+
+variable (s t : SingularManifold.{u} X k I)
 
 /-- The disjoint union of two singular `I`-manifolds on `X` is a singular `I`-manifold on `X`. -/
 @[expose] def sum (s t : SingularManifold X k I) : SingularManifold X k I where

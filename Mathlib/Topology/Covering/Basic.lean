@@ -363,7 +363,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
 
-variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
+variable {A : Type*} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
 /-- Proposition 1.34 of [hatcher02]. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)

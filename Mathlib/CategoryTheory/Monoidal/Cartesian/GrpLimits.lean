@@ -25,7 +25,7 @@ open CategoryTheory.Functor Grp Limits MonObj
 universe w v
 
 variable {C : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
-  {J : Type w} [Category J] [HasLimitsOfShape J C]
+  {J : Type w} [Category* J] [HasLimitsOfShape J C]
 
 instance : PreservesLimitsOfShape J (shrinkYonedaMon.{max w v} (C := C)) :=
   have : PreservesLimitsOfShape J (shrinkYonedaMon ⋙ (whiskeringRight _ _ _).obj (forget MonCat)) :=

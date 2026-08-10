@@ -18,7 +18,7 @@ the `Xᵢ` glue to a morphism `f : X ⟶ S` such that `Xᵢ ≅ f⁻¹ Uᵢ`.
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits
 
@@ -54,7 +54,7 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
 
 namespace Scheme.Cover
 
-variable {S : Scheme.{u}} (𝒰 : S.OpenCover) [Category 𝒰.I₀] [𝒰.LocallyDirected]
+variable {S : Scheme.{u}} (𝒰 : S.OpenCover.{v}) [Category* 𝒰.I₀] [𝒰.LocallyDirected]
 
 /--
 A relative gluing datum over a locally directed cover `𝒰` of `S` is a scheme `Xᵢ` for every

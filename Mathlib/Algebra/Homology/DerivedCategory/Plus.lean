@@ -54,7 +54,9 @@ namespace DerivedCategory
 
 open TStructure
 
-variable [HasDerivedCategory C]
+universe w
+
+variable [HasDerivedCategory.{w} C]
 
 namespace Plus
 

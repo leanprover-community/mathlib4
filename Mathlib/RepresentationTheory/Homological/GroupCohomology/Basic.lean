@@ -96,7 +96,7 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
       ext
       simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
-variable [Group G] (A : Rep k G) (n : ℕ)
+variable [Group G] (A : Rep.{u} k G) (n : ℕ)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

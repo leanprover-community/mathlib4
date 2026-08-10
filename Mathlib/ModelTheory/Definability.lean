@@ -41,7 +41,7 @@ This file defines what it means for a set over a first-order structure to be def
 @[expose] public section
 
 
-universe u v w u₁
+universe u v w u₁ u₂ v₂
 
 namespace Set
 
@@ -440,7 +440,7 @@ section
 
 open FirstOrder FirstOrder.Language Set Function
 
-variable {M : Type*} (L : Language) [L.Structure M]
+variable {M : Type*} (L : Language.{u, v}) [L.Structure M]
 variable {α β : Type*} (A : Set M)
 
 namespace Set
@@ -581,7 +581,8 @@ end
 
 namespace Set
 
-variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) {L' : FirstOrder.Language}
+variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v})
+variable {L' : FirstOrder.Language.{u₂, v₂}}
 variable [L.Structure M] [L'.Structure M]
 
 variable {α : Type u₁} {β : Type*}

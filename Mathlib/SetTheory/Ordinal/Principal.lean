@@ -50,7 +50,7 @@ variable {a b c o : Ordinal.{u}}
 
 section Arbitrary
 
-variable {op : Ordinal → Ordinal → Ordinal}
+variable {op : Ordinal.{u} → Ordinal.{u} → Ordinal.{u}}
 
 /-! ### Principal ordinals under an arbitrary operation -/
 

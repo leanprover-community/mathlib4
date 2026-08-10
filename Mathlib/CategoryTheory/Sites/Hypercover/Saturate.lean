@@ -19,7 +19,9 @@ Given a `0`-hypercover `E`, we define a `1`-hypercover `E.saturate`
 
 namespace CategoryTheory.PreZeroHypercover
 
-variable {C : Type*} [Category* C] {A : Type*} [Category* A]
+universe v u
+
+variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
 
 open Limits
 
@@ -93,7 +95,7 @@ def fromSaturateOfHasPullbacks {S : C} (E : PreZeroHypercover S)
   s₁ {i j} k := ⟨⟩
   h₁ {i j} k := pullback.lift k.fst k.snd k.w
 
-variable {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
+variable {S : C} (E : PreZeroHypercover.{max u v} S) [E.HasPullbacks]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -108,7 +110,7 @@ def toPreOneHypercoverHomotopy {S : C} (E : PreZeroHypercover S)
   wl := by simp
   wr := by simp
 
-variable {S : C} (E : PreZeroHypercover S) [E.HasPullbacks]
+variable {S : C} (E : PreZeroHypercover.{max u v} S) [E.HasPullbacks]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in

@@ -30,21 +30,26 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 
 @[expose] public section
 
-universe v u
+universe u w v
 
 namespace groupCohomology
 open Rep CategoryTheory Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
-  {A : Rep k H} {B : Rep k G} (f : G →* H) (φ : res f A ⟶ B) (n : ℕ)
+  {A : Rep.{max u v} k H} {B : Rep.{max u v} k G} (f : G →* H) (φ : res f A ⟶ B) (n : ℕ)
 
 section
 
-theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : res f₁ A ⟶ B} {T : Type*}
+variable {A : Rep.{v} k H} {B : Rep.{v} k G} in
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : res f₁ A ⟶ B} {T : Type w}
     (F : (f : G →* H) → (φ : res f A ⟶ B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
+
+section
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B) (n : ℕ)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
@@ -188,6 +193,12 @@ noncomputable def mapIso (e : G ≃* H) (e' : B.V ≃ₗ[k] A.V)
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     exact groupCohomology.map_congr (by simp) e'.comp_symm n
 
+end
+
+section
+
+variable {A : Rep.{v} k H} {B : Rep.{v} k G} (f : G →* H) (φ : res f A ⟶ B)
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/
 noncomputable abbrev cochainsMap₁ :
@@ -207,6 +218,12 @@ noncomputable abbrev cochainsMap₃ :
     ModuleCat.of k (H × H × H → A) ⟶ ModuleCat.of k (G × G × G → B) :=
   ModuleCat.ofHom <|
     φ.hom.toLinearMap.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
+
+end
+
+section
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_0_comp_cochainsIso₀ :
@@ -237,9 +254,13 @@ lemma cochainsMap_f_3_comp_cochainsIso₃ :
 
 end
 
+end
+
 open ShortComplex
 
 section H0
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -331,11 +352,17 @@ lemma mapCocycles₁_comp_i :
 lemma coe_mapCocycles₁ (x) :
     ⇑(mapCocycles₁ f φ x) = cochainsMap₁ f φ x := rfl
 
+section
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B)
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₁_hom :
-    cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁.{u, u} f φ := by
+    cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁ f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i]
+
+end
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -345,6 +372,10 @@ theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
   simp [mapShortComplexH1, shortComplexH1, Pi.zero_apply y]
+
+section
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -359,7 +390,7 @@ theorem map₁_one (φ : res 1 A ⟶ B) :
 
 section InfRes
 
-variable (A : Rep k G) (S : Subgroup G) [S.Normal]
+variable (A : Rep.{u} k G) (S : Subgroup G) [S.Normal]
 
 /-- The short complex `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)`. -/
 @[simps X₁ X₂ X₃ f g]
@@ -430,8 +461,15 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
       cocycles₁.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
 
 end InfRes
+
+end
+
 end H1
 section H2
+
+section
+
+variable {A : Rep.{v} k H} {B : Rep.{v} k G} (f : G →* H) (φ : res f A ⟶ B)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
@@ -492,6 +530,12 @@ lemma mapCocycles₂_comp_i :
 lemma coe_mapCocycles₂ (x) :
     ⇑(mapCocycles₂ f φ x) = cochainsMap₂ f φ x := rfl
 
+end
+
+section
+
+variable {A : Rep.{u} k H} {B : Rep.{u} k G} (f : G →* H) (φ : res f A ⟶ B)
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₂_hom :
@@ -504,6 +548,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapCocycles₂ f φ ≫ H2π B := by
   simp [H2π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₂_hom_assoc]
+
+end
 
 end H2
 

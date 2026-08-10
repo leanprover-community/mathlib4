@@ -221,7 +221,7 @@ def localizationAway : Generators R S Unit where
 
 end Localization
 
-variable {ι' : Type*} {T} [CommRing T] [Algebra R T]
+variable {ι' : Type*} {T : Type*} [CommRing T] [Algebra R T]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,

@@ -30,7 +30,7 @@ public import Mathlib.Tactic.CrossRefAttribute
 
 open Topology TopologicalSpace
 
-variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable (X : Type*) {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
 section closedPoints
 

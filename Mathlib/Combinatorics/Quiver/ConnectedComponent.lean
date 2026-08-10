@@ -83,7 +83,7 @@ We define strong connectivity (`IsStronglyConnected`), its positive-length refin
 
 section StronglyConnected
 
-variable (V : Type*) [Quiver V]
+variable (V : Type*) [Quiver.{v} V]
 
 /-- Strong connectivity: every ordered pair of vertices is joined by a (possibly empty)
 directed path. -/

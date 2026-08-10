@@ -111,9 +111,11 @@ namespace Rep
 open CategoryTheory Finsupp
 
 variable {k : Type u} {G : Type v} {H : Type w} [CommRing k] [Monoid G] [Monoid H]
-  (φ : G →* H) (A : Rep k G)
+  (φ : G →* H)
 
 section Coind
+
+variable (A : Rep.{t} k G)
 
 /--
 If `φ : G →* H` and  `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
@@ -155,6 +157,8 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
 
 end Coind
 section Coind'
+
+variable (A : Rep.{max u w} k G)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--
@@ -207,6 +211,8 @@ noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
 
 end Coind'
 noncomputable section CoindIso
+
+variable (A : Rep.{max u w} k G)
 
 /-- If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent

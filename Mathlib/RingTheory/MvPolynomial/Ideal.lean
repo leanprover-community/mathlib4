@@ -146,7 +146,9 @@ end MvPolynomial
 
 namespace MonomialOrder
 
-variable [CommSemiring R] {m : MonomialOrder σ}
+universe u
+
+variable [CommSemiring R] {m : MonomialOrder.{_, u} σ}
 open Ideal
 
 lemma span_leadingTerm_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :

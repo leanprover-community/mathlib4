@@ -22,7 +22,7 @@ a shift by `A`, and the localization functor is compatible with the shift.
 
 @[expose] public section
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ w
+universe v₁ v₂ v₃ u₁ u₂ u₃ w w₁
 
 namespace CategoryTheory
 
@@ -107,7 +107,7 @@ noncomputable instance MorphismProperty.commShift_Q :
 
 attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
-variable [W.HasLocalization]
+variable [W.HasLocalization.{w₁}]
 
 /-- The localized category `W.Localization'` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization' :

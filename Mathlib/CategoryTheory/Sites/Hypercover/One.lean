@@ -311,7 +311,7 @@ def inter (E F : PreOneHypercover S) [∀ i j, HasPullback (E.f i) (F.f j)]
   p₂ i j k := pullback.map _ _ _ _ (E.p₂ _) (F.p₂ _) (𝟙 S) (by simp [E.w]) (by simp [F.w])
   w := by simp [E.w]
 
-variable {E} {F : PreOneHypercover S}
+variable {E} {F : PreOneHypercover.{w'} S}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -378,7 +378,7 @@ def Hom.id (E : PreOneHypercover S) : Hom E E where
   h₁ _ := 𝟙 _
 
 variable {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
-  {G : PreOneHypercover S}
+  {G : PreOneHypercover.{w''} S}
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Composition of refinement morphisms of pre-`1`-hypercovers. -/
@@ -950,7 +950,7 @@ def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
 
 section
 
-variable {S : C} (E : J.OneHypercover S) (F : Sheaf J A)
+variable {S : C} (E : J.OneHypercover.{w} S) (F : Sheaf J A)
 
 section
 

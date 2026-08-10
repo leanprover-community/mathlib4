@@ -31,7 +31,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
-universe u
+universe u v
 
 open scoped AlgebraicGeometry
 
@@ -149,7 +149,7 @@ section of_injective
 
 open Scheme Pullback
 
-variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
+variable (𝒰 : Scheme.OpenCover.{u} Y) (𝒱 : ∀ i, Scheme.OpenCover.{v} (pullback f (𝒰.f i)))
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
