@@ -41,11 +41,11 @@ set_option backward.isDefEq.respectTransparency false
 
 variable {n : ℕ}
 
-/- The `K` theory is a ring via direct sum and tensoring. -/
+/-- The `K` theory is a ring via direct sum and tensoring. -/
 public noncomputable instance : CommRing (KFlag n) :=
   inferInstanceAs (CommRing (MvPolynomial (Fin n) ℚ))
 
-/- The `K` theory was tensored with `ℚ` so it is a `ℚ` algebra. -/
+/-- The `K` theory was tensored with `ℚ` so it is a `ℚ` algebra. -/
 public noncomputable instance : Algebra ℚ (KFlag n) :=
   inferInstanceAs (Algebra ℚ (MvPolynomial (Fin n) ℚ))
 
@@ -160,7 +160,7 @@ theorem parabSubalgebraAux_psi_mem (blockOf : Fin n → β) (k : ℕ) :
 @[expose] public noncomputable def ParabSubalgebra (blockOf : Fin n → β) : Subalgebra ℚ (KFlag n) :=
   ParabSubalgebraAux blockOf
 
-/- The subalgebra `K(GL(n)/P) ⊗_ℤ ℚ` is closed under the `ψ^k`s -/
+/-- The subalgebra `K(GL(n)/P) ⊗_ℤ ℚ` is closed under the `ψ^k`s -/
 public theorem parabSubalgebra_psi_mem (blockOf : Fin n → β) (k : ℕ) :
     ∀ x ∈ ParabSubalgebra blockOf, AdamsOperations.ψ (R := ℚ) k x ∈ ParabSubalgebra blockOf :=
   parabSubalgebraAux_psi_mem blockOf k

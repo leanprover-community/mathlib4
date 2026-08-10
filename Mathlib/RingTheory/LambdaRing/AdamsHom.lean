@@ -35,13 +35,13 @@ public instance : FunLike (AdamsHom R A B) A B where
     congr 1
     exact DFunLike.coe_injective h
 
-/-
+/--
 Simplify `f x` which is just using it as an algebra homomorphism
 and not needing that it has a proof of preserving `ψ^n` structure.
 -/
 @[simp] public theorem toAlgHom_apply (f : AdamsHom R A B) (x : A) : f.toAlgHom x = f x := rfl
 
-/- Extensional Equality of `AdamsHom` -/
+/-- Extensional Equality of `AdamsHom` -/
 @[ext] public theorem ext {f g : AdamsHom R A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
@@ -58,7 +58,7 @@ and not needing that it has a proof of preserving `ψ^n` structure.
         = (AdamsOperations.ψ (R := R) n).comp (g.toAlgHom.comp f.toAlgHom)
     rw [AlgHom.comp_assoc, f.map_psi n hn, ← AlgHom.comp_assoc, g.map_psi n hn, AlgHom.comp_assoc]
 
-/- Composing `AdamsHom` and then applying to an `x` also does
+/-- Composing `AdamsHom` and then applying to an `x` also does
 not need that each has a proof of preserving `ψ^n` structure.
 -/
 @[simp] public theorem comp_apply (g : AdamsHom R B C) (f : AdamsHom R A B) (x : A) :
