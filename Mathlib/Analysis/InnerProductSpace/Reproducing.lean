@@ -368,10 +368,9 @@ lemma outerKernel_apply (f : X → V) (x y) :
 
 omit [CompleteSpace V] in
 variable (𝕜) in
-@[simp]
 lemma outerKernel_inner (f : X → V) (x₁ x₂ : X) (v₁ v₂ : V) :
     ⟪outerKernel 𝕜 f x₂ x₁ v₁, v₂⟫_𝕜 = conj ⟪f x₁, v₁⟫_𝕜 * ⟪f x₂, v₂⟫_𝕜 := by
-  simp_rw [outerKernel_apply, rankOne_apply, inner_smul_left]
+  simp [inner_smul_left]
 
 variable (𝕜) in
 lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
