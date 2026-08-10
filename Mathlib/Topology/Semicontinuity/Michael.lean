@@ -139,7 +139,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
     have key : ∀ m k j x, k + 1 ≤ j → h (j + m) x - h j x ∈ V k := fun m ↦ by
       induction m with
       | zero =>
-        intro k j x _; simp only [Nat.add_zero, sub_self]; exact mem_of_mem_nhds (hV.1.mem k)
+        intro k j x _; simpa using mem_of_mem_nhds (hV.1.mem k)
       | succ m ih =>
         intro k j x hj
         obtain ⟨_, rfl, v, hv, hv'⟩ := hh_mem_ball j x
@@ -149,20 +149,18 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
         convert (hV.2 k).2.2.1 (Set.add_mem_add h1 h2) using 1
         abel_nf
     filter_upwards [(Filter.eventually_ge_atTop (n + 1)).prod_mk
-        (Filter.eventually_ge_atTop (n + 1))]
-    intro ⟨i, j⟩ ⟨hi, hj⟩ x _
+        (Filter.eventually_ge_atTop (n + 1))] with ⟨i, j⟩ ⟨hi, hj⟩ x _
     apply hn
-    obtain h_lt | h_le := Nat.lt_or_ge j i
+    obtain h_lt | h_le := j.lt_or_ge i
     · simpa [Nat.add_sub_cancel' h_lt.le, neg_sub] using
         (hV.2 n).2.1.1.neg_mem_iff.mpr (key (i - j) n j x hj)
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le h_le
       exact key m n i x hi
   choose H hH using fun x ↦ cauchySeq_tendsto_of_complete (hUnif.cauchySeq (mem_univ x))
-  use H
-  constructor
+  refine ⟨H, ?_, ?_⟩
   · rw [← continuousOn_univ]
     apply (hUnif.tendstoUniformlyOn_of_tendsto (fun x hx ↦ hH x)).continuousOn
-    exact Filter.Frequently.of_forall (by simp [hh_cont])
+    exact .of_forall (by simp [hh_cont])
   intro x
   rw [← (hf_isClosed x).iInter_closure_add_eq hV.1.toHasBasis]
   simp only [Set.iInter_true]
