@@ -41,9 +41,11 @@ set_option backward.isDefEq.respectTransparency false
 
 variable {n : ℕ}
 
+/- The `K` theory is a ring via direct sum and tensoring. -/
 public noncomputable instance : CommRing (KFlag n) :=
   inferInstanceAs (CommRing (MvPolynomial (Fin n) ℚ))
 
+/- The `K` theory was tensored with `ℚ` so it is a `ℚ` algebra. -/
 public noncomputable instance : Algebra ℚ (KFlag n) :=
   inferInstanceAs (Algebra ℚ (MvPolynomial (Fin n) ℚ))
 
@@ -52,6 +54,12 @@ public noncomputable instance : Algebra ℚ (KFlag n) :=
 
 -- The Adams operations, worked out directly on `MvPolynomial (Fin n) ℚ`
 
+/-
+The `ψ^k` on `ℚ[[L_1]...[L_n]]` where `[L_i]` are the classes
+of the `i`-th tautological line bundles.
+This is the aux version because it is on the underlying
+`MvPolynomial` not on `KFlag`. `flagPsi` does that.
+-/
 @[expose] public noncomputable def flagPsiAux (n k : ℕ) :
     MvPolynomial (Fin n) ℚ →ₐ[ℚ] MvPolynomial (Fin n) ℚ :=
   MvPolynomial.aeval fun i => (MvPolynomial.X i : MvPolynomial (Fin n) ℚ) ^ k
@@ -74,8 +82,10 @@ theorem flagPsiAux_mul (n : ℕ) (a b : ℕ) :
 by `L i ↦ (L i) ^ k`, matching the line-bundle formula `ψᵏ[L] = [L]^k`. -/
 @[expose] public noncomputable def flagPsi (n k : ℕ) : KFlag n →ₐ[ℚ] KFlag n := flagPsiAux n k
 
+/- `ψ^k` on the `KFlag n` is the identity -/
 public theorem flagPsi_one (n : ℕ) : flagPsi n 1 = AlgHom.id ℚ (KFlag n) := flagPsiAux_one n
 
+/- The multiplicativity `ψ^{a*b}` as composition of `ψ^a` and `ψ^b` on `KFlag n` -/
 public theorem flagPsi_mul (n : ℕ) (a b : ℕ) :
     flagPsi n (a * b) = (flagPsi n a).comp (flagPsi n b) := flagPsiAux_mul n a b
 
@@ -146,9 +156,11 @@ theorem parabSubalgebraAux_psi_mem (blockOf : Fin n → β) (k : ℕ) :
     rw [← AlgHom.comp_apply, ← AlgHom.comp_apply, flagPsiAux_rename_comm]
   rw [h, hx σ]
 
+/-- The subalgebra `K(GL(n)/P) ⊗_ℤ ℚ` of `K(GL(n)/B) ⊗_ℤ ℚ`. -/
 @[expose] public noncomputable def ParabSubalgebra (blockOf : Fin n → β) : Subalgebra ℚ (KFlag n) :=
   ParabSubalgebraAux blockOf
 
+/- The subalgebra `K(GL(n)/P) ⊗_ℤ ℚ` is closed under the `ψ^k`s -/
 public theorem parabSubalgebra_psi_mem (blockOf : Fin n → β) (k : ℕ) :
     ∀ x ∈ ParabSubalgebra blockOf, AdamsOperations.ψ (R := ℚ) k x ∈ ParabSubalgebra blockOf :=
   parabSubalgebraAux_psi_mem blockOf k

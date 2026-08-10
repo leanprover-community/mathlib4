@@ -9,6 +9,13 @@ import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 
+/-!
+Extending an `F` which is
+a function from primes to a monoid `M`
+such that all `F p`, `F q`... commute
+multiplicatively so that it is a
+totally multiplicative function on all `ℕ_{≥1}` -/
+
 namespace PrimeExtend
 
 open scoped Function
@@ -30,6 +37,7 @@ public noncomputable def extendPrimes (n : ℕ) : M :=
   (n.factorization.support.subtype Nat.Prime).noncommProd
     (fun q => F q ^ n.factorization q.1) (pc F Hcomm _ _)
 
+/- When `n=1`, the product is empty and so the result is `1 ∈ M` -/
 include Hcomm in
 public theorem extendPrimes_one : extendPrimes F Hcomm 1 = 1 := by
   change ((1 : ℕ).factorization.support.subtype Nat.Prime).noncommProd
