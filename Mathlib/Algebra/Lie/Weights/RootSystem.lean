@@ -490,42 +490,4 @@ lemma rootSystem_reflectionPerm_self_eq_neg (i : H.root) :
   rw [RootPairing.root_reflectionPerm, RootPairing.reflection_apply_self]
   simp
 
-lemma mem_range_rootSystem_iff_rootSpace_ne_bot (χ : Dual K H) (hχ : χ ≠ 0) :
-    χ ∈ Set.range (rootSystem H).root ↔ rootSpace H χ ≠ ⊥ := by
-  suffices (∃ α : Weight K H L, α.IsNonZero ∧ α.toLinear = χ) ↔ rootSpace H χ ≠ ⊥ by simpa
-  refine ⟨fun ⟨α, hα, hα'⟩ ↦ ?_, fun h ↦ ⟨⟨χ, h⟩, Weight.coe_toLinear_ne_zero_iff.mp hχ, rfl⟩⟩
-  simpa [← hα'] using α.genWeightSpace_ne_bot
-
-lemma chainTopCoeff_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
-    chainTopCoeff i.val j.val = (rootSystem H).chainTopCoeff i j := by
-  replace hij : LinearIndependent K ![(rootSystem H).root i, (rootSystem H).root j] := by
-    rw [RootPairing.IsReduced.linearIndependent_iff]
-    refine ⟨hij.1, ?_⟩
-    convert (rootSystem H).root.injective.ne_iff.mpr hij.2
-    simp
-  suffices ∀ n, n ≤ chainTopCoeff i.val j.val ↔ n ≤ (rootSystem H).chainTopCoeff i j from
-    le_antisymm (by rw [← this]) (by rw [this])
-  intro n
-  have aux : rootSpace H (n • i + j) ≠ ⊥ ↔ n ≤ chainTopCoeff i.val j.val := by
-    have hi : i.val.IsNonZero := by aesop
-    simpa using rootSpace_zsmul_add_ne_bot_iff_mem i.val j.val hi n
-  have hij' : (rootSystem H).root j + n • (rootSystem H).root i ≠ 0 := fun contra ↦ by
-    have := LinearIndependent.pair_iff.mp hij n 1 (by norm_cast; grind)
-    grind
-  rw [← (rootSystem H).root_add_nsmul_mem_range_iff_le_chainTopCoeff hij, ← aux,
-    mem_range_rootSystem_iff_rootSpace_ne_bot _ hij', add_comm]
-  rfl
-
-lemma chainBotCoeff_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
-    chainBotCoeff i.val j.val = (rootSystem H).chainBotCoeff i j := by
-  replace hij : -i ≠ j ∧ -i ≠ -j := by aesop (add simp neg_eq_iff_eq_neg)
-  have := chainTopCoeff_eq hij
-  rw [val_neg_root, Weight.coe_neg, chainTopCoeff_neg] at this
-  rw [this, neg_root_eq_reflection, RootPairing.chainTopCoeff_reflectionPerm_left]
-
-lemma chainLength_eq {i j : H.root} (hij : i ≠ j ∧ i ≠ -j) :
-    chainLength i.val j.val =
-      (rootSystem H).chainBotCoeff i j + (rootSystem H).chainTopCoeff i j := by
-  rw [← chainBotCoeff_add_chainTopCoeff, chainBotCoeff_eq hij, chainTopCoeff_eq hij]
-
 end LieAlgebra.IsKilling
