@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 public import Mathlib.MeasureTheory.Function.LpOrder
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Integrable functions
@@ -54,7 +55,7 @@ namespace MeasureTheory
 
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
-@[fun_prop]
+@[fun_prop, wikidata Q3153745]
 def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ

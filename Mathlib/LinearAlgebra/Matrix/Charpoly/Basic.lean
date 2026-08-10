@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -129,6 +130,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+@[wikidata Q849705]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 

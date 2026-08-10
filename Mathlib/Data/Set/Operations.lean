@@ -10,6 +10,7 @@ public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Push.Attr
 
 import Mathlib.Tactic.Attr.Register
@@ -219,6 +220,7 @@ lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p
 section Prod
 
 /-- The Cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+@[wikidata Q173740]
 def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 
 @[default_instance]
