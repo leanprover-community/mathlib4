@@ -41,7 +41,7 @@ variable {R : Type*} [CommRing R] [Algebra ℚ R]
 @[expose] public noncomputable def p (n : ℕ) (_hn : 0 < n) :
   SymmFun R := MvPolynomial.X (n - 1)
 
-/- The power sum inside `SymmFun R` are
+/-- The power sum inside `SymmFun R` are
 the `X_{n-1}` variables of the `MvPolynomial` -/
 public theorem p_def (n : ℕ) (hn : 0 < n) :
   p n hn = (MvPolynomial.X (n - 1) : SymmFun R) := rfl
@@ -53,7 +53,7 @@ public noncomputable def realize (m : ℕ) :
   SymmFun R →ₐ[R] MvPolynomial (Fin m) R :=
   MvPolynomial.aeval fun n => MvPolynomial.psum (Fin m) R (n + 1)
 
-/- Evaluating `p_n` at `X = x_1 + ... x_m`
+/-- Evaluating `p_n` at `X = x_1 + ... x_m`
 gives the concrete `p_n(x_1, ..., x_m)`. -/
 @[simp]
 public theorem realize_p (m n : ℕ) (hn : 0 < n) :
@@ -95,7 +95,7 @@ theorem comul_apply_X (n : ℕ) :
 theorem counit_apply_X (n : ℕ) : counit (R := R) (MvPolynomial.X n : SymmFun R) = 0 :=
   MvPolynomial.aeval_X _ _
 
-/- The counit and comultiplication above combine consistently to form a bialgebra -/
+/-- The counit and comultiplication above combine consistently to form a bialgebra -/
 public noncomputable instance : Bialgebra R (SymmFun R) :=
   .ofAlgHom comul counit
     (by
@@ -106,7 +106,7 @@ public noncomputable instance : Bialgebra R (SymmFun R) :=
     (by ext1 n; simp [comul_apply_X, counit_apply_X])
     (by ext1 n; simp [comul_apply_X, counit_apply_X])
 
-/- `Δ (p_n) = p_n ⊗ 1 + 1 ⊗ p_n` -/
+/-- `Δ (p_n) = p_n ⊗ 1 + 1 ⊗ p_n` -/
 @[simp]
 public theorem comul_X (n : ℕ) :
     Coalgebra.comul (R := R) (MvPolynomial.X n : SymmFun R) =
@@ -118,7 +118,7 @@ public theorem comul_X (n : ℕ) :
 theorem counit_X (n : ℕ) : Coalgebra.counit (R := R) (MvPolynomial.X n : SymmFun R) = 0 :=
   counit_apply_X n
 
-/- `Δ (p_n) = p_n ⊗ 1 + 1 ⊗ p_n` -/
+/-- `Δ (p_n) = p_n ⊗ 1 + 1 ⊗ p_n` -/
 @[simp]
 public theorem comul_p (n : ℕ) (hn : 0 < n) :
     Coalgebra.comul (R := R) (p n hn : SymmFun R)
@@ -142,7 +142,7 @@ theorem antipode_X (n : ℕ) :
     antipode (R := R) (MvPolynomial.X n : SymmFun R) = -(MvPolynomial.X n : SymmFun R) :=
   MvPolynomial.aeval_X _ _
 
-/- The bialgebra and antipode consistently combine to make `Λ_R` into a Hopf algebra. -/
+/-- The bialgebra and antipode consistently combine to make `Λ_R` into a Hopf algebra. -/
 public noncomputable instance : HopfAlgebra R (SymmFun R) :=
   .ofAlgHom antipode
     (by
@@ -156,7 +156,7 @@ public noncomputable instance : HopfAlgebra R (SymmFun R) :=
       erw [Algebra.TensorProduct.lift_tmul, Algebra.TensorProduct.lift_tmul]
       simp [antipode_X, counit_X])
 
-/- `S (p_n) = -p_n`-/
+/-- `S (p_n) = -p_n`. -/
 @[simp]
 public theorem antipode_p (n : ℕ) (hn : 0 < n) :
     HopfAlgebra.antipode (R := R) (p n hn : SymmFun R) = -(p n hn : SymmFun R) := by

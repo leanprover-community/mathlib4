@@ -96,7 +96,7 @@ theorem psi_apply_X (n k : ℕ) :
     psi n (MvPolynomial.X k : SymmFun R) = (MvPolynomial.X (n * (k + 1) - 1) : SymmFun R) :=
   MvPolynomial.aeval_X _ _
 
-/- The particular evaluation of `ψ^n (p_k)` -/
+/-- The particular evaluation of `ψ^n (p_k)` -/
 @[simp]
 public theorem psi_p (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
     psi n (p k hk : SymmFun R) = p (n * k) (Nat.mul_pos hn hk) := by
@@ -104,12 +104,12 @@ public theorem psi_p (n k : ℕ) (hn : 0 < n) (hk : 0 < k) :
   congr 1
   rw [Nat.sub_add_cancel hk]
 
-/- `ψ^1` is the identity -/
+/-- `ψ^1` is the identity -/
 public theorem psi_one : (psi 1 : SymmFun R →ₐ[R] SymmFun R) = AlgHom.id R (SymmFun R) := by
   ext1 k
   simp [psi_apply_X]
 
-/- `ψ^{mn}` is the composition of `ψ^m` and `ψ^n` -/
+/-- `ψ^{mn}` is the composition of `ψ^m` and `ψ^n` -/
 public theorem psi_mul {m n : ℕ} (_hm : 0 < m) (hn : 0 < n) :
     (psi (m * n) : SymmFun R →ₐ[R] SymmFun R) = (psi m).comp (psi n) := by
   ext1 k
@@ -125,7 +125,7 @@ i.e. substitute `ψ^n g` for every power sum `p_n` appearing in `f`. -/
 theorem comp_apply_X (k : ℕ) (g : SymmFun R) : comp (MvPolynomial.X k) g = psi (k + 1) g :=
   MvPolynomial.aeval_X _ _
 
-/- `(ψ^n g)[h]` = `ψ^n g[h]` -/
+/-- `(ψ^n g)[h]` = `ψ^n g[h]` -/
 public theorem comp_psi (h : SymmFun R) (n : ℕ) (hn : 0 < n) (g : SymmFun R) :
     comp (psi n g) h = psi n (comp g h) := by
   suffices heq : (MvPolynomial.aeval (fun k => psi (k + 1) h) : SymmFun R →ₐ[R] SymmFun R).comp
@@ -146,14 +146,14 @@ public theorem comp_assoc (f g h : SymmFun R) : comp (comp f g) h = comp f (comp
   simp only [AlgHom.comp_apply, MvPolynomial.aeval_X]
   exact comp_psi h (k + 1) (Nat.succ_pos k) g
 
-/- `p_1 [g] = g`-/
+/-- `p_1 [g] = g`. -/
 public theorem comp_p_one_left (g : SymmFun R) : comp (p 1 Nat.one_pos) g = g := by
   change MvPolynomial.aeval (fun n => psi (n + 1) g) (p 1 Nat.one_pos : SymmFun R) = g
   rw [p_def, MvPolynomial.aeval_X]
   change psi 1 g = g
   rw [psi_one, AlgHom.id_apply]
 
-/- `f[p_1] = f`-/
+/-- `f[p_1] = f`. -/
 public theorem comp_p_one_right (f : SymmFun R) : comp f (p 1 Nat.one_pos) = f := by
   change MvPolynomial.aeval (fun n => psi (n + 1) (p 1 Nat.one_pos : SymmFun R)) f = f
   have hid : (MvPolynomial.aeval (fun n => psi (n + 1) (p 1 Nat.one_pos : SymmFun R))
@@ -164,7 +164,7 @@ public theorem comp_p_one_right (f : SymmFun R) : comp f (p 1 Nat.one_pos) = f :
     omega
   rw [hid, AlgHom.id_apply]
 
-/- `Λ_R` has the structure of an `AdamsOperation` ring -/
+/-- `Λ_R` has the structure of an `AdamsOperation` ring -/
 public noncomputable instance : AdamsOperations R (SymmFun R) where
   ψ := psi
   ψ_one := psi_one
@@ -191,14 +191,14 @@ theorem act_apply_X (a : A) (n : ℕ) :
     act a (MvPolynomial.X n : SymmFun R) = AdamsOperations.ψ (R := R) (n + 1) a :=
   MvPolynomial.aeval_X _ _
 
-/- On `p_n` in `SymmFun R`, `act a` as an algebra homomorphism
+/-- On `p_n` in `SymmFun R`, `act a` as an algebra homomorphism
 with that as it's domain has value `ψ^n (a)` as required. -/
 @[simp]
 public theorem act_p (a : A) (n : ℕ) (hn : 0 < n) :
     act a (p n hn : SymmFun R) = AdamsOperations.ψ (R := R) n a := by
   rw [p_def, act_apply_X, Nat.sub_add_cancel hn]
 
-/- On `p_1` in `SymmFun R`, `act a` as an algebra homomorphism
+/-- On `p_1` in `SymmFun R`, `act a` as an algebra homomorphism
 with that as it's domain has value `ψ^1 (a) = a` as required. -/
 public theorem act_p_one (a : A) : act a (p 1 Nat.one_pos : SymmFun R) = a := by
   rw [act_p a 1 Nat.one_pos, AdamsOperations.ψ_one (R := R), AlgHom.id_apply]

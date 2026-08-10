@@ -37,8 +37,8 @@ public noncomputable def extendPrimes (n : ℕ) : M :=
   (n.factorization.support.subtype Nat.Prime).noncommProd
     (fun q => F q ^ n.factorization q.1) (pc F Hcomm _ _)
 
-/- When `n=1`, the product is empty and so the result is `1 ∈ M` -/
 include Hcomm in
+/-- When `n=1`, the product is empty and so the result is `1 ∈ M` -/
 public theorem extendPrimes_one : extendPrimes F Hcomm 1 = 1 := by
   change ((1 : ℕ).factorization.support.subtype Nat.Prime).noncommProd
     (fun q => F q ^ (1 : ℕ).factorization q.1) (pc F Hcomm _ _) = 1

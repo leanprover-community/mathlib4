@@ -54,7 +54,7 @@ public noncomputable instance : Algebra ℚ (KFlag n) :=
 
 -- The Adams operations, worked out directly on `MvPolynomial (Fin n) ℚ`
 
-/-
+/--
 The `ψ^k` on `ℚ[[L_1]...[L_n]]` where `[L_i]` are the classes
 of the `i`-th tautological line bundles.
 This is the aux version because it is on the underlying
@@ -82,10 +82,10 @@ theorem flagPsiAux_mul (n : ℕ) (a b : ℕ) :
 by `L i ↦ (L i) ^ k`, matching the line-bundle formula `ψᵏ[L] = [L]^k`. -/
 @[expose] public noncomputable def flagPsi (n k : ℕ) : KFlag n →ₐ[ℚ] KFlag n := flagPsiAux n k
 
-/- `ψ^k` on the `KFlag n` is the identity -/
+/-- `ψ^k` on the `KFlag n` is the identity -/
 public theorem flagPsi_one (n : ℕ) : flagPsi n 1 = AlgHom.id ℚ (KFlag n) := flagPsiAux_one n
 
-/- The multiplicativity `ψ^{a*b}` as composition of `ψ^a` and `ψ^b` on `KFlag n` -/
+/-- The multiplicativity `ψ^{a*b}` as composition of `ψ^a` and `ψ^b` on `KFlag n` -/
 public theorem flagPsi_mul (n : ℕ) (a b : ℕ) :
     flagPsi n (a * b) = (flagPsi n a).comp (flagPsi n b) := flagPsiAux_mul n a b
 
