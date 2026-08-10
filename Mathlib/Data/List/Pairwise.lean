@@ -5,10 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Batteries.Data.List.Lemmas
 public import Batteries.Data.List.Pairwise
+public import Mathlib.Data.List.TFAE
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Logic.Relation
-public import Batteries.Data.List.Lemmas
 
 /-!
 # Pairwise relations on a list
@@ -153,5 +154,50 @@ theorem Pairwise.rel_get_of_le [Std.Refl R] {l : List α} (h : l.Pairwise R) {a 
 theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
     Pairwise (fun a b => decide (R a b) = true) l := by
   refine h.imp fun {a b} h => by simpa using h
+
+/-! ## TFAE -/
+
+section TFAE
+
+variable {a b : Prop} {l l₁ l₂ : List Prop}
+
+theorem tfae_iff_pairwise : TFAE l ↔ l.Pairwise (· ↔ ·) :=
+  ⟨pairwise_of_forall_mem_list, Pairwise.forall_of_forall fun _ _ ↦ .rfl⟩
+
+theorem tfae_append :
+    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) := by
+  simp [tfae_iff_pairwise, pairwise_append]
+
+theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
+    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
+  simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
+
+theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
+
+theorem tfae_concat_of_mem (h : b ∈ l) :
+    TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
+  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
+
+theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
+  tfae_cons_of_mem (Mem.head _)
+
+@[simp]
+theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp [tfae_cons_cons]
+
+theorem tfae_of_forall (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
+  fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
+
+theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
+    (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
+  induction l generalizing a b with
+  | nil => simp_all [tfae_cons_cons, iff_def]
+  | cons c l IH =>
+    simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
+    rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
+    have := IH ⟨bc, ch⟩ (ab ∘ h_last)
+    exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
+
+end TFAE
 
 end List

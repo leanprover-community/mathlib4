@@ -6,7 +6,8 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 public import Batteries.Tactic.Alias
-public import Mathlib.Data.List.Pairwise
+public import Batteries.Data.List.Basic
+public import Mathlib.Init
 
 /-!
 # The Following Are Equivalent
@@ -35,9 +36,6 @@ theorem tfae_nil : TFAE [] :=
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
-theorem tfae_iff_pairwise : TFAE l ↔ l.Pairwise (· ↔ ·) :=
-  ⟨pairwise_of_forall_mem_list, Pairwise.forall_of_forall fun _ _ ↦ .rfl⟩
-
 theorem TFAE.subset (h : TFAE l₂) (hl : l₁ ⊆ l₂) : TFAE l₁ :=
   fun p hp q hq ↦ h p (hl hp) q (hl hq)
 
@@ -46,40 +44,6 @@ theorem tfae_congr (hp : l₁ ~ l₂) : TFAE l₁ ↔ TFAE l₂ :=
 
 @[simp]
 theorem tfae_reverse : TFAE l.reverse ↔ TFAE l := tfae_congr (reverse_perm l)
-
-theorem tfae_append :
-    TFAE (l₁ ++ l₂) ↔ TFAE l₁ ∧ TFAE l₂ ∧ (∀ a ∈ l₁, ∀ b ∈ l₂, (a ↔ b)) := by
-  simp [tfae_iff_pairwise, pairwise_append]
-
-theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
-    TFAE (l₁ ++ l₂) ↔ (a ↔ b) ∧ TFAE l₁ ∧ TFAE l₂ := by
-  simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
-
-theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
-  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
-
-theorem tfae_concat_of_mem (h : b ∈ l) :
-    TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
-  simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
-
-theorem tfae_cons_cons : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
-  tfae_cons_of_mem (Mem.head _)
-
-@[simp]
-theorem tfae_cons_self : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by simp [tfae_cons_cons]
-
-theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
-  fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
-
-theorem tfae_of_cycle (h_chain : List.IsChain (· → ·) (a :: b :: l))
-    (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
-  induction l generalizing a b with
-  | nil => simp_all [tfae_cons_cons, iff_def]
-  | cons c l IH =>
-    simp only [tfae_cons_cons, getLastD_cons, isChain_cons_cons] at *
-    rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
-    have := IH ⟨bc, ch⟩ (ab ∘ h_last)
-    exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ getLastD_mem_cons).1 ∘ bc⟩, this⟩
 
 theorem TFAE.out (h : TFAE l) (n₁ n₂ : Nat) {a b}
     (h₁ : l[n₁]? = some a := by rfl)
