@@ -290,6 +290,15 @@ theorem sSupIndep.mono {t : Set α} (hst : t ⊆ s) : sSupIndep t := fun _ ha =>
   (hs (hst ha)).mono_right (sSup_le_sSup (sdiff_subset_sdiff_left hst))
 
 include hs in
+/-- The image of an independent set under a map satisfying `f i ≤ i` on `s` is independent. -/
+theorem sSupIndep.image_of_le_self {f : α → α} (hf : ∀ i ∈ s, f i ≤ i) : sSupIndep (f '' s) := by
+  rintro t ⟨x, hxS, rfl⟩
+  refine hs hxS |>.mono (hf x hxS) ?_
+  simp only [sSup_le_iff, mem_sdiff, mem_image, mem_singleton_iff, and_imp, forall_exists_index,
+    forall_apply_eq_imp_iff₂]
+  refine fun y hyS hne ↦ (hf y hyS).trans <| le_sSup <| by grind
+
+include hs in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_sdiff y).mpr ⟨hy, h.symm⟩)
