@@ -554,6 +554,18 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   contrapose hi
   rwa [hi, mul_zero] at key
 
+instance : Algebra.IsAlgebraic K (⊥ : IntermediateField K L) where
+  isAlgebraic := by
+    intro ⟨x, hx⟩
+    obtain ⟨c, rfl⟩ := hx
+    exact isAlgebraic_algebraMap c
+
+instance : Algebra.IsAlgebraic (⊤ : IntermediateField K L) L where
+  isAlgebraic := by
+    intro x
+    let xt : (⊤ : IntermediateField K L) := ⟨x, mem_top⟩
+    exact isAlgebraic_algebraMap xt
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
