@@ -720,12 +720,18 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 @[to_additive]
+theorem lift_surjective_iff_closure_range_eq_top :
+    Function.Surjective (lift f) ↔ Subgroup.closure (Set.range f) = ⊤ := by
+  rw [← MonoidHom.range_eq_top, range_lift_eq_closure]
+
+@[to_additive]
 theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s → β)).range := by
   rw [FreeGroup.range_lift_eq_closure, Subtype.range_coe]
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) /-- The generators of `FreeAddGroup α` generate `FreeAddGroup α`. That
+is, the additive subgroup closure of the set of generators equals `⊤`. -/]
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← range_lift_eq_closure, lift_of_eq_id]
