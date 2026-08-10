@@ -92,6 +92,7 @@ def restrictionLT : Set.Iio i ⥤ C :=
 lemma restrictionLT_obj (k : J) (hk : k < i) :
     (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma restrictionLT_map {k₁ k₂ : Set.Iio i} (φ : k₁ ⟶ k₂) :
     (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
@@ -361,6 +362,7 @@ lemma ext (h : ∀ (k₁ k₂ : K) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ x)
 
 end subsingleton
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 open subsingleton in
 instance subsingleton : Subsingleton (Φ.Iteration j) where

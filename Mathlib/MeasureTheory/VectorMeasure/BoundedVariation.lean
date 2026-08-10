@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
-public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
 
@@ -139,8 +139,7 @@ lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     have A : hf.exists_vectorMeasure_le_measureAux.choose {a} = 0 := by
       rw [← botSet_eq_singleton_of_isBot ha]
       exact hf.exists_vectorMeasure_le_measureAux.choose_spec.2.1
-    simp only [vectorMeasure, h, ↓reduceDIte, VectorMeasure.coe_add, Pi.add_apply, A,
-      zero_add]
+    simp only [vectorMeasure, h, ↓reduceDIte, add_apply, A, zero_add]
     rw [VectorMeasure.dirac_apply_of_mem (MeasurableSet.singleton a)]
     · simpa only [heqa, sub_right_inj] using (leftLim_eq_of_isBot ha).symm
     · simp [heqa]

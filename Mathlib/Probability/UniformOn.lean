@@ -139,7 +139,7 @@ theorem uniformOn_self (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s s = 1 :=
 
 theorem uniformOn_eq_one_of (hs : s.Finite) (hs' : s.Nonempty) (ht : s ⊆ t) :
     uniformOn s t = 1 := by
-  haveI := isProbabilityMeasure_uniformOn hs hs'
+  have := isProbabilityMeasure_uniformOn hs hs'
   refine eq_of_le_of_not_lt prob_le_one ?_
   rw [not_lt, ← uniformOn_self hs hs']
   exact measure_mono ht

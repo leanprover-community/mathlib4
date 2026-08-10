@@ -36,7 +36,7 @@ Results should be proven for both `Bin(n, p)` and `Bin(R, n, p)` when possible, 
 one to prove the second. Note that results concerning `Bin(R, n, p)` may require
 `[MeasurableSingletonClass R]` and/or `[CharZero R]`.
 
-When refering to `Bin(n, p)` in names, use `binomial`. When refering to `Bin(R, n, p)`,
+When referring to `Bin(n, p)` in names, use `binomial`. When referring to `Bin(R, n, p)`,
 use `map_cast_binomial`.
 
 ## Notation
@@ -127,6 +127,7 @@ lemma binomial_real_self (n : ℕ) (p : I) :
 lemma map_cast_binomial_real_self [MeasurableSingletonClass R] [CharZero R] (n : ℕ) (p : I) :
     Bin(R, n, p).real {(n : R)} = p ^ n := by simp [map_cast_binomial_real_singleton]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma binomial_one_eq_bernoulliMeasure (p : I) :
     Bin(1, p) = Ber(1, 0, p) := by

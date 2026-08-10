@@ -28,7 +28,7 @@ class IsTopologicalAddTorsor {V : Type*} [AddGroup V] [TopologicalSpace V]
     (P : Type*) [AddTorsor V P] [TopologicalSpace P] extends ContinuousVAdd V P where
   continuous_vsub : Continuous (fun x : P × P => x.1 -ᵥ x.2)
 
-/-- A topological torsor over a topological group is a torsor where `+ᵥ` and `-ᵥ` are continuous. -/
+/-- A topological torsor over a topological group is a torsor where `•` and `/ₛ` are continuous. -/
 @[to_additive]
 class IsTopologicalTorsor {V : Type*} [Group V] [TopologicalSpace V]
     (P : Type*) [Torsor V P] [TopologicalSpace P] extends ContinuousSMul V P where
@@ -97,6 +97,25 @@ theorem IsTopologicalTorsor.to_isTopologicalGroup : IsTopologicalGroup V where
 @[to_additive (attr := simps!) /-- The map `v ↦ v +ᵥ p` as a homeomorphism between `V` and `P`. -/]
 def Homeomorph.smulConst (p : P) : V ≃ₜ P where
   __ := Equiv.smulConst p
+
+/-- The map `p' ↦ p /ₛ p'` as a homeomorphism: `Equiv.constSDiv` as a homeomorphism -/
+@[to_additive (attr := simps!)
+/-- The map `p' ↦ p -ᵥ p'` as a homeomorphism: `Equiv.constVSub` as a homeomorphism -/]
+def Homeomorph.constSDiv (p : P) : P ≃ₜ V where
+  toEquiv := Equiv.constSDiv p
+  continuous_invFun := by
+    have := IsTopologicalTorsor.to_isTopologicalGroup V P
+    fun_prop
+
+/-- `Equiv.pointReflection` as a homeomorphism -/
+def Homeomorph.pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] (p : P) : P ≃ₜ P :=
+  (Homeomorph.constVSub p).trans (Homeomorph.vaddConst p)
+
+@[simp]
+lemma Homeomorph.coe_pointReflection {V P : Type*} [AddGroup V] [TopologicalSpace V] [AddTorsor V P]
+    [TopologicalSpace P] [IsTopologicalAddTorsor P] (p : P) :
+    (Homeomorph.pointReflection p : P → P) = Equiv.pointReflection p := rfl
 
 end Torsor
 
