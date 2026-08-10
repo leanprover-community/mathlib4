@@ -36,7 +36,6 @@ lemma strictMono_insertNth_zero
   · simpa
   · simpa using hf i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma insertNth_monotone
     {f : Fin (n + 1) → α} (hf : Monotone f) (i : Fin n) (x : α)
     (hx₁ : f i.castSucc ≤ x) (hx₂ : x ≤ f i.succ) :
@@ -45,20 +44,11 @@ lemma insertNth_monotone
   intro j
   obtain hj | rfl | hj := lt_trichotomy j i.castSucc
   · obtain ⟨j, rfl⟩ := j.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hj)
-    simp only [castSucc_lt_castSucc_iff] at hj
-    rw [insertNth_apply_below (by simpa using hj.le),
-      insertNth_apply_below (by simpa)]
-    simpa using! hf j.castSucc_le_succ
-  · simpa [insertNth_apply_below (castSucc_lt_succ (i := i.castSucc))]
+    grind [insertNth_apply_below, castPred_castSucc, hf j.castSucc_le_succ]
+  · rwa [← succAbove_succ_self i.castSucc, insertNth_apply_succAbove, insertNth_apply_same]
   · obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hj)
-    simp only [castSucc_lt_succ_iff] at hj
-    obtain rfl | hj := hj.eq_or_lt
-    · simpa [insertNth_apply_above (show i.castSucc.succ < i.succ.succ by simp)]
-    · rw [insertNth_apply_above (by simpa),
-        insertNth_apply_above (by simpa using hj.le)]
-      simpa using hf j.castSucc_le_succ
+    grind [insertNth_apply_same, insertNth_apply_above, hf j.castSucc_le_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma strictMono_insertNth
     {f : Fin (n + 1) → α} (hf : StrictMono f) (i : Fin n) (x : α)
     (hx₁ : f i.castSucc < x) (hx₂ : x < f i.succ) :
@@ -67,18 +57,10 @@ lemma strictMono_insertNth
   intro j
   obtain hj | rfl | hj := lt_trichotomy j i.castSucc
   · obtain ⟨j, rfl⟩ := j.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hj)
-    simp only [castSucc_lt_castSucc_iff] at hj
-    rw [insertNth_apply_below (by simpa using hj.le),
-      insertNth_apply_below (by simpa)]
-    simpa using! hf j
-  · simpa [insertNth_apply_below (castSucc_lt_succ (i := i.castSucc))]
+    grind [insertNth_apply_below, castPred_castSucc]
+  · rwa [← succAbove_succ_self i.castSucc, insertNth_apply_succAbove, insertNth_apply_same]
   · obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hj)
-    simp only [castSucc_lt_succ_iff] at hj
-    obtain rfl | hj := hj.eq_or_lt
-    · simpa [insertNth_apply_above (show i.castSucc.succ < i.succ.succ by simp)]
-    · rw [insertNth_apply_above (by simpa),
-        insertNth_apply_above (by simpa using hj.le)]
-      simpa using hf j
+    grind [insertNth_apply_same, insertNth_apply_above]
 
 lemma insertNth_last_monotone
     {f : Fin (n + 1) → α} (hf : Monotone f) (x : α) (hx : f (Fin.last n) ≤ x) :
