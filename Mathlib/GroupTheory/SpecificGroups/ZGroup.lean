@@ -129,7 +129,7 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
   obtain ⟨ϕ⟩ := ((Group.isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
   let _ : CommGroup G :=
-    { mul_comm := fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]}
+    ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
 
 /-- A finite Z-group has cyclic abelianization. -/
