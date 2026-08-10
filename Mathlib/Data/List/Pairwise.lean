@@ -83,6 +83,10 @@ theorem pairwise_append_of_mem [Std.Symm R] [IsTrans α R] (ha : a ∈ l₁) (hb
     · exact _root_.trans (symm hab) hab
     · exact h₂.forall hb hy h.symm
 
+theorem pairwise_cons_of_mem [Std.Symm R] [IsTrans α R] (h : b ∈ l) :
+    (a :: l).Pairwise R ↔ R a b ∧ l.Pairwise R := by
+  simpa using pairwise_append_of_mem (l₁ := [a]) (by simp) h
+
 theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
     R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
   grind +splitIndPred

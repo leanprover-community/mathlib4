@@ -56,7 +56,7 @@ theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
   simp [tfae_iff_pairwise, pairwise_append_of_mem ha hb]
 
 theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
-  simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
+  simp [tfae_iff_pairwise, pairwise_cons_of_mem h]
 
 theorem tfae_concat_of_mem (h : b ∈ l) :
     TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
