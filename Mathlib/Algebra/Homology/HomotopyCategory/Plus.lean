@@ -203,6 +203,7 @@ section
 
 variable [HasZeroObject C] [HasBinaryBiproducts C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 open HomologicalComplex in
 set_option backward.defeqAttrib.useBackward true in
 instance :
@@ -239,6 +240,7 @@ noncomputable def singleFunctorCompιIso (n : ℤ) :
     singleFunctor C n ⋙ ι C ≅ HomotopyCategory.singleFunctor C n :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
@@ -256,6 +258,7 @@ namespace Functor
 variable {C D}
 variable (F : C ⥤ D) [F.Additive]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor between bounded below homotopy categories that is induced
 by an additive functor. -/

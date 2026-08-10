@@ -266,8 +266,6 @@ theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
 theorem X_dvd_mul_iff [IsCancelMulZero R] :
     X i ∣ p * q ↔ X i ∣ p ∨ X i ∣ q := by
   nontriviality R
-  have _ : NoZeroDivisors (MvPolynomial σ R) :=
-    IsLeftCancelMulZero.to_noZeroDivisors (MvPolynomial σ R)
   constructor
   · intro h
     suffices (p.modMonomial (Finsupp.single i 1)) * (q.modMonomial (Finsupp.single i 1)) =
@@ -340,7 +338,6 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
     refine ⟨n, le_refl n⟩
   suffices ∀ (d) (n : σ →₀ ℕ) (hd : n.degree = d) (p q : MvPolynomial σ R),
     p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r from this n.degree n rfl p q
-  classical
   intro d
   induction d with
   | zero =>

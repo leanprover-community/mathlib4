@@ -50,11 +50,11 @@ namespace MeasureTheory
 
 variable [NormedSpace ℝ E]
 
+set_option backward.isDefEq.respectTransparency.types false in
 omit [IsSFiniteKernel κ] in
 @[fun_prop]
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
-  classical
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
@@ -70,18 +70,19 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     exact κ.measurable_coe ((s n).measurableSet_fiber _)
   · rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable f (κ x)
-    · simp only [mem_setOf_eq, hfx, indicator_of_mem, f']
+    · simp only [mem_ofPred_eq, hfx, indicator_of_mem, f']
       apply tendsto_integral_approxOn_of_measurable_of_range_subset _ hfx
       exact subset_rfl
     · simp [f', hfx, integral_undef]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
   by_cases hE : CompleteSpace E; swap
   · simp [integral, hE, stronglyMeasurable_const]
   borelize E
-  haveI : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
+  have : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (α × β) E :=
     SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)
@@ -107,7 +108,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
-        mem_setOf_eq]
+        mem_ofPred_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_

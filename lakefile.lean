@@ -8,6 +8,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
+
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
@@ -38,13 +39,19 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
-`Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
+`Archive` and `Counterexamples`. -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
+
+/-- These options are passed as `leanOptions` when building `MathlibTest`. We don't use the typical
+mathlib options in order to simulate the default downstream environment. -/
+abbrev mathlibTestOptions : Array LeanOption := #[
+    ⟨`pp.mvars.anonymous, false⟩ -- test stability: pretty-print `?m.37` as `?_`
+  ]
 
 package mathlib where
   testDriver := "MathlibTest"
@@ -78,6 +85,7 @@ lean_lib Cache where
 
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
+  leanOptions := mathlibTestOptions
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions

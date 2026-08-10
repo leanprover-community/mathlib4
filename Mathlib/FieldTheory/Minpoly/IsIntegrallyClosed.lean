@@ -5,8 +5,6 @@ Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
@@ -134,7 +132,7 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   refine IsIntegrallyClosed.degree_le_of_ne_zero (s := s) hnz (by simp [hP]) |>.not_gt ?_
-  refine degree_sub_lt ?_ (ne_zero hs) ?_
+  refine degree_sub_lt_left ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 
@@ -230,6 +228,7 @@ def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
 theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
     (Algebra.adjoin.powerBasis' hx).dim = (minpoly R x).natDegree := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
