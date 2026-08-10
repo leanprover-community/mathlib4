@@ -84,7 +84,9 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
         eLpNorm (fun x => f x - s.indicator (fun _y => c) x) p μ ≤ ε ∧
           (∀ x, ‖f x‖ ≤ ‖c‖) ∧ Function.support f ⊆ u ∧ MemLp f p μ := by
   obtain ⟨η, η_pos, hη⟩ :
-      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _x => c) p μ ≤ ε :=
+      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+        NullMeasurableSet s μ →
+          eLpNorm (s.indicator fun _x => c) p μ ≤ ε :=
     exists_eLpNorm_indicator_le hp c hε
   have ηpos : (0 : ℝ≥0∞) < η := ENNReal.coe_lt_coe.2 η_pos
   obtain ⟨V, sV, V_open, h'V, hV⟩ : ∃ (V : Set α), V ⊇ s ∧ IsOpen V ∧ μ V < ∞ ∧ μ (V \ s) < η :=
@@ -118,17 +120,23 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : MemLp (fun x => g x • c) p μ := by
     refine MemLp.smul (memLp_top_const _) ?_ (p := p) (q := ∞)
-    refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
+    unfold MemLp
+    have hv : MeasurableSet v := u_open.measurableSet.inter V_open.measurableSet
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
-      (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
-    refine (eLpNorm_mono fun x => ?_).trans_lt this
+      (eLpNorm_indicator_const_le _ _ hv.nullMeasurableSet).trans_lt <| by
+        simp [lt_top_iff_ne_top, hμv.ne]
+    refine (eLpNorm_mono g.continuous.aestronglyMeasurable fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
-  refine ⟨fun x ↦ g x • c, by fun_prop, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
+  refine ⟨fun x ↦ g x • c, by fun_prop,
+    (eLpNorm_mono (gc_mem.aestronglyMeasurable.sub
+      (aestronglyMeasurable_const.indicator s_closed.measurableSet)) gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (sdiff_subset_sdiff inter_subset_right Subset.rfl)).trans hV.le)
+    ((u_open.measurableSet.inter V_open.measurableSet).diff
+      s_closed.measurableSet).nullMeasurableSet
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
@@ -156,7 +164,9 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   intro c t ht htμ ε hε
   rcases exists_Lp_half E μ p hε with ⟨δ, δpos, hδ⟩
   obtain ⟨η, ηpos, hη⟩ :
-      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _x => c) p μ ≤ δ :=
+      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+        NullMeasurableSet s μ →
+          eLpNorm (s.indicator fun _x => c) p μ ≤ δ :=
     exists_eLpNorm_indicator_le hp c δpos.ne'
   have hη_pos' : (0 : ℝ≥0∞) < η := ENNReal.coe_pos.2 ηpos
   obtain ⟨s, st, s_compact, s_closed, μs⟩ :
@@ -165,18 +175,17 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 : eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← eLpNorm_neg, neg_sub, ← indicator_sdiff st]
-    exact hη _ μs.le
+    exact hη _ μs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
   obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
     exists_compact_superset s_compact
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
     with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
     convert!
-      (hδ _ _
-          (f_mem.aestronglyMeasurable.sub
-            (aestronglyMeasurable_const.indicator s_closed.measurableSet))
-          ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
-            (aestronglyMeasurable_const.indicator ht))
+      (hδ _ _ ((f_mem.aestronglyMeasurable.sub
+            (aestronglyMeasurable_const.indicator s_closed.measurableSet)).add
+            ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
+              (aestronglyMeasurable_const.indicator ht)))
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
@@ -214,8 +223,13 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E,
       HasCompactSupport g ∧ ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Continuous g ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
-  exact hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.one_ne_top hε
+  obtain ⟨g, hg_support, hg, hg_cont, hg_mem⟩ :=
+    (memLp_one_iff_integrable.2 hf).exists_hasCompactSupport_eLpNorm_sub_le
+      ENNReal.one_ne_top hε
+  exact ⟨g, hg_support, by
+    rwa [eLpNorm_one_eq_lintegral_enorm
+      ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
+    hg_cont, memLp_one_iff_integrable.1 hg_mem⟩
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫`. -/
@@ -255,7 +269,9 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   intro c t ht htμ ε hε
   rcases exists_Lp_half E μ p hε with ⟨δ, δpos, hδ⟩
   obtain ⟨η, ηpos, hη⟩ :
-      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _x => c) p μ ≤ δ :=
+      ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η →
+        NullMeasurableSet s μ →
+          eLpNorm (s.indicator fun _x => c) p μ ≤ δ :=
     exists_eLpNorm_indicator_le hp c δpos.ne'
   have hη_pos' : (0 : ℝ≥0∞) < η := ENNReal.coe_pos.2 ηpos
   obtain ⟨s, st, s_closed, μs⟩ : ∃ s, s ⊆ t ∧ IsClosed s ∧ μ (t \ s) < η :=
@@ -263,17 +279,16 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 : eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← eLpNorm_neg, neg_sub, ← indicator_sdiff st]
-    exact hη _ μs.le
+    exact hη _ μs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_univ (subset_univ _) hsμ.ne c
       δpos.ne' with
     ⟨f, f_cont, I2, f_bound, -, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
     convert!
-      (hδ _ _
-          (f_mem.aestronglyMeasurable.sub
-            (aestronglyMeasurable_const.indicator s_closed.measurableSet))
-          ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
-            (aestronglyMeasurable_const.indicator ht))
+      (hδ _ _ ((f_mem.aestronglyMeasurable.sub
+            (aestronglyMeasurable_const.indicator s_closed.measurableSet)).add
+            ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
+              (aestronglyMeasurable_const.indicator ht)))
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
@@ -301,8 +316,12 @@ version in terms of `∫⁻`. -/
 theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
-  exact hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.one_ne_top hε
+  obtain ⟨g, hg, hg_mem⟩ := (memLp_one_iff_integrable.2 hf).exists_boundedContinuous_eLpNorm_sub_le
+    ENNReal.one_ne_top hε
+  exact ⟨g, by
+    rwa [eLpNorm_one_eq_lintegral_enorm
+      ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
+    memLp_one_iff_integrable.1 hg_mem⟩
 
 /-- Any integrable function can be approximated by bounded continuous functions,
 version in terms of `∫`. -/

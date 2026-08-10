@@ -174,32 +174,31 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
 lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
   filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
-  constructor
-  · exact (hi t).1
-  · by_cases hp : p = 0
-    · simp [hp]
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
-      ENNReal.coe_toReal]
-    have hf := (hi (p * t)).lintegral_lt_top
-    convert! hf using 3 with ω
-    rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
-      ← exp_mul, mul_comm, ← mul_assoc]
-    positivity
+  unfold MemLp
+  by_cases hp : p = 0
+  · simp [hp, eLpNorm_exponent_zero (hi t).1]
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp) (hi t).1,
+    ENNReal.coe_toReal]
+  have hf := (hi (p * t)).lintegral_lt_top
+  convert! hf using 3 with ω
+  rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
+    ← exp_mul, mul_comm, ← mul_assoc]
+  positivity
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
   · simpa [hp0] using (h.integrable_exp_mul t).1
-  constructor
-  · exact (h.integrable_exp_mul t).1
-  · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)]
-    simp only [ENNReal.coe_toReal]
-    have h' := (h.integrable_exp_mul (p * t)).2
-    rw [hasFiniteIntegral_def] at h'
-    convert! h' using 3 with ω
-    rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
-      ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
-    positivity
+  unfold MemLp
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)
+    (h.integrable_exp_mul t).1]
+  simp only [ENNReal.coe_toReal]
+  have h' := (h.integrable_exp_mul (p * t)).2
+  rw [hasFiniteIntegral_def] at h'
+  convert! h' using 3 with ω
+  rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
+    ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
+  positivity
 
 lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, ∀ t, cgf X (κ ω') t ≤ c * t ^ 2 / 2 := by
@@ -478,10 +477,10 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     simp only [ENNReal.coe_ofNat] at h
     have : κ ∘ₘ ν = ((κ ⊗ₖ η) ∘ₘ ν).map Prod.fst := by
       rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
-    rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
+    rwa [this, memLp_map_measure_iff h.aestronglyMeasurable measurable_fst.aemeasurable] at h
   · have h := hY.memLp_exp_mul t 2
     rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
-      memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
+      memLp_map_measure_iff h.aestronglyMeasurable measurable_snd.aemeasurable] at h
 
 /-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
 has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
