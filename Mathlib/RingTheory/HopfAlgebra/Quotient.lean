@@ -65,6 +65,6 @@ end HopfAlgebraStruct
 variable [HopfAlgebra R A] (I : Ideal A) [I.IsTwoSided] [I.IsHopfIdeal R]
 
 noncomputable instance : HopfAlgebra R (A ⧸ I) :=
-  mk_surjective.hopfAlgebra (mkBialgHom I) fun _ ↦ rfl
+  .ofSurjective (mkBialgHom I) mk_surjective fun _ ↦ rfl
 
 end HopfAlgebra.Quotient
