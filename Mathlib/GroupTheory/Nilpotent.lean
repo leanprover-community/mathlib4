@@ -1164,8 +1164,8 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
-instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
-  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G where
+  mul_comm := IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance
 
 instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
   inferInstance

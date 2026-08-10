@@ -1304,12 +1304,12 @@ instance (priority := 100) Group.toCancelMonoid : CancelMonoid G where
 end Group
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
-class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
+class AddCommGroup (G : Type u) extends SubNegMonoid G, AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
 -- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive (attr := wikidata Q181296)]
-class CommGroup (G : Type u) extends Group G, CommMonoid G
+class CommGroup (G : Type u) extends DivInvMonoid G, Group G, CommMonoid G
 
 section CommGroup
 

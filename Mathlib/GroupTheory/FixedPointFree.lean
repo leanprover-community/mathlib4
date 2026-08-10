@@ -73,7 +73,8 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
 @[instance_reducible]
 def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
-    CommGroup G := .mk (hφ.commute_all_of_involutive h2)
+    CommGroup G where
+  mul_comm := hφ.commute_all_of_involutive h2
 
 theorem orderOf_ne_two_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g : G) :
     orderOf g ≠ 2 := by

@@ -100,12 +100,12 @@ lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 @[simp]
 lemma fromSingleMk_sub {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     fromSingleMk (f - g) h = fromSingleMk f h - fromSingleMk g h :=
-  (fromSingleEquiv h).symm.map_sub _ _
+  (fromSingleEquiv h).symm.map_sub f g
 
 @[simp]
 lemma fromSingleMk_neg {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     fromSingleMk (-f) h = -fromSingleMk f h :=
-  (fromSingleEquiv h).symm.map_neg _
+  (fromSingleEquiv h).symm.map_neg f
 
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cochain ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) :
@@ -191,12 +191,12 @@ lemma toSingleMk_add {p q : ℤ} (f g : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
 @[simp]
 lemma toSingleMk_sub {p q : ℤ} (f g : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (f - g) h = toSingleMk f h - toSingleMk g h :=
-  (toSingleEquiv h).symm.map_sub _ _
+  (toSingleEquiv h).symm.map_sub f g
 
 @[simp]
 lemma toSingleMk_neg {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q) :
     toSingleMk (-f) h = -toSingleMk f h :=
-  (toSingleEquiv h).symm.map_neg _
+  (toSingleEquiv h).symm.map_neg f
 
 lemma toSingleMk_surjective {q n : ℤ} (α : Cochain K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) :
