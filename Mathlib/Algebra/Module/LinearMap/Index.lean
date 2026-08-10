@@ -6,10 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Exact.Sequence
-public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.Finiteness.Cofinite
 
 /-!
 # The index of a linear map
@@ -103,6 +102,13 @@ section DivisionRing
 
 variable {k : Type*} [DivisionRing k] [Module k M] [Module k N] [Module k P]
   {f : M →ₗ[k] N} {g : N →ₗ[k] P}
+
+public lemma hasIndex_iff_exists_isQuasiInverse :
+    f.HasIndex ↔ ∃ g : N →ₗ[k] M, g.IsQuasiInverse f := by
+  constructor
+  · sorry
+  · rintro ⟨g, hg⟩
+    sorry
 
 @[simp] public lemma index_neg :
     (-f).index = f.index := by
