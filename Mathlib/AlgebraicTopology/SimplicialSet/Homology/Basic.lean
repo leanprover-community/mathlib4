@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
@@ -31,11 +32,14 @@ namespace SSet
 
 variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
+-- Note: We could consider making `chainComplexFunctor` an abbrev in order to
+-- improve automation downstream. Instead, we make it a definition
+-- and provide suitable API, like `SSet.ιChainComplex`
 /--
 The chain complex associated to a simplicial set, with coefficients in `R : C`.
 It computes the simplicial homology of a simplicial sets with coefficients
 in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
-and `X := ℤ`.
+and `R := ℤ`.
 -/
 @[implicit_reducible]
 noncomputable def chainComplexFunctor : C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
@@ -94,6 +98,7 @@ lemma ιChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
       ∑ (i : Fin (n + 2)), (-1) ^ i.val • X.ιChainComplex (X.δ i x) := by
   simp [ιChainComplex, chainComplex, chainComplexFunctor, Preadditive.comp_sum]
 
+variable {X Y} in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
@@ -105,7 +110,7 @@ lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
 
 /-- The colimit cofan which defines the simplicial `n`-chains
 `(X.chainComplex R).X n`. -/
-noncomputable def chainComplexXCofan (n : ℕ) : Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
+noncomputable abbrev chainComplexXCofan (n : ℕ) : Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
   Cofan.mk _ X.ιChainComplex
 
 /-- Simplicial `n`-chains `(X.chainComplex R).X n` of a simplicial set `X`
@@ -120,6 +125,12 @@ lemma chainComplex_hom_ext {n : ℕ} {T : C} {f g : (X.chainComplex R).X n ⟶ T
     (h : ∀ (x : X _⦋n⦌), X.ιChainComplex x ≫ f = X.ιChainComplex x ≫ g) :
     f = g :=
   (X.isColimitChainComplexXCofan R n).hom_ext (fun _ ↦ h _)
+
+lemma isZero_chainComplex [X.HasDimensionLT 0] :
+    IsZero (X.chainComplex R) := by
+  rw [IsZero.iff_id_eq_zero]
+  ext n x
+  exact ((X.notNonempty_iff_hasDimensionLT_zero.mpr inferInstance) (.mk x)).elim
 
 variable [CategoryWithHomology C]
 
