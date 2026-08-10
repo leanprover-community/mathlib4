@@ -14,10 +14,6 @@ public import Mathlib.RingTheory.Coalgebra.Primitive
 This file defines primitive elements in a bialgebra and collects the facts about them that need
 the multiplication of `A`.
 
-## Main declarations
-
-* `Bialgebra.IsPrimitiveElem`: Predicate for an element of a bialgebra to be primitive.
-
 ## TODO
 
 * Show that the primitive elements form a `LieSubalgebra` with bracket `[a, b] = a * b - b * a`.
@@ -30,12 +26,12 @@ public section
 
 open Coalgebra TensorProduct
 
-variable {R A : Type*}
+variable {R A : Type*} [CommSemiring R]
 
 namespace Bialgebra
 
 section Semiring
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] {a : A}
+variable [Semiring A] [Bialgebra R A] {a : A}
 
 variable (R) in
 /-- A primitive element of a bialgebra is a `(1, 1)`-skew-primitive element, i.e. an element `a`
@@ -48,7 +44,7 @@ lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1
 end Semiring
 
 section Ring
-variable [CommSemiring R] [Ring A] [Bialgebra R A] {a b : A}
+variable [Ring A] [Bialgebra R A] {a b : A}
 
 /-- The commutator `[a, b] = a * b - b * a` of two primitive elements is primitive. -/
 lemma IsPrimitiveElem.commutator (ha : IsPrimitiveElem R a) (hb : IsPrimitiveElem R b) :
