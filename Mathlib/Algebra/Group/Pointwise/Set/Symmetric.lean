@@ -29,7 +29,7 @@ variable {α : Type*}
 
 section Inv
 
-variable [Inv α] {s t : Set α} {a : α}
+variable [Inv α] {s t : Set α}
 
 /-- A set `s` is *multiplicatively symmetric* if it is closed under inversion.
 This is equivalent to `s⁻¹ = s`, see `Set.isMulSymmetric_iff_inv_eq_self`. -/
@@ -38,7 +38,7 @@ This is equivalent to `-s = s`, see `Set.isAddSymmetric_iff_neg_eq_self`. -/]
 def IsMulSymmetric (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → x⁻¹ ∈ s
 
 @[to_additive]
-lemma IsMulSymmetric.inv_mem (h : s.IsMulSymmetric) (ha : a ∈ s) : a⁻¹ ∈ s := h ha
+lemma IsMulSymmetric.inv_mem (h : s.IsMulSymmetric) {a : α} (ha : a ∈ s) : a⁻¹ ∈ s := h ha
 
 @[to_additive]
 lemma isMulSymmetric_iff_subset_inv : s.IsMulSymmetric ↔ s ⊆ s⁻¹ := Iff.rfl
