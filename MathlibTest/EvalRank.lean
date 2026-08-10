@@ -130,7 +130,7 @@ instance : Zsqrtd.Nonsquare 5 :=
 
 -- mathlib states the `Nonsquare`-based instance for `ℕ`-coerced `d` only
 instance : IsDomain (Zsqrtd 5) :=
-  inferInstanceAs (IsDomain (Zsqrtd ((5 : ℕ) : ℤ)))
+  inferInstanceAs (IsDomain (Zsqrtd (5 : ℕ)))
 
 local notation "Φ" => (⟨1, 1⟩ : Zsqrtd 5)
 local notation "Ψ" => (⟨1, -1⟩ : Zsqrtd 5)
