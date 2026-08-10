@@ -188,9 +188,7 @@ variable {X : Ω → ℝ}
 
 The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
 theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n := by
-  rw [hX.integral_eq, integral_map_cast_binomial,
-    show .Iic n = (Finset.Iio 0).disjUnion (Finset.range (n + 1)) (by simp) by grind,
-    Finset.sum_disjUnion, Finset.sum_range_succ']
+  rw [hX.integral_eq, integral_map_cast_binomial, ← n.range_succ_eq_Iic, Finset.sum_range_succ']
   cases n with norm_num | succ n
   calc
     _ = p * ∑ x ∈ Finset.range (n + 1), (n + 1).choose (x + 1) * (x + 1) *
