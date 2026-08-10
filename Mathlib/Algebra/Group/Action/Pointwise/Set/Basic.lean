@@ -123,6 +123,11 @@ theorem pairwiseDisjoint_smul_iff :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 • p.2 :=
   pairwiseDisjoint_image_right_iff fun a _ _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
 
+@[to_additive (attr := simp)]
+theorem smul_mem_smul_set_iff {a : α} {x : β} {s : Set β} : a • x ∈ a • s ↔ x ∈ s :=
+  Function.Injective.mem_set_image (f := (a • ·))
+    fun _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
+
 end IsLeftCancelSMul
 
 @[to_additive]
@@ -187,10 +192,6 @@ scoped[Pointwise] attribute [instance] Set.mulActionSet Set.addActionSet Set.mul
 section Group
 
 variable [Group α] [MulAction α β] {s t A B : Set β} {a b : α} {x : β}
-
-@[to_additive (attr := simp)]
-theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
-  (MulAction.injective _).mem_set_image
 
 @[to_additive]
 theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
