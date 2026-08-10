@@ -384,6 +384,12 @@ theorem closedUnderRestriction' {G : StructureGroupoid H} [ClosedUnderRestrictio
     {e : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s) : e.restr s ∈ G :=
   ClosedUnderRestriction.closedUnderRestriction he s hs
 
+lemma StructureGroupoid.restr_mem_of_eqOn {G : StructureGroupoid H} [ClosedUnderRestriction G]
+    {e e' : OpenPartialHomeomorph H H} (he : e ∈ G) {s : Set H} (hs : IsOpen s)
+    (heq : EqOn e e' s) (hsub : e'.source ∩ s ⊆ e.source) : e'.restr s ∈ G :=
+  G.mem_of_eqOnSource (closedUnderRestriction' he (e'.open_source.inter hs))
+    (Setoid.symm (restr_eqOnSource_of_eqOn' hs heq hsub))
+
 /-- The trivial restriction-closed groupoid, containing only open partial homeomorphisms equivalent
 to the restriction of the identity to the various open subsets. -/
 def idRestrGroupoid : StructureGroupoid H where
