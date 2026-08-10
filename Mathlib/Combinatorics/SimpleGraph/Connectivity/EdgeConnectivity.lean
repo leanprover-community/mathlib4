@@ -225,7 +225,7 @@ theorem notEdgeReachable_degree_plus_one [Fintype <| G.neighborSet u] [Decidable
 
   rw [this] at this2
 
-  have := this2 (by simp only [Nat.cast_add, Nat.cast_one] ; exact ENat.natCast_lt_succ )
+  have := this2 (by simp only [Nat.cast_add, Nat.cast_one, ENat.natCast_lt_succ])
   rcases this with ⟨p⟩
   cases p with
   | nil =>
