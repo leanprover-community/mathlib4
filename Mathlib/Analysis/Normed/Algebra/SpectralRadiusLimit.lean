@@ -19,12 +19,9 @@ basic properties.
 
 ## Main statements
 
-* `spectrum.isOpen_resolventSet`: the resolvent set is open.
-* `spectrum.isClosed`: the spectrum is closed.
-* `spectrum.subset_closedBall_norm`: the spectrum is a subset of closed disk of radius
-  equal to the norm.
-* `spectrum.isCompact`: the spectrum is compact.
-* `spectrum.spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
+* `tendsto_spectralRadiusLim`: the sequence `‖a ^ k‖ ^ (1 / k)` converges to `spectralRadiusLimit`.
+* `spectralRadiusLim_add_le`: `spectralRadiusLimit` is subadditive.
+* `spectralRadiusLim_mul_le`: `spectralRadiusLimit` is submultiplicative.
 
 -/
 
@@ -48,12 +45,43 @@ theorem tendsto_spectralRadiusLim (a : A) :
     fun m n ↦ by simpa [pow_add] using norm_mul_le (a ^ m) (a ^ n)
   exact tendsto_nhds_limUnder ⟨h.lim, h.tendsto_lim fun n ↦ norm_nonneg (a ^ n)⟩
 
+theorem exists_le_spectralRadiusLim (a : A) (ε : ℝ) (hε : 0 < ε) :
+    ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * (spectralRadiusLim a + ε) ^ n := by
+  have := tendsto_spectralRadiusLim a
+  sorry
+
+theorem exists_spectralRadiusLim_le (a : A) (ε : ℝ) (hε : 0 < ε) (hε' : ε ≤ spectralRadiusLim a) :
+    ∃ C > 0, ∀ n, C * (spectralRadiusLim a - ε) ^ n ≤ ‖a ^ n‖ := by
+  have := tendsto_spectralRadiusLim a
+  sorry
+
 @[bound]
 theorem spectralRadiusLim_nonneg (a : A) : 0 ≤ spectralRadiusLim a :=
   isClosed_Ici.mem_of_tendsto (tendsto_spectralRadiusLim a)
     (.of_forall fun k ↦ by rw [Set.mem_Ici]; positivity)
 
-theorem Commute.spectralRadiusLim_mul {a b : A} (h : Commute a b) :
+theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
+    spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b := by
+  have := spectralRadiusLim_nonneg a
+  have := spectralRadiusLim_nonneg b
+  suffices ∀ ε > 0, ε ≤ spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
+      (spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3) from
+    le_of_forall_pos_le_add fun ε hε ↦ by grind [spectralRadiusLim_nonneg]
+  intro ε hε0 hε
+  obtain ⟨Cx, hCx, hx⟩ := exists_le_spectralRadiusLim a (ε / 3) (by positivity)
+  obtain ⟨Cy, hCy, hy⟩ := exists_le_spectralRadiusLim b (ε / 3) (by positivity)
+  obtain ⟨Cxy, hCxy, hxy⟩ := exists_spectralRadiusLim_le (a + b) (ε / 3) (by positivity) sorry
+  let C := Cx * Cy * ‖(1 : A)‖
+  suffices ∀ n, Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
+      C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n by
+    -- take `n`th powers and take the limit
+    sorry
+  intro n
+  specialize hxy n
+  grw [hc.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
+  grind [Finset.mul_sum, _root_.add_pow]
+
+theorem Commute.spectralRadiusLim_mul_le {a b : A} (h : Commute a b) :
     spectralRadiusLim (a * b) ≤ spectralRadiusLim a * spectralRadiusLim b := by
   refine OrderClosedTopology.isClosed_le'.mem_of_tendsto
     ((tendsto_spectralRadiusLim (a * b)).prodMk_nhds
@@ -63,8 +91,8 @@ theorem Commute.spectralRadiusLim_mul {a b : A} (h : Commute a b) :
 
 theorem spectralRadiusLim_pow_of_ne_zero (a : A) (n : ℕ) (hn : n ≠ 0) :
     spectralRadiusLim (a ^ n) = spectralRadiusLim a ^ n := by
-  refine tendsto_nhds_unique (tendsto_spectralRadiusLim (a ^ n)) ((((tendsto_spectralRadiusLim a).comp
-    (strictMono_mul_left_of_pos hn.pos).tendsto_atTop).pow n).congr fun k ↦ ?_)
+  refine tendsto_nhds_unique (tendsto_spectralRadiusLim (a ^ n)) ((tendsto_spectralRadiusLim a).comp
+    (strictMono_mul_left_of_pos hn.pos).tendsto_atTop |>.pow n |>.congr fun k ↦ ?_)
   rw [Function.comp_apply, Nat.cast_mul, mul_inv_rev,
     ← Real.rpow_mul_natCast (by positivity), inv_mul_cancel_right₀ (by simpa), pow_mul]
 
@@ -74,45 +102,20 @@ theorem spectralRadiusLim_pow [NormOneClass A] (a : A) (n : ℕ) :
   · simpa [hn, eq_comm] using tendsto_spectralRadiusLim (1 : A)
   · exact spectralRadiusLim_pow_of_ne_zero a n hn
 
-theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
-    spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b := by
-  apply le_of_forall_pos_le_add
-  intro ε hε
-  have h_le : ∀ a : A, ∃ C > 0, ∀ n, ‖a ^ n‖ ≤ C * (spectralRadiusLim a + ε / 3) ^ n := by
-    sorry
-  have h_ge : ∀ a : A, ∃ C > 0, ∀ n, C * (spectralRadiusLim a - ε / 3) ^ n ≤ ‖a ^ n‖ := by
-    sorry
-  suffices spectralRadiusLim (a + b) - ε / 3 ≤ (spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3) by
-    grind
-  obtain ⟨Cx, hCx, hx⟩ := h_le a
-  obtain ⟨Cy, hCy, hy⟩ := h_le b
-  obtain ⟨Cxy, hCxy, hxy⟩ := h_ge (a + b)
-  let C := Cx * Cy * ‖(1 : A)‖
-  suffices ∀ n, Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤ C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n by
-    -- take `n`th powers and take the limit
-    sorry
-  intro n
-  rw [add_pow]
-  specialize hxy n
-  have tmp (k : ℕ) : ‖(n.choose k : A)‖ ≤ (n.choose k) * ‖(1 : A)‖ := by
-    grw [← nsmul_one, norm_nsmul_le]
-  have := spectralRadiusLim_nonneg a
-  have := spectralRadiusLim_nonneg b
-  grw [hc.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, tmp] at hxy
-  grind [Finset.mul_sum]
-
 end SeminormedRing
 
 section SeminormedCommRing
 
 variable [SeminormedCommRing A]
 
-theorem spectralRadiusLim_mul (a b : A) :
-    spectralRadiusLim (a * b) ≤ spectralRadiusLim a * spectralRadiusLim b :=
-  (Commute.all a b).spectralRadiusLim_mul
-
+/-- `spectralRadiusLimit` is subadditive. -/
 theorem spectralRadiusLim_add_le (a b : A) :
     spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b :=
   (Commute.all a b).spectralRadiusLim_add_le
+
+/-- `spectralRadiusLimit` is submultiplicative. -/
+theorem spectralRadiusLim_mul_le (a b : A) :
+    spectralRadiusLim (a * b) ≤ spectralRadiusLim a * spectralRadiusLim b :=
+  (Commute.all a b).spectralRadiusLim_mul_le
 
 end SeminormedCommRing
