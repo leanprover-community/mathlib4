@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Will Blair. All rights reserved.
+Copyright (c) 2026 Alper FERUDUN. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Will Blair
+Authors: Alper FERUDUN
 -/
 module
 
@@ -18,6 +18,9 @@ theorem for a unit-step walk on `ℤ`, the continuous version of which is
 ## Main results
 
 * `Int.exists_eq_of_natAbs_sub_le_one`: the discrete intermediate value theorem.
+
+The statement and proof are due to Alper FERUDUN, who wrote them for
+[formal-conjectures](https://github.com/google-deepmind/formal-conjectures/pull/4218).
 -/
 
 @[expose] public section
