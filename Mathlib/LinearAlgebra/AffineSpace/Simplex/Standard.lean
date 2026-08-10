@@ -17,21 +17,21 @@ This file constructs simplices from bases and relates them to the standard simpl
 
 ## Main definitions
 
-* `Affine.Simplex.mkOfAffineBasis`: the simplex whose vertices are the points of an affine basis.
-* `Affine.Simplex.mkOfBasis`: the simplex in a module whose vertices are `0` together with the
+* `AffineBasis.toSimplex`: the simplex whose vertices are the points of an affine basis.
+* `Module.Basis.toSimplex`: the simplex in a module whose vertices are `0` together with the
   vectors of a basis.
-* `Affine.stdSimplex`: the simplex in `Fin n → k` whose vertices are `0` and the standard basis
-  vectors, i.e. the simplex obtained by applying `Affine.Simplex.mkOfBasis` to `Pi.basisFun`.
+* `Affine.stdAffineSimplex`: the simplex in `Fin n → k` whose vertices are `0` and the
+  standard basis vectors, i.e. the simplex obtained by applying `Module.Basis.toSimplex` to
+  `Pi.basisFun`.
 
 ## Main results
 
-* `Affine.Simplex.mem_closedInterior_mkOfAffineBasis_iff`: membership in the closed interior of
-  `Affine.Simplex.mkOfAffineBasis b` is characterised by the barycentric coordinates of `b`.
-* `Affine.Simplex.closedInterior_eq`: the closed interior of `Affine.stdSimplex` is the "corner"
-  region `{x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1}`.
-
-The relationship between `Affine.stdSimplex` and the standard simplex `stdSimplex ℝ (Fin n)` is
-established in `Mathlib/Analysis/Convex/StdSimplex.lean`.
+* `Affine.Simplex.mem_closedInterior_toSimplex_iff`: membership in the closed interior of
+  `b.toSimplex` is characterised by the barycentric coordinates of `b`.
+* `Affine.Simplex.stdAffineSimplex.closedInterior_eq`: the closed interior of
+  `Affine.stdAffineSimplex` is the "corner" region `{x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i ≤ 1}`.
+* `Affine.stdAffineSimplex.faceOpposite_zero_eq_stdSimplex` establishes the relationship between
+  the standard affine simplex `Affine.stdAffineSimplex` and the standard simplex `stdSimplex`.
 -/
 
 @[expose] public noncomputable section
@@ -44,79 +44,56 @@ variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P
 
 section ofBasis
 
-open Affine
-
-namespace Affine.Simplex
+open Affine Affine.Simplex
 
 /-- The simplex in `P` whose vertices are the points of an affine basis indexed by
 `Fin (n + 1)`. -/
-def mkOfAffineBasis (b : AffineBasis (Fin (n + 1)) k P) : Simplex k P n := mk b b.ind
+def AffineBasis.toSimplex (b : AffineBasis (Fin (n + 1)) k P) : Simplex k P n :=
+  Affine.Simplex.mk b b.ind
 
 /-- The simplex in `V` whose vertices are `0` together with the vectors of a basis indexed by
 `Fin n`. -/
-def mkOfBasis (b : Basis (Fin n) k V) : Simplex k V n := mkOfAffineBasis b.toAffineBasis
+abbrev Module.Basis.toSimplex (b : Basis (Fin n) k V) : Simplex k V n := b.toAffineBasis.toSimplex
 
-@[simp] lemma mkOfAffineBasis_points (b : AffineBasis (Fin (n + 1)) k P) :
-    (mkOfAffineBasis b).points = ⇑b :=
-  rfl
+namespace AffineBasis
 
-lemma affineSpan_range_mkOfAffineBasis_points (b : AffineBasis (Fin (n + 1)) k P) :
-    affineSpan k (Set.range (mkOfAffineBasis b).points) = ⊤ := by
-  rw [mkOfAffineBasis_points]
+@[simp] lemma toSimplex_points (b : AffineBasis (Fin (n + 1)) k P) :
+    (b.toSimplex).points = ⇑b := rfl
+
+lemma affineSpan_range_toSimplex (b : AffineBasis (Fin (n + 1)) k P) :
+    affineSpan k (Set.range b.toSimplex.points) = ⊤ := by
+  rw [b.toSimplex_points]
   exact b.tot
 
-/-- A point lies in `(mkOfAffineBasis b).setInterior I` iff all of its barycentric coordinates
+/-- A point lies in `(AffineBass.toSimplex b).setInterior I` iff all of its barycentric coordinates
 with respect to `b` lie in `I`. -/
-lemma mem_setInterior_mkOfAffineBasis_iff {I : Set k} (b : AffineBasis (Fin (n + 1)) k P)
-    {x : P} : x ∈ (mkOfAffineBasis b).setInterior I ↔ ∀ i, b.coord i x ∈ I := by
+lemma mem_setInterior_toSimplex {I : Set k} (b : AffineBasis (Fin (n + 1)) k P)
+    {x : P} : x ∈ b.toSimplex.setInterior I ↔ ∀ i, b.coord i x ∈ I := by
   conv_lhs => rw [← b.affineCombination_coord_eq_self x]
   exact affineCombination_mem_setInterior_iff (b.sum_coord_apply_eq_one x)
 
-/-- A point lies in the interior of `mkOfAffineBasis b` iff all of its barycentric coordinates
+/-- A point lies in the interior of `AffineBass.toSimplex b` iff all of its barycentric coordinates
 with respect to `b` lie in `Set.Ioo 0 1`. -/
-lemma mem_interior_mkOfAffineBasis_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
-    {x : P} : x ∈ (mkOfAffineBasis b).interior ↔ ∀ i, b.coord i x ∈ Set.Ioo 0 1 :=
-  mem_setInterior_mkOfAffineBasis_iff b
+lemma mem_interior_toSimplex_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
+    {x : P} : x ∈ b.toSimplex.interior ↔ ∀ i, b.coord i x ∈ Set.Ioo 0 1 :=
+  mem_setInterior_toSimplex b
 
-/-- A point lies in the closed interior of `mkOfAffineBasis b` iff all of its barycentric
+/-- A point lies in the closed interior of `AffineBass.toSimplex b` iff all of its barycentric
 coordinates with respect to `b` lie in `Set.Icc 0 1`. -/
-lemma mem_closedInterior_mkOfAffineBasis_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
-    {x : P} : x ∈ (mkOfAffineBasis b).closedInterior ↔ ∀ i, b.coord i x ∈ Set.Icc 0 1 :=
-  mem_setInterior_mkOfAffineBasis_iff b
+lemma mem_closedInterior_toSimplex_iff [PartialOrder k] (b : AffineBasis (Fin (n + 1)) k P)
+    {x : P} : x ∈ b.toSimplex.closedInterior ↔ ∀ i, b.coord i x ∈ Set.Icc 0 1 :=
+  mem_setInterior_toSimplex b
 
-lemma mkOfBasis_points (b : Basis (Fin n) k V) : (mkOfBasis b).points = Fin.cons 0 ⇑b :=
-  rfl
-
-@[simp] lemma mkOfBasis_points_zero (b : Basis (Fin n) k V) : (mkOfBasis b).points 0 = 0 :=
-  rfl
-
-@[simp] lemma mkOfBasis_points_succ (b : Basis (Fin n) k V) (i : Fin n) :
-    (mkOfBasis b).points i.succ = b i :=
-  rfl
-
-lemma range_mkOfBasis_points (b : Basis (Fin n) k V) :
-    Set.range (mkOfBasis b).points = insert 0 (Set.range ⇑b) := by
-  rw [mkOfBasis_points, Fin.range_cons]
-
-lemma affineSpan_range_mkOfBasis_points (b : Basis (Fin n) k V) :
-    affineSpan k (Set.range (mkOfBasis b).points) = ⊤ := SetLike.coe_injective <| by
-  rw [range_mkOfBasis_points, affineSpan_insert_zero, b.span_eq]
-  simp
-
-end Affine.Simplex
-
-end ofBasis
-
-section stdAffineSimplex
-
-variable (n) (k)
+end AffineBasis
 
 namespace Affine
 
 open Affine Affine.Simplex Set Pi
 
+variable (n) (k)
+
 /-- The simplex in `Fin n → k` whose vertices are `0` and the standard basis vectors. -/
-def stdAffineSimplex : Simplex k (Fin n → k) n := mkOfBasis <| basisFun k (Fin n)
+def stdAffineSimplex : Simplex k (Fin n → k) n := (basisFun k (Fin n)).toSimplex
 
 namespace stdAffineSimplex
 
@@ -169,5 +146,3 @@ lemma faceOpposite_zero_eq_stdSimplex [NeZero n] (𝕜 : Type*) [Field 𝕜] [Li
 end stdAffineSimplex
 
 end Affine
-
-end stdAffineSimplex
