@@ -122,54 +122,38 @@ theorem IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain [IsDed
 
 end
 
-/-- An integral domain is called a Dedekind domain if it is Noetherian, and the
-localization at every nonzero prime is a discrete valuation ring.
-This is an auxiliary definition used to prove
-`isDedekindDomain_iff_isDiscreteValuationRing_atPrime`. -/
-def IsDedekindDomainDvr [IsDomain A] : Prop :=
-  IsNoetherian A A ∧ ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
-    IsDiscreteValuationRing (Localization.AtPrime P)
-
-variable {A} [IsDomain A]
-
-theorem IsDedekindDomainDvr.dimLEOne (h : IsDedekindDomainDvr A) :
-    Ring.DimensionLEOne A where
-  maximalOfPrime := by
-    intro p hp hpp
-    rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
-    let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
-    let P := f ⟨p, hpp, hpq.disjoint_compl_left⟩
-    let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
-    have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
-      IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
-    have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
-    have hq1 : Q.1 ≠ ⊥ :=
-      fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
-    rcases (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
-      (h.2 q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
-    rw [show p = q from Subtype.val_inj.mpr <| f.injective <|
-      Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
-    exact hq
-
-theorem IsDedekindDomainDvr.isIntegrallyClosed (h : IsDedekindDomainDvr A) :
-    IsIntegrallyClosed A :=
-  IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm ↦
-    let ⟨_, _⟩ := (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime
-      (Localization.AtPrime p)).mp (h.2 p hp0 hpm.isPrime)
-    inferInstance
+variable {A}
 
 /-- An integral domain is a Dedekind domain iff it is Noetherian and
 the localization at every nonzero prime is a discrete valuation ring. -/
-public theorem isDedekindDomain_iff_isDiscreteValuationRing_atPrime :
-    IsDedekindDomain A ↔ IsNoetherian A A ∧ ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
-      IsDiscreteValuationRing (Localization.AtPrime P) := by
+public theorem isDedekindDomain_iff_isDiscreteValuationRing_atPrime [IsDomain A] :
+    IsDedekindDomain A ↔ IsNoetherian A A ∧
+      ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime, IsDiscreteValuationRing (Localization.AtPrime P) := by
   constructor
   · intro
     exact ⟨inferInstance, fun P hP _ =>
       IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain A hP _⟩
-  · intro h
-    change IsDedekindDomainDvr A at h
-    have : IsNoetherian A A := h.1
-    have : Ring.DimensionLEOne A := h.dimLEOne
-    have : IsIntegrallyClosed A := h.isIntegrallyClosed
+  · intro ⟨_i1, h⟩
+    have _i2 : Ring.DimensionLEOne A := by
+      constructor
+      intro p hp hpp
+      rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
+      let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
+      let P := f ⟨p, hpp, hpq.disjoint_compl_left⟩
+      let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
+      have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
+        IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
+      have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
+      have hq1 : Q.1 ≠ ⊥ :=
+        fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
+      rcases (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
+        (h q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
+      rw [show p = q from Subtype.val_inj.mpr <| f.injective <|
+        Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
+      exact hq
+    have _i3 : IsIntegrallyClosed A :=
+      IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm ↦
+        let ⟨_, _⟩ := (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime
+          (Localization.AtPrime p)).mp (h p hp0 hpm.isPrime)
+        inferInstance
     exact {}
