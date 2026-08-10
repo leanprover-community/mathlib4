@@ -64,7 +64,7 @@ theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
     spectralRadiusLim (a + b) ≤ spectralRadiusLim a + spectralRadiusLim b := by
   have := spectralRadiusLim_nonneg a
   have := spectralRadiusLim_nonneg b
-  suffices ∀ ε > 0, ε ≤ spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
+  suffices ∀ ε > 0, ε / 3 ≤ spectralRadiusLim (a + b) → spectralRadiusLim (a + b) - ε / 3 ≤
       (spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3) from
     le_of_forall_pos_le_add fun ε hε ↦ by grind [spectralRadiusLim_nonneg]
   intro ε hε0 hε
@@ -72,14 +72,18 @@ theorem Commute.spectralRadiusLim_add_le {a b : A} (hc : Commute a b) :
   obtain ⟨Cy, hCy, hy⟩ := exists_le_spectralRadiusLim b (ε / 3) (by positivity)
   obtain ⟨Cxy, hCxy, hxy⟩ := exists_spectralRadiusLim_le (a + b) (ε / 3) (by positivity) sorry
   let C := Cx * Cy * ‖(1 : A)‖
-  suffices ∀ n, Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
-      C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n by
-    -- take `n`th powers and take the limit
-    sorry
-  intro n
-  specialize hxy n
-  grw [hc.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
-  grind [Finset.mul_sum, _root_.add_pow]
+  have h (n : ℕ) : Cxy * (spectralRadiusLim (a + b) - ε / 3) ^ n ≤
+      C * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) ^ n := by
+    specialize hxy n
+    grw [hc.add_pow, norm_sum_le, norm_mul_le, norm_mul_le, hx, hy, Nat.norm_cast_le] at hxy
+    grind [Finset.mul_sum, _root_.add_pow]
+  replace h (n : ℕ) (hn : n ≠ 0) : Cxy ^ (n⁻¹ : ℝ) * (spectralRadiusLim (a + b) - ε / 3) ≤
+      C ^ (n⁻¹ : ℝ) * ((spectralRadiusLim a + ε / 3) + (spectralRadiusLim b + ε / 3)) := by
+    rw [← pow_le_pow_iff_left₀ (by positivity) (by positivity) hn, _root_.mul_pow, _root_.mul_pow,
+      ← Real.rpow_mul_natCast (by positivity), ← Real.rpow_mul_natCast (by positivity),
+      inv_mul_cancel₀ (by simpa), Real.rpow_one, Real.rpow_one]
+    exact h n
+  sorry
 
 theorem Commute.spectralRadiusLim_mul_le {a b : A} (h : Commute a b) :
     spectralRadiusLim (a * b) ≤ spectralRadiusLim a * spectralRadiusLim b := by
