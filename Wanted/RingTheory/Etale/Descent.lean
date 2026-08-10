@@ -11,6 +11,15 @@ open TensorProduct
 
 namespace Algebra
 
+/-
+The lemma `Algebra.FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat` has an
+additional `Algebra.FinitePresentation` assumption, because the proof uses that a flat module
+of finite presentation is projective and the former descends. This also holds without
+the finite presentation assumption, but requires showing that projectivity descends
+along faithfully flat base change, which is due to Raynaud and Gruson
+(see https://stacks.math.columbia.edu/tag/058B).
+-/
+
 /-- Formally smooth algebras descend along faithfully flat base change. See the TODO
 in the module docstring of `Mathlib/RingTheory/Etale/Descent.lean`. -/
 proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat

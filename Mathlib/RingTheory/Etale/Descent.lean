@@ -30,7 +30,8 @@ We also provide the corresponding `RingHom.CodescendsAlong` lemmas.
   of finite presentation is projective and the former descends. This also holds without
   the finite presentation assumption, but requires showing that projectivity descends
   along faithfully flat base change, which is due to Raynaud and Gruson
-  (see https://stacks.math.columbia.edu/tag/058B).
+  (see https://stacks.math.columbia.edu/tag/058B). See `Wanted/RingTheory/Etale/Descent.lean`
+  for the precise statement.
 -/
 
 public section
