@@ -6,10 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Prod
-<<<<<<< HEAD
 public import Mathlib.Algebra.Lie.CartanCriterion
-=======
->>>>>>> master
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
