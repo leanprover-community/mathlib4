@@ -32,7 +32,7 @@ lemma mapFundamentalGroupoid_id_comp (f : X ⟶ Y) :
     (mapFundamentalGroupoidComp (𝟙 X) f).inv ≫
       Functor.whiskerRight (mapFundamentalGroupoidId X).hom _ ≫
         (Functor.leftUnitor _).hom =
-    (congrMapFundamentalGroupoid (by simp)).hom := by
+    (congrMapFundamentalGroupoidOfEq (by simp)).hom := by
   cat_disch
 
 @[reassoc]
@@ -40,7 +40,7 @@ lemma mapFundamentalGroupoid_comp_id (f : X ⟶ Y) :
     (mapFundamentalGroupoidComp f (𝟙 Y)).inv ≫
       Functor.whiskerLeft _ (mapFundamentalGroupoidId Y).hom ≫
         (Functor.rightUnitor _).hom =
-    (congrMapFundamentalGroupoid (by simp)).hom := by
+    (congrMapFundamentalGroupoidOfEq (by simp)).hom := by
   cat_disch
 
 @[reassoc]
@@ -50,7 +50,7 @@ lemma mapFundamentalGroupoid_assoc (f₁ : X ⟶ Y) (f₂ : Y ⟶ Z) (f₃ : Z �
         (Functor.associator _ _ _).hom ≫
           Functor.whiskerLeft _ (mapFundamentalGroupoidComp f₂ f₃).hom ≫
             (mapFundamentalGroupoidComp f₁ (f₂ ≫ f₃)).hom =
-    (congrMapFundamentalGroupoid (by simp)).hom := by
+    (congrMapFundamentalGroupoidOfEq (by simp)).hom := by
   cat_disch
 
 namespace FundamentalGroupoid
@@ -63,9 +63,9 @@ def pseudofunctor : LocallyDiscrete SSet.{u} ⥤ᵖ  Cat.{u, u} :=
     (fun f ↦ (mapFundamentalGroupoid f).toCatHom)
     (fun X ↦ Cat.Hom.isoMk (mapFundamentalGroupoidId X))
     (fun f g ↦ Cat.Hom.isoMk ((mapFundamentalGroupoidComp f g).symm))
-    (fun f₁ f₂ f₃ ↦ by ext : 1; apply mapFundamentalGroupoid_assoc)
-    (fun f ↦ by ext : 1; apply mapFundamentalGroupoid_id_comp)
-    (fun f ↦ by ext : 1; apply mapFundamentalGroupoid_comp_id)
+    (fun _ _ _ ↦ by ext : 1; apply mapFundamentalGroupoid_assoc)
+    (fun _ ↦ by ext : 1; apply mapFundamentalGroupoid_id_comp)
+    (fun _ ↦ by ext : 1; apply mapFundamentalGroupoid_comp_id)
 
 end FundamentalGroupoid
 

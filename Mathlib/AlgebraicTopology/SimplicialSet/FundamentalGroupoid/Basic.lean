@@ -393,7 +393,7 @@ def mapFundamentalGroupoidComp (f : X ⟶ Y) (g : Y ⟶ Z) :
 /-- Two identical morphisms induce isomorphic functors
 on the fundamental groupoid. -/
 @[simps!]
-def congrMapFundamentalGroupoid {f g : X ⟶ Y} (h : f = g) :
+def congrMapFundamentalGroupoidOfEq {f g : X ⟶ Y} (h : f = g) :
     mapFundamentalGroupoid f ≅ mapFundamentalGroupoid g :=
   eqToIso (by rw[h])
 
