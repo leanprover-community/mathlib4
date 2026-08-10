@@ -11,6 +11,8 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Data.Finset.Prod
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Data.Fintype.Basic
 
 
 /-!
@@ -23,6 +25,8 @@ The set of states on each cell is `SingleCellState`.
 
 variable {G : Type*} [Group G]
 variable {SingleCellState : Type*}
+
+section Definitions
 
 /-- A configuration of a cellular automaton
 assigns a state in `SingleCellState` to each cell. -/
@@ -108,6 +112,10 @@ public def stepOneHom
   toFun := A.stepOne
   map_smul' := stepOne_smul A
 
+end CellularAutomaton
+
+end Definitions
+
 section PerodicConfigs
 
 /-
@@ -144,6 +152,26 @@ public lemma periodicConfigsStayPeriodic
       rw [h]
 
 end PerodicConfigs
+
+section EmptyWorld
+
+public def emptyWorldProperty
+  (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
+  (emptyState : SingleCellState) : Prop :=
+  A.localUpdateRule (fun _ => emptyState) = emptyState
+
+public lemma emptyWorldStatic
+  (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
+  (emptyState : SingleCellState) :
+  emptyWorldProperty A emptyState ->
+    A.stepOneHom (fun _ => emptyState) = (fun _ => emptyState) := by
+    intro h
+    funext x
+    exact h
+
+end EmptyWorld
+
+namespace CellularAutomaton
 
 section StepN
 
@@ -184,6 +212,21 @@ private lemma stepN_smul
   (n : ℕ) (g : G) (config : Configuration (G := G) (SingleCellState := SingleCellState)) :
   A.stepN n (g • config) = g • (A.stepN n config) :=
   (A.stepN n).map_smul g config
+
+public def influencesAtT
+  (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
+  (timestep : ℕ) (cell1 cell2 : G) :=
+  ∃ (word : List (A.neighborhood)) (_hword : word.length = timestep),
+    cell1*List.foldl (1:G) (f := fun acc n => acc*n.val) word = cell2
+
+public lemma influencesAtOne
+  (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
+  (cell1 : G) :
+  ∀ nbhr : A.neighborhood, A.influencesAtT 1 cell1 (cell1*nbhr.val) := by
+  intro nbhr
+  unfold influencesAtT
+  use [nbhr], by simp
+  simp
 
 end StepN
 
@@ -288,6 +331,7 @@ public lemma stillLifeOtherSteps
   simp only [one_pow, Nat.one_mul] at key
   exact key
 
+
 /- An oscillator is expressed as a glider that
 returns to itself with no shift and does so with some `periodicity`.
 This includes the degenerate case of zero periodicity,
@@ -359,6 +403,8 @@ public lemma oscillatorSameOrbitExistential
 
 end Gliders
 
+end CellularAutomaton
+
 section Product
 
 variable {G1 : Type*} [Group G1]
@@ -388,4 +434,245 @@ public def productCellularAutomaton
 
 end Product
 
-end CellularAutomaton
+section ElementaryCellularAutomaton
+
+/-
+A cellular automota on `Z` and the restriction
+that level of locality is particularly on the nearest neighbors
+and itself.
+The `SingleCellState` can still be an arbitrary `Fintype` rather than `Bool`.
+-/
+public def elementaryCellularAutomaton_pre
+  {SingleCellState : Type*} [Fintype SingleCellState]
+  (localUpdateRuleNonGroup :
+    SingleCellState × SingleCellState × SingleCellState
+      → SingleCellState) :
+  CellularAutomaton (G := ℤ) (SingleCellState := SingleCellState) where
+  neighborhood := {-1,0,1}
+  localUpdateRule := fun nbhd_states =>
+    localUpdateRuleNonGroup
+      (nbhd_states ⟨-1, by simp⟩,
+       nbhd_states ⟨ 0, by simp⟩,
+       nbhd_states ⟨ 1, by simp⟩)
+
+/-
+A traditional elementary cellular automota.
+For convenience use `wolframRule` below
+so that you can use the conventional number
+to specify which rule rather than as a function
+`localUpdateRuleNonGroup`
+-/
+public def elementaryCellularAutomaton
+  (localUpdateRuleNonGroup :
+    Bool × Bool × Bool
+      → Bool) :
+  CellularAutomaton (G := ℤ) (SingleCellState := Bool) :=
+  elementaryCellularAutomaton_pre localUpdateRuleNonGroup
+
+section BitHelpers
+
+/-
+For `n`=3, the `rule` is a number from 0 to 255
+which is the Wolfram code for the elementary cellular automaton
+and `pattern` is the values at cells left,center,right for inputs 0,1,2.
+The final output is what happens to the center cell at the next time step.
+This encapsulates the choices of how n booleans are interpreted
+as a single `Fin 2^n`.
+This also encapsulates how `Fin 2^n -> Fin 2` and `Fin 2^(2^n)`
+are related with testBit over any other choices that could have been.
+
+This is mostly so all endian-ness and bit-flip mistakes are confined to one place.
+-/
+def ruleTestBit
+  (n : ℕ) (rule : Fin (2 ^ (2 ^ n))) (pattern : Fin n → Bool) : Bool :=
+  (rule : ℕ).testBit ((List.ofFn pattern).foldl (fun acc b => 2 * acc + b.toNat) 0)
+
+def threebitconfig
+  (config_number : Fin 8) :
+  ({-1, 0, 1} : Finset ℤ) -> Bool :=
+  fun input =>
+    match input.val with
+      | -1 => (config_number : ℕ).testBit 2
+      | 0 => (config_number : ℕ).testBit 1
+      | 1 => (config_number : ℕ).testBit 0
+      | _ => false
+
+def threebitconfig2
+  (config_number : Fin 8) :
+  Fin 3-> Bool :=
+  fun input =>
+    match input with
+      | 0 => (config_number : ℕ).testBit 2
+      | 1 => (config_number : ℕ).testBit 1
+      | 2 => (config_number : ℕ).testBit 0
+
+lemma threebitconfig_eq_threebitconfig2 (i : Fin 8) :
+    (fun j => match j with
+      | 0 => threebitconfig i ⟨-1, by simp⟩
+      | 1 => threebitconfig i ⟨0, by simp⟩
+      | 2 => threebitconfig i ⟨1, by simp⟩) = threebitconfig2 i := by
+  fin_cases i <;> funext j <;> fin_cases j <;> rfl
+
+lemma ruleTestBit_threebitconfig2 (rule : Fin 256) (i : Fin 8) :
+    ruleTestBit 3 rule (threebitconfig2 i) = (rule : ℕ).testBit i := by
+  fin_cases i <;> rfl
+
+/-- Extracting bit `k` back out of the base-2 sum
+built from 8 bits recover the `k`-th bit. -/
+lemma bit8_testBit (a b c d e f g h : Bool) (k : Fin 8) :
+    (a.toNat + 2 * b.toNat + 4 * c.toNat + 8 * d.toNat +
+      16 * e.toNat + 32 * f.toNat + 64 * g.toNat + 128 * h.toNat).testBit k =
+      (match k with
+        | 0 => a | 1 => b | 2 => c | 3 => d
+        | 4 => e | 5 => f | 6 => g | 7 => h) := by
+  fin_cases k <;>
+    cases a <;> cases b <;> cases c <;> cases d <;>
+    cases e <;> cases f <;> cases g <;> cases h <;>
+    decide
+
+/-- Extracting bit `k` back out of the base-2 sum
+built from 3 bits recover the `k`-th bit. -/
+lemma bit3_testBit (l c r : Bool) :
+    (l.toNat * 4 + c.toNat * 2 + r.toNat).testBit 2 = l ∧
+    (l.toNat * 4 + c.toNat * 2 + r.toNat).testBit 1 = c ∧
+    (l.toNat * 4 + c.toNat * 2 + r.toNat).testBit 0 = r := by
+  cases l <;> cases c <;> cases r <;> decide
+
+lemma bitDiffer {n : ℕ} (x y : Fin (2 ^ n)) (hxy : x ≠ y) :
+  ∃ j : Fin n, (x : ℕ).testBit j ≠ (y : ℕ).testBit j := by
+  by_contra
+  rw [not_exists] at this
+  apply hxy
+  apply Fin.ext
+  apply Nat.eq_of_testBit_eq
+  intro i
+  rcases lt_or_ge i n with hi | hi
+  · exact not_ne_iff.mp (this ⟨i, hi⟩)
+  · rw [Nat.testBit_lt_two_pow (x.2.trans_le (Nat.pow_le_pow_right (by omega) hi)),
+        Nat.testBit_lt_two_pow (y.2.trans_le (Nat.pow_le_pow_right (by omega) hi))]
+
+end BitHelpers
+
+/-- The elementary cellular automaton given by its Wolfram code `rule`. -/
+public def wolframRule
+  (rule : Fin 256) :
+  CellularAutomaton (G := ℤ) (SingleCellState := Bool) :=
+  elementaryCellularAutomaton
+    fun (left, center, right) =>
+      ruleTestBit 3 rule
+        (fun i =>
+          match i with
+          | 0 => left
+          | 1 => center
+          | 2 => right
+        )
+
+/-- Rule 90 ignores the center cell and XORs the two neighbors -/
+example (nbhd_states : ({-1, 0, 1} : Finset ℤ) → Bool) :
+    (wolframRule 90).localUpdateRule nbhd_states =
+      xor (nbhd_states ⟨-1, by simp⟩) (nbhd_states ⟨1, by simp⟩) := by
+  rcases hl : nbhd_states ⟨-1, by simp⟩ with _ | _ <;>
+  rcases hc : nbhd_states ⟨0, by simp⟩ with _ | _ <;>
+  rcases hr : nbhd_states ⟨1, by simp⟩ with _ | _ <;>
+  simp only [wolframRule, elementaryCellularAutomaton, elementaryCellularAutomaton_pre,
+    ruleTestBit, hl, hc, hr] <;> decide
+
+/-- Rule 170 just copies over the right neighbor -/
+example (nbhd_states : ({-1, 0, 1} : Finset ℤ) → Bool) :
+    (wolframRule 170).localUpdateRule nbhd_states =
+      (nbhd_states ⟨1, by simp⟩) := by
+  rcases hl : nbhd_states ⟨-1, by simp⟩ with _ | _ <;>
+  rcases hc : nbhd_states ⟨0, by simp⟩ with _ | _ <;>
+  rcases hr : nbhd_states ⟨1, by simp⟩ with _ | _ <;>
+  simp only [wolframRule, elementaryCellularAutomaton, elementaryCellularAutomaton_pre,
+    ruleTestBit, hl, hc, hr] <;> decide
+
+lemma existsWolframNumber
+  (A : CellularAutomaton (G := ℤ) (SingleCellState := Bool))
+  (h_Alocal : A.neighborhood = {-1,0,1})
+  : ∃ rule : Fin 256, A = wolframRule rule := by
+  -- The 8 bits of which rule to use
+  -- zzz for 0th, and so on up to ooo for the 7th
+  set zzz := A.localUpdateRule (h_Alocal ▸ threebitconfig 0)
+  set zzo := A.localUpdateRule (h_Alocal ▸ threebitconfig 1)
+  set zoz := A.localUpdateRule (h_Alocal ▸ threebitconfig 2)
+  set zoo := A.localUpdateRule (h_Alocal ▸ threebitconfig 3)
+  set ozz := A.localUpdateRule (h_Alocal ▸ threebitconfig 4)
+  set ozo := A.localUpdateRule (h_Alocal ▸ threebitconfig 5)
+  set ooz := A.localUpdateRule (h_Alocal ▸ threebitconfig 6)
+  set ooo := A.localUpdateRule (h_Alocal ▸ threebitconfig 7)
+  set which_rule : Fin 256 := ⟨zzz.toNat + 2 * zzo.toNat + 4 * zoz.toNat + 8 * zoo.toNat +
+      16 * ozz.toNat + 32 * ozo.toNat + 64 * ooz.toNat + 128 * ooo.toNat, by
+        have hb : ∀ b : Bool, b.toNat ≤ 1 := fun b => by cases b <;> decide
+        have := hb zzz; have := hb zzo; have := hb zoz; have := hb zoo
+        have := hb ozz; have := hb ozo; have := hb ooz; have := hb ooo
+        omega⟩
+  refine ⟨which_rule, ?_⟩
+  simp only [wolframRule, elementaryCellularAutomaton, elementaryCellularAutomaton_pre]
+  cases A with
+  | mk nbhd rule_fn =>
+    simp only at h_Alocal
+    subst h_Alocal
+    congr 1
+    funext nbhd_states
+    have hb : ∀ b : Bool, b.toNat ≤ 1 := fun b => by cases b <;> decide
+    have hnb : nbhd_states = threebitconfig
+        ⟨(nbhd_states ⟨-1, by simp⟩).toNat * 4 + (nbhd_states ⟨0, by simp⟩).toNat * 2 +
+          (nbhd_states ⟨1, by simp⟩).toNat, by
+            have := hb (nbhd_states ⟨-1, by simp⟩)
+            have := hb (nbhd_states ⟨0, by simp⟩)
+            have := hb (nbhd_states ⟨1, by simp⟩)
+            omega⟩ := by
+      funext x
+      fin_cases x
+      · exact (bit3_testBit (nbhd_states ⟨-1, by simp⟩) (nbhd_states ⟨0, by simp⟩)
+          (nbhd_states ⟨1, by simp⟩)).1.symm
+      · exact (bit3_testBit (nbhd_states ⟨-1, by simp⟩) (nbhd_states ⟨0, by simp⟩)
+          (nbhd_states ⟨1, by simp⟩)).2.1.symm
+      · exact (bit3_testBit (nbhd_states ⟨-1, by simp⟩) (nbhd_states ⟨0, by simp⟩)
+          (nbhd_states ⟨1, by simp⟩)).2.2.symm
+    rw [hnb]
+    generalize hi :
+      (⟨(nbhd_states ⟨-1, by simp⟩).toNat * 4 + (nbhd_states ⟨0, by simp⟩).toNat * 2 +
+          (nbhd_states ⟨1, by simp⟩).toNat, by
+            have := hb (nbhd_states ⟨-1, by simp⟩)
+            have := hb (nbhd_states ⟨0, by simp⟩)
+            have := hb (nbhd_states ⟨1, by simp⟩)
+            omega⟩ : Fin 8) = i at hnb ⊢
+    simp only [threebitconfig_eq_threebitconfig2, ruleTestBit_threebitconfig2]
+    unfold which_rule
+    simp only [bit8_testBit]
+    fin_cases i <;> rfl
+
+public lemma existsUniqueWolframNumber
+  (A : CellularAutomaton (G := ℤ) (SingleCellState := Bool))
+  (h_Alocal : A.neighborhood = {-1,0,1})
+  : ∃! rule : Fin 256, A = wolframRule rule := by
+  have key := existsWolframNumber A h_Alocal
+  obtain ⟨rule_num, h_rulenum⟩ := key
+  use rule_num
+  refine And.intro ?hleft ?hright
+  · exact h_rulenum
+  · intro y hy
+    rw [h_rulenum] at hy
+    by_contra
+    have bad_input := bitDiffer (n:=8) (x:=rule_num) (y:=y) (hxy := Ne.symm this)
+    obtain ⟨bad_input,h_bad_input⟩ := bad_input
+    set bad_nbhd := threebitconfig bad_input
+    let rule_on_bad_nbhd := (wolframRule rule_num).localUpdateRule bad_nbhd
+    let y_on_bad_nbhd := (wolframRule y).localUpdateRule bad_nbhd
+    have on_bad_nbhd_eq : rule_on_bad_nbhd = y_on_bad_nbhd := by
+      unfold rule_on_bad_nbhd
+      unfold y_on_bad_nbhd
+      simp only [wolframRule, elementaryCellularAutomaton, elementaryCellularAutomaton_pre] at hy ⊢
+      injection hy with _ hy_rule
+      exact congrFun hy_rule _
+    have on_bad_nbhd_neq : rule_on_bad_nbhd ≠ y_on_bad_nbhd := by
+      unfold rule_on_bad_nbhd
+      unfold y_on_bad_nbhd
+      simp only [wolframRule, elementaryCellularAutomaton, elementaryCellularAutomaton_pre,
+        bad_nbhd, threebitconfig_eq_threebitconfig2, ruleTestBit_threebitconfig2]
+      exact h_bad_input
+    exact on_bad_nbhd_neq on_bad_nbhd_eq
+
+end ElementaryCellularAutomaton
