@@ -36,7 +36,7 @@ point of view are in the `ZLattice` namespace.
   `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
   of `ℤ`-rank equal to the `K`-rank of `E`
-* `ZLattice.comap`: for `e : F →ₗ[K] E` a linear map and `L : Submodule ℤ E`, `L.comap e` is the
+* `ZLattice.comap`: for `e : F → E` a linear map and `L : Submodule ℤ E`, `L.comap e` is the
   `Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
   linear equiv, then it is a `IsZLattice` of `F`, see `instIsZLatticeComap`.
 
@@ -691,7 +691,7 @@ section comap
 variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
     [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
-/-- For `e : F →ₗ[K] E` a linear map and `L : Submodule ℤ E`, `L.comap e` is the
+/-- For `e : F → E` a linear map and `L : Submodule ℤ E`, `L.comap e` is the
 `Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
 linear equiv, then it is a `IsZLattice` of `F`, see `instIsZLatticeComap`. -/
 protected def ZLattice.comap (e : F →ₗ[K] E) := L.comap (e.restrictScalars ℤ)
