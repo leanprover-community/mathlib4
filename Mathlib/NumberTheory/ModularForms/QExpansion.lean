@@ -9,8 +9,8 @@ public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
-public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of functions on the upper half plane
