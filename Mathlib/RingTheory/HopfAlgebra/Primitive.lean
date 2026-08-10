@@ -65,8 +65,7 @@ antipode-on-generators formula `S p = op (-p)`. -/
 noncomputable abbrev ofPrimitives [Bialgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ) {s : Set A}
     (adjoin_eq_top : Algebra.adjoin R s = ⊤) (prim : ∀ p ∈ s, IsPrimitiveElem R p)
     (S_apply : ∀ p ∈ s, S p = op (-p)) : HopfAlgebra R A := by
-  refine ofGenerators ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
-    (by simp) (fun _ _ ↦ by simp) adjoin_eq_top ?_ ?_ <;> intro p hp <;>
+  refine ofGenerators S adjoin_eq_top ?_ ?_ <;> intro p hp <;>
     simp [convMul_apply, (prim p hp).comul_eq_tmul_add_tmul, (prim p hp).counit_eq_zero,
       S_apply p hp]
 

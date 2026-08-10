@@ -26,7 +26,7 @@ antimultiplicative antipode data on generators.
 
 public section
 
-open Algebra Coalgebra LinearMap WithConv
+open Algebra Coalgebra LinearMap MulOpposite WithConv
 
 variable {R A : Type*} [CommSemiring R]
 
@@ -92,22 +92,25 @@ end LinearMap
 namespace HopfAlgebra
 
 section Construction
-variable [Semiring A] [Bialgebra R A] {S₀ : A →ₗ[R] A} {s : Set A}
+variable [Semiring A] [Bialgebra R A] {s : Set A}
 
-variable (S₀) in
-/-- Upgrade a bialgebra to a Hopf algebra from a unital antimultiplicative candidate antipode
-that is a two-sided convolution inverse of the identity pointwise on an algebra-generating
-set. -/
-noncomputable abbrev ofGenerators (S₀_one : S₀ 1 = 1) (S₀_mul : ∀ x y, S₀ (x * y) = S₀ y * S₀ x)
-    (adjoin_eq_top : adjoin R s = ⊤)
-    (S₀_convMul_id : ∀ p ∈ s,
-      (toConv S₀ * toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p)
-    (id_convMul_S₀ : ∀ p ∈ s,
-      (toConv (.id : A →ₗ[R] A) * toConv S₀) p = (1 : WithConv (A →ₗ[R] A)) p) :
+/-- Upgrade a bialgebra to a Hopf algebra from a candidate antipode — packaged as an algebra
+homomorphism into the opposite algebra — that is a two-sided convolution inverse of the
+identity pointwise on an algebra-generating set. -/
+noncomputable abbrev ofGenerators (S : A →ₐ[R] Aᵐᵒᵖ) (adjoin_eq_top : adjoin R s = ⊤)
+    (S_convMul_id : ∀ p ∈ s,
+      (toConv ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap) *
+        toConv (.id : A →ₗ[R] A)) p = (1 : WithConv (A →ₗ[R] A)) p)
+    (id_convMul_S : ∀ p ∈ s,
+      (toConv (.id : A →ₗ[R] A) *
+        toConv ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)) p =
+        (1 : WithConv (A →ₗ[R] A)) p) :
     HopfAlgebra R A :=
-  ofConvInverse S₀
-    (convMul_id_eq_one_of_adjoin_eq_top S₀_one S₀_mul adjoin_eq_top S₀_convMul_id)
-    (id_convMul_eq_one_of_adjoin_eq_top S₀_one S₀_mul adjoin_eq_top id_convMul_S₀)
+  ofConvInverse ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap)
+    (convMul_id_eq_one_of_adjoin_eq_top (by simp) (fun _ _ ↦ by simp) adjoin_eq_top
+      S_convMul_id)
+    (id_convMul_eq_one_of_adjoin_eq_top (by simp) (fun _ _ ↦ by simp) adjoin_eq_top
+      id_convMul_S)
 
 end Construction
 
