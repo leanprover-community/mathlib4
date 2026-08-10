@@ -58,7 +58,7 @@ theorem tfae_append_of_mem (ha : a ∈ l₁) (hb : b ∈ l₂) :
 theorem tfae_cons_of_mem (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l := by
   simpa using tfae_append_of_mem (l₁ := [a]) (by simp) h
 
-theorem tfae_append_singleton_of_mem (h : b ∈ l) :
+theorem tfae_concat_of_mem (h : b ∈ l) :
     TFAE (l ++ [a]) ↔ (a ↔ b) ∧ TFAE l := by
   simp [tfae_append_of_mem (l₁ := l) (l₂ := [a]) (b := a) h, iff_comm]
 
