@@ -121,6 +121,8 @@ converge to this limit is given in `Submultiplicative.tendsto_lim`. -/
 protected def lim (_h : Submultiplicative u) :=
   sInf ((fun n : ℕ ↦ u n ^ (n : ℝ)⁻¹) '' Ici 1)
 
+/-- Fekete's lemma for nonnegative submultiplicative sequences:
+The nth roots of a submultiplicative sequence converge. -/
 theorem tendsto_lim (hbdd : ∀ n, 0 ≤ u n) : Tendsto (fun n ↦ u n ^ (n : ℝ)⁻¹) atTop (𝓝 h.lim) := by
   by_cases! hu : ∃ n, u n ≤ 0
   · obtain ⟨n, hu⟩ := hu
