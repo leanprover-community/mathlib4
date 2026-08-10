@@ -111,7 +111,7 @@ jobs:
       # itself (see the `[labels]` table in bors.toml); this workflow no longer
       # adds or removes them. It still removes the `awaiting-author` and
       # `maintainer-merge` labels on a merge/delegate command. (Zulip emoji
-      # reactions are now kept in sync by the `zulip_emoji_reconcile` workflow.)
+      # reactions are kept in sync by the `zulip_emoji_reconcile` workflow.)
       - if: ${{ ! steps.inputs.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.inputs.outputs.bot == 'true' ) }}
