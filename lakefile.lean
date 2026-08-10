@@ -94,9 +94,10 @@ lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
 
 /-- Wanted statements: `Wanted/X/Y/Z.lean` contains the `proof_wanted` statements
-corresponding to `Mathlib/X/Y/Z.lean`. These files contain only imports, context setup
-(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular they have no
-copyright headers, so the header style linter is disabled.
+corresponding to `Mathlib/X/Y/Z.lean`. Each file carries a copyright header naming the
+author of the original statements, but beyond that contains only imports, context setup
+(`open`/`namespace`/`variable`) and `proof_wanted` statements; in particular there are no
+module docstrings, so the header style linter is disabled.
 `proof_wanted` elaborates to a `private` placeholder declaration, so every module here
 consists solely of private declarations; the `privateModule` linter is disabled accordingly
 (neither `@[expose] public section` nor a `public` modifier suppresses it, since the
