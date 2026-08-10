@@ -243,10 +243,8 @@ theorem irreducible_of_isMaximal_of_eq_span_singleton_of_not_isIdempotentElem {a
   obtain ⟨d, rfl⟩ := show a ∣ v by simp [← Ideal.mem_span_singleton, hv₂]
   refine idem (a * (c * d)) ?_ ?_
   · apply le_antisymm <;> rw [span_singleton_le_span_singleton]
-    · convert dvd_mul_right (a * (c * d)) a
-      nth_rw 1 [ha]
-      ring
-    · simp
+    · exact (dvd_mul_right (a * (c * d)) a).trans (ha.trans (by ring)).symm.dvd
+    · apply dvd_mul_right
   · rw [isIdempotentElem_iff]
     nth_rw 3 [ha]
     ring
