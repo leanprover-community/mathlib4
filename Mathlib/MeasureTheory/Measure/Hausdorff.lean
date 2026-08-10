@@ -1140,14 +1140,12 @@ theorem edist_le_hausdorffMeasure {s : Set X} (hs : IsPreconnected s) {x y : X} 
   -- `fun z ↦ edist x z`. However, `ENNReal` is not a `EMetricSpace` so this doesn't apply directly.
   -- As a work-around, we truncate this function by a constant larger than `μH[1] s`.
   let f (z : X) : ℝ := (min (edist x z) (μH[1] s + 1)).toReal
-  have hftop (z : X) : min (edist x z) (μH[1] s + 1) ≠ ∞ := fun h ↦ by
-    have : μH[1] s + 1 = ∞ := (min_eq_top.mp h).2
-    simp [htop] at this
+  have hftop (z : X) : min (edist x z) (μH[1] s + 1) ≠ ∞ := min_eq_top.not.mpr (by simp [htop])
   have hfle (p q : X) (hqp : edist q p ≠ ∞) : f p ≤ f q + (edist q p).toReal := by
     rw [← ENNReal.toReal_add (hftop q) hqp]
     apply ENNReal.toReal_mono (by simp [hftop q, hqp])
     rw [min_add]
-    exact min_le_min (edist_triangle x q p) (by simp)
+    exact min_le_min (edist_triangle x q p) (self_le_add_right _ _)
   have hlip : LipschitzWith 1 f := by
     refine LipschitzWith.of_edist_le fun p q ↦ ?_
     by_cases h : edist p q = ∞
@@ -1161,9 +1159,8 @@ theorem edist_le_hausdorffMeasure {s : Set X} (hs : IsPreconnected s) {x y : X} 
       simp [f, ENNReal.ofReal_toReal (hftop y)]
     _ = volume (Icc 0 (f y)) := by simp
     _ ≤ volume (f '' s) := by
-      refine measure_mono <| (hs.image f hlip.continuous.continuousOn).Icc_subset ?_ ?_
-      · exact ⟨x, hx, by simp [f]⟩
-      · exact ⟨y, hy, rfl⟩
+      apply measure_mono
+      exact (hs.image f hlip.continuous.continuousOn).Icc_subset ⟨x, hx, by simp [f]⟩ ⟨y, hy, rfl⟩
     _ = μH[1] (f '' s) := by rw [hausdorffMeasure_real]
     _ ≤ μH[1] s := by simpa using hlip.hausdorffMeasure_image_le zero_le_one s
   refine (min_le_iff.mp hminle).resolve_right (not_le_of_gt ?_)
