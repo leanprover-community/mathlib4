@@ -503,7 +503,7 @@ instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRig
     covariant_lt_iff_contravariant_le .. |>.mpr fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
 
 @[to_additive]
-instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
+instance (priority := 10) covariant_swap_mul_of_covariant_mul [CommSemigroup N]
     [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
@@ -518,7 +518,7 @@ theorem mulRightStrictMono_of_mulLeftStrictMono [CommSemigroup N] [LT N] [MulLef
   inferInstance
 
 @[to_additive]
-instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
+instance (priority := 10) contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
     [ContravariantClass N N (· * ·) r] : ContravariantClass N N (swap (· * ·)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
