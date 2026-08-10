@@ -104,6 +104,7 @@ def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
 kernel functions. -/
 def kernel : Matrix X X (V →L[𝕜] V) := .of fun x y ↦ (kerFun H x).adjoint ∘L kerFun H y
 
+@[simp]
 lemma kerFun_apply (y : X) (v : V) (x : X) : kerFun H y v x = kernel H x y v := by
   simp [kernel, kerFun]
 
@@ -131,7 +132,7 @@ lemma inner_kerFun (x : X) (v : V) (f : H) : ⟪f, kerFun H x v⟫_𝕜 = ⟪f x
 /-- The "reproducing" property of the kernel. -/
 lemma kernel_inner (x y : X) (v w : V) :
     ⟪kernel H x y v, w⟫_𝕜 = ⟪kerFun H y v, kerFun H x w⟫_𝕜 := by
-  simp [← adjoint_inner_left, kernel]
+  simp [← adjoint_inner_left]
 
 lemma norm_kernel_eq_norm_kerFun_sq (x) : ‖kernel H x x‖ = ‖kerFun H x‖ ^ 2 := by
   rw [sq, ← ContinuousLinearMap.norm_adjoint_comp_self, kernel_apply]
@@ -360,6 +361,7 @@ def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
 
 omit [CompleteSpace V] in
 variable (𝕜) in
+@[simp]
 lemma outerKernel_apply (f : X → V) (x y) :
     (outerKernel 𝕜 f) x y = InnerProductSpace.rankOne 𝕜 (f x) (f y) :=
   coe_inj.mp rfl
@@ -426,9 +428,8 @@ lemma mem_toSubmodule_outerKernel (f : X → V) : f ∈ toSubmodule (outerKernel
   obtain ⟨x, hx⟩ := Function.ne_iff.mp hf
   use (1 / (‖f x‖ : 𝕜) ^ 2) • (kerFun (OfKernel (outerKernel 𝕜 f)) x) (f x)
   ext
-  simp only [one_div, map_smul, coe_coe, coeCLM_apply, Pi.smul_apply, kerFun_apply,
-    OfKernel.kernel_ofKernel, outerKernel_apply, rankOne_apply, inner_self_eq_norm_sq_to_K]
-  rw [inv_smul_smul₀ (pow_ne_zero 2 <| RCLike.ofReal_ne_zero.mpr <| norm_ne_zero_iff.mpr hx)]
+  have : (‖f x‖ ^ 2 : 𝕜) ≠ 0 := by simpa
+  simp [inv_smul_smul₀ this]
 
 lemma mem_toSubmodule (f : X → V) {c : ℝ}
     (hc : ((c : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef) : f ∈ toSubmodule K := by
