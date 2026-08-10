@@ -213,11 +213,29 @@ def lmfdbIdParser : Parser :=
 
 /-! # DLMF parser -/
 
-/-- `dlmfId` is the node kind of DLMF identifiers: TODO SPECIFY -/
+/-- `dlmfId` is the node kind of DLMF identifiers:
+generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+See https://dlmf.nist.gov/help/cite for more details on the permalink format. -/
 abbrev dlmfIdKind : SyntaxNodeKind := `dlmfId
 
-/-- The main parser for DLMF identifiers: TODO SPECIFY -/
-def dlmfIdFn : ParserFn := sorry
+/-- The main parser for DLMF identifiers:
+generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+See https://dlmf.nist.gov/help/cite for more details on the permalink format. -/
+def dlmfIdFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum || c == '.' || c == '_') c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "dlmf id"
+  else
+    if !(c.extract i s.pos).toList.all
+      (fun c => c.isLower || c.isDigit || c == '.' || c == '_') then
+      ParserState.mkUnexpectedError s
+        "DLMF ids must consist only of letters, digits, periods, and underscores."
+    else
+      mkNodeToken dlmfIdKind i true c s
+
 
 @[inherit_doc dlmfIdFn]
 def dlmfIdNoAntiquot : Parser := {
@@ -370,25 +388,27 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
--- /-! ### DLMF attribute -/
+/-! ### DLMF attribute -/
 
--- /-- The `dlmf` attribute.
--- Use it as `@[dlmf foo.bar "Optional comment"]` to associate a Mathlib declaration with
--- the corresponding [DLMF](https://dlmf.nist.gov) item.
--- -/
--- syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
+/-- The `dlmf` attribute.
+Use it as `@[dlmf 5.4.E1 "Optional comment"]` to associate a Mathlib declaration with
+the corresponding [DLMF](https://dlmf.nist.gov) item.
 
--- initialize Lean.registerBuiltinAttribute {
---   name := `dlmfTag
---   descr := "Apply a DLMF identifier to a declaration."
---   add := fun decl stx _attrKind => do
---     let (id, comment) ← match stx with
---       | `(attr| dlmf $id $[$comment]?) => pure (id, comment)
---       | _ => throwUnsupportedSyntax
---     addCrossRefDoc .dlmf decl (← id.getDlmfId) ((comment.map (·.getString)).getD "")
---   -- docstrings are immutable once an asynchronous elaboration task has been started
---   applicationTime := .beforeElaboration
--- }
+
+-/
+syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `dlmfTag
+  descr := "Apply a DLMF identifier to a declaration."
+  add := fun decl stx _attrKind => do
+    let (id, comment) ← match stx with
+      | `(attr| dlmf $id $[$comment]?) => pure (id, comment)
+      | _ => throwUnsupportedSyntax
+    addCrossRefDoc .dlmf decl (← id.getDlmfId) ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
 
 end Mathlib.CrossRef
 
