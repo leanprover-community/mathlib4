@@ -52,6 +52,22 @@ theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
     IsNilpotent (u * r) ↔ IsNilpotent r :=
   h_comm ▸ hu.isNilpotent_mul_unit_of_commute_iff h_comm
 
+@[simp]
+theorem isNilpotent_op [MonoidWithZero R] {x : R} :
+    IsNilpotent (MulOpposite.op x) ↔ IsNilpotent x :=
+  ⟨fun ⟨n, hn⟩ ↦ ⟨n, MulOpposite.op_injective (by simpa)⟩,
+   fun ⟨n, hn⟩ ↦ ⟨n, by simpa [← MulOpposite.op_pow]⟩⟩
+
+alias ⟨_, IsNilpotent.op⟩ := isNilpotent_op
+
+@[simp]
+theorem isNilpotent_unop [MonoidWithZero R] {x : Rᵐᵒᵖ} :
+    IsNilpotent (MulOpposite.unop x) ↔ IsNilpotent x :=
+  ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simpa [← MulOpposite.unop_eq_zero_iff]⟩,
+   fun ⟨n, hn⟩ ↦ ⟨n, MulOpposite.op_injective (by simpa)⟩⟩
+
+alias ⟨_, IsNilpotent.unop⟩ := isNilpotent_unop
+
 section NilpotencyClass
 
 section ZeroPow
@@ -119,6 +135,13 @@ lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
 end MonoidWithZero
 
 end NilpotencyClass
+
+@[simp]
+theorem isReduced_mulOpposite_iff [MonoidWithZero R] : IsReduced Rᵐᵒᵖ ↔ IsReduced R := by
+  simp [isReduced_iff, isNilpotent_op]
+
+instance [MonoidWithZero R] [IsReduced R] : IsReduced Rᵐᵒᵖ :=
+  isReduced_mulOpposite_iff.mpr ‹_›
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]
