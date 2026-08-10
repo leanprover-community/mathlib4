@@ -128,7 +128,6 @@ def equivalence {f' : X' ⟶ Y'} {f : X ≌ Y} (r : RetractArrow₁ f' f.hom) :
       _ = _ := by
         simp [bicategoricalComp, r.comm'_assoc]
 
-
 end RetractArrow₁
 
 end Bicategory
