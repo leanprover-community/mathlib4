@@ -210,7 +210,6 @@ lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisc
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
 
-set_option backward.privateInPublic true in
 private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisconnected A]
     [T2Space A] [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) :
@@ -239,16 +238,14 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     mem_image_of_mem ρ hx₂
   exact disj''.ne_of_mem hx₁' hx₂' hρx
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
 satisfying the "Zorn subset condition" is a homeomorphism. -/
 noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnected A] [T2Space A]
     [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ) (ρ_surj : ρ.Surjective)
     (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) : E ≃ₜ A :=
-  ρ_cont.homeoOfEquivCompactToT2
-    (f := Equiv.ofBijective ρ ⟨homeoCompactToT2_injective ρ_cont ρ_surj zorn_subset, ρ_surj⟩)
+  ρ_cont.homeoOfEquivCompactToT2 (f := Equiv.ofBijective ρ
+    ⟨private homeoCompactToT2_injective ρ_cont ρ_surj zorn_subset, ρ_surj⟩)
 
 /-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
 in the category of compact spaces and continuous maps,

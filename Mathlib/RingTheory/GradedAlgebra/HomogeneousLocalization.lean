@@ -780,7 +780,6 @@ variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
-set_option backward.privateInPublic true in
 /-- Given `f ∣ x`, this is the map `A_{(f)} → A_f → A_x`. We will lift this to a map
 `A_{(f)} → A_{(x)}` in `awayMap`. -/
 private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
@@ -788,8 +787,6 @@ private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
     (isUnit_of_dvd_unit (map_dvd _ hx) (IsLocalization.Away.algebraMap_isUnit x))).comp
       (algebraMap (Away 𝒜 f) (Localization.Away f))
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma awayMapAux_mk (n a i hi) :
     awayMapAux 𝒜 ⟨_, hx⟩ (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩) =
       Localization.mk (a * g ^ i) ⟨x ^ i, (Submonoid.mem_powers_iff _ _).mpr ⟨i, rfl⟩⟩ := by
@@ -803,8 +800,6 @@ lemma awayMapAux_mk (n a i hi) :
   subst hx
   rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 include hg in
 lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
@@ -818,8 +813,6 @@ lemma range_awayMapAux_subset :
     apply SetLike.mul_mem_graded hb'
     exact SetLike.pow_mem_graded _ hg
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given `x = f * g` with `g` homogeneous of positive degree,
 this is the map `A_{(f)} → A_{(x)}` taking `a/f^i` to `ag^i/(fg)^i`. -/
 def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
@@ -829,8 +822,6 @@ def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
     (awayMapAux 𝒜 (f := f) ⟨_, hx⟩).rangeRestrict
   exact range_awayMapAux_subset 𝒜 hg hx
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_, hx⟩ a := by
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)

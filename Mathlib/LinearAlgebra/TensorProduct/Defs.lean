@@ -195,19 +195,18 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
-set_option backward.privateInPublic true in
 @[instance_reducible]
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
-attribute [local instance] addMonoidWithWrongNSMul in
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
-def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
+@[no_expose] def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
+  let : AddMonoid (M ⊗[R] N) := addMonoidWithWrongNSMul
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 
 theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
-  rfl
+  (rfl)
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
@@ -290,7 +289,7 @@ theorem _root_.IsAddUnit.tmul_right {m : M} (hm : IsAddUnit m) (n : N) : IsAddUn
 variable {R}
 
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
-  have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
+  have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => private rfl
   { smul_add := fun r x y => TensorProduct.smul_add r x y
     mul_smul := fun r s x =>
       x.induction_on (by simp_rw [TensorProduct.smul_zero])
@@ -304,7 +303,7 @@ instance : DistribMulAction R (M ⊗[R] N) :=
   TensorProduct.leftDistribMulAction
 
 theorem smul_tmul' (r : R') (m : M) (n : N) : r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x : M) (y : N) :

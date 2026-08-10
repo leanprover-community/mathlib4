@@ -72,16 +72,13 @@ noncomputable def repr : ONote → Ordinal.{0}
 @[simp] theorem repr_zero : repr 0 = 0 := rfl
 attribute [simp] repr.eq_1 repr.eq_2
 
-set_option backward.privateInPublic true in
 /-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/
 private def toStringAux (e : ONote) (n : ℕ) (s : String) : String :=
   if e = 0 then toString n
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Print an ordinal notation -/
-def toString : ONote → String
+@[no_expose] def toString : ONote → String
   | zero => "0"
   | oadd e n 0 => toStringAux e n (toString e)
   | oadd e n a => toStringAux e n (toString e) ++ " + " ++ toString a

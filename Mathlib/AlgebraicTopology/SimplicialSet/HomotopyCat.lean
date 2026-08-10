@@ -148,7 +148,6 @@ def OneTruncation₂.ofNerve₂.natIso :
       simp only [comp_id, id_comp]
       rfl))
 
-set_option backward.privateInPublic true in
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
@@ -187,8 +186,6 @@ def δ1₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 1
 /-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
 def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
@@ -197,15 +194,11 @@ def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ �
       (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm),
     map_map_of_eq V rfl⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 1st face of a 2-simplex. -/
 def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
@@ -390,7 +383,6 @@ variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
     F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
@@ -400,7 +392,6 @@ def mkNatTrans : F ⟶ G where
     exact this.symm.le f (by simp)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
     (mkNatTrans φ hφ).app (mk v) = φ v := rfl
@@ -414,19 +405,16 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl

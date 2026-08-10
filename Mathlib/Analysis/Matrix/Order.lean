@@ -287,7 +287,6 @@ def tracePositiveLinearMap : Matrix n n 𝕜 →ₚ[α] 𝕜 :=
 
 end tracePositiveLinearMap
 
-set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
 and `Matrix.toMatrixInnerProductSpace`. -/
@@ -301,8 +300,6 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
   add_left := by simp [mul_add]
   smul_left := by simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
@@ -310,8 +307,6 @@ noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.P
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]

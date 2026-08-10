@@ -424,7 +424,6 @@ theorem convexComb_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     ← convexComb_symm z y]
   rw [convexComb_assoc_coeff₁', convexComb_assoc_coeff₂', unitInterval.symm_symm]
 
-set_option backward.privateInPublic true in
 private theorem eq_convexComb.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
@@ -433,7 +432,6 @@ private theorem eq_convexComb.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_nonneg <;> grind
 
-set_option backward.privateInPublic true in
 private theorem eq_convexComb.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     ((y - x) / (z - x) : ℝ) ≤ 1 := by
   by_cases h : (z - x : ℝ) = 0
@@ -442,15 +440,13 @@ private theorem eq_convexComb.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ 
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     apply div_le_one_of_le₀ <;> grind
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 A point between two points in a closed interval
 can be expressed as a convex combination of them.
 -/
 theorem eq_convexComb {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     y = convexComb x z ⟨((y - x) / (z - x)),
-          eq_convexComb.zero_le hxy hyz, eq_convexComb.le_one hxy hyz⟩ := by
+          private eq_convexComb.zero_le hxy hyz, private eq_convexComb.le_one hxy hyz⟩ := by
   ext
   simp only [coe_convexComb]
   by_cases h : (z - x : ℝ) = 0

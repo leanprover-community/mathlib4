@@ -67,16 +67,12 @@ structure Hom (X Y : TopModuleCat.{v} R) where
   /-- The underlying continuous linear map. Use `hom` instead. -/
   hom' : X →L[R] Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category (TopModuleCat R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
@@ -342,8 +338,6 @@ end Limit
 
 section Adjunction
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The functor equipping a module over a topological ring with the finest possible
 topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where

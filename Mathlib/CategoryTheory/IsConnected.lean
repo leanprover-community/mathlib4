@@ -82,7 +82,6 @@ variable {K : Type u₂} [Category.{v₂} K]
 
 namespace IsPreconnected.IsoConstantAux
 
-set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
 private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
   obj j := have := Nonempty.intro j
@@ -90,7 +89,6 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   map {j _} f := have := Nonempty.intro j
     ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩⟩
 
-set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
@@ -98,13 +96,10 @@ private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
 
 end IsPreconnected.IsoConstantAux
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
 the constant functor with value `F.obj j` (for any choice of `j`).
 -/
-def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
+@[no_expose] def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _

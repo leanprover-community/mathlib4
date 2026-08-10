@@ -60,7 +60,6 @@ private local instance fintypeQuotient (H : OpenSubgroup (G)) :
   have : Finite (G ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
   Fintype.ofFinite _
 
-set_option backward.privateInPublic true in
 private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
     [TopologicalSpace X] [ContinuousSMul G X] [DiscreteTopology X] (x : X) :
     Fintype (G ⧸ (MulAction.stabilizer (G) x)) :=
@@ -101,8 +100,6 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
   exact ⟨ι, hf, g, ⟨(Sigma.mapIso (fun i ↦ (ui i).some)).symm ≪≫ u⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
 to the quotient of `Aut F` by the stabilizer of `x` as `Aut F`-sets. -/
 def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :

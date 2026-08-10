@@ -125,7 +125,6 @@ section DecidableEq
 
 variable [DecidableEq (K →+* ℂ)]
 
-set_option backward.privateInPublic true in
 /-- `c` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
 private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
@@ -135,8 +134,6 @@ private theorem c_nonneg : 0 ≤ c K := by
   positivity
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
       (c K) * house (algebraMap (𝓞 K) K α) := by
@@ -177,7 +174,6 @@ variable {α : Type*} {β : Type*} (a : Matrix α β (𝓞 K))
 private def a' : α → β → (K →+* ℂ) → (K →+* ℂ) → ℤ := fun k l r =>
   (newBasis K).repr (a k l * (newBasis K) r)
 
-set_option backward.privateInPublic true in
 /-- `asiegel K a` is the integer matrix of the coefficients of the
 product of matrix elements and basis vectors. -/
 private def asiegel : Matrix (α × (K →+* ℂ)) (β × (K →+* ℂ)) ℤ := fun k l => a' K a k.1 l.1 l.2 k.2
@@ -209,7 +205,6 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
-set_option backward.privateInPublic true in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
@@ -225,7 +220,6 @@ private theorem lin_1 (l k r) : a k l * (newBasis K) r =
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
 
 -- Variable declarations can only reference public items.
-set_option backward.privateInPublic true
 variable [Fintype β] (cardβ : Fintype.card β = q) (hmulvec0 : asiegel K a *ᵥ x = 0)
 
 include hxl hmulvec0 in
@@ -336,7 +330,6 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · exact asiegel_remark K a habs Apos
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
-set_option backward.privateInPublic.warn false in
 include hpq h0p cardα cardβ ha habs in
 /-- There exists a "small" non-zero algebraic integral solution of an
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/

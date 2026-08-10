@@ -130,7 +130,6 @@ section LinearOrder
 
 variable [∀ i, LinearOrder (α i)]
 
-set_option backward.privateInPublic true in
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
 private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort*}
@@ -152,10 +151,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance Colex.total_le : @Std.Total (Colex (Π₀ i, α i)) (· ≤ ·) :=
   Lex.total_le (ι := ιᵒᵈ)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
+@[no_expose] instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
@@ -165,10 +162,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
   Lex.decidableLE (ι := ιᵒᵈ)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
+@[no_expose] instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 set_option backward.isDefEq.respectTransparency false in

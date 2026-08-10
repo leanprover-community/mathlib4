@@ -115,14 +115,12 @@ instance carrier.instFrame : Order.Frame S where
   __ := carrier.instHeytingAlgebra
   __ := carrier.instCompleteLattice
 
-set_option backward.privateInPublic true in
 /-- See `Sublocale.restrict` for the public-facing version. -/
 private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
   choice x hx := ⟨x, by
@@ -159,11 +157,9 @@ def restrict (S : Sublocale X) : FrameHom X S where
     rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
     simp [restrictAux, sInf]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
 from the sublocale to the original locale. -/
-def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
+@[no_expose] def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
 

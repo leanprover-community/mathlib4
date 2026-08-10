@@ -43,7 +43,6 @@ prove a minimal set of lemmas about it, and then define the `LinearEquiv` using 
 **Do not add more lemmas about `auxDFT`**: it should be invisible to end-users.
 -/
 
-set_option backward.privateInPublic true in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure). This definition is
 private because it is superseded by the bundled `LinearEquiv` version.
@@ -79,8 +78,6 @@ end private_defs
 
 section defs
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bundled as a linear
 equivalence. Denoted as `𝓕` within the `ZMod` namespace.

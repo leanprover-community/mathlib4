@@ -55,15 +55,11 @@ structure Hom (X Y : BddDistLat.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category BddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

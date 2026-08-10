@@ -58,7 +58,6 @@ namespace QuaternionGroup
 
 variable {n : ℕ}
 
-set_option backward.privateInPublic true in
 /-- Multiplication of the quaternion group.
 -/
 private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
@@ -67,36 +66,30 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | xa i, a j => xa (i + j)
   | xa i, xa j => a (n + j - i)
 
-set_option backward.privateInPublic true in
 /-- The identity `1` is given by `aⁱ`.
 -/
 private def one : QuaternionGroup n :=
   a 0
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Inhabited (QuaternionGroup n) :=
+@[no_expose] instance : Inhabited (QuaternionGroup n) :=
   ⟨one⟩
 
-set_option backward.privateInPublic true in
 /-- The inverse of an element of the quaternion group.
 -/
 private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
-  mul := mul
+  mul := private mul
   mul_assoc := by
-    unfold instHMul
+    change ∀ a b c, mul (mul a b) c = mul a (mul b c)
     rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
     have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
     grind
-  one := one
+  one := private one
   one_mul := by
     rintro (i | i)
     · exact congr_arg a (zero_add i)
@@ -105,7 +98,7 @@ instance : Group (QuaternionGroup n) where
     rintro (i | i)
     · exact congr_arg a (add_zero i)
     · exact congr_arg xa (add_zero i)
-  inv := inv
+  inv := private inv
   inv_mul_cancel := by
     rintro (i | i)
     · exact congr_arg a (neg_add_cancel i)
@@ -113,28 +106,27 @@ instance : Group (QuaternionGroup n) where
 
 @[simp]
 theorem a_mul_a (i j : ZMod (2 * n)) : a i * a j = a (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem a_mul_xa (i j : ZMod (2 * n)) : a i * xa j = xa (j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
   rfl
 
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
-  rfl
+  (rfl)
 
-set_option backward.privateInPublic true in
 private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n where
   invFun i :=
     match i with
@@ -160,11 +152,9 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
   right_inv := by rintro (k | k) <;> rfl
   map_mul' := by rintro (k | k) (l | l) <;> simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
-instance [NeZero n] : Fintype (QuaternionGroup n) :=
+@[no_expose] instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=

@@ -107,7 +107,7 @@ variable {f f'}
 
 @[simp]
 theorem liftAux.smulₛₗ (r : R) (x) : liftAux f' (r • x) = σ₁₂ r • liftAux f' x :=
-  TensorProduct.induction_on x (smul_zero _).symm
+  TensorProduct.induction_on x (by simp)
     (fun p q => by simp_rw [← tmul_smul, liftAux_tmul, (f' p).map_smulₛₗ])
     fun p q ih1 ih2 => by simp_rw [smul_add, (liftAux f').map_add, ih1, ih2, smul_add]
 
@@ -318,9 +318,9 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
     lift (σ₁₂ := RingHom.id A)
     { toFun := fun m ↦
       { __ := mk R M N m
-        map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+        map_smul' := fun _ _ ↦ by simp }
       map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-      map_smul' := fun _ _ ↦ rfl }
+      map_smul' := fun _ _ ↦ by ext; simp [smul_tmul] }
   map_smul' s x := by
     induction x with
     | zero => simp

@@ -238,7 +238,6 @@ lemma mem_range : x ∈ range n ↔ n x = x where
   mp := by rintro ⟨x, rfl⟩; exact idempotent _
   mpr h := ⟨x, h⟩
 
-set_option backward.privateInPublic true in
 /-- See `Nucleus.giRestrict` for the public-facing version. -/
 private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subtype.val where
   choice x hx := ⟨x, mem_range.2 <| hx.antisymm n.le_apply⟩
@@ -246,9 +245,7 @@ private def giAux (n : Nucleus X) : GaloisInsertion (rangeFactorization n) Subty
   le_l_u x := le_apply
   choice_eq x hx := by ext; exact le_apply.antisymm hx
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
+@[no_expose] instance : CompleteLattice (range n) := n.giAux.liftCompleteLattice
 
 instance : Frame (range n) := .ofMinimalAxioms {
   inf_sSup_le_iSup_inf a s := by
@@ -265,11 +262,9 @@ instance : Frame (range n) := .ofMinimalAxioms {
   map_top' := by ext; exact map_top n
   map_sSup' s := by rw [n.giAux.gc.l_sSup, sSup_image]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
 the range to the original frame. -/
-def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
+@[no_expose] def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
 
 lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
   mpr h := funext_iff.mpr <| fun _ ↦ le_antisymm (le_trans (h (m _)) (m.idempotent' _)) le_apply
