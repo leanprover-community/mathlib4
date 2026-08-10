@@ -300,7 +300,8 @@ theorem _root_.Commute.exists_orderOf_eq_lcm {x y : G} (h : Commute x y) :
 
 /-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
 order `p`. -/
-@[to_additive]
+@[to_additive /-- A nontrivial additive monoid has prime exponent `p` if and only if every
+non-identity element has order `p`. -/]
 lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
     Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
   refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
@@ -572,7 +573,8 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   simpa using congr_fun h j
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
-@[to_additive]
+@[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of
+`M₁`. -/]
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
@@ -640,7 +642,7 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
     _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
-@[to_additive]
+@[to_additive /-- In a cancellative additive monoid of exponent two, all elements commute. -/]
 lemma mul_comm_of_exponent_two [IsCancelMul G] (hG : Monoid.exponent G = 2) (a b : G) :
     a * b = b * a :=
   Commute.of_orderOf_dvd_two (fun g => hG ▸ Monoid.order_dvd_exponent g) a b
@@ -667,13 +669,13 @@ theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
   MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
 
 /-- In a group of exponent two, every element is its own inverse. -/
-@[to_additive]
+@[to_additive /-- In an additive group of exponent two, every element is its own negation. -/]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hG ▸ Monoid.pow_exponent_eq_one x
 
 /-- If an element in a group has order two, then it is its own inverse. -/
-@[to_additive]
+@[to_additive /-- If an element in an additive group has order two, then it is its own negation. -/]
 lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
