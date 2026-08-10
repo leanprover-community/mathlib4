@@ -1226,7 +1226,7 @@ with a default so that `a / b = a * b⁻¹` holds by definition.
 Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure
 on a type with the minimum proof obligations.
 -/
-class Group (G : Type u) extends Monoid G, DivInvMonoid G where
+class Group (G : Type u) extends DivInvMonoid G where
   protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
@@ -1237,7 +1237,7 @@ with a default so that `a - b = a + -b` holds by definition.
 Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
 additive group structure on a type with the minimum proof obligations.
 -/
-class AddGroup (A : Type u) extends AddMonoid A, SubNegMonoid A where
+class AddGroup (A : Type u) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0
 
 attribute [to_additive (attr := wikidata Q83478)] Group
