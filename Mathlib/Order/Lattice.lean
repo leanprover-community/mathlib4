@@ -9,6 +9,7 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
+public import Mathlib.Tactic.GrindAttrs
 
 /-!
 # (Semi-)lattices
@@ -140,9 +141,15 @@ variable [SemilatticeSup α] {a b c d : α}
 theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 
+grind_pattern [membership] le_sup_left => a ⊔ b
+grind_pattern [membership] inf_le_left => a ⊓ b
+
 @[to_dual (attr := simp) inf_le_right]
 theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
+
+grind_pattern [membership] le_sup_right => a ⊔ b
+grind_pattern [membership] inf_le_right => a ⊓ b
 
 @[to_dual (reorder := a b c) le_inf]
 theorem sup_le : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
