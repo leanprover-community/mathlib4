@@ -176,7 +176,7 @@ theorem mem_span_iff_linearCombination (s : Set M) (x : M) :
     x ∈ span R s ↔ ∃ l : s →₀ R, linearCombination R (↑) l = x :=
   (SetLike.ext_iff.1 <| span_eq_range_linearCombination _ _) x
 
-lemma mem_span_setOf_iff_exists_linearCombination {p : M → Prop} {x : M} :
+lemma mem_span_setOfPred_iff_exists_linearCombination {p : M → Prop} {x : M} :
     x ∈ span R {a | p a} ↔ ∃ l : {a // p a} →₀ R, linearCombination R (↑) l = x :=
   mem_span_iff_linearCombination ..
 
