@@ -4523,6 +4523,7 @@ public import Mathlib.FieldTheory.ChevalleyWarning
 public import Mathlib.FieldTheory.Differential.Basic
 public import Mathlib.FieldTheory.Differential.Liouville
 public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.FinTrdeg
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.FieldTheory.Finite.GaloisField
@@ -6117,6 +6118,7 @@ public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.Fin.Finset
+public import Mathlib.Order.Fin.InsertNth
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints
@@ -7550,6 +7552,7 @@ public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
