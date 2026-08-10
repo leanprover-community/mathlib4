@@ -65,9 +65,6 @@ theorem eventually_measure_le_doublingConstant_mul :
     ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ doublingConstant μ * μ (closedBall x ε) :=
   Classical.choose_spec <| exists_measure_closedBall_le_mul μ
 
-@[deprecated (since := "2025-12-17")]
-alias exists_measure_closedBall_le_mul' := eventually_measure_le_doublingConstant_mul
-
 theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, ∀ t ≤ K, μ (closedBall x (t * ε)) ≤ C * μ (closedBall x ε) := by
   let C := doublingConstant μ

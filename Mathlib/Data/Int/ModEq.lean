@@ -26,6 +26,7 @@ modeq, congruence, mod, MOD, modulo, integers
 
 
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
+@[wikidata Q3773677]
 def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 
@@ -206,7 +207,7 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
-  letI d := gcd m c
+  let d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (gcd_dvd_right ..), Int.sub_mul]
@@ -250,6 +251,10 @@ theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
   exact ⟨fun ha ↦ h.symm.trans ha, h.trans⟩
 
 end ModEq
+
+@[simp]
+theorem abs_modEq_two : |a| ≡ a [ZMOD 2] := by
+  grind [Int.ModEq]
 
 @[simp]
 theorem modulus_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]

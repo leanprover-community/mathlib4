@@ -120,7 +120,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-open Classical in
+open scoped Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
       (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _).hom.hom := by
@@ -202,10 +202,10 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       · ext x
         exact hj.elim' (C.π.app j x)
     by_contra! h
-    haveI : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
-    haveI : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
+    have : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
+    have : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : T2Space (F.obj j))
-    haveI : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
+    have : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : CompactSpace (F.obj j))
     have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)

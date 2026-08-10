@@ -149,7 +149,7 @@ of `f.det`. -/
 theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orientation R M ι)
     (f : M ≃ₗ[R] M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x := by
   cases nonempty_fintype ι
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   induction x using Module.Ray.ind with | h g hg =>
   rw [Orientation.map_apply, smul_rayOfNeZero, ray_eq_iff, Units.smul_def,
     (g.compLinearMap f.symm).eq_smul_basis_det e, g.eq_smul_basis_det e,
@@ -201,6 +201,7 @@ variable {ι : Type*}
 
 namespace Orientation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module `M` over a linearly ordered commutative ring has precisely two "orientations" with
 respect to an empty index type. (Note that these are only orientations of `M` of in the conventional
 mathematical sense if `M` is zero-dimensional.) -/
@@ -338,7 +339,7 @@ equal or negations. -/
 theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
     (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
   have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
-  letI := Classical.decEq ι
+  let := Classical.decEq ι
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
     rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
 
@@ -379,7 +380,7 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   have H : 0 < finrank R M := by
     rw [← h]
     exact Fintype.card_pos
-  haveI : FiniteDimensional R M := of_finrank_pos H
+  have : FiniteDimensional R M := of_finrank_pos H
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_neg_iff, LinearEquiv.coe_det]
 
 /-- If the index type has cardinality equal to the finite dimension, a basis with the given

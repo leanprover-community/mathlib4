@@ -159,7 +159,6 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q w
     congr 1
     exact Multiequalizer.hom_ext _ _ _ (fun I => by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
   ext : 2

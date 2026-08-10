@@ -66,6 +66,10 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+theorem isNNRat_divNat : {a na n : ℕ} → {b nb d : ℕ} → IsNat a na → IsNat b nb →
+    IsNNRat (na / nb : ℚ≥0) n d → IsNNRat (NNRat.divNat a b) n d
+  | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [NNRat.divNat_eq_div]; exact ⟨_, h⟩
+
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
@@ -80,7 +84,24 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat _ q n d q(isRat_mkRat $pa $pb $p)
 
+/-- The `norm_num` extension which identifies expressions of the form `NNRat.divNat a b`,
+such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
+@[norm_num NNRat.divNat _ _]
+def evalNNRatDivNat : NormNumExt where eval {u α} (e : Q(ℚ≥0)) : MetaM (Result e) := do
+  let .app (.app (.const ``NNRat.divNat _) (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  haveI' : $e =Q NNRat.divNat $a $b := ⟨⟩
+  let ra ← derive q($a)
+  let ⟨na, pa⟩ ← deriveNat q($a) q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
+  let rab ← derive q($na / $nb : NNRat)
+  let some ⟨q, n, d, p⟩ := rab.toNNRat' q(NNRat.instSemifield.toDivisionSemiring) | failure
+  return .isNNRat _ q n d q(isNNRat_divNat $pa $pb $p)
+
 theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+    IsNat q n → IsNat (q : R) n
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+theorem isNat_nnratCast {R : Type*} [DivisionSemiring R] : {q : ℚ≥0} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
@@ -90,6 +111,10 @@ theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
 
 theorem isNNRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℕ} → {d : ℕ} →
     IsNNRat q n d → IsNNRat (q : R) n d
+  | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
+
+theorem isNNRat_nnratCast {R : Type*} [DivisionSemiring R] [CharZero R] : {q : ℚ≥0} → {n : ℕ} →
+    {d : ℕ} → IsNNRat q n d → IsNNRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
 theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
@@ -119,6 +144,23 @@ recognizes `q`, returning the cast of `q`. -/
     assumeInstancesCommute
     let i ← inferCharZeroOfDivisionRing dα
     return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
+  | _ => failure
+
+/-- The `norm_num` extension which identifies an expression `NNRat.cast q` where `norm_num`
+recognizes `q`, returning the cast of `q`. -/
+@[norm_num NNRat.cast _, NNRatCast.nnratCast _]
+def evalNNRatCast : NormNumExt where eval {u α} e := do
+  let dα ← inferDivisionSemiring α
+  let ~q(@NNRat.cast _ $dα' $a) := e | failure
+  guard <| ← matchesInstance dα' q(@DivisionSemiring.toNNRatCast _ $dα)
+  match ← derive q($a) with
+  | .isNat _ na pa =>
+    assumeInstancesCommute
+    return .isNat _ na q(isNat_nnratCast $pa)
+  | .isNNRat _ qa na da pa =>
+    assumeInstancesCommute
+    let some _ ← inferCharZeroOfDivisionSemiring? dα | failure
+    return .isNNRat q(inferInstance) qa na da q(isNNRat_nnratCast $pa)
   | _ => failure
 
 theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
