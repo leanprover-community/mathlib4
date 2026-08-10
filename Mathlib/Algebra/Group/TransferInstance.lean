@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Data.Fintype.Basic
 
+import Mathlib.Tactic.FastInstance
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 
@@ -116,13 +118,14 @@ lemma mulEquiv_symm_apply (e : α ≃ β) [Mul β] (b : β) :
 
 /-- Transfer `Semigroup` across an `Equiv` -/
 @[to_additive /-- Transfer `add_semigroup` across an `Equiv` -/]
-protected abbrev semigroup [Semigroup β] : Semigroup α := by
+protected abbrev semigroup [Semigroup β] : Semigroup α := fast_instance% by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommSemigroup` across an `Equiv` -/]
-protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
+protected abbrev commSemigroup [CommSemigroup β] :
+    CommSemigroup α := fast_instance% by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
@@ -149,14 +152,15 @@ protected lemma isCancelMul [Mul β] [IsCancelMul β] :
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
 @[to_additive /-- Transfer `AddZeroClass` across an `Equiv` -/]
-protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
+protected abbrev mulOneClass [MulOneClass β] :
+    MulOneClass α := fast_instance% by
   let one := e.one
   let mul := e.mul
   apply e.injective.mulOneClass _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Monoid` across an `Equiv` -/
 @[to_additive /-- Transfer `AddMonoid` across an `Equiv` -/]
-protected abbrev monoid [Monoid β] : Monoid α := by
+protected abbrev monoid [Monoid β] : Monoid α := fast_instance% by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -164,7 +168,7 @@ protected abbrev monoid [Monoid β] : Monoid α := by
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommMonoid` across an `Equiv` -/]
-protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
+protected abbrev commMonoid [CommMonoid β] : CommMonoid α := fast_instance% by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -172,7 +176,7 @@ protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
 
 /-- Transfer `Group` across an `Equiv` -/
 @[to_additive /-- Transfer `AddGroup` across an `Equiv` -/]
-protected abbrev group [Group β] : Group α := by
+protected abbrev group [Group β] : Group α := fast_instance% by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
@@ -183,7 +187,7 @@ protected abbrev group [Group β] : Group α := by
 
 /-- Transfer `CommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommGroup` across an `Equiv` -/]
-protected abbrev commGroup [CommGroup β] : CommGroup α := by
+protected abbrev commGroup [CommGroup β] : CommGroup α := fast_instance% by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
