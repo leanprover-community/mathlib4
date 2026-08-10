@@ -101,7 +101,7 @@ lemma inr_le_inr_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
 
 @[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
 
-lemma inr_lr_inr {a b : A} (hab : a ≤ b) (ha : IsSelfAdjoint a := by cfc_tac)
+lemma inr_le_inr {a b : A} (hab : a ≤ b) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
     (a : A⁺¹) ≤ (b : A⁺¹) :=
   inr_le_inr_iff a b |>.mpr hab
