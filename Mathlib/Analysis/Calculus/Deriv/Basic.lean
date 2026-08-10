@@ -666,8 +666,7 @@ theorem Filter.EventuallyEq.codiscreteWithin_derivWithin'
     (h : f₁ =ᶠ[codiscreteWithin s] f) (ht : t ⊆ s) :
     derivWithin f₁ t =ᶠ[codiscreteWithin s] derivWithin f t := by
   filter_upwards [h.codiscreteWithin_fderivWithin' (𝕜 := 𝕜) ht] with y hy
-  unfold derivWithin
-  rw [hy]
+  simp [derivWithin, hy]
 
 /--
 If two functions agree on a codiscrete subset of `s`, then so do their derivatives within `s`.
@@ -684,8 +683,7 @@ theorem Filter.EventuallyEq.codiscreteWithin_deriv (h : f₁ =ᶠ[codiscreteWith
     (hs : IsOpen s) :
     deriv f₁ =ᶠ[codiscreteWithin s] deriv f := by
   filter_upwards [h.codiscreteWithin_fderiv (𝕜 := 𝕜) hs] with y hy
-  unfold deriv
-  rw [hy]
+  simp_rw [deriv, hy]
 
 end congr
 
