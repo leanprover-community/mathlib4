@@ -52,10 +52,10 @@ example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx
     x * y * z ∈ S₂ := by
   membership
 
-example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
+example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (hx : x ∈ S₁)
     (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₁ ⊔ S₂ := by
-  grind [membership] -- weird bug: `mem_of_le_of_mem` fails to E-match
+  membership
 
 example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S) (hz : z ∈ S) :
     z * (x * y) ∈ S := by
