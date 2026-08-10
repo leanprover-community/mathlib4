@@ -58,17 +58,6 @@ theorem sSup_le_sSup_of_isCofinalFor (h : IsCofinalFor s t) : sSup s ≤ sSup t 
 theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
-@[to_dual]
-theorem iSup₂_eq_iSup_diagonal
-    (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
-    ⨆ i, ⨆ j, f i j = ⨆ k, f k k := by
-  refine le_antisymm (sSup_le ?_) (sSup_le ?_) <;> rintro _ ⟨i, rfl⟩
-  · refine sSup_le ?_
-    rintro _ ⟨j, rfl⟩
-    obtain ⟨k, hk⟩ := h i j
-    exact hk.trans (le_sSup ⟨k, rfl⟩)
-  · exact (le_sSup (s := range (f i)) ⟨i, rfl⟩).trans (le_sSup ⟨i, rfl⟩)
-
 end
 
 open OrderDual
@@ -299,6 +288,12 @@ theorem iSup₂_mono' {f : ∀ i, κ i → α} {g : ∀ i', κ' i' → α} (h : 
 @[to_dual]
 theorem iSup_const_mono (h : ι → ι') : ⨆ _ : ι, a ≤ ⨆ _ : ι', a :=
   iSup_le <| le_iSup _ ∘ h
+
+@[to_dual]
+theorem iSup₂_eq_iSup_diagonal (f : ι → ι → α) (h : ∀ i j, ∃ k, f i j ≤ f k k) :
+    ⨆ i, ⨆ j, f i j = ⨆ k, f k k :=
+  le_antisymm (iSup_le fun i ↦ iSup_mono' (h i))
+    (iSup_le fun k ↦ le_iSup_of_le k (le_iSup (f k) k))
 
 @[to_dual none]
 theorem iSup_iInf_le_iInf_iSup (f : ι → ι' → α) : ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
