@@ -714,33 +714,23 @@ section Minimal
 
 variable [Preorder α] {s : Set α} {a b : α}
 
+@[to_dual]
 theorem DirectedOn.le_of_minimal (h : DirectedOn (fun x y ↦ y ≤ x) s) (hMin : Minimal (· ∈ s) a)
     (hb : b ∈ s) : a ≤ b := by
   obtain ⟨z, hz, hza, hzb⟩ := h a hMin.1 b hb
   exact (hMin.2 hz hza).trans hzb
 
-theorem DirectedOn.le_of_maximal (h : DirectedOn (· ≤ ·) s) (hMax : Maximal (· ∈ s) a)
-    (hb : b ∈ s) : b ≤ a := by
-  obtain ⟨z, hz, haz, hbz⟩ := h a hMax.1 b hb
-  exact hbz.trans (hMax.2 hz haz)
-
+@[to_dual]
 theorem DirectedOn.minimal_iff_isLeast (h : DirectedOn (fun x y ↦ y ≤ x) s) :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   ⟨fun hMin ↦ ⟨hMin.1, fun _ hy ↦ h.le_of_minimal hMin hy⟩, fun h ↦ ⟨h.1, fun _ hy _ ↦ h.2 hy⟩⟩
 
-theorem DirectedOn.maximal_iff_isGreatest (h : DirectedOn (· ≤ ·) s) :
-    Maximal (· ∈ s) a ↔ IsGreatest s a :=
-  minimal_iff_isLeast (α := αᵒᵈ) h
-
 end Minimal
 
+@[to_dual]
 theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   (Std.Total.directedOn s).minimal_iff_isLeast
-
-theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
-    Maximal (· ∈ s) a ↔ IsGreatest s a :=
-  (Std.Total.directedOn s).maximal_iff_isGreatest
 
 /-!
 ### (In)equalities with the least upper bound and the greatest lower bound
@@ -751,18 +741,22 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {s s' : Set α} {t : Set β} {a b : α}
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 
+@[to_dual none]
 theorem lowerBounds_le_upperBounds_of_nonempty_inter (h : (s ∩ s').Nonempty)
     (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s') : a ≤ b := by
   have ⟨x, hx, hx'⟩ := h
   exact le_trans (ha hx) (hb hx')
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
 
+@[to_dual none]
 theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s a)
     (hb : IsLUB s' b) : a ≤ b :=
   lowerBounds_le_upperBounds_of_nonempty_inter h ha.left hb.left
@@ -771,6 +765,7 @@ theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s
 theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
   ⟨fun hb => ⟨a, ha.1, hb⟩, fun ⟨_, hcs, hcb⟩ => lt_of_le_of_lt (ha.2 hcs) hcb⟩
 
+@[to_dual self (reorder := a b, x y, ha hb, hx hy)]
 theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b ≤ a) (hx : x ∈ s)
     (hy : y ∈ s) : x ≤ y :=
   calc
@@ -778,7 +773,8 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-@[to_dual (attr := simp)] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+@[to_dual (attr := simp)]
+lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
     upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
   ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
 
@@ -813,10 +809,12 @@ theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
 
+@[to_dual self (reorder := a b, Ha Hb)]
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
     s.Subsingleton := fun _ hx _ hy =>
   le_antisymm (le_of_isLUB_le_isGLB Ha Hb hab hx hy) (le_of_isLUB_le_isGLB Ha Hb hab hy hx)
 
+@[to_dual self (reorder := a b, Ha Hb)]
 theorem isGLB_lt_isLUB_of_ne (Ha : IsGLB s a) (Hb : IsLUB s b) {x y} (Hx : x ∈ s) (Hy : y ∈ s)
     (Hxy : x ≠ y) : a < b :=
   lt_iff_le_not_ge.2
