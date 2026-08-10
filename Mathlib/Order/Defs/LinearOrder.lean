@@ -10,7 +10,7 @@ public import Batteries.Tactic.Trans
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Push.Attr
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Order.Defs.PartialOrder
 
