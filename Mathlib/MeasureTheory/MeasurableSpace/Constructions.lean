@@ -422,6 +422,13 @@ theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
 theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
 
+@[fun_prop]
+theorem measurable_diag : @Measurable α (α × α) m (m.prod m) Function.diag :=
+  measurable_id.prodMk measurable_id
+
+theorem measurable_diag' {m'} (h : m' ≤ m) : @Measurable α (α × α) m (m.prod m') Function.diag :=
+  measurable_id.prodMk (measurable_id'' h)
+
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
   hf.comp measurable_prodMk_left
@@ -870,7 +877,7 @@ variable [MeasurableSpace α] {p q : α → Prop}
 @[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s :=
   measurableSet_setOfPred.symm
 
-alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
+alias ⟨_, Measurable.setOf⟩ := measurableSet_setOfPred
 
 @[fun_prop]
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
