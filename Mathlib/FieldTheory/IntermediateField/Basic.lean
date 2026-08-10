@@ -737,6 +737,9 @@ instance (E : IntermediateField L' L) : Algebra L' (E.restrictScalars K) := E.al
 instance (E : IntermediateField L' L) : IsScalarTower L' (E.restrictScalars K) L :=
   E.isScalarTower_mid'
 
+instance (E : IntermediateField L' L) : IsScalarTower K L' (E.restrictScalars K) :=
+  E.isScalarTower
+
 end RestrictScalars
 
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
