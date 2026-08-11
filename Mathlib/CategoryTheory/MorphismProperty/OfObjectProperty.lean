@@ -33,7 +33,7 @@ lemma ofObjectProperty_iff {X Y : C} (f : X ⟶ Y) :
 
 variable {P} in
 lemma ofObjectProperty_left_monotone :
-    Monotone (fun P : ObjectProperty C => ofObjectProperty P Q) := by
+    Monotone (ofObjectProperty · Q) := by
   intro _ _ h _ _ _ ⟨hX, hY⟩
   exact ⟨h _ hX, hY⟩
 
@@ -42,7 +42,7 @@ alias monotone_ofObjectProperty_left := ofObjectProperty_left_monotone
 
 variable {Q} in
 lemma ofObjectProperty_right_monotone :
-    Monotone (fun Q : ObjectProperty C => ofObjectProperty P Q) := by
+    Monotone (ofObjectProperty P) := by
   intro _ _ h _ _ _ ⟨hX, hY⟩
   exact ⟨hX, h _ hY⟩
 
