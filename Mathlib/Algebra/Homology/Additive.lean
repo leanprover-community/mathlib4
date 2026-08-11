@@ -99,7 +99,7 @@ namespace CategoryTheory
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
     HomologicalComplex W₁ c ⥤ HomologicalComplex W₂ c where
   obj C :=
