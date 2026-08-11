@@ -156,7 +156,7 @@ end ConditionallyCompletePartialOrder
 
 section ConditionallyCompleteLattice
 
-theorem tendsto_finset_inf_ciInf {ι} [ConditionallyCompleteLattice α] [OrderTop α]
+theorem tendsto_finsetInf_ciInf {ι} [ConditionallyCompleteLattice α] [OrderTop α]
     [InfConvergenceClass α] [Nonempty ι] {a : ι → α} (ha : BddBelow (range a)) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
   tendsto_finset_sup_ciSup (α := αᵒᵈ) ha
