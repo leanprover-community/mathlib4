@@ -739,13 +739,6 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
     (m.map f).toFinset = m.toFinset.image f :=
   Finset.val_inj.1 (Multiset.dedup_map_dedup_eq _ _).symm
 
-/-- The subtypes corresponding to equal `Finset`s are equivalent.
-
-See `Equiv.setCongr` for the `Set` version. -/
-@[simps!] def Finset.equivOfEq {s t : Finset α} (h : s = t) :
-    s ≃ t :=
-  .subtypeEquivProp <| by simp [h]
-
 namespace Equiv
 
 /-- A `Finset` is bijective to its image under an equivalence.
