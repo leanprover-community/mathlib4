@@ -93,8 +93,8 @@ theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     norm_num
   all_goals exfalso; simp [prod_range_succ] at h; norm_cast at h
   -- n = 3
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
+  · refine factorial_monotone.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
   -- n = 4
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 7 ?_ ?_ _ h <;> decide
+  · refine factorial_monotone.ne_of_lt_of_lt_nat 7 ?_ ?_ _ h <;> decide
   -- n = 5
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 10 ?_ ?_ _ h <;> decide
+  · refine factorial_monotone.ne_of_lt_of_lt_nat 10 ?_ ?_ _ h <;> decide
