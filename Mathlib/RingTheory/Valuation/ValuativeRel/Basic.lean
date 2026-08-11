@@ -819,7 +819,7 @@ lemma supp_eq_valuation_supp {R : Type*} [CommRing R] [ValuativeRel R] :
   ext
   simpa using valuation_eq_zero_iff.symm
 
-instance : (supp R).IsPrime where
+instance : (supp R).IsCompletelyPrime where
   ne_top' := by
     rw [Ideal.ne_top_iff_one]
     exact not_vle_one_zero
