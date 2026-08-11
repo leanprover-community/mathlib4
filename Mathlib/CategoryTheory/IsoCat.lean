@@ -17,7 +17,7 @@ This is a strict notion, stronger than an equivalence of categories `C ≌ D`.
 We also define `Functor.IsIso` as a property saying that a functor is fully faithful and
 bijective on objects. We develop basic api for these two concepts.
 
-Unless the application explicitely demands an isomorphism, the equivalence of categories is
+Unless the application explicitly demands an isomorphism, the equivalence of categories is
 to be preferred.
 
 ## Main definitions
