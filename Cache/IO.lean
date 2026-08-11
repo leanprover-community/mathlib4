@@ -407,8 +407,54 @@ def readLtarHash (ltarPath : FilePath) : IO (Option UInt64) := do
     hash := hash ||| ((bytes.get! (4 + i)).toUInt64 <<< (i * 8).toUInt64)
   return some hash
 
+/--
+Path of the file that records the root hash of the last unpack.
+
+The file sits in the root project's build directory, so `lake clean` removes
+it. An absent file makes the next unpack overwrite every file.
+-/
+def rootHashFile : FilePath :=
+  ".lake" / "build" / "cache-roothash"
+
+/-- Read the root hash of the last unpack. Return `none` if the file is absent
+or holds no valid hash. -/
+def readUnpackedRootHash (path : FilePath := rootHashFile) : IO (Option UInt64) := do
+  let contents ← try IO.FS.readFile path catch _ => return none
+  -- The record holds 16 hex digits and nothing else. Any other content fails to
+  -- parse and reports a change, which overwrites the build directory. This is
+  -- the safe direction.
+  return contents.parseHexToUInt64?
+
+/-- Record the root hash of the last unpack.
+
+A failure here is not fatal. The next unpack overwrites every file instead of
+skipping, which is correct but slower. -/
+def writeUnpackedRootHash (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Unit := do
+  try
+    if let some parent := path.parent then IO.FS.createDirAll parent
+    IO.FS.writeFile path (Nat.toHexDigits rootHash.toNat 8)
+  catch e =>
+    IO.eprintln s!"warning: cannot record the root hash in {path}: {e}"
+
+/--
+Report whether the root hash differs from the root hash of the last unpack.
+
+`needsDecompression` compares Lake dep hashes. A dep hash covers the source of
+a module and the sources of its imports. It does not cover the toolchain, the
+lakefile or the manifest. The mathlib cache hash covers all three through
+`rootHash`. Two different cache hashes can therefore carry the same dep hash,
+and the unpack then keeps an artifact that the new `.ltar` replaces.
+
+A change of the root hash changes every artifact, so compare the root hash to
+catch what the dep hash cannot show.
+-/
+def rootHashChanged (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Bool := do
+  return (← readUnpackedRootHash path) != some rootHash
+
 /-- Check if a module's trace file indicates it is already decompressed with the correct hash.
     The hash to compare comes from the ltar file header, not the mathlib cache hash.
+    This check is blind to the toolchain, the lakefile and the manifest; see
+    `rootHashChanged` for the check that covers them.
     Returns `true` if the module needs decompression, `false` if it can be skipped. -/
 def needsDecompression (mod : Name) (mathlibHash : UInt64) : CacheM Bool := do
   -- Read the Lake depHash from the ltar file header
@@ -466,8 +512,16 @@ def prepareDecompConfig (hashMap : ModuleHashMap) (force : Bool) :
     alreadyDecompressed := cached.size - toDecomp.size
   }
 
-/-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
+/-- Decompresses build files into their respective folders.
+
+`fullRun` states that `hashMap` holds every module of the cache. Only a full
+run records the root hash, because the record claims that the whole build
+directory is unpacked at that hash. -/
+def unpackCache (hashMap : ModuleHashMap) (force : Bool) (rootHash : UInt64)
+    (fullRun : Bool := true) : CacheM Unit := do
+  -- The per-module check below cannot see a change of the toolchain, the
+  -- lakefile or the manifest. Overwrite every file when the root hash differs.
+  let force := force || (← rootHashChanged rootHash)
   let hashMap ← hashMap.filterExists true
   let totalCached := hashMap.size
   -- Unless force is set, filter to only modules that actually need decompression
@@ -489,6 +543,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     IO.println s!"Already decompressed {totalCached} file(s)"
   else
     IO.println "No cache files to decompress"
+  if fullRun then writeUnpackedRootHash rootHash
 
 instance : Ord FilePath where
   compare x y := compare x.toString y.toString

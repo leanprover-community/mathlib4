@@ -786,7 +786,7 @@ fetched are filtered out so the next container only retries genuine misses.
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
-    (decompress : Bool := false) (forceUnpack : Bool := false)
+    (decompress : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
     (unsafeScopes : List String := []) : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
@@ -800,10 +800,14 @@ def downloadFiles
 
   -- Set up decompression config if enabled: one config shared by all container
   -- rounds, with the pipeline state carried between them via `decompState`.
+  -- The pipeline carries only files that arrive from the server, and the filter
+  -- above keeps only hashes that the cache directory lacks. Each of these files
+  -- is therefore a new artifact, so overwrite always: a skip here can only keep
+  -- an artifact that the new one replaces.
   let decompConfig ← if decompress then
     let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
       acc.insert hash mod
-    pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
+    pure (some { hashToMod, force := true, isMathlibRoot, mathlibDepPath : DecompConfig })
   else
     pure none
 
@@ -965,16 +969,27 @@ def checkForManifestMismatch : IO.CacheM Unit := do
 trust-ordered container list from `defaultContainersForRepo` is the single
 source of truth for what gets tried — there's no separate outer-loop
 iteration. Master's cache reaches fork builds via `master` being in the fork
-chain (the highest-trust source, holding the bulk of any fork's deps). -/
+chain (the highest-trust source, holding the bulk of any fork's deps).
+
+`rootHash` is the root hash of the current checkout. It decides whether the
+unpack overwrites every file; see `IO.rootHashChanged`. `fullRun` states that
+`hashMap` holds every module of the cache, which a `cache get` with a module
+argument does not. Only a full run records the root hash. -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack parallel decompress : Bool) (rootHash : UInt64)
+    (fullRun : Bool)
     (unsafeScopes : List String := [])
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
     checkForManifestMismatch
+
+  -- The per-module check in `IO.needsDecompression` cannot see a change of the
+  -- toolchain, the lakefile or the manifest. Overwrite every already-cached
+  -- file when the root hash differs. See `IO.rootHashChanged`.
+  let forceUnpack := forceUnpack || (← IO.rootHashChanged rootHash)
 
   let mathlibDepPath := (← read).mathlibDepPath
   let startTime ← IO.monoMsNow
@@ -996,7 +1011,7 @@ def getFiles
 
   let failed ← downloadFiles repo hashMap forceDownload parallel
     (warnOnMissing := true)
-    (decompress := decompress) (forceUnpack := forceUnpack)
+    (decompress := decompress)
     isMathlibRoot mathlibDepPath (unsafeScopes := unsafeScopes)
   if failed > 0 then
     IO.println s!"Downloading {failed} files failed"
@@ -1019,9 +1034,12 @@ def getFiles
     if bgDecomp.isSome && parallel then
       -- Background task handled pre-cached files, download pipeline handled new files
       IO.println s!"Completed successfully in {elapsed} ms!"
+      -- Every file of `hashMap` is unpacked at this root hash. `unpackCache`
+      -- records the same hash on the other branch.
+      if fullRun then IO.writeUnpackedRootHash rootHash
     else
       -- Either no background decompression ran, or non-parallel mode needs final sweep
-      IO.unpackCache hashMap forceUnpack
+      IO.unpackCache hashMap forceUnpack rootHash fullRun
   else
     IO.println "Downloaded all files successfully!"
 
