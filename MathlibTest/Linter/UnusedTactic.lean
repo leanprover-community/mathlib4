@@ -119,7 +119,7 @@ macro_rules
 #eval Mathlib.Linter.UnusedTactic.addIgnoreTacticKind ``doNotEmitWarningStx
 
 /--
-warning: 'congr' tactic does nothing
+warning: Unused tactic linter: `congr` does nothing
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
