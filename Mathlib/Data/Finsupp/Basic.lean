@@ -444,6 +444,10 @@ theorem mapDomain_surjective {f : α → β} (hf : f.Surjective) :
   use mapDomain (surjInv hf) x
   rw [← mapDomain_comp, (rightInverse_surjInv hf).id, mapDomain_id]
 
+lemma mapDomain_fintype [Fintype α] (f : α → β) (g : α →₀ M) :
+    Finsupp.mapDomain f g = ∑ (a : α), .single (f a) (g a) :=
+  Finsupp.sum_fintype _ _ (by simp)
+
 /-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type*} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
