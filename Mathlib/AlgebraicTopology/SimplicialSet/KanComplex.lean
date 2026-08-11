@@ -118,5 +118,4 @@ instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
     ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_liftOfKanComplex ..]
   simp
 
-
 end SSet
