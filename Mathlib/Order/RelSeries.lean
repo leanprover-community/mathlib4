@@ -890,6 +890,13 @@ lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty 
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
+instance [FiniteDimensionalOrder α] : WellFoundedLT α where
+  wf := SetRel.IsWellFounded.of_finiteDimensional {(a, b) : α × α | a < b}
+
+@[to_dual existing]
+instance [FiniteDimensionalOrder α] : WellFoundedGT α where
+  wf := SetRel.IsWellFounded.inv_of_finiteDimensional {(a, b) : α × α | a < b}
+
 variable {α}
 
 lemma longestOf_is_longest [FiniteDimensionalOrder α] (x : LTSeries α) :
