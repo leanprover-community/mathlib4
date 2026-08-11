@@ -189,7 +189,7 @@ variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α}
 theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
   tendsto_atBot_ciInf h_mono (OrderBot.bddBelow _)
 
-theorem tendsto_finset_inf_iInf {ι} (a : ι → α) :
+theorem tendsto_finsetInf_iInf {ι} (a : ι → α) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
   tendsto_finset_sup_iSup (α := αᵒᵈ) a
 
