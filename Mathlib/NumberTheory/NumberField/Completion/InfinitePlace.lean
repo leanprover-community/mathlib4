@@ -94,6 +94,10 @@ def equivCompletion : v.Completion ≃ v.1.Completion where
   left_inv _ := rfl
   right_inv _ := rfl
 
+-- This instance exists to avoid a zsmul diamond.
+instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)] : SMul R v.Completion where
+  smul r x := ofCompletion (r • toCompletion x)
+
 instance : NormedField v.Completion := fast_instance% (equivCompletion v).normedField
 
 /-- `Completion.toCompletion` as a ring isomorphism onto the underlying completion. -/
@@ -333,7 +337,6 @@ variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
 theorem algebraMap_eq_coe (x : WithAbs v.1) :
     algebraMap (WithAbs v.1) w.Completion x = (algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
   apply ext
-  rw [algebraMap_toCompletion]
   exact UniformSpace.Completion.algebraMap_def (WithAbs w.1) (WithAbs v.1) x
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]

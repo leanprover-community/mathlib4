@@ -71,37 +71,35 @@ variable (R R' A E : Type*)
 convert back and forth between the representations. -/
 def equiv : WithCStarModule A E ≃ E := Equiv.refl _
 
-instance instNontrivial [Nontrivial E] : Nontrivial C⋆ᵐᵒᵈ(A, E) := ‹Nontrivial E›
-instance instInhabited [Inhabited E] : Inhabited C⋆ᵐᵒᵈ(A, E) := ‹Inhabited E›
-instance instNonempty [Nonempty E] : Nonempty C⋆ᵐᵒᵈ(A, E) := ‹Nonempty E›
-instance instUnique [Unique E] : Unique C⋆ᵐᵒᵈ(A, E) := ‹Unique E›
+instance [Nontrivial E] : Nontrivial C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Nontrivial E
+instance [Inhabited E] : Inhabited C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Inhabited E
+instance [Nonempty E] : Nonempty C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Nonempty E
+instance [Unique E] : Unique C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Unique E
 
 /-! ## `C⋆ᵐᵒᵈ(A, E)` inherits various module-adjacent structures from `E`. -/
 
-instance instZero [Zero E] : Zero C⋆ᵐᵒᵈ(A, E) := ‹Zero E›
-instance instAdd [Add E] : Add C⋆ᵐᵒᵈ(A, E) := ‹Add E›
-instance instSub [Sub E] : Sub C⋆ᵐᵒᵈ(A, E) := ‹Sub E›
-instance instNeg [Neg E] : Neg C⋆ᵐᵒᵈ(A, E) := ‹Neg E›
-instance instAddMonoid [AddMonoid E] : AddMonoid C⋆ᵐᵒᵈ(A, E) := ‹AddMonoid E›
-instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid C⋆ᵐᵒᵈ(A, E) := ‹SubNegMonoid E›
-instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid C⋆ᵐᵒᵈ(A, E) :=
-  ‹SubNegZeroMonoid E›
+instance [Zero E] : Zero C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Zero E
+instance [Add E] : Add C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Add E
+instance [Sub E] : Sub C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Sub E
+instance [Neg E] : Neg C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| Neg E
+instance [SMul R E] : SMul R C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| SMul R E
 
-instance instAddCommGroup [AddCommGroup E] : AddCommGroup C⋆ᵐᵒᵈ(A, E) := ‹AddCommGroup E›
+instance [AddMonoid E] : AddMonoid C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| AddMonoid E
+instance [SubNegMonoid E] : SubNegMonoid C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| SubNegMonoid E
+instance [SubNegZeroMonoid E] : SubNegZeroMonoid C⋆ᵐᵒᵈ(A, E) :=
+  inferInstanceAs <| SubNegZeroMonoid E
 
-instance instSMul {R : Type*} [SMul R E] : SMul R C⋆ᵐᵒᵈ(A, E) := ‹SMul R E›
+instance [AddCommGroup E] : AddCommGroup C⋆ᵐᵒᵈ(A, E) := inferInstanceAs <| AddCommGroup E
 
-instance instModule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
-    Module R C⋆ᵐᵒᵈ(A, E) :=
-  ‹Module R E›
+instance [Semiring R] [AddCommGroup E] [Module R E] : Module R C⋆ᵐᵒᵈ(A, E) :=
+  inferInstanceAs <| Module R E
 
-instance instIsScalarTower [SMul R R'] [SMul R E] [SMul R' E]
-    [IsScalarTower R R' E] : IsScalarTower R R' C⋆ᵐᵒᵈ(A, E) :=
-  ‹IsScalarTower R R' E›
+instance [SMul R R'] [SMul R E] [SMul R' E] [IsScalarTower R R' E] :
+    IsScalarTower R R' C⋆ᵐᵒᵈ(A, E) :=
+  inferInstanceAs <| IsScalarTower R R' E
 
-instance instSMulCommClass [SMul R E] [SMul R' E] [SMulCommClass R R' E] :
-    SMulCommClass R R' C⋆ᵐᵒᵈ(A, E) :=
-  ‹SMulCommClass R R' E›
+instance [SMul R E] [SMul R' E] [SMulCommClass R R' E] : SMulCommClass R R' C⋆ᵐᵒᵈ(A, E) :=
+  inferInstanceAs <| SMulCommClass R R' E
 
 section Equiv
 

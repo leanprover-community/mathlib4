@@ -117,11 +117,13 @@ instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
 since that relies on a subsingleton elimination for `Unique`. -/
+@[nolint instanceDiamonds]
 instance Fintype.subtypeEq (y : α) : Fintype { x // x = y } :=
   Fintype.subtype {y} (by simp)
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
 since that relies on a subsingleton elimination for `Unique`. -/
+@[nolint instanceDiamonds]
 instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 

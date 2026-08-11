@@ -59,8 +59,6 @@ def toString : Ineq → String
 
 instance : ToString Ineq := ⟨toString⟩
 
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
-
 end Mathlib.Ineq
 
 /-! ### Parsing inequalities -/

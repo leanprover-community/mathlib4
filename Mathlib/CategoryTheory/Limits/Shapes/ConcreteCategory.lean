@@ -97,7 +97,7 @@ end Products
 
 section Terminal
 
-variable {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable {FC : C → C → Type*} {CC : C → Type w} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
 variable [ConcreteCategory.{w} C FC]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `ToType X` is a

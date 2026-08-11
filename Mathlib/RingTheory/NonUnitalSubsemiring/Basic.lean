@@ -237,6 +237,7 @@ theorem center_toSubsemigroup :
   rfl
 
 /-- The center is commutative and associative. -/
+@[nolint instanceDiamonds]
 instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
