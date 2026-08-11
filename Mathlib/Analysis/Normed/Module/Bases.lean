@@ -131,6 +131,21 @@ abbrev UnconditionalSchauderBasis (β : Type*)
     (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X] :=
   GeneralSchauderBasis β 𝕜 X (SummationFilter.unconditional β)
 
+
+/-- When there is a finite basis, it can be regarded as a generalized Schauder basis.
+The assumption `L.LeAtTop` is needed to ensure that a finite sum converges along `L`. -/
+def Module.Basis.toGeneralSchauderBasis [CompleteSpace 𝕜] [Fintype β]
+    {L : SummationFilter β} [L.LeAtTop] (b : Module.Basis β 𝕜 X) :
+    GeneralSchauderBasis β 𝕜 X L :=
+  letI : FiniteDimensional 𝕜 X := b.finiteDimensional_of_finite
+  { basis := b
+    coord := fun i ↦ LinearMap.toContinuousLinearMap (b.coord i)
+    ortho i j := by
+      rw [coe_toContinuousLinearMap']
+      by_cases h : i = j <;> simp [h]
+    expansion x := by
+      simpa using hasSum_fintype (fun i ↦ b.coord i x • b i) L }
+
 /-- Coercion from a `GeneralSchauderBasis` to the underlying basis function. -/
 instance : CoeFun (GeneralSchauderBasis β 𝕜 X L) (fun _ ↦ β → X) where
   coe b := b.basis

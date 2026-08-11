@@ -5,6 +5,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Bases
 public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -13,11 +14,11 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 ## Main results
 
-* `coeff` : for an `ℝ`-basis `b` in an `ℝ`-vector space `V` and a `V`-valued vector measure `μ`, one
-  has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficient `a i E` is
-  an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b i`.
-* `sum_coeff_smul_eq` : the characterizing equality `∑ i, (μ.coeff b i E) • b i = μ E ` for `coeff`.
-* `sum_toSpanSingleton_coeff_eq` : `μ` as a linear combination of vector measures.
+* `coord` : for a `𝕜`-Schauder basis `b` in an `𝕜`-vector space `V` and a `V`-valued vector measure
+  `μ`, one has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coordinate
+  `a i E` is a `𝕜`-valued vector measure, which we call `μ.coord b i`.
+* `sum_coord_smul_eq` : the characterizing equality `∑ i, (μ.coord b i E) • b i = μ E ` for `coord`.
+* `sum_toSpanSingleton_coord_eq` : `μ` as a linear combination of vector measures.
 
 -/
 
@@ -29,27 +30,33 @@ open scoped ENNReal NNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X : Type*} {mX : MeasurableSpace X}
-  {V : Type*} [AddCommGroup V] [TopologicalSpace V] [T2Space V] [IsTopologicalAddGroup V]
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [FiniteDimensional 𝕜 V]
-  {ι : Type*}
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+  {ι : Type*} {L : SummationFilter ι}
 
-/-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
-`i`-th component of `μ` as an `ℝ`-valued vector measure, that is a `SignedMeasure X`. -/
-noncomputable def coeff (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) : ι → VectorMeasure X 𝕜 :=
-  fun i ↦ mapRangeₗ (b.coord i) (b.coord i).continuous_of_finiteDimensional μ
-
-@[simp]
-lemma coeff_apply (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
-    μ.coeff b i E = b.coord i (μ E) := by simp [coeff]
-
-theorem sum_coeff_smul_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) (E : Set X) :
-    ∑ i, (μ.coeff b i E) • b i = μ E := by simp
+/-- For a Schauder basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coord b i`
+gives the `i`-th component of `μ` as a `𝕜`-valued vector measure. -/
+protected noncomputable def coord (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
+    ι → VectorMeasure X 𝕜 :=
+  fun i ↦ mapRangeₗ (b.coord i).toLinearMap (b.coord i).continuous μ
 
 @[simp]
-theorem sum_toSpanSingleton_coeff_eq [Fintype ι] (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) :
+lemma coord_apply (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (i : ι) (E : Set X) :
+    μ.coord b i E = b.coord i (μ E) := by simp [VectorMeasure.coord]
+
+theorem hasSum_coord_smul (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) (E : Set X) :
+    HasSum (fun (i : ι) => (b.coord i) (μ E) • b i) (μ E) L := b.expansion (μ E)
+
+@[simp]
+theorem sum_coord_smul_eq [Fintype ι] [L.LeAtTop] [L.NeBot] (b : GeneralSchauderBasis ι 𝕜 V L)
+    (μ : VectorMeasure X V) (E : Set X) : ∑ i, (μ.coord b i E) • b i = μ E := by
+  simpa [coord_apply] using (hasSum_fintype _ L).unique (b.expansion (μ E))
+
+@[simp]
+theorem sum_toSpanSingleton_coord_eq [CompleteSpace 𝕜] [Fintype ι] [L.LeAtTop] [L.NeBot]
+    (b : GeneralSchauderBasis ι 𝕜 V L) (μ : VectorMeasure X V) :
     ∑ i, mapRangeₗ (toSpanSingleton 𝕜 V (b i))
-      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coeff b i) = μ := by
-  ext; simp
+      ((toSpanSingleton 𝕜 V (b i)).continuous_of_finiteDimensional) (μ.coord b i) = μ := by
+  ext; simpa using sum_coord_smul_eq b μ _
 
 end MeasureTheory.VectorMeasure

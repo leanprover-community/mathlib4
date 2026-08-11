@@ -670,6 +670,10 @@ finite-dimensional spaces it is the `ι`th basis vector of the dual space.
 def coord : M →ₗ[R] R :=
   Finsupp.lapply i ∘ₗ ↑b.repr
 
+@[simp]
+theorem sum_coord [Fintype ι] (b : Basis ι R M) (u : M) :
+    ∑ i, b.coord i u • b i = u := sum_equivFun b u
+
 theorem forall_coord_eq_zero_iff {x : M} : (∀ i, b.coord i x = 0) ↔ x = 0 :=
   Iff.trans (by simp only [b.coord_apply, DFunLike.ext_iff, Finsupp.zero_apply])
     b.repr.map_eq_zero_iff
