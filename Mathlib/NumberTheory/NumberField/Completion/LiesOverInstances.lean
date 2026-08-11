@@ -29,8 +29,9 @@ variable [w.LiesOver v]
 /-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
 lies over `v`. -/
 noncomputable def completionMap : v.Completion →+* w.Completion :=
-  ((Completion.equiv w).symm.toRingHom.comp
-    (LiesOver.isometry_algebraMap w v).mapRingHom).comp (Completion.equiv v).toRingHom
+  ((Completion.equiv w).symm.toRingHom.comp <|
+    UniformSpace.Completion.mapRingHom _ (LiesOver.isometry_algebraMap w v).continuous).comp <|
+    (Completion.equiv v).toRingHom
 
 theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) :=
   (continuous_ofCompletion w).comp <|
@@ -39,7 +40,7 @@ theorem continuous_completionMap : Continuous (completionMap (v := v) (w := w)) 
 theorem completionMap_coe (x : WithAbs v.1) :
     completionMap (x : v.Completion) = ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) :
       w.Completion) :=
-  Completion.ext <| (LiesOver.isometry_algebraMap w v).mapRingHom_coe x
+  Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion := completionMap.toAlgebra
