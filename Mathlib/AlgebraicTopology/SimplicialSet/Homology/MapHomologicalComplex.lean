@@ -36,7 +36,7 @@ variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
 
 open SimplicialObject Functor in
 /-- The chain complex functor commutes with the "extension of scalars".
-More precisely, if `F : C ⥤ D` is a functor which commutes with coproducts,
+More precisely, if `F : C ⥤ D` is a functor which commutes with arbitrary coproducts,
 `R : C` and `X : SSet`, then the chain complex of `X` with coefficients
 in `F.obj R` is obtained by applying `F` to the chain complex of `X`
 with coefficients in `R`. -/
