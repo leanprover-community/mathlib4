@@ -41,6 +41,7 @@ noncomputable abbrev tensor : CokernelCofork (coprod.desc (f₁ ▷ Y₂) (Y₁ 
     · simp [tensorHom_def, ← comp_whiskerRight_assoc, coprod.inl_desc]
     · simp [tensorHom_def', ← whiskerLeft_comp_assoc, coprod.inr_desc])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two colimit cokernel coforks `c₁` and `c₂` for `f₁ : X₁ ⟶ Y₁` and
 `f₂ : X₂ ⟶ Y₂`, if the cokernels of `f₁` and `f₂` are preserves by suitable
 tensor products, then `c₁.pt ⊗ c₂.pt` is the cokernel of the

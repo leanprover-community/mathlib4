@@ -39,7 +39,7 @@ variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H]
 
 /-- An isomorphism of monoids with zero can be treated as a homomorphism preserving zero.
 This is a helper projection that utilizes the `MonoidWithZeroHomClass` instance. -/
-def toMonoidWithZeroHom (f : G ≃* H) : G →*₀ H := f
+def toMonoidWithZeroHom (f : G ≃* H) : G →*₀ H := .ofClass f
 
 @[simp] lemma toMonoidWithZeroHom_apply (f : G ≃* H) (x : G) : f.toMonoidWithZeroHom x = f x := rfl
 

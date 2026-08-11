@@ -29,6 +29,7 @@ namespace AffineIndependent
 
 variable [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `exists_affineCombination_eq_smul_eq`. -/
 private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : AffineIndependent k p)
     {s : Set ι} (hs : s.Nonempty) {fs : s → Finset ι} (hfs : ∀ i, (i : ι) ∈ fs i) {w : s → ι → k}
@@ -60,7 +61,7 @@ private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : Affin
       by_cases hj : j = i
       · simp [hj]
       replace hind := congr_fun hind j
-      convert hind using 1
+      convert! hind using 1
       · simp [Set.indicator_apply, hj]
       · simp [Set.indicator_apply, hj, w', AffineMap.lineMap_apply_module]
     · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw, hfs]
@@ -86,16 +87,16 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
     by_cases hi : (i : ι) ∈ fs i <;> simpa [hi] using Finset.sum_congr rfl (by aesop)
   have hp'x : ∀ i : s, p' ∈ line[k, p i, (fsx i).affineCombination k p (wx i)] := by
     intro i
-    convert hp' i using 4
+    convert! hp' i using 4
     simp_rw [fsx, wx]
     exact (Finset.affineCombination_indicator_subset _ _ (by simp)).symm
   obtain ⟨w', fs', h⟩ := hp.exists_affineCombination_eq_smul_eq_aux hs hfsx hwx hp'x
   refine ⟨w', fs', h.1, h.2.1, fun i ↦ ?_⟩
   obtain ⟨r, hr⟩ := h.2.2 i
   refine ⟨r, fun j ↦ ?_⟩
-  convert hr j using 2
-  simp only [Set.indicator_apply, Set.mem_diff, SetLike.mem_coe, Set.mem_singleton_iff,
-    Finset.coe_insert, Set.insert_diff_of_mem, fsx, wx]
+  convert! hr j using 2
+  simp only [Set.indicator_apply, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton_iff,
+    Finset.coe_insert, Set.insert_sdiff_of_mem, fsx, wx]
   grind
 
 /-- A version of **Ceva's theorem** for a finite indexed affinely independent family of points:
@@ -119,7 +120,7 @@ lemma exists_affineCombination_eq_smul_eq_of_fintype [Fintype ι] {p : ι → P}
   · intro i
     obtain ⟨r, hr⟩ := hi i
     refine ⟨r, fun j ↦ ?_⟩
-    convert hr j using 1
+    convert! hr j using 1
     · simp [Set.indicator_apply]
     · by_cases hj : j = (i : ι) <;> simp [Set.indicator_apply, hj]
 
@@ -131,6 +132,7 @@ section CommRing
 
 variable [CommRing k] [NoZeroDivisors k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Ceva's theorem** for a triangle, expressed in terms of multiplying weights. -/
 lemma prod_eq_prod_one_sub_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k} {p' : P}
     (hp' : ∀ i : Fin 3, p' ∈
@@ -200,6 +202,7 @@ section Field
 
 variable [Field k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Ceva's theorem** for a triangle, expressed using division. -/
 lemma prod_div_one_sub_eq_one_of_mem_line_point_lineMap {t : Triangle k P} {r : Fin 3 → k}
     (hr0 : ∀ i, r i ≠ 0) {p' : P} (hp' : ∀ i : Fin 3, p' ∈

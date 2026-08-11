@@ -118,14 +118,14 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
       Finset.sum_eq_single_of_mem y (Finset.mem_univ _) (by aesop)]
     simp only [hx, hy.symm, hx', hy', reduceIte, Nat.cast_add]
     ring
-  · simp_rw [if_neg (h₂ _), Finset.sum_const_zero, sub_zero]
+  · simp_rw [ite_eq_right (h₂ _), Finset.sum_const_zero, sub_zero]
     replace h₂ : P.chainTopCoeff i k = 0 :=
       P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]
     have h_lin_ind_x : LinearIndependent R ![P.root i, P.root x] := by simpa [hx] using h_lin_ind
     have hx' : P.chainBotCoeff i k = P.chainBotCoeff i x + 1 :=
       chainBotCoeff_of_add h_lin_ind_x (add_comm (P.root i) _ ▸ hx)
     simp [hx, hx', h₂]
-  · simp_rw [if_neg (h₁ _), Finset.sum_const_zero, zero_sub]
+  · simp_rw [ite_eq_right (h₁ _), Finset.sum_const_zero, zero_sub]
     replace h₁ : P.chainBotCoeff i k = 0 :=
       P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx]
     have h_lin_ind_y : LinearIndependent R ![P.root i, P.root y] := by
@@ -139,7 +139,7 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
 /-- Lemma 3.4 from [Geck](Geck2017). -/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
-  letI := P.indexNeg
+  let := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   classical
@@ -176,13 +176,15 @@ lemma lie_e_f_same :
         simp [P.ne_zero x, eq_comm]
       simp only [e, f, h, Ring.lie_def, Matrix.sub_apply, Matrix.mul_apply, Fintype.sum_sum_type,
         Matrix.fromBlocks_apply₂₁, Matrix.of_apply, hki, reduceIte, zero_mul, Finset.sum_const_zero,
-        Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, if_neg (hx _), add_zero,
-        aux, zero_sub, Matrix.diagonal_apply]
+        Matrix.fromBlocks_apply₂₂, mul_ite, ite_mul, mul_zero, ← ite_and, ite_eq_right (hx _),
+        add_zero, aux, zero_sub, Matrix.diagonal_apply]
       rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
       simp [eq_comm, apply_ite ((-·) : R → R)]
     rcases eq_or_ne k l with rfl | hkl
     · exact lie_e_f_same_aux i k hki hki'
     · simp_all [h, e, f]
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
@@ -203,7 +205,7 @@ omit [P.IsReduced]
 private lemma lie_e_f_ne_aux₀ (k : b.support) (l : ι) :
     ⁅e i, f j⁆ (Sum.inl k) (Sum.inr l) = 0 := by
   classical
-  letI := P.indexNeg
+  let := P.indexNeg
   have aux₁ : ∀ x ∈ Finset.univ, ¬ (P.root x = P.root i + P.root l ∧ k = j ∧ x = j) := by
     rintro x - ⟨hl, -, rfl⟩
     exact b.sub_notMem_range_root i.property j.property ⟨-l, by simp [hl]⟩
@@ -219,7 +221,7 @@ include hij
 private lemma lie_e_f_ne_aux₁ :
     ⁅e i, f j⁆ᵀ (Sum.inr j) = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k)
   · rw [Matrix.transpose_apply, lie_e_f_ne_aux₀, Pi.zero_apply]
@@ -232,7 +234,7 @@ private lemma lie_e_f_ne_aux₁ :
       simpa [e, f, P.ne_zero, hij, -indexNeg_neg, -Finset.univ_eq_attach, ← ite_and,
         Finset.sum_eq_single_of_mem j (Finset.mem_univ _) aux]
     rcases eq_or_ne k i with rfl | hk; swap
-    · rw [if_neg (by tauto), Finset.sum_ite_of_false (by aesop)]; simp
+    · rw [ite_eq_right (by tauto), Finset.sum_ite_of_false (by aesop)]; simp
     by_cases hij_mem : P.root i + P.root j ∈ range P.root
     · obtain ⟨m, hm⟩ := hij_mem
       rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - hx; simp [← hm, hx]),
@@ -250,7 +252,7 @@ private lemma lie_e_f_ne_aux₁ :
 private lemma lie_e_f_ne_aux₂ :
     letI := P.indexNeg
     ⁅e i, f j⁆ᵀ (Sum.inr (-i)) = 0 := by
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k)
   · rw [Matrix.transpose_apply, lie_e_f_ne_aux₀, Pi.zero_apply]
@@ -263,7 +265,7 @@ private lemma lie_e_f_ne_aux₂ :
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp
-  letI := P.indexNeg
+  let := P.indexNeg
   classical
   ext (k | k) (l | l)
   · rw [ne_comm] at hij
@@ -271,7 +273,7 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
   · exact lie_e_f_ne_aux₀ k l
   · have aux₁ : P.root k ≠ P.root i - P.root j :=
       fun contra ↦ b.sub_notMem_range_root i.property j.property ⟨k, contra⟩
-    simp [e, f, ← sub_eq_add_neg, if_neg aux₁]
+    simp [e, f, ← sub_eq_add_neg, ite_eq_right aux₁]
   · /- Geck Case 1 (covered by the auxiliary lemmas above). -/
     rcases eq_or_ne l j with rfl | h₃
     · rw [← ⁅e i, f j⁆.transpose_apply, lie_e_f_ne_aux₁ hij, Pi.zero_apply, Matrix.zero_apply]
@@ -322,9 +324,14 @@ lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     have aux₄ (x) (hx : x ≠ l') :
       ¬ (P.root x = P.root i + P.root l ∧ P.root k = P.root x - P.root j) := by
         grind [EmbeddingLike.apply_eq_iff_eq]
-    rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₃ _ h)]),
-      Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by rintro x - h; rw [if_neg (aux₄ _ h)]),
-      if_pos (⟨hm, by rw [hm, hk]; abel⟩), if_pos ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]
+    rw [Finset.sum_eq_single_of_mem m (Finset.mem_univ _) (by
+        rintro x - h
+        rw [ite_eq_right (aux₃ _ h)]),
+      Finset.sum_eq_single_of_mem l' (Finset.mem_univ _) (by
+        rintro x - h
+        rw [ite_eq_right (aux₄ _ h)]),
+      ite_eq_left (⟨hm, by rw [hm, hk]; abel⟩),
+      ite_eq_left ⟨by rw [hl', add_comm], by rw [hl', hk]⟩]
     have := chainBotCoeff_mul_chainTopCoeff i.property j.property hij' hl'.symm hm.symm h₅
     norm_cast
 

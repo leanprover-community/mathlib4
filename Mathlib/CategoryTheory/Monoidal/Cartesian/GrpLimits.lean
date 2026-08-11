@@ -20,7 +20,7 @@ public section
 
 namespace CategoryTheory
 
-open Functor Grp Limits MonObj
+open CategoryTheory.Functor Grp Limits MonObj
 
 universe w v
 

@@ -145,7 +145,7 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
   have h₀ := congr_fun ((complexBasis α).sum_repr f) 0
   have h₁ := congr_fun ((complexBasis α).sum_repr f) a
   simp only [complexBasis_apply, Fintype.sum_apply, Pi.smul_apply, h, smul_eq_mul, mul_one,
-    map_zero_eq_one, if_pos rfl, if_neg ha, f] at h₀ h₁
+    map_zero_eq_one, ite_eq_left rfl, ite_eq_right ha, f] at h₀ h₁
   exact one_ne_zero (h₁.symm.trans h₀)
 
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
@@ -153,7 +153,7 @@ lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
 
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
-    forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)
+    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! DFunLike.congr_fun ha (Additive.ofMul ψ)
 
 lemma doubleDualEmb_bijective : Bijective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) := by
   cases nonempty_fintype α

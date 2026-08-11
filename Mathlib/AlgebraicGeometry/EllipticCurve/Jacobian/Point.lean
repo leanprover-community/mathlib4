@@ -123,7 +123,9 @@ lemma neg_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) 
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z ^ 2, W.toAffine.negY (P x / P z ^ 2) (P y / P z ^ 3), 1] := by
-  erw [neg, smul_fin3, mul_div_cancel₀ _ <| pow_ne_zero 2 hPz, ← negY_of_Z_ne_zero hPz,
+  rw [neg, smul_fin3]
+  simp only [fin3_def_ext]
+  rw [mul_div_cancel₀ _ <| pow_ne_zero 2 hPz, ← negY_of_Z_ne_zero hPz,
     mul_div_cancel₀ _ <| pow_ne_zero 3 hPz, mul_one]
 
 private lemma nonsingular_neg_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
@@ -156,8 +158,8 @@ lemma addY_neg {P : Fin 3 → R} (hP : W'.Equation P) : W'.addY P (W'.neg P) = -
 
 lemma addXYZ_neg {P : Fin 3 → R} (hP : W'.Equation P) :
     W'.addXYZ P (W'.neg P) = -W'.dblZ P • ![1, 1, 0] := by
-  erw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3, neg_sq, mul_one,
-    Odd.neg_pow <| by decide, mul_one, mul_zero]
+  rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3]
+  simp +decide [fin3_def_ext, Odd.neg_pow]
 
 variable (W') in
 /-- The negation of a Jacobian point class on a Weierstrass curve `W`.
@@ -193,7 +195,7 @@ noncomputable def add (P Q : Fin 3 → R) : Fin 3 → R :=
   if P ≈ Q then W'.dblXYZ P else W'.addXYZ P Q
 
 lemma add_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.add P Q = W'.dblXYZ P :=
-  if_pos h
+  ite_eq_left h
 
 lemma add_smul_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) = u ^ 4 • W'.add P Q := by
@@ -206,7 +208,7 @@ lemma add_of_eq {P Q : Fin 3 → R} (h : P = Q) : W'.add P Q = W'.dblXYZ P :=
   h ▸ add_self P
 
 lemma add_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) : W'.add P Q = W'.addXYZ P Q :=
-  if_neg h
+  ite_eq_right h
 
 lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : IsUnit u)
     (hv : IsUnit v) : W'.add (u • P) (v • Q) = (u * v) ^ 2 • W'.add P Q := by
@@ -215,8 +217,8 @@ lemma add_smul_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) {u v : R} (hu : 
 lemma add_smul_equiv (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     W'.add (u • P) (v • Q) ≈ W'.add P Q := by
   by_cases h : P ≈ Q
-  · exact ⟨hu.unit ^ 4, by convert (add_smul_of_equiv h hu hv).symm⟩
-  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert (add_smul_of_not_equiv h hu hv).symm⟩
+  · exact ⟨hu.unit ^ 4, by convert! (add_smul_of_equiv h hu hv).symm⟩
+  · exact ⟨(hu.unit * hv.unit) ^ 2, by convert! (add_smul_of_not_equiv h hu hv).symm⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
     W'.add P Q ≈ W'.add P' Q' := by
@@ -447,17 +449,17 @@ noncomputable def toAffine (P : Fin 3 → F) : W.toAffine.Point :=
   if hP : W.Nonsingular P ∧ P z ≠ 0 then .some _ _ <| (nonsingular_of_Z_ne_zero hP.2).mp hP.1 else 0
 
 lemma toAffine_of_singular {P : Fin 3 → F} (hP : ¬W.Nonsingular P) : toAffine W P = 0 := by
-  rw [toAffine, dif_neg <| not_and_of_not_left _ hP]
+  rw [toAffine, dite_eq_right <| not_and_of_not_left _ hP]
 
 lemma toAffine_of_Z_eq_zero {P : Fin 3 → F} (hPz : P z = 0) : toAffine W P = 0 := by
-  rw [toAffine, dif_neg <| not_and_not_right.mpr fun _ => hPz]
+  rw [toAffine, dite_eq_right <| not_and_not_right.mpr fun _ => hPz]
 
 lemma toAffine_zero : toAffine W ![1, 1, 0] = 0 :=
   toAffine_of_Z_eq_zero rfl
 
 lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) :
     toAffine W P = .some _ _ ((nonsingular_of_Z_ne_zero hPz).mp hP) := by
-  rw [toAffine, dif_pos ⟨hP, hPz⟩]
+  rw [toAffine, dite_eq_left ⟨hP, hPz⟩]
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
     toAffine W ![X, Y, 1] = .some _ _ ((nonsingular_some ..).mp h) := by

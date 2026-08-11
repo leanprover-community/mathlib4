@@ -116,6 +116,8 @@ def compFunctor {J : Type*} [LinearOrder J]
   obj x := x.1 ≫ x.2
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local ext (iff := false)] Functor.ext in
 attribute [local simp] types_tensorObj_def in
 @[simps -isSimp]
@@ -127,6 +129,7 @@ instance (J : Type*) [LinearOrder J] :
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] SimplicialThickening.Hom_def
 
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
@@ -143,6 +146,7 @@ alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] types_tensorObj_def in
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of
@@ -180,6 +184,7 @@ lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
 
 end SimplicialThickening
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The simplicial nerve of a simplicial category `C` is defined as the simplicial set whose
 `n`-simplices are given by the set of simplicial functors from the simplicial thickening of

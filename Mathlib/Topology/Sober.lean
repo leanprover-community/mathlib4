@@ -98,7 +98,7 @@ theorem isGenericPoint_iff_forall_closed (hS : IsClosed S) (hxS : x ∈ S) :
     IsGenericPoint x S ↔ ∀ Z : Set α, IsClosed Z → x ∈ Z → S ⊆ Z := by
   have : closure {x} ⊆ S := closure_minimal (singleton_subset_iff.2 hxS) hS
   simp_rw [IsGenericPoint, subset_antisymm_iff, this, true_and, closure, subset_sInter_iff,
-    mem_setOf_eq, and_imp, singleton_subset_iff]
+    mem_ofPred_eq, and_imp, singleton_subset_iff]
 
 end genericPoint
 
@@ -122,7 +122,7 @@ theorem IsIrreducible.isGenericPoint_genericPoint_closure
 theorem IsIrreducible.isGenericPoint_genericPoint [QuasiSober α] {S : Set α}
     (hS : IsIrreducible S) (hS' : IsClosed S) :
     IsGenericPoint hS.genericPoint S := by
-  convert hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
+  convert! hS.isGenericPoint_genericPoint_closure; exact hS'.closure_eq.symm
 
 @[simp]
 theorem IsIrreducible.genericPoint_closure_eq [QuasiSober α] {S : Set α} (hS : IsIrreducible S) :
@@ -142,7 +142,7 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
 
 theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
     IsGenericPoint (genericPoint α) univ := by
-  simpa using (IrreducibleSpace.isIrreducible_univ α).isGenericPoint_genericPoint_closure
+  simpa using! (IrreducibleSpace.isIrreducible_univ α).isGenericPoint_genericPoint_closure
 
 @[simp]
 theorem genericPoint_closure [QuasiSober α] [IrreducibleSpace α] :
@@ -156,6 +156,7 @@ theorem genericPoint_specializes [QuasiSober α] [IrreducibleSpace α] (x : α) 
 
 attribute [local instance] specializationOrder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
@@ -220,13 +221,13 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
       ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
     use H.genericPoint
     apply le_antisymm
-    · simpa [h'.closure_subset_iff, h'.closure_eq] using
+    · simpa [h'.closure_subset_iff, h'.closure_eq] using!
         continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
     rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
       H.isGenericPoint_genericPoint_closure.def]
     refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
       (closure_mono ?_)
-    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_mono subset_closure
+    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using! Set.image_mono subset_closure
 
 lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
     (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=

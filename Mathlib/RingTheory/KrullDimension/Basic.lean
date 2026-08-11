@@ -5,7 +5,6 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (used in `proof_wanted` only)
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
@@ -91,10 +90,6 @@ lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := 
   rw [← PrimeSpectrum.nonempty_iff_nontrivial]
   exact LTSeries.nonempty_of_finiteDimensionalOrder _
 
-proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
-    [IsNoetherianRing R] (n : ℕ) :
-    ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
-
 section Zero
 
 -- See `Mathlib/RingTheory/KrullDimension/Zero.lean` for further results.
@@ -104,6 +99,13 @@ lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPr
     Order.krullDim_nonpos_iff_forall_isMax,
     (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall, PrimeSpectrum.isMax_iff]
   rfl
+
+/-- A ring has krull dimension at most zero if and only if all minimal primes are maximal. -/
+theorem Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal :
+    Ring.KrullDimLE 0 R ↔ ∀ I ∈ minimalPrimes R, I.IsMaximal := by
+  refine Ring.krullDimLE_zero_iff.trans ⟨fun h I hI ↦ h I hI.1.1, fun h I hI ↦ ?_⟩
+  obtain ⟨J, hJ, hle⟩ := Ideal.exists_minimalPrimes_le bot_le (J := I)
+  exact (h J hJ).eq_of_le hI.ne_top hle ▸ h J hJ
 
 lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : Ring.KrullDimLE 0 R := by
   rwa [Ring.krullDimLE_zero_iff]
@@ -157,7 +159,7 @@ lemma Ring.KrullDimLE.mk₁ (H : ∀ I : Ideal R, I.IsPrime → I ∈ minimalPri
 
 lemma Ring.krullDimLE_one_iff_of_isPrime_bot [(⊥ : Ideal R).IsPrime] :
     Ring.KrullDimLE 1 R ↔ ∀ I : Ideal R, I ≠ ⊥ → I.IsPrime → I.IsMaximal := by
-  letI : OrderBot (PrimeSpectrum R) := { bot := ⟨⊥, ‹_›⟩, bot_le I := bot_le (a := I.1) }
+  let : OrderBot (PrimeSpectrum R) := { bot := ⟨⊥, ‹_›⟩, bot_le I := bot_le (a := I.1) }
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_one,
     Order.krullDim_le_one_iff_forall_isMax, (PrimeSpectrum.equivSubtype R).forall_congr_left,
     Subtype.forall, PrimeSpectrum.isMax_iff, forall_comm (α := _ ≠ ⊥),

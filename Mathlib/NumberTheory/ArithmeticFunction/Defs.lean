@@ -107,7 +107,7 @@ theorem one_one : (1 : ArithmeticFunction R) 1 = 1 :=
 
 @[simp]
 theorem one_apply_ne {x : ℕ} (h : x ≠ 1) : (1 : ArithmeticFunction R) x = 0 :=
-  if_neg h
+  ite_eq_right h
 
 end One
 
@@ -187,6 +187,7 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
 
 end AddMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
   natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
   natCast_zero := by ext; simp
@@ -260,17 +261,10 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
   apply sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l * j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i * k, l), (i, k)⟩) <;> aesop (add simp mul_assoc)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
-  rw [smul_apply]
-  by_cases x0 : x = 0
-  · simp [x0]
-  have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
-  rw [← sum_subset h]
-  · simp
-  intro y ymem ynotMem
-  have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
-  simp [y1ne]
+  simp_all [← map_div_right_divisors, sum_eq_single 1]
 
 end Module
 
@@ -278,21 +272,12 @@ section Semiring
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
   mul_one f := by
     ext x
-    rw [mul_apply]
-    by_cases x0 : x = 0
-    · simp [x0]
-    have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
-    rw [← sum_subset h]
-    · simp
-    intro ⟨y₁, y₂⟩ ymem ynotMem
-    have y2ne : y₂ ≠ 1 := by
-      intro con
-      simp_all
-    simp [y2ne]
+    simp_all [← map_div_left_divisors, sum_eq_single 1]
   mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) where
@@ -312,7 +297,6 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
 instance [CommRing R] : CommRing (ArithmeticFunction R) where
   neg_add_cancel := neg_add_cancel
   mul_comm := mul_comm
-  zsmul n f := n • f
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
     Module R (ArithmeticFunction S) where
@@ -379,17 +363,17 @@ def dirichletInverseFun (n : ℕ) : R :=
 
 @[simp]
 theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
-  rw [dirichletInverseFun, if_pos rfl]
+  rw [dirichletInverseFun, ite_eq_left rfl]
 
 @[simp]
 theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) := by
-  rw [dirichletInverseFun, if_neg one_ne_zero, if_pos rfl]
+  rw [dirichletInverseFun, ite_eq_right one_ne_zero, ite_eq_left rfl]
 
 @[simp]
 theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
     dirichletInverseFun f hf n =
       - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
-  rw [dirichletInverseFun, if_neg hn0, if_neg hn1]
+  rw [dirichletInverseFun, ite_eq_right hn0, ite_eq_right hn1]
   conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
 
 /-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
@@ -397,6 +381,7 @@ theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
 def dirichletInverse : ArithmeticFunction R :=
   ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
     f * dirichletInverse f hf = 1 := by
   ext n
@@ -461,7 +446,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     induction s using Finset.induction_on with
     | empty => simp [hf]
     | insert _ _ has ih =>
-      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [coe_insert, Set.pairwise_insert_of_symm] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact Coprime.prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
@@ -648,5 +633,14 @@ theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
   case cons a s ha ih =>
     rw [Finset.prod_cons]
     exact (hf a (by grind)).mul (by grind)
+
+@[arith_mult]
+theorem IsMultiplicative.pow [CommSemiring R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {k : ℕ} : IsMultiplicative (f ^ k) := by
+  induction k
+  case zero => simp
+  case succ k hk =>
+    rw [pow_succ]
+    exact hk.mul hf
 
 end ArithmeticFunction

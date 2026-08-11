@@ -5,7 +5,7 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.Away.Basic
@@ -299,29 +299,29 @@ lemma injective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Injective f := by
   algebraize [f]
-  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  let (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
   have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
   have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
-  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  let (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
   have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
   apply injective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
-  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma surjective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Surjective f := by
   algebraize [f]
-  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  let (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
   have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
   have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
-  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  let (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
   have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
     .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
   apply surjective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
-  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using! h
 
 lemma bijective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :

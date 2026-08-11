@@ -344,7 +344,8 @@ include hAopen in
 theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) {p : ι → Prop} :
     IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, p i → f.1 i ∈ A i} := by
   rw [le_principal_iff] at hS
-  convert isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
+  convert!
+    isOpen_set_pi (hS.inter_of_left {i | p i}) (fun i _ ↦ hAopen i) |>.preimage continuous_coe
   ext f
   refine ⟨fun H i hi ↦ H i hi.2, fun H i hiT ↦ ?_⟩
   by_cases hiS : i ∈ S
@@ -354,7 +355,7 @@ theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 
 include hAopen in
 theorem isOpen_forall_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) :
     IsOpen {f : Πʳ i, [R i, A i]_[𝓟 S] | ∀ i, f.1 i ∈ A i} := by
-  convert isOpen_forall_imp_mem_of_principal hAopen hS (p := fun _ ↦ True)
+  convert! isOpen_forall_imp_mem_of_principal hAopen hS (p := fun _ ↦ True)
   simp
 
 include hAopen in
@@ -409,7 +410,7 @@ theorem weaklyLocallyCompactSpace_of_cofinite [∀ i, WeaklyLocallyCompactSpace 
     have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.2)
     have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi.2
     have hSA : ∀ i ∈ S, IsCompact (A i) := fun i hi ↦ hi.1
-    haveI := weaklyLocallyCompactSpace_of_principal hS hSA
+    have := weaklyLocallyCompactSpace_of_principal hS hSA
     rcases exists_inclusion_eq_of_eventually R A hS hSx with ⟨x', hxx'⟩
     rw [← hxx', nhds_eq_map_inclusion hAopen]
     rcases exists_compact_mem_nhds x' with ⟨K, K_compact, hK⟩
@@ -528,7 +529,7 @@ instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] [∀ i, ContinuousIn
   continuous_inv := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousInv (Πʳ i, [R i, B i]_[𝓟 T]) :=
+    have : ContinuousInv (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousInv fun _ ↦ rfl
     exact (continuous_inclusion hT).comp continuous_inv
 
@@ -539,7 +540,7 @@ instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
   continuous_const_smul g := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
+    have : ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousConstSMul id rfl
     exact (continuous_inclusion hT).comp (continuous_const_smul g)
 

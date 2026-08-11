@@ -65,7 +65,8 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
     rw [mk_ker, LiesOver.over (P := P) (p := p)]
     exact map_comap_le
   have : P'.IsMaximal := map_isMaximal_of_equiv e
-  have : P'.height = 1 := IsPrincipalIdealRing.height_eq_one_of_isMaximal P' polynomial_not_isField
+  have : P'.height = 1 :=
+    IsPrincipalIdealRing.height_eq_one_of_isMaximal P' (Polynomial.not_isField (R ⧸ p))
   rwa [← e.height_map <| P.map (Ideal.Quotient.mk <| p.map (algebraMap R R[X]))]
 
 /-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
@@ -120,7 +121,7 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert ← H using 1
+    convert! ← H using 1
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
     · rw [Nat.card_congr e]
   | h_empty => simp

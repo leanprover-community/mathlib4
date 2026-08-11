@@ -67,6 +67,7 @@ variable {σ e₁ e₁' e₂ e₂'}
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
 variable [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem continuousOn_continuousLinearMapCoordChange [RingHomIsometric σ]
     [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂]
@@ -153,10 +154,9 @@ theorem continuousLinearMapCoordChange_apply (b : B)
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
     continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply,
-    Trivialization.symmL_apply]
-  rw [e₂.coordChangeL_apply e₂', e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1,
-    e₂'.coe_linearMapAt_of_mem hb.2.2]
+    ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply]
+  rw [e₂.symmL_apply hb.1.2, e₁'.symmL_apply hb.2.1, e₂.coordChangeL_apply e₂',
+    e₁'.coordChangeL_apply e₁, e₁.coe_linearMapAt_of_mem hb.1.1, e₂'.coe_linearMapAt_of_mem hb.2.2]
   exacts [⟨hb.2.1, hb.1.1⟩, ⟨hb.1.2, hb.2.2⟩]
 
 end Bundle.Pretrivialization
@@ -169,6 +169,7 @@ variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorB
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 variable [RingHomIsometric σ]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a
 `VectorPrebundle` (this is an auxiliary construction for the
 `VectorBundle` instance, in which the pretrivializations are collated but no topology
@@ -203,10 +204,11 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
     have : IsInducing fun x ↦ (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
-    convert this
+    convert! this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]
-    rw [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _)]
+    simp only [Trivialization.symmL_apply, mem_baseSet_trivializationAt,
+      Trivialization.linearMapAt_def_of_mem]
     rfl
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
@@ -518,7 +520,7 @@ theorem inCoordinates_apply_eq₂
     (trivializationAt F₃ E₃ x₀).linearMapAt 𝕜 x
       (ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₂ E₂ x₀).symm x w)) := by
   rw [inCoordinates_eq h₁x (by simp [h₂x, h₃x])]
-  simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply]
+  simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply, h₂x]
 
 end TwoVariables
 

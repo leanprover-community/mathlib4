@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Binary product of standard simplices
@@ -91,6 +92,24 @@ lemma nonDegenerate_iff_strictMono_objEquiv {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SS
     PartialOrder.mem_nerve_nonDegenerate_iff_strictMono]
   rfl
 
+lemma isoNerve_hom_app_obj {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
+    ((isoNerve p q).hom.app _ x).obj = ULift.up ∘ objEquiv x := rfl
+
+lemma range_isoNerve_hom_app_obj {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
+    Set.range ((isoNerve p q).hom.app _ x).obj = ULift.down ⁻¹' Set.range (objEquiv x) := by
+  rw [isoNerve_hom_app_obj]
+  refine (Equiv.ulift.eq_preimage_iff_image_eq ..).2 ?_
+  simp [Set.range_comp, ← Set.image_comp]
+
+lemma ofSimplex_le_ofSimplex_iff
+    {n m : ℕ} (s : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (t : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋m⦌) :
+    Subcomplex.ofSimplex s ≤ Subcomplex.ofSimplex t ↔
+      Set.range (objEquiv s) ⊆ Set.range (objEquiv t) := by
+  simp only [← Subcomplex.image_le_image_iff (isoNerve p q).hom,
+    Subcomplex.image_ofSimplex, PartialOrder.nerve_ofSimplex_le_ofSimplex_iff,
+    range_isoNerve_hom_app_obj]
+  exact ⟨Set.preimage_mono (f := ULift.up), Set.preimage_mono⟩
+
 /-- Given a `n`-simplex `x` in `Δ[p] ⊗ Δ[q]`, this is the order preserving
 map `Fin (n + 1) →o Fin (m + 1)` (with `p + q = m`) which corresponds to the
 sum of the two components of `objEquiv x : Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
@@ -142,7 +161,7 @@ lemma le_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegene
   induction i using Fin.induction with
   | zero => simp
   | succ i hi =>
-    simpa using lt_of_le_of_lt hi (strictMono_orderHomOfSimplex x hm Fin.castSucc_lt_succ)
+    simpa using! lt_of_le_of_lt hi (strictMono_orderHomOfSimplex x hm Fin.castSucc_lt_succ)
 
 lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌)
     (hn : p + q = n := by lia) :
@@ -167,7 +186,7 @@ lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     have h₂ := z₂.2
     rw [nonDegenerate_max_dim_iff] at h₁ h₂
     simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
-      using DFunLike.congr_fun (h₁.trans h₂.symm) i
+      using! DFunLike.congr_fun (h₁.trans h₂.symm) i
 
 lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
     (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :

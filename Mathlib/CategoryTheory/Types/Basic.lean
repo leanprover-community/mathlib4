@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ToAdditive
 
@@ -58,7 +57,7 @@ structure Fun (X Y : Type*) where
 
 instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
   coe f x := f.toFun x
-  coe_injective' _ := by aesop
+  coe_injective _ := by aesop
 
 initialize_simps_projections Fun (toFun → apply)
 
@@ -70,11 +69,11 @@ lemma Fun.coe_mk {X Y : Type*} (f : X → Y) : (Fun.mk f : X → Y) = f :=
   rfl
 
 /-- The identity function as a `Fun`. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
-@[simps! +dsimpLhs]
+@[implicit_reducible, simps!]
 def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/

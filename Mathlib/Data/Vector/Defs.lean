@@ -65,6 +65,7 @@ def head : Vector α (Nat.succ n) → α
   | ⟨a :: _, _⟩ => a
 
 /-- The head of a vector obtained by prepending is the element prepended. -/
+@[simp, grind =]
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
@@ -74,6 +75,7 @@ def tail : Vector α n → Vector α (n - 1)
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
 
 /-- The tail of a vector obtained by prepending is the vector prepended. to -/
+@[simp, grind =]
 theorem tail_cons (a : α) : ∀ v : Vector α n, tail (cons a v) = v
   | ⟨_, _⟩ => rfl
 
@@ -121,6 +123,7 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a vector under a partial function. -/
 def pmap (f : (a : α) → p a → β) :
     (v : Vector α n) → (∀ x ∈ v.toList, p x) → Vector β n

@@ -56,10 +56,10 @@ theorem Presieve.isSheaf_yoneda' {α : Type u} :
   fun β _ hs x hx =>
   ⟨↾fun y => (x _ (hs y)).hom PUnit.unit , fun γ f h =>
     ConcreteCategory.hom_ext _ _ fun z => by
-      convert ConcreteCategory.congr_hom (hx (𝟙 _) (↾fun _ => z)
-        (hs <| f z) h rfl) PUnit.unit using 1,
+      convert!
+        ConcreteCategory.congr_hom (hx (𝟙 _) (↾fun _ => z) (hs <| f z) h rfl) PUnit.unit using 1,
       fun f hf => ConcreteCategory.hom_ext _ _ fun y => by
-        convert ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
+        convert! ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
 
 /-- The sheaf condition for `yoneda'`. -/
 theorem Presheaf.isSheaf_yoneda' {α : Type u} :
@@ -105,7 +105,7 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
 theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f := by
   funext x
   apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
-  convert ConcreteCategory.congr_hom (S.map_id _) _
+  convert! ConcreteCategory.congr_hom (S.map_id _) _
 
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
   apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
@@ -132,6 +132,7 @@ theorem eval_map (S : Type uᵒᵖ ⥤ Type u) (α β) (f : β ⟶ α) (s x) :
   simp_rw [eval, ← comp_apply, ← Functor.map_comp, ← op_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps!]
 noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
@@ -157,6 +158,7 @@ theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S�
     eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.1 α s x) :=
   (ConcreteCategory.congr_hom (f.hom.naturality (↾fun _ => x).op) s).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology (Type u)`. -/
@@ -179,11 +181,12 @@ noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u
     ext1
     apply yonedaEquiv.injective
     dsimp [yoneda', yonedaEquiv, equivYoneda, evalEquiv]
-    simpa using typesGlue_eval (S := yoneda.obj X) (𝟙 X)
+    simpa using! typesGlue_eval (S := yoneda.obj X) (𝟙 X)
 
 instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.Subcanonical :=
   GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun _ => Presieve.isSheaf_yoneda'
 
+set_option backward.defeqAttrib.useBackward true in
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
   refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)
