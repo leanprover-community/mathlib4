@@ -53,7 +53,7 @@ variable {x : B}
 /-- A minimal polynomial is monic. -/
 theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
-  rw [dif_pos hx]
+  rw [dite_eq_left hx]
   exact (degree_lt_wf.min_mem _ hx).1
 
 /-- A minimal polynomial is nonzero. -/
@@ -61,7 +61,7 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
   (monic hx).ne_zero
 
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
-  dif_neg hx
+  dite_eq_right hx
 
 theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
   ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
