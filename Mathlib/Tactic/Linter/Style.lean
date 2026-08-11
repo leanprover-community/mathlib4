@@ -487,7 +487,7 @@ the `header` linter; its own state is trivial.
 -/
 public initialize longLineLinter : StatefulLinter Unit Unit ←
   registerStatefulLinter ()
-    (post := fun stx _ _ readPrev _ => withSetOptionIn' (longLinePost readPrev) stx)
+    (post := fun stx _ _ readPrev _ => withSetOptionIn (longLinePost readPrev) stx)
 
 end Style.longLine
 

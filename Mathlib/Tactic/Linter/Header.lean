@@ -285,26 +285,6 @@ public structure HeaderState where
   headerSyntax : Syntax := .missing
   deriving Inhabited
 
--- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
-/--
-`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
-option values to the current scope. Then it runs `k` on the innermost command.
-The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
-stateful linter.
--/
-public partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
-    Syntax → CommandElabM α :=
-  fun stx => do
-    if stx.getKind == ``Lean.Parser.Command.in &&
-       stx[0].getKind == ``Lean.Parser.Command.set_option then
-      -- Do not modify the infotrees when elaborating, and silently ignore errors.
-      let opts ← withEnableInfoTree false try
-          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
-        catch _ => getOptions
-      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
-    else
-      k stx
-
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -504,7 +484,7 @@ public initialize headerLinter : StatefulLinter HeaderState Unit ←
   registerStatefulLinter {}
     (post := fun stx self _ _ _ => do
       if self.settled then return self
-      withSetOptionIn' (headerPost · self) stx)
+      withSetOptionIn (headerPost · self) stx)
 
 end Style.header
 
