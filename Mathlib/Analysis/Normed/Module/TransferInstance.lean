@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.MetricSpace.TransferInstance
 
 /-!
-# Transfer normed algebraic structures across `Equiv`s
+# Transfer normed algebraic structures across `Equiv`s or `AddEquiv`s
 
 In this file, we transfer a (semi-)normed (additive) commutative group and normed space structures
 across an equivalence.
@@ -42,10 +42,12 @@ protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) : NormedCo
 
 end Equiv
 
-/-- Transfer `NormedSpace` across an `Equiv` -/
+/-- Transfer `NormedSpace` across an `AddEquiv` -/
 protected abbrev AddEquiv.normedSpace (𝕜 : Type*) [NormedField 𝕜]
     [AddCommGroup α] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃+ β) :
     letI : SeminormedAddCommGroup α := .induced _ _ e
     NormedSpace 𝕜 α :=
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
+
+@[deprecated (since := "2026-07-30")] alias Equiv.normedSpace := AddEquiv.normedSpace

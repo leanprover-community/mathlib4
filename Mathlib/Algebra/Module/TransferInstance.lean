@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer algebraic structures across `Equiv`s or `AddEquiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
@@ -29,16 +29,16 @@ variable (R) [Zero R]
 /-- Transfer `NoZeroSMulDivisors` across an `Equiv` -/
 protected lemma noZeroSMulDivisors [Zero α] [Zero β] [SMul R β] [NoZeroSMulDivisors R β]
     (e : α ≃ β) (map_zero : e 0 = 0) :
-    let := e.smul R
+    letI := e.smul R
     NoZeroSMulDivisors R α := by
-  extract_lets
+  let := e.smul R
   refine ⟨fun {r} m ↦ ?_⟩
   simp_rw [e.eq_symm_apply.2 map_zero, eq_symm_apply, smul_def, apply_symm_apply]
   exact eq_zero_or_eq_zero_of_smul_eq_zero
 
 end Equiv
 
-variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R β]
+variable [AddCommMonoid α] [AddCommMonoid β] [Module R β]
 
 namespace AddEquiv
 
@@ -62,7 +62,7 @@ def linearEquiv :
     map_smul' := fun r x => by
       apply e.symm.injective
       simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-      exact Iff.mpr e.apply_eq_iff_eq_symm_apply rfl }
+      exact Iff.mp (eq_symm_apply _) rfl }
 
 @[simp]
 lemma linearEquiv_apply (a : α) : e.linearEquiv R a = e a := rfl
@@ -70,7 +70,6 @@ lemma linearEquiv_apply (a : α) : e.linearEquiv R a = e a := rfl
 @[simp]
 lemma linearEquiv_symm_apply (b : β) : (e.linearEquiv R).symm b = e.symm b := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree [Module.IsTorsionFree R β] :
@@ -80,6 +79,14 @@ protected lemma moduleIsTorsionFree [Module.IsTorsionFree R β] :
   (e.linearEquiv R).injective.moduleIsTorsionFree _ (by simp)
 
 end AddEquiv
+
+@[deprecated (since := "2026-08-10")] alias Equiv.module := AddEquiv.module
+@[deprecated (since := "2026-08-10")] alias Equiv.linearEquiv := AddEquiv.linearEquiv
+@[deprecated (since := "2026-08-10")] alias Equiv.linearEquiv_apply := AddEquiv.linearEquiv_apply
+@[deprecated (since := "2026-08-10")]
+alias Equiv.linearEquiv_symm_apply := AddEquiv.linearEquiv_symm_apply
+@[deprecated (since := "2026-08-10")]
+alias Equiv.moduleIsTorsionFree := AddEquiv.moduleIsTorsionFree
 
 variable [Module R α] (A : Type*) [Semiring A] [Module R A] [Module A β]
 

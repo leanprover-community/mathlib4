@@ -337,8 +337,8 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
-instance distribSMul [DistribSMul N R] : DistribSMul N R[M] where
-  smul_add := by intros; ext; simp [smul_add]
+instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
+  fast_instance% coeffAddEquiv.distribSMul _
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :

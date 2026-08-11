@@ -547,39 +547,35 @@ variable {R A B : Type*} [CommSemiring R]
   [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
 
 variable (R) in
-/-- Transfer `CoalgebraStruct` across an `Equiv`. -/
-abbrev coalgebraStruct [CoalgebraStruct R B] (e : A ≃ₗ[R] B) :
-    CoalgebraStruct R A where
-  comul := TensorProduct.map e.symm.toLinearMap e.symm.toLinearMap ∘ₗ comul ∘ₗ e.toLinearMap
+/-- Transfer `CoalgebraStruct` across a `LinearEquiv`. -/
+abbrev coalgebraStruct [CoalgebraStruct R B] (e : A ≃ₗ[R] B) : CoalgebraStruct R A where
+  comul := TensorProduct.map e.symm e.symm ∘ₗ comul ∘ₗ e.toLinearMap
   counit := counit ∘ₗ e.toLinearMap
 
 variable (R) in
-/-- Transfer `Coalgebra` across an `Equiv`. -/
+/-- Transfer `Coalgebra` across a `LinearEquiv`. -/
 abbrev coalgebra [Coalgebra R B] (e : A ≃ₗ[R] B) : Coalgebra R A where
   __ := e.coalgebraStruct R
   rTensor_counit_comp_comul := by
     ext
-    apply (TensorProduct.map_bijective (f := .id) Function.bijective_id
-      e.bijective).injective
+    apply (TensorProduct.map_bijective (f := .id) Function.bijective_id e.bijective).injective
     simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
       LinearMap.rTensor] using! Coalgebra.rTensor_counit_comul _
   lTensor_counit_comp_comul := by
     ext
-    apply (TensorProduct.map_bijective (g := .id) e.bijective
-      Function.bijective_id).injective
+    apply (TensorProduct.map_bijective (g := .id) e.bijective Function.bijective_id).injective
     simpa +instances [coalgebraStruct, LinearMap.comp_assoc, TensorProduct.map_map,
       LinearMap.lTensor] using! Coalgebra.lTensor_counit_comul _
   coassoc := by
     ext
     apply (TensorProduct.map_bijective e.bijective <|
-      TensorProduct.map_bijective e.bijective
-      e.bijective).injective
+      TensorProduct.map_bijective e.bijective e.bijective).injective
     simp +instances [coalgebraStruct, e.tensorProductAssoc_def R e e, TensorProduct.congr,
       ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
     simpa [LinearMap.comp_assoc, -coassoc_apply] using! coassoc_apply (R := R) (A := B) _
 
 variable (R) in
-/-- Transfer `Coalgebra.IsCocomm` across an `Equiv`. -/
+/-- Transfer `Coalgebra.IsCocomm` across a `LinearEquiv`. -/
 lemma coalgebraIsCocomm [Coalgebra R B] [IsCocomm R B] (e : A ≃ₗ[R] B) :
     letI := e.coalgebra R
     IsCocomm R A :=
@@ -587,3 +583,7 @@ lemma coalgebraIsCocomm [Coalgebra R B] [IsCocomm R B] (e : A ≃ₗ[R] B) :
   { comm_comp_comul := by ext; simp [comul, ← TensorProduct.map_comm] }
 
 end LinearEquiv
+
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebraStruct := LinearEquiv.coalgebraStruct
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebra := LinearEquiv.coalgebra
+@[deprecated (since := "2026-08-10")] alias Equiv.coalgebraIsCocomm := LinearEquiv.coalgebraIsCocomm

@@ -15,9 +15,6 @@ public import Mathlib.Algebra.Module.TransferInstance
 Main definitions:
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
 * `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
-* `Equiv.lieRing` transferring a LieRing structure along an equivalence (transfers the additive
-  structure using `Equiv.addCommGroup` and then the bracket using `AddEquiv.lieRing`)
-* `Equiv.lieAlgebra` transferring a Lie algebra structure along an equivalence
 
 -/
 
@@ -68,3 +65,25 @@ lemma LinearEquiv.lieEquiv_symm_apply (e : M ≃ₗ[R] L) (b : L) :
     (e.lieEquiv R).symm b = e.symm b := rfl
 
 end
+
+namespace Equiv
+
+variable {R L' L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (e : L' ≃ L)
+
+/-- Transfer `LieRing` across an `Equiv` -/
+@[deprecated AddEquiv.lieRing (since := "2026-07-30")]
+protected abbrev lieRing : LieRing L' :=
+  letI := e.addCommGroup
+  e.addEquiv.lieRing
+
+@[deprecated AddEquiv.bracket_def (since := "2026-07-30")]
+lemma bracket_def (x y : L') :
+    letI := e.lieRing
+    ⁅x, y⁆ = e.symm ⁅e x, e y⁆ := rfl
+
+@[deprecated (since := "2026-07-30")] alias lieAlgebra := LinearEquiv.lieAlgebra
+@[deprecated (since := "2026-07-30")] alias lieEquiv := LinearEquiv.lieEquiv
+@[deprecated (since := "2026-07-30")] alias lieEquiv_apply := LinearEquiv.lieEquiv_apply
+@[deprecated (since := "2026-07-30")] alias lieEquiv_symm_apply := LinearEquiv.lieEquiv_symm_apply
+
+end Equiv

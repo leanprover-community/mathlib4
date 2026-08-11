@@ -50,10 +50,8 @@ section DistribMulAction
 variable [Monoid S] [Semiring R] [DistribMulAction S R]
 
 @[to_additive (dont_translate := S) distribMulAction]
-instance distribMulAction : DistribMulAction S R[M] where
-  __ := distribSMul
-  one_smul := by intros; ext; simp
-  mul_smul := by intros; ext; simp [mul_smul]
+instance distribMulAction : DistribMulAction S R[M] :=
+  fast_instance% coeffAddEquiv.distribMulAction _
 
 @[to_additive (dont_translate := S) (attr := simp)]
 lemma mapDomain_smul (f : M → N) (s : S) (x : R[M]) : mapDomain f (s • x) = s • mapDomain f x := by
@@ -65,9 +63,7 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] where
-  zero_smul := by intros; ext; simp
-  add_smul := by intros; ext; simp [add_smul]
+instance : Module R S[M] := fast_instance% coeffAddEquiv.module _
 
 @[to_additive (dont_translate := R)]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
@@ -77,12 +73,7 @@ variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
 @[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S :=
-  { coeffAddEquiv with
-    map_smul' := fun r x => by
-      apply coeffAddEquiv.symm.injective
-      simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-      exact Iff.mpr (Equiv.apply_eq_iff_eq_symm_apply _) rfl }
+def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffAddEquiv.linearEquiv _
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear map. -/
