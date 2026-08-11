@@ -51,7 +51,6 @@ export Compl (compl)
 postfix:1024 "ᶜ" => compl
 
 initialize_simps_projections Compl
-initialize_simps_projections HasCompl
 
 /-! ### `Sup` and `Inf` -/
 
