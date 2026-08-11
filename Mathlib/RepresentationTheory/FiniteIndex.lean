@@ -50,20 +50,20 @@ variable {A}
 @[simp]
 lemma indToCoindAux_self (g : G) (a : A) :
     indToCoindAux A g a g = a := by
-  rw [indToCoindAux, LinearMap.pi_apply, dif_pos]
+  rw [indToCoindAux, LinearMap.pi_apply, dite_eq_left]
   · simp [← S.1.one_def]
   · rfl
 
 lemma indToCoindAux_of_not_rel (g g₁ : G) (a : A) (h : ¬(QuotientGroup.rightRel S).r g₁ g) :
     indToCoindAux A g a g₁ = 0 := by
-  simp [indToCoindAux, dif_neg h]
+  simp [indToCoindAux, dite_eq_right h]
 
 @[simp]
 lemma indToCoindAux_mul_snd (g g₁ : G) (a : A) (s : S) :
     indToCoindAux A g a (s * g₁) = A.ρ s (indToCoindAux A g a g₁) := by
   rcases em ((QuotientGroup.rightRel S).r g₁ g) with ⟨s₁, rfl⟩ | h
   · simp only [indToCoindAux, LinearMap.pi_apply]
-    rw [dif_pos ⟨s * s₁, mul_assoc ..⟩, dif_pos ⟨s₁, rfl⟩]
+    rw [dite_eq_left ⟨s * s₁, mul_assoc ..⟩, dite_eq_left ⟨s₁, rfl⟩]
     simp [S.1.smul_def, mul_assoc, ← S.1.mul_def]
   · rw [indToCoindAux_of_not_rel _ _ _ h, indToCoindAux_of_not_rel, map_zero]
     exact mt (fun ⟨s₁, hs₁⟩ => ⟨s⁻¹ * s₁, by simp_all [S.1.smul_def, mul_assoc]⟩) h
@@ -73,8 +73,8 @@ lemma indToCoindAux_mul_fst (g₁ g₂ : G) (a : A) (s : S) :
      indToCoindAux A (s * g₁) (A.ρ s a) g₂ = indToCoindAux A g₁ a g₂ := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s₁, rfl⟩ | h
   · simp only [indToCoindAux, LinearMap.pi_apply]
-    rw [dif_pos ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩, dif_pos ⟨s₁, rfl⟩,
-      ← Module.End.mul_apply, ← map_mul]
+    rw [dite_eq_left ⟨s₁ * s⁻¹, by simp [S.1.smul_def, smul_eq_mul, mul_assoc]⟩,
+      dite_eq_left ⟨s₁, rfl⟩, ← Module.End.mul_apply, ← map_mul]
     congr
     simp [Subtype.ext_iff, S.1.smul_def, mul_assoc]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]

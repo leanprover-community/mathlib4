@@ -240,7 +240,7 @@ theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
   classical
   have := Fact.mk <|
     (SplittingField.splits q).of_dvd (map_ne_zero hq) ((map_dvd_map' _).mpr hpq)
-  simpa only [restrictDvd_def, dif_neg hq] using! restrict_surjective _ _
+  simpa only [restrictDvd_def, dite_eq_right hq] using! restrict_surjective _ _
 
 variable (p q)
 
@@ -257,7 +257,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
-  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
+  simp only [dite_eq_right hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
   rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
