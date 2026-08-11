@@ -488,12 +488,7 @@ theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflT
 
 theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a b)
     (ac : ReflTransGen r a c) : ReflTransGen r b c ∨ ReflTransGen r c b := by
-  induction ab with
-  | refl => exact Or.inl ac
-  | tail _ bd IH =>
-    rcases IH with (IH | IH)
-    · grind [cases_head IH, Relator.RightUnique]
-    · exact Or.inr (IH.tail bd)
+  induction ab with grind [→ cases_head, Relator.RightUnique]
 
 end ReflTransGen
 
