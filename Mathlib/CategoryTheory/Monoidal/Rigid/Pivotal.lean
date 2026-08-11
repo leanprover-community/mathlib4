@@ -52,39 +52,41 @@ attribute [instance] PivotalCategory.pivotalIso_isMonoidal
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
   [PivotalCategory C]
 
-/-- The chosen natural isomorphism from the identity to the double right dual. -/
-abbrev chosenPivotalIso : 𝟭 C ≅ doubleRightDualFunctor C := PivotalCategory.pivotalIso
-
--- The double right mate uses the dual instances chosen by `doubleRightDualFunctor`; disabling
--- transparency-aware definitional equality lets Lean identify them with the ambient instances.
-set_option backward.isDefEq.respectTransparency false in
 lemma rightAdjointMate_rightAdjointMate {X Y : C} (f : X ⟶ Y) :
-    (fᘁ)ᘁ = (chosenPivotalIso.app X).inv ≫ f ≫ (chosenPivotalIso.app Y).hom := by
-  simp [← cancel_mono (chosenPivotalIso.app Y).inv, ← doubleRightDualFunctor_map,
-    chosenPivotalIso.inv.naturality]
+    fᘁᘁ = (PivotalCategory.pivotalIso.app X).inv ≫ f ≫
+      (PivotalCategory.pivotalIso.app Y).hom := by
+  have h : (doubleRightDualFunctor C).map f =
+      PivotalCategory.pivotalIso.inv.app X ≫ f ≫
+        PivotalCategory.pivotalIso.hom.app Y := by
+    rw [← cancel_mono (PivotalCategory.pivotalIso.inv.app Y)]
+    simpa only [Category.assoc, Iso.hom_inv_id_app, Category.comp_id,
+      Functor.id_obj, Functor.id_map] using
+      PivotalCategory.pivotalIso.inv.naturality f
+  exact (doubleRightDualFunctor_map C f).symm.trans h
 
 /-- In a pivotal category, `X` is a left dual of its right dual `Xᘁ`. -/
 @[implicit_reducible]
 def pivotalExactPairing (X : C) : ExactPairing Xᘁ X :=
   let : ExactPairing Xᘁ ((doubleRightDualFunctor C).obj X) := HasRightDual.exact
-  exactPairingCongrRight (chosenPivotalIso.app X)
+  exactPairingCongrRight (PivotalCategory.pivotalIso.app X)
 
 lemma pivotalExactPairing_coevaluation (X : C) :
     letI := pivotalExactPairing X
-    η_ Xᘁ X = η_ Xᘁ Xᘁᘁ ≫ Xᘁ ◁ (chosenPivotalIso.app X).inv := rfl
+    η_ Xᘁ X = η_ Xᘁ Xᘁᘁ ≫ Xᘁ ◁ (PivotalCategory.pivotalIso.app X).inv := rfl
 
 lemma pivotalExactPairing_evaluation (X : C) :
     letI := pivotalExactPairing X
-    ε_ Xᘁ X = (chosenPivotalIso.app X).hom ▷ Xᘁ ≫ ε_ Xᘁ Xᘁᘁ := rfl
+    ε_ Xᘁ X = (PivotalCategory.pivotalIso.app X).hom ▷ Xᘁ ≫ ε_ Xᘁ Xᘁᘁ := rfl
 
 /-- In a pivotal category, left and right duals are isomorphic. -/
 def leftDualIsoRightDual (X : C) [HasLeftDual X] : (ᘁX) ≅ Xᘁ :=
   leftDualIso HasLeftDual.exact (pivotalExactPairing X)
 
 lemma pivotal_adjointMate {X Y : C} (f : X ⟶ Y) :
-    letI : HasLeftDual X := { leftDual := Xᘁ, exact := pivotalExactPairing X }
-    letI : HasLeftDual Y := { leftDual := Yᘁ, exact := pivotalExactPairing Y }
+    letI : HasLeftDual X := (pivotalExactPairing X).hasLeftDual
+    letI : HasLeftDual Y := (pivotalExactPairing Y).hasLeftDual
   (ᘁf) = fᘁ := by
+  unfold ExactPairing.hasLeftDual
   rw [← leftAdjointMate_rightAdjointMate (fᘁ), rightAdjointMate_rightAdjointMate]
   dsimp only [leftAdjointMate]
   rw [pivotalExactPairing_coevaluation, pivotalExactPairing_evaluation]
