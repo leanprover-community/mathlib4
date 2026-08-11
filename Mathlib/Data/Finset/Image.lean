@@ -748,6 +748,15 @@ See also `Equiv.setCongr`. -/
     s ≃ t :=
   .subtypeEquivProp <| by simp [h]
 
+@[simp] lemma finsetCongr_refl {s : Finset α} : finsetCongr (s := s) rfl = .refl _ := rfl
+
+lemma finsetCongr_symm {s t : Finset α} (h : s = t) :
+    finsetCongr h.symm = (finsetCongr h).symm := rfl
+
+lemma finsetCongr_trans {s t u : Finset α} (h : s = t) (h' : t = u) :
+    finsetCongr (h.trans h') = (finsetCongr h).trans (finsetCongr h') :=
+  rfl
+
 namespace Finset
 
 /-- If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
