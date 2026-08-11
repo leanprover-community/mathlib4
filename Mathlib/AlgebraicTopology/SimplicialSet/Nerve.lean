@@ -24,7 +24,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 @[expose] public section
 
-open CategoryTheory Category Simplicial Opposite
+open CategoryTheory Simplicial Opposite
 
 universe v u
 
