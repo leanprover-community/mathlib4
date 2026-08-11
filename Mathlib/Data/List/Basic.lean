@@ -138,7 +138,7 @@ instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_empty_eq := fun x =>
-      show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg not_mem_nil }
+      show (if x ∈ ([] : List α) then [] else [x]) = [x] from ite_eq_right not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -930,7 +930,11 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]; rfl
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    simp [filter, ih]
+    cases p a <;> rfl
 
 @[simp]
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
