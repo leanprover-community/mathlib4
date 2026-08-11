@@ -1080,7 +1080,7 @@ abbrev FakeMul (α : Type) := Mul α
 variable {α : Type}
 /--
 error: @[to_additive] failed to add declaration `instFakeAddOfAddGroup`.
-  The translated type doesn't match the translated value.
+  The translated value does not have the translated type.
 The value
   fun {α} [AddGroup α] => { add := fun x1 x2 => x1 + x2 }
 has type
