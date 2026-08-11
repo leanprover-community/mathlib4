@@ -159,7 +159,8 @@ theorem ordConnected_iff_upperClosure_inter_lowerClosure :
 
 /-- The upper and lower closures of a maximal antichain cover the whole order. -/
 theorem IsMaxAntichain.codisjoint_upperClosure_lowerClosure (hs : IsMaxAntichain (· ≤ ·) s) :
-    Codisjoint (upperClosure s) (lowerClosure s) := by
+    Codisjoint (upperClosure s : Set α) ↑(lowerClosure s) := by
+  rw [codisjoint_iff, sup_eq_union, top_eq_univ]
   refine eq_univ_of_forall fun a => by_contra fun ha => ?_
   simp only [mem_union, SetLike.mem_coe, mem_upperClosure, mem_lowerClosure, not_or, not_exists,
     not_and] at ha
