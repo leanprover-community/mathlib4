@@ -696,7 +696,7 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [DecidableRe
   (nat_rec' (h := fun x nih => if p x (nih.1 + 1) then nih.1 + 1 else nih.2)
     hf (const 0) (ite (hp.comp fst (snd |> fst.comp |> succ.comp))
       (snd |> fst.comp |> succ.comp) (snd.comp snd))).of_eq fun x => by
-        induction f x <;> simp [Nat.findGreatest, *]
+        induction f x <;> simp [Nat.findGreatest_succ, *]
 
 /-- To show a function `f : α → ℕ` is primitive recursive, it is enough to show that the function
   is bounded by a primitive recursive function and that its graph is primitive recursive -/
