@@ -48,13 +48,13 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
   let ops : RingOps (Int × Int) := {
     zero := (0, 0)
     one := (1, 0)
-    mul := fun (a, b) (c, e) => (a * c + d * b * e, a * e + b * c)
-    sub := fun (a, b) (c, e) => (a - c, b - e)
-    divExact := fun (a, b) (c, e) =>
-      -- multiply by the conjugate `c - e√d` and divide by the norm, exactly
-      let norm := c * c - d * e * e
-      ((a * c - d * b * e) / norm, (b * c - a * e) / norm)
-    isZero := fun (a, b) => pure (a == 0 && b == 0) }
+    mul := fun (x, y) (x', y') => (x * x' + d * y * y', x * y' + y * x')
+    sub := fun (x, y) (x', y') => (x - x', y - y')
+    divExact := fun (x, y) (x', y') =>
+      -- multiply by the conjugate `x' - y'√d` and divide by the norm, exactly
+      let norm := x' * x' - d * y' * y'
+      ((x * x' - d * y * y') / norm, (y * x' - x * y') / norm)
+    isZero := fun (x, y) => pure (x == 0 && y == 0) }
   let prepare (entries : Array (Array Expr)) :
       MetaM (Array (Array (Int × Int)) ×
         (BareissData (Int × Int) → BareissData (Int × Int))) := do
