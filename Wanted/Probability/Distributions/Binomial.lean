@@ -13,11 +13,6 @@ open scoped ProbabilityTheory unitInterval
 namespace ProbabilityTheory
 variable {Ω : Type*} {m : MeasurableSpace Ω} {P : Measure Ω} {n : ℕ} {p : I} {X : Ω → ℝ}
 
-/-- **Expectation of a binomial random variable**.
-
-The expectation of a binomial random variable with parameters `n` and `p` is `pn`. -/
-proof_wanted integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.val * n
-
 /-- **Variance of a binomial random variable**.
 
 The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/

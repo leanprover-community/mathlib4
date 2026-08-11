@@ -2573,6 +2573,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
+public import Mathlib.CategoryTheory.Bicategory.RetractArrow
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
 public import Mathlib.CategoryTheory.Bicategory.Span.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
@@ -7551,6 +7552,7 @@ public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
