@@ -169,11 +169,11 @@ instance Prod.supConvergenceClass
     [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
-  rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
+  rw [isLUB_prod, ← range_domRestrict, ← range_domRestrict] at h
   have A : Tendsto (fun x : s => (x : α × β).1) atTop (𝓝 a) :=
-    tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
+    tendsto_atTop_isLUB (monotone_fst.domRestrict s) h.1
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
-    tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
+    tendsto_atTop_isLUB (monotone_snd.domRestrict s) h.2
   exact A.prodMk_nhds B
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
@@ -184,8 +184,8 @@ instance Pi.supConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
-  simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  simp only [isLUB_pi, ← range_domRestrict] at h
+  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).domRestrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -207,14 +207,10 @@ theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpac
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
-@[deprecated (since := "2026-01-22")] alias tendsto_of_monotone := tendsto_atTop_of_monotone
-
 theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
-
-@[deprecated (since := "2026-01-22")] alias tendsto_of_antitone := tendsto_atTop_of_antitone
 
 theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :

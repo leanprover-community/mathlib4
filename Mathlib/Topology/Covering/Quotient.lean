@@ -101,7 +101,7 @@ noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ 
       have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm); ⟨g, Subtype.ext eq⟩⟩
 
 @[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
-  (Equiv.apply_eq_iff_eq_symm_apply _).mpr <| Subtype.ext (one_smul ..).symm
+  (Equiv.eq_symm_apply _).mp <| Subtype.ext (one_smul ..).symm
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] theorem fiberEquivGroup_eq_iff {x : X} (e e' : f ⁻¹' {x}) (g : G) :

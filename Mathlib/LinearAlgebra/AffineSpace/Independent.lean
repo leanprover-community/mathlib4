@@ -108,7 +108,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
           Finset.sum_subtype_map_embedding fun x _ => (hfg x).symm]
         rw [hfdef]
         dsimp only
-        rw [dif_pos rfl]
+        rw [dite_eq_left rfl]
         exact neg_add_cancel _
       have hs2 : s2.weightedVSub p f = (0 : V) := by
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
@@ -300,7 +300,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
       intro i2
       have h : ∃ i : ι2, f i = f i2 := ⟨i2, rfl⟩
       have hs : h.choose = i2 := f.injective h.choose_spec
-      simp_rw [w', dif_pos h, hs]
+      simp_rw [w', dite_eq_left h, hs]
     have hw's : ∑ i ∈ fs', w' i = 0 := by
       rw [← hw, Finset.sum_map]
       simp [hw']
@@ -827,7 +827,7 @@ theorem AffineIndependent.affineIndependent_of_notMem_span {p : ι → P} {i : �
       have hw' : ∑ x ∈ s', w' x = 1 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
-        simpa only [not_not, Finset.filter_eq' _ i, if_pos his.1, sum_singleton, hwmi,
+        simpa only [not_not, Finset.filter_eq' _ i, ite_eq_left his.1, sum_singleton, hwmi,
           add_neg_eq_zero] using hwm
       rw [← s.affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one hms his.1 hwmi, ←
         (Subtype.range_coe : _ = { x | x ≠ i }), ← Set.range_comp, ←
@@ -944,7 +944,7 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P
         (s.sum_affineCombinationLineMapWeights h₂ h₃ c) hs h₂ h₃
         (Pi.single_eq_of_ne h₁₂.symm _)
         (Pi.single_eq_of_ne h₁₃.symm _) ?_
-    · rw [Finset.sum_pi_single', if_pos h₁]
+    · rw [Finset.sum_pi_single', ite_eq_left h₁]
     rw [Finset.affineCombinationLineMapWeights_apply_left h₂₃,
       Finset.affineCombinationLineMapWeights_apply_right h₂₃]
     simp_all only [sub_pos, sign_pos]

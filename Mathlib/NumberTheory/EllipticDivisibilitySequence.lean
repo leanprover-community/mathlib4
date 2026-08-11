@@ -385,13 +385,14 @@ lemma preNormEDS'_four : preNormEDS' b c d 4 = d := by
 lemma preNormEDS'_even (m : ℕ) : preNormEDS' b c d (2 * (m + 3)) =
     preNormEDS' b c d (m + 2) ^ 2 * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 5) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) * preNormEDS' b c d (m + 4) ^ 2 := by
-  rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS', dif_neg m.not_even_two_mul_add_one]
+  rw [show 2 * (m + 3) = 2 * m + 1 + 5 by rfl, preNormEDS',
+    dite_eq_right m.not_even_two_mul_add_one]
   simp [Nat.mul_add_div two_pos]
 
 lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
     preNormEDS' b c d (m + 4) * preNormEDS' b c d (m + 2) ^ 3 * (if Even m then b else 1) -
       preNormEDS' b c d (m + 1) * preNormEDS' b c d (m + 3) ^ 3 * (if Even m then 1 else b) := by
-  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dif_pos <| even_two_mul m,
+  rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dite_eq_left <| even_two_mul m,
     m.mul_div_cancel_left two_pos]
 
 /-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
@@ -486,12 +487,12 @@ lemma complEDS₂_two : complEDS₂ b c d 2 = d := by
 
 @[simp]
 lemma complEDS₂_three : complEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b - d ^ 2 * b := by
-  simp [complEDS₂, if_neg (by decide : ¬Even (3 : ℤ)), sub_mul]
+  simp [complEDS₂, ite_eq_right (by decide : ¬Even (3 : ℤ)), sub_mul]
 
 @[simp]
 lemma complEDS₂_four : complEDS₂ b c d 4 =
     c ^ 2 * preNormEDS (b ^ 4) c d 6 - preNormEDS (b ^ 4) c d 5 ^ 2 := by
-  simp [complEDS₂, if_pos (by decide : Even (4 : ℤ))]
+  simp [complEDS₂, ite_eq_left (by decide : Even (4 : ℤ))]
 
 @[simp]
 lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k := by
@@ -546,7 +547,7 @@ lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
 lemma normEDS_mul_complEDS₂ (k : ℤ) :
     normEDS b c d k * complEDS₂ b c d k = normEDS b c d (2 * k) := by
   simp_rw [normEDS, mul_right_comm, preNormEDS_mul_complEDS₂, mul_assoc, apply_ite₂, one_mul,
-    mul_one, ite_self, if_pos <| even_two_mul k]
+    mul_one, ite_self, ite_eq_left <| even_two_mul k]
 
 lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d (2 * k) :=
   ⟨complEDS₂ .., (normEDS_mul_complEDS₂ ..).symm⟩
@@ -567,7 +568,8 @@ lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
 lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
     normEDS b c d (m + 2) * normEDS b c d m ^ 3 -
       normEDS b c d (m - 1) * normEDS b c d (m + 1) ^ 3 := by
-  simp_rw [normEDS, preNormEDS_odd, if_neg m.not_even_two_mul_add_one, Int.even_add, Int.even_sub,
+  simp_rw [normEDS, preNormEDS_odd, ite_eq_right m.not_even_two_mul_add_one, Int.even_add,
+    Int.even_sub,
     even_two, iff_true, Int.not_even_one, iff_false]
   split_ifs <;> ring1
 
@@ -634,7 +636,7 @@ lemma complEDS'_one : complEDS' b c d k 1 = 1 := by
 
 lemma complEDS'_even (m : ℕ) : complEDS' b c d k (2 * (m + 1)) =
     complEDS' b c d k (m + 1) * complEDS₂ b c d ((m + 1) * k) := by
-  rw [show 2 * (m + 1) = 2 * m + 2 by rfl, complEDS', dif_pos <| even_two_mul m,
+  rw [show 2 * (m + 1) = 2 * m + 2 by rfl, complEDS', dite_eq_left <| even_two_mul m,
     m.mul_div_cancel_left two_pos, Nat.cast_succ]
 
 lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
@@ -642,7 +644,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
         * normEDS b c d ((m + 2) * k + 1) * normEDS b c d ((m + 2) * k - 1) -
       complEDS' b c d k (m + 2) ^ 2
           * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) := by
-  rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dif_neg m.not_even_two_mul_add_one]
+  rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dite_eq_right m.not_even_two_mul_add_one]
   simp [Nat.mul_add_div two_pos, add_assoc]
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
