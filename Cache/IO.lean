@@ -38,6 +38,7 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
+  `Wanted,
   `MathlibTest,
   -- Allow PRs to upload oleans for Reap for testing.
   `Requests,

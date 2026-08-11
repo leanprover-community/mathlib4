@@ -5,7 +5,6 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (used in `proof_wanted` only)
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
@@ -90,10 +89,6 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
 lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := by
   rw [← PrimeSpectrum.nonempty_iff_nontrivial]
   exact LTSeries.nonempty_of_finiteDimensionalOrder _
-
-proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
-    [IsNoetherianRing R] (n : ℕ) :
-    ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
 
 section Zero
 

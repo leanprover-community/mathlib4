@@ -72,7 +72,7 @@ on:
         # Default: the full `Mathlib` library — the representative master shadow.
         # For a cheaper experiment, pass a smaller set, e.g.
         #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
-        # or add `Archive Counterexamples` to also shadow those libraries.
+        # or add `Archive Counterexamples Wanted` to also shadow those libraries.
         default: Mathlib
       toolchain_override:
         description: >-
@@ -582,12 +582,12 @@ jobs:
           # (no rebuild). Deps building is expected and excluded from the grep.
           # Emit an explicit health line (consumed by the Zulip report) and fail
           # the run if it's not a full hit.
-          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true)
           if [ "$BUILT_ROOT" -ne 0 ]; then
             health="❌ NOT full cache hits — ${BUILT_ROOT} root-package module(s) rebuilt"
             echo "health=${health}" >> "$GITHUB_OUTPUT"
             echo "::error::${health}"
-            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true
             exit 1
           fi
           health="✅ full cache hits — 0 root-package modules rebuilt (${FETCHED_ARTIFACTS} served from cache)"
