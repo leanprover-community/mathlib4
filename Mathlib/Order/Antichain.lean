@@ -418,6 +418,8 @@ theorem maximal_isAntichain_iff : Maximal (IsAntichain r) s ↔ IsMaxAntichain r
   mp h := ⟨h.prop, fun _ ht hst ↦ hst.antisymm <| h.le_of_ge ht hst⟩
   mpr h := ⟨h.isAntichain, fun _ ht hst ↦ h.right ht hst |>.ge⟩
 
+alias ⟨_, IsMaxAntichain.maximal_isAntichain⟩ := maximal_isAntichain_iff
+
 end General
 
 /-! ### Weak antichains -/
