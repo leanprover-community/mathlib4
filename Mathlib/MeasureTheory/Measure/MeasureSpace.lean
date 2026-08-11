@@ -1471,11 +1471,11 @@ theorem ae_zero {_m0 : MeasurableSpace α} : ae (0 : Measure α) = ⊥ :=
 
 @[gcongr, mono]
 theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
-  fun s hs ↦ bot_unique <| (Pi.le_def.1 h sᶜ).trans hs.le
+  fun s hs ↦ bot_unique <| (h sᶜ).trans_eq hs
 
 protected theorem AEDisjoint.of_le (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
     AEDisjoint ν s t :=
-  bot_unique <| (Pi.le_def.1 h' (s ∩ t)).trans h.le
+  bot_unique <| (h' (s ∩ t)).trans_eq h
 
 theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (h' : ν ≤ μ) :
     NullMeasurableSet s ν := by
@@ -1485,14 +1485,11 @@ theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (h' : ν ≤ μ) :
 lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
     NullMeasurableSet s (c • μ) := by
   obtain ⟨t, ht, hst⟩ := h
-  refine ⟨t, ht, hst.filter_mono fun u hu ↦ ?_⟩
-  rw [mem_ae_iff, μ.smul_apply, smul_eq_mul, mem_ae_iff.2 hu, mul_zero]
+  exact ⟨t, ht, hst.filter_mono (ae_smul_measure_le c)⟩
 
 lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ := by
-  refine ⟨fun ⟨t, ht, hst⟩ ↦ ⟨t, ht,  hst.filter_mono fun u hu ↦ ?_⟩, fun h ↦ h.smul_measure c⟩
-  rw [mem_ae_iff, μ.smul_apply, smul_eq_mul, mul_eq_zero, or_iff_not_imp_left] at hu
-  exact hu hc
+  simp only [nullMeasurableSet_iff_eventuallyMeasurableSet, μ.ae_ennreal_smul_measure_eq hc]
 
 theorem _root_.AEMeasurable.mono_measure {f : α → β} (h : AEMeasurable f μ) (h' : ν ≤ μ) :
     AEMeasurable f ν := by

@@ -195,7 +195,7 @@ theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : A
 
 theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
     g ∘ f =ᵐ[μ] g' ∘ f :=
-  ae_eq_comp' hf h Measure.AbsolutelyContinuous.rfl
+  ae_eq_comp' hf h .rfl
 
 end MeasureTheory
 

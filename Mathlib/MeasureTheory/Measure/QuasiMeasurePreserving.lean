@@ -110,11 +110,11 @@ theorem ae (h : QuasiMeasurePreserving f μa μb) {p : β → Prop} (hg : ∀ᵐ
   h.tendsto_ae hg
 
 @[gcongr]
-theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
+theorem ae_eq_comp (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
     g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
   h.ae hg
 
-@[deprecated (since := "2026-08-01")] alias ae_eq_comp := ae_eq
+@[deprecated (since := "2026-08-01")] alias ae_eq := ae_eq_comp
 
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
@@ -192,7 +192,7 @@ theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : Measu
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
     (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
-  simpa only [← preimage_smul_inv] using! h_qmp.ae_eq h_ae_eq
+  simpa only [← preimage_smul_inv] using! h_qmp.ae_eq_comp h_ae_eq
 
 end QuasiMeasurePreserving
 

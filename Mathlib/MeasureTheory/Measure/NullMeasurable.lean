@@ -416,7 +416,7 @@ end NullMeasurable
 
 section AEMeasurable
 
-variable [m : MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {f : α → β}
+variable {m : MeasurableSpace α} [MeasurableSpace β] {μ : Measure α} {f : α → β}
 
 protected theorem _root_.AEMeasurable.nullMeasurable (h : AEMeasurable f μ) :
     NullMeasurable f μ :=
