@@ -210,7 +210,7 @@ section Bot
 instance instBot : Bot (WithZero α) :=
   ⟨none⟩
 
-@[simp← ]
+@[simp ←]
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 end Bot

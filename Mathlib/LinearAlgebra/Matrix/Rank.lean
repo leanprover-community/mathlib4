@@ -382,7 +382,8 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
     simp only [hBdef, mul_apply, of_apply, submatrix_apply, id_eq]
     by_cases hi : i ∈ s
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
-        fun a ha => by rw [if_neg fun he => ha (Subtype.ext he), zero_mul], if_pos rfl, one_mul]
+        fun a ha => by rw [ite_eq_right fun he => ha (Subtype.ext he), zero_mul],
+        ite_eq_left rfl, one_mul]
     · have h0 : A i = 0 := hz i hi
       aesop
   calc A.rank = (B * A.submatrix Subtype.val id).rank := by rw [hB]

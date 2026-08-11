@@ -177,7 +177,7 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
-    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
+    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, ite_eq_left]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv

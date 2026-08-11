@@ -668,7 +668,7 @@ singleton indicator functions.
   set s := h.toFinset with hs
   by_cases hw : w ∈ s
   · simp [hw]
-  · simp only [hw, if_false]
+  · simp only [hw, ite_false]
     have : w ∉ support D := by simpa only [hs, Set.Finite.mem_toFinset] using hw
     exact (notMem_support.mp this).symm
 

@@ -250,7 +250,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
-      rw [dif_pos hb, hg hb]
+      rw [dite_eq_left hb, hg hb]
 
 variable [Div α] [MulDivCancelClass α] {f : ι → α} {s : Finset ι} {i : ι}
 

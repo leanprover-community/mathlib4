@@ -69,12 +69,12 @@ theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
 
 @[simp]
 theorem roots_zero : (0 : R[X]).roots = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem card_roots (hp0 : p ≠ 0) : (Multiset.card (roots p) : WithBot ℕ) ≤ degree p := by
   classical
   unfold roots
-  rw [dif_neg hp0]
+  rw [dite_eq_right hp0]
   exact (Classical.choose_spec (exists_multiset_roots hp0)).1
 
 theorem card_roots' (p : R[X]) : Multiset.card p.roots ≤ natDegree p := by
@@ -99,7 +99,7 @@ theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by
   by_cases hp : p = 0
   · simp [hp]
-  rw [roots_def, dif_neg hp]
+  rw [roots_def, dite_eq_right hp]
   exact (Classical.choose_spec (exists_multiset_roots hp)).2 a
 
 @[simp]

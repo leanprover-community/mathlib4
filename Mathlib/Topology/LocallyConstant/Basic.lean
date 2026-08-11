@@ -536,9 +536,9 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     · cases i <;> rw [continuousOn_iff_continuous_domRestrict]
       · convert! hg
         ext x
-        simp only [cond_false, domRestrict_apply, Subtype.coe_eta, dite_eq_right_iff]
+        simp only [Bool.cond_false, domRestrict_apply, Subtype.coe_eta, dite_eq_right_iff]
         exact fun hx ↦ hfg x ⟨hx, x.prop⟩
-      · simp only [cond_true, domRestrict_dite, Subtype.coe_eta]
+      · simp only [Bool.cond_true, domRestrict_dite, Subtype.coe_eta]
         exact hf
 
 @[simp]
@@ -549,7 +549,7 @@ lemma piecewise_apply_left {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : Is
     piecewise h₁ h₂ h f g hfg x = f ⟨x, hx⟩ := by
   simp only [piecewise,
     coe_mk]
-  rw [dif_pos hx]
+  rw [dite_eq_left hx]
 
 @[simp]
 lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂)

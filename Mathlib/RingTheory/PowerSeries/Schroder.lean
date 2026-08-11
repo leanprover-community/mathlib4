@@ -86,7 +86,7 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     apply sum_congr rfl
     intros x hx
     have hx' : 0 < x := by grind
-    rw [if_pos hx']
+    rw [ite_eq_left hx']
   rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by lia,
     sum_range_succ]
   grind [largeSchroder_zero]

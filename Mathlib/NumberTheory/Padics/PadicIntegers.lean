@@ -361,7 +361,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     unfold PadicInt.inv
     rw [norm_eq_padic_norm] at h
     dsimp only
-    rw [dif_pos h]
+    rw [dite_eq_left h]
     apply Subtype.ext_iff.2
     simp [mul_inv_cancel₀ hk]
 

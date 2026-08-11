@@ -308,7 +308,7 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 
 @[to_dual inf_le_ite]
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
-  if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
+  if h : P then (ite_eq_left h).trans_le le_sup_left else (ite_eq_right h).trans_le le_sup_right
 
 @[to_dual (reorder := H (x y))]
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}

@@ -116,8 +116,8 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   · dsimp only
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
-  · exact dif_neg hi
-  · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
+  · exact dite_eq_right hi
+  · simp only [iInter_dite, biInter_eq_iInter, dite_eq_left (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter α} {s}

@@ -502,9 +502,9 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
     then X.ιMapObj p i j h
     else 0
 
-lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dite_eq_left h
 
-lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dite_eq_right h
 
 variable {X Y} in
 @[reassoc (attr := simp)]

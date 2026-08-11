@@ -262,7 +262,7 @@ theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred
   induction s using Multiset.induction with
   | empty => simp
   | cons a s ih =>
-    simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_if]; clear ih; congr
+    simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_ite]; clear ih; congr
     split_ifs <;> simp
 
 /-! ### countP -/

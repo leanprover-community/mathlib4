@@ -125,7 +125,7 @@ lemma LSeries.tendsto_atTop {f : ℕ → ℂ} (ha : abscissaOfAbsConv f < ⊤) :
     Tendsto (fun x : ℝ ↦ LSeries f x) atTop (nhds (f 1)) := by
   let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
   have hF₀ : F 0 = 0 := rfl
-  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+  have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
   have ha' : abscissaOfAbsConv F < ⊤ := (abscissaOfAbsConv_congr hF).symm ▸ ha
   simp_rw [← LSeries_congr hF]
   convert! LSeries.tendsto_cpow_mul_atTop (n := 0) (fun _ hm ↦ Nat.le_zero.mp hm ▸ hF₀) ha' using 1
@@ -149,7 +149,7 @@ lemma LSeries_eventually_eq_zero_iff' {f : ℕ → ℂ} :
     refine ⟨fun H ↦ ?_, fun H ↦ Eventually.of_forall fun x ↦ ?_⟩
     · let F (n : ℕ) : ℂ := if n = 0 then 0 else f n
       have hF₀ : F 0 = 0 := rfl
-      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := if_neg hn
+      have hF {n : ℕ} (hn : n ≠ 0) : F n = f n := ite_eq_right hn
       suffices ∀ n, F n = 0 from fun n hn ↦ (hF hn).symm.trans (this n)
       have ha : ¬ abscissaOfAbsConv F = ⊤ := abscissaOfAbsConv_congr hF ▸ h
       have h' (x : ℝ) : LSeries F x = LSeries f x := LSeries_congr hF x

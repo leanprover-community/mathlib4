@@ -241,7 +241,7 @@ lemma isIso_pushoutSection_iff :
 
 set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] IsAffineOpen.isoSpec_hom in
-attribute [local simp← ] Scheme.Hom.resLE_eq_morphismRestrict in
+attribute [local simp ←] Scheme.Hom.resLE_eq_morphismRestrict in
 lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
     (hUX : IsAffineOpen UX) : IsIso (pushoutSection H hUST hUSX hUY) := by
   refine (isIso_pushoutSection_iff ..).mpr (IsPullback.of_map_of_faithful Scheme.Spec ?_).unop

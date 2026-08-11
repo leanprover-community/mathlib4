@@ -324,7 +324,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
       simp only [Submonoid.mem_comap.mp (hφ hq), Submonoid.mem_comap.mp (hφ hq'),
-        dif_pos, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
+        dite_eq_left, ofFractionRing.injEq, Localization.mk_eq_mk_iff]
       refine Localization.r_of_eq ?_
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
@@ -340,8 +340,8 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     have hq : φ q ∈ S[X]⁰ := hφ q.prop
     have hq' : φ q' ∈ S[X]⁰ := hφ q'.prop
     have hqq' : φ ↑(q * q') ∈ S[X]⁰ := by simpa using Submonoid.mul_mem _ hq hq'
-    simp_rw [← ofFractionRing_mul, Localization.mk_mul, liftOn_ofFractionRing_mk, dif_pos hq,
-      dif_pos hq', dif_pos hqq', ← ofFractionRing_mul, Submonoid.coe_mul, map_mul,
+    simp_rw [← ofFractionRing_mul, Localization.mk_mul, liftOn_ofFractionRing_mk, dite_eq_left hq,
+      dite_eq_left hq', dite_eq_left hqq', ← ofFractionRing_mul, Submonoid.coe_mul, map_mul,
       Localization.mk_mul, Submonoid.mk_mul_mk]
 
 theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
@@ -869,7 +869,7 @@ def numDenom (x : K⟮X⟯) : K[X] × K[X] :=
   (by
       intro p q a hq ha
       dsimp
-      rw [if_neg hq, if_neg (mul_ne_zero ha hq)]
+      rw [ite_eq_right hq, ite_eq_right (mul_ne_zero ha hq)]
       have ha' : a.leadingCoeff ≠ 0 := Polynomial.leadingCoeff_ne_zero.mpr ha
       have hainv : a.leadingCoeff⁻¹ ≠ 0 := inv_ne_zero ha'
       simp only [Prod.ext_iff, gcd_mul_left, normalize_apply a, Polynomial.coe_normUnit, mul_assoc,
@@ -896,9 +896,9 @@ theorem numDenom_div (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     numDenom (algebraMap _ _ p / algebraMap _ _ q) =
       (Polynomial.C (q / gcd p q).leadingCoeff⁻¹ * (p / gcd p q),
         Polynomial.C (q / gcd p q).leadingCoeff⁻¹ * (q / gcd p q)) := by
-  rw [numDenom, liftOn'_div, if_neg hq]
+  rw [numDenom, liftOn'_div, ite_eq_right hq]
   intro p
-  rw [if_pos rfl, if_neg (one_ne_zero' K[X])]
+  rw [ite_eq_left rfl, ite_eq_right (one_ne_zero' K[X])]
   simp
 
 /-- `RatFunc.num` is the numerator of a rational function,

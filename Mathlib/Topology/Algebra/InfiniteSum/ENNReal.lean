@@ -283,8 +283,11 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
-  _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
+  calc
+    ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b : Bool, if b = true then s else t, f x :=
+      tsum_congr_set_coe _ (by ext x; simp [or_comm])
+    _ ≤ _ := by
+      simpa using tsum_iUnion_le f (fun b : Bool => if b = true then s else t)
 
 open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :

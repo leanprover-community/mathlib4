@@ -691,7 +691,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
     refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
-    rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
+    rwa [coeff_add, hp, zero_add, coeff_C, ite_eq_left rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [map_mul, aeval_X, mul_eq_zero] at aeval_eq
     rcases aeval_eq with aeval_eq | x_eq

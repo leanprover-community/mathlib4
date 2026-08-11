@@ -476,13 +476,13 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
         surjective_id.iInf_congr _ fun t => iInf_congr_Prop Iff.rfl fun ht => ?_
   dsimp
   by_cases htr : ∀ n, ediam (t n) ≤ r
-  · rw [iInf_eq_if, if_pos htr]
+  · rw [iInf_eq_if, ite_eq_left htr]
     congr 1 with n : 1
-    simp only [iInf_eq_if, htr n, if_true]
-  · rw [iInf_eq_if, if_neg htr]
+    simp only [iInf_eq_if, htr n, ite_true]
+  · rw [iInf_eq_if, ite_eq_right htr]
     push Not at htr; rcases htr with ⟨n, hn⟩
     refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
-    rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
+    rw [iSup_eq_if, ite_eq_left, iInf_eq_if, ite_eq_right]
     · exact hn.not_ge
     rcases ediam_pos_iff.1 hn.pos with ⟨x, hx, -⟩
     exact ⟨x, hx⟩

@@ -323,10 +323,10 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       · exact ⊤
       exact ↑(Multiset.card (Classical.choose (pf a h)))
     rintro a b ⟨ane0, ⟨c, hc, b_eq⟩⟩
-    rw [dif_neg ane0]
+    rw [dite_eq_right ane0]
     by_cases h : b = 0
     · simp [h, lt_top_iff_ne_top]
-    · rw [dif_neg h, Nat.cast_lt]
+    · rw [dite_eq_right h, Nat.cast_lt]
       have cne0 : c ≠ 0 := by
         refine mt (fun con => ?_) h
         rw [b_eq, con, mul_zero]

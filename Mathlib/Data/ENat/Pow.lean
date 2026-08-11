@@ -76,7 +76,7 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
   have : (0 : ℕ∞) ≤ 1 := zero_le_one
-  rw [epow_def, if_neg, if_neg, if_neg] <;> grind
+  rw [epow_def, ite_eq_right, ite_eq_right, ite_eq_right] <;> grind
 
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z

@@ -126,12 +126,12 @@ def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
 
 lemma one_le_logSizeRadius (ha : 1 < a) :
     1 ≤ logSizeRadius t V a c := by
-  rw [logSizeRadius, dif_pos ha]
+  rw [logSizeRadius, dite_eq_left ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).1
 
 lemma card_le_logSizeRadius_le_pow_logSizeRadius (ha : 1 < a) :
     #(V.filter fun x ↦ edist t x ≤ logSizeRadius t V a c * c) ≤ a ^ (logSizeRadius t V a c) := by
-  rw [logSizeRadius, dif_pos ha]
+  rw [logSizeRadius, dite_eq_left ha]
   exact (Nat.find_spec (exists_radius_le t V ha c)).2
 
 lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
@@ -141,7 +141,7 @@ lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
   · simp only [h_one, tsub_self, pow_zero, Nat.cast_one, zero_mul, nonpos_iff_eq_zero,
       Nat.one_le_cast, Finset.one_le_card]
     exact ⟨t, by simpa⟩
-  rw [logSizeRadius, dif_pos ha] at h_one ⊢
+  rw [logSizeRadius, dite_eq_left ha] at h_one ⊢
   have : Nat.find (exists_radius_le t V ha c) - 1 < Nat.find (exists_radius_le t V ha c) := by
     simp
   have h := Nat.find_min (exists_radius_le t V ha c) this

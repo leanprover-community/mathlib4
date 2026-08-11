@@ -154,7 +154,7 @@ theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom
   · simp only [restrict₀_apply, MonoidWithZeroHom.coe_ofClass, restrict_def, map_eq_zero,
       dite_eq_left_iff, coe_ne_zero, imp_false, not_not] at hk
     by_contra h0
-    rw [dif_pos (by rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
+    rw [dite_eq_left (by rw [dite_eq_left ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
   · convert! h
     simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]

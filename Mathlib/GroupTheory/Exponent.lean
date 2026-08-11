@@ -132,7 +132,7 @@ theorem exponent_eq_sInf :
     Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
   by_cases h : Monoid.ExponentExists G
   · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
-    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    rw [Monoid.exponent, dite_eq_left h, Nat.sInf_def h']
     congr
   · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
       Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
@@ -150,9 +150,9 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
   classical
   by_cases h : ExponentExists G
-  · simp_rw [exponent, dif_pos h]
+  · simp_rw [exponent, dite_eq_left h]
     exact (Nat.find_spec h).2 g
-  · simp_rw [exponent, dif_neg h, pow_zero]
+  · simp_rw [exponent, dite_eq_right h, pow_zero]
 
 @[to_additive]
 theorem pow_eq_mod_exponent {n : ℕ} (g : G) : g ^ n = g ^ (n % exponent G) :=
@@ -168,7 +168,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
   classical
-  rw [exponent, dif_pos]
+  rw [exponent, dite_eq_left]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
   · exact ⟨n, hpos, hG⟩

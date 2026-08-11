@@ -224,12 +224,12 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         ext x
         dsimp [g, LocallyConstant.ofIsClopen]
         rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+          Function.comp_apply, ite_eq_right]
         refine mt (fun α => hVU α) ?_
         simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, ite_eq_left hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map

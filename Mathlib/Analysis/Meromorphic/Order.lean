@@ -55,7 +55,7 @@ noncomputable def meromorphicOrderAt (f : 𝕜 → E) (x : 𝕜) : WithTop ℤ :
 @[simp]
 lemma meromorphicOrderAt_of_not_meromorphicAt (hf : ¬ MeromorphicAt f x) :
     meromorphicOrderAt f x = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 lemma meromorphicAt_of_meromorphicOrderAt_ne_zero (hf : meromorphicOrderAt f x ≠ 0) :
     MeromorphicAt f x := by

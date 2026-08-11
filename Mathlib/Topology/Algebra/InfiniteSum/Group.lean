@@ -78,7 +78,7 @@ theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq
   by_cases h : b' = b
   · rw [h, update_self]
     simp
-  · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
+  · simp only [h, update_of_ne, ite_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
 theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :

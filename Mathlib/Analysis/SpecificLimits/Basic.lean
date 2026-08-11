@@ -610,7 +610,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
   · conv_rhs => simp
     split_ifs
     exacts [hf0 _, zero_lt_one]
-  · simpa only [Subtype.coe_prop, dif_pos, Subtype.coe_eta]
+  · simpa only [Subtype.coe_prop, dite_eq_left, Subtype.coe_eta]
 
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,

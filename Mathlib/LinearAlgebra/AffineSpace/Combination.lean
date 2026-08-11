@@ -621,7 +621,7 @@ theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (
 @[deprecated Finset.sum_pi_single' (since := "2026-04-16")]
 theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
     ∑ j ∈ s, affineCombinationSingleWeights k i j = 1 := by
-  rw [affineCombinationSingleWeights, s.sum_pi_single', if_pos h]
+  rw [affineCombinationSingleWeights, s.sum_pi_single', ite_eq_left h]
 
 /-- Weights for expressing the subtraction of two points as a `weightedVSub`. -/
 def weightedVSubVSubWeights [DecidableEq ι] (i j : ι) : ι → k :=
@@ -754,7 +754,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i �
       rw [Finsupp.linearCombination_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
         intro i hi
-        simp [w', Set.indicator_apply, if_pos hi]
+        simp [w', Set.indicator_apply, ite_eq_left hi]
       · exact fun _ => zero_smul k _
 
 /-- An `affineCombination` with sum of weights 1 is in the

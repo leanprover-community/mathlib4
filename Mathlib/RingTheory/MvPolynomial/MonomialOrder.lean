@@ -193,7 +193,7 @@ theorem degree_X [Nontrivial R] {s : σ} :
     m.degree (X s : MvPolynomial σ R) = Finsupp.single s 1 := by
   classical
   change m.degree (monomial (Finsupp.single s 1) (1 : R)) = _
-  rw [degree_monomial, if_neg one_ne_zero]
+  rw [degree_monomial, ite_eq_right one_ne_zero]
 
 @[simp] theorem degree_one : m.degree (1 : MvPolynomial σ R) = 0 := by
   nontriviality R
@@ -320,7 +320,7 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   classical
   by_cases hd : d = 0
   · simp [hd]
-  · rw [coeff_C, if_neg (Ne.symm hd)]
+  · rw [coeff_C, ite_eq_right (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩

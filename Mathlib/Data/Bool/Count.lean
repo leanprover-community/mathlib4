@@ -90,7 +90,7 @@ theorem two_mul_count_bool_eq_ite (hl : IsChain (· ≠ ·) l) (b : Bool) :
       if Even (length l) then length l else
       if Option.some b == l.head? then length l + 1 else length l - 1 := by
   by_cases h2 : Even (length l)
-  · rw [if_pos h2, hl.two_mul_count_bool_of_even h2]
+  · rw [ite_eq_left h2, hl.two_mul_count_bool_of_even h2]
   · rcases l with - | ⟨x, l⟩
     · exact (h2 .zero).elim
     grind [hl.tail.two_mul_count_bool_of_even]

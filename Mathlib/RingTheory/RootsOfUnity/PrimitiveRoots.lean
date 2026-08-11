@@ -436,7 +436,7 @@ theorem eq_neg_one_of_two_right [NoZeroDivisors R] {ζ : R} (h : IsPrimitiveRoot
 theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
     IsPrimitiveRoot (-1 : R) 2 := by
   convert! IsPrimitiveRoot.orderOf (-1 : R)
-  rw [orderOf_neg_one, if_neg <| by rwa [ringChar.eq_iff.mpr h]]
+  rw [orderOf_neg_one, ite_eq_right <| by rwa [ringChar.eq_iff.mpr h]]
 
 /-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
@@ -663,7 +663,7 @@ lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n
 if there is a primitive root of unity in `R`. -/
 theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     Multiset.card (nthRoots n (1 : R)) = n := by
-  rw [card_nthRoots h, if_pos ⟨ζ, h.pow_eq_one⟩]
+  rw [card_nthRoots h, ite_eq_left ⟨ζ, h.pow_eq_one⟩]
 
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
     (nthRoots n a).Nodup := by

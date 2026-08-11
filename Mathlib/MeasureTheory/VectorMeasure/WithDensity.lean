@@ -46,11 +46,11 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
   if hf : Integrable f μ then
     { measureOf' := fun s => if MeasurableSet s then ∫ x in s, f x ∂μ else 0
       empty' := by simp
-      not_measurable' := fun _ hs => if_neg hs
+      not_measurable' := fun _ hs => ite_eq_right hs
       m_iUnion' := fun s hs₁ hs₂ => by
         convert! hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
-        · rw [if_pos (hs₁ n)]
-        · rw [if_pos (MeasurableSet.iUnion hs₁)] }
+        · rw [ite_eq_left (hs₁ n)]
+        · rw [ite_eq_left (MeasurableSet.iUnion hs₁)] }
   else 0
 
 open Measure
@@ -58,7 +58,9 @@ open Measure
 variable {f g : α → E}
 
 theorem withDensityᵥ_apply (hf : Integrable f μ) {s : Set α} (hs : MeasurableSet s) :
-    μ.withDensityᵥ f s = ∫ x in s, f x ∂μ := by rw [withDensityᵥ, dif_pos hf]; exact dif_pos hs
+    μ.withDensityᵥ f s = ∫ x in s, f x ∂μ := by
+  rw [withDensityᵥ, dite_eq_left hf]
+  exact ite_eq_left hs
 
 @[simp]
 theorem withDensityᵥ_zero : μ.withDensityᵥ (0 : α → E) = 0 := by
@@ -73,7 +75,7 @@ theorem withDensityᵥ_neg : μ.withDensityᵥ (-f) = -μ.withDensityᵥ f := by
     rw [_root_.neg_apply, withDensityᵥ_apply hf hi, ← integral_neg,
       withDensityᵥ_apply hf.neg hi]
     simp only [Pi.neg_apply]
-  · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, neg_zero]
+  · rw [withDensityᵥ, withDensityᵥ, dite_eq_right hf, dite_eq_right, neg_zero]
     rwa [integrable_neg_iff]
 
 theorem withDensityᵥ_neg' : (μ.withDensityᵥ fun x => -f x) = -μ.withDensityᵥ f :=
@@ -113,7 +115,7 @@ theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norme
     simp only [Pi.smul_apply]
   · by_cases hr : r = 0
     · rw [hr, zero_smul, zero_smul, withDensityᵥ_zero]
-    · rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg, smul_zero]
+    · rw [withDensityᵥ, withDensityᵥ, dite_eq_right hf, dite_eq_right, smul_zero]
       rwa [integrable_smul_iff hr f]
 
 theorem withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
@@ -146,7 +148,7 @@ theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α �
   · refine VectorMeasure.AbsolutelyContinuous.mk fun i hi₁ hi₂ => ?_
     rw [toENNRealVectorMeasure_apply_measurable hi₁] at hi₂
     rw [withDensityᵥ_apply hf hi₁, Measure.restrict_zero_set hi₂, integral_zero_measure]
-  · rw [withDensityᵥ, dif_neg hf]
+  · rw [withDensityᵥ, dite_eq_right hf]
     exact VectorMeasure.AbsolutelyContinuous.zero _
 
 /-- Having the same density implies the underlying functions are equal almost everywhere. -/
@@ -162,7 +164,7 @@ theorem WithDensityᵥEq.congr_ae {f g : α → E} (h : f =ᵐ[μ] g) :
     rw [withDensityᵥ_apply hf hi, withDensityᵥ_apply (hf.congr h) hi]
     exact integral_congr_ae (ae_restrict_of_ae h)
   · have hg : ¬Integrable g μ := by intro hg; exact hf (hg.congr h.symm)
-    rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg hg]
+    rw [withDensityᵥ, withDensityᵥ, dite_eq_right hf, dite_eq_right hg]
 
 theorem Integrable.withDensityᵥ_eq_iff [CompleteSpace E]
     {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) :

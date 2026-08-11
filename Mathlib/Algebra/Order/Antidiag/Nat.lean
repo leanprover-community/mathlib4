@@ -195,7 +195,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_ofPred_eq]
   · rw [Finset.prod_filter]
     convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
-    rw [if_pos rfl]
+    rw [ite_eq_left rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finsetProd_iff hp.1.prime]
     push Not

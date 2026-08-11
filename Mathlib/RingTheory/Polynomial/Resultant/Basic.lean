@@ -95,7 +95,7 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
   by_cases hn : f.natDegree = 0
   · ext ⟨i, hi⟩; lia
   ext ⟨i, hi⟩ ⟨j, hj⟩
-  rw [sylvesterDeriv, dif_neg hn]
+  rw [sylvesterDeriv, dite_eq_right hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
     rw [Matrix.updateRow_ne (Fin.ne_of_val_ne hi'),
@@ -224,7 +224,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
           have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
               Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
           simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
-          rw [if_neg, mul_zero]
+          rw [ite_eq_right, mul_zero]
           lia
       lia
   rw [resultant, resultant, ← this m le_rfl]
@@ -306,7 +306,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       · congr 1; lia
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by lia)]
+      rw [ite_eq_left (by lia)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,

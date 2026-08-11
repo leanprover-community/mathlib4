@@ -229,7 +229,7 @@ end Complex
 
 namespace Real
 
-attribute [local simp← ] Complex.ofReal_choose in
+attribute [local simp ←] Complex.ofReal_choose in
 attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by

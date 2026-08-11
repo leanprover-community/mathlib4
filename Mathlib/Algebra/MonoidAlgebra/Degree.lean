@@ -342,12 +342,12 @@ theorem coeff_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     (p * q).coeff (ap + aq) = p.coeff ap * q.coeff aq := by
   classical
   simp_rw [coeff_mul, Finsupp.sum]
-  rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
-  · refine fun a ha hne => if_neg (fun he => ?_)
+  rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, ite_eq_left rfl]
+  · refine fun a ha hne => ite_eq_right (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
     exact (add_lt_add_right (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
-  · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
-  · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
+  · intro h; rw [ite_eq_left rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
+  · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => ite_eq_right <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
     have := addLeftMono_of_addLeftStrictMono B
@@ -602,9 +602,11 @@ lemma Monic.supDegree_pow
     [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction n with
-  | zero => rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, if_neg one_ne_zero, hzero]
-  | succ n ih => rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero,
-      ih, succ_nsmul']
+  | zero =>
+    rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, ite_eq_right one_ne_zero, hzero]
+  | succ n ih =>
+    rw [pow_succ', (hp.pow hadd hD).supDegree_mul_of_ne_zero_left hD hadd hp.ne_zero, ih,
+      succ_nsmul']
 
 end AddMonoid
 

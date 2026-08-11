@@ -298,13 +298,13 @@ def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   else fun x => f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
-    lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
+    lift' f (mk a) = f a := by rw [lift', dite_eq_left h, lift_mk]
 
 @[fun_prop]
 theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous (lift' f) := by
   by_cases hf : UniformContinuous f
-  · rwa [lift', dif_pos hf, uniformContinuous_lift]
-  · rw [lift', dif_neg hf]
+  · rwa [lift', dite_eq_left hf, uniformContinuous_lift]
+  · rw [lift', dite_eq_right hf]
     exact uniformContinuous_of_const fun a _ => rfl
 
 /-- The separation quotient functor acting on functions. -/
