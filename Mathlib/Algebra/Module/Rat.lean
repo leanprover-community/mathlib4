@@ -116,6 +116,7 @@ lemma HasUniqueDiv.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : HasUni
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hxy)
 
+variable (M) in
 /-- A `ℚ≥0`-module is torsion-free as a group.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
@@ -131,6 +132,7 @@ lemma HasUniqueDiv.of_module_rat [AddCommGroup M] [Module ℚ M] : HasUniqueDiv 
   nsmul_right_injective n hn x y hxy := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)
 
+variable (M) in
 /-- A `ℚ`-module is torsion-free as a group.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
