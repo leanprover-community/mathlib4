@@ -18,8 +18,6 @@ exact pairings and duals.
 ## Main definitions
 
 * `ExactPairing` of two objects of a monoidal category
-* Explicit operations on exact pairings, including `ExactPairing.tensorOf` and
-  `ExactPairing.rightMate`
 * Type classes `HasLeftDual` and `HasRightDual` that capture that a pairing exists
 * The `rightAdjointMate f` as a morphism `fᘁ : Yᘁ ⟶ Xᘁ` for a morphism `f : X ⟶ Y`
 * The classes of `RightRigidCategory`, `LeftRigidCategory` and `RigidCategory`
@@ -137,10 +135,8 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation_evaluation' := by monoidal_coherence
   evaluation_coevaluation' := by monoidal_coherence
 
-@[simp]
 lemma ExactPairing.unit_coevaluation : η_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).inv := rfl
 
-@[simp]
 lemma ExactPairing.unit_evaluation : ε_ (𝟙_ C) (𝟙_ C) = (ρ_ (𝟙_ C)).hom := rfl
 
 /-- The tensor product of exact pairings. Given exact pairings `(X₁, Y₁)` and `(X₂, Y₂)`,
