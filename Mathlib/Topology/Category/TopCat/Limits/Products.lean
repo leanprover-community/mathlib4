@@ -150,18 +150,14 @@ equipped with the product topology.
 def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
   (limit.isLimit _).conePointUniqueUpToIso (prodBinaryFanIsLimit X Y)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
-    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+    (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd :=
   rfl
 
 -- Note that `(x : X ⨯ Y)` would mean `(x : ↑X × ↑Y)` below:
@@ -285,7 +281,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
           · rw [continuousOn_iff_continuous_domRestrict]
             convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
-              exact dif_pos hx
+              exact dite_eq_left hx
             fun_prop
           · exact h₁.isOpen_range
         · revert h x
@@ -298,7 +294,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             convert_to! Continuous
                 (g ∘ h₂.isEmbedding.toHomeomorph.symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
-              exact dif_neg hx
+              exact dite_eq_right hx
             apply Continuous.comp
             · exact g.hom.continuous_toFun
             · apply Continuous.comp (by fun_prop)
@@ -313,7 +309,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        rw [dif_neg]
+        rw [dite_eq_right]
         · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩

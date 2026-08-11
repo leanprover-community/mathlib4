@@ -163,7 +163,7 @@ theorem natDegree_lt_natDegree_iff (hp : p ≠ 0) : natDegree p < natDegree q �
 theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
   ext (_ | n)
   · simp
-  rw [coeff_C, if_neg (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
+  rw [coeff_C, ite_eq_right (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
   exact h.trans_lt (WithBot.coe_lt_coe.2 n.succ_pos)
 
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
@@ -653,7 +653,7 @@ theorem leadingCoeff_X_pow_add_C {n : ℕ} (hn : 0 < n) {r : R} :
     (X ^ n + C r).leadingCoeff = 1 := by
   nontriviality R
   rw [leadingCoeff, natDegree_X_pow_add_C, coeff_add, coeff_X_pow_self, coeff_C,
-    if_neg (pos_iff_ne_zero.mp hn), add_zero]
+    ite_eq_right (pos_iff_ne_zero.mp hn), add_zero]
 
 @[simp]
 theorem leadingCoeff_X_add_C [Semiring S] (r : S) : (X + C r).leadingCoeff = 1 := by

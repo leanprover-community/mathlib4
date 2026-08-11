@@ -93,8 +93,8 @@ def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
   left_inv p := by cases p <;> simp
   right_inv p := by
     induction p using ind with | h w hw =>
-    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
-        if_false, OnePoint.elim_infty, OnePoint.elim_some]
+    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, ite_true,
+        ite_false, OnePoint.elim_infty, OnePoint.elim_some]
     · have : w 0 ≠ 0 := fun h ↦ hw <| funext <| by simp_all
       use (w 0)⁻¹
       ext i
@@ -204,7 +204,7 @@ lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZe
       refine fun hb ↦ fixpointPolynomial_eq_zero_iff.not.mpr hg ?_
       simp [fixpointPolynomial, hb, hc, hd]
     · have : discrim (g 1 0) (g 1 1 - g 0 0) (-g 0 1) = 0 := by rw [discrim]; grind
-      simpa [parabolicFixedPoint, if_neg hc, sq, sub_eq_add_neg]
+      simpa [parabolicFixedPoint, ite_eq_right hc, sq, sub_eq_add_neg]
         using quadratic_eq_zero_iff_of_discrim_eq_zero hc this c
 
 lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]

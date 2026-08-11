@@ -181,10 +181,6 @@ theorem vlt.ne_zero (h : x <ᵥ y) : y ≠ 0 := by
 lemma zero_vlt_one : (0 : R) <ᵥ 1 :=
   not_vle_one_zero
 
-@[deprecated mul_vle_mul_left (since := "2026-01-06")]
-lemma vle_mul_right (z) (h : x ≤ᵥ y) : x * z ≤ᵥ y * z :=
-  mul_vle_mul_left h z
-
 lemma mul_vle_mul_right (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y :=
   vle_trans (veq_mul_comm _ _).1 (vle_trans (mul_vle_mul_left h z) ((veq_mul_comm _ _).1))
 
@@ -275,13 +271,11 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
   (mul_vle_mul_iff_left hz).not
 
 @[gcongr] alias ⟨_, mul_vlt_mul_left⟩ := mul_vlt_mul_iff_left
-@[deprecated (since := "2026-01-06")] alias vlt_mul_right := mul_vlt_mul_left
 
 @[simp] lemma mul_vlt_mul_iff_right (hx : 0 <ᵥ x) : x * y <ᵥ x * z ↔ y <ᵥ z :=
   (mul_vle_mul_iff_right hx).not
 
 @[gcongr] alias ⟨_, mul_vlt_mul_right⟩ := mul_vlt_mul_iff_right
-@[deprecated (since := "2026-01-06")] alias vlt_mul_left := mul_vlt_mul_right
 
 @[gcongr]
 lemma mul_veq_mul (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
@@ -623,7 +617,7 @@ instance : Inv (ValueGroupWithZero R) where
     · absurd hx
       apply vle_mul_cancel t.prop
       simpa using vle_trans h₁ (mul_vle_mul_left hy s)
-    · simp only [dif_neg hx, dif_neg hy]
+    · simp only [dite_eq_right hx, dite_eq_right hy]
       apply ValueGroupWithZero.sound
       · grw [veq_mul_comm, veq_mul_comm _ x]
         simpa using h₂
@@ -632,7 +626,7 @@ instance : Inv (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 0) :
-    (ValueGroupWithZero.mk x y)⁻¹ = ValueGroupWithZero.mk (y : R) ⟨x, hx⟩ := dif_neg hx
+    (ValueGroupWithZero.mk x y)⁻¹ = ValueGroupWithZero.mk (y : R) ⟨x, hx⟩ := dite_eq_right hx
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
@@ -643,7 +637,7 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
     rw [← ValueGroupWithZero.mk_zero 1, ← ValueGroupWithZero.mk_one_one,
       ValueGroupWithZero.mk_le_mk] at h
     simp [not_vle_one_zero] at h
-  inv_zero := dif_pos .rfl
+  inv_zero := dite_eq_left .rfl
   mul_inv_cancel := ValueGroupWithZero.ind fun x y h => by
     rw [ne_eq, ← ValueGroupWithZero.mk_zero 1, ValueGroupWithZero.mk_eq_mk] at h
     simp only [Submonoid.coe_one, mul_one, zero_mul, zero_vle, and_true] at h
@@ -831,14 +825,6 @@ instance : (supp R).IsPrime where
 section Ring
 
 variable {R : Type*} [Ring R] [ValuativeRel R] {a b c d : R}
-
-@[deprecated (since := "2026-01-06")] alias vle_mul_right_iff := mul_vle_mul_iff_left
-
-@[deprecated (since := "2026-01-06")] alias vle_mul_left_iff := mul_vle_mul_iff_right
-
-@[deprecated (since := "2026-01-06")] alias vlt_mul_right_iff := mul_vlt_mul_iff_left
-
-@[deprecated (since := "2026-01-06")] alias vlt_mul_left_iff := mul_vlt_mul_iff_right
 
 lemma mul_vlt_mul_of_vlt_of_vle (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
     a * c <ᵥ b * d :=
@@ -1149,7 +1135,6 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   · simp [restrict₀_apply, embed]
   · simp [restrict₀_apply, embed]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
 isomorphic to that of `w` via `h.orderMonoidIso`. Then the following diagram is commutative:
@@ -1170,10 +1155,9 @@ theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGrou
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
     h.orderMonoidIso
     (embed w x) = embed v x := by
-  simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
+  simp only [embed, coe_mk, ZeroHom.coe_mk]
   induction x using ValueGroupWithZero.ind with
-  | mk r s =>
-    simp
+  | mk r s => simp [Valuation.IsEquiv.orderMonoidIso_spec₀]
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/

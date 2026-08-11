@@ -68,7 +68,7 @@ theorem isIntegral_exp_neg_rat_mul_pi_mul_I (q : ℚ) :
 theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
   rw [sin.eq_1, mul_div_cancel₀ _ two_ne_zero]
   exact (isIntegral_exp_neg_rat_mul_pi_mul_I q).sub (isIntegral_exp_rat_mul_pi_mul_I q)
-    |>.mul isIntegral_int_I
+    |>.mul <| isIntegral_I ℤ
 
 /-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `cos` function. -/
 theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) := by

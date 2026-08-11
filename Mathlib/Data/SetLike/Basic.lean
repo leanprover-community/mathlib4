@@ -264,8 +264,6 @@ theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := b
 @[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
 alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 
-@[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
-
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simpa [← coe_subset_coe] using! Set.not_subset
 
