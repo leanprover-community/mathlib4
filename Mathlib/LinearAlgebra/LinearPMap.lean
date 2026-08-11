@@ -840,13 +840,7 @@ theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
   grind
 
 theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ f.toFun.range ↔ ∃ x : E, (x, y) ∈ f.graph := by
-  constructor <;> intro h
-  · rw [LinearMap.mem_range] at h
-    rcases h with ⟨⟨x, hx⟩, rfl⟩
-    use x
-    simp [hx]
   simp
-  grind
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
