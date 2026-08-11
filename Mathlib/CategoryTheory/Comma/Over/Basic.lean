@@ -173,7 +173,7 @@ section
 variable (X)
 
 /-- The forgetful functor mapping an arrow to its domain. -/
-@[stacks 001G]
+@[stacks 001G, implicit_reducible]
 def forget : Over X ⥤ T :=
   Comma.fst _ _
 

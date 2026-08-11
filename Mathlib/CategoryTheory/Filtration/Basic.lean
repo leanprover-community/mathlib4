@@ -58,10 +58,7 @@ abbrev obj (F : Filtration X ι) (i : ι) : C :=
 
 /-- The underlying diagram in `C` obtained by forgetting `MonoOver`. -/
 abbrev diagram (F : Filtration X ι) : ι ⥤ C :=
-  { obj := fun i ↦ F.obj i
-    map := fun f ↦ (F.toMonoOver.map f).hom.left
-    map_id := by simp
-    map_comp := by simp }
+  F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
 @[simp]
 lemma diagram_obj (F : Filtration X ι) (i : ι) :
@@ -129,9 +126,8 @@ instance : Category (FilteredObject C ι) where
       natTrans := f.natTrans ≫ g.natTrans
       comm := by
         intro i
-        dsimp only [Filtration.diagram, Filtration.inj, Filtration.obj]
-        rw [NatTrans.comp_app]
-        rw [Category.assoc, g.comm, ← Category.assoc, f.comm, Category.assoc] }
+        simp only [NatTrans.comp_app, Category.assoc, Hom.comm]
+        rw [← Category.assoc, f.comm, Category.assoc] }
   id_comp f := by
     apply Hom.ext <;> simp
   comp_id f := by
@@ -198,15 +194,9 @@ lemma compatibleWith_iff_exists_hom (f : F.X ⟶ G.X) :
     CompatibleWith (C := C) (F := F) (G := G) f ↔ ∃ φ : F ⟶ G, φ.hom = f := by
   constructor
   · rintro ⟨α, hα⟩
-    refine ⟨{ hom := f
-              natTrans := α
-              comm := ?_ }, rfl⟩
-    intro i
-    simpa using (hα i)
+    exact ⟨{ hom := f, natTrans := α, comm := hα }, rfl⟩
   · rintro ⟨φ, rfl⟩
-    refine ⟨φ.natTrans, ?_⟩
-    intro i
-    simp
+    exact ⟨φ.natTrans, φ.comm⟩
 
 end Compatibility
 
