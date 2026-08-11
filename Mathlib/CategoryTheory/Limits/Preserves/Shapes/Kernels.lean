@@ -43,6 +43,7 @@ lemma map_condition : G.map c.ι ≫ G.map f = 0 := by
 
 /-- A kernel fork for `f` is mapped to a kernel fork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[implicit_reducible]
 def map : KernelFork (G.map f) :=
   KernelFork.ofι (G.map c.ι) (c.map_condition G)
 
@@ -172,6 +173,7 @@ lemma map_condition : G.map f ≫ G.map c.π = 0 := by
 
 /-- A cokernel cofork for `f` is mapped to a cokernel cofork for `G.map f` if `G` is a functor
 which preserves zero morphisms. -/
+@[implicit_reducible]
 def map : CokernelCofork (G.map f) :=
   CokernelCofork.ofπ (G.map c.π) (c.map_condition G)
 
