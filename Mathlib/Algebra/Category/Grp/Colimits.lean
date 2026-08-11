@@ -248,11 +248,7 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
   ι :=
     { app j :=
         AddCommGrpCat.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
-      naturality _ _ _ := by
-        ext
-        dsimp
-        change Shrink.addEquiv.symm _ = _
-        rw [Quot.map_ι] }
+      naturality _ _ _ := by ext; simp }
 
 @[simp]
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrpCat.{w}) [Small.{w} (Quot F)] :

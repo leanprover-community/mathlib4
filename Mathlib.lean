@@ -6123,10 +6123,7 @@ public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.InsertNth
-<<<<<<< HEAD
 public import Mathlib.Order.Fin.Prod
-=======
->>>>>>> origin/mulstruct-assoc
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints
@@ -7560,6 +7557,7 @@ public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs

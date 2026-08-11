@@ -529,9 +529,9 @@ noncomputable instance _root_.Module.End.instDivisionRing
   inv f := if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <| bijective_of_ne_zero h).symm
   exists_pair_ne := ⟨0, 1, have := IsSimpleModule.nontrivial R M; zero_ne_one⟩
   mul_inv_cancel a a0 := by
-    simp_rw [dif_neg a0]; ext
+    simp_rw [dite_eq_right a0]; ext
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
