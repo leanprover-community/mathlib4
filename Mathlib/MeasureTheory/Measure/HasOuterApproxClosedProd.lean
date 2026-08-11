@@ -90,9 +90,9 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     rintro - ⟨-, ⟨s₁, hs₁, rfl⟩, -, ⟨t₁, ht₁, rfl⟩, rfl⟩ -
       ⟨-, ⟨s₂, hs₂, rfl⟩, -, ⟨t₂, ht₂, rfl⟩, rfl⟩ -
     refine ⟨_, ⟨fun i ↦ s₁ i ∩ s₂ i, ?_, rfl⟩, _, ⟨fun j ↦ t₁ j ∩ t₂ j, ?_, rfl⟩, ?_⟩
-    · simp only [Set.mem_pi, mem_univ, mem_setOf_eq, forall_const] at hs₁ hs₂ ⊢
+    · simp only [Set.mem_pi, mem_univ, mem_ofPred_eq, forall_const] at hs₁ hs₂ ⊢
       exact fun i ↦ (hs₁ i).inter (hs₂ i)
-    · simp only [Set.mem_pi, mem_univ, mem_setOf_eq, forall_const] at ht₁ ht₂ ⊢
+    · simp only [Set.mem_pi, mem_univ, mem_ofPred_eq, forall_const] at ht₁ ht₂ ⊢
       exact fun j ↦ (ht₁ j).inter (ht₂ j)
     simp [Set.pi_inter_distrib, Set.prod_inter_prod]
   have hπ2 : Prod.instMeasurableSpace = generateFrom π := by
@@ -108,7 +108,7 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     · exact ⟨fun _ ↦ Set.univ, fun _ ↦ ⟨fun _ ↦ Set.univ, by simp, by simp⟩, iUnion_const _⟩
   refine ext_of_generate_finite π hπ2 hπ1 ?_ hμν
   rintro - ⟨-, ⟨s, hs, rfl⟩, -, ⟨t, ht, rfl⟩, rfl⟩
-  simp only [Set.mem_pi, mem_univ, mem_setOf_eq, forall_const] at hs ht
+  simp only [Set.mem_pi, mem_univ, mem_ofPred_eq, forall_const] at hs ht
   have (p : (Π i, X i) × (Π j, Y j)) := ENNReal.continuous_coe.tendsto _ |>.comp <|
     (tendsto_finsetProd Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
       (HasOuterApproxClosed.tendsto_apprSeq (hs i)) (p.1 i))).mul

@@ -209,7 +209,7 @@ theorem selfAdjoint.val_re_map_spectrum (a : selfAdjoint A) :
 lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     IsConnected (σ ℂ a)ᶜ := by
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
-    rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
+    rw [← Set.inter_union_distrib_left, ← Set.ofPred_or] at this
     rw [← Set.inter_univ (σ ℂ a)ᶜ]
     convert this
     exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
@@ -222,7 +222,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
-    rw [Set.mem_setOf_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
+    rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
     simp_all
 
 namespace StarSubalgebra

@@ -78,7 +78,7 @@ theorem ramificationIdx'_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p
 
 theorem ramificationIdx'_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx' p P = 0 :=
-  dif_neg (by push Not; exact h)
+  dite_eq_right (by push Not; exact h)
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_zero := ramificationIdx'_eq_zero
 
@@ -112,7 +112,7 @@ theorem ramificationIdx'_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramification
 
 @[simp]
 theorem ramificationIdx'_bot : ramificationIdx' (⊥ : Ideal R) P = 0 :=
-  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
+  dite_eq_right <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_bot := ramificationIdx'_bot
 
@@ -167,7 +167,7 @@ lemma ramificationIdx'_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
   dsimp only [ramificationIdx']
   congr 1
   ext n
-  simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
+  simp only [Set.mem_ofPred_eq, Ideal.map_le_iff_le_comap]
   rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
     ← map_comap_of_equiv, ← Ideal.map_pow, map_comap_of_equiv, ← comap_coe (RingEquiv.symm _),
     comap_comap, RingEquiv.symm_symm, e.toRingEquiv_toRingHom, ← e.toAlgHom_toRingHom,
