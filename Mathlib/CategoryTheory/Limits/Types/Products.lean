@@ -229,7 +229,6 @@ noncomputable def productLimitCone :
       π := Discrete.natTrans (fun ⟨j⟩ =>
         ↾fun f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
-    have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
         simpa using! ConcreteCategory.congr_hom (w ⟨j⟩) x) }

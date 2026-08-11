@@ -19,7 +19,7 @@ As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasu
 `p : unitInterval`.
 
 Imagine a certain experience which has success probability `p`. If you repeat this experience
-infintely many times and independently, the number of failures before the first success
+infinitely many times and independently, the number of failures before the first success
 follows a geometric distribution with parameter `p`.
 
 ## Main definition
@@ -58,7 +58,7 @@ noncomputable def geometricMeasure (p : unitInterval) : Measure ℕ := if p ≠ 
 lemma geometricMeasure_eq (hp : p ≠ 0) :
     geometricMeasure p =
       Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n) :=
-  if_pos hp
+  ite_eq_left hp
 
 /-- The `positivty` tactic does not work for this goal. Use this lemma to rewrite
 `(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/

@@ -227,8 +227,8 @@ theorem replicate_inter (n : ℕ) (x : α) (s : Multiset α) :
   ext y
   rw [count_inter, count_replicate, count_replicate]
   by_cases h : x = y
-  · simp only [h, if_true]
-  · simp only [h, if_false, Nat.zero_min]
+  · simp only [h, ite_true]
+  · simp only [h, ite_false, Nat.zero_min]
 
 @[simp]
 theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :

@@ -508,9 +508,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     letI := Classical.decEq K
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
   mul_inv_cancel x hx := show x * dite _ (h := _) _ _ = _ by
-    rw [dif_neg hx]
+    rw [dite_eq_right hx]
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
