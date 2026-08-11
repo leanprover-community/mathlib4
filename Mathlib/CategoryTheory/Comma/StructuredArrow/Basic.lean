@@ -30,6 +30,7 @@ namespace CategoryTheory
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 
 /-- The category of `T`-structured arrows with domain `S : D` (here `T : C ⥤ D`),
 has as its objects `D`-morphisms of the form `S ⟶ T Y`, for some `Y : C`,
@@ -300,8 +301,6 @@ noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj
     · simp
     · apply T.map_injective
       simpa only [homMk_right, T.map_preimage, ← w m] using! (Category.id_comp _).symm
-
-variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
 
 /-- The functor `(S, F ⋙ G) ⥤ (S, G)`. -/
 @[simps!, implicit_reducible]
@@ -786,8 +785,6 @@ noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.o
     apply S.map_injective
     simpa only [homMk_left, S.map_preimage, ← w m] using! (Category.comp_id _).symm
 
-variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]
-
 /-- The functor `(F ⋙ G, S) ⥤ (G, S)`. -/
 @[simps!, implicit_reducible]
 def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ CostructuredArrow G S :=
@@ -1092,6 +1089,28 @@ def toStructuredArrow' (F : C ⥤ D) (d : D) :
     StructuredArrow.homMk f.unop.left.unop
       (Quiver.Hom.op_inj (by simp [dsimp% f.unop.w]))
 
+open CategoryTheory.Functor in
+/-- Equivalences of categories induce equivalences of `CostructuredArrow` categories. -/
+@[simps!]
+def congr
+    {S₁ : C ⥤ D} {S₂ : A ⥤ B} {T₁ : D} {T₂ : B} (e₁ : C ≌ A) (e₂ : D ≌ B)
+    (comm : S₁ ⋙ e₂.functor ≅ e₁.functor ⋙ S₂) (iso : e₂.functor.obj T₁ ≅ T₂) :
+    CostructuredArrow S₁ T₁ ≌ CostructuredArrow S₂ T₂ :=
+  map₂Iso (F := e₁) (G := e₂) comm.inv
+    (whiskerLeft _ (S₁.rightUnitor.inv ≫ whiskerLeft S₁ e₂.unitIso.hom ≫
+    (associator _ _ _).inv ≫ whiskerRight comm.hom e₂.inverse) ≫
+    (associator _ _ _).inv ≫
+    whiskerRight ((associator _ _ _).inv ≫ whiskerRight e₁.counitIso.hom S₂) _ ≫
+    (associator _ _ _).hom ≫ (leftUnitor _).hom) (by
+      ext X
+      dsimp
+      simp only [Category.comp_id, Category.id_comp, Category.assoc, ← Functor.map_comp,
+        ← Functor.map_comp_assoc, Iso.hom_inv_id_app, id_obj, comp_obj, Functor.map_id,
+        Equivalence.functor_unit_comp,
+        ← dsimp% e₂.unitIso.hom.naturality_1 (S₁.mapIso (e₁.unitIso.app X)),
+        dsimp% comm.hom.naturality_assoc (e₁.unitIso.hom.app X)]) (by cat_disch) iso.hom
+      (e₂.inverse.map iso.inv ≫ e₂.unitIso.inv.app T₁) (by simp) (by simp)
+
 end CostructuredArrow
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -1330,8 +1349,7 @@ end Prod
 
 namespace Comma
 
-variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
-  {T : Type u₃} [Category.{v₃} T] (L : A ⥤ T) (R : B ⥤ T)
+variable {T : Type u₅} [Category.{v₅} T] (L : A ⥤ T) (R : B ⥤ T)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor from the costructured arrow category on `snd L R` over `b : B` to the

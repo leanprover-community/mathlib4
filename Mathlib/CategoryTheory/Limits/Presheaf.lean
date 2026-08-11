@@ -59,51 +59,6 @@ open Category Limits Opposite ConcreteCategory
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
--- to be moved
-section
-
-variable {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
-
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
-@[simps]
-def CostructuredArrow.congr
-    {S₁ : C₁ ⥤ D₁} {S₂ : C₂ ⥤ D₂} {T₁ : D₁} {T₂ : D₂}
-    (e₁ : C₁ ≌ C₂) (e₂ : D₁ ≌ D₂)
-    (comm : S₁ ⋙ e₂.functor ≅ e₁.functor ⋙ S₂)
-    (iso : e₂.functor.obj T₁ ≅ T₂) : CostructuredArrow S₁ T₁ ≌ CostructuredArrow S₂ T₂ where
-  functor :=
-    CostructuredArrow.post _ e₂.functor _ ⋙
-      (CostructuredArrow.mapIso iso).functor ⋙ (CostructuredArrow.mapNatIso comm).functor ⋙
-      CostructuredArrow.pre e₁.functor _ _
-  inverse :=
-    CostructuredArrow.post _ e₂.inverse _ ⋙
-      (CostructuredArrow.mapIso
-        (e₂.inverse.mapIso iso.symm ≪≫ e₂.unitIso.symm.app T₁)).functor ⋙
-      (CostructuredArrow.mapNatIso
-        (Functor.isoWhiskerRight
-            ((Functor.leftUnitor _).symm ≪≫ Functor.isoWhiskerRight e₁.counitIso.symm _ ≪≫
-            Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft e₁.inverse comm.symm) _ ≪≫
-            Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (Functor.associator _ _ _) ≪≫
-          Functor.isoWhiskerLeft _
-            (Functor.isoWhiskerLeft _ e₂.unitIso.symm ≪≫ Functor.rightUnitor _))).functor ⋙
-      CostructuredArrow.pre e₁.inverse _ _
-  unitIso :=
-    NatIso.ofComponents (fun X ↦
-      CostructuredArrow.isoMk (e₁.unitIso.app X.left) (by
-        dsimp
-        simp only [id_comp, comp_id, Functor.map_comp, Equivalence.inv_fun_map, Functor.comp_obj,
-          Functor.id_obj, assoc, Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_app]
-        simp only [← Functor.map_comp_assoc, e₁.counit_app_functor,
-          dsimp% NatIso.naturality_2 comm (e₁.unitIso.inv.app X.left)]
-        simp [← Functor.map_comp_assoc]))
-  counitIso :=
-    NatIso.ofComponents (fun Y ↦ CostructuredArrow.isoMk (e₁.counitIso.app Y.left))
-
-end
-
-
-
 variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Presheaf
