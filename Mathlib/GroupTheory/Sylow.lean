@@ -718,7 +718,7 @@ theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Pr
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of `G`, then any chain
 of subgroups whose orders divide `p ^ n` can be completed to a tower of subgroups of orders
 `p ^ 0, …, p ^ n`. -/
-theorem exists_subgroup_tower_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
+theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
     (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
     (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ∣ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
@@ -787,9 +787,9 @@ theorem exists_subgroup_tower_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
 
 /-- A corollary of **Sylow's first theorem**. If `p ^ n` divides the order of the group, then
 there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
-theorem exists_subgroup_tower [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
+theorem exists_orderEmbedding [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
-  obtain ⟨f, _, hcard⟩ := exists_subgroup_tower_of_isChain hp h IsChain.empty (by simp) (by simp)
+  obtain ⟨f, _, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp) (by simp)
   exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
