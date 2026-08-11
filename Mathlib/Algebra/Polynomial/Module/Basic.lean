@@ -142,15 +142,15 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
-instance : Module S (PolynomialModule R M) := (coeffEquiv R).module _
+instance : Module S (PolynomialModule R M) := coeffAddEquiv.module _
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
-    IsScalarTower S R (PolynomialModule R M) := (coeffEquiv R).isScalarTower _ _
+    IsScalarTower S R (PolynomialModule R M) := coeffAddEquiv.isScalarTower _ _
 
 variable (R S) in
 /-- `PolynomialModule.coeff` as a linear equiv. -/
 @[simps! apply symm_apply]
-def coeffLinearEquiv : PolynomialModule R M ≃ₗ[S] ℕ →₀ M := (coeffEquiv _).linearEquiv _
+def coeffLinearEquiv : PolynomialModule R M ≃ₗ[S] ℕ →₀ M := (coeffAddEquiv (M := M)).linearEquiv S
 
 variable (R) in
 /-- `PolynomialModule.single` as a linear map. -/
@@ -181,13 +181,14 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
-  haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
+  have : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| (coeffLinearEquiv R R).symm.comp <|
     (Finsupp.lmapDomain M R Nat.succ).comp (coeffLinearEquiv R R).toLinearMap
   constructor
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
@@ -317,6 +318,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
     | monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
         monomial_smul_single, f.map_smul, algebraMap_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
 def eval (r : R) : PolynomialModule R M →ₗ[R] M where

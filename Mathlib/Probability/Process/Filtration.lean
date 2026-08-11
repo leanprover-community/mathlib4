@@ -145,16 +145,16 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, if_false, le_refl]
-        simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
+        swap; · simp only [h_nonempty, ite_false, le_refl]
+        simp only [h_nonempty, ite_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
         have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
         exact sInf_le hfi_mem
       le' := fun i => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, if_false, le_refl]
-        simp only [h_nonempty, if_true]
+        swap; · simp only [h_nonempty, ite_false, le_refl]
+        simp only [h_nonempty, ite_true]
         obtain ⟨f, hf_mem⟩ := h_nonempty
         exact le_trans (sInf_le ⟨f, hf_mem, rfl⟩) (f.le i) }⟩
 
@@ -295,24 +295,24 @@ lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :
     𝓕₊ i = 𝓕 i := by
-  rw [rightCont_apply, hi, neBot_iff, ne_self_iff_false, if_false]
+  rw [rightCont_apply, hi, neBot_iff, ne_self_iff_false, ite_false]
 
 /-- If the index type is a `SuccOrder`, then `𝓕₊ = 𝓕`. -/
 @[simp] lemma rightCont_eq_self [LinearOrder ι] [SuccOrder ι] (𝓕 : Filtration ι m) :
     𝓕₊ = 𝓕 := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   ext _
   rw [rightCont_eq_of_nhdsGT_eq_bot _ SuccOrder.nhdsGT]
 
 lemma rightCont_eq_of_isMax [PartialOrder ι] (𝓕 : Filtration ι m) {i : ι} (hi : IsMax i) :
     𝓕₊ i = 𝓕 i := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   exact rightCont_eq_of_nhdsGT_eq_bot _ (hi.Ioi_eq ▸ nhdsWithin_empty i)
 
 lemma rightCont_eq_of_exists_gt [LinearOrder ι] (𝓕 : Filtration ι m) {i : ι}
     (hi : ∃ j > i, Set.Ioo i j = ∅) :
     𝓕₊ i = 𝓕 i := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   obtain ⟨j, hij, hIoo⟩ := hi
   have hcov : i ⋖ j := covBy_iff_Ioo_eq.mpr ⟨hij, hIoo⟩
   exact rightCont_eq_of_nhdsGT_eq_bot _ <| CovBy.nhdsGT hcov
@@ -323,12 +323,12 @@ topology, see `rightCont_eq`. -/
 lemma rightCont_eq_of_neBot_nhdsGT [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) [(𝓝[>] i).NeBot] :
     𝓕₊ i = ⨅ j > i, 𝓕 j := by
-  rw [rightCont_apply, if_pos ‹(𝓝[>] i).NeBot›]
+  rw [rightCont_apply, ite_eq_left ‹(𝓝[>] i).NeBot›]
 
 lemma rightCont_eq_of_not_isMax [LinearOrder ι] [DenselyOrdered ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : ¬IsMax i) :
     𝓕₊ i = ⨅ j > i, 𝓕 j := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   have : (𝓝[>] i).NeBot := nhdsGT_neBot_of_exists_gt (not_isMax_iff.mp hi)
   exact rightCont_eq_of_neBot_nhdsGT _ _
 
@@ -342,15 +342,15 @@ lemma rightCont_eq [LinearOrder ι] [DenselyOrdered ι] [NoMaxOrder ι]
 variable [PartialOrder ι]
 
 lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   intro i
   by_cases hne : (𝓝[>] i).NeBot
   · rw [rightCont_eq_of_neBot_nhdsGT]
     exact le_iInf₂ fun _ he => 𝓕.mono he.le
-  · rw [rightCont_apply, if_neg hne]
+  · rw [rightCont_apply, ite_eq_right hne]
 
 @[simp] lemma rightCont_self (𝓕 : Filtration ι m) : 𝓕₊₊ = 𝓕₊ := by
-  letI := Preorder.topology ι; haveI : OrderTopology ι := ⟨rfl⟩
+  let := Preorder.topology ι; have : OrderTopology ι := ⟨rfl⟩
   apply le_antisymm _ 𝓕₊.le_rightCont
   intro i
   by_cases hne : (𝓝[>] i).NeBot
@@ -367,7 +367,7 @@ lemma le_rightCont (𝓕 : Filtration ι m) : 𝓕 ≤ 𝓕₊ := by
         · simpa [rightCont_apply, hnv] using 𝓕.mono hv.2.le
       exact hle₁.trans hle₂
     simpa [rightCont_eq_of_neBot_nhdsGT] using hineq
-  · rw [rightCont_apply, if_neg hne]
+  · rw [rightCont_apply, ite_eq_right hne]
 
 /-- A filtration `𝓕` is right continuous if it is equal to its right continuation `𝓕₊`. -/
 class IsRightContinuous (𝓕 : Filtration ι m) where
@@ -409,6 +409,7 @@ section
 
 open MeasurableSpace
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
     {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
@@ -498,6 +499,7 @@ def piLE : @Filtration (Π i, X i) ι _ pi where
 
 variable [LocallyFiniteOrderBot ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
   apply le_antisymm
   · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
@@ -525,7 +527,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap (s : Set ι).restrict := rfl
+    piFinset (X := X) s = pi.comap (s : Set ι).domRestrict := rfl
 
 end piFinset
 

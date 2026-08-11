@@ -88,7 +88,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
     MeasurableSet {a | IsRatStieltjesPoint f a} := by
   have h1 : MeasurableSet {a | Monotone (f a)} := by
     change MeasurableSet {a | ∀ q r (_ : q ≤ r), f a q ≤ f a r}
-    simp_rw [Set.setOf_forall]
+    simp_rw [Set.ofPred_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
     refine MeasurableSet.iInter (fun r ↦ ?_)
     refine MeasurableSet.iInter (fun _ ↦ ?_)
@@ -98,7 +98,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
   have h3 : MeasurableSet {a | Tendsto (f a) atBot (𝓝 0)} :=
     measurableSet_tendsto _ (fun q ↦ hf.eval)
   have h4 : MeasurableSet {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t} := by
-    rw [Set.setOf_forall]
+    rw [Set.ofPred_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
     exact measurableSet_eq_fun (.iInf fun _ ↦ hf.eval) hf.eval
   suffices {a | IsRatStieltjesPoint f a}
@@ -107,7 +107,7 @@ lemma measurableSet_isRatStieltjesPoint [MeasurableSpace α] (hf : Measurable f)
     rw [this]
     exact (((h1.inter h2).inter h3).inter h4)
   ext a
-  simp only [mem_setOf_eq, mem_inter_iff]
+  simp only [mem_ofPred_eq, mem_inter_iff]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ⟨⟨⟨h.mono, h.tendsto_atTop_one⟩, h.tendsto_atBot_zero⟩, h.iInf_rat_gt_eq⟩
   · exact ⟨h.1.1.1, h.1.1.2, h.1.2, h.2⟩
@@ -183,14 +183,15 @@ lemma defaultRatCDF_le_one (q : ℚ) : defaultRatCDF q ≤ 1 := by
 lemma tendsto_defaultRatCDF_atTop : Tendsto defaultRatCDF atTop (𝓝 1) := by
   refine (tendsto_congr' ?_).mp tendsto_const_nhds
   rw [EventuallyEq, eventually_atTop]
-  exact ⟨0, fun q hq => (if_neg (not_lt.mpr hq)).symm⟩
+  exact ⟨0, fun q hq => (ite_eq_right (not_lt.mpr hq)).symm⟩
 
 lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine (tendsto_congr' ?_).mp tendsto_const_nhds
   rw [EventuallyEq, eventually_atBot]
-  refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
+  refine ⟨-1, fun q hq => (ite_eq_left (hq.trans_lt ?_)).symm⟩
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
     ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by
   simp only [defaultRatCDF]
@@ -204,7 +205,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
   · refine le_antisymm ?_ (le_ciInf fun x ↦ ?_)
     · obtain ⟨q, htq, hq_neg⟩ : ∃ q, t < q ∧ q < 0 := ⟨t / 2, by linarith, by linarith⟩
       refine (ciInf_le h_bdd ⟨q, htq⟩).trans ?_
-      rw [if_pos]
+      rw [ite_eq_left]
       rwa [Subtype.coe_mk]
     · split_ifs
       exacts [le_rfl, zero_le_one]
@@ -213,7 +214,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
       split_ifs
       exacts [zero_le_one, le_rfl]
     · refine le_ciInf fun x ↦ ?_
-      rw [if_neg]
+      rw [ite_eq_right]
       rw [not_lt] at h ⊢
       exact h.trans (mem_Ioi.mp x.prop).le
 
@@ -247,7 +248,7 @@ def toRatCDF (f : α → ℚ → ℝ) : α → ℚ → ℝ := fun a ↦
 
 lemma toRatCDF_of_isRatStieltjesPoint {a : α} (h : IsRatStieltjesPoint f a) (q : ℚ) :
     toRatCDF f a q = f a q := by
-  rw [toRatCDF, if_pos h]
+  rw [toRatCDF, ite_eq_left h]
 
 lemma toRatCDF_unit_prod (a : α) :
     toRatCDF (fun (p : Unit × α) ↦ f p.2) ((), a) = toRatCDF f a := by
@@ -290,6 +291,7 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ}
 variable {f : α → ℚ → ℝ} [MeasurableSpace α] (hf : IsMeasurableRatCDF f)
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]

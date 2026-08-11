@@ -86,7 +86,7 @@ theorem norm_eq_matrix_det [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (s :
 /-- If `x` is in the base ring `K`, then the norm is `x ^ [L : K]`. -/
 theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
     norm R (algebraMap R S x) = x ^ Fintype.card ι := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
   simp
 

@@ -68,6 +68,7 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
 
 variable (P R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ (R.FamilyOfElements P) where
@@ -148,6 +149,7 @@ theorem compatible_iff (x : FirstObj P S.arrows) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨Y, Z, g, f, hf⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `S`, iff the fork given by `w` is an equalizer. -/
 theorem equalizer_sheaf_condition :
     Presieve.IsSheafFor P (S : Presieve X) ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
@@ -214,7 +216,7 @@ theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   ext fg
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
-  haveI := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+  have := Presieve.HasPairwisePullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 
@@ -235,6 +237,7 @@ theorem compatible_iff (x : FirstObj P R) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
@@ -352,6 +355,7 @@ lemma compatible_iff_of_small (x : FirstObj P X) :
   · apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔

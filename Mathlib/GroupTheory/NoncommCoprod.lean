@@ -103,6 +103,7 @@ theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=
 theorem noncommCoprod_comp_inr : (f.noncommCoprod g comm).comp (inr M N) = g :=
   ext fun x => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem noncommCoprod_unique (f : M × N →* P) :
     (f.comp (inl M N)).noncommCoprod (f.comp (inr M N)) (fun _ _ => (commute_inl_inr _ _).map f)
@@ -114,6 +115,7 @@ theorem noncommCoprod_inl_inr {M N : Type*} [Monoid M] [Monoid N] :
     (inl M N).noncommCoprod (inr M N) commute_inl_inr = id (M × N) :=
   noncommCoprod_unique <| .id (M × N)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem comp_noncommCoprod {Q : Type*} [Monoid Q] (h : P →* Q) :
     h.comp (f.noncommCoprod g comm) =

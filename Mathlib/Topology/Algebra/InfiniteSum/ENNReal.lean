@@ -283,10 +283,13 @@ theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
-  _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
+  calc
+    ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b : Bool, if b = true then s else t, f x :=
+      tsum_congr_set_coe _ (by ext x; simp [or_comm])
+    _ ≤ _ := by
+      simpa using tsum_iUnion_le f (fun b : Bool => if b = true then s else t)
 
-open Classical in
+open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   ENNReal.summable.tsum_eq_add_tsum_ite' b
@@ -470,7 +473,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
   simpa using tsum_lt_tsum (fun a => zero_le) hi hg
 
-open Classical in
+open scoped Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine (NNReal.summable_of_le (fun i' => ?_) hf).tsum_eq_add_tsum_ite' i

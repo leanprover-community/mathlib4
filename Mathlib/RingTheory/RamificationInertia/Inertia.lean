@@ -33,7 +33,7 @@ section
 
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
-open Classical in
+open scoped Classical in
 /-- Given a prime ideal `q` of an `R`-algebra `S`, the inertia degree of `q` over `R` is defined
 to be the degree of the residue field of `q` over the residue field of its preimage `p` in `R`.
 
@@ -49,13 +49,13 @@ theorem inertiaDeg_def [hq : q.IsPrime]
     [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
     [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)] :
     q.inertiaDeg R = Module.finrank (q.under R).ResidueField q.ResidueField := by
-  convert! dif_pos hq
+  convert! dite_eq_left hq
   simp [Algebra.algebra_ext_iff, Localization.AtPrime.algebraMap_eq]
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_def := inertiaDeg_def
 
 theorem inertiaDeg_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg R = 0 :=
-  dif_neg hq
+  dite_eq_right hq
 
 @[deprecated (since := "2026-07-03")] alias inertiaDeg'_of_not_isPrime :=
   inertiaDeg_of_not_isPrime

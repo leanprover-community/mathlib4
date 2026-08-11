@@ -205,6 +205,7 @@ theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M
 
 variable {R L M N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `maxTrivSubmodule` is functorial. -/
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
@@ -352,7 +353,7 @@ theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N�
 
 theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, I⁆ = ⊥ := by
   simp only [_root_.eq_bot_iff, lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le,
-    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_setOf_eq, exists_imp]
+    LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_ofPred_eq, exists_imp]
   refine
     ⟨fun h z x y hz =>
       hz.symm.trans
