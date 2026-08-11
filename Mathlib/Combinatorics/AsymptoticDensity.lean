@@ -56,6 +56,14 @@ The relative partial-density interface is informed by the experimental
 The definitions and proofs here are adapted independently to current mathlib and use `Finset.Iio`,
 without project-local dependencies.
 
+For `S : Set ℕ`, ordinary lower and upper density, relative to `Set.univ`, agree with the linear
+growth of the counting function `n ↦ #{x ∈ Finset.range n | x ∈ S}`. Relative density with a general
+reference set `A` instead normalizes by `#{x ∈ Finset.range n | x ∈ A}`. The opt-in module
+`Mathlib.Combinatorics.AsymptoticDensity.LinearGrowth` provides the ordinary-density bridge without
+adding the extended-real growth API to this module's imports.
+`Mathlib.Analysis.Asymptotics.ExpGrowth` uses the different normalization `log (u n) / n`, so it is
+parallel infrastructure rather than the basis of the present definitions.
+
 ## TODO
 
 * Characterize exact density by equality of lower and upper density under the appropriate

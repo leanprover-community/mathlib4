@@ -3554,6 +3554,7 @@ public import Mathlib.Combinatorics.Additive.SmallTripling
 public import Mathlib.Combinatorics.Additive.SubsetSum
 public import Mathlib.Combinatorics.Additive.VerySmallDoubling
 public import Mathlib.Combinatorics.AsymptoticDensity
+public import Mathlib.Combinatorics.AsymptoticDensity.LinearGrowth
 public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.Compactness
 public import Mathlib.Combinatorics.Configuration
