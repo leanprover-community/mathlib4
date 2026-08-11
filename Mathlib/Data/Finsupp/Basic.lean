@@ -173,7 +173,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+    simp only [single_apply, ← Equiv.eq_symm_apply, equivMapDomain_apply]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -378,12 +378,12 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     rw [mapDomain, sum_apply, sum]
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
-    · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
+    · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
       convert! add_zero (x a)
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => ite_eq_right ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
@@ -683,10 +683,10 @@ theorem filter_eq_self_iff : f.filter p = f ↔ ∀ x, f x ≠ 0 → p x := by
     not_imp_comm]
 
 @[simp]
-theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
+theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := ite_eq_left h
 
 @[simp]
-theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
+theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := ite_eq_right h
 
 @[simp]
 theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
@@ -1211,12 +1211,12 @@ def piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) : α →₀ 
 @[simp]
 theorem subtypeDomain_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
     subtypeDomain P (f.piecewise g) = f :=
-  Finsupp.ext fun a => dif_pos a.prop
+  Finsupp.ext fun a => dite_eq_left a.prop
 
 @[simp]
 theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} →₀ M) :
     subtypeDomain (¬P ·) (f.piecewise g) = g :=
-  Finsupp.ext fun a => dif_neg a.prop
+  Finsupp.ext fun a => dite_eq_right a.prop
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
