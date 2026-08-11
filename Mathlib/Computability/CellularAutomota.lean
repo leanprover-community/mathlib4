@@ -13,6 +13,12 @@ public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Computability.Language
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
 /-!
@@ -32,7 +38,7 @@ section Definitions
 assigns a state in `SingleCellState` to each cell. -/
 @[expose] public def Configuration := G → SingleCellState
 
-/- The group action of `G` on configurations coming from its action on itself. -/
+/-- The group action of `G` on configurations coming from its action on itself. -/
 public instance ConfigIsGSet :
   MulAction G
   (Configuration (G := G) (SingleCellState := SingleCellState)) where
@@ -46,7 +52,7 @@ public instance ConfigIsGSet :
     change config ((g₁ * g₂)⁻¹ * cell_pos) = config (g₂⁻¹ * (g₁⁻¹ * cell_pos))
     rw [mul_inv_rev, mul_assoc]
 
-/- A cellular automaton
+/-- A cellular automaton
 consists of a neighborhood and a local update rule
 that uses the current states of the cells in that neighborhood
 of each cell to determine the new state of that cell. -/
@@ -63,7 +69,7 @@ public structure CellularAutomaton where
 
 namespace CellularAutomaton
 
-/-
+/--
 Ignore the cells outside
 of the old neighborhood and use the local update rule
 of the old neighborhood to determine the new state of a cell.
@@ -85,7 +91,7 @@ public def expandNbhd
         new_nbhd_states ⟨old_nbhd.val, h old_nbhd.2⟩
       )
 
-/- The underlying function for a single time step but without it's G equivariance. -/
+/-- The underlying function for a single time step but without it's G equivariance. -/
 private def stepOne
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) :
@@ -118,7 +124,7 @@ end Definitions
 
 section PerodicConfigs
 
-/-
+/--
 A configuration is periodic with respect to a (not necessarily normal) subgroup of `G`
 if it is invariant under the action of that subgroup.
 One can think of this as modding out by the subgroup
@@ -129,7 +135,7 @@ public def periodicConfigs
   Set (Configuration (G := G) (SingleCellState := SingleCellState)) :=
   {config | ∀ p : PeriodicGroup, (p • config) = config}
 
-/-
+/--
 The time step was G equivariant,
 so the periodicity of a configuration
 is preserved under the time step.
@@ -155,11 +161,17 @@ end PerodicConfigs
 
 section EmptyWorld
 
+/--
+The local update rule if all the neighborhood
+is `emptyState` gives the new cell as also `emptyState`.
+-/
 public def emptyWorldProperty
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (emptyState : SingleCellState) : Prop :=
   A.localUpdateRule (fun _ => emptyState) = emptyState
 
+/-- If the `CellularAutomoton` `A` has the `emptyWorldProperty`
+then a world full of `emptyState` stays that way under one time step. -/
 public lemma emptyWorldStatic
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (emptyState : SingleCellState) :
@@ -175,7 +187,7 @@ namespace CellularAutomaton
 
 section StepN
 
-/- Iterate the step function `n` times. -/
+/-- Iterate the step function `n` times. -/
 public def stepN
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (n : ℕ) :
@@ -213,12 +225,16 @@ private lemma stepN_smul
   A.stepN n (g • config) = g • (A.stepN n config) :=
   (A.stepN n).map_smul g config
 
+/-- The value at one cell influences another cell at a later time.
+This is whether one is in the "light-cone" of another.
+-/
 public def influencesAtT
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (timestep : ℕ) (cell1 cell2 : G) :=
   ∃ (word : List (A.neighborhood)) (_hword : word.length = timestep),
     cell1*List.foldl (1:G) (f := fun acc n => acc*n.val) word = cell2
 
+/-- The influences relation for one time step is the neigborhood relation -/
 public lemma influencesAtOne
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
   (cell1 : G) :
@@ -232,7 +248,7 @@ end StepN
 
 section Gliders
 
-/-
+/--
 A configuration `config` is a glider if
 after `after_t_steps` steps it returns to the
 same configuration shifted by `shifts_by`.
@@ -246,7 +262,7 @@ public def isGlider
   (shifts_by : G) (after_t_steps : ℕ) : Prop :=
   A.stepN after_t_steps config = shifts_by • config
 
-/- An existential glider does not explicitly have
+/-- An existential glider does not explicitly have
 - how many steps it takes
 - how much it shifts
 However for this it is not including the
@@ -259,7 +275,7 @@ public def isExistentialGlider
   ∃ (shifts_by : G) (after_t_steps : ℕ) (_after_t_steps_pos : after_t_steps > 0),
     A.isGlider config shifts_by after_t_steps
 
-/-
+/--
 If a configuration is a glider for a given
 number of time steps and shift,
 then it is also a glider for any multiple of that
@@ -280,7 +296,7 @@ public lemma gliderOtherSteps
     rw [Nat.mul_succ, stepN_add, MulActionHom.comp_apply, gliding,
       (A.stepN (after_t_steps * k)).map_smul, ih, pow_succ', mul_smul]
 
-/- The other configurations
+/-- The other configurations
 in the orbit of an glider are also gliders
 with the same periodicity and shifts_by. -/
 public lemma gliderSameOrbit
@@ -297,7 +313,7 @@ public lemma gliderSameOrbit
     MulActionHom.comp_apply, gliding]
   rw [stepN_smul]
 
-/- If a configuration is an existential glider with unspecified periodicity and shift,
+/-- If a configuration is an existential glider with unspecified periodicity and shift,
 then the other configurations in its orbit are also. -/
 public lemma gliderSameOrbitExistential
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
@@ -310,7 +326,7 @@ public lemma gliderSameOrbitExistential
     use shifts_by
     use after_t_steps
 
-/- A still life is expressed as a glider that
+/-- A still life is expressed as a glider that
 returns to itself with no shift and does so immediately with
 just one time step. -/
 public def isStillLife
@@ -318,7 +334,7 @@ public def isStillLife
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) : Prop :=
   isGlider A config 1 1
 
-/- If a configuration is a still life,
+/-- If a configuration is a still life,
 then it will return to itself with no shift at all times not just one step. -/
 public lemma stillLifeOtherSteps
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
@@ -332,7 +348,7 @@ public lemma stillLifeOtherSteps
   exact key
 
 
-/- An oscillator is expressed as a glider that
+/-- An oscillator is expressed as a glider that
 returns to itself with no shift and does so with some `periodicity`.
 This includes the degenerate case of zero periodicity,
 in which every configuration is an oscillator according to this
@@ -343,7 +359,7 @@ public def isOscillator
   (periodicity : ℕ) : Prop :=
   isGlider A config 1 periodicity
 
-/- An existential oscillator does not explicitly have
+/-- An existential oscillator does not explicitly have
 how many steps it takes to return.
 However to make this proposition nontrivial and not
 always true for every `config`, periodicity must be positive here. -/
@@ -352,7 +368,7 @@ public def isExistentialOscillator
   (config : Configuration (G := G) (SingleCellState := SingleCellState)) : Prop :=
   ∃ (periodicity : ℕ) (_periodicity_pos : periodicity > 0), A.isOscillator config periodicity
 
-/-
+/--
 If a configuration is an oscillator for a given
 number of time steps,
 then it is also an oscillator for any multiple of that
@@ -371,7 +387,7 @@ public lemma oscillatorOtherSteps
   simp only [one_pow] at key
   exact key oscillating
 
-/- The other configurations
+/-- The other configurations
 in the orbit of an oscillator are also oscillators
 with the same periodicity. -/
 public lemma oscillatorSameOrbit
@@ -389,7 +405,7 @@ public lemma oscillatorSameOrbit
   rw [← MulActionHom.comp_apply, ← stepN_add, Nat.add_comm, stepN_add,
     MulActionHom.comp_apply, oscillating]
 
-/- If a configuration is an existential oscillator with unspecified periodicity,
+/-- If a configuration is an existential oscillator with unspecified periodicity,
 then the other configurations in its orbit are also. -/
 public lemma oscillatorSameOrbitExistential
   (A : CellularAutomaton (G := G) (SingleCellState := SingleCellState))
@@ -412,6 +428,12 @@ variable {G2 : Type*} [Group G2]
 variable {SingleCellState1 : Type*}
 variable {SingleCellState2 : Type*}
 
+/-- The product of two cellular automota
+On the product of the groups as the set of cells.
+The set of states on each cells is the product of the
+corresponding state types.
+The update rule is just the update rule of each
+factor applied independently. -/
 public def productCellularAutomaton
   (A₁ : CellularAutomaton (G := G1) (SingleCellState := SingleCellState1))
   (A₂ : CellularAutomaton (G := G2) (SingleCellState := SingleCellState2))
@@ -436,7 +458,7 @@ end Product
 
 section ElementaryCellularAutomaton
 
-/-
+/--
 A cellular automota on `Z` and the restriction
 that level of locality is particularly on the nearest neighbors
 and itself.
@@ -455,7 +477,7 @@ public def elementaryCellularAutomaton_pre
        nbhd_states ⟨ 0, by simp⟩,
        nbhd_states ⟨ 1, by simp⟩)
 
-/-
+/--
 A traditional elementary cellular automota.
 For convenience use `wolframRule` below
 so that you can use the conventional number
@@ -471,7 +493,7 @@ public def elementaryCellularAutomaton
 
 section BitHelpers
 
-/-
+/--
 For `n`=3, the `rule` is a number from 0 to 255
 which is the Wolfram code for the elementary cellular automaton
 and `pattern` is the values at cells left,center,right for inputs 0,1,2.
@@ -644,6 +666,8 @@ lemma existsWolframNumber
     simp only [bit8_testBit]
     fin_cases i <;> rfl
 
+/-- Any cellular automota on `ℤ` which only looks at nearest neighbors
+for the update rule is a `wolframRule rule` for some unique `rule` -/
 public lemma existsUniqueWolframNumber
   (A : CellularAutomaton (G := ℤ) (SingleCellState := Bool))
   (h_Alocal : A.neighborhood = {-1,0,1})
@@ -676,3 +700,187 @@ public lemma existsUniqueWolframNumber
     exact on_bad_nbhd_neq on_bad_nbhd_eq
 
 end ElementaryCellularAutomaton
+
+section ConwayLife
+
+/-- The number of `a : α` for which `f a` is `true`. -/
+private def count_true
+  {α : Type*}
+  [Fintype α]
+  (f : α -> Bool) : ℕ :=
+  ∑ a, (f a).toNat
+
+private def z2_nbhrs : Finset (Multiplicative (ℤ × ℤ)) :=
+  {
+    (-1,-1),(-1,0),(-1,1),
+    (0,-1),(0,0),(0,1),
+    (1,-1),(1,0),(1,1)
+  }
+
+private def z2_origin : z2_nbhrs :=
+  ⟨(0,0), Finset.mem_insert_of_mem (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem
+    (Finset.mem_insert_of_mem (Finset.mem_insert_self _ _))))⟩
+
+private lemma count_true_le_card
+  {α : Type*}
+  [Fintype α]
+  (f : α -> Bool) : count_true f ≤ Fintype.card α := by
+  unfold count_true
+  calc ∑ a, (f a).toNat
+      ≤ ∑ _a : α, 1 := Finset.sum_le_sum fun a _ => by cases f a <;> decide
+    _ = Fintype.card α := by simp
+
+public def ConwayLife
+  (become_alive : Fin 10 -> Bool)
+  (become_dead : Fin 10 -> Bool)
+  : CellularAutomaton
+    (G:=Multiplicative (ℤ × ℤ))
+    (SingleCellState:=Bool)
+  where
+  neighborhood := z2_nbhrs
+  localUpdateRule := fun nbhd => (
+    let live_nbhrs : Fin 10 := ⟨count_true nbhd, by
+      have key := count_true_le_card (α := z2_nbhrs) nbhd
+      simp at key
+      have hcard : z2_nbhrs.card = 9 := by decide
+      omega
+    ⟩
+    if nbhd z2_origin then (
+      if become_dead live_nbhrs then false else true
+    ) else (
+      if become_alive live_nbhrs then true else false
+    )
+  )
+
+private def ConwayLifeTypical := ConwayLife
+  (fun alive_nbhrs => alive_nbhrs = 3)
+  (fun alive_nbhrs => alive_nbhrs < 3 ∨ alive_nbhrs > 5)
+
+end ConwayLife
+
+section Languages
+
+set_option linter.checkUnivs false in
+/--
+A cellular autotomota
+where one can load up words in an `Alphabet`
+step for `timing (len w)` and then read
+a `Bool` by evaluating a predicate `acceptingCriterion.2` on the state
+of the cell at `acceptingCriterion.1`.
+-/
+public structure CellularAutomatonAcceptor where
+  SingleCellState : Type*
+  trivialState: SingleCellState
+  G : Type*
+  gdecide : DecidableEq G
+  ggroup : Group G
+  Alphabet: Type*
+  automota: CellularAutomaton (G:=G) (SingleCellState:=SingleCellState)
+  trivialStays: emptyWorldProperty automota trivialState
+  loading: (ℕ ↪ G) × ((ℕ × Alphabet) -> SingleCellState)
+  timing : ℕ -> ℕ
+  acceptingCriterion : (ℕ → G) × (SingleCellState -> Bool)
+
+/--
+For the particular case of `G=ℤ` and the
+way loading based on position in the list is just casting
+from `ℕ` to `ℤ` -/
+public def oneDimensional
+  (SingleCellState : Type*)
+  [Fintype SingleCellState]
+  (trivialState : SingleCellState)
+  (Alphabet : Type*)
+  (update : SingleCellState × SingleCellState × SingleCellState -> SingleCellState)
+  (trivialStays : emptyWorldProperty (elementaryCellularAutomaton_pre update) trivialState)
+  (loading : Alphabet -> SingleCellState)
+  (read_pos: ℕ -> ℤ)
+  (cellPredicate : SingleCellState -> Bool)
+  : CellularAutomatonAcceptor where
+  SingleCellState := SingleCellState
+  trivialState := trivialState
+  G := Multiplicative ℤ
+  gdecide := inferInstance
+  ggroup := inferInstance
+  Alphabet := Alphabet
+  automota := elementaryCellularAutomaton_pre update
+  trivialStays := trivialStays
+  loading := (
+    Nat.castEmbedding.trans Multiplicative.ofAdd.toEmbedding,
+    fun (_, a) => loading a
+  )
+  timing := fun n => n
+  acceptingCriterion := (
+    read_pos,
+    cellPredicate
+  )
+
+/--
+For the particular case of `G=ℤ` and also
+that the state space is just `Option Alphabet`
+with the loading being obtained from the identity map. -/
+public def oneDimensional_option
+  (Alphabet : Type*)
+  [Fintype (Option Alphabet)]
+  (update : Option Alphabet × Option Alphabet × Option Alphabet -> Option Alphabet)
+  (trivialStays : update (none,none,none) = none)
+  (read_pos : ℕ -> ℤ)
+  (cellPredicate : Option Alphabet -> Bool)
+  : CellularAutomatonAcceptor :=
+  oneDimensional (Option Alphabet) none Alphabet
+    update trivialStays (loading:=some) read_pos cellPredicate
+
+namespace CellularAutomatonAcceptor
+
+/--
+Providing a list of `Alphabet`
+creates a configuration which each
+entry loaded as a `SingleCellState` of a corresponding cell
+according to `loading`.
+Every other cell is in `trivialState`. -/
+public def load
+  (A : CellularAutomatonAcceptor)
+:
+  List A.Alphabet -> Configuration (G:=A.G) (SingleCellState:=A.SingleCellState) :=
+  let emptyWorld : Configuration (G:=A.G) (SingleCellState:=_) :=
+    fun (_) => A.trivialState
+  haveI := A.gdecide
+  fun word => (
+    (word.zip (List.range (word.length))).foldl (
+      fun curConfig (curLetter, pos_list) =>
+        Function.update (f:=curConfig) (a' := A.loading.1 pos_list)
+          (v := (A.loading).2 (pos_list,curLetter))
+    )
+    emptyWorld
+  )
+
+/--
+A word in `Alphabet` is accepted if
+when loaded and then time stepped
+for `timing (word.length)` steps
+results in a state where we can
+readout the result of a predicate at
+the chosen cell.
+Both of those are provided in `acceptingCriterion`. -/
+public def accepts
+(A : CellularAutomatonAcceptor)
+:
+  List A.Alphabet -> Bool :=
+  haveI := A.ggroup
+  fun word => (
+    let startingConfig := A.load word
+    let endingConfig := A.automota.stepN (G:=A.G) (n:=A.timing (word.length)) startingConfig
+    let endingConfigReadout := endingConfig (A.acceptingCriterion.1 word.length)
+    A.acceptingCriterion.2 endingConfigReadout
+  )
+
+/-- The language is the set of accepted words. -/
+public def language
+(A : CellularAutomatonAcceptor)
+:
+  Language (α:=A.Alphabet) :=
+  {word | A.accepts word}
+
+end CellularAutomatonAcceptor
+
+
+end Languages
