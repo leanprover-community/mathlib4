@@ -31,24 +31,21 @@ variable {α β G M : Type*}
 section ite
 variable [Pow α β]
 
-@[to_additive (attr := simp) dite_smul]
+@[to_additive (attr := simp, to_additive) dite_smul]
 lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
     a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) smul_dite]
+@[to_additive (attr := simp, to_additive) smul_dite]
 lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
     (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
 
-@[to_additive (attr := simp) ite_smul]
+@[to_additive (attr := simp, to_additive) ite_smul]
 lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
     a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
 
-@[to_additive (attr := simp) smul_ite]
+@[to_additive (attr := simp, to_additive) smul_ite]
 lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
     (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
-
-set_option linter.existingAttributeWarning false in
-attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
 
 end ite
 

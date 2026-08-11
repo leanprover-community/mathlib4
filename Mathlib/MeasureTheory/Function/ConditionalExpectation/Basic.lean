@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
@@ -97,6 +98,7 @@ It is defined as 0 if any one of the following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
+@[wikidata Q772232]
 noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
@@ -402,33 +404,6 @@ end RCLike
 
 end NormedSpace
 
-section Real
-variable [InnerProductSpace ℝ E] [CompleteSpace E]
-
--- TODO: Generalize via the conditional Jensen inequality
-lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
-  by_cases hm : m ≤ m₀; swap
-  · simp [condExp_of_not_le hm]
-  by_cases hfμ : SigmaFinite (μ.trim hm); swap
-  · rw [condExp_of_not_sigmaFinite hm hfμ]
-    simp
-  by_cases hfi : Integrable f μ; swap
-  · rw [condExp_of_not_integrable hfi]
-    simp
-  obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
-  · simp [hf]
-  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf a.symm⟩
-  rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
-  refine le_trans (eLpNorm_condExpL2_le hm _) ?_
-  rw [eLpNorm_congr_ae hf.coeFn_toLp]
-
-protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f | m]) 2 μ := by
-  by_cases hm : m ≤ m₀
-  · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
-      eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
-  · simp [condExp_of_not_le hm]
-
-end Real
 end NormedAddCommGroup
 
 section NormedRing

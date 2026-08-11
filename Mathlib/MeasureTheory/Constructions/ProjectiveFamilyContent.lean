@@ -64,7 +64,7 @@ end MeasurableCylinders
 
 section ProjectiveFamilyFun
 
-open Classical in
+open scoped Classical in
 /-- For `P` a family of measures, with `P J` a measure on `Π j : J, α j`, we define a function
 `projectiveFamilyFun P s` by setting it to `P I S` if `s = cylinder I S` for a measurable `S` and
 to 0 if `s` is not a measurable cylinder. -/
