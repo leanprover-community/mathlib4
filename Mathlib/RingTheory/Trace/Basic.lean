@@ -627,3 +627,28 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   ring
 
 end Basis
+
+namespace Algebra
+
+section IsQuadraticExtension
+
+variable {R A : Type*} [CommRing R] [Nontrivial R] [CommRing A] [Algebra R A]
+  [IsQuadraticExtension R A]
+
+variable (R) in
+/-- Every element of a quadratic extension satisfies its characteristic equation. -/
+theorem IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero (a : A) :
+    a ^ 2 - Algebra.trace R A a • a + algebraMap R A (Algebra.norm R a) = 0 := by
+  let b := Module.finBasisOfFinrankEq R A (IsQuadraticExtension.finrank_eq_two R A)
+  simpa [Matrix.charpoly_fin_two, ← Algebra.trace_eq_matrix_trace b,
+    ← Algebra.norm_eq_matrix_det b, smul_def] using Algebra.aeval_leftMulMatrix_charpoly b a
+
+variable (R) in
+/-- The square of an element of a quadratic extension in terms of its trace and norm. -/
+theorem IsQuadraticExtension.sq_eq_trace_smul_sub_norm (a : A) :
+    a ^ 2 = Algebra.trace R A a • a - algebraMap R A (Algebra.norm R a) := by
+  rw [← sub_eq_zero, ← sub_add, IsQuadraticExtension.sq_sub_trace_smul_add_norm_eq_zero]
+
+end IsQuadraticExtension
+
+end Algebra
