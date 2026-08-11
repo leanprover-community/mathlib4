@@ -245,24 +245,6 @@ This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercove
 abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
   Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
 
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.idx := PreZeroHypercover.Hom.s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.app := PreZeroHypercover.Hom.h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.w := PreZeroHypercover.Hom.w₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.id := PreZeroHypercover.Hom.id
-
-@[deprecated (since := "2026-01-13")] alias Cover.Hom.comp := PreZeroHypercover.Hom.comp
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_idx_apply := PreZeroHypercover.id_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.id_app := PreZeroHypercover.id_h₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_idx_apply := PreZeroHypercover.comp_s₀
-
-@[deprecated (since := "2026-01-13")] alias Cover.comp_app := PreZeroHypercover.comp_h₀
-
 end category
 
 end MorphismProperty

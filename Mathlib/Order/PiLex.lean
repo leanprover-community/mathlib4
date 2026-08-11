@@ -79,8 +79,6 @@ theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFoun
       have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
       exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
 
-@[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
-
 /-
 These instances are leaky, because they define the relation on `∀ i, β i` instead of
 `Lex (∀ i, β i)`/`Colex (∀ i, β i)`. So, we would like to mark them `@[semireducible]`.

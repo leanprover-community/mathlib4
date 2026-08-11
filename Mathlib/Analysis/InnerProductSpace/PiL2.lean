@@ -1243,36 +1243,6 @@ variable [Fintype n] [DecidableEq n]
 abbrev toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   toLpLin 2 2
 
-@[deprecated toLpLin_toLp (since := "2026-01-22")]
-lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :
-    Matrix.toEuclideanLin A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
-
-@[deprecated ofLp_toLpLin (since := "2026-01-22")]
-theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ofLp (Matrix.toEuclideanLin A x) = Matrix.toLin' A (ofLp x) :=
-  rfl
-
-@[deprecated toLpLin_apply (since := "2026-01-22")]
-theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    toEuclideanLin M v = toLp _ (M *ᵥ ofLp v) := rfl
-
-@[deprecated ofLp_toLpLin (since := "2026-01-22")]
-theorem ofLp_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    ofLp (toEuclideanLin M v) = M *ᵥ ofLp v :=
-  rfl
-
-@[deprecated toLpLin_toLp (since := "2026-01-22")]
-theorem toEuclideanLin_apply_piLp_toLp (M : Matrix m n 𝕜) (v : n → 𝕜) :
-    toEuclideanLin M (toLp _ v) = toLp _ (M *ᵥ v) :=
-  rfl
-
--- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
-@[deprecated toLpLin_eq_toLin (since := "2026-01-22")]
-theorem toEuclideanLin_eq_toLin [Finite m] :
-    (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
-      Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
-  rfl
-
 open EuclideanSpace in
 lemma toEuclideanLin_eq_toLin_orthonormal [Fintype m] :
     toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
@@ -1298,9 +1268,6 @@ theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintyp
     (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
     (innerₛₗ 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
   ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
-
-@[deprecated (since := "2026-01-03")] alias toMatrix_innerSL_apply :=
-  LinearMap.toMatrix_innerₛₗ_apply
 
 end Matrix
 

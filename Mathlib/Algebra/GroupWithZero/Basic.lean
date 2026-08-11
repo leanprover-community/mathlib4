@@ -265,12 +265,6 @@ lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
 
-@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero := eq_zero_of_pow_eq_zero
-@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff := pow_eq_zero_iff
-@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero_iff := pow_ne_zero_iff
-@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero := pow_ne_zero
-@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff' := pow_eq_zero_iff'
-
 theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
     (h : ∀ a : α, a ≠ 0 → ∃ b : α, b * a = 1) {a : α} (ha : a ≠ 0) : ∃ b : α, a * b = 1 := by
   obtain _ | _ := subsingleton_or_nontrivial α

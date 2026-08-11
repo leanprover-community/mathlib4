@@ -229,8 +229,6 @@ theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (�
 theorem nhdsLT_neBot_of_exists_lt {b : α} (H : ∃ a, a < b) : NeBot (𝓝[<] b) :=
   nhdsWithin_Iio_neBot' H (le_refl b)
 
-@[deprecated (since := "2026-01-16")] alias nhdsWithin_Iio_self_neBot' := nhdsLT_neBot_of_exists_lt
-
 instance nhdsLT_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) := nhdsWithin_Iio_neBot (le_refl a)
 
 theorem right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=

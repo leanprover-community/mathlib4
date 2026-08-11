@@ -108,11 +108,6 @@ alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 @[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCofinalFor := LE.le.isCofinalFor
 @[deprecated (since := "2026-03-23")] alias HasSubset.Subset.isCoinitialFor := LE.le.isCoinitialFor
 
-@[deprecated LE.le.isCofinalFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated LE.le.isCoinitialFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
-
 @[to_dual (attr := refl)]
 protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
 
@@ -452,9 +447,6 @@ theorem bddAbove_Iio : BddAbove (Iio a) :=
 @[to_dual]
 theorem le_of_isLUB_Iio (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
   (isLUB_le_iff hb).mpr fun _ hk => le_of_lt hk
-
-@[deprecated (since := "2026-01-17")] alias lub_Iio_le := le_of_isLUB_Iio
-@[deprecated (since := "2026-01-17")] alias le_glb_Ioi := le_of_isGLB_Ioi
 
 @[to_dual]
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :

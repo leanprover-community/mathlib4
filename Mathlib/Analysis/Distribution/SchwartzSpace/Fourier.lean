@@ -139,15 +139,6 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     rw [fourier_coe, fourierInv_coe, f.continuous.fourier_fourierInv_eq f.integrable
       (𝓕 f).integrable]
 
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE := FourierTransform.fourierCLE
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE_apply := FourierTransform.fourierCLE_apply
-
-@[deprecated (since := "2026-01-06")]
-alias fourierTransformCLE_symm_apply := FourierTransform.fourierCLE_symm_apply
-
 end definition
 
 section eval

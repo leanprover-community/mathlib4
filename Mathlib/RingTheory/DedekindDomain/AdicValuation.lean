@@ -588,11 +588,6 @@ def adicValued : Valued K ℤᵐ⁰ :=
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
-@[deprecated adicValued_apply (since := "2026-01-28")]
-theorem adicValued_apply' (x : WithVal (v.valuation K)) :
-    v.adicValued.v (WithVal.equiv _ x) = v.valuation K (WithVal.equiv _ x) :=
-  rfl
-
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation, defined as a one-field structure
