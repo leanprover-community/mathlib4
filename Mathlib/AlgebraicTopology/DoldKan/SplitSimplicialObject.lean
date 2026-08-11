@@ -53,7 +53,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem cofan_inj_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : (s.cofan Δ).inj A ≫ s.πSummand B = 0 := by
   dsimp [πSummand]
-  rw [ι_desc, dif_neg h.symm]
+  rw [ι_desc, dite_eq_right h.symm]
 
 variable [Preadditive C]
 
@@ -254,7 +254,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
 set_option backward.defeqAttrib.useBackward true in
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split monomormphism from the chain complex `s.nondegComplex` to
-the alternating face map complex fo `X`. -/
+the alternating face map complex of `X`. -/
 @[no_expose]
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
