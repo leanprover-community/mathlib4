@@ -320,7 +320,7 @@ theorem subset_succChain : s ⊆ SuccChain r s := by
   else
     simp [SuccChain, h]
 
-theorem List.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.IsChain r) :
+theorem List.IsChain.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.IsChain r) :
     _root_.IsChain r {a | a ∈ l} :=
   h.pairwise.imp Relation.SymmGen.of_rel |>.set_pairwise
 
