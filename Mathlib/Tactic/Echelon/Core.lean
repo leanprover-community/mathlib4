@@ -36,8 +36,8 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 
 ## References
 
-* E. H. Bareiss, *Sylvester's identity and multistep integer-preserving Gaussian
-  elimination*, Mathematics of Computation 22 (1968).
+* [Bareiss, *Sylvester's identity and multistep integer-preserving Gaussian
+  elimination*][bareiss1968]
 -/
 
 public meta section
