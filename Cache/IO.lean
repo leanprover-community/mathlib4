@@ -412,6 +412,10 @@ Path of the file that records the root hash of the last unpack.
 
 The file sits in the root project's build directory, so `lake clean` removes
 it. An absent file makes the next unpack overwrite every file.
+
+The record states the root hash of the last full unpack. It does not state the
+root hash of the checkout. A run with a module argument covers one closure
+only, so such a run does not write the record.
 -/
 def rootHashFile : FilePath :=
   ".lake" / "build" / "cache-roothash"
@@ -447,6 +451,17 @@ and the unpack then keeps an artifact that the new `.ltar` replaces.
 
 A change of the root hash changes every artifact, so compare the root hash to
 catch what the dep hash cannot show.
+
+The root hash is the only part of a cache hash that a dep hash cannot show.
+`Cache.Hashing.getHash` builds a cache hash from `rootHash`, `pathHash`, the
+hash of the content, and the cache hashes of the imports. Hold the root hash
+fixed, and each other part is safe:
+* the hash of the content moves only when the source moves, and the dep hash
+  then moves with it;
+* an import hash moves only when that import moves, which moves either its own
+  dep hash or its name, and a new name moves the `import` line of this module;
+* `pathHash` is a function of the module name, so a new name gives a new trace
+  path, and `needsDecompression` finds no trace file there.
 -/
 def rootHashChanged (rootHash : UInt64) (path : FilePath := rootHashFile) : IO Bool := do
   return (← readUnpackedRootHash path) != some rootHash

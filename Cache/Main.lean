@@ -278,8 +278,9 @@ def main (args : List String) : IO Unit := do
   | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false hashMemo.rootHash
-  | ["unpack!"] => unpackCache hashMap true hashMemo.rootHash
+  -- `unpack` takes no module argument, so it always covers the whole cache.
+  | ["unpack"] => unpackCache hashMap false hashMemo.rootHash (fullRun := true)
+  | ["unpack!"] => unpackCache hashMap true hashMemo.rootHash (fullRun := true)
   | ["unstage"] => unstage
   | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>
