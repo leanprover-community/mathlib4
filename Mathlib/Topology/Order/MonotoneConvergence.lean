@@ -191,7 +191,7 @@ theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i,
 
 theorem tendsto_finsetInf_iInf {ι} (a : ι → α) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
-  tendsto_finset_sup_iSup (α := αᵒᵈ) a
+  tendsto_finsetSup_iSup (α := αᵒᵈ) a
 
 theorem tendsto_atTop_iInf (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i, f i)) :=
   tendsto_atTop_ciInf h_anti (OrderBot.bddBelow _)
