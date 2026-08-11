@@ -264,7 +264,7 @@ theorem StrictMono.isCoinitial_range {f : β → β} [WellFoundedGT β] (hf : St
   fun a ↦ ⟨_, ⟨a, rfl⟩, hf.apply_le⟩
 
 @[deprecated "Use `StrictMono.isCofinal_range` and `IsCofinal.not_bddAbove`."
-(since := "2026-06-21")]
+(since := "2026-08-10")]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨a, ha⟩
@@ -272,7 +272,7 @@ theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoun
   exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
 
 @[deprecated "Use `StrictMono.isCoinitial` and `IsCoinitial.not_bddBelow`."
-(since := "2026-06-21")]
+(since := "2026-08-10")]
 theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
     (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
   hf.dual.not_bddAbove_range_of_wellFoundedLT
