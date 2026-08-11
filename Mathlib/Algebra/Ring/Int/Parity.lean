@@ -138,7 +138,7 @@ theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 
 lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
   rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
 
-theorem sq_mod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
+theorem sq_emod_four_eq_one_of_odd {x : ℤ} (hx : Odd x) : x ^ 2 % 4 = 1 := by
   grind [sq_emod_four]
 
 lemma eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
