@@ -34,7 +34,7 @@ This file concerns bases on dual vector spaces.
 
 @[expose] public section
 
-open Module Dual Submodule LinearMap Function
+open Module Submodule LinearMap Function
 
 noncomputable section
 
@@ -145,7 +145,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, ite_eq_left (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -230,7 +230,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open LinearMap Function
+open LinearMap
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
