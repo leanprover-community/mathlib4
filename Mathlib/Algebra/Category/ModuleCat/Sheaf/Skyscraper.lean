@@ -342,8 +342,6 @@ variable (R : TopCat.Sheaf RingCat.{u} Y)
 /--
 Canonical map from the topos theoretic fiber
 `CategoryTheory.GrothendieckTopology.Point.presheafFiber` to `TopCat.Presheaf.stalk`.
-
-TODO: This should be upgraded to an isomorphism
 -/
 noncomputable def pointPresheafFiberToStalk :
     (Opens.pointGrothendieckTopology p).presheafFiber.obj R.presheaf ⟶ R.presheaf.stalk p :=
