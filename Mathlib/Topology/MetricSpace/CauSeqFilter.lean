@@ -20,7 +20,8 @@ public section
 
 universe u v
 
-open Set Filter Topology
+open Set Filter
+open scoped Topology
 
 variable {β : Type v}
 

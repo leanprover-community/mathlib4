@@ -20,7 +20,8 @@ composition of functions (the chain rule).
 public section
 
 
-open Filter Asymptotics ContinuousLinearMap Set Topology
+open Filter Asymptotics ContinuousLinearMap Set
+open scoped Topology
 
 noncomputable section
 

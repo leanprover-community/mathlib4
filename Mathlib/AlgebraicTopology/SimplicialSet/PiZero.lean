@@ -31,7 +31,8 @@ of a simplicial sets. We also introduce typeclasses
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite TypeCat
+open CategoryTheory Limits Opposite TypeCat
+open scoped Simplicial
 
 namespace SSet
 

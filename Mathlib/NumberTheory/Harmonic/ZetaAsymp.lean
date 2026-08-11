@@ -44,7 +44,8 @@ we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 
 @[expose] public section
 
-open Set MeasureTheory Filter Topology
+open Set MeasureTheory Filter
+open scoped Topology
 
 @[inherit_doc] local notation "γ" => Real.eulerMascheroniConstant
 
@@ -411,7 +412,8 @@ end val_at_one
 end ZetaAsymptotics
 
 open scoped Real
-open Complex ComplexConjugate
+open Complex
+open scoped ComplexConjugate
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
 this particular value to it. -/

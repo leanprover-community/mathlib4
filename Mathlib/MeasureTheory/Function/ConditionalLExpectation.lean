@@ -52,7 +52,8 @@ is just used to show existence. However for (potential) convenience the actual d
 
 public section
 
-open MeasureTheory ProbabilityTheory Measure
+open MeasureTheory Measure
+open scoped ProbabilityTheory
 
 open scoped ENNReal
 

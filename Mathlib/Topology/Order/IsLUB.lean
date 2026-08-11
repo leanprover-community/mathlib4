@@ -14,7 +14,8 @@ public import Mathlib.Topology.Order.LeftRightNhds
 
 public section
 
-open Set Filter TopologicalSpace Topology Function
+open Set Filter TopologicalSpace Function
+open scoped Topology
 
 open OrderDual (toDual ofDual)
 

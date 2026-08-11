@@ -29,7 +29,8 @@ left continuous, right continuous
 public section
 
 
-open Set Filter Topology
+open Set Filter
+open scoped Topology
 
 section Preorder
 

@@ -77,7 +77,8 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Topology Set Filter TopologicalSpace ENNReal MeasureTheory Function
+open Set Filter TopologicalSpace ENNReal MeasureTheory Function
+open scoped Topology
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 

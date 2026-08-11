@@ -25,7 +25,8 @@ category of simplicial sets.
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
+open scoped Simplicial
 
 namespace SSet
 

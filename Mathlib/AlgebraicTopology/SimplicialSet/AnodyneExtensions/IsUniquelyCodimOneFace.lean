@@ -27,7 +27,8 @@ study of strong (inner) anodyne extensions.
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+open scoped Simplicial
 
 namespace SSet.S
 

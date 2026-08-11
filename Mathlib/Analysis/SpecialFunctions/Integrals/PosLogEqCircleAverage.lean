@@ -20,7 +20,8 @@ the circle average of `log ‖· - a‖` over the unit circle.
 
 public section
 
-open Filter Interval intervalIntegral MeasureTheory Metric Real
+open Filter intervalIntegral MeasureTheory Metric Real
+open scoped Interval
 
 variable {a c : ℂ} {R : ℝ}
 

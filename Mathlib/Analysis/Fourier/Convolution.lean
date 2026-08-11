@@ -34,7 +34,8 @@ variable {𝕜 R E F F₁ F₂ F₃ : Type*}
 
 namespace Real
 
-open MeasureTheory Convolution
+open MeasureTheory
+open scoped Convolution
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedAddCommGroup F₁] [NormedAddCommGroup F₂] [NormedAddCommGroup F₃]
@@ -132,7 +133,8 @@ variable [RCLike 𝕜]
   [NormedAddCommGroup F₂] [NormedSpace ℂ F₂] [NormedSpace 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₂]
   [NormedAddCommGroup F₃] [NormedSpace ℂ F₃] [NormedSpace 𝕜 F₃] [SMulCommClass ℂ 𝕜 F₃]
 
-open FourierTransform Convolution
+open FourierTransform
+open scoped Convolution
 
 /-- The bilinear convolution of Schwartz functions.
 

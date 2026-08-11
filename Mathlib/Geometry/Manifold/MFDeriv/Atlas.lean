@@ -34,7 +34,8 @@ charts, differentiable, bijective
 noncomputable section
 
 open scoped Manifold ContDiff
-open Bundle Set Topology
+open Bundle Set
+open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]

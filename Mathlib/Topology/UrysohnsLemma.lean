@@ -87,7 +87,8 @@ Urysohn's lemma, normal topological space, locally compact topological space
 
 variable {X : Type*} [TopologicalSpace X]
 
-open Set Filter TopologicalSpace Topology Filter
+open Set Filter TopologicalSpace Filter
+open scoped Topology
 open scoped Pointwise
 
 namespace Urysohns

@@ -34,7 +34,8 @@ endowed with an order.
 @[expose] public section
 
 
-open Set Function Filter Topology
+open Set Function Filter
+open scoped Topology
 
 /-!
 ### Definition and notation

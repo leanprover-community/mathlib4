@@ -32,7 +32,8 @@ contracting map, fixed point, Banach fixed point theorem
 
 @[expose] public section
 
-open NNReal Topology ENNReal Filter Function
+open NNReal ENNReal Filter Function
+open scoped Topology
 
 variable {α : Type*}
 

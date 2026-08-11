@@ -35,7 +35,8 @@ nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite HomotopicalAlgebra
+open CategoryTheory Limits Opposite HomotopicalAlgebra
+open scoped Simplicial
 
 namespace SSet
 

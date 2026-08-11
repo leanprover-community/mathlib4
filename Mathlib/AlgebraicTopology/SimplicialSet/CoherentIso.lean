@@ -136,7 +136,7 @@ end CategoryTheory
 
 namespace SSet
 
-open Simplicial
+open scoped Simplicial
 
 /-- The simplicial set that encodes a single isomorphism.
 Its n-simplices are formal compositions of arrows in WalkingIso. -/

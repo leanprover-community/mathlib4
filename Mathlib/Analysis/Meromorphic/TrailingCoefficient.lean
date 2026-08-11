@@ -25,7 +25,8 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f g : 𝕜 → E} {x : 𝕜}
 
-open Filter Topology
+open Filter
+open scoped Topology
 
 variable (f x) in
 /--

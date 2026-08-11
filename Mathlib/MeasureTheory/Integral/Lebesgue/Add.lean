@@ -22,7 +22,8 @@ public section
 
 namespace MeasureTheory
 
-open Set Filter ENNReal Topology NNReal SimpleFunc
+open Set Filter ENNReal NNReal SimpleFunc
+open scoped Topology
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ : Measure α}
 

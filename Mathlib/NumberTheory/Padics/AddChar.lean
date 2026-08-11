@@ -40,7 +40,8 @@ equivalent if `NormMulClass R` holds.
 @[expose] public section
 
 open scoped fwdDiff
-open Filter Topology
+open Filter
+open scoped Topology
 
 variable {p : ℕ} [Fact p.Prime]
 

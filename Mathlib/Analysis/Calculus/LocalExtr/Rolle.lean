@@ -44,7 +44,8 @@ local extremum, Rolle's Theorem
 
 public section
 
-open Set Filter Topology
+open Set Filter
+open scoped Topology
 
 variable {f f' : ℝ → ℝ} {a b l : ℝ}
 

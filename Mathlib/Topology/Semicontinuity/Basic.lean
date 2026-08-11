@@ -60,7 +60,8 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 public section
 
-open Topology ENNReal
+open ENNReal
+open scoped Topology
 
 open Set Function Filter
 

@@ -88,7 +88,8 @@ open Set
 
 open Filter hiding map
 
-open Function MeasurableSpace Topology Filter ENNReal NNReal Interval MeasureTheory
+open Function MeasurableSpace Filter ENNReal NNReal MeasureTheory
+open scoped Topology Interval
 open scoped symmDiff
 
 variable {α β γ δ ι R R' : Type*}

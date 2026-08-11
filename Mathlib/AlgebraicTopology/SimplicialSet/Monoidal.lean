@@ -28,8 +28,9 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
   Limits SimplicialObject.Truncated
+open scoped Simplicial
 
 namespace SSet
 

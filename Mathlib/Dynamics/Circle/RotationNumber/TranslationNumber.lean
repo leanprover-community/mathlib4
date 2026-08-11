@@ -116,7 +116,8 @@ circle homeomorphism, rotation number
 
 @[expose] public section
 
-open Filter Set Int Topology
+open Filter Set Int
+open scoped Topology
 open Function hiding Commute
 
 /-!

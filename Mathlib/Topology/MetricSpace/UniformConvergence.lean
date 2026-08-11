@@ -45,7 +45,8 @@ public section
 
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
 open scoped UniformConvergence NNReal ENNReal
-open Filter Topology Uniformity
+open Filter
+open scoped Topology Uniformity
 
 namespace UniformFun
 

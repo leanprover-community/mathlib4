@@ -23,7 +23,8 @@ public section
 
 noncomputable section
 
-open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
+open UpperHalfPlane Filter Function Complex CongruenceSubgroup
+open scoped Manifold
 
 namespace EisensteinSeries
 

@@ -29,7 +29,8 @@ universe u
 
 noncomputable instance : TopCat.toSSet.{u}.Monoidal := .ofChosenFiniteProducts _
 
-open CategoryTheory MonoidalCategory Simplicial Opposite
+open CategoryTheory MonoidalCategory Opposite
+open scoped Simplicial
 
 namespace SimplexCategory
 

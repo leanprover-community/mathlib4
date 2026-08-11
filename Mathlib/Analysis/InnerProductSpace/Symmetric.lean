@@ -40,7 +40,7 @@ self-adjoint, symmetric
 
 open RCLike
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 section Seminormed
 

@@ -62,7 +62,7 @@ public import Mathlib.Order.SetDissipate
 
 open MeasurableSpace Set
 
-open MeasureTheory
+open scoped MeasureTheory
 
 variable {α β : Type*}
 

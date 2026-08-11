@@ -29,7 +29,8 @@ namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace Function RealInnerProductSpace
+open AffineSubspace Function
+open scoped RealInnerProductSpace
 open scoped Affine
 
 variable {V P : Type*}

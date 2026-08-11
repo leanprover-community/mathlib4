@@ -29,7 +29,7 @@ assert_not_exists Affine.Simplex
 
 noncomputable section
 
-open Affine
+open scoped Affine
 
 namespace Finset
 

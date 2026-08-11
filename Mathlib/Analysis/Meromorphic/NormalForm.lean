@@ -25,7 +25,8 @@ form at a single point and along a set, respectively.
 
 @[expose] public section
 
-open Metric Set Topology WithTop
+open Metric Set WithTop
+open scoped Topology
 open scoped Pointwise
 
 variable

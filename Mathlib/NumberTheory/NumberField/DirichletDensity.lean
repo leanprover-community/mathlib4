@@ -39,7 +39,8 @@ public section
 
 noncomputable section
 
-open Filter IsDedekindDomain Topology Set
+open Filter IsDedekindDomain Set
+open scoped Topology
 
 namespace NumberField.Set
 

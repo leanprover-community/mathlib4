@@ -20,7 +20,8 @@ so we only add API needed for this lemma.
 @[expose] public section
 
 
-open Interval Function OrderDual
+open Function OrderDual
+open scoped Interval
 
 namespace Set
 

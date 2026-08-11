@@ -17,7 +17,8 @@ longer than its content; but giving it a name serves as a way of standardizing A
 
 @[expose] public section
 
-open Set Topology
+open Set
+open scoped Topology
 
 namespace TopologicalSpace
 

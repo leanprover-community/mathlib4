@@ -259,7 +259,8 @@ end TemperedDistribution
 
 /-! ## Classical distributions -/
 
-open TopologicalSpace Distributions
+open TopologicalSpace
+open scoped Distributions
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}

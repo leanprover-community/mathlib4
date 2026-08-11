@@ -20,7 +20,8 @@ bounded bilinear maps.
 public section
 
 
-open Asymptotics Topology
+open Asymptotics
+open scoped Topology
 
 noncomputable section
 

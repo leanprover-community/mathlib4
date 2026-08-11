@@ -21,7 +21,8 @@ public section
 
 universe u
 
-open CategoryTheory Simplicial SSet
+open CategoryTheory SSet
+open scoped Simplicial
 
 namespace PartialOrder
 

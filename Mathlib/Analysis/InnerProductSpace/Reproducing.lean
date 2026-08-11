@@ -37,7 +37,8 @@ positive semidefinite matrices.
 
 public noncomputable section
 
-open ContinuousLinearMap InnerProductSpace Submodule ComplexConjugate Filter
+open ContinuousLinearMap InnerProductSpace Submodule Filter
+open scoped ComplexConjugate
 open scoped Topology
 
 /--

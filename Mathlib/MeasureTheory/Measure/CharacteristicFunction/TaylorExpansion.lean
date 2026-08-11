@@ -30,7 +30,8 @@ characteristic function, Taylor expansion
 public section
 
 
-open ProbabilityTheory Complex Set VectorFourier
+open Complex Set VectorFourier
+open scoped ProbabilityTheory
 open scoped Nat RealInnerProductSpace Topology
 
 namespace MeasureTheory

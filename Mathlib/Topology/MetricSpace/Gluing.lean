@@ -55,7 +55,8 @@ noncomputable section
 
 universe u v w
 
-open Function Set Uniformity
+open Function Set
+open scoped Uniformity
 
 namespace Metric
 

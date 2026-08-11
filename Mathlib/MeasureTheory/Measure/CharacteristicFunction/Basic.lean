@@ -51,7 +51,8 @@ and `L`.
 
 @[expose] public section
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate WithLp
+open BoundedContinuousFunction Real Complex WithLp
+open scoped RealInnerProductSpace ComplexConjugate
 
 open scoped ENNReal
 

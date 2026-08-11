@@ -28,7 +28,8 @@ Throughout the present file, `X` denotes a topologically space and `U` a subset 
 
 @[expose] public section
 
-open Filter Function Set Topology
+open Filter Function Set
+open scoped Topology
 
 variable
   {X : Type*} [TopologicalSpace X] {U : Set X}

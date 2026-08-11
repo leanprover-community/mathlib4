@@ -220,7 +220,7 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
 
-open FinsetFamily
+open scoped FinsetFamily
 
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
 original, or it's not in the original but it's the compression of something in the original. -/

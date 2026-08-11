@@ -62,7 +62,7 @@ namespace Asymptotics
 
 open Filter Function
 
-open Topology
+open scoped Topology
 
 section NormedAddCommGroup
 

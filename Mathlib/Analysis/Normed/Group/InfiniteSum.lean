@@ -36,7 +36,8 @@ infinite series, absolute convergence, normed group
 
 public section
 
-open Topology ENNReal NNReal
+open ENNReal NNReal
+open scoped Topology
 
 open Finset Filter Metric
 

@@ -37,7 +37,8 @@ This file defines the **Turán density** of a simple graph.
 @[expose] public section
 
 
-open Asymptotics Filter Finset Fintype Topology
+open Asymptotics Filter Finset Fintype
+open scoped Topology
 
 namespace SimpleGraph
 

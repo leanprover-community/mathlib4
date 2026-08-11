@@ -27,7 +27,7 @@ public section
 
 open Set Filter
 
-open Topology
+open scoped Topology
 
 section LinearOrder
 

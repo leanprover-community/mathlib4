@@ -45,8 +45,9 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 @[expose] public section
 
 open scoped ENNReal BoundedContinuousFunction
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
+open CompactlySupportedContinuousMap Filter Function Set
   TopologicalSpace MeasureTheory
+open scoped CompactlySupported Topology
 
 namespace RealRMK
 

@@ -23,7 +23,8 @@ public section
 
 noncomputable section
 
-open RCLike Real Filter Topology
+open RCLike Real Filter
+open scoped Topology
 open LinearMap renaming BilinForm → BilinForm
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]

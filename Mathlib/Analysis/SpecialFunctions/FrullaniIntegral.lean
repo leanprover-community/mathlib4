@@ -22,7 +22,8 @@ integrability of the integrand.
 
 public section
 
-open Real Set Filter MeasureTheory intervalIntegral Topology Metric
+open Real Set Filter MeasureTheory intervalIntegral Metric
+open scoped Topology
 
 namespace Frullani
 

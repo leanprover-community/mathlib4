@@ -21,7 +21,8 @@ It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+open scoped Simplicial
 
 namespace SSet
 

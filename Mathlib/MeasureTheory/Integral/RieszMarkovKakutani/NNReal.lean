@@ -30,7 +30,8 @@ public section
 
 open scoped NNReal
 
-open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
+open CompactlySupportedContinuousMap MeasureTheory
+open scoped CompactlySupported
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]

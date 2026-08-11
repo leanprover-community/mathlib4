@@ -54,7 +54,8 @@ namespace EuclideanGeometry
 
 namespace Sphere
 
-open AffineSubspace RealInnerProductSpace
+open AffineSubspace
+open scoped RealInnerProductSpace
 open scoped Affine
 
 variable {V P : Type*}

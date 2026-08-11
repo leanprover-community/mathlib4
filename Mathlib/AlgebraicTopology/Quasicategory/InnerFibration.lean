@@ -20,7 +20,8 @@ formalized.
 
 public section
 
-open CategoryTheory MorphismProperty Simplicial Limits
+open CategoryTheory MorphismProperty Limits
+open scoped Simplicial
 
 universe u
 

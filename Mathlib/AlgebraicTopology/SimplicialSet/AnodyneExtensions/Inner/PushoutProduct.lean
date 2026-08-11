@@ -46,7 +46,8 @@ https://kerodon.net/tag/0079 which is avoided in the mathlib implementation.
 
 universe u
 
-open CategoryTheory MonoidalCategory MonoidalClosed Simplicial HomotopicalAlgebra Limits
+open CategoryTheory MonoidalCategory MonoidalClosed HomotopicalAlgebra Limits
+open scoped Simplicial
 
 namespace SSet
 

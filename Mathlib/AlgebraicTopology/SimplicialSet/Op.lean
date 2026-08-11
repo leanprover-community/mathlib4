@@ -31,7 +31,8 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+open scoped Simplicial
 
 namespace SSet
 

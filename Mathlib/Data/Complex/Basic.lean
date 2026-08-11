@@ -42,7 +42,7 @@ structure Complex : Type where
 
 namespace Complex
 
-open ComplexConjugate
+open scoped ComplexConjugate
 
 noncomputable instance : DecidableEq ℂ :=
   Classical.decEq _

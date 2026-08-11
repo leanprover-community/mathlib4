@@ -18,7 +18,7 @@ This file defines topological torsors of additive and multiplicative groups, tha
 
 @[expose] public section
 
-open Topology
+open scoped Topology
 
 section Torsor
 
