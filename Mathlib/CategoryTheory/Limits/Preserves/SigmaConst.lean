@@ -64,17 +64,17 @@ variable {α β : Type*} (f : α → β)
   [HasCoproduct (fun (_ : α) ↦ R)] [HasCoproduct (fun (_ : β) ↦ R)]
   [HasCoproduct (fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)]
 
-open Classical in
+open scoped Classical in
 /-- A colimit cokernel cofork for the map
 `∐ fun (_ : α) ↦ R ⟶ ∐ fun (_ : β) ↦ R` induced by a map `f : α → β`. -/
-@[simps! pt]
+@[simps! pt, implicit_reducible]
 noncomputable def sigmaConstCokernelCofork :
     CokernelCofork
       (Sigma.map' (f := fun (_ : α) ↦ R) (g := fun (_ : β) ↦ R) f (fun _ ↦ 𝟙 R)) :=
   CokernelCofork.ofπ (Z := ∐ fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)
     (Sigma.desc (fun b ↦
       if hb : b ∈ (Set.range f)ᶜ then Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ else 0))
-    (by ext; simp [Sigma.ι_desc])
+    (by ext; simp)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
@@ -83,7 +83,7 @@ lemma ι_sigmaConstCokernelCofork_π (b : β) (hb : b ∉ Set.range f) :
       Sigma.ι (fun _ ↦ R) ⟨b, hb⟩ := by
   dsimp [sigmaConstCokernelCofork]
   rw [Sigma.ι_desc]
-  apply dif_pos
+  apply dite_eq_left
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -91,7 +91,7 @@ lemma ι_sigmaConstCokernelCofork_π_eq_zero (a : α) :
     dsimp% Sigma.ι (fun _ ↦ R) (f a) ≫ (sigmaConstCokernelCofork R f).π = 0 := by
   dsimp [sigmaConstCokernelCofork]
   rw [Sigma.ι_desc]
-  exact dif_neg (by simp)
+  exact dite_eq_right (by simp)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

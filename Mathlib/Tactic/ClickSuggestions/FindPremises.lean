@@ -269,7 +269,7 @@ public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name)
   return .append {} pre
 
 /-- Compute the discrimination trees for the local variables in `lctx`.
-We restrict to the varaibles in `lctx` to avoid using introduced bound variables. -/
+We restrict to the variables in `lctx` to avoid using introduced bound variables. -/
 public def computeLCtxDiscrTrees (choice : Choice) (lctx : LocalContext) (fvarId? : Option FVarId) :
     MetaM PreDiscrTrees := do
   let mut entries : Entries := {}

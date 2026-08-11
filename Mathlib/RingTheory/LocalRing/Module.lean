@@ -77,9 +77,9 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
   · intro hN
-    letI : Module k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
+    let : Module k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
       inferInstanceAs (Module (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
-    letI : IsScalarTower R k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
+    let : IsScalarTower R k (M ⧸ (𝔪 • ⊤ : Submodule R M)) :=
       inferInstanceAs (IsScalarTower R (R ⧸ 𝔪) (M ⧸ 𝔪 • (⊤ : Submodule R M)))
     let f := AlgebraTensorModule.lift (((LinearMap.ringLmapEquivSelf k k _).symm
       (Submodule.mkQ (𝔪 • ⊤ : Submodule R M))).restrictScalars R)
@@ -170,8 +170,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     ∃ (b : Basis ι R M), ∀ i, b i = v i := by
   let bk : Basis ι k (k ⊗[R] M) := Basis.mk hli (by rw [hsp])
-  haveI : Finite ι := Module.Finite.finite_basis bk
-  letI : Fintype ι := Fintype.ofFinite ι
+  have : Finite ι := Module.Finite.finite_basis bk
+  let : Fintype ι := Fintype.ofFinite ι
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
@@ -251,6 +251,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv i hi
@@ -268,7 +269,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     rw [show v n = _ from hay n]
     exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
   let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
-  have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
+  have a_eq i : a i j = a' i.1 := by simp_rw [a', dite_eq_left i.2]
   have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
     convert! hfa j
@@ -277,17 +278,18 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   specialize ih (v + (c · • v n)) ?_ ?_
   · convert! (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
     · ext; simp [tmul_add]; rfl
-    simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
+    simp_rw [Function.comp_def, c, ite_eq_left, neg_zero, zero_mul, map_zero]
   · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
     simp_rw [Pi.add_apply, smul_add, s.sum_add_distrib, c, smul_smul, ← s.sum_smul, ← mul_assoc,
       ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfv]
     congr 4
-    exact s.sum_congr rfl fun i hi ↦ by rw [if_neg (ne_of_mem_of_not_mem hi hn)]
+    exact s.sum_congr rfl fun i hi ↦ by rw [ite_eq_right (ne_of_mem_of_not_mem hi hn)]
   obtain hi | hi := Finset.mem_insert.mp hi
   · rw [hi, hfn, Finset.sum_eq_zero, neg_zero, zero_mul]
     intro i hi; rw [ih i hi, zero_mul]
   · exact ih i hi
 
+set_option backward.isDefEq.respectTransparency.types false in
 open Finsupp in
 theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Flat R M] {ι : Type u}
     (v : ι → M) (h : Function.Bijective (linearCombination k (TensorProduct.mk R k M 1 ∘ v))) :

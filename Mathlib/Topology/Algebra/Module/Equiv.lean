@@ -366,10 +366,8 @@ theorem trans_toLinearEquiv (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃S
 
 /-- Product of two continuous linear equivalences. The map comes from `Equiv.prodCongr`. -/
 def prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂) (e' : M₃ ≃L[R₁] M₄) :
-    (M₁ × M₃) ≃L[R₁] M₂ × M₄ :=
-  { e.toLinearEquiv.prodCongr e'.toLinearEquiv with
-    continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
-    continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
+    (M₁ × M₃) ≃L[R₁] M₂ × M₄ where
+  __ := e.toLinearEquiv.prodCongr e'.toLinearEquiv
 
 @[simp, norm_cast]
 theorem prodCongr_apply [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
@@ -382,6 +380,7 @@ theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (
     (e.prodCongr e' : M₁ × M₃ →L[R₁] M₂ × M₄) = (e : M₁ →L[R₁] M₂).prodMap (e' : M₃ →L[R₁] M₄) :=
   rfl
 
+@[simp]
 theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
   rfl
@@ -862,6 +861,7 @@ section AutRing
 
 variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/
 def unitsEquivAut : Rˣ ≃ R ≃L[R] R where
   toFun u :=
@@ -1062,7 +1062,7 @@ equivalence. -/
 def IsInvertible (f : M →L[R] M₂) : Prop :=
   ∃ (A : M ≃L[R] M₂), A = f
 
-open Classical in
+open scoped Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
@@ -1080,7 +1080,7 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 /-- By definition, if `f` is not invertible then `inverse f = 0`. -/
 @[simp] lemma inverse_of_not_isInvertible
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
-  dif_neg hf
+  dite_eq_right hf
 
 @[simp]
 theorem isInvertible_zero_iff :
