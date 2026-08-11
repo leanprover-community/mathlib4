@@ -532,8 +532,6 @@ lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by
 termination_by p.semilength
 decreasing_by exacts [semilength_insidePart_lt h, semilength_outsidePart_lt h]
 
-@[deprecated (since := "2026-02-03")] alias semilength_eq_numNodes_equivTree := numNodes_toTree
-
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
 @[simps!]

@@ -508,9 +508,6 @@ theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
     IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).map_isSuccLimit l
 
-@[deprecated (since := "2026-02-01")]
-alias isSuccLimit_mul := isSuccLimit_mul_right
-
 theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPrelimit (a * b) := by
   obtain rfl | ha := eq_zero_or_pos a
   · rw [zero_mul]
@@ -990,10 +987,6 @@ theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω �
     exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
     exact isSuccPrelimit_mul_left isSuccLimit_omega0
-
-@[deprecated isSuccPrelimit_iff_omega0_dvd (since := "2026-02-01")]
-theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_omega0_dvd]
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=

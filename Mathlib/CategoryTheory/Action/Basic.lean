@@ -337,8 +337,6 @@ def actionPUnitEquivalence : Action V PUnit ≌ V where
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
-@[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence
-
 variable (V)
 
 set_option backward.isDefEq.respectTransparency.types false in

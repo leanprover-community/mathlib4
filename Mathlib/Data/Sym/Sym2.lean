@@ -182,8 +182,6 @@ protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
-@[deprecated (since := "2026-02-05")] alias mk_prod_swap_eq := eq_swap
-
 theorem congr_right {a b c : α} : s(a, b) = s(a, c) ↔ b = c := by
   simp +contextual
 
@@ -267,8 +265,6 @@ theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) 
 
 @[simp]
 theorem map_mk (f : α → β) (a b : α) : map f s(a, b) = s(f a, f b) := rfl
-
-@[deprecated (since := "2026-02-05")] alias map_pair_eq := map_mk
 
 theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) := by
   intro z z'
@@ -512,8 +508,6 @@ def IsDiag : Sym2 α → Prop :=
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
 
-@[deprecated (since := "2026-02-05")] alias isDiag_iff_proj_eq := mk_isDiag_iff
-
 protected lemma IsDiag.map : z.IsDiag → (z.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) z
 
 lemma isDiag_map (hf : Injective f) : (z.map f).IsDiag ↔ z.IsDiag :=
@@ -592,8 +586,6 @@ def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
 @[simp]
 theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias fromRel_proj_prop := fromRel_prop
 
 theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
@@ -1024,8 +1016,6 @@ For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements f
 def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
-
-@[deprecated (since := "2026-02-05")] alias mk'_mem_sym2_iff := mk_mem_sym2_iff
 
 lemma mem_sym2_iff_subset {z : Sym2 α} : z ∈ s.sym2 ↔ (z : Set α) ⊆ s := by
   induction z using Sym2.inductionOn
