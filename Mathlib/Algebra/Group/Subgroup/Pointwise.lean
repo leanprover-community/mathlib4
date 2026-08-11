@@ -44,7 +44,7 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
   Set.ext fun _ => inv_mem_iff
 
 @[to_additive]
-theorem InvMemClass.isInvClosed [SetLike S G] [InvMemClass S G] (H : S) :
+theorem InvMemClass.isInvClosed [Inv G] [SetLike S G] [InvMemClass S G] (H : S) :
     (H : Set G).IsInvClosed :=
   fun _ => inv_mem
 
