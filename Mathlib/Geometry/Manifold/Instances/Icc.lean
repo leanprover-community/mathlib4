@@ -73,7 +73,7 @@ open Manifold IsManifold
 lemma isImmersionOfComplement_subtypeVal_Icc :
     IsImmersionOfComplement Unit (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
-  letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin 1)) Unit
+  let φ₀ := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin 1)) Unit
   let φ : (EuclideanSpace ℝ (Fin 1) × Unit) ≃L[ℝ] ℝ :=
     φ₀.trans (PiLp.equivOfUnique 2 ℝ (fun (_ : Fin 1) ↦ ℝ))
   by_cases hz : ↑z < y

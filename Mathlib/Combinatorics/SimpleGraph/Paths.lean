@@ -373,7 +373,7 @@ theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) 
     (p.drop n).IsPath := by
   replace h : (p.drop 1).IsPath := h.isPath_tail
   rw [← Nat.add_sub_of_le hn, drop_add_eq]
-  simp [h.drop (n - 1)]
+  simp [h.drop (n - 1), -drop_drop]
 
 theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
     (p.take n).IsPath := by
@@ -778,7 +778,7 @@ lemma IsPath.isCycle_append {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (h
   rw [isCycle_def, isTrail_append]
   refine ⟨⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · grind [IsPath.disjoint_edges_of_disjoint_support, List.Disjoint.symm]
-  · grind [nil_append_iff, length_eq_zero_iff]
+  · grind [nil_append_iff]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 

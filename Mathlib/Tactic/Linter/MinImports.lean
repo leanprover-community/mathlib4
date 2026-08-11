@@ -107,7 +107,6 @@ macro "#import_bumps" : command => `(
   run_cmd logInfo "Counting imports from here."
   set_option linter.minImports true)
 
-
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsPost (readPrev : PrevStateFn) (stx : Syntax) (self : ImportState) :
     CommandElabM ImportState := do
@@ -191,7 +190,7 @@ The typed handle of the `minImports` linter. Other stateful linters can read the
 -/
 public initialize minImportsLinter : StatefulLinter ImportState Unit ←
   registerStatefulLinter {}
-    (post := fun stx self _ readPrev _ => withSetOptionIn' (minImportsPost readPrev · self) stx)
+    (post := fun stx self _ readPrev _ => withSetOptionIn (minImportsPost readPrev · self) stx)
 
 end MinImports
 
