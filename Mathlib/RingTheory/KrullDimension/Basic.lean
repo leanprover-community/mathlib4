@@ -50,7 +50,7 @@ lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] : ringKrullDim R = �
 lemma zero_le_ringKrullDim_iff_nontrivial : 0 ≤ ringKrullDim R ↔ Nontrivial R := by
   refine ⟨fun h ↦ ?_, fun h ↦ krullDim_nonneg⟩
   contrapose! h
-  simp [ringKrullDim_eq_bot_of_subsingleton]
+  exact WithBot.lt_coe_bot.mpr krullDim_eq_bot
 
 lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] : 0 ≤ ringKrullDim R :=
   krullDim_nonneg
