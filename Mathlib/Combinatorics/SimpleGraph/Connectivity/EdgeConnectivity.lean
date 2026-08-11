@@ -155,6 +155,7 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
 
+
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
   obtain ⟨w, hw⟩ := h.reachable (by simp) |>.exists_isPath
@@ -215,7 +216,7 @@ theorem edgeReachability_comm : G.edgeReachability u v = G.edgeReachability v u 
 theorem edgeConnectivity_le_edgeReachability : G.edgeConnectivity ≤ G.edgeReachability u v :=
   iSup₂_le fun _ hi ↦ IsEdgeReachable.le_edgeReachability (hi u v)
 
-theorem notEdgeReachable_degree_plus_one [Fintype <| G.neighborSet u] [DecidableEq V] (huv : u ≠ v)
+theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableEq V] (huv : u ≠ v)
     : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
   intro h
   unfold IsEdgeReachable at h
@@ -239,7 +240,7 @@ theorem edgeReachability_le_degree_left
   simp only [edgeReachability, iSup_le_iff, Nat.cast_le]
   intro i h
   have this2 : ¬G.IsEdgeReachable (G.degree u + 1) u v  := by
-    exact notEdgeReachable_degree_plus_one huv
+    exact notEdgeReachable_degree_add_one huv
   by_contra
   simp only [ge_iff_le, not_le] at this
   apply this2
