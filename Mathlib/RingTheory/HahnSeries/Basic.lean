@@ -257,7 +257,7 @@ def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
 
 @[simp]
 theorem orderTop_zero : orderTop (0 : R⟦Γ⟧) = ⊤ :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 @[simp]
 theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
@@ -265,7 +265,7 @@ theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
 
 theorem orderTop_of_ne_zero (hx : x ≠ 0) :
     orderTop x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+  dite_eq_right hx
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
 
@@ -361,11 +361,11 @@ def order (x : R⟦Γ⟧) : Γ :=
 
 @[simp]
 theorem order_zero : order (0 : R⟦Γ⟧) = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+  dite_eq_right hx
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
@@ -439,7 +439,7 @@ def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
         contrapose hb
-        rw [Function.mem_support, dif_neg hb, Classical.not_not] }
+        rw [Function.mem_support, dite_eq_right hb, Classical.not_not] }
 
 @[simp]
 theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
@@ -447,9 +447,9 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {a : Γ} :
   rw [embDomain]
   dsimp only
   by_cases ha : a ∈ x.support
-  · rw [dif_pos (Set.mem_image_of_mem f ha)]
+  · rw [dite_eq_left (Set.mem_image_of_mem f ha)]
     exact congr rfl (f.injective (Classical.choose_spec (Set.mem_image_of_mem f ha)).2)
-  · rw [dif_neg, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
+  · rw [dite_eq_right, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
     contrapose ha
     obtain ⟨b, hb1, hb2⟩ := (Set.mem_image _ _ _).1 ha
     rwa [f.injective hb2] at hb1
@@ -462,7 +462,7 @@ theorem embDomain_mk_coeff {f : Γ → Γ'} (hfi : Function.Injective f)
 
 theorem embDomain_notin_image_support {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'}
     (hb : b ∉ f '' x.support) : (embDomain f x).coeff b = 0 :=
-  dif_neg hb
+  dite_eq_right hb
 
 theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
     support (embDomain f x) ⊆ f '' x.support := by
