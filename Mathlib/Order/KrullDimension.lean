@@ -277,7 +277,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
   rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
 
-/- For elements of finite height, `height` is strictly monotone. -/
+/-- For elements of finite height, `height` is strictly monotone. -/
 @[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
     height x < height y := by
   rw [← ENat.add_one_le_iff hfin.ne, height_add_const, iSup₂_le_iff]
@@ -298,7 +298,7 @@ lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := 
     gcongr
     simp [hfin]
 
-/- For elements of finite height, `coheight` is strictly antitone. -/
+/-- For elements of finite height, `coheight` is strictly antitone. -/
 @[gcongr] lemma coheight_strictAnti {x y : α} (hyx : y < x) (hfin : coheight x < ⊤) :
     coheight x < coheight y :=
   height_strictMono (α := αᵒᵈ) hyx hfin
@@ -952,18 +952,6 @@ lemma krullDim_eq_one_iff_of_boundedOrder {α : Type*} [PartialOrder α] [Bounde
   krullDim_eq_one_iff_of_boundedOrder.mpr ‹_›
 
 variable {α : Type*} [Preorder α]
-
-/-
-These two lemmas could possibly be used to simplify the subsequent calculations,
-especially once the `Set.encard` api is richer.
-
-(Commented out to avoid importing modules purely for `proof_wanted`.)
-proof_wanted height_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
-  height a = (Set.Iio a).encard
-
-proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
-  coheight a = (Set.Ioi a).encard
--/
 
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>
