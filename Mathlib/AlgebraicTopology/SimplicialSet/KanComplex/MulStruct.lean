@@ -535,7 +535,6 @@ lemma exists_left_inverse [KanComplex X] (p : X.PtSimplex (n + 1) x) (i : Fin (n
     ∃ (q : X.PtSimplex (n + 1) x), Nonempty (MulStruct q p .const i) := by
   let α (j : Fin (n + 3)) (hj : j ≠ i.succ.succ) : Δ[n + 1] ⟶ X :=
     if j = i.castSucc.castSucc then p.map else const x
-  have h_α (j) (hj) (hj' : j ≠ i.castSucc.castSucc) : α j hj = const x := by grind
   have δ_α (j) (hj) (k : Fin (n + 2)) : stdSimplex.δ k ≫ α j hj = const x := by
     dsimp [α]; split_ifs <;> simp
   have hα : horn.IsCompatible α := fun _ _ _ _ _ ↦ by simp [δ_α]
