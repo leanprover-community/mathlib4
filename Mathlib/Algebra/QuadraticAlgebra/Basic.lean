@@ -417,9 +417,8 @@ def mapEquiv (a b : R) (u : Rˣ) (k : R) {a' b' : R}
     QuadraticAlgebra R a' b' ≃ₐ[R] QuadraticAlgebra R a b where
   __ := map a b u k ha hb
   invFun := map a' b' (u⁻¹ : Rˣ) (-(u⁻¹ : Rˣ) * k)
-    (by simp only [sq, ha, mul_assoc, mul_sub, Units.inv_mul_cancel_left, hb, mul_add, neg_mul,
-        mul_neg, sub_neg_eq_add, neg_neg]; ring)
-    (by simp only [hb, mul_add, Units.inv_mul_cancel_left, neg_mul, mul_neg]; ring)
+    (by grind [sq, mul_assoc, Units.inv_mul_cancel_left])
+    (by grind [Units.inv_mul_cancel_left])
   left_inv _ := by ext <;> simp [mul_assoc]
   right_inv _ := by ext <;> simp [mul_assoc]
 
