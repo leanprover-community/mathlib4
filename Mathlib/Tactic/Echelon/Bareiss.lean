@@ -12,12 +12,13 @@ public import Mathlib.Tactic.Echelon.Rat
 public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
-# The Bareiss decomposition method
+# The Bareiss decomposition driver
 
 Given a matrix literal `A` over a commutative domain, the entry point
 `mkBareissDecomposition` selects a computation model for the element type, runs the
 elimination, and elaborates a certificate `⟨L, σ, pivot, …⟩ : Echelon.Decomposition A`,
-with the certificate conditions checked by the kernel via `decide`.
+with the certificate conditions checked by the kernel via `decide`. The elimination
+itself is the model-parameterized `bareissDecomp` in `Mathlib.Tactic.Echelon.Core`.
 
 ## Main definitions
 
