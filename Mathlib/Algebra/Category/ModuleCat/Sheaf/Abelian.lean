@@ -24,7 +24,7 @@ are imported.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

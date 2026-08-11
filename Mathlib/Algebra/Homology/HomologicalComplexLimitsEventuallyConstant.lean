@@ -20,12 +20,12 @@ isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits
 
 variable {C J ι : Type*} [Category C] [Category J]
-   {c : ComplexShape ι} [IsCofiltered J]
+  {c : ComplexShape ι} [IsCofiltered J]
 
 namespace HomologicalComplex
 

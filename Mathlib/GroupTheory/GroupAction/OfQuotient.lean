@@ -17,7 +17,7 @@ there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on 
 
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
@@ -59,7 +59,7 @@ open scoped FixedPoints
 
 variable {α : Type*} [Group α] [MulDistribMulAction G α]
 
-instance : MulDistribMulAction (G ⧸ H) (α^*H) :=
+instance : MulDistribMulAction (G ⧸ H) (FixedPoints.subgroup H α) :=
   inferInstanceAs <| MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H α)
 
 end MulDistribMulAction

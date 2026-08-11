@@ -84,7 +84,7 @@ lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
   split_ifs at ihn ⊢ with hn'
   · rw [lt_add_iff_pos_left]
     exact mul_pos_of_neg_of_neg hx0 ihn
-  · grw [← hx]
+  · grw [← hx.le]
     gcongr
     simpa only [mul_one] using mul_lt_mul_of_neg_left ihn hx0
 

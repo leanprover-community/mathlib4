@@ -137,7 +137,7 @@ instance [e.IsTruncGE] : e.op.IsTruncLE where
 instance [e.IsTruncLE] : e.op.IsTruncGE where
   mem_next h := e.mem_prev h
 
-open Classical in
+open scoped Classical in
 /-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
 noncomputable def r (i' : ι') : Option ι :=
   if h : ∃ (i : ι), e.f i = i'
@@ -174,6 +174,7 @@ section
 
 variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `up' a` to itself via (· + b). -/
 @[simps!]
 def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
@@ -181,11 +182,13 @@ def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
+set_option backward.isDefEq.respectTransparency false in
 instance (a b : A) : (embeddingUp'Add a b).IsRelIff := by dsimp [embeddingUp'Add]; infer_instance
 
 instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
   mem_next {j _} h := ⟨j + a, (add_right_comm _ _ _).trans h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `down' a` to itself via (· + b). -/
 @[simps!]
 def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
@@ -193,6 +196,7 @@ def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
 
+set_option backward.isDefEq.respectTransparency false in
 instance (a b : A) : (embeddingDown'Add a b).IsRelIff := by
   dsimp [embeddingDown'Add]; infer_instance
 
@@ -201,6 +205,7 @@ instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
@@ -208,11 +213,13 @@ def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; lia)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
 
 instance : embeddingUpNat.IsTruncGE where
   mem_next {j _} h := ⟨j + 1, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `down ℕ` to `up ℤ` with sends `n` to `-n`. -/
 @[simps!]
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
@@ -220,13 +227,16 @@ def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
     (fun _ _ h => by simpa using h)
     (by dsimp; lia)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : embeddingDownNat.IsTruncLE where
   mem_prev {i j} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
 variable (p : ℤ)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
@@ -234,11 +244,14 @@ def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
     (fun _ _ h => by dsimp at h; lia)
     (by dsimp; lia)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (embeddingUpIntGE p).IsTruncGE where
   mem_next {j _} h := ⟨j + 1, by dsimp at h ⊢; lia⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
@@ -246,11 +259,14 @@ def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
     (fun _ _ h => by dsimp at h; lia)
     (by dsimp; lia)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; lia⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
   constructor
@@ -261,6 +277,7 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
     dsimp
     lia
 
+set_option backward.defeqAttrib.useBackward true in
 lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
     (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
   constructor

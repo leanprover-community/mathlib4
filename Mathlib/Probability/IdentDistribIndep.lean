@@ -47,8 +47,8 @@ lemma IdentDistrib.prodMk [IsFiniteMeasure μ]
     have : IsFiniteMeasure ν := by
       have : IsFiniteMeasure (ν.map Z) := by rw [← hXZ.map_eq]; infer_instance
       exact Measure.isFiniteMeasure_of_map hXZ.aemeasurable_snd
-    rw [(indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_fst hYW.aemeasurable_fst).mp hXY,
-      (indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_snd hYW.aemeasurable_snd).mp hZW,
+    rw [hXY.map_prod_eq_prod_map_map hXZ.aemeasurable_fst hYW.aemeasurable_fst,
+      hZW.map_prod_eq_prod_map_map hXZ.aemeasurable_snd hYW.aemeasurable_snd,
       hXZ.map_eq, hYW.map_eq]
 
 /-- If `(X i)` and `(Y i)` are families of independent random variables indexed by a countable

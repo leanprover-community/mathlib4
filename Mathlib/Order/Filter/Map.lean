@@ -60,11 +60,7 @@ theorem mem_map' : t ∈ map m f ↔ { x | m x ∈ t } ∈ f :=
 theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
   f.sets_of_superset hs <| subset_preimage_image m s
 
--- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
--- However this is a higher priority lemma.
--- It seems the side condition `hf` is not applied by `simpNF`.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
   ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
 
@@ -239,6 +235,11 @@ theorem Eventually.comap {p : β → Prop} (hf : ∀ᶠ b in g, p b) (f : α →
     ∀ᶠ a in comap f g, p (f a) :=
   preimage_mem_comap hf
 
+@[simp]
+lemma EventuallyEq.comp_comap {F : Filter β} {f g : β → γ} (h : α → β)
+    (hfg : f =ᶠ[F] g) : f.comp h =ᶠ[comap h F] g.comp h :=
+  hfg.comap _
+
 theorem comap_id : comap id f = f :=
   le_antisymm (fun _ => preimage_mem_comap) fun _ ⟨_, ht, hst⟩ => mem_of_superset ht hst
 
@@ -321,7 +322,7 @@ nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β
 
 theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
     LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
-  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
+  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using! hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
 nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}
@@ -337,7 +338,7 @@ A set `s` belongs to `Filter.kernMap m f` if either of the following equivalent 
 
 1. There exists a set `t ∈ f` such that `s = Set.kernImage m t`. This is used as a definition.
 2. There exists a set `t` such that `tᶜ ∈ f` and `sᶜ = m '' t`, see `Filter.mem_kernMap_iff_compl`
-and `Filter.compl_mem_kernMap`.
+   and `Filter.compl_mem_kernMap`.
 
 This definition is useful because it gives a right adjoint to `Filter.comap`, and because it has a
 nice interpretation when working with `co-` filters (`Filter.cocompact`, `Filter.cofinite`, ...).
@@ -442,7 +443,7 @@ theorem comap_bot : comap m ⊥ = ⊥ :=
 
 theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
   rw [neBot_iff] at *
-  contrapose! h
+  contrapose h
   rw [h]
   exact comap_bot
 
@@ -714,7 +715,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
-  haveI := nonempty_subtype.2 ne
+  have := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 
@@ -779,7 +780,7 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
     calc
       f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
       _ ⊆ f '' (V ∩ W) := by gcongr
-      _ = f '' (f ⁻¹' U) := by rw [h]
+      _ = f '' f ⁻¹' U := by rw [h]
       _ ⊆ U := image_preimage_subset f U
 
 protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
@@ -859,7 +860,7 @@ theorem le_seq {f : Filter (α → β)} {g : Filter α} {h : Filter β}
     (hh : ∀ t ∈ f, ∀ u ∈ g, Set.seq t u ∈ h) : h ≤ seq f g := fun _ ⟨_, ht, _, hu, hs⟩ =>
   mem_of_superset (hh _ ht _ hu) fun _ ⟨_, hm, _, ha, eq⟩ => eq ▸ hs _ hm _ ha
 
-@[mono]
+@[gcongr, mono]
 theorem seq_mono {f₁ f₂ : Filter (α → β)} {g₁ g₂ : Filter α} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.seq g₁ ≤ f₂.seq g₂ :=
   le_seq fun _ hs _ ht => seq_mem_seq (hf hs) (hg ht)
@@ -968,7 +969,7 @@ theorem bind_le {f : Filter α} {g : α → Filter β} {l : Filter β} (h : ∀�
     f.bind g ≤ l :=
   join_le <| eventually_map.2 h
 
-@[mono]
+@[gcongr, mono]
 theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ᶠ[f₁] g₂) :
     bind f₁ g₁ ≤ bind f₂ g₂ := by
   refine le_trans (fun s hs => ?_) (join_mono <| map_mono hf)

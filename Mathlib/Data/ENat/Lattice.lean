@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.Lattice.Nat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -35,33 +35,50 @@ noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
 namespace ENat
 variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ}
 
-lemma iSup_coe_eq_top : ⨆ i, (f i : ℕ∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
-lemma iSup_coe_ne_top : ⨆ i, (f i : ℕ∞) ≠ ⊤ ↔ BddAbove (range f) := iSup_coe_eq_top.not_left
-lemma iSup_coe_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
-lemma iInf_coe_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
-lemma iInf_coe_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
-  rw [Ne, iInf_coe_eq_top, not_isEmpty_iff]
-lemma iInf_coe_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
+lemma iSup_natCast_eq_top : ⨆ i, (f i : ℕ∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
+lemma iSup_natCast_ne_top : ⨆ i, (f i : ℕ∞) ≠ ⊤ ↔ BddAbove (range f) := iSup_natCast_eq_top.not_left
+lemma iSup_natCast_lt_top : ⨆ i, (f i : ℕ∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
+lemma iInf_natCast_eq_top : ⨅ i, (f i : ℕ∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
+lemma iInf_natCast_ne_top : ⨅ i, (f i : ℕ∞) ≠ ⊤ ↔ Nonempty ι := by
+  rw [Ne, iInf_natCast_eq_top, not_isEmpty_iff]
+lemma iInf_natCast_lt_top : ⨅ i, (f i : ℕ∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
-lemma coe_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
+@[deprecated (since := "2026-07-17")] alias iSup_coe_eq_top := iSup_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_ne_top := iSup_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iSup_coe_lt_top := iSup_natCast_lt_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_eq_top := iInf_natCast_eq_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_ne_top := iInf_natCast_ne_top
+@[deprecated (since := "2026-07-17")] alias iInf_coe_lt_top := iInf_natCast_lt_top
 
-lemma coe_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
+lemma natCast_sSup : BddAbove s → ↑(sSup s) = ⨆ a ∈ s, (a : ℕ∞) := WithTop.coe_sSup
+
+@[deprecated (since := "2026-07-17")] alias coe_sSup := natCast_sSup
+
+lemma natCast_sInf (hs : s.Nonempty) : ↑(sInf s) = ⨅ a ∈ s, (a : ℕ∞) :=
   WithTop.coe_sInf hs (OrderBot.bddBelow s)
 
-lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
+@[deprecated (since := "2026-07-17")] alias coe_sInf := natCast_sInf
 
-@[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
+lemma natCast_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) := WithTop.coe_iSup _
+
+@[deprecated (since := "2026-07-17")] alias coe_iSup := natCast_iSup
+
+@[norm_cast] lemma natCast_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
+
+@[deprecated (since := "2026-07-17")] alias coe_iInf := natCast_iInf
 
 @[simp]
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
-  iInf_coe_eq_top.mpr ‹_›
+  iInf_natCast_eq_top.mpr ‹_›
 
-lemma iInf_eq_coe_iff {f : ι → ℕ∞} {n : ℕ} :
+lemma iInf_eq_natCast_iff {f : ι → ℕ∞} {n : ℕ} :
     ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   by_cases! hι : IsEmpty ι
   · simp [iInf_of_isEmpty]
   apply ciInf_eq_iff
+
+@[deprecated (since := "2026-07-17")] alias iInf_eq_coe_iff := iInf_eq_natCast_iff
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
@@ -69,7 +86,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · norm_cast
 
 @[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
-  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
+  simpa [Order.lt_one_iff] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -77,8 +94,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  rw [← lt_one_iff_eq_zero]
-  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
+  rw [← Order.lt_one_iff, sInf_lt_iff]
+  simp
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
@@ -98,7 +115,7 @@ lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
     specialize h y hy
     have hxt : y < ⊤ := lt_of_le_of_lt h hx
     use y.toNat
-    simp [toNat_le_of_le_coe h, LT.lt.ne_top hxt]
+    simp [toNat_le_of_le_natCast h, LT.lt.ne_top hxt]
 
 lemma finite_of_sSup_lt_top (h : sSup s < ⊤) : s.Finite := by
   contrapose! h
@@ -123,7 +140,7 @@ lemma exists_eq_iSup₂_of_lt_top {ι₁ ι₂ : Type*} {f : ι₁ → ι₂ →
 variable {ι κ : Sort*} {f g : ι → ℕ∞} {s : Set ℕ∞} {a : ℕ∞}
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℕ∞) = ⊤ :=
-  (iSup_eq_top _).2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+  iSup_eq_top.2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
   refine (iSup_le fun i ↦ mul_le_mul' rfl.le <| le_iSup_iff.2 fun _ a ↦ a i).antisymm' <|
@@ -195,7 +212,7 @@ lemma iSup_add [Nonempty ι] (f : ι → ℕ∞) : (⨆ i, f i) + a = ⨆ i, f i
 
 lemma add_biSup' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
     a + ⨆ i, ⨆ _ : p i, f i = ⨆ i, ⨆ _ : p i, a + f i := by
-  haveI : Nonempty {i // p i} := nonempty_subtype.2 h
+  have : Nonempty {i // p i} := nonempty_subtype.2 h
   simp only [iSup_subtype', add_iSup]
 
 lemma biSup_add' {p : ι → Prop} (h : ∃ i, p i) (f : ι → ℕ∞) :
@@ -228,7 +245,7 @@ lemma biSup_add_biSup_le {ι κ : Type*} {s : Set ι} {t : Set κ} (hs : s.Nonem
 
 lemma iSup_add_iSup (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) : iSup f + iSup g = ⨆ i, f i + g i := by
   cases isEmpty_or_nonempty ι
-  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
+  · simp
   · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
     refine iSup_add_iSup_le fun i j => ?_
     rcases h i j with ⟨k, hk⟩
@@ -248,7 +265,7 @@ lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
-  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
+  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, iInf_eq_bot.2, bot_eq_zero]
     exact fun x hx ↦ ⟨i, by simpa [hi.le, tsub_eq_zero_of_le]⟩
   simp_rw [not_exists, not_lt] at h
   refine le_antisymm (le_iInf fun i ↦ tsub_le_tsub_left (le_iSup ..) _) <|

@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.TensorProduct.Maps
@@ -138,6 +138,12 @@ theorem LinearMap.lTensor_range :
   apply lTensor_surjective
   rw [← range_eq_top, range_rangeRestrict]
 
+/-- If `g` is surjective, then `g.baseChange A` is surjective. -/
+theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
+    (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
+  rw [LinearMap.baseChange_eq_ltensor]
+  exact lTensor_surjective _ hg
+
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
@@ -198,6 +204,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
@@ -305,6 +312,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
@@ -405,7 +413,7 @@ lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
   rw [← ker_comp]
-  convert rTensor_mkQ Q I
+  convert! rTensor_mkQ Q I
   · ext; simp
   rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 

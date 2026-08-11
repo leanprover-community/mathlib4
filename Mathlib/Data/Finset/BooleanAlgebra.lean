@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
@@ -89,11 +89,11 @@ theorem top_eq_univ : (⊤ : Finset α) = univ :=
   rfl
 
 theorem ssubset_univ_iff {s : Finset α} : s ⊂ univ ↔ s ≠ univ :=
-  @lt_top_iff_ne_top _ _ _ s
+  lt_top_iff_ne_top
 
 @[simp]
 theorem univ_subset_iff {s : Finset α} : univ ⊆ s ↔ s = univ :=
-  @top_le_iff _ _ _ s
+  top_le_iff
 
 theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t := by
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
@@ -107,6 +107,8 @@ instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
 section BooleanAlgebra
 variable [DecidableEq α] {a : α}
 
+open symmDiff
+
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
 
@@ -118,20 +120,28 @@ theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
 
+@[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := by simp [himp_eq, imp_iff_or_not]
+
+protected theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq ..
+
+@[simp] theorem mem_bihimp_iff : a ∈ s ⇔ t ↔ (a ∈ s ↔ a ∈ t) := by simp [bihimp, iff_def']
+
+protected theorem bihimp_def : s ⇔ t = (s ∪ tᶜ) ∩ (t ∪ sᶜ) := bihimp_eq ..
+
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
   Set.ext fun _ => mem_compl
 
-@[simp] lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := @compl_le_compl_iff_le (Finset α) _ _ _
-@[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
+lemma compl_subset_compl : sᶜ ⊆ tᶜ ↔ t ⊆ s := compl_le_compl_iff_le
+lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := compl_lt_compl_iff_lt
 
-lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
+lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl
 
 lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
-  le_compl_iff_disjoint_right (α := Finset α)
+  le_compl_iff_disjoint_right
 
 lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
-  le_compl_iff_disjoint_left (α := Finset α)
+  le_compl_iff_disjoint_left
 
 @[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
   rw [subset_compl_comm, singleton_subset_iff, mem_compl]
@@ -273,8 +283,7 @@ section DecEq
 
 variable [Fintype α] [DecidableEq α]
 
-@[simp]
-lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm

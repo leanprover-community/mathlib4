@@ -59,10 +59,12 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {s t : Set α}
 
-open Classical in
+open scoped Classical in
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT ν)` is sigma-finite and for all
 measurable sets `t ⊆ sᶜ`, either `ν t = 0` or `μ t = ∞`. -/
-def Measure.sigmaFiniteSetWRT (μ ν : Measure α) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.sigmaFiniteSetWRT (μ ν : Measure α) : Set α :=
   if h : ∃ s : Set α, MeasurableSet s ∧ SigmaFinite (μ.restrict s)
     ∧ (∀ t, t ⊆ sᶜ → ν t ≠ 0 → μ t = ∞)
   then h.choose
@@ -118,12 +120,14 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     exact ht.le
   · refine ⟨∅, MeasurableSet.empty, by rw [Measure.restrict_empty]; infer_instance, ?_⟩
     rw [tsub_eq_zero_of_le hC_lt]
-    exact zero_le _
+    exact zero_le
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and
 for `C` the supremum of `ν s` over all measurable sets `s` with `μ.restrict s` sigma-finite,
 `ν (μ.sigmaFiniteSetGE ν n) ≥ C - 1/n`. -/
-def Measure.sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) : Set α :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose
 
 lemma measurableSet_sigmaFiniteSetGE [IsFiniteMeasure ν] (n : ℕ) :
@@ -159,7 +163,9 @@ lemma tendsto_measure_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν]
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetWRT' ν)` is sigma-finite and
 `ν (μ.sigmaFiniteSetWRT' ν)` has maximal measure among such sets. -/
-def Measure.sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] : Set α :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] : Set α :=
   ⋃ n, μ.sigmaFiniteSetGE ν n
 
 lemma measurableSet_sigmaFiniteSetWRT' [IsFiniteMeasure ν] :
@@ -304,7 +310,9 @@ section SigmaFiniteSet
 
 /-- A measurable set such that `μ.restrict μ.sigmaFiniteSet` is sigma-finite,
   and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0` or `μ s = ∞`. -/
-def Measure.sigmaFiniteSet (μ : Measure α) : Set α := μ.sigmaFiniteSetWRT μ
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def Measure.sigmaFiniteSet (μ : Measure α) : Set α := μ.sigmaFiniteSetWRT μ
 
 @[measurability]
 lemma measurableSet_sigmaFiniteSet : MeasurableSet μ.sigmaFiniteSet :=

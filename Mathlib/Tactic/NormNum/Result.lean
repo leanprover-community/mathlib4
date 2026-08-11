@@ -41,11 +41,11 @@ variable {u : Level}
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
-@[implicit_reducible]
+@[instance_reducible]
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
@@ -311,33 +311,36 @@ section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
-@[nolint unusedArguments, expose] def Result {α : Q(Type u)} (x : Q($α)) := Result'
+@[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
+-- The new behaviour of `inferInstanceAs` from leanprover/lean4#12897 needs to be updated,
+-- to ensure that if we are in a `meta` section then the auxiliary definitions are also `meta`.
+-- Fixed in https://github.com/leanprover/lean4/pull/13043
 instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
-@[match_pattern, inline, expose] def Result.isTrue {x : Q(Prop)} :
+@[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
     ∀ (proof : Q($x)), Result q($x) := Result'.isBool true
 
 /-- The result is `proof : ¬x`, where `x` is a (false) proposition. -/
-@[match_pattern, inline, expose] def Result.isFalse {x : Q(Prop)} :
+@[match_pattern, inline] def Result.isFalse {x : Q(Prop)} :
     ∀ (proof : Q(¬$x)), Result q($x) := Result'.isBool false
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
-@[match_pattern, inline, expose] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(AddMonoidWithOne $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsNat $x $lit)),
       Result x := Result'.isNat
 
 /-- The result is `-lit` where `lit` is a raw nat literal
 and `proof : isInt x (.negOfNat lit)`. -/
-@[match_pattern, inline, expose] def Result.isNegNat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline] def Result.isNegNat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(Ring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsInt $x (.negOfNat $lit))),
       Result x := Result'.isNegNat
 
 /-- The result is `proof : IsNNRat x n d`,
 where `n` a raw nat literal, `d` is a raw nat literal (not 0 or 1),
 `n` and `d` are coprime, and `q` is the value of `n / d`. -/
-@[match_pattern, inline, expose] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(DivisionSemiring $α) := by assumption) (q : Rat) (n : Q(ℕ)) (d : Q(ℕ))
       (proof : Q(IsNNRat $x $n $d)), Result x := Result'.isNNRat
 
@@ -345,7 +348,7 @@ where `n` a raw nat literal, `d` is a raw nat literal (not 0 or 1),
 where `n` is `.negOfNat lit` with `lit` a raw nat literal,
 `d` is a raw nat literal (not 0 or 1),
 `n` and `d` are coprime, and `q` is the value of `n / d`. -/
-@[match_pattern, inline, expose] def Result.isNegNNRat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline] def Result.isNegNNRat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℕ)) (d : Q(ℕ))
       (proof : Q(IsRat $x (.negOfNat $n) $d)), Result x := Result'.isNegNNRat
 

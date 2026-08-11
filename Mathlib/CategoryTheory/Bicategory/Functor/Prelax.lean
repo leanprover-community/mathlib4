@@ -163,7 +163,7 @@ variable {a b : B}
 
 /-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
-@[simps!]
+@[simps! -isSimp]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
 
@@ -174,6 +174,10 @@ instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map�
 lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
   apply IsIso.eq_inv_of_hom_inv_id
   simp [← F.map₂_comp η (inv η)]
+
+lemma map₂_iso_inv {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.inv = inv (F.map₂ η.hom) := by
+  rw [← F.map₂_inv, IsIso.Iso.inv_hom]
 
 @[reassoc, simp]
 lemma map₂_hom_inv {f g : a ⟶ b} (η : f ≅ g) :
@@ -202,6 +206,7 @@ lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
   subst hfg
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
     F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
   subst hfg

@@ -62,14 +62,14 @@ lemma PrespectralSpace.of_isOpenCover
     {ι : Type*} {U : ι → Opens X} (hU : IsOpenCover U) [∀ i, PrespectralSpace (U i)] :
     PrespectralSpace X := by
   refine .of_isTopologicalBasis (hU.isTopologicalBasis fun i ↦ isTopologicalBasis) ?_
-  simp only [Set.mem_iUnion, Set.mem_image, Set.mem_setOf_eq, forall_exists_index, and_imp,
+  simp only [Set.mem_iUnion, Set.mem_image, Set.mem_ofPred_eq, forall_exists_index, and_imp,
     forall_comm (α := Set _), forall_apply_eq_imp_iff₂]
   exact fun i V hV hV' ↦ hV'.image continuous_subtype_val
 
 lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
     (f : X → Y) (hf : IsInducing f) (hf' : IsSpectralMap f) : PrespectralSpace X :=
   .of_isTopologicalBasis (PrespectralSpace.isTopologicalBasis.isInducing hf) (by
-    simp only [Set.mem_image, Set.mem_setOf_eq, forall_exists_index, and_imp]
+    simp only [Set.mem_image, Set.mem_ofPred_eq, forall_exists_index, and_imp]
     rintro _ U h₁ h₂ rfl
     exact hf'.isCompact_preimage_of_isOpen h₁ h₂)
 
@@ -103,11 +103,10 @@ variable (X) in
 lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
     TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
   dsimp only [TopologicalSpace.Opens.IsBasis]
-  convert isTopologicalBasis (X := X)
+  convert! isTopologicalBasis (X := X)
   ext s
   exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
 def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     Opens X ≃o Order.Ideal (CompactOpens X) where

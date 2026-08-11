@@ -66,7 +66,7 @@ where
 partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   let eType ← inferType e
   let e ← do
-    let { expr, proof? := some proof } ← Simp.simp eType | pure e
+    let { expr, proof? := some proof, .. } ← Simp.simp eType | pure e
     trace[translate_detail] "unfoldConsts: added a cast from {eType} to {expr}"
     mkAppOptM ``Eq.mp #[eType, expr, proof, e]
   let eTypeWhnf ← whnf (← inferType e)
@@ -86,7 +86,7 @@ partial def refoldConsts (b : UnfoldBoundaries) (e expectedType : Expr) : SimpM 
 where
   go (e : Expr) (goal : MVarId) : SimpM Unit := do
     let goal ← do
-      let { expr, proof? := some proof } ← Simp.simp (← goal.getType) | pure goal
+      let { expr, proof? := some proof, .. } ← Simp.simp (← goal.getType) | pure goal
       trace[translate_detail] "refoldConsts: added a cast from {← goal.getType} to {expr}"
       goal.replaceTargetEq expr proof
     forallTelescope (← goal.getType) fun xs tgt => do

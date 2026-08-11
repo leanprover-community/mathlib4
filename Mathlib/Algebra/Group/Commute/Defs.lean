@@ -76,6 +76,10 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 instance : @Std.Refl S Commute :=
   ⟨Commute.refl⟩
 
+@[to_additive]
+instance : @Std.Symm S Commute where
+  symm _ _ := .symm
+
 -- This instance is useful for `Finset.noncommProd`
 @[to_additive]
 instance on_refl {f : G → S} : Std.Refl fun a b => Commute (f a) (f b) :=
@@ -198,3 +202,11 @@ theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
 end Group
 
 end Commute
+
+@[to_additive] protected lemma IsLeftRegular.commute_mul_left_iff [Semigroup S] {a b : S}
+    (reg : IsLeftRegular a) : Commute (a * b) a ↔ Commute a b := by
+  simp [commute_iff_eq, mul_assoc, reg.eq_iff, eq_comm]
+
+@[to_additive] protected lemma IsRightRegular.commute_mul_right_iff [Semigroup S] {a b : S}
+    (reg : IsRightRegular a) : Commute (b * a) a ↔ Commute a b := by
+  simp [commute_iff_eq, ← mul_assoc, reg.eq_iff, eq_comm]

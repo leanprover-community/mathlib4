@@ -62,6 +62,7 @@ def functor (T : C ⥤ D) : D ⥤ Cat where
 variable {E : Type u₃} [Category.{v₃} E]
 variable (L : C ⥤ D) (R : E ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence` between
 the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
@@ -70,6 +71,7 @@ def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma
   obj P := ⟨P.fiber.left, P.base, P.fiber.hom⟩
   map f := ⟨f.fiber.left, f.base, by simp⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Fibers of `grothendieckPrecompFunctorToComma L R`, composed with `Comma.fst L R`, are isomorphic
 to the projection `proj L (R.obj X)`. -/
@@ -79,6 +81,7 @@ def ιCompGrothendieckPrecompFunctorToCommaCompFst (X : E) :
     proj L (R.obj X) :=
   NatIso.ofComponents (fun X => Iso.refl _) (fun _ => by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
@@ -106,12 +109,18 @@ costructured arrows. -/
 def grothendieckProj : Grothendieck (functor L) ⥤ C :=
   grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]
 def ιCompGrothendieckProj (X : D) :
     Grothendieck.ι (functor L) X ⋙ grothendieckProj L ≅ proj L X :=
   ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) X
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Functors between costructured arrow categories induced by morphisms in the base category
 composed with fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
 @[simps!]

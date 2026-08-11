@@ -19,7 +19,7 @@ This file expands on the development in the core library.
 ## Main definitions
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
+  Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
 
 -/
@@ -83,6 +83,21 @@ lemma ne_zero_of_lt {a b : Fin (n + 1)} (hab : a < b) : b ≠ 0 :=
 
 lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
   Fin.ne_of_lt <| Fin.lt_of_lt_of_le hab b.le_last
+
+lemma ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (hb : b ≠ last n) (hab : a ≤ b) :
+    a ≠ last n := by
+  intro rfl
+  exact Nat.not_lt_of_le hab (lt_last_iff_ne_last.mpr hb)
+
+lemma val_sub_lt_of_lt_of_le {a b : Fin n} (ha : a.val < m) (hab : b ≤ a) :
+    (a - b).val < m := by
+  rw [Fin.sub_val_of_le hab]
+  exact sub_lt_of_lt ha
+
+lemma sub_ne_last_of_ne_last_of_le {a b : Fin (n + 1)} (ha : a ≠ last n) (hab : b ≤ a) :
+    a - b ≠ last n := by
+  rw [← lt_last_iff_ne_last, lt_def]
+  exact val_sub_lt_of_lt_of_le (val_lt_last ha) hab
 
 /-- Equivalence between `Fin n` and `{ i // i < n }`. -/
 @[simps apply symm_apply]
@@ -529,23 +544,15 @@ theorem val_add_one_of_lt' {n : ℕ} {i : Fin n} (h : i + 1 < n) :
   simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
 instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
-  suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m
+  suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using! NeZero.ne m
   apply Nat.mod_eq_of_lt
-  simpa using zero_lt_of_ne_zero (NeZero.ne n)
+  simpa using! zero_lt_of_ne_zero (NeZero.ne n)
 
 section Mul
 
 /-!
 ### mul
 -/
-
-@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
-
-@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
-
-@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
-
-@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

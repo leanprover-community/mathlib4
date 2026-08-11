@@ -53,16 +53,9 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
-@[deprecated (since := "2025-10-24")] alias intCast_eq_zero := intCast_eq_zero_iff
-@[deprecated (since := "2025-10-24")] alias natCast_eq_zero := natCast_eq_zero_iff
-
 @[simp high, norm_cast] lemma intCast_eq_one_iff {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
 
-@[deprecated (since := "2025-10-24")] alias intCast_eq_one := intCast_eq_one_iff
-
 @[simp high, norm_cast] lemma natCast_eq_one_iff {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
-
-@[deprecated (since := "2025-10-24")] alias natCast_eq_one := natCast_eq_one_iff
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
@@ -167,8 +160,10 @@ instance addCommGroup : AddCommGroup ℚ where
     rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_one, Rat.one_mul]
     rfl
   zsmul_zero' := Rat.zero_mul
-  zsmul_succ' _ _ := by simp [Rat.add_mul]
-  zsmul_neg' _ _ := by rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
+  zsmul_succ' _ _ := by simp_rw [HSMul.hSMul, SMul.smul]; simp [Rat.add_mul]
+  zsmul_neg' _ _ := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
 instance addGroup : AddGroup ℚ := by infer_instance
 
@@ -270,10 +265,7 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 
--- Will be subsumed by `Int.coe_inj` after we have defined
--- `LinearOrderedField ℚ` (which implies characteristic zero).
-theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
-  ⟨congr_arg num, congr_arg _⟩
+@[deprecated (since := "2026-06-06")] alias coe_int_inj := intCast_inj
 
 end Casts
 
