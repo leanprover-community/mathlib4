@@ -11,17 +11,9 @@ public import Mathlib.Tactic.Echelon.Parsing
 /-!
 # `eval_rank`: rank of matrix literals by Bareiss elimination
 
-`eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain
-with kernel-decidable equality, for entries the selected computation model evaluates:
-numerals and `norm_num`-evaluable expressions everywhere, plus ring-specific literals
-such as the `⟨a, b⟩` pairs of `ℤ√d` (enabled by importing
-`Mathlib.Tactic.Echelon.Zsqrtd`). The simproc `norm_rank` rewrites such ranks inside
-`simp` sets, skipping any term it cannot evaluate.
-
-## Main definitions
-
-- `eval_rank`: the tactic.
-- `norm_rank`: the simproc, for use in `simp` sets.
+This module defines the `eval_rank` tactic and the `norm_rank` simproc, which compute
+the rank of a matrix literal with non-symbolic entries through an
+`Echelon.Decomposition` certificate checked by the kernel.
 -/
 
 public meta section
@@ -43,8 +35,7 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
   let k := mkNatLit len
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 
-/-- Core of the `norm_rank` simprocs. Skips terms outside the method's scope; a failure
-of a committed attempt throws. -/
+/-- Core of the `norm_rank` simproc and the `eval_rank` tactic. -/
 def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
@@ -61,16 +52,20 @@ end Mathlib.Tactic.Echelon
 
 open Mathlib.Tactic.Echelon
 
-/-- The `norm_rank` simproc normalizes `Matrix.rank` of a closed matrix literal via its
-Bareiss decomposition. Terms it cannot evaluate are skipped. -/
+/-- The `norm_rank` simproc evaluates the rank of matrices with non-symbolic entries.
+Terms that it cannot evaluate are skipped. -/
 simproc_decl norm_rank (Matrix.rank _) := fun e => do
   try normRankCore e
   catch ex =>
     trace[Tactic.evalRank] "{ex.toMessageData}"
     return .continue
 
-/-- `eval_rank` reduces `Matrix.rank` of a closed matrix literal to a literal and tries to
-close the goal. Rank terms the method skips are reported under `trace.Tactic.evalRank`. -/
+/--
+`eval_rank` evaluates the rank of matrices with non-symbolic entries.
+
+The element type must be a commutative domain with kernel-decidable equality.
+Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
+-/
 elab (name := evalRank) "eval_rank" : tactic => do
   let goal ← Tactic.getMainGoal
   -- disable the generic no progress error from `simp`
