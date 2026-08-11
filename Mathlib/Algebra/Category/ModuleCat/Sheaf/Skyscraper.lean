@@ -99,10 +99,12 @@ noncomputable def skyscraperSMul (X : Cᵒᵖ) (r : ↑(R.obj X)) :
       (Φ.skyscraperPresheaf (AddCommGrpCat.of (↑M : Type w))).obj X :=
   Limits.Pi.map fun x => skyscraperSMulComponent Φ R M X r x
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma skyscraperSMul_π (X : Cᵒᵖ) (r : ↑(R.obj X)) (x : Φ.fiber.obj X.unop) :
-    skyscraperSMul Φ R M X r ≫ Limits.Pi.π _ x =
-      Limits.Pi.π _ x ≫ skyscraperSMulComponent Φ R M X r x :=
+    skyscraperSMul Φ R M X r ≫
+        Limits.Pi.π (fun (_ : Φ.fiber.obj X.unop) => AddCommGrpCat.of (↑M : Type w)) x =
+      Limits.Pi.π (fun (_ : Φ.fiber.obj X.unop) => AddCommGrpCat.of (↑M : Type w)) x ≫
+        skyscraperSMulComponent Φ R M X r x :=
   Limits.Pi.map_π _ x
 
 lemma skyscraperSMul_one (X : Cᵒᵖ) :
