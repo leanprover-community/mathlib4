@@ -70,7 +70,7 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
     have : ChartedSpace.LiftPropAt P f (Opens.inclusion hUV x') := by
       rw [hG.liftPropAt_iff_comp_inclusion hUV]
       exact hU x'
-    convert this
+    convert! this
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is
