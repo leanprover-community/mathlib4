@@ -9,7 +9,6 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.Logic.Pairwise
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
-public import Mathlib.Tactic.GrindAttrs
 
 /-!
 # (Semi-)lattices
@@ -141,7 +140,6 @@ variable [SemilatticeSup α] {a b c d : α}
 theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 
-
 @[to_dual (attr := simp) inf_le_right]
 theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
@@ -194,11 +192,6 @@ alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 attribute [to_dual (attr := simp)] sup_of_le_left sup_of_le_right
 attribute [to_dual le_of_inf_eq'] le_of_sup_eq
 attribute [to_dual le_of_inf_eq] le_of_sup_eq'
-
-grind_pattern sup_of_le_left => a ⊔ b, b ≤ a
-grind_pattern sup_of_le_right => a ⊔ b, a ≤ b
-grind_pattern inf_of_le_left => a ⊓ b, a ≤ b
-grind_pattern inf_of_le_right => a ⊓ b, b ≤ a
 
 @[to_dual (attr := simp) inf_lt_left]
 theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
@@ -315,7 +308,7 @@ theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
 
 @[to_dual inf_le_ite]
 theorem ite_le_sup (a b : α) (P : Prop) [Decidable P] : ite P a b ≤ a ⊔ b :=
-  if h : P then (if_pos h).trans_le le_sup_left else (if_neg h).trans_le le_sup_right
+  if h : P then (ite_eq_left h).trans_le le_sup_left else (ite_eq_right h).trans_le le_sup_right
 
 @[to_dual (reorder := H (x y))]
 theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
