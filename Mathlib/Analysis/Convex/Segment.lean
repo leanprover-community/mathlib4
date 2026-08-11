@@ -95,8 +95,6 @@ theorem openSegment_subset_iff :
 
 end SMul
 
-open Convex
-
 section MulActionWithZero
 
 variable (𝕜)

@@ -25,8 +25,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 
 @[expose] public section
 
-open Topology
-
 variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes

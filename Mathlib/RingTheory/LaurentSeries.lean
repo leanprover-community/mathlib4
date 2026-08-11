@@ -415,7 +415,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open IsDedekindDomain.HeightOneSpectrum RatFunc WithZero
+open IsDedekindDomain.HeightOneSpectrum WithZero
 
 variable {K}
 
@@ -631,7 +631,7 @@ variable {K : Type*} [Field K]
 
 section Complete
 
-open Filter WithZero PowerSeries
+open Filter WithZero
 
 variable (K) in
 lemma valuation_surjective : Function.Surjective (Valued.v (R := K⸨X⸩)) := by
