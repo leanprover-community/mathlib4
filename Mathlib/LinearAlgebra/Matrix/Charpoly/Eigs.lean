@@ -86,7 +86,7 @@ theorem mem_spectrum_iff_isRoot_charpoly {r : K} : r ∈ spectrum K A ↔ IsRoot
   simp [mem_spectrum_iff_not_isUnit_eval_charpoly]
 
 /-- A matrix and its transpose have the same spectrum. -/
-theorem spectrum_transpose (A : Matrix n n K) : spectrum K A.transpose = spectrum K A := by
+@[simp] theorem spectrum_transpose (A : Matrix n n K) : spectrum K Aᵀ = spectrum K A := by
   ext μ
   rw [mem_spectrum_iff_isRoot_charpoly, mem_spectrum_iff_isRoot_charpoly, charpoly_transpose]
 
