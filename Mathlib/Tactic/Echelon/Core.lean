@@ -13,18 +13,16 @@ public import Mathlib.Init
 A computable model of a ring packages the representation the untrusted producer computes
 with: a value type `V`, its arithmetic (`RingOps V`), and the encoding between entry
 syntax and values. `mkProducer` assembles a `Producer` from a model's parts, and the
-tactic selects a model by matching on the ring expression.
+tactic selects a model through the `bareiss_ext` extension registry.
 
 ## Main definitions
 
+- `RingOps`: the arithmetic of a model's value type.
 - `bareissDecomp`: fraction-free Gaussian elimination over a model's values.
 - `mkProducer`: assemble a producer from a model's parts.
+- `bareiss_ext`: the attribute registering a `BareissExt` computation model.
 
 ## Implementation notes
-
-Model selection traffics in `Producer`s rather than model records: a structure bundling
-`V : Type` lives in `Type 1`, which `MetaM` cannot return, so the value type exists only
-inside each producer's closure.
 
 The elimination in `bareissDecomp` maintains the invariant `L * A_σ = W`, where
 `A_σ := A.submatrix σ id` is the input with its rows in the arrangement `σ` accumulated
@@ -158,5 +156,43 @@ def mkProducer {V : Type} (ops : RingOps V)
   let (values, restore) ← prepare entries
   let d ← bareissDecomp ops values
   (restore d).mapM render
+
+/-- An extension of the Bareiss ring computation model. -/
+structure BareissExt where
+  /-- The computation model for the ring type `R`, or `none` if the extension does not
+  handle `R`. -/
+  producer? (R : Expr) : MetaM (Option Producer)
+  /-- The name of the extension. -/
+  name : Name := by exact decl_name%
+
+/-- Read a `bareiss_ext` extension from a declaration of the right type. -/
+def mkBareissExt (n : Name) : ImportM BareissExt := do
+  let { env, opts, .. } ← read
+  IO.ofExcept <| unsafe env.evalConstCheck BareissExt opts ``BareissExt n
+
+/-- Environment extension for the `bareiss_ext` computation models.
+Uses a simple array to store the registered extensions for now. -/
+initialize bareissExt : ScopedEnvExtension Name (Name × BareissExt) (Array BareissExt) ←
+  registerScopedEnvExtension {
+    mkInitial := pure #[]
+    ofOLeanEntry := fun _ n => return (n, ← mkBareissExt n)
+    toOLeanEntry := (·.1)
+    addEntry := fun s (_, ext) => s.push ext
+  }
+
+initialize registerBuiltinAttribute {
+  name := `bareiss_ext
+  descr := "adds a computation model to the Bareiss elimination"
+  applicationTime := .afterCompilation
+  add := fun declName _ kind => do
+    ensureAttrDeclIsMeta `bareiss_ext declName kind
+    let env ← getEnv
+    unless (env.getModuleIdxFor? declName).isNone do
+      throwError "invalid attribute 'bareiss_ext', declaration is in an imported module"
+    -- this ignores in-progress definitions
+    if (IR.getSorryDep env declName).isSome then return
+    bareissExt.add (declName, ← mkBareissExt declName) kind
+    recordExtraRevUseOfCurrentModule
+}
 
 end Mathlib.Tactic.Echelon

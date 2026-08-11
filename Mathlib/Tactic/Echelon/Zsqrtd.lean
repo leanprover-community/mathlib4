@@ -56,11 +56,20 @@ def zsqrtdProducer (dQ : Q(ℤ)) (d : Int) : Producer :=
       ((a * c - d * b * e) / norm, (b * c - a * e) / norm)
     isZero := fun (a, b) => pure (a == 0 && b == 0) }
   let prepare (entries : Array (Array Expr)) :
-      MetaM (Array (Array (Int × Int)) × (BareissData (Int × Int) → BareissData (Int × Int))) := do
+      MetaM (Array (Array (Int × Int)) ×
+        (BareissData (Int × Int) → BareissData (Int × Int))) := do
     let values ← entries.mapM (·.mapM evalZsqrtdEntry)
     return (values, id)
   let render : Int × Int → MetaM Expr := fun (a, b) =>
     return q((⟨$(mkIntLitQ a), $(mkIntLitQ b)⟩ : Zsqrtd $dQ))
   mkProducer ops prepare render
+
+/-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
+@[bareiss_ext] def zsqrtdExt : BareissExt where
+  producer? R := do
+    let_expr Zsqrtd dE := R | return none
+    let some d ← getIntValue? dE | return none
+    have dQ : Q(ℤ) := dE
+    return some (zsqrtdProducer dQ d)
 
 end Mathlib.Tactic.Echelon

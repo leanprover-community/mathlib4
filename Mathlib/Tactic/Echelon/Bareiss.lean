@@ -31,6 +31,8 @@ public meta section
 
 open Lean Meta Elab Qq
 
+initialize registerTraceClass `Tactic.evalRank
+
 namespace Mathlib.Tactic.Echelon
 
 /-- Build the numeral of `i` in `Fin $n`. -/
@@ -95,16 +97,15 @@ def elabCertificate (A L σ pivotE : Expr) : TermElabM Expr := do
     pure e
   instantiateMVars e
 
--- TODO: implement this in compiler using some method like a `norm_num` extension
-/-- Select the computation model for the ring expression `R`. -/
+/-- Select the computation model for the ring expression `R`: the first registered
+`bareiss_ext` extension that handles `R`, or the default rational model. -/
 def producerFor (R : Expr) : MetaM Producer := do
-  match_expr ← whnf R with
-  | Zsqrtd dE =>
-    if let some d ← getIntValue? dE then
-      have dQ : Q(ℤ) := dE
-      return zsqrtdProducer dQ d
-    ratProducer R
-  | _ => ratProducer R
+  let R ← whnf R
+  for ext in bareissExt.getState (← getEnv) do
+    if let some p ← ext.producer? R then
+      trace[Tactic.evalRank] "selected the model `{ext.name}` for{indentExpr R}"
+      return p
+  ratProducer R
 
 /-- Produce and elaborate the `Echelon.Decomposition` certificate of the matrix literal
 `A`. -/

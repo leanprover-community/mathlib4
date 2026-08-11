@@ -27,8 +27,6 @@ public meta section
 
 open Lean Meta Elab
 
-initialize registerTraceClass `Tactic.evalRank
-
 namespace Mathlib.Tactic.Echelon
 
 /-- Rewrite `Matrix.rank A` to the pivot count of the Bareiss decomposition of the matrix
