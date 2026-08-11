@@ -410,15 +410,19 @@ def readLtarHash (ltarPath : FilePath) : IO (Option UInt64) := do
 /--
 Path of the file that records the root hash of the last unpack.
 
-The file sits in the root project's build directory, so `lake clean` removes
-it. An absent file makes the next unpack overwrite every file.
+The file sits in the root project's build directory. `lake clean` removes that
+directory, so the record goes with the artifacts that it describes. An absent
+file makes the next unpack overwrite every file.
+
+The name carries the `mathlib-` prefix because Lake owns this directory. The
+prefix keeps the file clear of any name that Lake itself uses.
 
 The record states the root hash of the last full unpack. It does not state the
 root hash of the checkout. A run with a module argument covers one closure
 only, so such a run does not write the record.
 -/
 def rootHashFile : FilePath :=
-  ".lake" / "build" / "cache-roothash"
+  ".lake" / "build" / "mathlib-cache-roothash"
 
 /-- Read the root hash of the last unpack. Return `none` if the file is absent
 or holds no valid hash. -/
