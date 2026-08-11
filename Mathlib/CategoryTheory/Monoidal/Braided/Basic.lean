@@ -796,6 +796,32 @@ end Tensor
 
 end MonoidalCategory
 
+/-- The tensorator followed by the braiding of two tensor products can be expressed by braiding
+the corresponding factors before applying the tensorator. -/
+theorem SymmetricCategory.tensorμ_braid
+    {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
+    (X₁ X₂ Y₁ Y₂ : C) :
+    tensorμ X₁ X₂ Y₁ Y₂ ≫ (β_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂)).hom =
+      ((β_ X₁ X₂).hom ⊗ₘ (β_ Y₁ Y₂).hom) ≫ tensorμ X₂ X₁ Y₂ Y₁ := by
+  simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y₁ X₂, tensorHom_def]
+
+/-- Braiding both pairs of factors before applying the tensorator is the same as first applying
+the tensorator and then braiding the resulting tensor products. -/
+theorem SymmetricCategory.tensorμ_braid_tensorHom
+    {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
+    (X₁ X₂ Y₁ Y₂ : C) :
+    tensorμ X₁ X₂ Y₁ Y₂ ≫ ((β_ X₁ Y₁).hom ⊗ₘ (β_ X₂ Y₂).hom) =
+      (β_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂)).hom ≫ tensorμ Y₁ Y₂ X₁ X₂ := by
+  simp only [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y₁ X₂, tensorHom_def,
+    whiskerRight_tensor, tensor_whiskerLeft, Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc,
+    braiding_tensor_right_hom, braiding_tensor_left_hom, comp_whiskerRight, whisker_assoc,
+    whiskerLeft_comp, pentagon_assoc, pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc,
+    whiskerLeft_hom_inv_assoc, Iso.cancel_iso_hom_left]
+  slice_rhs 10 11 =>
+    rw [← whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
+  monoidal
+
+/-- The tensorator commutes with simultaneously swapping two pairs of equal factors. -/
 @[reassoc]
 theorem SymmetricCategory.tensorμ_braid_swap
     {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]

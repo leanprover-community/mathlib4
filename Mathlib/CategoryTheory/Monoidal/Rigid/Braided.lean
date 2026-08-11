@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gareth Ma
+Authors: Gareth Ma, Jack McKoen
 -/
 module
 
@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
-# Deriving `RigidCategory` instance for braided and left/right rigid categories.
+# Rigid pairings and rigidity in braided monoidal categories
 -/
 
 @[expose] public section
@@ -83,6 +83,72 @@ def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   evaluation' := (β_ X Y).hom ≫ ε_ X Y
   coevaluation_evaluation' := coevaluation_evaluation_braided'
   evaluation_coevaluation' := evaluation_coevaluation_braided'
+
+lemma exactPairingSwap_coevaluation {X Y : C} (p : ExactPairing X Y) :
+    letI := exactPairing_swap X Y
+    η_ Y X = η_ X Y ≫ (β_ Y X).inv := rfl
+
+lemma exactPairingSwap_evaluation {X Y : C} (p : ExactPairing X Y) :
+    letI := exactPairing_swap X Y
+    ε_ Y X = (β_ X Y).hom ≫ ε_ X Y := rfl
+
+end CategoryTheory.BraidedCategory
+
+namespace CategoryTheory.ExactPairing
+
+@[simp]
+lemma rightMate_swap_rightMate {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') (f : X ⟶ Y) :
+    (exactPairing_swap Y Y').rightMate (exactPairing_swap X X') (pX.rightMate pY f) = f := by
+  apply (exactPairing_swap Y Y').rightHom_ext
+  rw [rightMate_comp_evaluation]
+  simp only [exactPairingSwap_evaluation, braiding_naturality_right_assoc,
+    rightMate_comp_evaluation, ← braiding_naturality_left_assoc]
+
+/-- The evaluation for the tensor product of two exact pairings, expressed using the braiding. -/
+lemma tensorPairing_evaluation {X X' Y Y' : C}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') :
+    ε_ (X ⊗ Y) (Y' ⊗ X') =
+      (Y' ⊗ X') ◁ (β_ X Y).hom ≫ tensorμ Y' X' Y X ≫ (ε_ Y Y' ⊗ₘ ε_ X X') ≫
+        (λ_ (𝟙_ C)).hom := by
+  rw [ExactPairing.tensor_evaluation]
+  calc
+    _ = 𝟙 _ ⊗≫ Y' ◁ ((β_ (X' ⊗ X) Y).hom ≫ Y ◁ ε_ X X') ⊗≫ ε_ Y Y' := by
+      rw [← braiding_naturality_left, braiding_tensorUnit_left]
+      monoidal
+    _ = _ := by
+      rw [braiding_tensor_left_hom, tensorμ, tensorHom_def, ← whisker_exchange]
+      monoidal
+
+section Symmetric
+
+variable {D : Type*} [Category* D] [MonoidalCategory D] [SymmetricCategory D]
+
+lemma tensorOf_swap_evaluation {X X' Y Y' : D}
+    (pX : ExactPairing X X') (pY : ExactPairing Y Y') :
+    @ExactPairing.evaluation D _ _ (Y' ⊗ X') (X ⊗ Y)
+      ((exactPairing_swap Y Y').tensorOf (exactPairing_swap X X')) =
+    @ExactPairing.evaluation D _ _ (Y' ⊗ X') (X ⊗ Y)
+      (exactPairing_swap (X ⊗ Y) (Y' ⊗ X')) := by
+  rw [exactPairingSwap_evaluation (pX.tensorOf pY),
+    tensorPairing_evaluation, tensorPairing_evaluation, exactPairingSwap_evaluation pY,
+    exactPairingSwap_evaluation pX, ← tensorHom_comp_tensorHom]
+  slice_lhs 2 3 => rw [SymmetricCategory.tensorμ_braid_tensorHom]
+  simp only [Category.assoc]
+  rw [braiding_naturality_right_assoc, cancel_epi, ← tensorHom_id, ← id_tensorHom]
+  slice_lhs 1 1 =>
+    rw [← Category.id_comp (β_ Y' X').hom, ← SymmetricCategory.symmetry X Y,
+      ← tensorHom_comp_tensorHom]
+  slice_lhs 2 3 => rw [← SymmetricCategory.tensorμ_braid]
+  simp only [Category.assoc]
+  rw [← braiding_naturality_assoc, braiding_leftUnitor]
+  monoidal
+
+end Symmetric
+
+end CategoryTheory.ExactPairing
+
+namespace CategoryTheory.BraidedCategory
 
 /-- If `X` has a right dual in a braided category, then it has a left dual. -/
 @[instance_reducible]
