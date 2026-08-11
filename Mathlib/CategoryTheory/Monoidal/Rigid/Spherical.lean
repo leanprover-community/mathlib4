@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Trace
 
 A pivotal category is spherical when its left and right traces agree.
 
-The canonical pivotal structure on a rigid symmetric monoidal category is spherical.
+The canonical pivotal structure on a right rigid symmetric monoidal category is spherical.
 -/
 
 @[expose] public section
@@ -24,19 +24,19 @@ universe v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RigidCategory C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
 
 /-- A pivotal category is spherical when its left and right traces agree. -/
 class SphericalCategory (C : Type u) [Category.{v} C] [MonoidalCategory C]
-    [RigidCategory C] [PivotalCategory C] : Prop where
+    [RightRigidCategory C] [PivotalCategory C] : Prop where
   leftTrace_eq_rightTrace {X : C} (f : X ⟶ X) : leftTrace f = rightTrace f
 
-/-- The canonical spherical structure on a rigid symmetric monoidal category. -/
+/-- The canonical spherical structure on a right rigid symmetric monoidal category. -/
 instance symmetricSphericalCategory
     [SymmetricCategory C] : SphericalCategory C where
   leftTrace_eq_rightTrace {X} f := by
     rw [leftTrace, rightTrace, pivotalExactPairing_coevaluation, pivotalExactPairing_evaluation]
-    simp only [pivotalIso, PivotalCategory.pivotalIso]
+    simp only [chosenPivotalIso, PivotalCategory.pivotalIso]
     erw [ExactPairing.coevaluation_comp_rightMate, ExactPairing.rightMate_comp_evaluation]
     simp only [id_whiskerRight, Category.comp_id, whiskerLeft_id, Category.id_comp]
     rw [BraidedCategory.exactPairingSwap_coevaluation, BraidedCategory.exactPairingSwap_evaluation]
@@ -59,12 +59,14 @@ lemma trace_eq_rightTrace {X : C} (f : X ⟶ X) : trace f = rightTrace f :=
 
 end
 
-example [SymmetricCategory C]
+/-- In a right rigid symmetric monoidal category, the spherical trace is given by the usual
+coevaluation-braiding-evaluation composite. -/
+lemma trace_eq_coevaluation_braiding_evaluation [SymmetricCategory C]
     {X : C} (f : X ⟶ X) :
     trace f =
       η_ X Xᘁ ≫ f ▷ Xᘁ ≫ (β_ X Xᘁ).hom ≫ ε_ X Xᘁ := by
   rw [trace_eq_rightTrace, rightTrace, pivotalExactPairing_evaluation]
-  have h_hom : (pivotalIso.app X).hom =
+  have h_hom : (chosenPivotalIso.app X).hom =
       (rightDualIso (BraidedCategory.exactPairing_swap X Xᘁ) HasRightDual.exact).hom := rfl
   rw [h_hom]
   dsimp only [rightDualIso]
