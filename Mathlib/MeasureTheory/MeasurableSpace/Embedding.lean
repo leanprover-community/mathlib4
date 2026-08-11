@@ -106,9 +106,9 @@ theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
     (hg' : Measurable g') : Measurable (extend f g g') := by
   refine measurable_of_restrict_of_restrict_compl hf.measurableSet_range ?_ ?_
-  · rw [restrict_extend_range]
+  · rw [domRestrict_extend_range]
     simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
-  · rw [restrict_extend_compl_range]
+  · rw [domRestrict_extend_compl_range]
     exact hg'.comp measurable_subtype_coe
 
 theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (hg : Measurable g)
