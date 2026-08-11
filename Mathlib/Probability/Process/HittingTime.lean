@@ -409,9 +409,6 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
     simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2026-01-25")]
-alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
-
 theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
@@ -421,9 +418,6 @@ theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι
     ext; simp [hittingAfter_le_iff]
   simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
     MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
-
-@[deprecated (since := "2026-01-25")]
-alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -467,9 +461,6 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
   simpa using hf.isStoppingTime_hittingBtwn hs n
-
-@[deprecated (since := "2026-01-25")]
-alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 
