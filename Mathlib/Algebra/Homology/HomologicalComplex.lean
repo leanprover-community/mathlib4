@@ -170,7 +170,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
-  refine dif_neg ?_
+  refine dite_eq_right ?_
   push Not
   intro
   apply Nat.noConfusion
@@ -194,7 +194,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-  refine dif_neg ?_
+  refine dite_eq_right ?_
   push Not
   intro
   apply Nat.noConfusion
@@ -412,7 +412,7 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.prev]
-        rw [dif_neg]
+        rw [dite_eq_right]
         push Not; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
@@ -431,7 +431,7 @@ def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
     congr_arg C.X
       (by
         dsimp [ComplexShape.next]
-        rw [dif_neg]; rintro ⟨j, hj⟩
+        rw [dite_eq_right]; rintro ⟨j, hj⟩
         have : c.next i = j := c.next_eq' hj
         rw [this] at h; contradiction)
 
@@ -655,10 +655,10 @@ theorem of_X : (of X d sq).X = X :=
 @[simp]
 theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
   dsimp [of.d]
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
-  simp [of.d, dif_neg h]
+  simp [of.d, dite_eq_right h]
 
 end Of
 
@@ -722,12 +722,12 @@ theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 @[simp]
 theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 lemma mk_congr_succ_X₃ {S S' : ShortComplex V} (h : S = S') :
     (succ S).1 = (succ S').1 := by rw [h]
@@ -765,7 +765,7 @@ lemma mk_d (n : ℕ) :
     rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
   dsimp only [mk, of, of.d]
-  rw [dif_pos (by rfl), eqToHom_refl, id_comp]
+  rw [dite_eq_left (by rfl), eqToHom_refl, id_comp]
   rfl
 
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
@@ -793,7 +793,7 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
-  rw [if_pos rfl, Category.id_comp]
+  rw [ite_eq_left rfl, Category.id_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism from `(mk' X₀ X₁ d₀ succ').X (n + 2)` that is given by
@@ -902,7 +902,7 @@ abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (
     CochainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => dif_neg (c := i + 1 = j) w
+    shape := fun i j w => dite_eq_right (c := i + 1 = j) w
     d_comp_d' := fun i j k => by
       dsimp [of.d]
       split_ifs with h h' h'
@@ -918,10 +918,10 @@ theorem of_X : (of X d sq).X = X :=
 @[simp]
 theorem of_d (j : α) : of.d X d j (j + 1) = d j := by
   dsimp [of.d]
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : of.d X d i j = 0 := by
-  simp [of.d, dif_neg h]
+  simp [of.d, dite_eq_right h]
 
 end Of
 
@@ -984,12 +984,12 @@ theorem mk_X_2 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 2 = X₂ :=
 @[simp]
 theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 @[simp]
 theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   change ite (2 = 1 + 1) (d₁ ≫ 𝟙 X₂) 0 = d₁
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
@@ -1017,7 +1017,7 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 0 1 = d₀ := by
   change ite (1 = 0 + 1) (d₀ ≫ 𝟙 X₁) 0 = d₀
-  rw [if_pos rfl, Category.comp_id]
+  rw [ite_eq_left rfl, Category.comp_id]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 end Mk
