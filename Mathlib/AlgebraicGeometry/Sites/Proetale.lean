@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Sites.Subcanonical
 public import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
 /-!
-
 # The pro-étale site
 
 In this file we define the big and small pro-étale site. The big pro-étale site is

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
-
 # Universal colimits and van Kampen colimits
 
 ## Main definitions

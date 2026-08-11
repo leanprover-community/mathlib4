@@ -11,7 +11,6 @@ public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
-
 # Discrete quotients of a topological space.
 
 This file defines the type of discrete quotients of a topological space,

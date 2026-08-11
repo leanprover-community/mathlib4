@@ -9,7 +9,6 @@ public import Mathlib.Data.Finite.Defs
 public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
-
 ## Main definitions and results
 
 * `FiniteGrp` is the category of finite groups.

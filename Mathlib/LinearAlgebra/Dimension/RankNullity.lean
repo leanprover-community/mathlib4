@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
-
 # The rank nullity theorem
 
 In this file we provide the rank nullity theorem as a typeclass, and prove various corollaries

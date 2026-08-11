@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
 /-!
-
 # Category of Profinite Groups
 
 We say `G` is a profinite group if it is a topological group which is compact and totally

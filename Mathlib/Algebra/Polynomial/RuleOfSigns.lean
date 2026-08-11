@@ -12,7 +12,6 @@ public import Mathlib.Data.List.Destutter
 public import Mathlib.Data.Sign.Basic
 
 /-!
-
 # Descartes' Rule of Signs
 
 We define the "sign changes" in the coefficients of a polynomial, and prove Descartes'

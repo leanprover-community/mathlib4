@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # Subsets of prime spectra related to modules
 
 ## Main results

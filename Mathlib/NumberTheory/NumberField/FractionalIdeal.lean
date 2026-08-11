@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.FractionalIdeal.Norm
 public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
-
 # Fractional ideals of number fields
 
 Prove some results on the fractional ideals of number fields.

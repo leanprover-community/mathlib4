@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
-
 # Construction of the projection `PInfty` for the Dold-Kan correspondence
 
 In this file, we construct the projection `PInfty : K[X] ⟶ K[X]` by passing

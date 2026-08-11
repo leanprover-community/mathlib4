@@ -11,7 +11,6 @@ public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module
 public import Mathlib.Topology.LocallyConstant.Algebra
 /-!
-
 # Discrete condensed `R`-modules
 
 This file provides the necessary API to prove that a condensed `R`-module is discrete if and only

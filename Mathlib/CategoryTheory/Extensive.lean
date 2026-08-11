@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 
 /-!
-
 # Extensive categories
 
 ## Main definitions

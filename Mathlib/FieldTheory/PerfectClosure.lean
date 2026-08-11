@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Perfect
 
 /-!
-
 # The perfect closure of a characteristic `p` ring
 
 ## Main definitions

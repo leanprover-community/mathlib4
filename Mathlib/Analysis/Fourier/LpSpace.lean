@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
-
 # The Fourier transform on $L^p$
 
 In this file we define the Fourier transform on $L^2$ as a linear isometry equivalence.

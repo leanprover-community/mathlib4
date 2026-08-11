@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
-
 # Preservation of (co)limits by the sheaf Yoneda functor
 -/
 

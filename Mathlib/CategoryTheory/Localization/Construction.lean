@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
-
 # Construction of the localized category
 
 This file constructs the localized category, obtained by formally inverting

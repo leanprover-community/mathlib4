@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
-
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that for an `R`-algebra `S` taking cokernels commutes with base change

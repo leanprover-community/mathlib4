@@ -9,7 +9,6 @@ import Mathlib.Init
 
 
 /-!
-
 # Tools for the unicode Linter
 
 The actual linter is defined in `TextBased.lean`.

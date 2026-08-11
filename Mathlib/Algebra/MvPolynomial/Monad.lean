@@ -9,7 +9,6 @@ public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
-
 # Monad operations on `MvPolynomial`
 
 This file defines two monadic operations on `MvPolynomial`. Given `p : MvPolynomial σ R`,

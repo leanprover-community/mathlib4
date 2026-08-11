@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
-
 # Decomposition of the Q endomorphisms
 
 In this file, we obtain a lemma `decomposition_Q` which expresses

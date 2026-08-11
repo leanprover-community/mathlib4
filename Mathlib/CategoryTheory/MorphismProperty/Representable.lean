@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
-
 # Relatively representable morphisms
 
 In this file we define and develop basic results about relatively representable morphisms.

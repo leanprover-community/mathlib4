@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
 public import Mathlib.CategoryTheory.Filtered.Final
 /-!
-
 # Extending cones in `Profinite`
 
 Let `(Sᵢ)_{i : I}` be a family of finite sets indexed by a cofiltered category `I` and let `S` be

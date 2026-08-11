@@ -44,7 +44,6 @@ Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
 
-
 -/
 
 @[expose] public section

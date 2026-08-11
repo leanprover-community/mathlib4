@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.ScottContinuity.Prod
 
 /-!
-
 # Scott continuity on complete lattices
 
 ## Main results

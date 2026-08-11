@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
-
 # Submodules of a module
 
 In this file we define

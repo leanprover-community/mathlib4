@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
-
 # Trails and Eulerian trails
 
 This module contains additional theory about trails, including Eulerian trails (also known

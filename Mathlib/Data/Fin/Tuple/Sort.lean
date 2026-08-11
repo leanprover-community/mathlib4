@@ -12,7 +12,6 @@ public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Data.Fintype.Fin
 
 /-!
-
 # Sorting tuples by their values
 
 Given an `n`-tuple `f : Fin n → α` where `α` is ordered,

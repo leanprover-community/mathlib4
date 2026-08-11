@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 /-!
 # Restriction of a measure to a sub-σ-algebra
 
-
 ## Main definitions
 
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.

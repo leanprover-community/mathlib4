@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 /-!
-
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)

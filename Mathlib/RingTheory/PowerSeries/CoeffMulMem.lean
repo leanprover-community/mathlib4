@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
-
 # Some results on the coefficients of multiplication of two power series
 
 ## Main results

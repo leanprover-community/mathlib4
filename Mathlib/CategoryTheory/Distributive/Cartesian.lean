@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-
 # Distributive categories
 
 ## Main definitions
@@ -27,7 +26,6 @@ monoidal distributive.
 ## Main results
 
 - The coproduct coprojections are monic in a Cartesian distributive category.
-
 
 ## TODO
 

@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
-
 # Functor categories have finite limits when the target category does
 
 These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/Basic.lean` because

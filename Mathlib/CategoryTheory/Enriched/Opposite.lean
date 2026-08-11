@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
-
 # The opposite category of an enriched category
 
 When a monoidal category `V` is braided, we may define the opposite `V`-category of a

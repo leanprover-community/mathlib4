@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
-
 # Topology of fundamental group
 
 In this file we define a natural topology on the automorphism group of a functor

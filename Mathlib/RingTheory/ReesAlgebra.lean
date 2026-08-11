@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.FiniteType
 
 /-!
-
 # Rees algebra
 
 The Rees algebra of an ideal `I` is the subalgebra `R[It]` of `R[t]` defined as `R[It] = ⨁ₙ Iⁿ tⁿ`.

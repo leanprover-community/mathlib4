@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
-
 # Valuative Relations as Valued
 
 In this temporary file, we provide a helper instance

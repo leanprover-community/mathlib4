@@ -16,7 +16,6 @@ public import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
-
 # Interactive unfolding
 
 This file defines the interactive tactic `unfold?`.

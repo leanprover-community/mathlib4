@@ -8,7 +8,6 @@ module
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
 /-!
-
 # The adjunction between condensed sets and topological spaces
 
 This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1}` which is

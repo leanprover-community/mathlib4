@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.Preserves
 /-!
-
 # Sheaves for the extensive topology
 
 This file characterises sheaves for the extensive topology.

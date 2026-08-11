@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 /-!
-
 # Light condensed objects
 
 This file defines the category of light condensed objects in a category `C`, following the work

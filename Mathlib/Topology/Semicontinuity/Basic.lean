@@ -52,7 +52,6 @@ ones for lower semicontinuous functions using `OrderDual`.
 * <https://en.wikipedia.org/wiki/Closed_convex_function>
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 
-
 + lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
 + lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.

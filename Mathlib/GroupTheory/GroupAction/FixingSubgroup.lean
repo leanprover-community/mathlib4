@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 /-!
-
 # Fixing submonoid, fixing subgroup of an action
 
 In the presence of an action of a monoid or a group,

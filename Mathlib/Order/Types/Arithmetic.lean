@@ -10,7 +10,6 @@ public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
-
 ## Main definitions
 
 * `OrderType.card o`: the cardinality of an OrderType `o`.

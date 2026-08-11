@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
-
 # The Dold-Kan correspondence for pseudoabelian categories
 
 In this file, for any idempotent complete additive category `C`,

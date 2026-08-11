@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.Topology.Category.CompHausLike.Basic
 /-!
-
 # Explicit limits and colimits
 
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,

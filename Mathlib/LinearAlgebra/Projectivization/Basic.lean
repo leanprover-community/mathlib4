@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
-
 # Projective Spaces
 
 This file contains the definition of the projectivization of a vector space over a field,

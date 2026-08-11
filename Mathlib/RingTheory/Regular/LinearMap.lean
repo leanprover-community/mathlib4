@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
 Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff

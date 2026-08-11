@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.WithTerminal.Basic
 public import Mathlib.Data.Fintype.Option
 
 /-!
-
 # `WithTerminal C` and `WithInitial C` are finite whenever `C` is
 
 If `C` has finitely many objects, then so do `WithTerminal C` and `WithInitial C`,

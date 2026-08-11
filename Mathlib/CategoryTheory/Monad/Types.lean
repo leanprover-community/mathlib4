@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Control.Basic
 
 /-!
-
 # Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
 
 This allows us to use these monads in category theory.

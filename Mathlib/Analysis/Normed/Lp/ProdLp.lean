@@ -35,7 +35,6 @@ statements for the coordinate functions, for instance.
 If you wish to endow a type synonym of `α × β` with the `L^p` distance, you can use
 `pseudoMetricSpaceToProd` and the declarations below that one.
 
-
 ## Implementation notes
 
 This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.

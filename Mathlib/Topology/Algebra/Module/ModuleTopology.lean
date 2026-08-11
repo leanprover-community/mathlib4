@@ -20,7 +20,6 @@ product topology). Note that `- : A → A` is also automatically continuous as i
 
 This topology was suggested by Will Sawin [here](https://mathoverflow.net/a/477763/1384).
 
-
 ## Mathematical details
 
 I (buzzard) don't know of any reference for this other than Sawin's mathoverflow answer,

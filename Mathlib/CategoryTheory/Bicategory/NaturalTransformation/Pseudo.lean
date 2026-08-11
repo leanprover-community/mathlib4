@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
-
 # Strong transformations of pseudofunctors
 
 There are three types of transformations between pseudofunctors, depending on the direction

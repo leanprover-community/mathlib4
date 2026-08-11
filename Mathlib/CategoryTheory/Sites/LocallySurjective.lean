@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.LocallyInjective
 public import Mathlib.CategoryTheory.ShrinkYoneda
 /-!
-
 # Locally surjective morphisms
 
 ## Main definitions

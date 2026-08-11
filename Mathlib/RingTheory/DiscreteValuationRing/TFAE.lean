@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
-
 # Equivalent conditions for DVR
 
 In `IsDiscreteValuationRing.TFAE`, we show that the following are equivalent for a

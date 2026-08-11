@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
-
 # Galois Group as a profinite group
 
 In this file, we prove that given a field extension `K/k`, there is a continuous isomorphism between

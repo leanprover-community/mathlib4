@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
-
 # Fibers of functors
 
 In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories `Fiber p S` for every

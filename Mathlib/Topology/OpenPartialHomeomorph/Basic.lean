@@ -11,7 +11,6 @@ public import Mathlib.Topology.PartialHomeomorph.Basic
 /-!
 # Partial homeomorphisms: basic theory
 
-
 ## Main definitions
 
 * `OpenPartialHomeomorph.refl`: the identity open partial homeomorphism

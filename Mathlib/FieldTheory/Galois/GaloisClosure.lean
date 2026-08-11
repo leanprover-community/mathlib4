@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
-
 # Main definitions and results
 
 In a field extension `K/k`

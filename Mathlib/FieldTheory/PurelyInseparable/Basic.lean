@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
-
 # Basic results about purely inseparable extensions
 
 This file contains basic definitions and results about purely inseparable extensions.

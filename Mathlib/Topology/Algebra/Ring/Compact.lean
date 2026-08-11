@@ -18,7 +18,6 @@ public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
-
 # Compact Hausdorff Rings
 
 ## Main results

@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
-
 # Cardinality of Ore localizations
 
 This file contains some results on cardinality of Ore localizations.

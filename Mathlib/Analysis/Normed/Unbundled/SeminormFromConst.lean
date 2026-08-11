@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 /-!
 # SeminormFromConst
 
-
 In this file, we prove [BGR, Proposition 1.3.2/2][bosch-guntzer-remmert] : starting from a
 power-multiplicative seminorm on a commutative ring `R` and a nonzero `c : R`, we create a new
 power-multiplicative seminorm for which `c` is multiplicative.
@@ -20,7 +19,6 @@ power-multiplicative seminorm for which `c` is multiplicative.
 * `seminormFromConst'` : the real-valued function sending `x ∈ R` to the limit of
   `(f (x * c^n))/((f c)^n)`.
 * `seminormFromConst` : the function `seminormFromConst'` as a `RingSeminorm` on `R`.
-
 
 ## Main Results
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst' c f`

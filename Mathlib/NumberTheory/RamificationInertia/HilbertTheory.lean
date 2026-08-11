@@ -9,7 +9,6 @@ public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
-
 # Decomposition and Inertia fields
 
 In this file, we develop Hilbert Theory on the splitting of prime ideals in a Galois extension.

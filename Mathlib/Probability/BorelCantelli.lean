@@ -10,7 +10,6 @@ public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.Independence.Basic
 
 /-!
-
 # The second Borel-Cantelli lemma
 
 This file contains the *second Borel-Cantelli lemma* which states that, given a sequence of

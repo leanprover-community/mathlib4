@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Hom.Bounded
 /-!
-
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`
@@ -28,7 +27,6 @@ and the set of factors of `a`.
 - `multiplicity_eq_multiplicity_factor_dvd_iso_of_mem_normalizedFactors` : if there is a bijection
   between the set of factors of `a : M` and `b : N` then for any prime `p ∣ a`,
   `multiplicity p a = multiplicity (d p) b`
-
 
 ## TODO
 - Create a structure for chains of divisors.

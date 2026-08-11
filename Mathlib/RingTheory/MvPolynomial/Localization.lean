@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Localization and multivariate polynomial rings
 
 In this file we show some results connecting multivariate polynomial rings and localization.

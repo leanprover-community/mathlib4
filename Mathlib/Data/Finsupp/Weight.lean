@@ -58,7 +58,6 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 - For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
   there are finitely many `f : σ →₀ ℕ` of bounded degree.
 
-
 ## TODO
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,

@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Stability of finiteness conditions in commutative algebra
 
 In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` are

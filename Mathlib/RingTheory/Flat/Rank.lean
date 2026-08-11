@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
-
 # Results for the rank of a finite flat algebra
 
 In this file we study a finite, flat `R`-algebra `S` and relate injectivity and

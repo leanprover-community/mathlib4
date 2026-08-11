@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 set_option linter.style.header false
 
 /-!
-
 # Valuation subrings are exactly the maximal local subrings
 
 See `LocalSubring.isMax_iff`.

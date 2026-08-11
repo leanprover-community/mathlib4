@@ -339,7 +339,6 @@ elab_rules : tactic
 end Mathlib.Tactic.TFAE
 
 /-!
-
 ### Deprecated "Goal-style" `tfae_have`
 
 This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve

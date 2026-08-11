@@ -12,7 +12,6 @@ public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
-
 # Closed immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is a closed immersion if the underlying map of topological spaces

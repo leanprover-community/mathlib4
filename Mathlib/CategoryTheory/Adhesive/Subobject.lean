@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
-
 # Subobjects in adhesive categories
 
 ## Main Results

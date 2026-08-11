@@ -18,7 +18,6 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.LocalProperties.Injective
 
 /-!
-
 # Relation of Injective Dimension with Localizations
 
 -/

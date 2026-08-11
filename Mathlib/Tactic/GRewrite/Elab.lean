@@ -10,7 +10,6 @@ public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.GRewrite.Core
 
 /-!
-
 # The generalized rewriting tactic
 
 This file defines the tactics that use the backend defined in `Mathlib.Tactic.GRewrite.Core`:

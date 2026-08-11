@@ -13,7 +13,6 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
-
 # The Grothendieck topology on `TopCat`
 
 In this file we define the standard Grothendieck topology on `TopCat`. This is the topology

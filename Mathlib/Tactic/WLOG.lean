@@ -11,7 +11,6 @@ public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Push
 
 /-!
-
 # Without loss of generality tactic
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,

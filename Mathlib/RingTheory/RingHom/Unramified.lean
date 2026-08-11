@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Unramified.Locus
 public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # The meta properties of unramified ring homomorphisms.
 
 -/

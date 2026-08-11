@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
-
 # Colimits in `P.Over ⊤ S`
 
 Let `P` be a morphism property in the category of schemes and `S` be a scheme. Let

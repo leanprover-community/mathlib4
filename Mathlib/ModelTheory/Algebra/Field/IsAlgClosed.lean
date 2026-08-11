@@ -12,7 +12,6 @@ public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
 /-!
-
 # The First-Order Theory of Algebraically Closed Fields
 
 This file defines the theory of algebraically closed fields of characteristic `p`, as well

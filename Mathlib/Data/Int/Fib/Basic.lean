@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Fib.Basic
 
 /-!
-
 # Fibonacci numbers extended onto the integers
 
 This file defines the Fibonacci sequence on the integers.
