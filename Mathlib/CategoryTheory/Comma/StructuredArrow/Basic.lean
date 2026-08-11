@@ -472,6 +472,27 @@ def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
     pre S F G ≅ map₂ (G := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
+open CategoryTheory.Functor in
+/-- Equivalences of categories induce equivalences of `StructuredArrow` categories. -/
+@[implicit_reducible, simps! functor inverse unitIso counitIso]
+def congr {S₁ : D} {S₂ : B} {T₁ : C ⥤ D} {T₂ : A ⥤ B} (e₁ : C ≌ A) (e₂ : D ≌ B)
+    (comm : T₁ ⋙ e₂.functor ≅ e₁.functor ⋙ T₂) (iso : e₂.functor.obj S₁ ≅ S₂) :
+    StructuredArrow S₁ T₁ ≌ StructuredArrow S₂ T₂ :=
+  map₂Iso iso.inv (e₂.unitIso.hom.app S₁ ≫ e₂.inverse.map iso.hom) comm.hom
+    (whiskerRight (T₂.leftUnitor.inv ≫ whiskerRight e₁.counitIso.inv T₂ ≫
+      (associator _ _ _).hom ≫ whiskerLeft e₁.inverse comm.inv) _ ≫
+      (associator _ _ _).hom ≫ whiskerLeft _ ((associator _ _ _).hom ≫
+        whiskerLeft _ e₂.unitIso.inv ≫ T₁.rightUnitor.hom)) (by simp) (by simp) (by
+    ext X
+    dsimp
+    simp only [Category.comp_id, Category.id_comp, Category.assoc,
+      ← Functor.map_comp_assoc, Equivalence.counitInv_functor_comp, Functor.map_id,
+      ← dsimp% e₂.unitIso.inv.naturality_1 (T₁.mapIso (e₁.unitIso.app X)),
+      ← dsimp% comm.inv.naturality (e₁.unitIso.inv.app X),
+      Equivalence.counitInv_functor_comp, Functor.map_id,
+      Iso.hom_inv_id_app, comp_obj, Iso.hom_inv_id_app_assoc])
+    (by ext; simp [← Functor.map_comp])
+
 /-- A structured arrow is called universal if it is initial. -/
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
 
@@ -934,6 +955,26 @@ def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
+open CategoryTheory.Functor in
+/-- Equivalences of categories induce equivalences of `CostructuredArrow` categories. -/
+@[implicit_reducible, simps! functor inverse unitIso counitIso]
+def congr {S₁ : C ⥤ D} {S₂ : A ⥤ B} {T₁ : D} {T₂ : B} (e₁ : C ≌ A) (e₂ : D ≌ B)
+    (comm : S₁ ⋙ e₂.functor ≅ e₁.functor ⋙ S₂) (iso : e₂.functor.obj T₁ ≅ T₂) :
+    CostructuredArrow S₁ T₁ ≌ CostructuredArrow S₂ T₂ :=
+  map₂Iso comm.inv
+    (whiskerLeft _ (S₁.rightUnitor.inv ≫ whiskerLeft S₁ e₂.unitIso.hom ≫
+    (associator _ _ _).inv ≫ whiskerRight comm.hom e₂.inverse) ≫ (associator _ _ _).inv ≫
+      whiskerRight ((associator _ _ _).inv ≫ whiskerRight e₁.counitIso.hom S₂) _ ≫
+      (associator _ _ _).hom ≫ (leftUnitor _).hom) (by
+    ext X
+    dsimp
+    simp only [Category.comp_id, Category.id_comp, Category.assoc, ← Functor.map_comp,
+      ← Functor.map_comp_assoc, Iso.hom_inv_id_app, id_obj, comp_obj, Functor.map_id,
+      Equivalence.functor_unit_comp,
+      ← dsimp% e₂.unitIso.hom.naturality_1 (S₁.mapIso (e₁.unitIso.app X)),
+      dsimp% comm.hom.naturality_assoc (e₁.unitIso.hom.app X)]) (by cat_disch) iso.hom
+    (e₂.inverse.map iso.inv ≫ e₂.unitIso.inv.app T₁) (by simp) (by simp)
+
 /-- A costructured arrow is called universal if it is terminal. -/
 abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
@@ -1088,28 +1129,6 @@ def toStructuredArrow' (F : C ⥤ D) (d : D) :
   map f :=
     StructuredArrow.homMk f.unop.left.unop
       (Quiver.Hom.op_inj (by simp [dsimp% f.unop.w]))
-
-open CategoryTheory.Functor in
-/-- Equivalences of categories induce equivalences of `CostructuredArrow` categories. -/
-@[simps!]
-def congr
-    {S₁ : C ⥤ D} {S₂ : A ⥤ B} {T₁ : D} {T₂ : B} (e₁ : C ≌ A) (e₂ : D ≌ B)
-    (comm : S₁ ⋙ e₂.functor ≅ e₁.functor ⋙ S₂) (iso : e₂.functor.obj T₁ ≅ T₂) :
-    CostructuredArrow S₁ T₁ ≌ CostructuredArrow S₂ T₂ :=
-  map₂Iso (F := e₁) (G := e₂) comm.inv
-    (whiskerLeft _ (S₁.rightUnitor.inv ≫ whiskerLeft S₁ e₂.unitIso.hom ≫
-    (associator _ _ _).inv ≫ whiskerRight comm.hom e₂.inverse) ≫
-    (associator _ _ _).inv ≫
-    whiskerRight ((associator _ _ _).inv ≫ whiskerRight e₁.counitIso.hom S₂) _ ≫
-    (associator _ _ _).hom ≫ (leftUnitor _).hom) (by
-      ext X
-      dsimp
-      simp only [Category.comp_id, Category.id_comp, Category.assoc, ← Functor.map_comp,
-        ← Functor.map_comp_assoc, Iso.hom_inv_id_app, id_obj, comp_obj, Functor.map_id,
-        Equivalence.functor_unit_comp,
-        ← dsimp% e₂.unitIso.hom.naturality_1 (S₁.mapIso (e₁.unitIso.app X)),
-        dsimp% comm.hom.naturality_assoc (e₁.unitIso.hom.app X)]) (by cat_disch) iso.hom
-      (e₂.inverse.map iso.inv ≫ e₂.unitIso.inv.app T₁) (by simp) (by simp)
 
 end CostructuredArrow
 
