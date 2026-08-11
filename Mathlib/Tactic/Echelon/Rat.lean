@@ -15,8 +15,8 @@ public meta import Mathlib.Tactic.NormNum.Basic
 # The rational model for the Bareiss elimination
 
 The rational model of a ring: entries evaluate to rational numerals via `norm_num`,
-rows scale integral, and the elimination runs on integer values. It is the fallback model
-the tactic uses when no ring-specific model matches the ring.
+denominators are cleared by row scaling, and the elimination runs on integer values. It
+is the fallback model the tactic uses when no ring-specific model matches the ring.
 
 ## Main definitions
 
@@ -31,7 +31,7 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Echelon
 
-/-- Data-only evaluation a matrix entry to its rational value via `norm_num`.
+/-- Data-only evaluation of a matrix entry to its rational value via `norm_num`.
 Fraction values are accepted only in characteristic zero. -/
 def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
   unless charZero do
@@ -39,17 +39,19 @@ def evalEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
       | Neg.neg _ _ a => a
       | _ => e
     if stripped.isAppOf ``HDiv.hDiv then
-      throwError "division entries are supported only in characteristic zero{indentExpr e}"
+      throwError "the rational model supports division entries only in characteristic \
+        zero{indentExpr e}"
   let ⟨_, _, eQ⟩ ← inferTypeQ' e
   let r ← try some <$> Meta.NormNum.derive eQ catch _ => pure none
   let some v := r.bind (·.toRat)
     | throwError "the entry does not evaluate to a rational numeral{indentExpr e}"
   unless v.den == 1 || charZero do
-    throwError "division entries are supported only in characteristic zero{indentExpr e}"
+    throwError "the rational model supports division entries only in characteristic \
+      zero{indentExpr e}"
   return v
 
-/-- Scale each row integral by the lcm of its denominators. Returns the integer matrix
-together with the row scales, which are later folded back into `L`. -/
+/-- Scale each row by the lcm of its denominators to clear them. Returns the integer
+matrix together with the row scales, which are later folded back into `L`. -/
 def scaleRowsIntegral (ratRows : Array (Array Rat)) : Array (Array Int) × Array Nat :=
   let scales : Array Nat := ratRows.map fun row => row.foldl (fun l v => Nat.lcm l v.den) 1
   (((ratRows.zip scales).map fun (row, s) => row.map fun v => (mkRat s 1 * v).num), scales)
@@ -86,9 +88,9 @@ def isZeroInRing {u : Level} (R : Q(Type u)) (v : Int) : MetaM Bool := do
     if r.isAppOf ``Decidable.isFalse then return false
   throwError "equality in the element type does not reduce in the kernel{indentExpr R}"
 
-/-- The rational model of a ring: entries evaluate to rational numerals, rows scale
-integral, and the elimination runs on integer values. It applies to every ring, as the
-fallback model. -/
+/-- The rational model of a ring: entries evaluate to rational numerals, denominators
+are cleared by row scaling, and the elimination runs on integer values. It applies to
+every ring, as the fallback model. -/
 def ratProducer (R : Expr) : MetaM Producer := do
   let u ← getDecLevel R
   have R : Q(Type u) := R

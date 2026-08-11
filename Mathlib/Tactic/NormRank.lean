@@ -28,14 +28,14 @@ def normalizeRank (e A : Expr) (m n : Nat) (R : Expr) (entries : Array (Array Ex
     MetaM Simp.Result := do
   let decomp ← (mkBareissDecomposition A m n R entries).run'
   let pf ← mkAppM ``Echelon.Decomposition.rank_eq #[decomp]
-  -- the statement's right-hand side: the pivoted-row count of the certificate
+  -- the statement's right-hand side: the pivot count of the certificate
   let cnt := (← inferType pf).appArg!
   let some len := ((Kernel.whnf (← getEnv) (← getLCtx) cnt).toOption).bind (·.rawNatLit?)
     | throwError "the pivot count does not reduce to a literal"
   let k := mkNatLit len
   return { expr := k, proof? := some (← mkExpectedTypeHint pf (← mkEq e k)) }
 
-/-- Core of the `norm_rank` simproc and the `eval_rank` tactic. -/
+/-- Core of the `norm_rank` simproc. -/
 def normRankCore : Simp.Simproc := fun e => do
   let_expr Matrix.rank _ _ _ _ _ A := e | return .continue
   let A ← instantiateMVars A
@@ -67,19 +67,9 @@ The element type must be a commutative domain with kernel-decidable equality.
 Terms skipped can be viewed by using `set_option trace.Tactic.evalRank true`.
 -/
 elab (name := evalRank) "eval_rank" : tactic => do
-  let goal ← Tactic.getMainGoal
-  -- disable the generic no progress error from `simp`
-  let ctx ← Simp.mkContext (config := { failIfUnchanged := false })
-    (congrTheorems := ← getSimpCongrTheorems)
-  let some keys ← Simp.getSimprocDeclKeys? ``norm_rank
-    -- this should be unreachable
-    | throwError "internal error: no discrimination keys registered for `norm_rank`"
-  let simprocs := ({} : Simp.Simprocs).addCore keys `evalRank (post := true) (.inl normRankCore)
-  match ← simpGoal goal ctx #[simprocs] with
-  | (none, _) => return
-  | (some (_, goal'), _) =>
-    if goal' == goal then
-      throwError "eval_rank made no progress.\n\
-        Additional information may be available using `set_option trace.Tactic.evalRank true`."
-    Tactic.replaceMainGoal [goal']
-    Tactic.evalTactic (← `(tactic| try lia))
+  try
+    Tactic.evalTactic (← `(tactic| simp only [norm_rank]))
+  catch _ =>
+    throwError "`eval_rank` made no progress.\n\
+      Additional information may be available using `set_option trace.Tactic.evalRank true`."
+  Tactic.evalTactic (← `(tactic| try lia))
