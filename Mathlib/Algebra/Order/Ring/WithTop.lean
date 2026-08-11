@@ -222,7 +222,7 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
 @[to_dual]
-instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOrder α]
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
     [Subsingleton (AddUnits α)] : NonUnitalNonAssocSemiring (WithTop α) where
   right_distrib a b c := by
     cases c with
@@ -252,19 +252,19 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
       exact congr_arg some (mul_add _ _ _)
 
 @[to_dual]
-instance instNonAssocSemiring [NonAssocSemiring α] [PartialOrder α] [Subsingleton (AddUnits α)]
+instance instNonAssocSemiring [NonAssocSemiring α] [Subsingleton (AddUnits α)]
     [Nontrivial α] : NonAssocSemiring (WithTop α) where
 
 @[to_dual]
-instance instNonUnitalSemiring [NonUnitalSemiring α] [PartialOrder α] [Subsingleton (AddUnits α)]
+instance instNonUnitalSemiring [NonUnitalSemiring α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] : NonUnitalSemiring (WithTop α) where
 
 @[to_dual]
-instance instSemiring [Semiring α] [PartialOrder α] [Subsingleton (AddUnits α)]
+instance instSemiring [Semiring α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] [Nontrivial α] : Semiring (WithTop α) where
 
 @[to_dual]
-instance instCommSemiring [CommSemiring α] [PartialOrder α] [Subsingleton (AddUnits α)]
+instance instCommSemiring [CommSemiring α] [Subsingleton (AddUnits α)]
     [NoZeroDivisors α] [Nontrivial α] : CommSemiring (WithTop α) where
 
 instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
