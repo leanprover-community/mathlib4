@@ -87,7 +87,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   · apply isClopen_biUnion_finset
     intro s hs
     dsimp [W]
-    rw [dif_pos hs]
+    rw [dite_eq_left hs]
     exact ⟨(hV s).1.1.preimage (F.map _).hom.hom.continuous,
       (hV s).1.2.preimage (F.map _).hom.hom.continuous⟩
   · ext x
@@ -96,14 +96,14 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
+      rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
+      rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w] at hx
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
@@ -171,7 +171,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  rw [dif_pos]
+  rw [dite_eq_left]
   swap
   · assumption
   apply_fun ι
@@ -180,7 +180,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   · intro a b hh
     have hhh := congr_fun hh a
     dsimp [ι] at hhh
-    rw [if_pos rfl] at hhh
+    rw [ite_eq_left rfl] at hhh
     split_ifs at hhh with hh1
     · exact hh1.symm
     · exact False.elim (bot_ne_top hhh)

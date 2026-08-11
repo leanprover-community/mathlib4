@@ -105,8 +105,8 @@ noncomputable def trivial : MulChar R R' where
   toFun := by classical exact fun x => if IsUnit x then 1 else 0
   map_nonunit' := by
     intro a ha
-    simp only [ha, if_false]
-  map_one' := by simp only [isUnit_one, if_true]
+    simp only [ha, ite_false]
+  map_one' := by simp only [isUnit_one, ite_true]
   map_mul' := by
     intro x y
     classical
@@ -158,22 +158,22 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
   map_one' := by
     have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.ext rfl
-    simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
+    simp only [h1, dite_eq_left, Units.val_eq_one, map_one, isUnit_one]
   map_mul' := by
     classical
       intro x y
       by_cases hx : IsUnit x
-      · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
+      · simp only [hx, IsUnit.mul_iff, true_and, dite_eq_left]
         by_cases hy : IsUnit y
-        · simp only [hy, dif_pos]
+        · simp only [hy, dite_eq_left]
           have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
           norm_cast
-        · simp only [hy, not_false_iff, dif_neg, mul_zero]
-      · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dif_neg, zero_mul]
+        · simp only [hy, not_false_iff, dite_eq_right, mul_zero]
+      · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dite_eq_right, zero_mul]
   map_nonunit' := by
     intro a ha
-    simp only [ha, not_false_iff, dif_neg]
+    simp only [ha, not_false_iff, dite_eq_right]
 
 theorem ofUnitHom_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : ofUnitHom f ↑a = f a := by simp [ofUnitHom]
 
@@ -254,7 +254,7 @@ noncomputable instance inhabited : Inhabited (MulChar R R') :=
 
 /-- Evaluation of the trivial character -/
 @[simp]
-theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by exact dif_pos a.isUnit
+theorem one_apply_coe (a : Rˣ) : (1 : MulChar R R') a = 1 := by exact dite_eq_left a.isUnit
 
 /-- Evaluation of the trivial character -/
 lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_coe hx.unit
@@ -395,7 +395,7 @@ noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] 
   toFun := domRestrict T
   map_one' := by
     ext x
-    rw [domRestrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
+    rw [domRestrict_apply, ite_eq_left x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
   map_mul' x y := by ext; simp
 
 @[deprecated (since := "2026-07-19")] alias restrictHom := domRestrictHom

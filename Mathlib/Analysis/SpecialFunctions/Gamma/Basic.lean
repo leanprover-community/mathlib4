@@ -68,11 +68,11 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
   rw [← Ioc_union_Ioi_eq_Ioi (@zero_le_one ℝ _ _ _ _), integrableOn_union]
   constructor
   · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine IntegrableOn.continuousOn_mul continuousOn_id.neg.rexp ?_ isCompact_Icc
-    refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
-    exact intervalIntegrable_rpow' (by linarith)
-  · refine integrable_of_isBigO_exp_neg one_half_pos ?_ (Gamma_integrand_isLittleO _).isBigO
-    exact continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind))
+    exact (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp
+      ((intervalIntegrable_rpow' (by linarith)).continuousOn_mul continuousOn_id.neg.rexp)
+  · exact integrable_of_isBigO_exp_neg one_half_pos
+      (continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind)))
+      (Gamma_integrand_isLittleO _).isBigO
 
 end Real
 
@@ -308,6 +308,7 @@ private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamm
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/
+@[grind =]
 theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   let n := ⌊1 - s.re⌋₊
   have t1 : -s.re < n := by simpa only [sub_sub_cancel_left] using Nat.sub_one_lt_floor (1 - s.re)

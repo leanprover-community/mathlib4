@@ -289,7 +289,7 @@ variable {I J : FractionalIdeal R⁰ K} (h : K →ₐ[R] K')
 theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
     ∃ x, x ≠ 0 ∧ algebraMap R K x ∈ I := by
   obtain ⟨y : K, y_mem, y_notMem⟩ :=
-    SetLike.exists_of_lt (by simpa only using bot_lt_iff_ne_bot.mpr hI)
+    SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr hI)
   have y_ne_zero : y ≠ 0 := by simpa using y_notMem
   obtain ⟨z, ⟨x, hx⟩⟩ := exists_integer_multiple R⁰ y
   refine ⟨x, ?_, ?_⟩
@@ -401,16 +401,16 @@ variable {I J : FractionalIdeal R₁⁰ K}
 
 @[simp]
 theorem div_zero {I : FractionalIdeal R₁⁰ K} : I / 0 = 0 :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     I / J = ⟨I / J, isFractional_div_of_ne_zero h⟩ :=
-  dif_neg h
+  dite_eq_right h
 
 @[simp]
 theorem coe_div {I J : FractionalIdeal R₁⁰ K} (hJ : J ≠ 0) :
     (↑(I / J) : Submodule R₁ K) = ↑I / (↑J : Submodule R₁ K) :=
-  congr_arg _ (dif_neg hJ)
+  congr_arg _ (dite_eq_right hJ)
 
 theorem mem_div_iff_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) {x} :
     x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I := by

@@ -527,12 +527,13 @@ theorem evalCoeff_eq [IsOrderedAddMonoid R] [Archimedean R] {x : M} {c : FiniteA
     {y : f.val.domain} (hy : y.val - x ∈ ball K c) :
     evalCoeff f x c = (ofLex (f.val y)).coeff c := by
   have hnonempty : ∃ y : f.val.domain, y.val - x ∈ ball K c := ⟨y, hy⟩
-  simpa [evalCoeff, dif_pos hnonempty] using coeff_eq_of_mem f x hnonempty.choose_spec hy le_rfl
+  simpa [evalCoeff, dite_eq_left hnonempty]
+    using coeff_eq_of_mem f x hnonempty.choose_spec hy le_rfl
 
 theorem evalCoeff_eq_zero {x : M} {c : FiniteArchimedeanClass M}
     (h : ¬∃ y : f.val.domain, y.val - x ∈ ball K c) :
     f.evalCoeff x c = 0 := by
-  rw [evalCoeff, dif_neg h]
+  rw [evalCoeff, dite_eq_right h]
 
 theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
     (evalCoeff f x).support.IsWF := by
@@ -541,7 +542,7 @@ theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
   have hnonempty : ∃ y : f.val.domain, y.val - x ∈ ball K (seq 0) := by
     specialize hmem 0
     contrapose hmem with hempty
-    simp [evalCoeff, dif_neg hempty]
+    simp [evalCoeff, dite_eq_right hempty]
   obtain ⟨y, hy⟩ := hnonempty
   have hmem' (n : ℕ) : seq n ∈ (ofLex (f.val y)).coeff.support := by
     specialize hmem n
