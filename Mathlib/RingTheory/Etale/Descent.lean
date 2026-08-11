@@ -30,7 +30,8 @@ We also provide the corresponding `RingHom.CodescendsAlong` lemmas.
   of finite presentation is projective and the former descends. This also holds without
   the finite presentation assumption, but requires showing that projectivity descends
   along faithfully flat base change, which is due to Raynaud and Gruson
-  (see https://stacks.math.columbia.edu/tag/058B).
+  (see https://stacks.math.columbia.edu/tag/058B). See `Wanted/RingTheory/Etale/Descent.lean`
+  for the precise statement.
 -/
 
 public section
@@ -50,14 +51,6 @@ lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
   have : Subsingleton (T ⊗[R] Ω[S⁄R]) :=
     (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
   exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
-
-/-- Formally smooth algebras descend along faithfully flat base change. See the TODO
-in the module docstring. -/
-proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
-    [FormallySmooth T (T ⊗[R] S)] :
-    FormallySmooth R S
 
 lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
     Smooth R S := by
