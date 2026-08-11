@@ -14,7 +14,8 @@ public import Mathlib.Tactic.Echelon.Parsing
 `eval_rank` closes goals of the form `Matrix.rank !![…] = k` over a commutative domain
 with kernel-decidable equality, for entries the selected computation model evaluates:
 numerals and `norm_num`-evaluable expressions everywhere, plus ring-specific literals
-such as the `⟨a, b⟩` pairs of `ℤ√d`. The simproc `norm_rank` rewrites such ranks inside
+such as the `⟨a, b⟩` pairs of `ℤ√d` (enabled by importing
+`Mathlib.Tactic.Echelon.Zsqrtd`). The simproc `norm_rank` rewrites such ranks inside
 `simp` sets, skipping any term it cannot evaluate.
 
 ## Main definitions

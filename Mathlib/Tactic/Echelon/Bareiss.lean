@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Rat
-public import Mathlib.Tactic.Echelon.Zsqrtd
 
 public meta import Mathlib.LinearAlgebra.Matrix.Notation
 
