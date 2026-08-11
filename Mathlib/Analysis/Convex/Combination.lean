@@ -114,8 +114,8 @@ theorem Finset.centerMass_ite_eq [DecidableEq ι] (hi : i ∈ t) :
     · congr with i
       split_ifs with h
       exacts [h ▸ one_smul _ _, zero_smul _ _]
-    · rw [sum_ite_eq, if_pos hi]
-  · rw [sum_ite_eq, if_pos hi]
+    · rw [sum_ite_eq, ite_eq_left hi]
+  · rw [sum_ite_eq, ite_eq_left hi]
 
 variable {t}
 
@@ -225,13 +225,13 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     (∑ᶠ i, w i • z i) ∈ s := by
   have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
-    rw [finsum, dif_neg H] at h₁
+    rw [finsum, dite_eq_right H] at h₁
     exact zero_ne_one h₁
   have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
   rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine hs.sum_mem (fun _ _ => h₀ _) ?_ fun i hi => hz _ ?_
-  · rwa [finsum, dif_pos hfin_w] at h₁
+  · rwa [finsum, dite_eq_left hfin_w] at h₁
   · rwa [hfin_w.mem_toFinset] at hi
 
 theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
@@ -243,9 +243,9 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
   · convert! h { x, y } (fun z => if z = y then b else a) _ _ _
-    · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
+    · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial]
     · grind
-    · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
+    · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi
       cases hi <;> subst i <;> assumption
@@ -396,7 +396,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     · intros
       split_ifs
       exacts [zero_le_one, le_refl 0]
-    · rw [Finset.sum_ite_eq, if_pos hx]
+    · rw [Finset.sum_ite_eq, ite_eq_left hx]
   · rintro x ⟨wx, hwx₀, hwx₁, rfl⟩ y ⟨wy, hwy₀, hwy₁, rfl⟩ a b ha hb hab
     rw [Finset.centerMass_segment _ _ _ _ hwx₁ hwy₁ _ _ hab]
     refine ⟨_, ?_, ?_, rfl⟩

@@ -335,7 +335,7 @@ lemma widthInfty_nonneg : 0 ≤ 𝒢.widthInfty := 𝒢.adjoinNegOne.strictWidth
 variable {𝒢} in
 lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
-  simp [Subgroup.strictWidthInfty, dif_pos,
+  simp [Subgroup.strictWidthInfty, dite_eq_left,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
       <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
@@ -357,7 +357,7 @@ lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
   · simp [strictPeriods_eq_zmultiples_strictWidthInfty]
-  · simp [strictWidthInfty, dif_neg h]
+  · simp [strictWidthInfty, dite_eq_right h]
 
 variable {𝒢} in
 lemma periods_eq_zmultiples_widthInfty [DiscreteTopology 𝒢.periods] :

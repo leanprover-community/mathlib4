@@ -85,7 +85,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       refine this _ _ _ (univ _) (inter _) ?_
       intro e he
       dsimp [Vs]
-      rw [dif_pos he]
+      rw [dite_eq_left he]
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
@@ -96,7 +96,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dite_eq_left he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

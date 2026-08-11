@@ -316,7 +316,7 @@ theorem leftInverse_trunc_toLaurent :
     simp only [hf, hg, map_add]
   · intro n r
     simp only [Polynomial.toLaurent_C_mul_T, trunc_C_mul_T, Int.natCast_nonneg, Int.toNat_natCast,
-      if_true]
+      ite_true]
 
 @[simp]
 theorem _root_.Polynomial.trunc_toLaurent (f : R[X]) : trunc (toLaurent f) = f :=

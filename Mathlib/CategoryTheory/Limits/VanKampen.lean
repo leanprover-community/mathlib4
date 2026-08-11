@@ -689,14 +689,15 @@ set_option backward.defeqAttrib.useBackward true in
 theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → C}
     {c : Cofan X} (hc : IsVanKampenColimit c) (i j : ι) [DecidableEq ι] :
     IsPullback (P := (if j = i then X i else ⊥_ C))
-      (if h : j = i then eqToHom (if_pos h) else eqToHom (if_neg h) ≫ initial.to (X i))
-      (if h : j = i then eqToHom ((if_pos h).trans (congr_arg X h.symm))
-        else eqToHom (if_neg h) ≫ initial.to (X j))
+      (if h : j = i then eqToHom (ite_eq_left h) else eqToHom (ite_eq_right h) ≫ initial.to (X i))
+      (if h : j = i then eqToHom ((ite_eq_left h).trans (congr_arg X h.symm))
+        else eqToHom (ite_eq_right h) ≫ initial.to (X j))
       (Cofan.inj c i) (Cofan.inj c j) := by
   refine (hc (Cofan.mk (X i) (f := fun k ↦ if k = i then X i else ⊥_ C)
-    (fun k ↦ if h : k = i then (eqToHom <| if_pos h) else (eqToHom <| if_neg h) ≫ initial.to _))
-    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (if_pos h).trans
-      (congr_arg X h.symm)) else (eqToHom <| if_neg h) ≫ initial.to _))
+    (fun k ↦
+      if h : k = i then (eqToHom <| ite_eq_left h) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
+    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (ite_eq_left h).trans
+      (congr_arg X h.symm)) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
     (c.inj i) ?_ (.of_discrete _)).mp ⟨?_⟩ ⟨j⟩
   · ext ⟨k⟩
     simp only [Discrete.functor_obj, Functor.const_obj_obj, NatTrans.comp_app,
@@ -704,7 +705,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
     split
     · subst ‹k = i›; rfl
     · simp
-  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
+  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (ite_eq_left rfl).symm) ≫ t.inj i) ?_ ?_
     · intro t j
       simp only [Cofan.mk_pt, cofan_mk_inj]
       split
@@ -725,7 +726,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
   subst this
   have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert! isPullback_of_cofan_isVanKampen hc i.as j.as
-  exact (if_neg (mt Discrete.ext hi.symm)).symm
+  exact (ite_eq_right (mt Discrete.ext hi.symm)).symm
 
 set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
@@ -740,7 +741,7 @@ theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι �
   nth_rw 1 [← Category.id_comp (c.ι.app i)]
   convert! IsPullback.paste_vert _ (isPullback_of_cofan_isVanKampen hc i.as i.as)
   swap
-  · exact (eqToHom (if_pos rfl).symm)
+  · exact (eqToHom (ite_eq_left rfl).symm)
   · simp
   · exact IsPullback.of_vert_isIso ⟨by simp⟩
 

@@ -300,12 +300,12 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
-    rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
+    rw [PolynomialModule.coeff_single, Finsupp.single_apply, ite_eq_left rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
-    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
+    rw [Subalgebra.smul_def, smul_single_apply, ite_eq_left (show n' ≤ n + 1 by lia)]
     have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this

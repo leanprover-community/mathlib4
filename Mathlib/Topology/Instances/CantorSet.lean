@@ -258,7 +258,7 @@ theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
     (cantorSequence x).get (n + 1) =
       3 * ((cantorSequence x).get n - 3 ^ n * ofDigitsTerm (cantorToTernary x).get n) := by
   simp only [cantorSequence, ofDigitsTerm, cantorToTernary, cantorToBinary, Set.mem_Icc,
-    Bool.if_true_right, Bool.or_false, Stream'.get_map, Bool.cond_not, Bool.cond_decide,
+    Bool.ite_true_right, Bool.or_false, Stream'.get_map, Bool.cond_not, Bool.cond_decide,
     Stream'.get_succ_iterate', cantorStep]
   split_ifs <;> simp
   field

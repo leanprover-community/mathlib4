@@ -52,18 +52,18 @@ def inftyValuationDef (r : RatFunc F) : ℤᵐ⁰ :=
   if r = 0 then 0 else exp r.intDegree
 
 theorem InftyValuation.map_zero' : inftyValuationDef F 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem InftyValuation.map_one' : inftyValuationDef F 1 = 1 :=
-  (if_neg one_ne_zero).trans <| by simp
+  (ite_eq_right one_ne_zero).trans <| by simp
 
 theorem InftyValuation.map_mul' (x y : RatFunc F) :
     inftyValuationDef F (x * y) = inftyValuationDef F x * inftyValuationDef F y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
   by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
+  · rw [hx, zero_mul, ite_eq_left (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
+    · rw [hy, mul_zero, ite_eq_left (Eq.refl _), mul_zero]
     · simp_all [RatFunc.intDegree_mul]
 
 theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
@@ -75,7 +75,7 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
 @[simp]
 theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :
     inftyValuationDef F x = exp x.intDegree := by
-  rw [inftyValuationDef, if_neg hx]
+  rw [inftyValuationDef, ite_eq_right hx]
 
 /-- The valuation at infinity on `F(t)`. -/
 def inftyValuation : Valuation (RatFunc F) ℤᵐ⁰ where
@@ -95,7 +95,8 @@ theorem inftyValuation.C {k : F} (hk : k ≠ 0) :
 
 @[simp]
 theorem inftyValuation.X : inftyValuation F RatFunc.X = exp 1 := by
-  simp [inftyValuation_apply, inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
+  simp [inftyValuation_apply, inftyValuationDef, ite_eq_right RatFunc.X_ne_zero,
+    RatFunc.intDegree_X]
 
 lemma inftyValuation.X_zpow (m : ℤ) : inftyValuation F (RatFunc.X ^ m) = exp m := by simp
 
@@ -106,7 +107,7 @@ theorem inftyValuation.X_inv : inftyValuation F (1 / RatFunc.X) = exp (-1) := by
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : F[X]} (hp : p ≠ 0) :
     inftyValuationDef F (algebraMap F[X] (RatFunc F) p) = exp (p.natDegree : ℤ) := by
-  rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
+  rw [inftyValuationDef, ite_eq_right (by simpa), RatFunc.intDegree_polynomial]
 
 instance : Valuation.IsNontrivial (inftyValuation F) := ⟨RatFunc.X, by simp⟩
 

@@ -281,7 +281,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   · exact measurable_prodMk_left ht
   · exact measurable_prodMk_left ht
   classical
-  rw [piecewise_apply, if_pos]
+  rw [piecewise_apply, ite_eq_left]
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.

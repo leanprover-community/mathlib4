@@ -407,7 +407,7 @@ noncomputable def disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : 
 
 private theorem disjointOfUnion_coe (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (j : J) :
     hC.disjointOfUnion hJ j = (hC.exists_partition_disjointed hJ j).choose.parts := by
-  rw [disjointOfUnion, dif_pos j.2]
+  rw [disjointOfUnion, dite_eq_left j.2]
 
 lemma pairwiseDisjoint_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     PairwiseDisjoint J (hC.disjointOfUnion hJ) := by

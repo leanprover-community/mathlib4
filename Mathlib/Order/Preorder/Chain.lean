@@ -300,13 +300,13 @@ noncomputable def SuccChain (r : α → α → Prop) (s : Set α) : Set α :=
 theorem succChain_spec (h : ∃ t, IsChain r s ∧ SuperChain r s t) :
     SuperChain r s (SuccChain r s) := by
   have : IsChain r s ∧ SuperChain r s h.choose := h.choose_spec
-  simpa [SuccChain, dif_pos, exists_and_left.mp h] using this.2
+  simpa [SuccChain, dite_eq_left, exists_and_left.mp h] using this.2
 
 theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) := by
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then exact (succChain_spec h).1
   else
     rw [exists_and_left] at h
-    simpa [SuccChain, dif_neg, h] using hs
+    simpa [SuccChain, dite_eq_right, h] using hs
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by

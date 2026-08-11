@@ -236,7 +236,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
   replace eq := congr(Polynomial.coeff $eq (σ i))
   rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
     (aeval_toPolynomialAdjoinImageCompl_eq_zero hFa i)), Polynomial.coeff_mul_C,
-    Polynomial.coeff_expand hp.pos, if_neg hi, eq_mul_inv_iff_mul_eq₀
+    Polynomial.coeff_expand hp.pos, ite_eq_right hi, eq_mul_inv_iff_mul_eq₀
     (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
     Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 

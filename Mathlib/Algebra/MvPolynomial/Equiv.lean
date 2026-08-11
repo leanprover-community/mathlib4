@@ -519,7 +519,7 @@ theorem optionEquivLeft_coeff_some_coeff_none
     simp only [coeff_zero]
     by_cases hj : j = n
     · simp [hj]
-    · rw [if_neg hj]
+    · rw [ite_eq_right hj]
       simp only [ite_eq_right_iff]
       intro hj_none hj_some
       apply False.elim (hj _)
@@ -696,18 +696,18 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
       Fin.cases_succ, ← _root_.map_prod, ← map_pow, Function.comp_apply]
     rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
     obtain rfl | hjmi := eq_or_ne j (m.cons i)
-    · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul,
+    · simpa only [cons_zero, cons_succ, ite_eq_left rfl, monomial_eq, C_1, one_mul,
         Finsupp.prod_pow] using! coeff_monomial m m (1 : R)
-    · simp only [hjmi, if_false]
+    · simp only [hjmi, ite_false]
       obtain hij | rfl := ne_or_eq i (j 0)
-      · simp only [hij, if_false, coeff_zero]
-      simp only [if_true]
+      · simp only [hij, ite_false, coeff_zero]
+      simp only [ite_true]
       have hmj : m ≠ j.tail := by
         rintro rfl
         rw [cons_tail] at hjmi
         contradiction
-      simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply, if_neg hmj.symm] using!
-        coeff_monomial m j.tail (1 : R)
+      simpa only [monomial_eq, C_1, one_mul, Finsupp.prod_pow, tail_apply,
+        ite_eq_right hmj.symm] using! coeff_monomial m j.tail (1 : R)
 
 theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (n + 1)) R) :
     eval (Fin.cons y s : Fin (n + 1) → R) f =
@@ -830,7 +830,7 @@ lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
       (optionEquivLeft R {b // b ≠ a} (rename (Equiv.optionSubtypeNe a).symm p)).natDegree := by
   rw [natDegree_optionEquivLeft, eq_comm]
   convert! degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
-  rw [Equiv.optionSubtypeNe_symm_apply, dif_pos rfl]
+  rw [Equiv.optionSubtypeNe_symm_apply, dite_eq_left rfl]
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by

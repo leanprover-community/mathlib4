@@ -605,7 +605,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [v, if_neg (not_lt.mpr hn)]
+    simp [v, ite_eq_right (not_lt.mpr hn)]
   apply cauchySeq_sum_of_eventually_eq this
     (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C

@@ -136,11 +136,11 @@ def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
 
 theorem ratio_of_trivial [DilationClass F α β] (f : F)
     (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
-  if_pos h
+  ite_eq_left h
 
 @[nontriviality]
 theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
-  if_pos fun x y ↦ by simp [Subsingleton.elim x y]
+  ite_eq_left fun x y ↦ by simp [Subsingleton.elim x y]
 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
@@ -279,7 +279,7 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
-  · rw [ratio, if_pos h]
+  · rw [ratio, ite_eq_left h]
   · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
     simp

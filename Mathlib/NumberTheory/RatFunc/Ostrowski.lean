@@ -217,8 +217,8 @@ lemma valuation_isEquiv_valuationIdeal_adic_of_valuation_X_le_one [IsRankOneDisc
       have hp0 : p ≠ 0 := by simp_all
       set pi := πᵥ with hpi_def
       have hpi : v.IsUniformizer (pi : RatFunc K) := uniformizingPolynomial_isUniformizer hle
-      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, if_neg hp0,
-        if_neg hq0, div_inv_eq_mul]
+      simp only [map_div₀, valuation_of_algebraMap, intValuation_def, exp_neg, ite_eq_right hp0,
+        ite_eq_right hq0, div_inv_eq_mul]
       rw [valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hp0,
         valuation_eq_valuation_uniformizingPolynomial_pow_of_valuation_X_le_one hle hq0]
       simp_all [div_le_one₀, inv_mul_le_one₀,

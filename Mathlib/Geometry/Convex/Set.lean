@@ -125,7 +125,7 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
   · rw [← huw, Finset.mem_image] at hy
     obtain ⟨x, hx, rfl⟩ := hy
     convert mapDomain_apply' _ _ support_onFinset_subset hfu hx
-    exact (if_pos hx).symm
+    exact (ite_eq_left hx).symm
   · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
 

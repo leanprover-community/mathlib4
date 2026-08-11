@@ -388,8 +388,8 @@ variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
 
 lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
-  | inl h => rw [h.neg_one_pow, if_pos h]
-  | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
+  | inl h => rw [h.neg_one_pow, ite_eq_left h]
+  | inr h => rw [h.neg_one_pow, ite_eq_right (by simpa using h)]
 
 lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
   simp [h, neg_one_pow_eq_ite]

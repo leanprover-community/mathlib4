@@ -152,7 +152,7 @@ noncomputable def φ (B : Set X) : Set X :=
 
 omit [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [PartialOrder X] in
 lemma φ_eq (B : Set X) (hB : HasCardinalLT B κ₂) :
-  φ Y m B = φ₀ Y m B hB := dif_pos hB
+  φ Y m B = φ₀ Y m B hB := dite_eq_left hB
 
 include hY' in
 omit [Fact κ₂.IsRegular] [PartialOrder X] in

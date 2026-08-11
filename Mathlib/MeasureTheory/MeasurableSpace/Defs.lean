@@ -202,7 +202,7 @@ theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s
 
 @[simp, measurability]
 protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
-    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
+    (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (if i = true then s₁ else s₂) := by
   cases i
   exacts [h₂, h₁]
 

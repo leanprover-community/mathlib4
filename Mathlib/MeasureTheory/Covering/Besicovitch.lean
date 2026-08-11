@@ -372,13 +372,13 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   have color_G : ∀ n, n ≤ N → p.color (G n) = n := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [color_i, Inf_eq_N, if_true]
-    · simp only [G]; simp only [H.ne, (hg n H).right.right.symm, if_false]
+    · simp only [G]; simp only [color_i, Inf_eq_N, ite_true]
+    · simp only [G]; simp only [H.ne, (hg n H).right.right.symm, ite_false]
   have G_lt_last : ∀ n, n ≤ N → G n < p.lastStep := by
     intro n hn
     rcases hn.eq_or_lt with (rfl | H)
-    · simp only [G]; simp only [hi, if_true]
-    · simp only [G]; simp only [H.ne, (hg n H).left.trans hi, if_false]
+    · simp only [G]; simp only [hi, ite_true]
+    · simp only [G]; simp only [H.ne, (hg n H).left.trans hi, ite_false]
   have fGn :
       ∀ n, n ≤ N →
         p.c (p.index (G n)) ∉ p.iUnionUpTo (G n) ∧ p.R (G n) ≤ p.τ * p.r (p.index (G n)) := by
@@ -439,7 +439,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       inter := by
         intro a ha
         have I : (a : ℕ) < N := ha
-        have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true]
+        have J : G (Fin.last N) = i := by dsimp; simp only [G, ite_true]
         have K : G a = g a := by simp [G, I.ne]
         convert! dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
@@ -939,7 +939,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         simp only [mem_iUnion, mem_image] at hx
         rcases hx with ⟨i, y, _, rfl⟩
         exact y.2
-      simp only [r, if_pos h'x, (hr1 x h'x).1.1]
+      simp only [r, ite_eq_left h'x, (hr1 x h'x).1.1]
   · intro x hx
     by_cases h'x : x ∈ s'
     · obtain ⟨i, y, ySi, xy⟩ : ∃ (i : Fin N) (y : ↥s'), y ∈ S i ∧ x ∈ ball (y : α) (r1 y) := by
@@ -951,7 +951,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
       · simp only [mem_iUnion, mem_image]
         exact ⟨i, y, ySi, rfl⟩
       · have : (y : α) ∈ s' := y.2
-        simp only [r, if_pos this]
+        simp only [r, ite_eq_left this]
         exact ball_subset_closedBall xy
     · obtain ⟨y, yt0, hxy⟩ : ∃ y : α, y ∈ t0 ∧ x ∈ closedBall y (r0 y) := by
         simpa [s', hx, -mem_closedBall] using h'x

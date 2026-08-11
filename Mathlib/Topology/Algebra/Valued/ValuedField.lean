@@ -450,7 +450,7 @@ noncomputable def valueGroup₀_hom_extensionValuation :
     · simpa [← hx, hx0] using hxy
     · by_cases hy0 : y = 0
       · simpa [← hy, hy0] using hxy
-      · rw [dif_neg, dif_neg, dif_neg]
+      · rw [dite_eq_right, dite_eq_right, dite_eq_right]
         · simp only [← WithZero.coe_mul, MulMemClass.mk_mul_mk, WithZero.coe_inj, Subtype.mk.injEq]
           rw [← Units.mk0_mul]
           · ext
@@ -529,15 +529,15 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
         rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
         by_cases hx0 : x = 0
         · simp only [hx0]
-          rw [dif_pos (map_zero _)]
+          rw [dite_eq_left (map_zero _)]
           · simp only [valueGroup₀_equiv_extensionValuation, valueGroup₀_hom_extensionValuation,
               MulEquiv.ofBijective_apply, coe_mk, ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, dif_neg]
+            rw [Valuation.restrict_def, restrict₀_apply, dite_eq_right]
             · have hext : hv.extension 0 = 0 := by rw [extension_eq_zero_iff]
               simp [hext]
             · simp [← v.restrict.zero_iff, v.restrict_def,
                 (restrict₀_surjective (.ofClass hv.v) _).choose_spec]
-        · rw [dif_neg (by simp [hx0])]
+        · rw [dite_eq_right (by simp [hx0])]
           · set y := (restrict₀_surjective (.ofClass hv.v) γ).choose with hy_def
             have hy := (restrict₀_surjective (.ofClass hv.v) γ).choose_spec
             apply_fun embedding at hy
@@ -545,7 +545,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
             simp only [coe_ofClass, extensionValuation_toFun, valueGroup₀_equiv_extensionValuation,
               valueGroup₀_hom_extensionValuation, MulEquiv.ofBijective_apply, coe_mk,
               ZeroHom.coe_mk]
-            rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dif_neg]
+            rw [Valuation.restrict_def, restrict₀_apply, ← hy_def, dite_eq_right]
             · simp only [coe_ofClass, extensionValuation_toFun, extension_extends,
               Valuation.embedding_restrict, WithZero.coe_lt_coe, Subtype.mk_lt_mk,
               ← Units.val_lt_val, Units.val_mk0]

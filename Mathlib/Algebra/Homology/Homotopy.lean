@@ -530,7 +530,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by rw [dif_neg]; exact w
+  zero i j w := by rw [dite_eq_right]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -544,7 +544,7 @@ def mkInductive : Homotopy e 0 where
         dsimp [xNextIso]
         rw [id_comp]
     · dsimp [toPrev]
-      rw [dif_pos (by simp only [ChainComplex.prev])]
+      rw [dite_eq_left (by simp only [ChainComplex.prev])]
       simp [xPrevIso, comp_id]
 
 end
@@ -664,7 +664,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by rw [dif_neg]; exact w
+  zero i j w := by rw [dite_eq_right]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -679,7 +679,7 @@ def mkCoinductive : Homotopy e 0 where
         dsimp [xPrevIso]
         rw [comp_id]
     · dsimp [fromNext]
-      rw [dif_pos (by simp only [CochainComplex.next])]
+      rw [dite_eq_left (by simp only [CochainComplex.next])]
       simp [xNextIso, id_comp]
 
 end

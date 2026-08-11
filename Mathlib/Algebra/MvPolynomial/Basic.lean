@@ -481,12 +481,12 @@ theorem support_add [DecidableEq σ] : (p + q).support ⊆ p.support ∪ q.suppo
   Finsupp.support_add
 
 theorem support_X [Nontrivial R] : (X n : MvPolynomial σ R).support = {Finsupp.single n 1} := by
-  classical rw [X, support_monomial, if_neg]; exact one_ne_zero
+  classical rw [X, support_monomial, ite_eq_right]; exact one_ne_zero
 
 theorem support_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).support = {Finsupp.single s n} := by
   classical
-    rw [X_pow_eq_monomial, support_monomial, if_neg (one_ne_zero' R)]
+    rw [X_pow_eq_monomial, support_monomial, ite_eq_right (one_ne_zero' R)]
 
 @[simp]
 theorem support_zero : (0 : MvPolynomial σ R).support = ∅ :=
@@ -597,8 +597,9 @@ theorem eq_monomial_of_support_subset_singleton {φ : MvPolynomial σ R} {d₀ :
   classical
   ext d
   rcases eq_or_ne d d₀ with rfl | hd
-  · rw [coeff_monomial, if_pos rfl]
-  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial, if_neg fun e ↦ hd e.symm]
+  · rw [coeff_monomial, ite_eq_left rfl]
+  · rw [notMem_support_iff.mp fun hmem ↦ hd (h d hmem), coeff_monomial,
+      ite_eq_right fun e ↦ hd e.symm]
 
 @[simp]
 theorem coeff_C [DecidableEq σ] (m) (a) :
@@ -606,7 +607,7 @@ theorem coeff_C [DecidableEq σ] (m) (a) :
   Finsupp.single_apply
 
 theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) (a : R) : coeff m (C a) = 0 := by
-  classical rw [coeff_C, if_neg h.symm]
+  classical rw [coeff_C, ite_eq_right h.symm]
 
 -- The intended use case of this theorem is for `n = 1` (often useful for `pderiv`).
 @[simp]
@@ -647,7 +648,7 @@ alias coeff_X' := coeff_X
 @[simp]
 theorem coeff_X_same (i : σ) :
     coeff (Finsupp.single i 1) (X i : MvPolynomial σ R) = 1 := by
-  classical rw [coeff_X, if_pos rfl]
+  classical rw [coeff_X, ite_eq_left rfl]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

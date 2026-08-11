@@ -276,7 +276,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     AlgebraicTopology.AlternatingFaceMapComplex.ε_app_f_zero, compForgetAugmentedIso, eqToIso.inv,
     HomologicalComplex.eqToHom_f, compForgetAugmented, compForgetAugmented.toModule, ε,
     SimplicialObject.augment, Unique.eq_default (terminal.from _), MonoidAlgebra.coeff_single,
-    Finsupp.single_apply, if_pos (Subsingleton.elim _ _)]
+    Finsupp.single_apply, ite_eq_left (Subsingleton.elim _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
