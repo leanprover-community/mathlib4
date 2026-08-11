@@ -366,7 +366,7 @@ theorem sumDiffSubset_symm_apply_of_notMem {α} {s t : Set α} (h : s ⊆ t) [De
     {x : t} (hx : x.val ∉ s) :
     (Equiv.Set.sumDiffSubset h).symm x = Sum.inr ⟨x, ⟨x.property, hx⟩⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
-  simp only [apply_symm_apply, sumDiffSubset_apply_inr]
+  simp only [apply_symm_apply, sumDiffSubset_apply_inr, inclusion]
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
