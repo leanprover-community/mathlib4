@@ -8,7 +8,7 @@ module
 public meta import Lean.Meta.CoeAttr
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.SplitIfs
 
 /-!
@@ -154,6 +154,8 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
 abbrev FunLike F α β := DFunLike F α fun _ => β
+
+initialize_simps_projections DFunLike
 
 section Dependent
 

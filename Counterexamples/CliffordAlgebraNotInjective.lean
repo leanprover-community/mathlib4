@@ -155,7 +155,7 @@ theorem sq_map_add_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a 
 
 theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a b : ι → R) :
     sq i (a - b) = sq i a - sq i b := by
-  haveI : Nonempty ι := ⟨i⟩
+  have : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
 
 /-- The quadratic form (metric) is just Euclidean -/
@@ -163,10 +163,10 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
+  simp only [Q', sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
-  simp only [Q', QuadraticMap.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
+  simp only [Q', sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
 theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
@@ -177,7 +177,7 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
       simp [Q', sq]
-    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
+    _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, ite_eq_left]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv

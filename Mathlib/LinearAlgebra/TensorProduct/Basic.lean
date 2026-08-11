@@ -263,7 +263,7 @@ variable (R M N)
 
 /-- The tensor product of modules is commutative, up to linear equivalence. -/
 protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
-  LinearEquiv.ofLinear (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
+  LinearEquiv.ofLinearMap (lift (mk R N M).flip) (lift (mk R M N).flip) (ext' fun _ _ => rfl)
     (ext' fun _ _ => rfl)
 
 @[simp]
