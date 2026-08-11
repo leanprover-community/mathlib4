@@ -266,12 +266,12 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
   toFun := Sum.elim Fin.val (n + ·)
   invFun i := if hi : i < n then .inl ⟨i, hi⟩ else .inr (i - n)
   left_inv i := (i.casesOn
-    (fun _ => dif_pos (Fin.is_lt _))
-    (fun _ => (dif_neg (Nat.le_add_right _ _).not_gt).trans <|
+    (fun _ => dite_eq_left (Fin.is_lt _))
+    (fun _ => (dite_eq_right (Nat.le_add_right _ _).not_gt).trans <|
       congrArg _ (Nat.add_sub_cancel_left _ _)))
   right_inv i := (apply_dite _ _ _ _).trans <| (i.lt_or_ge n).by_cases
-    (fun hi => dif_pos hi)
-    (fun hi => (dif_neg hi.not_gt).trans <| Nat.add_sub_cancel' hi)
+    (fun hi => dite_eq_left hi)
+    (fun hi => (dite_eq_right hi.not_gt).trans <| Nat.add_sub_cancel' hi)
 
 @[simp] theorem finSumNatEquiv_apply_left (i : Fin n) :
     finSumNatEquiv n (.inl i) = i := rfl
@@ -280,10 +280,10 @@ def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
     finSumNatEquiv n (.inr i) = n + i := rfl
 
 @[simp] theorem finSumNatEquiv_symm_apply_of_lt {i : ℕ} (hi : i < n) :
-    (finSumNatEquiv n).symm i = .inl ⟨i, hi⟩ := dif_pos hi
+    (finSumNatEquiv n).symm i = .inl ⟨i, hi⟩ := dite_eq_left hi
 
 @[simp] theorem finSumNatEquiv_symm_apply_of_ge {i : ℕ} (hi : n ≤ i) :
-    (finSumNatEquiv n).symm i = .inr (i - n) := dif_neg (Nat.not_lt_of_ge hi)
+    (finSumNatEquiv n).symm i = .inr (i - n) := dite_eq_right (Nat.not_lt_of_ge hi)
 
 theorem finSumNatEquiv_symm_apply_fin (i : Fin n) :
     (finSumNatEquiv n).symm i = .inl i := by simp

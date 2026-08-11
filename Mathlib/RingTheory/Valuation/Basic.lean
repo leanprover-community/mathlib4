@@ -383,7 +383,7 @@ lemma one_apply_def (x : R) : (1 : Valuation R Γ₀) x = if x = 0 then 0 else 1
 
 @[simp] lemma toMonoidWithZeroHom_one : (1 : Valuation R Γ₀).toMonoidWithZeroHom = 1 := rfl
 
-lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := if_neg hx
+lemma one_apply_of_ne_zero {x : R} (hx : x ≠ 0) : (1 : Valuation R Γ₀) x = 1 := ite_eq_right hx
 
 @[simp]
 lemma one_apply_eq_zero_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 0 ↔ x = 0 :=
@@ -831,7 +831,7 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : (MonoidWithZeroH
     (hs' : (MonoidWithZeroHom.ofClass w) s ≠ 0 := h.ofClass_eq_zero.ne.1 hs) :
     valueGroup₀Fun h (valueGroup.mk (.ofClass v) r s hr hs) =
       valueGroup.mk (.ofClass w) r s hr' hs' := by
-  rw [valueGroup₀Fun, dif_neg (by simp)]
+  rw [valueGroup₀Fun, dite_eq_right (by simp)]
   generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec
   simp only [MonoidWithZeroHom.coe_ofClass, ne_eq, WithZero.coe_inj, valueGroup.mk_inj] at c_spec ⊢

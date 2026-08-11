@@ -517,9 +517,7 @@ where
         trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
           assuming it is a non-trivially normed field"
         -- Return the trivial model with corners: this will work if `H` is a normed field.
-        let eT : Term ← Term.exprToSyntax H
-        let iTerm : Term ← ``(𝓘($eT))
-        Term.elabTerm iTerm none
+        mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -569,8 +567,7 @@ where
   fromUpperHalfPlane : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
-      let c ← Term.exprToSyntax (mkConst `Complex)
-      Term.elabTerm (← `(𝓘($c))) none
+      mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
     else throwError "`{e}` is not the complex upper half plane"
   /-- Attempt to find a model with corners on the units in a normed algebra -/
   fromUnitsOfAlgebra : TermElabM Expr := do
@@ -638,9 +635,8 @@ where
     -- We don't use `match_expr` to avoid importing `Circle`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
       -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
-      let r ← Term.exprToSyntax q(ℝ)
-      let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
-      Term.elabTerm (← ``(𝓘($r, $eE))) none
+      let euclE ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
+      mkAppOptM ``modelWithCornersSelf #[q(ℝ), none, euclE, none, none]
     else throwError "`{e}` is not the complex unit circle"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
@@ -704,9 +700,8 @@ where
         let some nE ← factFinder E
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
         -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
-        let r ← Term.exprToSyntax q(ℝ)
-        let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
-        Term.elabTerm (← ``(𝓘($r, $eE))) none
+        let euclE ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
+        mkAppOptM ``modelWithCornersSelf #[q(ℝ), none, euclE, none, none]
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
