@@ -10,9 +10,8 @@ public import Mathlib.Geometry.Convex.Cone.Face.Basic
 /-!
 ## Face
 
-This file defines the notion of face of a pointed cone as a bundled object and establishes the
-complete lattice structure thereon. The type `Face C` therefore also represents the face lattice
-of a pointed cone `C`.
+This file defines the concept of a face of a pointed cone. It also defines the complete lattice
+structure on the collection of all faces of such a cone.
 
 ## Main definitions
 
@@ -47,9 +46,9 @@ namespace Face
 
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
--- TODO: This should not be required if we say
+-- TODO: This whould not be required if Lean allowed us to write:
 -- `structure Face (C : PointedCone R M) extends toPointedCone : PointedCone R M where`
--- but it seems like it still is.
+-- but as of August 2026 it does not. See:
 -- see https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Structure.20extensions.20vs.20abbrev.20difference.20in.20dot.20notation/with/581169071
 /-- Converts a face of a pointed cone into a pointed cone. -/
 @[coe]
@@ -63,7 +62,7 @@ instance : SetLike (Face C) M where
 
 instance : PartialOrder (Face C) := .ofSetLike (Face C) M
 
-lemma le : F ≤ C := F.isFaceOf.le
+lemma toPointedCone_le : F ≤ C := F.isFaceOf.le
 
 @[ext]
 theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext h
@@ -88,8 +87,7 @@ instance : Min (Face C) where
 instance : InfSet (Face C) where
   sInf S :=
     { toSubmodule := C ⊓ sInf {s.1 | s ∈ S}
-      isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf)
-    }
+      isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf) }
 
 instance : SemilatticeInf (Face C) where
   inf := min
@@ -111,7 +109,7 @@ instance : CompleteSemilatticeInf (Face C) where
 
 instance : CompleteLattice (Face C) where
   top := ⟨C, .refl _⟩
-  le_top F := F.le
+  le_top F := F.toPointedCone_le
   __ := completeLatticeOfCompleteSemilatticeInf _
 
 instance : Inhabited (Face C) := ⟨⊤⟩
@@ -173,8 +171,9 @@ theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   · intro h; exact ⟨⟨x.2, h⟩, ⟨x.1, h⟩⟩
 
 @[gcongr]
-theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} :
-    F₁ ≤ F₁' → F₂ ≤ F₂' → prod F₁ F₂ ≤ prod F₁' F₂' := Submodule.prod_mono
+theorem prod_mono {F₁ F₁' : Face C₁} {F₂ F₂' : Face C₂} (h₁ : F₁ ≤ F₁') (h₂ : F₂ ≤ F₂') :
+    prod F₁ F₂ ≤ prod F₁' F₂' :=
+  Submodule.prod_mono h₁ h₂
 
 /-- The face lattice of the product of two cones is isomorphic to the product of their face
 lattices. -/
