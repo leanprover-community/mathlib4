@@ -134,6 +134,6 @@ lemma HasUniqueDiv.of_module_rat [AddCommGroup M] [Module ℚ M] : HasUniqueDiv 
 /-- A `ℚ`-module is torsion-free as a group.
 
 This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
-lemma IsMulTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M :=
+lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M :=
   letI := HasUniqueDiv.of_module_rat M
   inferInstance
