@@ -325,10 +325,12 @@ noncomputable def grFunctor (F : Filtration X ι) : ComposableArrows ι 1 ⥤ C 
   map_id := by
     intro S
     apply coequalizer.hom_ext
-    rw [cokernel.π_desc]
-    change (F.toMonoOver.map ((𝟙 S : S ⟶ S).app 1)).hom.left ≫ cokernel.π _ =
-      cokernel.π _ ≫ 𝟙 _
-    simp
+    have hid : (F.toMonoOver.map (𝟙 (S.obj 1))).hom.left = 𝟙 _ := by
+      simp
+    simp only [coequalizer_as_cokernel, Nat.reduceAdd, Fin.isValue, NatTrans.id_app,
+      cokernel.π_desc]
+    rw [hid]
+    exact (Category.id_comp _).trans (Category.comp_id _).symm
   map_comp := by
     intro S T U φ ψ
     apply coequalizer.hom_ext
