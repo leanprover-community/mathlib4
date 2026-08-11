@@ -132,7 +132,7 @@ theorem mateEquiv_counit_symm (α : TwoSquare R₁ H G R₂) (d : D) :
   exact (mateEquiv_counit adj₁ adj₂ ((mateEquiv adj₁ adj₂).symm α) d)
 
 set_option backward.defeqAttrib.useBackward true in
-/- A component of a transposed version of the mates correspondence. -/
+/-- A component of a transposed version of the mates correspondence. -/
 theorem unit_mateEquiv (α : TwoSquare G L₁ L₂ H) (c : C) :
     G.map (adj₁.unit.app c) ≫ (mateEquiv adj₁ adj₂ α).app _ =
       adj₂.unit.app _ ≫ R₂.map (α.app _) := by
