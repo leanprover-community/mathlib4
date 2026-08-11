@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Config
 public import Mathlib.Tactic.FunProp.Core
 
+import Mathlib.Tactic.InferParam
 import Lean.Elab.InfoTree.Main
 
 /-!
@@ -62,7 +63,7 @@ syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def assumptionDischarge : Expr → MetaM (Option Expr) :=
-  fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
+  fun e => do tacticToDischarge (← `(tactic| first | with_reducible assumption | infer_param)) e
 
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
@@ -92,7 +93,8 @@ def funPropTac : Tactic
         | some d =>
           match d with
           | `(discharger| (discharger:=$tac)) =>
-            pure <| tacticToDischarge (← `(tactic| first | with_reducible assumption | ($tac)))
+            pure <| tacticToDischarge
+              (← `(tactic| first | with_reducible assumption | infer_param | ($tac)))
           | _ => pure assumptionDischarge
 
       let namesToUnfold ← show CoreM (Array Name) from
