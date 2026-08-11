@@ -45,7 +45,7 @@ lemma continuous_iff {T ι : Type*} [TopologicalSpace T] (f : T → StdSimplex R
   exact continuous_pi_iff
 
 @[fun_prop]
-lemma continuous_weights_apply {ι : Type*} [Finite ι] (i : ι) :
+lemma continuous_weights_apply {ι : Type*} (i : ι) :
     Continuous (fun (t : StdSimplex R ι) ↦ t.weights i) :=
   (continuous_apply i).comp (by rw [continuous_iff_le_induced])
 
