@@ -17,6 +17,14 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 /-!
 # Relative simplicial homology
 
+In this file, given a pair `P : SSetPair` of simplicial sets,
+we define the chain complex `P.chainComplex R` of `P` with coefficients
+in `R` (where `R` is an object in a preadditive category with
+coproducts). The homology in degree `n` of this complex is denoted `P.homology R n`:
+this is the relative homology of the pair, which is related to the homology
+of simplicial sets `P.left` and `P.right` via a long homology sequence
+(see the lemmas `SSetPair.homology_exact₁`, `SSetPair.homology_exact₂` and
+`SSetPair.homology_exact₃`),
 
 -/
 
@@ -62,20 +70,10 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     Mono ((SSet.chainComplexMap P.hom R).f n) :=
   inferInstanceAs (Mono ((sigmaConst.obj R).map (P.hom.app (op ⦋n⦌))))
 
-set_option backward.defeqAttrib.useBackward true in
-instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
-    dsimp% Mono ((SSet.chainComplexMap P.hom R).f n) :=
-  inferInstanceAs (Mono ((SSet.chainComplexMap P.hom R).f n))
-
 instance (R : C) (P : SSetPair.{w}) :
     Mono (SSet.chainComplexMap P.hom R) :=
   HomologicalComplex.mono_of_mono_f _ inferInstance
 
-instance (R : C) (P : SSetPair.{w}) :
-    dsimp% Mono (SSet.chainComplexMap P.hom R) :=
-  HomologicalComplex.mono_of_mono_f _ inferInstance
-
-set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     Mono ((((chainComplexFunctorLeftToRight C).app R).app P).f n) :=
   inferInstanceAs (Mono ((SSet.chainComplexMap P.hom R).f n))
@@ -90,8 +88,6 @@ instance (R : C) : Mono ((chainComplexFunctorLeftToRight C).app R) :=
 instance : Mono (chainComplexFunctorLeftToRight C) :=
   NatTrans.mono_of_mono_app _
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     HasCokernel ((((chainComplexFunctorLeftToRight C).app R).app P).f n) := by
   dsimp [SSet.chainComplexFunctor]
@@ -142,8 +138,7 @@ lemma chainComplexFunctor_condition :
 /-- The (colimit) cokernel cofork expressing the bifunctor
 `SSetPair.chainComplexFunctor C : C ⥤ SSetPair ⥤ ChainComplex C ℕ`
 as a cokernel of `chainComplexFunctorLeftToRight C`. -/
-@[no_expose]
-noncomputable def cokernelCoforkChainComplexFunctorLeftToRight :
+noncomputable abbrev cokernelCoforkChainComplexFunctorLeftToRight :
     CokernelCofork (chainComplexFunctorLeftToRight.{w} C) :=
   CokernelCofork.ofπ _ (chainComplexFunctor_condition _)
 
@@ -164,7 +159,6 @@ instance (R : C) (P : SSetPair.{w}) :
       ((evaluation ..).obj P) :=
   evaluation_preservesColimit_of_hasCokernel_app ..
 
-set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) :
     PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0 ⋙
       (evaluation ..).obj R) ((evaluation ..).obj P) :=
@@ -177,8 +171,6 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
       (HomologicalComplex.eval _ _ n) :=
   HomologicalComplex.eval_preservesColimit_of_hasCokernel_f ..
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0 ⋙
       ((evaluation ..).obj R ⋙ (evaluation ..).obj P))
@@ -216,15 +208,14 @@ chain complex of the pair. -/
 noncomputable def chainComplexπ : P.right.chainComplex R ⟶ P.chainComplex R :=
   ((chainComplexFunctorπ.{w} C).app R).app P
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma chainComplex_condition :
-    dsimp% SSet.chainComplexMap P.hom R ≫ P.chainComplexπ R = 0 :=
+    SSet.chainComplexMap P.hom R ≫ P.chainComplexπ R = 0 :=
   NatTrans.congr_app (NatTrans.congr_app (chainComplexFunctor_condition C) R) P
 
 @[reassoc (attr := simp)]
 lemma chainComplex_condition_f (n : ℕ) :
-    dsimp% (SSet.chainComplexMap P.hom R).f n ≫ (P.chainComplexπ R).f n = 0 := by
+    (SSet.chainComplexMap P.hom R).f n ≫ (P.chainComplexπ R).f n = 0 := by
   simp [← HomologicalComplex.comp_f]
 
 /--
@@ -237,7 +228,6 @@ noncomputable def cokernelCoforkChainComplex :
     CokernelCofork (SSet.chainComplexMap P.hom R) :=
   CokernelCofork.ofπ _ (chainComplex_condition ..)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a pair of simplicial sets `i : X ⟶ Y` (with `i` a monomorphism)
 and `R : C` (e.g. `C := Ab` and `R := ℤ`), the chain complex
@@ -260,7 +250,6 @@ instance isIso_chainComplexπ [P.left.HasDimensionLT 0] : IsIso (P.chainComplex�
   CokernelCofork.IsColimit.isIso_π _ (P.isColimitCokernelCoforkChainComplex R) (
     (P.left.isZero_chainComplex _).eq_of_src ..)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isZero_chainComplex [IsIso P.hom] : IsZero (P.chainComplex R) := by
   simp [IsZero.iff_id_eq_zero, ← cancel_epi (P.chainComplexπ R),
     ← dsimp% cancel_epi (SSet.chainComplexMap P.hom R)]
@@ -294,15 +283,8 @@ instance (n : ℕ) : Epi ((P.chainComplexπ R).f n) :=
 /-- Given a pair of simplicial sets corresponding to a monomorphism `i : X ⟶ Y`,
 this is the (short exact) short complex which relates
 the chain complex of `X`, of `Y` and of the pair. -/
-@[simps]
-noncomputable def chainComplexShortComplex : ShortComplex (ChainComplex C ℕ) :=
+noncomputable abbrev chainComplexShortComplex : ShortComplex (ChainComplex C ℕ) :=
     ShortComplex.mk _ _ (P.chainComplex_condition R)
-
-set_option backward.defeqAttrib.useBackward true in
-instance : Mono (P.chainComplexShortComplex R).f := by dsimp; infer_instance
-
-set_option backward.defeqAttrib.useBackward true in
-instance : Epi (P.chainComplexShortComplex R).g := by dsimp; infer_instance
 
 section
 
@@ -331,7 +313,7 @@ lemma homologyMap_comp (n : ℕ) :
 
 attribute [local simp] homologyMap_comp in
 /-- The relative simplicial homology functor in degree `n` with coefficients in `R : C`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def homologyFunctor (n : ℕ) : SSetPair.{w} ⥤ C where
   obj P := P.homology R n
   map f := SSetPair.homologyMap f R n
@@ -341,15 +323,10 @@ this is the morphism from the homology of `Y` to the relative homology of the pa
 noncomputable abbrev homologyπ (n : ℕ) : P.right.homology R n ⟶ P.homology R n :=
   HomologicalComplex.homologyMap (P.chainComplexπ R) n
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma homologyMap_hom_homologyπ (n : ℕ) :
     SSet.homologyMap P.hom R n ≫ P.homologyπ R n = 0 := by
   simp [← HomologicalComplex.homologyMap_comp]
-
-instance isIso_homologyπ [P.left.HasDimensionLT 0] (n : ℕ) : IsIso (P.homologyπ R n) := by
-  dsimp [homologyπ]
-  infer_instance
 
 end
 
