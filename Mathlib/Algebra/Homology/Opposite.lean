@@ -151,7 +151,6 @@ def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex V
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun _ => Iso.refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -160,11 +159,7 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
   inverse := opInverse V c
   unitIso := opUnitIso V c
   counitIso := opCounitIso V c
-  functor_unitIso_comp X := by
-    ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Hom.isoOfComponents_hom_f]
-    exact Category.comp_id _
+  functor_unitIso_comp _ := Category.comp_id (𝟙 _)
 
 instance : (opFunctor V c).IsEquivalence := (opEquivalence V c).isEquivalence_functor
 instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_inverse
