@@ -71,7 +71,7 @@ lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x,
   apply h
 
 /-- The projection of a graded object to its `i`-th component. -/
-@[simps]
+@[implicit_reducible, simps]
 def eval {β : Type w} (b : β) : GradedObject β C ⥤ C where
   obj X := X b
   map f := f b
@@ -502,9 +502,9 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
     then X.ιMapObj p i j h
     else 0
 
-lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dite_eq_left h
 
-lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dite_eq_right h
 
 variable {X Y} in
 @[reassoc (attr := simp)]

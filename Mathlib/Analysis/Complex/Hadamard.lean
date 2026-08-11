@@ -252,12 +252,12 @@ noncomputable def interpStrip (z : ℂ) : ℂ :=
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
     interpStrip f z = sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z := by
-  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, if_false, or_false]
+  simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, ite_false, or_false]
 
 /-- Rewrite for `InterpStrip` when `0 = sSupNormIm f 0` or `0 = sSupNormIm f 1`. -/
 lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
     interpStrip f z = 0 :=
-  if_pos h
+  ite_eq_left h
 
 /-- Rewrite for `InterpStrip` on the open vertical strip. -/
 lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1) :

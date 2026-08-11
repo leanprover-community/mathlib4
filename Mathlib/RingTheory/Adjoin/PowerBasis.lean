@@ -120,7 +120,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
     Algebra.smul_def, map_smul]
   simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
-  · simp only [hij, if_true]
+  · simp only [hij, ite_true]
     rw [Algebra.smul_def, mul_one]
     exact isIntegral_algebraMap
   · simp [hij, isIntegral_zero]
