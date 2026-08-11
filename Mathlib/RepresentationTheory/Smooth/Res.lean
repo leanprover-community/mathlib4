@@ -79,6 +79,13 @@ def smoothCoind (s : H →* G) (ρ : Representation k H V) :
     Representation k G (smoothVectors (coind s ρ)).toSubmodule :=
   (smoothVectors (coind s ρ)).toRepresentation
 
+omit [TopologicalSpace H] in
+@[simp]
+lemma smoothCoind_apply_apply (s : H →* G) (ρ : Representation k H V) (g x : G)
+    (f : (smoothVectors (coind s ρ)).toSubmodule) :
+    ((smoothCoind s ρ) g f).val.val x = f.val.val (x * g) := by
+  rfl
+
 variable {k : Type u} [CommRing k]
 variable {V : Type t} [AddCommGroup V] [Module k V]
 variable {s : H →* G}
@@ -90,7 +97,7 @@ lemma isSmoothVector_IndVMk {ρ : Representation k H V} {v : V} (h_isOpen : IsOp
       ((stabilizer ρ v).map s).map (MulAut.conj g⁻¹) ≤ stabilizer (ind s ρ) (IndV.mk s ρ g v) := by
     simp only [SetLike.le_def, Subgroup.mem_map, mem_stabilizer, forall_exists_index, and_imp]
     intro _ _ _ h_stab rfl h_conj
-    rw [← h_conj,MonoidHom.coe_coe, MulAut.conj_apply, inv_inv, ind_map_conj_mk, h_stab]
+    simp [← h_conj, h_stab]
   have h_open : IsOpen (((stabilizer ρ v).map s).map (MulAut.conj g⁻¹).toMonoidHom : Set G) := by
     convert ((isOpenMap_mul_right g).comp (isOpenMap_mul_left g⁻¹)) _ (h_isOpen _ hv)
     ext; simp

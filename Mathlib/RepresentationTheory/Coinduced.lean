@@ -58,9 +58,8 @@ If `ρ : Representation k G A` and `φ : G →* H` then `coindV φ ρ` is the su
 functions `H → A` underlying the coinduction of `ρ` along `φ`, i.e., the functions `f : H → A`
 such that `f (φ g * h) = (ρ g) (f h)` for all `g : G` and `h : H`.
 -/
-@[simps]
 def coindV : Submodule k (H → A) where
-  carrier := {f : H → A | ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) }
+  carrier := {f : H → A | ∀ (g : G) (h : H), f (φ g * h) = σ g (f h)}
   add_mem' _ _ _ _ := by simp_all
   zero_mem' := by simp
   smul_mem' _ _ _ := by simp_all
@@ -68,6 +67,10 @@ def coindV : Submodule k (H → A) where
 @[simp]
 lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
   Iff.rfl
+
+@[simp]
+lemma coindV_apply_map_mul (f : coindV φ σ) (g : G) (x : H) :
+    f.val (φ g * x) = σ g (f.val x) := f.prop g x
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--
@@ -78,12 +81,16 @@ to the function sending `h₁` to `f (h₁ * h)`.
 
 See also `Rep.coind` and `Representation.coind'` for variants involving the category `Rep k G`.
 -/
-@[simps]
 def coind : Representation k H (coindV φ ρ) where
   toFun h := (LinearMap.funLeft _ _ (· * h)).restrict fun x hx g h₁ => by
     simpa [mul_assoc] using hx g (h₁ * h)
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
+
+@[simp]
+lemma coind.apply_val_apply (f : coindV φ σ) (h x : H) :
+    (coind φ σ h f).val x = f.val (x * h) := by
+  simp [coind]; rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable {σ ρ} in
@@ -91,10 +98,8 @@ variable {σ ρ} in
   natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
 def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
   __ : _ →ₗ[k] _ := (f.toLinearMap.compLeft H).restrict fun x h ↦ by
-    simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
-      IntertwiningMap.toLinearMap_apply] at h ⊢
-    intro g h0
-    simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
+    simp only [mem_coindV] at h ⊢
+    simp [h, IntertwiningMap.isIntertwining]
   isIntertwining' h := by ext; simp
 
 lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
