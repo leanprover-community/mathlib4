@@ -353,6 +353,32 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 
 end OfKernel
 
+section subRKHS
+
+variable (H₀ : Submodule 𝕜 H) [CompleteSpace H₀]
+
+instance instSubRKHS : RKHS 𝕜 H₀ X V where
+  coeCLM := (coeCLM 𝕜 (H:=H)).comp H₀.subtypeL
+  coeCLM_injective := coeCLM_injective.comp H₀.subtype_injective
+
+lemma kerFun_subRKHS (x : X) :
+    kerFun H₀ x = H₀.orthogonalProjectionOnto.comp (kerFun H x) := by
+  ext1
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp [kerFun_inner, comp_apply, -coe_inner, inner_orthogonalProjectionOnto_eq_of_mem_right]
+  rfl
+
+lemma kernel_subRKHS (x y : X) :
+    kernel H₀ x y = (kerFun H x).adjoint ∘L (H₀.starProjection.comp (kerFun H y)) := by
+  rw [kernel_apply]
+  ext v
+  refine ext_inner_right 𝕜 fun v ↦ ?_
+  simp [comp_apply, kerFun_subRKHS, Submodule.adjoint_orthogonalProjectionOnto]
+
+end subRKHS
+
+section outerKernel
+
 variable (𝕜) in
 /-- The kernel generated from a function `f : X → V` with the rank-one operators `⟪f x, •⟫ f y` as
 its entries. -/
@@ -392,32 +418,30 @@ lemma posSemidef_outerKernel (f : X → V) : (outerKernel 𝕜 f).PosSemidef := 
 instance (f : X → V) : Fact (outerKernel 𝕜 f).PosSemidef := by
   simp [fact_iff, posSemidef_outerKernel 𝕜 f]
 
-lemma posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
+lemma kernel_span_singleton (f : H) :
+    kernel (𝕜 ∙ f) = (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f := by
+  ext
+  simp [kernel_subRKHS, starProjection_singleton, division_def, smul_smul, mul_comm]
+
+lemma kernel_span_singleton_perp (f : H) :
+    kernel (𝕜 ∙ f)ᗮ = kernel H - (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f := by
+  ext
+  simp [kernel_subRKHS, starProjection_singleton, division_def, smul_smul, mul_comm]
+
+open ComplexOrder in
+theorem posSemidef_norm_sq_smul_kernel_sub_outerKernel (f : OfKernel K) :
     ((‖f‖ : 𝕜) ^ 2 • K - outerKernel 𝕜 f).PosSemidef := by
-  rw [posSemidef_iff_re_sum_kernel']
-  refine ⟨((Fact.out : K.PosSemidef).1.smul
-    (by rw [← RCLike.im_eq_zero_iff_isSelfAdjoint, RCLike.im_ofReal_pow])).sub
-    (posSemidef_outerKernel 𝕜 f).1, fun g ↦ ?_⟩
-  calc
-    _ = ∑ x₁ ∈ g.support, ∑ x₂ ∈ g.support, RCLike.re ⟪(‖f‖ ^ 2 : 𝕜) • K x₂ x₁ (g x₁)
-          - ⟪f x₁, g x₁⟫_𝕜 • f x₂, g x₂⟫_𝕜 := by
-      simp [Finsupp.sum, map_sum, outerKernel_apply]
-    _ = ∑ x₁ ∈ g.support, ∑ x₂ ∈ g.support, (‖f‖ ^ 2 * RCLike.re
-          ⟪K x₂ x₁ (g x₁), g x₂⟫_𝕜 - RCLike.re (⟪g x₁, f x₁⟫_𝕜 • ⟪ f x₂, g x₂⟫_𝕜)) := by
-      simp [inner_sub_left, inner_smul_left]
-    _ = (‖f‖ * ‖g.sum fun x v ↦ kerFun (OfKernel K) x v‖) ^ 2
-          - ‖⟪f, g.sum fun x v ↦ kerFun (OfKernel K) x v⟫_𝕜‖ ^ 2 :=
-      by
-        simp_rw [Finset.sum_sub_distrib, ← inner_conj_symm _ (f _), Finsupp.sum, mul_pow _ _ 2,
-          ← Finset.mul_sum, ← map_sum, ← inner_kerFun]
-        congr 1
-        · simp_rw [← OfKernel.kernel_ofKernel, kernel_inner, ← inner_sum, ← sum_inner]
-          simp
-        · simp_rw [RCLike.norm_sq_eq_def, ← Finset.smul_sum, ← Finset.sum_smul, ← map_sum,
-            ← inner_sum]
-          simp [-inner_conj_symm, smul_eq_mul, RCLike.mul_re, RCLike.conj_im]
-    _ ≥ 0 := by
-      grw [ge_iff_le, sub_nonneg, norm_inner_le_norm]
+  by_cases hf : f = 0
+  · simp [hf, Matrix.PosSemidef.zero]
+  suffices ((‖f‖ : 𝕜) ^ 2 • (K - (1 / (‖f‖ : 𝕜) ^ 2) • outerKernel 𝕜 f)).PosSemidef by
+    have hp : (‖f‖ ^ 2 : 𝕜) ≠ 0 := by simpa
+    simpa [smul_sub, smul_inv_smul₀ hp (outerKernel 𝕜 ⇑f)] using this
+  refine Matrix.PosSemidef.smul ?_ (by simp)
+  simpa [kernel_span_singleton_perp] using (posSemidef_kernel ↥(𝕜 ∙ f)ᗮ)
+
+end outerKernel
+
+section toSubmodule
 
 variable (K) in
 /-- The submodule of `X→V` by embedding `OfKernel K` into `X→V`. -/
@@ -478,5 +502,7 @@ theorem mem_toSubmodule_iff (f : X → V) : f ∈ toSubmodule K ↔
 
 theorem exists_OfKernel_eq {f : X → V} (hf : f ∈ toSubmodule K) : ∃ (f' : OfKernel K), ↑f' = f :=
   Set.mem_range.mp hf
+
+end toSubmodule
 
 end RKHS
