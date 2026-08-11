@@ -378,7 +378,7 @@ def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsRootSystem] [P₂.IsReduced]
 end Uniqueness
 
 omit [IsDomain R] [Finite ι] in
-lemma cartanMatrix_of_equiv {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
+lemma map_equiv_cartanMatrix {ι₂ M₂ N₂ : Type*} [DecidableEq ι₂]
     [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P₂ : RootPairing ι₂ R M₂ N₂} [P₂.IsCrystallographic]
     (e : P.Equiv P₂) :
