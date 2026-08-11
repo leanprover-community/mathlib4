@@ -43,9 +43,6 @@ along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 class UniversallyClosed (f : X ⟶ Y) : Prop where
   universally_isClosedMap : universally (topologically @IsClosedMap) f
 
-@[deprecated (since := "2026-01-20")]
-alias UniversallyClosed.out := UniversallyClosed.universally_isClosedMap
-
 lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyClosed f] :
     IsClosedMap f := UniversallyClosed.universally_isClosedMap _ _ _ IsPullback.of_id_snd
 
