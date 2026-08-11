@@ -234,7 +234,7 @@ theorem notEdgeReachable_degree_add_one [Fintype <| G.neighborSet u] [DecidableE
       exact h'.2 (by grind [mem_incidenceSet])
   }
 
-theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] [DecidableEq V] 
+theorem edgeReachability_le_degree_left [Fintype <| G.neighborSet u] [DecidableEq V]
     (huv : u ≠ v) : G.edgeReachability u v ≤ G.degree u := by
   simp only [edgeReachability, iSup_le_iff, Nat.cast_le]
   intro i h
