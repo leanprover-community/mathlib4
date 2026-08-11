@@ -645,7 +645,7 @@ lemma rightMate_comp_evaluation {X X' Y Y' : C}
 
 lemma rightHom_ext {X X' Z : C} (p : ExactPairing X X') {f g : Z ⟶ X'}
     (h : f ▷ X ≫ ε_ X X' = g ▷ X ≫ ε_ X X') : f = g := by
-  letI := p.hasRightDual
+  let := p.hasRightDual
   have hf := tensorRightHomEquiv_whiskerRight_comp_evaluation (X := X) (Y := Z) f
   have hg := tensorRightHomEquiv_whiskerRight_comp_evaluation (X := X) (Y := Z) g
   change (tensorRightHomEquiv Z X X' (𝟙_ C))
@@ -672,10 +672,10 @@ lemma rightMate_tensor {X₁ X₂ X₁' X₂' Y₁ Y₂ Y₁' Y₂' : C}
     (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (pX₁.tensorOf pX₂).rightMate (pY₁.tensorOf pY₂) (f ⊗ₘ g) =
       pX₂.rightMate pY₂ g ⊗ₘ pX₁.rightMate pY₁ f := by
-  letI := pX₁.hasRightDual
-  letI := pX₂.hasRightDual
-  letI := pY₁.hasRightDual
-  letI := pY₂.hasRightDual
+  let := pX₁.hasRightDual
+  let := pX₂.hasRightDual
+  let := pY₁.hasRightDual
+  let := pY₂.hasRightDual
   apply (pX₁.tensorOf pX₂).rightHom_ext
   rw [rightMate_comp_evaluation]
   simp only [tensor_evaluation]
