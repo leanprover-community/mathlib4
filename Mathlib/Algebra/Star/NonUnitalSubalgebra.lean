@@ -1181,7 +1181,8 @@ theorem comap_center_le_center {F} [IsScalarTower R B B] [SMulCommClass R B B] [
   NonUnitalSubsemiring.comap_center_le_center hf
 
 @[simp]
-theorem map_center_eq [IsScalarTower R B B] [SMulCommClass R B B] (f : A ≃⋆ₐ[R] B) :
+theorem map_center_eq {F} [IsScalarTower R B B] [SMulCommClass R B B] [EquivLike F A B]
+    [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) :
     map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 

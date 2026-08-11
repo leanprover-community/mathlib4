@@ -294,7 +294,8 @@ theorem comap_center_le_center {F} [NonUnitalNonAssocSemiring S] [FunLike F R S]
   Set.preimage_center_subset hf
 
 @[simp]
-theorem map_center_eq [NonUnitalNonAssocSemiring S] (f : R ≃+* S) :
+theorem map_center_eq {F} [NonUnitalNonAssocSemiring S] [EquivLike F R S]
+    [RingEquivClass F R S] (f : F) :
     map f (center R) = center S :=
   SetLike.coe_injective (Set.image_center_eq f)
 
