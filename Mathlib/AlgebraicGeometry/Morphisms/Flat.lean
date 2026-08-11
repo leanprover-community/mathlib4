@@ -46,8 +46,6 @@ class Flat (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.flat_appLE := Flat.flat_appLE
 
-@[deprecated (since := "2026-01-20")] alias Flat.flat_of_affine_subset := Scheme.Hom.flat_appLE
-
 namespace Flat
 
 instance : HasRingHomProperty @Flat RingHom.Flat where
