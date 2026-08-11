@@ -333,12 +333,12 @@ private def α (j : Fin (n + 3)) (_ : j ≠ i.castSucc.castSucc.succ := by grind
 private lemma α_of_lt (j : Fin (n + 3)) (hj : j < i.castSucc.castSucc.castSucc := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
-  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+  rw [ite_eq_right (by grind), ite_eq_right (by grind), ite_eq_right (by grind)]
 
 private lemma α_of_gt (j : Fin (n + 3)) (hj : i.succ.succ.succ < j := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
-  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+  rw [ite_eq_right (by grind), ite_eq_right (by grind), ite_eq_right (by grind)]
 
 @[simp]
 private lemma α_castSucc_castSucc_castSucc :
@@ -349,13 +349,13 @@ private lemma α_castSucc_castSucc_castSucc :
 private lemma α_castSucc_succ_succ :
     α h₀₂ h₁₃ h (i.castSucc.succ.succ) = h.map := by
   dsimp [α]
-  rw [if_neg (by grind), if_pos (by simp)]
+  rw [ite_eq_right (by grind), ite_eq_left (by simp)]
 
 @[simp]
 private lemma α_succ_succ_succ :
     α h₀₂ h₁₃ h i.succ.succ.succ = h₀₂.map := by
   dsimp [α]
-  rw [if_neg (by grind), if_neg (by grind), if_pos (by simp)]
+  rw [ite_eq_right (by grind), ite_eq_right (by grind), ite_eq_left (by simp)]
 
 private lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j hj) := by
   rw [horn.isCompatible_iff]
