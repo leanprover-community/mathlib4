@@ -155,6 +155,17 @@ instance {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unmop :=
 
 end IsIso
 
+section
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Taking both opposites of a functor into an opposite monoidal category. -/
+@[simps!]
+protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ ⥤ D :=
+  unmopFunctor Cᵒᵖ ⋙ (F ⋙ unmopFunctor Dᵒᵖ).leftOp
+
+end
+
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory CategoryTheory.Functor LaxMonoidal OplaxMonoidal
@@ -485,11 +496,6 @@ instance : (opOpEquivalence C).IsMonoidal where
 section
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
-
-/-- Taking both opposites of a functor into an opposite monoidal category. -/
-@[simps!]
-protected def Functor.opMop (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) : (Cᵒᵖ)ᴹᵒᵖ ⥤ D :=
-  unmopFunctor Cᵒᵖ ⋙ (F ⋙ unmopFunctor Dᵒᵖ).leftOp
 
 variable (F : C ⥤ (Dᵒᵖ)ᴹᵒᵖ) [F.Monoidal]
 
