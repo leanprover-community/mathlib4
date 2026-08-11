@@ -19,7 +19,6 @@ public section
 
 suppress_compilation
 
-open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity ENNReal
 open Metric ContinuousLinearMap

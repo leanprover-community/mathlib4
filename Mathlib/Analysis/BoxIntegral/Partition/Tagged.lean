@@ -29,7 +29,7 @@ rectangular box, box partition
 
 noncomputable section
 
-open Finset Function ENNReal NNReal Set
+open Finset Function NNReal Set
 
 namespace BoxIntegral
 

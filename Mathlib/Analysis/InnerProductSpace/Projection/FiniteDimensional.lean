@@ -40,7 +40,7 @@ variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 local notation "absR" => @abs ℝ _ _
 
-open Topology Finsupp Submodule RCLike Real Filter InnerProductSpace
+open Finsupp Submodule RCLike Real InnerProductSpace
 open LinearMap (ker range)
 
 variable (K : Submodule 𝕜 E)

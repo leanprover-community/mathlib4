@@ -317,7 +317,7 @@ end
 
 namespace WeakDual
 
-open ContinuousMap Complex
+open Complex
 
 open scoped ComplexStarModule
 

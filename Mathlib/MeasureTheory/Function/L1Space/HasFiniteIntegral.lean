@@ -34,7 +34,7 @@ noncomputable section
 
 open Topology ENNReal MeasureTheory NNReal
 
-open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
+open Set Filter TopologicalSpace ENNReal MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']

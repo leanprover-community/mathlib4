@@ -74,7 +74,7 @@ the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 @[expose] public section
 
-open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
+open Module Real Set Filter Bornology Uniformity NNReal ENNReal WithLp
 
 noncomputable section
 

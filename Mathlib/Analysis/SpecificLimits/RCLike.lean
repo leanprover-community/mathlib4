@@ -15,7 +15,7 @@ public import Mathlib.Analysis.RCLike.Basic
 
 public section
 
-open Set Algebra Filter
+open Filter
 open scoped Topology
 
 namespace RCLike

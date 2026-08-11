@@ -32,8 +32,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Category
-
 variable (C : Type u₁) [Category.{v₁} C]
 variable (D : Type u₂) [Category.{v₂} D]
 variable {E : Type u₃} [Category.{v₃} E]
@@ -430,8 +428,6 @@ def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
         exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
-
-open ThinSkeleton
 
 section
 

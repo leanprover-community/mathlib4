@@ -149,7 +149,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-open Set Real
+open Real
 
 /-- An operator is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=

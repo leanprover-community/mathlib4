@@ -57,7 +57,7 @@ set_option linter.style.longFile 1600
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
-open Set Topology Filter NNReal
+open Set Topology Filter
 
 namespace Asymptotics
 

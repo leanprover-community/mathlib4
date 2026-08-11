@@ -32,7 +32,7 @@ set or module that characterize it as discrete.
 
 universe u v w
 
-open CategoryTheory Limits Opposite GrothendieckTopology
+open CategoryTheory Opposite
 
 namespace Condensed
 

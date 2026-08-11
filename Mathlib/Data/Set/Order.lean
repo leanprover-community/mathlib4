@@ -13,8 +13,6 @@ public import Mathlib.Data.Set.Basic
 
 public section
 
-open Function
-
 universe u v
 
 namespace Set

@@ -22,8 +22,8 @@ public section
 
 variable {𝓕 α ι κ E F G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter
+open ENNReal Filter NNReal
 
 namespace NNReal
 

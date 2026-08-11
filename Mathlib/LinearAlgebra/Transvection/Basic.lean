@@ -61,7 +61,7 @@ def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
 
 namespace transvection
 
-open Submodule LinearMap
+open LinearMap
 
 theorem apply (f : Dual R V) (v x : V) :
     transvection f v x = x + f x • v :=
@@ -547,7 +547,7 @@ section determinant
 
 namespace LinearMap.transvection
 
-open Polynomial Module
+open Module
 
 open scoped TensorProduct
 

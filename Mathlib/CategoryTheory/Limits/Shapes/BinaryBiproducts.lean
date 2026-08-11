@@ -35,7 +35,7 @@ noncomputable section
 
 universe w w' v u
 
-open CategoryTheory Functor Opposite
+open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 

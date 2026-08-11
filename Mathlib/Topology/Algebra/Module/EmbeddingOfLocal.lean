@@ -63,7 +63,7 @@ proof for more details.
 
 @[expose] public section
 
-open Topology Filter Bornology Set
+open Topology Filter Set
 open scoped Pointwise Set.Notation
 
 variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]

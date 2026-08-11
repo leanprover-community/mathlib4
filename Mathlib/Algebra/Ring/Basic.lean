@@ -29,8 +29,6 @@ assert_not_exists Nat.cast_sub
 
 variable {R S : Type*}
 
-open Function
-
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/

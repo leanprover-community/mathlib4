@@ -47,7 +47,7 @@ open scoped Pointwise
 
 namespace Subgroup
 
-open Cardinal Function
+open Function
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 

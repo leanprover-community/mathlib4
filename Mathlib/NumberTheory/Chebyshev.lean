@@ -859,7 +859,7 @@ end Chebyshev
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: the first Chebyshev function is nonnegative. -/
 @[positivity Chebyshev.theta _]

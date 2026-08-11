@@ -54,7 +54,7 @@ so on.
 public section
 
 
-open MeasureTheory Filter Finset
+open MeasureTheory Filter
 
 noncomputable section
 
@@ -291,8 +291,6 @@ theorem variance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ �
 end IdentDistrib
 
 section UniformIntegrable
-
-open TopologicalSpace
 
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
   {μ : Measure α} [IsFiniteMeasure μ]

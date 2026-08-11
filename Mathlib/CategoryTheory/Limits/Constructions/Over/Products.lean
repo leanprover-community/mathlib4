@@ -179,8 +179,6 @@ namespace Over
 section BinaryProduct
 variable {X : C} {Y Z : Over X}
 
-open Limits
-
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=

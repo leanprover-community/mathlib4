@@ -47,7 +47,7 @@ pointwise subtraction
 
 assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
-open Function MulOpposite
+open MulOpposite
 
 open scoped Pointwise
 

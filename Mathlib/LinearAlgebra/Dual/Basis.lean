@@ -34,7 +34,7 @@ This file concerns bases on dual vector spaces.
 
 @[expose] public section
 
-open Module Dual Submodule LinearMap Function
+open Module Submodule LinearMap Function
 
 noncomputable section
 
@@ -230,7 +230,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open LinearMap Function
+open LinearMap
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]

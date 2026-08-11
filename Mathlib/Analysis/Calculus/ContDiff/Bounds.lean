@@ -26,7 +26,7 @@ open scoped NNReal Nat ContDiff
 
 universe u uD uE uF uG
 
-open Set Fin Filter Function
+open Set Fin Function
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddCommGroup D]
   [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}

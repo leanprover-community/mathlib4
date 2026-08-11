@@ -31,7 +31,7 @@ universe u
 
 variable (R : Type (u + 1)) [Ring R]
 
-open CategoryTheory Limits Profinite Condensed
+open CategoryTheory Profinite Condensed
 
 noncomputable section
 

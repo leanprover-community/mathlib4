@@ -30,7 +30,7 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
 
 assert_not_exists Finset
 
-open Set NNReal ENNReal
+open NNReal ENNReal
 
 namespace ENNReal
 
@@ -388,7 +388,7 @@ end ENNReal
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]

@@ -47,7 +47,7 @@ theorem swap_smul_involutive [MulAction (Perm α) β] (i j : α) :
 end Swap
 end Equiv
 
-open Equiv Function
+open Equiv
 
 namespace Set
 variable {α : Type*} {f : Perm α} {s : Set α}

@@ -39,7 +39,7 @@ As in other polynomial files, we typically use the notation:
 
 noncomputable section
 
-open Set Function Finsupp
+open Function Finsupp
 
 universe u v
 

@@ -24,7 +24,7 @@ function with finite support, module, linear algebra
 
 noncomputable section
 
-open Set LinearMap
+open LinearMap
 
 namespace Finsupp
 

@@ -38,7 +38,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace Finset
 
-open Multiset Subtype Function
+open Multiset
 
 /-! ### range -/
 

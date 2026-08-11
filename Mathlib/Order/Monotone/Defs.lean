@@ -459,8 +459,6 @@ section Preorder
 
 variable [Preorder β] {f : α → β} {s : Set α}
 
-open Ordering
-
 @[to_dual self]
 theorem Monotone.reflect_lt (hf : Monotone f) {a b : α} (h : f a < f b) : a < b :=
   lt_of_not_ge fun h' ↦ h.not_ge (hf h')

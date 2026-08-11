@@ -199,7 +199,7 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
 
-open Cardinal Basis Submodule Function Set LinearMap
+open Cardinal Submodule Function LinearMap
 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =

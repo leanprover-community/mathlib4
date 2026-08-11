@@ -25,7 +25,7 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 
 @[expose] public section
 
-open Fin Function Finset Set
+open Fin Function Finset
 
 universe uR uS uι uι' v v' v₁ v₂ v₃
 

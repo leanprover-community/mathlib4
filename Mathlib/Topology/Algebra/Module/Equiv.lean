@@ -39,7 +39,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
+open Topology Filter
 open scoped Ring
 
 universe u v w u'

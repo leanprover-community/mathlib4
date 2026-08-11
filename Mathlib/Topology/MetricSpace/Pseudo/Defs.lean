@@ -254,7 +254,7 @@ theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]

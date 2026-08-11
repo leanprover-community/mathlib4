@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Module Complex
+open Module
 
 open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 

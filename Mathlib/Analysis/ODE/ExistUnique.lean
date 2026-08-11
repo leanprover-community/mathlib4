@@ -39,7 +39,7 @@ integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 
 @[expose] public section
 
-open Function intervalIntegral MeasureTheory Metric Set
+open Function Metric Set
 open scoped Nat NNReal Topology
 
 /-! ## Existence of solutions to ODEs -/

@@ -34,7 +34,7 @@ topologies.
 
 universe u v
 
-open Cardinal Order Topology
+open Order Topology
 
 namespace Ordinal
 

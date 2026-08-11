@@ -31,7 +31,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
 
 universe u
 
-open CategoryTheory Opposite CategoryTheory.Limits TensorProduct
+open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace RingHom
 

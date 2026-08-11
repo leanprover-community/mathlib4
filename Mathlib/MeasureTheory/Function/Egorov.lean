@@ -27,7 +27,7 @@ convergence in measure.
 
 noncomputable section
 
-open MeasureTheory NNReal ENNReal Topology
+open MeasureTheory ENNReal Topology
 
 namespace MeasureTheory
 

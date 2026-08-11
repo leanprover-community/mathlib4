@@ -29,7 +29,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open Set Fin
 
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}

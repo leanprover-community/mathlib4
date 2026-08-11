@@ -96,8 +96,6 @@ instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) [LocallyRingedSpace.IsOpenImme
 
 namespace PresheafedSpace.IsOpenImmersion
 
-open PresheafedSpace
-
 local notation "IsOpenImmersion" => PresheafedSpace.IsOpenImmersion
 
 attribute [instance] IsOpenImmersion.c_iso

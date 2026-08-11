@@ -789,7 +789,7 @@ end Primrec
 
 namespace PrimrecRel
 
-open Primrec List PrimrecPred
+open PrimrecPred
 
 variable {α β : Type*} {R : α → β → Prop} {L : List α} {b : β}
 

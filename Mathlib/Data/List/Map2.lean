@@ -30,8 +30,6 @@ assert_not_exists Prod.swap_eq_iff_eq_swap
 assert_not_exists Ring
 assert_not_exists Set.range
 
-open Function
-
 open Nat hiding one_pos
 
 namespace List
