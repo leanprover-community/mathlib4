@@ -43,6 +43,8 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 open Function Set
