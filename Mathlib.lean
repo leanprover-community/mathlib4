@@ -2123,6 +2123,7 @@ public import Mathlib.Analysis.Meromorphic.Complex
 public import Mathlib.Analysis.Meromorphic.Divisor
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
 public import Mathlib.Analysis.Meromorphic.IsolatedZeros
+public import Mathlib.Analysis.Meromorphic.LogDeriv
 public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Analysis.Meromorphic.RCLike
@@ -2407,6 +2408,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Analysis.SpecialFunctions.Pow.NthRootLemmas
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 public import Mathlib.Analysis.SpecialFunctions.Sigmoid
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
@@ -2571,6 +2573,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
+public import Mathlib.CategoryTheory.Bicategory.RetractArrow
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
 public import Mathlib.CategoryTheory.Bicategory.Span.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
@@ -4520,6 +4523,7 @@ public import Mathlib.FieldTheory.ChevalleyWarning
 public import Mathlib.FieldTheory.Differential.Basic
 public import Mathlib.FieldTheory.Differential.Liouville
 public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.FinTrdeg
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.FieldTheory.Finite.GaloisField
@@ -5137,6 +5141,7 @@ public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.Matrix.Dual
 public import Mathlib.LinearAlgebra.Matrix.DualNumber
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
+public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
@@ -5888,6 +5893,7 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
 public import Mathlib.NumberTheory.NumberField.DedekindZeta
+public import Mathlib.NumberTheory.NumberField.DirichletDensity
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
@@ -6112,6 +6118,7 @@ public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Fin.Clamp
 public import Mathlib.Order.Fin.Finset
+public import Mathlib.Order.Fin.InsertNth
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints
@@ -7236,6 +7243,7 @@ public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.AddGroup
 public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas
@@ -7544,6 +7552,7 @@ public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
 public import Mathlib.Tactic.Simproc.FinsetInterval
 public import Mathlib.Tactic.Simproc.VecPerm
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
