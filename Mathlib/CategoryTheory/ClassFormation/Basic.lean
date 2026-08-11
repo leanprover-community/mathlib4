@@ -118,9 +118,42 @@ noncomputable def Over.isInitialEquiv {S : C} {X : Over S}
   left_inv _ := by subsingleton
   right_inv _ := by subsingleton
 
+lemma PreGaloisCategory.IsConnected.of_iso
+    {X Y : C} [PreGaloisCategory.IsConnected X] (e : X ≅ Y) :
+    IsConnected Y where
+  notInitial h := notInitial (h.ofIso e.symm)
+  noTrivialComponent Z i _ hZ := by
+    rw [← isIso_comp_right_iff _ e.inv]
+    exact noTrivialComponent _ _ hZ
+
+lemma PreGaloisCategory.smul_def
+    (F : C ⥤ FintypeCat.{w}) {X : C} (g : Aut X) (x : F.obj X) :
+    g • x = F.map g.hom x := rfl
+
+lemma Aut.autMulEquivOfIso_apply_hom {X Y : C} (e : X ≅ Y) (g : Aut X) :
+    (autMulEquivOfIso e g).hom = e.inv ≫ g.hom ≫ e.hom := rfl
+
+open ConcreteCategory in
+lemma PreGaloisCategory.IsGalois.of_iso [GaloisCategory C]
+    {X Y : C} [hX : PreGaloisCategory.IsGalois X] (e : X ≅ Y) :
+    IsGalois Y := by
+  have := IsConnected.of_iso e
+  let F := GaloisCategory.getFiberFunctor C
+  rw [isGalois_iff_pretransitive F, MulAction.isPretransitive_iff] at hX ⊢
+  intro x y
+  obtain ⟨x, rfl⟩ := (bijective_of_isIso (F.map e.hom)).surjective x
+  obtain ⟨y, rfl⟩ := (bijective_of_isIso (F.map e.hom)).surjective y
+  obtain ⟨g, rfl⟩ := hX x y
+  refine ⟨Aut.autMulEquivOfIso e g, ?_⟩
+  simp only [PreGaloisCategory.smul_def, Aut.autMulEquivOfIso_apply_hom,
+    ← ConcreteCategory.comp_apply, ← Functor.map_comp, Iso.hom_inv_id_assoc]
+
 variable (C) in
 abbrev PreGaloisCategory.isConnected : ObjectProperty C :=
   IsConnected
+
+instance : (PreGaloisCategory.isConnected C).IsClosedUnderIsomorphisms where
+  of_iso e _ := PreGaloisCategory.IsConnected.of_iso e
 
 instance (X : (PreGaloisCategory.isConnected C).FullSubcategory) :
     PreGaloisCategory.IsConnected X.obj :=
@@ -157,6 +190,56 @@ instance [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F] :
   infer_instance
 
 open PreGaloisCategory
+
+section
+
+variable {D : Type*} [Category* D] [GaloisCategory C] [GaloisCategory D]
+  (F : C ⥤ D) [F.IsEquivalence]
+
+instance (X : C) [PreGaloisCategory.IsConnected X] :
+    PreGaloisCategory.IsConnected (F.obj X) where
+  notInitial h :=
+    IsConnected.notInitial (X := X)
+      ((IsInitial.isInitialObj F.inv _ h).ofIso
+        (F.asEquivalence.unitIso.symm.app X))
+  noTrivialComponent Y i _ hY := by
+    obtain ⟨i', hi'⟩ := F.map_surjective ((F.objObjPreimageIso Y).hom ≫ i)
+    have : Mono i' := Functor.mono_of_mono_map F (by rw [hi']; infer_instance)
+    have := IsConnected.noTrivialComponent _ i' (fun hY' ↦ hY
+      ((IsInitial.isInitialObj F _ hY').ofIso (F.objObjPreimageIso Y)))
+    rw [← isIso_comp_left_iff (F.objObjPreimageIso Y).hom, ← hi']
+    infer_instance
+
+instance (G : D ⥤ FintypeCat.{w}) [FiberFunctor G] :
+    FiberFunctor (F ⋙ G) where
+  preservesQuotientsByFiniteGroups G _ _:= by
+    obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv.{_, 0} G
+    exact preservesColimitsOfShape_of_equiv e.toSingleObjEquiv.symm _
+
+instance (X : C) [PreGaloisCategory.IsGalois X] :
+    IsGalois (F.obj X) := by
+  let G := GaloisCategory.getFiberFunctor D
+  have : F.IsEquivalence := inferInstance
+  have hX := (isGalois_iff_pretransitive (F ⋙ G) X).1 inferInstance
+  rw [isGalois_iff_pretransitive G]
+  rw [MulAction.isPretransitive_iff] at hX ⊢
+  intro x y
+  obtain ⟨g, rfl⟩ := hX x y
+  exact ⟨F.mapAut X g, rfl⟩
+
+lemma isConnected_iff_of_isEquivalence
+    (F : C ⥤ D) [F.IsEquivalence] (X : C) :
+    PreGaloisCategory.IsConnected (F.obj X) ↔ PreGaloisCategory.IsConnected X :=
+  ⟨fun _ ↦ PreGaloisCategory.IsConnected.of_iso (X := F.inv.obj (F.obj X))
+    (F.asEquivalence.unitIso.symm.app X), fun _ ↦ inferInstance⟩
+
+lemma isGalois_iff_of_isEquivalence
+    (F : C ⥤ D) [F.IsEquivalence] (X : C) :
+    IsGalois (F.obj X) ↔ IsGalois X :=
+  ⟨fun _ ↦ PreGaloisCategory.IsGalois.of_iso (X := F.inv.obj (F.obj X))
+    (F.asEquivalence.unitIso.symm.app X), fun _ ↦ inferInstance⟩
+
+end
 
 lemma has_connected_component [GaloisCategory C] (X : C) (hX : IsInitial X → False) :
     ∃ (X₀ : C) (f : X₀ ⟶ X), Mono f ∧ PreGaloisCategory.IsConnected X₀ := by
@@ -260,7 +343,8 @@ def isConnectedTopologyFiberFunctor [GaloisCategory C]
     obtain ⟨Y, f, _, hR⟩ := hR
     obtain ⟨y, rfl⟩ := surjective_of_epi ((forget _).map (F.map f.hom)) x
     exact ⟨Y, f, hR, y, rfl⟩
-  initiallySmall := sorry
+  initiallySmall := by
+    sorry
   isCofiltered := sorry
 
 lemma isConnected_over_iff
@@ -280,6 +364,13 @@ lemma isConnected_over_iff
       IsConnected.noTrivialComponent Y.left i.left
         (fun h' ↦ h (Over.isInitialEquiv.symm h'))
     exact isIso_of_reflects_iso _ (Over.forget _)
+
+instance {X S : C} (f : X ⟶ S)
+    [(Over.forget S).PreservesMonomorphisms]
+    [PreservesColimit (Functor.empty.{0} (Over S)) (Over.forget S)]
+    [PreGaloisCategory.IsConnected X] :
+    PreGaloisCategory.IsConnected (Over.mk f) := by
+  rwa [isConnected_over_iff]
 
 instance (S : C)
     [(Over.forget S).PreservesMonomorphisms]
@@ -301,8 +392,7 @@ lemma exists_aut_of_isConnected
   obtain ⟨g, hg⟩ :=
     (FiberFunctor.isPretransitive_of_isConnected F S).exists_smul_eq (F.map f x) s
   refine ⟨g, ?_⟩
-  rwa [← ConcreteCategory.comp_apply, ← NatTrans.naturality,
-    ConcreteCategory.comp_apply]
+  rwa [← NatTrans.naturality_apply]
 
 set_option backward.privateInPublic true in
 @[implicit_reducible, simps]
@@ -347,17 +437,13 @@ instance (s : F.obj S) : FiberFunctor (fiberFunctorOver F S s) where
       refine ConcreteCategory.injective_of_mono_of_preservesPullback (g.hom.app _)
         (Subtype.ext_iff.1 (hf.injective (a₁ := ⟨_, hg⟩) (a₂ := ⟨_, ?_⟩) ?_))
       · simp only [Over.forget_obj, Set.mem_preimage, Set.mem_singleton_iff]
-        rwa [← ConcreteCategory.comp_apply, ← NatTrans.naturality,
-          ConcreteCategory.comp_apply, ← f.w, Functor.map_comp,
-          ConcreteCategory.comp_apply, ← h,
-          ← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
-          ← Functor.map_comp_assoc, f.w, NatTrans.naturality, ConcreteCategory.comp_apply]
+        rwa [← NatTrans.naturality_apply, ← f.w,
+          Functor.map_comp, ConcreteCategory.comp_apply, ← h,
+          ← Functor.map_comp_apply, f.w, NatTrans.naturality_apply]
       · dsimp
         ext
         change F.map f.left (g.hom.app _ x₁) = F.map f.left (g.hom.app _ x₂)
-        rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
-          ← NatTrans.naturality, ConcreteCategory.comp_apply,
-          ConcreteCategory.comp_apply, h]
+        simp only [← NatTrans.naturality_apply, h]
     · dsimp at y
       obtain ⟨g, hg⟩ := exists_aut_of_isConnected F Y.hom y s
       obtain ⟨x, hx⟩ := hf.surjective ⟨_, hg⟩
@@ -380,11 +466,65 @@ abbrev IsGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
     [PreGaloisCategory.IsConnected X] : Prop :=
   IsGalois (Over.mk f)
 
+lemma isGaloisCover_def {Y X : C} (f : Y ⟶ X) [GaloisCategory C]
+  [PreGaloisCategory.IsConnected X] :
+  IsGaloisCover f ↔ IsGalois (Over.mk f) := Iff.rfl
+
 lemma isConnected_of_isGaloisCover [GaloisCategory C] {Y X : C} (f : Y ⟶ X)
     [PreGaloisCategory.IsConnected X] [IsGaloisCover f] :
     PreGaloisCategory.IsConnected Y := by
   rw [← dsimp% isConnected_over_iff (Over.mk f)]
   infer_instance
+
+lemma hom_ext_of_isConnected [GaloisCategory C]
+    (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+    {Y X : C} [PreGaloisCategory.IsConnected Y]
+    {f f' : Y ⟶ X} (y : F.obj Y) (h : F.map f y = F.map f' y) :
+    f = f' :=
+  F.map_injective (by
+    ext z
+    obtain ⟨g, rfl⟩ := (FiberFunctor.isPretransitive_of_isConnected F Y).exists_smul_eq y z
+    simp only [mulAction_def, ← NatTrans.naturality_apply, h])
+
+lemma isGaloisOver_of_isGalois [GaloisCategory C]
+    {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected X]
+    (hY : IsGalois Y := by infer_instance) :
+    IsGaloisCover f := by
+  have : PreGaloisCategory.IsConnected (Over.mk f).left := by
+    dsimp
+    infer_instance
+  let F := GaloisCategory.getFiberFunctor C
+  rw [isGaloisCover_def]
+  let s : F.obj X := Classical.arbitrary _
+  rw [isGalois_iff_pretransitive (fiberFunctorOver F X s),
+    MulAction.isPretransitive_iff]
+  rw [isGalois_iff_pretransitive F, MulAction.isPretransitive_iff] at hY
+  intro ⟨x, hx⟩ ⟨y, hy⟩
+  obtain ⟨g, rfl⟩ := hY x y
+  exact ⟨Over.isoMk g (hom_ext_of_isConnected F x (by cat_disch)), rfl⟩
+
+lemma isGaloisCover_of_comp [GaloisCategory C]
+    {Z Y X : C} (g : Z ⟶ Y) (f : Y ⟶ X)
+    [PreGaloisCategory.IsConnected Y]
+    [PreGaloisCategory.IsConnected X]
+    (hfg : IsGaloisCover (g ≫ f) := by infer_instance) :
+    IsGaloisCover g := by
+  rw [isGaloisCover_def] at hfg ⊢
+  have : PreGaloisCategory.IsConnected (Over.mk f).left := by
+    assumption
+  let e := Over.iteratedSliceEquiv (Over.mk f)
+  let γ := e.inverse.obj (Over.mk g)
+  change IsGalois γ.left at hfg
+  have := isGaloisOver_of_isGalois γ.hom
+  rw [isGaloisCover_def] at this
+  rwa [← isGalois_iff_of_isEquivalence e.inverse (Over.mk g)]
+
+lemma exists_isGaloisCover [GaloisCategory C]
+    {Y X : C} (f : Y ⟶ X) [PreGaloisCategory.IsConnected Y]
+      [PreGaloisCategory.IsConnected X] :
+    ∃ (Z : C) (g : Z ⟶ Y), IsGaloisCover (g ≫ f) := by
+  obtain ⟨Z, g, _⟩ := exists_hom_from_galois_of_connected (Over.mk f)
+  exact ⟨Z.left, g.left, by rwa [dsimp% g.w]⟩
 
 end GaloisCategory
 

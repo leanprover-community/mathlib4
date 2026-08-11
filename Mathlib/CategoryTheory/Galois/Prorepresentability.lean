@@ -432,7 +432,7 @@ theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
 with less restrictive universe assumptions, see `FiberFunctor.isPretransitive_of_isConnected`. -/
 private instance FiberFunctor.isPretransitive_of_isConnected' (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) := by
-  obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_connected F X
+  obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_connected X
   have hs : Function.Surjective (F.map f) := surjective_of_nonempty_fiber_of_isConnected F f
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨a, ha⟩ := hs x
