@@ -612,6 +612,7 @@ public import Mathlib.Algebra.Homology.Embedding.HomEquiv
 public import Mathlib.Algebra.Homology.Embedding.IsSupported
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
+public import Mathlib.Algebra.Homology.Embedding.Splitting
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.Embedding.TruncGE
 public import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
@@ -638,6 +639,7 @@ public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+public import Mathlib.Algebra.Homology.HomotopyCategory.ChainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
@@ -2573,6 +2575,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 public import Mathlib.CategoryTheory.Bicategory.Product
+public import Mathlib.CategoryTheory.Bicategory.RetractArrow
 public import Mathlib.CategoryTheory.Bicategory.SingleObj
 public import Mathlib.CategoryTheory.Bicategory.Span.Basic
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
