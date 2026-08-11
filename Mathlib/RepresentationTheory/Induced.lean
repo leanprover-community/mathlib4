@@ -49,8 +49,6 @@ universe t w w' u u' v v'
 
 namespace Representation
 
-open Finsupp
-
 variable {k G H : Type*} [CommRing k] [Group G] [Group H] (φ : G →* H) {A B : Type*}
   [AddCommGroup A] [Module k A] (ρ : Representation k G A)
   [AddCommGroup B] [Module k B] (τ : Representation k G B)
@@ -161,8 +159,6 @@ noncomputable def indResAdjunction : indFunctor k φ ⊣ resFunctor.{max w v' u}
       change (indResHomEquiv φ _ _).symm (_ ≫ _) = _
       ext; simp [indMap, indResHomEquiv]
     homEquiv_naturality_right := by intros; rfl }
-
-open Finsupp
 
 noncomputable instance : (indFunctor.{max u v' w} k φ).IsLeftAdjoint :=
   (indResAdjunction k φ).isLeftAdjoint

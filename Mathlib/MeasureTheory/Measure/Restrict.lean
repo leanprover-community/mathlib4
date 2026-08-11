@@ -124,11 +124,12 @@ theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
   mpr h t _ := measure_inter_null_of_null_left t h
 
 theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
-    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    (hC : IsCountablySpanning C) (hm : ∀ t ∈ C, MeasurableSet t)
+    (ht : ∀ t ∈ C, μ.restrict t s = 0) :
     μ s = 0 := by
   rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
   intro t htc
-  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+  simpa [← μ.restrict_apply' (hm _ htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
@@ -1018,7 +1019,7 @@ theorem mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem [Zero β] {t : 
   rw [Measure.restrict_apply' hs, Set.indicator_preimage, Set.ite]
   simp_rw [Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0
-  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, if_true,
+  simp only [ht, ← Set.compl_eq_univ_sdiff, compl_compl, ite_true,
     Set.preimage_const]
   simp_rw [Set.union_inter_distrib_right, Set.compl_inter_self s, Set.union_empty]
 
@@ -1027,7 +1028,7 @@ theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 
   classical
   rw [mem_map, mem_ae_iff, Set.indicator_preimage, Set.ite, Set.compl_union, Set.compl_inter]
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
-  simp only [ht, if_false, Set.compl_empty, Set.empty_sdiff, Set.inter_univ, Set.preimage_const]
+  simp only [ht, ite_false, Set.compl_empty, Set.empty_sdiff, Set.inter_univ, Set.preimage_const]
 
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by
