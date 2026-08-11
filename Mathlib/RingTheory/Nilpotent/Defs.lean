@@ -62,8 +62,7 @@ alias ⟨_, IsNilpotent.op⟩ := isNilpotent_op
 @[simp]
 theorem isNilpotent_unop [MonoidWithZero R] {x : Rᵐᵒᵖ} :
     IsNilpotent (MulOpposite.unop x) ↔ IsNilpotent x :=
-  ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simpa [← MulOpposite.unop_eq_zero_iff]⟩,
-   fun ⟨n, hn⟩ ↦ ⟨n, MulOpposite.op_injective (by simpa)⟩⟩
+  isNilpotent_op.symm
 
 alias ⟨_, IsNilpotent.unop⟩ := isNilpotent_unop
 
