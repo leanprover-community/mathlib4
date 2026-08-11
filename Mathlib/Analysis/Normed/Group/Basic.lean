@@ -628,10 +628,6 @@ lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
-@[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
-
-@[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
-
 @[to_additive]
 lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
   rw [← enorm_inv', inv_div]
@@ -639,12 +635,6 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
   rw [Metric.mem_eball, edist_one_right]
-
-@[deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_zero_iff := mem_eball_zero_iff
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_one_iff := mem_eball_one_iff
 
 end ENorm
 

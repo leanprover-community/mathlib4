@@ -167,5 +167,3 @@ theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 
 end Metric
 
-@[deprecated (since := "2026-01-24")]
-alias EMetric.t4Space := Metric.t4Space

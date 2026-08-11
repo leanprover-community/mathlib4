@@ -272,10 +272,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwayTarget
     apply hPa _ (algebraMap S (Localization.Away a) t)
     apply hs a ha
 
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwayTarget :=
-  locally_stableUnderCompositionWithLocalizationAwayTarget
-
 /-- If `P` is stable under composition with localization away maps on the left,
 then so is `Locally P`. -/
 lemma locally_stableUnderCompositionWithLocalizationAwaySource
@@ -285,10 +281,6 @@ lemma locally_stableUnderCompositionWithLocalizationAwaySource
   refine ⟨s, hsone, fun t ht ↦ ?_⟩
   rw [← comp_assoc]
   exact hPa _ r _ (hs t ht)
-
-@[deprecated (since := "2026-02-11")]
-alias locally_StableUnderCompositionWithLocalizationAwaySource :=
-  locally_stableUnderCompositionWithLocalizationAwaySource
 
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :

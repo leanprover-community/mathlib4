@@ -87,8 +87,3 @@ end
 
 end Int
 
-@[deprecated "use `zsmul_eq_mul`" (since := "2026-01-05")]
-lemma zsmul_int_int (a b : ℤ) : a • b = a * b := rfl
-
-@[deprecated "use `zsmul_one`" (since := "2026-01-05")]
-lemma zsmul_int_one (n : ℤ) : n • (1 : ℤ) = n := mul_one _

@@ -917,9 +917,4 @@ end AlgebraicGeometry
 
 namespace ModuleCat
 
-@[deprecated (since := "2026-02-11")] noncomputable alias tilde := AlgebraicGeometry.tilde
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toOpen := tilde.toOpen
-@[deprecated (since := "2026-02-11")] alias Tilde.toOpen_res := tilde.toOpen_res
-@[deprecated (since := "2026-02-11")] noncomputable alias Tilde.toStalk := tilde.toStalk
-
 end ModuleCat
