@@ -99,6 +99,8 @@ theorem mdifferentiableWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace 
     MDiffAt[s] (π F E) p :=
   (mdifferentiableAt_proj E).mdifferentiableWithinAt
 
+section
+
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
@@ -120,6 +122,28 @@ theorem mdifferentiableAt_zeroSection {x : B} : MDiffAt (zeroSection F E) x :=
 theorem mdifferentiableWithinAt_zeroSection {t : Set B} {x : B} :
     MDiffAt[t] (zeroSection F E) x :=
   (mdifferentiable_zeroSection _ _ x).mdifferentiableWithinAt
+
+end
+
+variable {s : ∀ x, E x} {u : Set B} {x : B}
+
+@[nontriviality]
+lemma mdifferentiableWithinAt_section_of_subsingleton [Subsingleton F] :
+    MDiffAt[u] (T% s) x :=
+  (contMDiffWithinAt_section_of_subsingleton _).mdifferentiableWithinAt one_ne_zero
+
+@[nontriviality]
+lemma mdifferentiableAt_section_of_subsingleton [Subsingleton F] : MDiffAt (T% s) x := by
+  rw [← mdifferentiableWithinAt_univ]
+  apply mdifferentiableWithinAt_section_of_subsingleton
+
+@[nontriviality]
+lemma mdifferentiableOn_section_of_subsingleton [Subsingleton F] : MDiff[u] (T% s) :=
+  fun _x _hx ↦ mdifferentiableWithinAt_section_of_subsingleton ..
+
+@[nontriviality]
+lemma mdifferentiable_section_of_subsingleton [Subsingleton F] : MDiff (T% s) :=
+  fun _x ↦ mdifferentiableAt_section_of_subsingleton ..
 
 end Bundle
 
