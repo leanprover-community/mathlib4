@@ -13,9 +13,9 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 ## Main results
 
-* `coeff` : for a `ℝ`-basis `b` in an `ℝ`-vector space `V` and a `V`-valued vector measure `μ`, one
-  has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficients `a i E` is
-  an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b`.
+* `coeff` : for an `ℝ`-basis `b` in an `ℝ`-vector space `V` and a `V`-valued vector measure `μ`, one
+  has the equality `μ E = ∑ i, a i E • b i` for each `E : Set X`. Then the coefficient `a i E` is
+  an `ℝ`-valued vector measure (`SignedMeasure`), which we call `μ.coeff b i`.
 * `sum_coeff_smul_eq` : the characterizing equality `∑ i, (μ.coeff b i E) • b i = μ E ` for `coeff`.
 * `sum_toSpanSingleton_coeff_eq` : `μ` as a linear combination of vector measures.
 
@@ -35,7 +35,7 @@ variable {X : Type*} {mX : MeasurableSpace X}
   {ι : Type*}
 
 /-- For a basis `b` in `V` indexed by `ι`, `i : ι` and a vector measure `μ`, `μ.coeff b i` gives the
-`i`-th component of `μ` as a `ℝ`-valued vector measure, which is `SignedMeasure X`. -/
+`i`-th component of `μ` as an `ℝ`-valued vector measure, that is a `SignedMeasure X`. -/
 noncomputable def coeff (b : Basis ι 𝕜 V) (μ : VectorMeasure X V) : ι → VectorMeasure X 𝕜 :=
   fun i ↦ mapRangeₗ (b.coord i) (b.coord i).continuous_of_finiteDimensional μ
 
