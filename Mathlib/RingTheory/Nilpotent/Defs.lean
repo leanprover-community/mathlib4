@@ -54,9 +54,8 @@ theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
 
 @[simp]
 theorem isNilpotent_op [MonoidWithZero R] {x : R} :
-    IsNilpotent (MulOpposite.op x) ↔ IsNilpotent x :=
-  ⟨fun ⟨n, hn⟩ ↦ ⟨n, MulOpposite.op_injective (by simpa)⟩,
-   fun ⟨n, hn⟩ ↦ ⟨n, by simpa [← MulOpposite.op_pow]⟩⟩
+    IsNilpotent (MulOpposite.op x) ↔ IsNilpotent x := by
+  simp_rw [IsNilpotent, ← MulOpposite.op_pow, MulOpposite.op_eq_zero_iff]
 
 alias ⟨_, IsNilpotent.op⟩ := isNilpotent_op
 
