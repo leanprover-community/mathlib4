@@ -85,12 +85,14 @@ billed as a Read op.
 -/
 def probeContainerForSHA (container : Container) (repo sha : String) :
     IO Bool := do
-  let url := markerURL container repo sha
+  let url := s!"{← container.getURL}/{markerPath repo sha}"
   -- Discard the response body to the platform null device (`NUL` on Windows),
   -- so curl reports a write error only on a genuine failure, not on every probe.
+  -- `--location`: the read base may answer with a redirect; `%{http_code}` then
+  -- reports the final response, so the 200/404 distinction is unaffected.
   let out ← IO.Process.output
     {cmd := (← IO.getCurl),
-     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I", url],
+     args := #["-s", "-o", IO.nullDevice, "-w", "%{http_code}", "-I", "--location", url],
      cwd := "."}
   if out.exitCode != 0 then
     -- Network error; assume no cache at this SHA

@@ -129,6 +129,30 @@ def flatPath (c : Container) (repo : String) : Bool :=
 
 end Container
 
+/-- Base URL that cache reads default to: the Azure Blob Storage account,
+addressed directly. -/
+def defaultGetBaseURL : String := "https://lakecache.blob.core.windows.net"
+
+/--
+Base URL for cache reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
+`defaultGetBaseURL`.
+
+Read URLs are `{base}/{azureContainerName}/{key}` — the same namespace the
+Azure account serves — so any host that mirrors that namespace is a valid
+base. The override swaps the host while keeping the whole container chain
+intact, unlike `MATHLIB_CACHE_GET_URL`, which collapses the chain to a single
+URL.
+
+Only reads follow this base. Uploads, marker writes, and the blob-listing
+query authenticate against Azure and use `Container.azureURL` directly.
+-/
+def getBaseURL : IO String := do
+  return (← IO.getEnv "MATHLIB_CACHE_BASE_URL").getD defaultGetBaseURL
+
+/-- Read URL for a container: `{getBaseURL}/{azureContainerName}`. -/
+def Container.getURL (c : Container) : IO String := do
+  return s!"{← getBaseURL}/{c.azureContainerName}"
+
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
 

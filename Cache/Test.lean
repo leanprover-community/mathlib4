@@ -159,6 +159,20 @@ def test_Container_azureURL : IO Unit := do
     "https://lakecache.blob.core.windows.net/mathlib4"
     Container.legacy.azureURL
 
+/-- Read URLs follow `getBaseURL`: the same `/{container}` namespace as
+`azureURL`, under whichever base `MATHLIB_CACHE_BASE_URL` selects. With no
+override, reads address Azure directly and the two URL families coincide. -/
+def test_Container_getURL : IO Unit := do
+  IO.println "Container.getURL:"
+  let base ← getBaseURL
+  assertEq "master read URL" s!"{base}/mathlib4-master" (← Container.master.getURL)
+  assertEq "forks read URL" s!"{base}/mathlib4-forks" (← Container.forks.getURL)
+  assertEq "legacy read URL" s!"{base}/mathlib4" (← Container.legacy.getURL)
+  if (← IO.getEnv "MATHLIB_CACHE_BASE_URL").isNone then
+    assertEq "default base is the Azure host" defaultGetBaseURL base
+    assertEq "default read URL matches azureURL"
+      Container.master.azureURL (← Container.master.getURL)
+
 /-- Whether a container lays files out flat (`/f/<hash>`) or namespaces them by
 repo (`/f/<repo>/<hash>`). The layout is fixed per container so that all of a
 container's writers stay on non-colliding paths:
@@ -1055,6 +1069,7 @@ def runAll : IO Unit := do
   test_Container_name
   test_Container_parse
   test_Container_azureURL
+  test_Container_getURL
   test_Container_flatPath
   test_defaultContainersForRepo
   test_mkFileURL

@@ -284,6 +284,12 @@ all repos use `cs` instead.
 -/
 initialize cacheFromOverride : IO.Ref (Option (List Container)) ← IO.mkRef none
 
+/-- Pair each container in a lookup chain with its read URL, keeping the
+chain's trust order. -/
+private def chainWithGetURLs (containers : List Container) :
+    IO (List (Option Container × String)) :=
+  containers.mapM fun c => do return (some c, ← c.getURL)
+
 /--
 Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
@@ -303,7 +309,7 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
   if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
     return [(none, url)]
   if let some cliOverride ← cacheFromOverride.get then
-    return cliOverride.map fun c => (some c, c.azureURL)
+    return ← chainWithGetURLs cliOverride
   let envOverride? ← do
     match (← IO.getEnv "MATHLIB_CACHE_FROM") with
     | none => pure none
@@ -315,8 +321,7 @@ def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) :=
           (unrecognized container name). Known containers: \
           {", ".intercalate (Container.all.map Container.name)}."
         pure none
-  let containers := envOverride?.getD (defaultContainersForRepo repo)
-  return containers.map fun c => (some c, c.azureURL)
+  chainWithGetURLs (envOverride?.getD (defaultContainersForRepo repo))
 
 /-- Authentication method used for cache upload operations. -/
 inductive UploadAuth where
@@ -452,8 +457,10 @@ def downloadFile (container : Option Container) (repo containerURL : String)
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--fail", "--silent", "--write-out", "%{http_code}",
-        "-o", partPath.toString] }
+      args := #[url, "--fail", "--silent",
+        -- The read base may answer with a redirect to the blob's current home.
+        "--location",
+        "--write-out", "%{http_code}", "-o", partPath.toString] }
   if out.exitCode = 0 then
     IO.FS.rename partPath path
     return .served
@@ -713,6 +720,8 @@ private def downloadFilesFromContainer
     let args := #["--request", "GET", "--parallel",
         -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
         "--silent",
+        -- The read base may answer with a redirect to the blob's current home.
+        "--location",
         "--retry", "5", -- there seem to be some intermittent failures
         "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
     -- `legacy` answers reads with 403 once its public access is revoked ahead
