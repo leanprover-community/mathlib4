@@ -136,7 +136,7 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   -- Adding up the disjoint contributions gives `N * (ε / 2) ≤ μH[1] s` for every `N`.
   have hbound (N : ℕ) : N * (ε / 2) ≤ μH[1] s := by
     calc
-      N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp [Finset.sum_const, Finset.card_range]
+      N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp
       _ ≤ ∑ n ∈ Finset.range N, μH[1] (s ∩ eball (f n) (ε / 2)) := by
           refine Finset.sum_le_sum fun n _ => ?_
           apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
