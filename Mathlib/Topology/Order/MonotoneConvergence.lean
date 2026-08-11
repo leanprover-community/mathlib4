@@ -130,7 +130,7 @@ end ConditionallyCompletePartialOrder
 
 section ConditionallyCompleteLattice
 
-theorem tendsto_finset_sup_ciSup {ι} [ConditionallyCompleteLattice α] [OrderBot α]
+theorem tendsto_finsetSup_ciSup {ι} [ConditionallyCompleteLattice α] [OrderBot α]
     [SupConvergenceClass α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
   simpa [ciSup_eq_ciSup_finset ha] using
