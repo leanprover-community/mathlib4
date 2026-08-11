@@ -27,7 +27,14 @@ local infixl:50 " ~ᵤ " => Associated
 
 section
 
-variable {α : Type*} [CommMonoidWithZero α] [WfDvdMonoid α]
+variable {α ι : Type*}
+
+theorem pow_inf'_multiplicity_dvd [Monoid α] (b : α) {s : Finset ι}
+    (hsNe : s.Nonempty) (f : ι → α) {i : ι} (hi : i ∈ s) :
+    b ^ (s.inf' hsNe fun j ↦ multiplicity b (f j)) ∣ f i :=
+  (pow_dvd_pow b (Finset.inf'_le _ hi)).trans (pow_multiplicity_dvd b (f i))
+
+variable [CommMonoidWithZero α] [WfDvdMonoid α]
 
 theorem WfDvdMonoid.max_power_factor' {a₀ x : α} (h : a₀ ≠ 0) (hx : ¬IsUnit x) :
     ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
@@ -52,30 +59,26 @@ theorem FiniteMultiplicity.of_prime_left {a b : α} (ha : Prime a) (hb : b ≠ 0
     FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
 
-theorem WfDvdMonoid.max_power_factor_of_finset (b : α) (hbI : Irreducible b)
-    {ι : Type*} (s : Finset ι) (hsNe : s.Nonempty) (f : ι → α) (hNe0 : ∀ x ∈ s, f x ≠ 0) :
-    ∃ (n : ℕ), (∀ i ∈ s, b ^ n ∣ f i) ∧ ∃ j ∈ s, ¬ (b ^ (n + 1) ∣ f j) := by
-  let σ : Finset ℕ := s.image (fun x ↦ multiplicity b (f x))
-  have hσ : σ.Nonempty := by simp [σ, Finset.image_nonempty, hsNe]
-  use (σ.min' hσ)
-  constructor
-  · intro i hi
-    apply (pow_dvd_pow _ _).trans (_ : b ^ (multiplicity b (f i)) ∣ f i) <;>
-      aesop (add safe Finset.min'_le) -- can unfold this aesop to make it fast
-  obtain ⟨j, hmem, hj⟩ := by simpa [σ] using Finset.min'_mem σ hσ
-  use j, hmem; simp only [← hj, σ]; clear hj
-  aesop (add safe [FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt,
-    FiniteMultiplicity.of_not_isUnit, Irreducible.not_isUnit]) (erase Aesop.BuiltinRules.not_intro)
+theorem WfDvdMonoid.exists_not_pow_inf'_multiplicity_succ_dvd (b : α) (hbI : Irreducible b)
+    {s : Finset ι} (hsNe : s.Nonempty) (f : ι → α) (hNe0 : ∀ i ∈ s, f i ≠ 0) :
+    ∃ j ∈ s, ¬ b ^ ((s.inf' hsNe fun i ↦ multiplicity b (f i)) + 1) ∣ f j := by
+  obtain ⟨j, hjs, hj⟩ := Finset.exists_mem_eq_inf' hsNe fun i ↦ multiplicity b (f i)
+  exact ⟨j, hjs, hj ▸ (FiniteMultiplicity.of_not_isUnit hbI.not_isUnit
+    (hNe0 j hjs)).not_pow_dvd_of_multiplicity_lt (lt_add_one _)⟩
 
 /--
 Given a finitely supported function `f : ι →₀ α` we can factor the biggest
 power of some irreducible `b : α` out of `f`. -/
-theorem WfDvdMonoid.max_power_factor_of_finsupp (b : α) (hbI : Irreducible b)
-    {ι : Type*} (f : ι →₀ α) (h0 : f ≠ 0) :
-    ∃ (n : ℕ), (∀ i , b ^ n ∣ f i) ∧ ∃ j ∈ f.support, ¬ (b ^ (n + 1) ∣ f j) := by
-  have ⟨n, h1, h2⟩ := max_power_factor_of_finset b hbI f.support (by simp [*]) f (by simp)
-  refine ⟨n, fun i ↦ ?_, h2⟩
-  by_cases hi : i ∈ f.support <;> aesop
+theorem WfDvdMonoid.max_power_factor_of_finsupp (b : α) (hbI : Irreducible b) (f : ι →₀ α)
+    (h0 : f ≠ 0) : ∃ (n : ℕ), (∀ i , b ^ n ∣ f i) ∧ ∃ j ∈ f.support, ¬ (b ^ (n + 1) ∣ f j) := by
+  have hs : f.support.Nonempty := Finsupp.support_nonempty_iff.mpr h0
+  refine ⟨f.support.inf' hs fun i ↦ multiplicity b (f i), fun i ↦ ?_,
+    exists_not_pow_inf'_multiplicity_succ_dvd b hbI hs f fun i hi ↦
+      Finsupp.mem_support_iff.mp hi⟩
+  by_cases hi : i ∈ f.support
+  · exact pow_inf'_multiplicity_dvd b hs f hi
+  · rw [Finsupp.notMem_support_iff.mp hi]
+    exact dvd_zero _
 
 /--
 Given a finitely supported function `f : ι →₀ α` we can factor the biggest
@@ -83,9 +86,8 @@ power of some irreducible `b : α` out of `f`.
 
 This is a variant of `WfDvdMonoid.max_power_factor_of_finsupp` where the function obtained by
 dividing by `b ^ n` is explicit. -/
-theorem WfDvdMonoid.max_power_factor_of_finsupp'
-    {ι : Type*} (b : α) (hbI : Irreducible b) (f : ι →₀ α) (h0 : f ≠ 0) :
-    ∃ (n : ℕ) (f' : ι →₀ α), f' ≠ 0 ∧ f'.support = f.support
+theorem WfDvdMonoid.max_power_factor_of_finsupp' (b : α) (hbI : Irreducible b) (f : ι →₀ α)
+    (h0 : f ≠ 0) : ∃ (n : ℕ) (f' : ι →₀ α), f' ≠ 0 ∧ f'.support = f.support
       ∧ (∀ i, f i = b ^ n * f' i) ∧ ∃ j ∈ f'.support, ¬ (b ∣ f' j) := by
   obtain ⟨n, h1, ⟨j, hmem, hj⟩⟩ := max_power_factor_of_finsupp b hbI f h0
   choose! f' hf using h1
