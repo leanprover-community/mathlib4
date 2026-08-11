@@ -379,6 +379,7 @@ instance (p : G.Walk v w) : Decidable p.Nil :=
   | nil => isTrue .nil
   | cons _ _ => isFalse nofun
 
+@[grind .]
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
 lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
@@ -394,7 +395,7 @@ lemma darts_eq_nil {p : G.Walk v w} : p.darts = [] ↔ p.Nil := by
 lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
-@[simp]
+@[simp, grind .]
 theorem length_eq_zero_iff {p : G.Walk u v} : p.length = 0 ↔ p.Nil := by
   cases p <;> simp
 
