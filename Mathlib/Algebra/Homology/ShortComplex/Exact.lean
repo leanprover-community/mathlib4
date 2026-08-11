@@ -676,6 +676,14 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
   s := 0
   s_g := hg.eq_of_src _ _
 
+/-- The obvious splitting of a short complex `S` when `S.X₁`, `S.X₂` and `S.X₃` are zero. -/
+def ofIsZero (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) : Splitting S where
+  r := 0
+  s := 0
+  f_r := h₁.eq_of_src ..
+  s_g := h₃.eq_of_src ..
+  id := h₂.eq_of_src ..
+
 variable {S}
 
 set_option backward.defeqAttrib.useBackward true in
