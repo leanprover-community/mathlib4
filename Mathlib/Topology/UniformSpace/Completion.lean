@@ -75,7 +75,7 @@ def gen (s : SetRel α α) : SetRel (CauchyFilter α) (CauchyFilter α) :=
   { p | s ∈ p.1.val ×ˢ p.2.val }
 
 theorem monotone_gen : Monotone (gen : SetRel α α → _) :=
-  monotone_setOf fun p => @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
+  monotone_ofPred fun p => @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
 
 -- Porting note: this was a calc proof, but I could not make it work
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
@@ -83,12 +83,12 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [f, map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
+    simp [f, map_lift'_eq, monotone_ofPred, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
       (monotone_principal.comp
-        (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
+        (monotone_ofPred fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
         simp only [Function.comp, h, mem_map, f]
@@ -173,7 +173,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
           ht'₂ <| SetRel.prodMk_mem_comp (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
-    Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
+    Set.inter_comm _ (range pureCauchy), mem_ofPred_eq]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
   · exact monotone_const.inter monotone_preimage
   · let ⟨y, hy⟩ := h_ex s hs
@@ -231,7 +231,7 @@ variable [T0Space β]
 
 theorem extend_pureCauchy {f : α → β} (hf : UniformContinuous f) (a : α) :
     extend f (pureCauchy a) = f a := by
-  rw [extend, if_pos hf]
+  rw [extend, ite_eq_left hf]
   exact uniformly_extend_of_ind isUniformInducing_pureCauchy denseRange_pureCauchy hf _
 
 end T0Space
@@ -241,9 +241,9 @@ variable [CompleteSpace β]
 @[fun_prop]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
-  · rw [extend, if_pos hf]
+  · rw [extend, ite_eq_left hf]
     exact uniformContinuous_uniformly_extend isUniformInducing_pureCauchy denseRange_pureCauchy hf
-  · rw [extend, if_neg hf]
+  · rw [extend, ite_eq_right hf]
     exact uniformContinuous_of_const fun a _b => by congr
 
 end Extend

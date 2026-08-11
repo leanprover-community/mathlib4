@@ -222,11 +222,11 @@ theorem IsMatching.verts_eq_biUnion_edgeSet {M : G.Subgraph} (h : M.IsMatching) 
     exact ⟨s(v, u), he, Sym2.mem_mk_left ..⟩
   · exact mem_verts_of_mem_edge he hv
 
-theorem IsMatching.injOn_edgeSet : (setOf IsMatching).InjOn (edgeSet (G := G)) := by
+theorem IsMatching.injOn_edgeSet : (Set.ofPred IsMatching).InjOn (edgeSet (G := G)) := by
   refine fun M₁ h₁ M₂ h₂ h ↦ Subgraph.ext ?_ <| Sym2.fromRel_eq_fromRel_iff_eq .. |>.mp h
   rw [h₁.verts_eq_biUnion_edgeSet, h₂.verts_eq_biUnion_edgeSet, h]
 
-theorem IsMatching.strictMonoOn_edgeSet : StrictMonoOn (edgeSet (G := G)) (setOf IsMatching) :=
+theorem IsMatching.strictMonoOn_edgeSet : StrictMonoOn (edgeSet (G := G)) (Set.ofPred IsMatching) :=
   edgeSet_monotone.monotoneOn _ |>.strictMonoOn_of_injOn injOn_edgeSet
 
 /--

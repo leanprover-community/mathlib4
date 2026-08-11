@@ -192,7 +192,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   have tan_cts_U : ContinuousOn tan U := by
     apply ContinuousOn.mono continuousOn_tan
     intro z hz
-    simp only [mem_setOf_eq]
+    simp only [mem_ofPred_eq]
     exact (cos_pos hz).ne'
   have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
   have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ => tan y' - y') y := by

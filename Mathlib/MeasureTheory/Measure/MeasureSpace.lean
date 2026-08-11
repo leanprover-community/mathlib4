@@ -1202,12 +1202,12 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       · refine mem_iUnion.2 ⟨1, ?_⟩
         simp [hx, hxt]
     · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
-      rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, if_neg zero_ne_one.symm,
+      rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, ite_eq_right zero_ne_one.symm,
         ENNReal.summable.tsum_eq_zero_iff.2 _, add_zero]
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
-        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, le_refl, inf_of_le_left]
+        simp only [ht', ite_eq_right hn₀, ite_eq_right hn₁, measure_empty, le_refl, inf_of_le_left]
   · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
     -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
     -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.
@@ -1226,7 +1226,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
       obtain ⟨i, hi⟩ := mem_iUnion.1 <| ht' hx₂
       refine ⟨i, ?_, hi⟩
       by_contra h
-      simp only [mem_setOf_eq, not_lt] at h
+      simp only [mem_ofPred_eq, not_lt] at h
       exact mem_iInter₂.1 hx₁ i h hi
     have hle₂ : ν (tᶜ ∩ s) ≤ ∑' (n : {k | ν (t' k) < μ (t' k)}), ν (t' n) :=
       (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
@@ -1240,11 +1240,11 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         intro n hn; simpa
       · rw [Subtype.forall]
         intro n hn
-        rw [mem_setOf_eq] at hn
+        rw [mem_ofPred_eq] at hn
         simp [le_of_lt hn]
     · rw [Set.disjoint_iff]
       rintro k ⟨hk₁, hk₂⟩
-      rw [mem_setOf_eq] at hk₁ hk₂
+      rw [mem_ofPred_eq] at hk₁ hk₂
       exact False.elim <| hk₂.not_ge hk₁
 
 @[simp]

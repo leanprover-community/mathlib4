@@ -892,7 +892,7 @@ protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
-  dif_neg Set.not_nonempty_empty
+  dite_eq_right Set.not_nonempty_empty
 
 /-! ### Successor order properties -/
 
@@ -1165,7 +1165,7 @@ theorem isNormal_ord : Order.IsNormal ord where
   strictMono := ord_strictMono
   mem_lowerBounds_upperBounds_of_isSuccLimit := by
     intro a ha
-    simp_rw [lowerBounds, upperBounds, mem_setOf, forall_mem_image, ord_le]
+    simp_rw [lowerBounds, upperBounds, mem_ofPred, forall_mem_image, ord_le]
     refine fun b H ↦ le_of_forall_lt fun c hc ↦ ?_
     simpa using H (ha.succ_lt hc)
 

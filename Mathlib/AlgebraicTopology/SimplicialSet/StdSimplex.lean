@@ -51,7 +51,7 @@ namespace stdSimplex
 
 open Finset Opposite SimplexCategory
 
-/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful; -/
+/-- The functor `stdSimplex : SimplexCategory ⥤ SSet` is fully faithful. -/
 abbrev fullyFaithful : stdSimplex.{u}.FullyFaithful :=
   ULiftYoneda.fullyFaithful SimplexCategory
 
@@ -203,6 +203,14 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
       X.map f.op x :=
   rfl
 
+lemma opObjEquiv_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X.op _⦋0⦌) :
+    opObjEquiv (n := op n) (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv x)) := rfl
+
+lemma opObjEquiv_symm_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X _⦋0⦌) :
+    (opObjEquiv (n := op n)).symm (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv.symm x)) := rfl
+
 namespace stdSimplex
 
 lemma δ_apply {n d : ℕ} (x : (Δ[n] _⦋d + 1⦌ : Type u)) (i : Fin (d + 2)) (j : Fin (d + 1)) :
@@ -272,7 +280,7 @@ attribute [local simp] image_subset_iff
 as a subcomplex. -/
 @[simps -isSimp obj]
 def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj U := setOf (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
+  obj U := Set.ofPred (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
   map {U V} i := by aesop
 
 attribute [local simp] face_obj
@@ -319,8 +327,27 @@ lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
 lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
     (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
     stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
-  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
-    yonedaEquiv.apply_symm_apply]
+  rw [yonedaEquiv.eq_symm_apply, ← yonedaEquiv_naturality, yonedaEquiv.apply_symm_apply]
+
+lemma stdSimplex.δ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
+    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.σ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
+    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.yonedaEquiv_δ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
+
+lemma stdSimplex.yonedaEquiv_σ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
+    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
 
 namespace Subcomplex
 
@@ -605,7 +632,7 @@ private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     obtain ⟨f₂, rfl⟩ := objEquiv.symm.surjective x₂
     simp only [mem_nonDegenerate_iff_mono, Equiv.apply_symm_apply,
       SimplexCategory.mono_iff_injective, SimplexCategory.len_mk] at h₁ h₂
-    simp only [Set.mem_setOf_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
+    simp only [Set.mem_ofPred_eq, SimplexCategory.len_mk, Equiv.apply_symm_apply,
       Subtype.mk.injEq, EmbeddingLike.apply_eq_iff_eq] at h₃ ⊢
     apply SimplexCategory.Hom.ext
     rw [← OrderHom.range_eq_iff h₁ h₂]

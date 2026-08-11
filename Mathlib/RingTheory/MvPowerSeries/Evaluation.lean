@@ -24,7 +24,7 @@ consisting of ideals.
 
 Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
 `MvPowerSeries.eval₂ f φ a` is the evaluation of the multivariate power series `f` at `a`.
-It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
+If `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
 its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
 bundled in `MvPowerSeries.HasEval a` :
@@ -140,7 +140,6 @@ set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries inferInstance
 
-set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
@@ -209,7 +208,7 @@ noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
   have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
-  rw [eval₂, dif_pos this]
+  rw [eval₂, dite_eq_left this]
   congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
