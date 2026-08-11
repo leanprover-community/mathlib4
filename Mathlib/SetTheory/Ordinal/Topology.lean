@@ -43,18 +43,6 @@ variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
-@[deprecated SuccOrder.isOpen_singleton_iff (since := "2026-01-20")]
-theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a :=
-  SuccOrder.isOpen_singleton_iff
-
-@[deprecated SuccOrder.nhds_eq_pure (since := "2026-01-20")]
-theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
-  SuccOrder.nhds_eq_pure
-
-@[deprecated SuccOrder.isOpen_iff (since := "2026-01-20")]
-theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s :=
-  SuccOrder.isOpen_iff
-
 open List Set in
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     TFAE [a ∈ closure s,
@@ -137,10 +125,6 @@ theorem isClosed_iff_bsup :
   · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
-
-@[deprecated SuccOrder.isSuccLimit_of_mem_frontier (since := "2026-01-20")]
-theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
-  SuccOrder.isSuccLimit_of_mem_frontier ha
 
 @[deprecated isNormal_enum_iff_dirSupClosed (since := "2026-05-25")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
