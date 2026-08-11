@@ -85,7 +85,7 @@ def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
     have := congr_arg (fun f ↦ F.map₂ f) r.comm
     simp at this
     simp [← cancel_mono (F.map r.i₁ ◁ (F.mapComp r.r₁ f').inv),
-      ← cancel_mono ( (F.mapComp r.i₁ (r.r₁ ≫ f')).inv),
+      ← cancel_mono ((F.mapComp r.i₁ (r.r₁ ≫ f')).inv),
       this, dsimp% F.toLax.map₂_leftUnitor_assoc f']
 
 /-- In a bicategory, a `1`-morphism that is a retract
