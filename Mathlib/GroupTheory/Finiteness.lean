@@ -103,7 +103,7 @@ theorem isMulFG_iff : IsMulFG M ↔ ∃ S : Finset M, Submonoid.closure (S : Set
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG M ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = ⊤ ∧ S.Finite := by
+    IsMulFG M ↔ ∃ S : Set M, Submonoid.closure S = ⊤ ∧ S.Finite := by
   rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive]
@@ -128,7 +128,7 @@ theorem isMulFG_iff : IsMulFG P ↔ ∃ S : Finset M, Submonoid.closure (S : Set
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG P ↔ ∃ S : Set M, Submonoid.closure (S : Set M) = P ∧ S.Finite := by
+    IsMulFG P ↔ ∃ S : Set M, Submonoid.closure S = P ∧ S.Finite := by
   rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive (attr := simp)]
@@ -157,7 +157,7 @@ theorem isMulFG_iff : IsMulFG G ↔ ∃ S : Finset G, Subgroup.closure (S : Set 
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG G ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = ⊤ ∧ S.Finite := by
+    IsMulFG G ↔ ∃ S : Set G, Subgroup.closure S = ⊤ ∧ S.Finite := by
   rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive]
@@ -182,7 +182,7 @@ theorem isMulFG_iff : IsMulFG H ↔ ∃ S : Finset G, Subgroup.closure (S : Set 
 
 @[to_additive]
 theorem isMulFG_iff_finite :
-    IsMulFG H ↔ ∃ S : Set G, Subgroup.closure (S : Set G) = H ∧ S.Finite := by
+    IsMulFG H ↔ ∃ S : Set G, Subgroup.closure S = H ∧ S.Finite := by
   rw [isMulFG_iff, ← Finset.exists_iff_exists_finite]
 
 @[to_additive (attr := simp)]
