@@ -32,22 +32,22 @@ lemma ofObjectProperty_iff {X Y : C} (f : X ⟶ Y) :
     ofObjectProperty P Q f ↔ P X ∧ Q Y := Iff.rfl
 
 variable {P} in
-lemma ofObjectProperty_left_mono {P' : ObjectProperty C} (h : P ≤ P') :
-    ofObjectProperty P Q ≤ ofObjectProperty P' Q := by
-  intro _ _ _ ⟨hX, hY⟩
+lemma ofObjectProperty_left_monotone :
+    Monotone (fun P : ObjectProperty C => ofObjectProperty P Q) := by
+  intro _ _ h _ _ _ ⟨hX, hY⟩
   exact ⟨h _ hX, hY⟩
 
 @[deprecated (since := "2026-08-10")]
-alias monotone_ofObjectProperty_left := ofObjectProperty_left_mono
+alias monotone_ofObjectProperty_left := ofObjectProperty_left_monotone
 
 variable {Q} in
-lemma ofObjectProperty_right_mono {Q' : ObjectProperty C} (h : Q ≤ Q') :
-    ofObjectProperty P Q ≤ ofObjectProperty P Q' := by
-  intro _ _ _ ⟨hX, hY⟩
+lemma ofObjectProperty_right_monotone :
+    Monotone (fun Q : ObjectProperty C => ofObjectProperty P Q) := by
+  intro _ _ h _ _ _ ⟨hX, hY⟩
   exact ⟨hX, h _ hY⟩
 
 @[deprecated (since := "2026-08-10")]
-alias monotone_ofObjectProperty_right := ofObjectProperty_right_mono
+alias monotone_ofObjectProperty_right := ofObjectProperty_right_monotone
 
 lemma ofObjectProperty_inverseImage {D : Type*} [Category* D] (F : D ⥤ C) :
     ofObjectProperty (P.inverseImage F) (Q.inverseImage F) =

@@ -143,14 +143,13 @@ lemma le_triangEnvelope : P ≤ P.triangEnvelope :=
 instance [P.Nonempty] : P.triangEnvelope.Nonempty :=
   .mono P.le_triangEnvelope
 
-variable {P} in
-lemma triangEnvelope_mono {Q : ObjectProperty C} (h : P ≤ Q) :
-    P.triangEnvelope ≤ Q.triangEnvelope :=
-  iSup_le fun n => (P.monotone_triangEnvelopeIter h n).trans
-    (Q.triangEnvelopeIter_le_triangEnvelope n)
+lemma triangEnvelope_monotone :
+    Monotone (triangEnvelope (C := C)) := fun _ _ h =>
+  iSup_le fun n => (monotone_triangEnvelopeIter h n).trans
+    (triangEnvelopeIter_le_triangEnvelope _ n)
 
 @[deprecated (since := "2026-08-10")]
-alias monotone_triangEnvelope := triangEnvelope_mono
+alias monotone_triangEnvelope := triangEnvelope_monotone
 
 instance : P.triangEnvelope.IsStableUnderRetracts where
   of_retract := by
