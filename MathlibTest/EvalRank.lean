@@ -34,6 +34,14 @@ example : Matrix.rank (R := ℚ)
   eval_rank
 
 example : Matrix.rank (R := ℚ)
+    !![,,,] = 0 := by
+  eval_rank
+
+example : Matrix.rank (R := ℚ)
+    !![;;;] = 0 := by
+  eval_rank
+
+example : Matrix.rank (R := ℚ)
     !![0, 0;
        0, 0] = 0 := by
   eval_rank
