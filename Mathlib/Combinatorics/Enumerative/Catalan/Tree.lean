@@ -16,7 +16,10 @@ import Mathlib.Tactic.Field
 
 
 /-!
+# Counting binary trees with Catalan numbers
+
 ## Main results
+
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
 

@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
+# Connectivity of simple graphs
+
 ## Main definitions
 
 * `SimpleGraph.Reachable` for the relation of whether there exists
