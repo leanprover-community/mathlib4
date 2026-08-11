@@ -34,7 +34,6 @@ variable {𝕜 n : Type*} {A : Matrix n n 𝕜} [RCLike 𝕜] [Fintype n]
 
 open scoped ComplexOrder Matrix.Norms.Operator
 
-/-- Auxiliary form of `linfty_opNorm_le_one_of_mem_rowStochastic` using row sums. -/
 lemma linfty_opNorm_le_one_of_row_sum (h_row_sum : ∀ i, ∑ j, A i j = 1)
     (h_nonneg : ∀ i j, 0 ≤ A i j) : ‖A‖ ≤ 1 := by
   have h (i : n) : ∑ j, ‖A i j‖₊ = 1 := by
@@ -43,32 +42,25 @@ lemma linfty_opNorm_le_one_of_row_sum (h_row_sum : ∀ i, ∑ j, A i j = 1)
     exact h_row_sum i
   simp [linfty_opNorm_def, Finset.sup_le_iff, h]
 
-/-- Auxiliary form of `norm_mulVec_le_of_mem_rowStochastic` using row sums. -/
 lemma norm_mulVec_le_of_row_sum (h_row_sum : ∀ i, ∑ j, A i j = 1)
     (h_nonneg : ∀ i j, 0 ≤ A i j) (v : n → 𝕜) : ‖A *ᵥ v‖ ≤ ‖v‖ := by
   grw [linfty_opNorm_mulVec, linfty_opNorm_le_one_of_row_sum h_row_sum h_nonneg, one_mul]
 
 variable [DecidableEq n]
 
-/-- A row-stochastic matrix has `L∞` operator norm at most `1` (`Matrix.linfty_opNorm_def`). -/
 lemma linfty_opNorm_le_one_of_mem_rowStochastic (hM : A ∈ rowStochastic 𝕜 n) : ‖A‖ ≤ 1 :=
   linfty_opNorm_le_one_of_row_sum (sum_row_of_mem_rowStochastic hM) fun _ _ =>
     nonneg_of_mem_rowStochastic hM
 
-/-- A row-stochastic matrix is nonexpansive for `mulVec` in the `L∞` operator norm.
-Also `‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖` by `Matrix.linfty_opNorm_mulVec`. -/
 lemma norm_mulVec_le_of_mem_rowStochastic (hM : A ∈ rowStochastic 𝕜 n) (v : n → 𝕜) :
     ‖A *ᵥ v‖ ≤ ‖v‖ := by
   grw [linfty_opNorm_mulVec, linfty_opNorm_le_one_of_mem_rowStochastic hM, one_mul]
 
-/-- The spectral radius of a row-stochastic matrix is at most `1`, via
-`spectrum.spectralRadius_le_nnnorm`. -/
 theorem spectralRadius_le_one_of_mem_rowStochastic [Nonempty n] (hM : A ∈ rowStochastic 𝕜 n) :
     spectralRadius 𝕜 A ≤ 1 :=
   (spectrum.spectralRadius_le_nnnorm A).trans <| by
     exact_mod_cast linfty_opNorm_le_one_of_mem_rowStochastic hM
 
-/-- See `spectralRadius_le_one_of_mem_rowStochastic`. -/
 theorem spectralRadius_le_one_of_row_sum [Nonempty n] (h_row_sum : ∀ i, ∑ j, A i j = 1)
     (h_nonneg : ∀ i j, 0 ≤ A i j) : spectralRadius 𝕜 A ≤ 1 :=
   spectralRadius_le_one_of_mem_rowStochastic (mem_rowStochastic_iff_sum.mpr ⟨h_nonneg, h_row_sum⟩)
