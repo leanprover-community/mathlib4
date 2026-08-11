@@ -147,7 +147,7 @@ noncomputable def liftOn [Nonempty ((x : α) → ε x)] {β : Sort*} (t : Produc
       if h : x ∈ s then g x h else Classical.arbitrary ((x : α) → ε x) x)
     (fun _ _ hs ht _ _ hgg =>
       h _ _ (hgg.mp (Filter.eventually_of_mem (Filter.inter_mem hs ht) fun _ hx hgg =>
-        ((dif_pos hx.1).trans ((hgg hx.1 hx.2).trans (dif_pos hx.2).symm))))) t
+        ((dite_eq_left hx.1).trans ((hgg hx.1 hx.2).trans (dite_eq_left hx.2).symm))))) t
 
 theorem liftOn_ofFun [Nonempty ((x : α) → ε x)] {β : Sort*} (g : ((x : α) → ε x))
     (f : ((x : α) → ε x) → β) (h : ∀ g g', (∀ᶠ x in l, g x = g' x) → f g = f g') :
@@ -162,7 +162,7 @@ theorem inductionOn [Nonempty ((x : α) → ε x)] {motive : Product l ε → Pr
   obtain ⟨f, rfl⟩ : ∃ g : (x : α) → ε x, (fun x _ => g x) = f := by
     classical
     exact ⟨fun x => if h : x ∈ s then f x h else Classical.arbitrary ((x : α) → ε x) x,
-      funext₂ fun x h => dif_pos h⟩
+      funext₂ fun x h => dite_eq_left h⟩
   rw [← ofFun_eq_ofPartialFun]
   exact ofFun f
 
@@ -203,7 +203,7 @@ theorem subsingleton_iff : Subsingleton (l.Product ε) ↔
     obtain ⟨hx, hxs⟩ := hx
     specialize hx hxs hxs
     contrapose! hx
-    rw [dif_pos hx]
+    rw [dite_eq_left hx]
     exact (exists_ne (f x hxs)).choose_spec
   · intro h
     obtain h | h := h
@@ -437,11 +437,11 @@ theorem coe_compTendsto' (f : α → β) {lc : Filter γ} {g : Germ lc α} (hg :
     (f : Germ l β).compTendsto' g hg = g.map f := by
   unfold compTendsto'
   by_cases h : l.NeBot
-  · exact (dif_pos h).trans (liftOn_coe _ _ f)
+  · exact (dite_eq_left h).trans (liftOn_coe _ _ f)
   · cases Filter.not_neBot.1 h
     generalize g.map f = u
     induction u using Product.inductionOnPartialFun with | ofPartialFun s hs u
-    refine (dif_neg h).trans (Product.ofPartialFun_eq_iff.2 ?_)
+    refine (dite_eq_right h).trans (Product.ofPartialFun_eq_iff.2 ?_)
     simp
 
 /-- Given a germ `f : Germ l β` and a function `g : γ → α`, where `l : Filter α`, if `g` tends
@@ -1240,7 +1240,7 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
       refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, ?_⟩
       rw [← coe_mul, coe_eq]
       filter_upwards [hfg] with x hx
-      rw [Pi.mul_apply, dif_pos hx, hc x hx]
+      rw [Pi.mul_apply, dite_eq_left hx, hc x hx]
     · refine ⟨f, ?_⟩
       cases Filter.not_neBot.1 h
       exact (Product.subsingleton_iff.2 (.inr Filter.eventually_bot)).allEq _ _
