@@ -99,16 +99,10 @@ theorem continuousWithinAt_toIcoMod_Ici : ContinuousWithinAt (toIcoMod hp a) (Ic
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIcoDiv_Ici hp a x).smul continuousWithinAt_const
 
-@[deprecated (since := "2026-01-04")]
-alias continuous_right_toIcoMod := continuousWithinAt_toIcoMod_Ici
-
 /-- `toIocMod` is continuous on the right at every point. -/
 theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Iic x) x :=
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
-
-@[deprecated (since := "2026-01-04")]
-alias continuous_left_toIocMod := continuousWithinAt_toIocMod_Iic
 
 /-- At every point `x`, for all `y < x` sufficiently close to `x`,
 we have `toIcoDiv hp a y = toIocDiv hp a x`.

@@ -522,17 +522,6 @@ section LinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-@[deprecated "directly use n as a lower bound." (since := "2026-01-02")]
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
-    BddBelow (Function.support f) := by
-  refine ⟨n, fun _ ↦ ?_⟩
-  contrapose
-  simp_all
-
-@[deprecated bddBelow_empty (since := "2026-01-02")]
-theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp
-
 theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
     i ≤ x.orderTop ↔ ∀ j : Γ, j < i → x.coeff j = 0 where
   mp hi j hj := coeff_eq_zero_of_lt_orderTop (hj.trans_le hi)
@@ -562,11 +551,6 @@ theorem order_lt_iff_exists [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
 
 variable [LocallyFiniteOrder Γ]
 
-@[deprecated BddBelow.isWF (since := "2026-01-02")]
-theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO :=
-  hf.isWF.isPWO
-
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
 def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
@@ -576,9 +560,6 @@ def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ�
 theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
   rfl
 
-@[deprecated (since := "2026-01-02")]
-alias zero_ofSuppBddBelow := ofSuppBddBelow_zero
-
 @[simp]
 theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔ f = 0 :=
   HahnSeries.ext_iff
@@ -586,14 +567,6 @@ theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔
 @[simp]
 theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
   rfl
-
-@[deprecated le_order_iff_forall (since := "2026-01-02")]
-theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀ (m : Γ), m < n → f m = 0) :
-    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  rw [le_order_iff_forall]
-  · exact hn
-  · simpa
 
 end LinearOrder
 

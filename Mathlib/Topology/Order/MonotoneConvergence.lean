@@ -207,14 +207,10 @@ theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpac
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
-@[deprecated (since := "2026-01-22")] alias tendsto_of_monotone := tendsto_atTop_of_monotone
-
 theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
-
-@[deprecated (since := "2026-01-22")] alias tendsto_of_antitone := tendsto_atTop_of_antitone
 
 theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :

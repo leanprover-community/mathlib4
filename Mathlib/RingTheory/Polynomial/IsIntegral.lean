@@ -155,11 +155,6 @@ protected lemma IsIntegral.coeff
   · simpa [show i ≠ m by lia] using this
   · simp [coeff_eq_zero_of_natDegree_lt hi, isIntegral_zero]
 
-@[deprecated (since := "2026-01-01")]
-alias IsIntegral.coeff_of_exists_smul_mem_lifts := IsIntegral.coeff
-
-@[deprecated (since := "2026-01-01")] alias IsIntegral.coeff_of_isFractionRing := IsIntegral.coeff
-
 theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
     IsIntegral R[X] f ↔ ∀ n, IsIntegral R (f.coeff n) := by
   refine ⟨IsIntegral.coeff, fun H ↦ ?_⟩

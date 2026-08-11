@@ -683,9 +683,6 @@ theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
 
-@[deprecated (since := "2026-01-22")]
-alias isSheafFor_top_sieve := isSheafFor_top
-
 /-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
 presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/
 lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}

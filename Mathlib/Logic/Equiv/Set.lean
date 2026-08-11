@@ -152,7 +152,9 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
 
-/-- The subtypes corresponding to equal sets are equivalent. -/
+/-- The subtypes corresponding to equal sets are equivalent.
+
+See also `Equiv.finsetCongr`. -/
 @[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
   subtypeEquivProp <| h ▸ rfl
@@ -439,7 +441,9 @@ theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Se
   ext ⟨b, a, has, rfl⟩
   simp [hf.eq_iff]
 
-/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
+/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
+
+See also `Equiv.Finset.congr`. -/
 @[simps]
 protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
   ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩

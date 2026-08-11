@@ -66,9 +66,6 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 
 variable {X Y : Scheme.{u}}
 
-@[deprecated (since := "2026-01-20")]
-alias isOpenImmersion_iff_stalk := IsOpenImmersion.iff_isIso_stalkMap
-
 set_option backward.isDefEq.respectTransparency false in
 theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
     (𝒰 : X.OpenCover) (hf : Function.Injective f) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :

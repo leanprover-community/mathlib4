@@ -360,10 +360,6 @@ theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI =
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
 
-@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
-  getLastI_eq_getLast?_getD
-
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -402,10 +398,6 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
   cases l <;> rfl
-
-@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
-  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 

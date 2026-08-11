@@ -592,20 +592,12 @@ theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrder
     · aesop
   · simp +contextual
 
-@[deprecated (since := "2026-01-06")] alias finprod_cond_pos := finsum_cond_pos
-
 @[to_additive finsum_pos]
 theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : HasFiniteMulSupport f) : 1 < ∏ᶠ i, f i := by
   rw [← finprod_mem_univ]
   apply one_lt_finprod_cond <;> simpa
-
-@[deprecated (since := "2026-01-03")]
-alias finsum_pos' := finsum_pos
-
-@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
-alias one_lt_finprod' := one_lt_finprod
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
 `M` is a `CommMonoidWithZero`. -/
