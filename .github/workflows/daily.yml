@@ -120,6 +120,18 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
+      - name: Identify the commit that was tested
+        run: |
+          if [ "${{ matrix.branch_type }}" == "master" ]; then
+            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
+          else
+            # `github.sha` is this workflow's own checkout of `master`, not the commit the
+            # `nightly` leg tested, so resolve the tag that leg actually checked out.
+            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
+          fi
+
       - name: Post success message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
@@ -131,7 +143,7 @@ jobs:
           type: 'stream'
           topic: 'leanchecker'
           content: |
-            ✅ leanchecker [succeeded](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ✅ leanchecker [succeeded](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for leanchecker on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
@@ -144,7 +156,7 @@ jobs:
           type: 'stream'
           topic: 'leanchecker failure'
           content: |
-            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
   check-mathlib_test_executable:
     runs-on: ubuntu-latest
@@ -243,6 +255,18 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
+      - name: Identify the commit that was tested
+        run: |
+          if [ "${{ matrix.branch_type }}" == "master" ]; then
+            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
+          else
+            # `github.sha` is this workflow's own checkout of `master`, not the commit the
+            # `nightly` leg tested, so resolve the tag that leg actually checked out.
+            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
+          fi
+
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
@@ -254,7 +278,7 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
-            ✅ mathlib_test_executable [succeeded](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ✅ mathlib_test_executable [succeeded](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for mathlib_test_executable on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
@@ -267,7 +291,7 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
   check-nanoda:
     runs-on: ubuntu-latest
@@ -408,6 +432,18 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
+      - name: Identify the commit that was tested
+        run: |
+          if [ "${{ matrix.branch_type }}" == "master" ]; then
+            echo "TESTED_REPO=${{ github.repository }}" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=${{ github.sha }}" >> "$GITHUB_ENV"
+          else
+            # `github.sha` is this workflow's own checkout of `master`, not the commit the
+            # `nightly` leg tested, so resolve the tag that leg actually checked out.
+            echo "TESTED_REPO=leanprover-community/mathlib4-nightly-testing" >> "$GITHUB_ENV"
+            echo "TESTED_SHA=$(git rev-parse "${LATEST_TAG}^{commit}")" >> "$GITHUB_ENV"
+          fi
+
       - name: Post success message for nanoda on Zulip
         if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
@@ -419,7 +455,7 @@ jobs:
           type: 'stream'
           topic: 'nanoda'
           content: |
-            ✅ nanoda [succeeded](${{ steps.get-status.outputs.nanoda_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ✅ nanoda [succeeded](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for nanoda on Zulip
         if: steps.get-status.outputs.job_conclusion != 'success'
@@ -432,4 +468,4 @@ jobs:
           type: 'stream'
           topic: 'nanoda failure'
           content: |
-            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
