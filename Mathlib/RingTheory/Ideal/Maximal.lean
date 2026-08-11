@@ -239,8 +239,8 @@ theorem irreducible_of_isMaximal_of_eq_span_singleton_of_not_isIdempotentElem {a
     (max.eq_of_le (span_singleton_ne_top hu) (by simp [ha, Ideal.mem_span_singleton]))
   have hv₂ : span {a} = span {v} :=
     (max.eq_of_le (span_singleton_ne_top hv) (by simp [ha, Ideal.mem_span_singleton]))
-  obtain ⟨c, rfl⟩ := show a ∣ u by simp [← Ideal.mem_span_singleton, hu₂]
-  obtain ⟨d, rfl⟩ := show a ∣ v by simp [← Ideal.mem_span_singleton, hv₂]
+  obtain ⟨c, rfl⟩ : a ∣ u := by simp [← Ideal.mem_span_singleton, hu₂]
+  obtain ⟨d, rfl⟩ : a ∣ v := by simp [← Ideal.mem_span_singleton, hv₂]
   refine idem (a * (c * d)) ?_ ?_
   · apply le_antisymm <;> rw [span_singleton_le_span_singleton]
     · convert dvd_mul_right (a * (c * d)) a
