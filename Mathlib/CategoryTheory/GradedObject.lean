@@ -71,7 +71,7 @@ lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x,
   apply h
 
 /-- The projection of a graded object to its `i`-th component. -/
-@[simps]
+@[implicit_reducible, simps]
 def eval {β : Type w} (b : β) : GradedObject β C ⥤ C where
   obj X := X b
   map f := f b
