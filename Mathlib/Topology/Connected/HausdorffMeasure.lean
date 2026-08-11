@@ -122,8 +122,6 @@ theorem isTotallyDisconnected_of_hausdorffMeasure_lt_top {d : ℝ} (hd : d < 1)
 /-- A preconnected set with finite one-dimensional Hausdorff measure is totally bounded. -/
 theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconnected s)
     (hle : μH[1] s < ∞) : TotallyBounded s := by
-  by_cases! hse : s = ∅
-  · simp_all
   refine EMetric.totallyBounded_iff.2 fun ε hε => ?_
   contrapose! hle with hcov
   refine top_le_iff.mpr <| ENNReal.eq_top_of_forall_nnreal_le fun r => ?_
