@@ -106,26 +106,6 @@ macro "#import_bumps" : command => `(
   run_cmd logInfo "Counting imports from here."
   set_option linter.minImports true)
 
--- TODO: Upstream? https://github.com/leanprover/lean4/pull/14581
-/--
-`withSetOptionIn' k stx` peels off the `set_option ... in` prefixes of `stx` and applies the
-option values to the current scope. Then it runs `k` on the innermost command.
-The function is a variant of `withSetOptionIn`, with a result type that fits the phases of a
-stateful linter.
--/
-private partial def withSetOptionIn' {α : Type} (k : Syntax → CommandElabM α) :
-    Syntax → CommandElabM α :=
-  fun stx => do
-    if stx.getKind == ``Lean.Parser.Command.in &&
-       stx[0].getKind == ``Lean.Parser.Command.set_option then
-      -- Do not modify the infotrees when elaborating, and silently ignore errors.
-      let opts ← withEnableInfoTree false try
-          (·.1) <$> elabSetOption stx[0][1] stx[0][3]
-        catch _ => getOptions
-      withScope ({ · with opts }) do withSetOptionIn' k stx[2]
-    else
-      k stx
-
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsPost (stx : Syntax) (self : ImportState) : CommandElabM ImportState := do
   -- The reset applies also when the linter option is off. The linter then lints the
@@ -202,7 +182,7 @@ The typed handle of the `minImports` linter. Other stateful linters can read the
 -/
 public initialize minImportsLinter : StatefulLinter ImportState Unit ←
   registerStatefulLinter {}
-    (post := fun stx self _ _ _ => withSetOptionIn' (minImportsPost · self) stx)
+    (post := fun stx self _ _ _ => withSetOptionIn (minImportsPost · self) stx)
 
 end MinImports
 
