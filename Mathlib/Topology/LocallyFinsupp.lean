@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stefan Kebekus, Raphael Douglas Giles
+Authors: Stefan Kebekus
 -/
 module
 
@@ -385,10 +385,6 @@ instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-/--
-Simplifier lemma: Support does not change when replacing a function with locally finite support by
-its negative.
--/
 @[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
 
@@ -396,20 +392,6 @@ instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-/-!
-## Supports of sums, and functions supported in a given set
--/
-
-lemma support_add [AddMonoid Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
-    (D₁ + D₂).support ⊆ D₁.support ∪ D₂.support := by
-  intro x hx
-  by_contra hcon
-  simp only [Set.mem_union, not_or, notMem_support] at hcon
-  exact hx (by simp [hcon.1, hcon.2])
-
-lemma support_sub [AddGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
-    (D₁ - D₂).support ⊆ D₁.support ∪ D₂.support := by
-  simpa [sub_eq_add_neg] using support_add D₁ (-D₂)
 
 variable (U Y) in
 /--
@@ -424,10 +406,6 @@ def supported [AddGroup Y] (s : Set X) : AddSubgroup (locallyFinsuppWithin U Y) 
 
 @[simp] lemma mem_supported [AddGroup Y] {s : Set X} {D : locallyFinsuppWithin U Y} :
     D ∈ supported U Y s ↔ D.support ⊆ s := Iff.rfl
-
-/-!
-## Arithmetic of `single`
--/
 
 section Single
 
