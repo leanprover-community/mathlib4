@@ -741,35 +741,48 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
 
 namespace Equiv
 
-/-- Given an equivalence `α` to `β`, produce an equivalence between `Finset α` and `Finset β`. -/
-protected def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
+/-- The subtypes corresponding to equal finsets are equivalent.
+
+See also `Equiv.setCongr`. -/
+@[simps!] def finsetCongr {s t : Finset α} (h : s = t) :
+    s ≃ t :=
+  .subtypeEquivProp <| by simp [h]
+
+namespace Finset
+
+/-- If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
+
+See also `Equiv.Set.congr`. -/
+protected def congr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding
   left_inv s := by simp [Finset.map_map]
   right_inv s := by simp [Finset.map_map]
 
 @[simp]
-theorem finsetCongr_apply (e : α ≃ β) (s : Finset α) : e.finsetCongr s = s.map e.toEmbedding :=
+theorem congr_apply (e : α ≃ β) (s : Finset α) : Equiv.Finset.congr e s = s.map e.toEmbedding :=
   rfl
 
 @[simp]
-theorem finsetCongr_refl : (Equiv.refl α).finsetCongr = Equiv.refl _ := by
+theorem congr_refl : Equiv.Finset.congr (Equiv.refl α) = Equiv.refl _ := by
   ext
   simp
 
 @[simp]
-theorem finsetCongr_symm (e : α ≃ β) : e.finsetCongr.symm = e.symm.finsetCongr :=
+theorem congr_symm (e : α ≃ β) : (Equiv.Finset.congr e).symm = Equiv.Finset.congr e.symm :=
   rfl
 
 @[simp]
-theorem finsetCongr_trans (e : α ≃ β) (e' : β ≃ γ) :
-    e.finsetCongr.trans e'.finsetCongr = (e.trans e').finsetCongr := by
+theorem congr_trans (e : α ≃ β) (e' : β ≃ γ) :
+    (Equiv.Finset.congr e).trans (Equiv.Finset.congr e') = Equiv.Finset.congr (e.trans e') := by
   ext
   simp [-Finset.mem_map, -Equiv.trans_toEmbedding]
 
-theorem finsetCongr_toEmbedding (e : α ≃ β) :
-    e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
+theorem congr_toEmbedding (e : α ≃ β) :
+    (Equiv.Finset.congr e).toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
+
+end Finset
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
