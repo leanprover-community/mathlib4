@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Bits
 
-/-! Lemmas about `size`. -/
+/-! # Lemmas about `Nat.size`, `Nat.shiftLeft` and `Nat.shiftRight` -/
 
 public section
 

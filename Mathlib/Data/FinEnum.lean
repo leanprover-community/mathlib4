@@ -11,6 +11,8 @@ public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Pi
 
 /-!
+# Finitely enumerable types
+
 Type class for finitely enumerable types. The property is stronger
 than `Fintype` in that it assigns each element a rank in a finite
 enumeration.

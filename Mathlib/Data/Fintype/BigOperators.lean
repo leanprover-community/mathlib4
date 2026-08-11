@@ -15,10 +15,13 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Vector
 
 /-!
+# Big operators over a fintype
+
 Results about "big operations" over a `Fintype`, and consequent
 results about cardinalities of certain types.
 
-## Implementation note
+## Implementation notes
+
 This content had previously been in `Data.Fintype.Basic`, but was moved here to avoid
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.

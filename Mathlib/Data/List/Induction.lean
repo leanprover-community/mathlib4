@@ -9,7 +9,7 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive
 
-/-! ### Induction principles for lists -/
+/-! # Induction principles for lists -/
 
 @[expose] public section
 
