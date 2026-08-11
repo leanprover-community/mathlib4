@@ -138,7 +138,7 @@ instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_empty_eq := fun x =>
-      show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg not_mem_nil }
+      show (if x ∈ ([] : List α) then [] else [x]) = [x] from ite_eq_right not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
   rfl
@@ -360,10 +360,6 @@ theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI =
   | [_, _, _] => rfl
   | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
 
-@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
-  getLastI_eq_getLast?_getD
-
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
   | [], _, _ => rfl
@@ -402,10 +398,6 @@ theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
 
 theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
   cases l <;> rfl
-
-@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
-  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 
@@ -930,7 +922,11 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]; rfl
+  induction l with
+  | nil => rfl
+  | cons a l ih =>
+    simp [filter, ih]
+    cases p a <;> rfl
 
 @[simp]
 theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
