@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
-# Relative simplicial homology
+# Pairs of simplicial sets
 
 
 -/
