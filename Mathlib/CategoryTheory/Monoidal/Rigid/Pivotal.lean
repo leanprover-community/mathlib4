@@ -55,14 +55,9 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RightRigidCategory 
 lemma rightAdjointMate_rightAdjointMate {X Y : C} (f : X ⟶ Y) :
     fᘁᘁ = (PivotalCategory.pivotalIso.app X).inv ≫ f ≫
       (PivotalCategory.pivotalIso.app Y).hom := by
-  have h : (doubleRightDualFunctor C).map f =
-      PivotalCategory.pivotalIso.inv.app X ≫ f ≫
-        PivotalCategory.pivotalIso.hom.app Y := by
-    rw [← cancel_mono (PivotalCategory.pivotalIso.inv.app Y)]
-    simpa only [Category.assoc, Iso.hom_inv_id_app, Category.comp_id,
-      Functor.id_obj, Functor.id_map] using
-      PivotalCategory.pivotalIso.inv.naturality f
-  exact (doubleRightDualFunctor_map C f).symm.trans h
+  change (doubleRightDualFunctor C).map f = _
+  rw [← cancel_mono (PivotalCategory.pivotalIso.inv.app Y)]
+  simpa using PivotalCategory.pivotalIso.inv.naturality f
 
 /-- In a pivotal category, `X` is a left dual of its right dual `Xᘁ`. -/
 @[implicit_reducible]
