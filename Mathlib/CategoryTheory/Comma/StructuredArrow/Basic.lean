@@ -262,10 +262,8 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   rw [eq_mk h]
   simp
 
---#adaptation_note
---/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 /-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
-@[simps!?, implicit_reducible]
+@[simps!, implicit_reducible]
 def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
   Comma.mapLeftIso _ ((Functor.const _).mapIso i)
 
