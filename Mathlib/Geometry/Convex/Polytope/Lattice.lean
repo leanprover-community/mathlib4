@@ -23,7 +23,9 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [ConvexSpace R X]
 
 variable (R X) in
+/-- A polytope is the convex hull of finitely many points. -/
 structure Polytope where
+  /-- The carrier of the polytope. -/
   carrier : Set X
   isPolytope : IsPolytope R carrier
 
