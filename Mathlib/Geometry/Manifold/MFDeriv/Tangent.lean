@@ -63,7 +63,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
-  simp [mfderiv, if_pos this, Function.comp_assoc]
+  simp [mfderiv, ite_eq_left this, Function.comp_assoc]
   rfl
 
 /-- The preimage under the projection from the tangent bundle of a set with unique differential in
@@ -91,7 +91,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     simp_all [mfderiv]
     rfl
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
-    rw [if_pos]
+    rw [ite_eq_left]
     · simp [Function.comp_def, OpenPartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
       rfl
     · apply mdifferentiableWithinAt_extChartAt_symm

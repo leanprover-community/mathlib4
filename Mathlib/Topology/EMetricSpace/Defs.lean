@@ -350,9 +350,6 @@ distance, with a topology defeq to the initial one. -/
   toUniformSpace := uniformSpaceOfEDistOfHasBasis d h_self h_comm h_triangle h_basis
   uniformity_edist := rfl
 
-@[deprecated (since := "2026-01-08")]
-alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
-
 namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
@@ -631,60 +628,6 @@ theorem closedEBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ
 
 end Metric
 
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-24")] alias ball := eball
-@[deprecated (since := "2026-01-24")] alias mem_ball := mem_eball
-@[deprecated (since := "2026-01-24")] alias mem_ball' := mem_eball'
-@[deprecated (since := "2026-01-24")] alias closedBall := closedEBall
-@[deprecated (since := "2026-01-24")] alias mem_closedBall := mem_closedEBall
-@[deprecated (since := "2026-01-24")] alias mem_closedBall' := mem_closedEBall'
-@[deprecated (since := "2026-01-24")] alias closedBall_top := closedEBall_top
-@[deprecated (since := "2026-01-24")] alias ball_subset_closedBall := eball_subset_closedEBall
-@[deprecated (since := "2026-01-24")] alias pos_of_mem_ball := pos_of_mem_eball
-@[deprecated (since := "2026-01-24")] alias mem_ball_self := mem_eball_self
-@[deprecated (since := "2026-01-24")] alias mem_closedBall_self := mem_closedEBall_self
-@[deprecated (since := "2026-01-24")] alias mem_ball_comm := mem_eball_comm
-@[deprecated (since := "2026-01-24")] alias mem_closedBall_comm := mem_closedEBall_comm
-@[deprecated (since := "2026-01-24")] alias ball_subset_ball := eball_subset_eball
-
-@[deprecated (since := "2026-01-24")]
-alias closedBall_subset_closedBall := closedEBall_subset_closedEBall
-
-@[deprecated (since := "2026-01-24")] alias ball_disjoint := eball_disjoint
-@[deprecated (since := "2026-01-24")] alias ball_subset := eball_subset
-@[deprecated (since := "2026-01-24")] alias exists_ball_subset_ball := exists_eball_subset_eball
-@[deprecated (since := "2026-01-24")] alias ball_eq_empty_iff := eball_eq_empty_iff
-
-@[deprecated (since := "2026-01-24")]
-alias ordConnected_setOf_closedBall_subset := ordConnected_setOfPred_closedEBall_subset
-
-@[deprecated (since := "2026-01-24")]
-alias ordConnected_setOf_ball_subset := ordConnected_setOfPred_eball_subset
-
-@[deprecated (since := "2026-01-24")] alias edistLtTopSetoid := edistLtTopSetoid
-@[deprecated (since := "2026-01-24")] alias ball_zero := eball_zero
-
-@[deprecated (since := "2026-01-24")]
-protected alias nhds_basis_eball := nhds_basis_eball
-
-@[deprecated (since := "2026-01-24")] alias nhdsWithin_basis_eball := nhdsWithin_basis_eball
-@[deprecated (since := "2026-01-24")] alias nhds_basis_closed_eball := nhds_basis_closedEBall
-
-@[deprecated (since := "2026-01-24")]
-alias nhdsWithin_basis_closed_eball := nhdsWithin_basis_closedEBall
-
-@[deprecated (since := "2026-01-24")] alias isOpen_ball := isOpen_eball
-@[deprecated (since := "2026-01-24")] alias isClosed_ball_top := isClosed_eball_top
-@[deprecated (since := "2026-01-24")] alias ball_mem_nhds := eball_mem_nhds
-@[deprecated (since := "2026-01-24")] alias closedBall_mem_nhds := closedEBall_mem_nhds
-@[deprecated (since := "2026-01-24")] alias ball_prod_same := eball_prod_same
-@[deprecated (since := "2026-01-24")] alias closedBall_prod_same := closedEBall_prod_same
-
-end EMetric
-
 namespace Subtype
 
 open Metric
@@ -694,32 +637,20 @@ theorem preimage_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (eball a.1 r) = eball a r :=
   rfl
 
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetricBall := preimage_eball
-
 @[simp]
 theorem preimage_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val ⁻¹' (closedEBall a.1 r) = closedEBall a r :=
   rfl
-
-@[deprecated (since := "2026-01-24")]
-alias preimage_emetricClosedBall := preimage_closedEBall
 
 @[simp]
 theorem image_eball {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (eball a r) = eball a.1 r ∩ {a | p a} := by
   rw [← preimage_eball, image_preimage_eq_inter_range, range_val_subtype]
 
-@[deprecated (since := "2026-01-24")]
-alias image_emetricBall := image_eball
-
 @[simp]
 theorem image_closedEBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
     Subtype.val '' (closedEBall a r) = closedEBall a.1 r ∩ {a | p a} := by
   rw [← preimage_closedEBall, image_preimage_eq_inter_range, range_val_subtype]
-
-@[deprecated (since := "2026-01-24")]
-alias image_emetricClosedBall := image_closedEBall
 
 end Subtype
 
@@ -769,9 +700,6 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
 @[simp] lemma Metric.closedEBall_zero (x : γ) : closedEBall x 0 = {x} := by ext; simp
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.closedBall_zero := Metric.closedEBall_zero
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
