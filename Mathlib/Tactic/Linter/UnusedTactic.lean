@@ -115,7 +115,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
   ]
 
 /-- Is this a syntax kind that contains intentionally unused tactic subterms? -/
-def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
+public def isIgnoreTacticKind (ignoreTacticKinds : NameHashSet) (k : SyntaxNodeKind) : Bool :=
   k matches .str _ "quot" ||
   ignoreTacticKinds.contains k
 
