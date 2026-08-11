@@ -831,6 +831,8 @@ instance : Add (M →ₛₗ[σ₁₂] M₂) :=
       map_add' := by simp [add_comm, add_left_comm]
       map_smul' := by simp [smul_add] }⟩
 
+@[simp] protected theorem coe_add (f g : M →ₛₗ[σ₁₂] M₂) : ⇑(f + g) = ⇑f + ⇑g := rfl
+
 @[simp]
 theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
   rfl
