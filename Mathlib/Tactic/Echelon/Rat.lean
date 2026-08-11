@@ -17,12 +17,6 @@ public meta import Mathlib.Tactic.NormNum.Basic
 The rational model of a ring: entries evaluate to rational numerals via `norm_num`,
 denominators are cleared by row scaling, and the elimination runs on integer values. It
 is the fallback model the tactic uses when no ring-specific model matches the ring.
-
-## Main definitions
-
-- `ratProducer`: the rational model.
-- `evalEntry`: evaluate a matrix entry to its rational value.
-- `isZeroInRing`: the kernel zero test for an integer value in a ring.
 -/
 
 public meta section

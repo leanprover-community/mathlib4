@@ -15,10 +15,6 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 The computable model of the quadratic extensions `ℤ√d`: values are pairs `(a, b)`
 denoting `a + b√d`, with the multiplication reduced by `√d * √d = d` and exact division
 by conjugation. Entries are `⟨a, b⟩` literals, `√d`, or numerals.
-
-## Main definitions
-
-- `zsqrtdProducer`: the `ℤ√d` model.
 -/
 
 public meta section
