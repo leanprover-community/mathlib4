@@ -35,10 +35,10 @@ instance : MulZeroClass (WithTop α) where
     | ⊤, ⊤ => ⊤
   mul_zero
     | (a : α) => congr_arg some <| mul_zero _
-    | ⊤ => if_pos rfl
+    | ⊤ => ite_eq_left rfl
   zero_mul
     | (b : α) => congr_arg some <| zero_mul _
-    | ⊤ => if_pos rfl
+    | ⊤ => ite_eq_left rfl
 
 @[to_dual (attr := simp, norm_cast)]
 lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
@@ -46,18 +46,18 @@ lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
 @[to_dual]
 lemma mul_top' : ∀ (a : WithTop α), a * ⊤ = if a = 0 then 0 else ⊤
   | (a : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊤ => (if_neg top_ne_zero).symm
+  | ⊤ => (ite_eq_right top_ne_zero).symm
 
 @[to_dual (attr := simp)]
-lemma mul_top (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', if_neg h]
+lemma mul_top (h : a ≠ 0) : a * ⊤ = ⊤ := by rw [mul_top', ite_eq_right h]
 
 @[to_dual]
 lemma top_mul' : ∀ (b : WithTop α), ⊤ * b = if b = 0 then 0 else ⊤
   | (b : α) => if_congr coe_eq_zero.symm rfl rfl
-  | ⊤ => (if_neg top_ne_zero).symm
+  | ⊤ => (ite_eq_right top_ne_zero).symm
 
 @[to_dual (attr := simp)]
-lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', if_neg hb]
+lemma top_mul (hb : b ≠ 0) : ⊤ * b = ⊤ := by rw [top_mul', ite_eq_right hb]
 
 @[to_dual (attr := simp)]
 lemma top_mul_top : (⊤ * ⊤ : WithTop α) = ⊤ := rfl
@@ -100,7 +100,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a 
 @[to_dual]
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.byContradiction fun h₂ => ?_⟩
-  rw [mul_def, if_neg h₂] at h₁
+  rw [mul_def, ite_eq_right h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
