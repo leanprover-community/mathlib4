@@ -98,8 +98,8 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
       let := isAlgClosure_of_transcendence_basis v hv
       simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
-      rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
-        ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax.{max u w, v}]
+      rw [lift_max, ← Cardinal.mk_liftEq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
+        ← lift_aleph0.{max u v w, max u w}, lift_umax.{max u w, v}, ← lift_max]
     _ ≤ Cardinal.lift.{v} (max (max (max (Cardinal.lift #R) (Cardinal.lift #ι)) ℵ₀) ℵ₀) :=
         lift_le.2 (max_le_max MvPolynomial.cardinalMk_le_max_lift le_rfl)
     _ = _ := by simp
@@ -161,14 +161,14 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis ℤ K
   obtain ⟨t, ht⟩ := exists_isTranscendenceBasis ℤ L
   have hL : ℵ₀ < #L := by
-    rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
+    rwa [← aleph0_lt_lift.{v, u}, ← mk_liftEq.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
     rw [← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         hs (le_of_eq mk_int) hK),
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_eq mk_int) hL)]
-    exact Cardinal.lift_mk_eq'.2 hKL
-  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
+    exact Cardinal.mk_liftEq.2 hKL
+  obtain ⟨e⟩ := Cardinal.mk_liftEq.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
@@ -178,14 +178,14 @@ private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [Char
   obtain ⟨s, hs⟩ := exists_isTranscendenceBasis (ZMod p) K
   obtain ⟨t, ht⟩ := exists_isTranscendenceBasis (ZMod p) L
   have hL : ℵ₀ < #L := by
-    rwa [← aleph0_lt_lift.{v, u}, ← lift_mk_eq'.2 hKL, aleph0_lt_lift]
+    rwa [← aleph0_lt_lift.{v, u}, ← mk_liftEq.2 hKL, aleph0_lt_lift]
   have : Cardinal.lift.{v} #s = Cardinal.lift.{u} #t := by
     rw [← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         hs (le_of_lt (lt_aleph0_of_finite _)) hK),
       ← lift_injective (cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt _
         ht (le_of_lt (lt_aleph0_of_finite _)) hL)]
-    exact Cardinal.lift_mk_eq'.2 hKL
-  obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
+    exact Cardinal.mk_liftEq.2 hKL
+  obtain ⟨e⟩ := Cardinal.mk_liftEq.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
 /-- Two uncountable algebraically closed fields are isomorphic

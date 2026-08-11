@@ -33,7 +33,7 @@ variable {x y : ZFSet.{u}}
 
 /-- `ZFSet.card x` is equal to the cardinality of `x` as a set of `ZFSet`s. -/
 theorem cardinalMk_coe_sort : #x = lift.{u + 1, u} (card x) := by
-  rw [card, lift_mk_shrink'']
+  simp [card]
 
 @[gcongr]
 theorem card_mono (h : x ⊆ y) : card x ≤ card y := by
