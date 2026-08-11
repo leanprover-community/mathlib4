@@ -25,7 +25,7 @@ In fields we show that:
 * `Matrix.trace_eq_sum_roots_charpoly_of_splits`: the trace is the sum of the roots of the
   characteristic polynomial if the polynomial splits in the field of the matrix.
 * `Matrix.spectrum_transpose`: a matrix and its transpose have the same spectrum
-  (`Matrix.spectralRadius_transpose` is in `Analysis.Matrix.Spectrum`).
+  (`Matrix.spectralRadius_transpose` is in `Mathlib/Analysis/Matrix/Spectrum.lean`).
 
 In an algebraically closed field we show that:
 
