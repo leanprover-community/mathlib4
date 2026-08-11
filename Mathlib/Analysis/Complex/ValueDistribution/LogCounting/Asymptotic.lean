@@ -132,11 +132,11 @@ lemma finite_support_of_logCounting_isBigO_log [ProperSpace E]
     intro w
     simp only [hD', coe_sum, Finset.sum_apply, single_apply, Finset.sum_ite_eq]
     by_cases hw : w ∈ t
-    · simp only [hw, if_true]
+    · simp only [hw, ite_true]
       have h₁ : D w ≠ 0 := mem_support.mp (htsub (Finset.mem_coe.2 hw))
       have h₂ : (0 : ℤ) ≤ D w := by simpa using (le_def.1 h) w
       omega
-    · simpa [hw, if_false] using (le_def.1 h) w
+    · simpa [hw, ite_false] using (le_def.1 h) w
   -- A uniform bound on the norms of points in `t`.
   obtain ⟨R₀, hR₀⟩ : ∃ R₀ : ℝ, ∀ z ∈ t, ‖z‖ ≤ R₀ := t.finite_toSet.isBounded.exists_norm_le
   set K := ∑ z ∈ t, log ‖z‖ with hK
