@@ -5,11 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
-public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
-public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 
 /-!
 # Pointed simplices
@@ -25,7 +22,7 @@ which will be used in the definition of homotopy groups of Kan complexes.
 
 universe u
 
-open HomotopicalAlgebra CategoryTheory Simplicial Limits
+open CategoryTheory Simplicial
 
 namespace SSet
 
