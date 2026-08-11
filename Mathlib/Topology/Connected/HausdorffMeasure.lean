@@ -141,22 +141,22 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   calc
     N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp
     _ ≤ ∑ n ∈ Finset.range N, μH[1] (s ∩ eball (f n) (ε / 2)) := by
-        refine Finset.sum_le_sum fun n _ => ?_
-        apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
-        grw [ENNReal.half_le_self, hf2 n (n + 1) n.lt_add_one]
+      refine Finset.sum_le_sum fun n _ => ?_
+      apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
+      grw [ENNReal.half_le_self, hf2 n (n + 1) n.lt_add_one]
     _ ≤ ∑ n ∈ Finset.range N, μH[1] ((toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
-        refine Finset.sum_le_sum fun n _ => measure_mono ?_
-        grw [subset_toMeasurable _ s]
+      refine Finset.sum_le_sum fun n _ => measure_mono ?_
+      grw [subset_toMeasurable _ s]
     _ = μH[1] (⋃ n ∈ Finset.range N, (toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
-        refine (measure_biUnion_finset (fun i hi j hj hij => ?_) fun i _ => ?_).symm
-        · simp only [Function.onFun]
-          suffices h : Disjoint (eball (f i) (ε / 2)) (eball (f j) (ε / 2)) from
-            h.mono inter_subset_right inter_subset_right
-          wlog hijlt : i < j generalizing i j
-          · exact (this j hj i hi hij.symm (by grind)).symm
-          · apply eball_disjoint
-            simpa using hf2 i j hijlt
-        · measurability
+      refine (measure_biUnion_finset (fun i hi j hj hij => ?_) fun i _ => ?_).symm
+      · simp only [Function.onFun]
+        suffices h : Disjoint (eball (f i) (ε / 2)) (eball (f j) (ε / 2)) from
+          h.mono inter_subset_right inter_subset_right
+        wlog hijlt : i < j generalizing i j
+        · exact (this j hj i hi hij.symm (by grind)).symm
+        · apply eball_disjoint
+          simpa using hf2 i j hijlt
+      · measurability
     _ ≤ μH[1] (toMeasurable μH[1] s) := measure_mono (iUnion₂_subset fun i _ => inter_subset_left)
     _ = μH[1] s := by simp
 
