@@ -364,14 +364,18 @@ theorem gramSchmidtOrthonormalBasis_inv_triangular' {i j : ι} (hij : i < j) :
 /-- Given an indexed family `f : ι → E` of vectors in an inner product space `E`, for which the
 size of the index set is the dimension of `E`, the matrix of coefficients of `f` with respect to the
 orthonormal basis `gramSchmidtOrthonormalBasis` constructed from `f` is upper-triangular. -/
-theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
-    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
+theorem gramSchmidtOrthonormalBasis_inv_isUpperTriangular :
+    ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).IsUpperTriangular := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
+
+@[deprecated (since := "2026-07-30")]
+alias gramSchmidtOrthonormalBasis_inv_blockTriangular :=
+  gramSchmidtOrthonormalBasis_inv_isUpperTriangular
 
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by
-  convert! Matrix.det_of_upperTriangular (gramSchmidtOrthonormalBasis_inv_blockTriangular h f)
+  convert! Matrix.det_of_isUpperTriangular (gramSchmidtOrthonormalBasis_inv_isUpperTriangular h f)
   exact ((gramSchmidtOrthonormalBasis h f).repr_apply_apply (f _) _).symm
 
 end OrthonormalBasis
