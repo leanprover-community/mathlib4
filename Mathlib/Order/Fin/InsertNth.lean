@@ -36,7 +36,6 @@ lemma strictMono_insertNth_zero
   · simpa
   · simpa using hf i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma insertNth_monotone
     {f : Fin (n + 1) → α} (hf : Monotone f) (i : Fin n) (x : α)
     (hx₁ : f i.castSucc ≤ x) (hx₂ : x ≤ f i.succ) :
@@ -50,7 +49,6 @@ lemma insertNth_monotone
   · obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hj)
     grind [insertNth_apply_same, insertNth_apply_above, hf j.castSucc_le_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma strictMono_insertNth
     {f : Fin (n + 1) → α} (hf : StrictMono f) (i : Fin n) (x : α)
     (hx₁ : f i.castSucc < x) (hx₂ : x < f i.succ) :

@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-public import Mathlib.Order.Fin.InsertNth
-public import Mathlib.Order.Fin.Prod
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.Fin.InsertNth
+import Mathlib.Order.Fin.Prod
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Binary product of standard simplices
@@ -40,7 +40,7 @@ variable {p q : ℕ}
 /-- `n`-simplices in `Δ[p] ⊗ Δ[q]` identify to order preserving maps
 `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
 def objEquiv {n : ℕ} :
-    (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌ ≃ (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)) where
+    (Δ[p] : SSet.{u}) _⦋n⦌ ⊗ Δ[q]  _⦋n⦌ ≃ (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)) where
   toFun := fun ⟨x, y⟩ ↦ OrderHom.prod
       (stdSimplex.objEquiv x).toOrderHom
       (stdSimplex.objEquiv y).toOrderHom
@@ -53,15 +53,15 @@ def objEquiv {n : ℕ} :
 
 @[simp]
 lemma objEquiv_apply_symm_apply {n : ℕ} (f : (Fin (n + 1) →o Fin (p + 1) × Fin (q + 1))) :
-    dsimp% objEquiv (objEquiv.{u}.symm f) = f := rfl
+    objEquiv (objEquiv.{u}.symm f) = f := rfl
 
 @[simp]
-lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    dsimp% (objEquiv x i).1 = x.1 i := rfl
+lemma objEquiv_apply_fst {n : ℕ} (x : (Δ[p] : SSet.{u}) _⦋n⦌ ⊗ Δ[q] _⦋n⦌) (i : Fin (n + 1)) :
+    (objEquiv x i).1 = x.1 i := rfl
 
 @[simp]
-lemma objEquiv_apply_snd {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (i : Fin (n + 1)) :
-    dsimp% (objEquiv x i).2 = x.2 i := rfl
+lemma objEquiv_apply_snd {n : ℕ} (x : (Δ[p] : SSet.{u}) _⦋n⦌ ⊗ Δ[q] _⦋n⦌) (i : Fin (n + 1)) :
+    (objEquiv x i).2 = x.2 i := rfl
 
 lemma objEquiv_naturality {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌)
     (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
@@ -73,7 +73,7 @@ lemma objEquiv_map_apply {n m : ℕ}
       objEquiv ((Δ[p] ⊗ Δ[q]).map f.op x) i = objEquiv x (f.toOrderHom i) :=
   rfl
 
-lemma objEquiv_δ_apply {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n + 1⦌) (i : Fin (n + 2))
+lemma objEquiv_δ_apply {n : ℕ} (x : (Δ[p] : SSet.{u}) _⦋n + 1⦌ ⊗ Δ[q] _⦋n + 1⦌) (i : Fin (n + 2))
     (j : Fin (n + 1)) :
     dsimp% objEquiv ((Δ[p] ⊗ Δ[q]).δ i x) j = objEquiv x (i.succAbove j) := rfl
 
@@ -97,6 +97,24 @@ lemma nonDegenerate_iff_strictMono_objEquiv {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SS
   rw [← nonDegenerate_iff_of_mono (isoNerve p q).hom,
     PartialOrder.mem_nerve_nonDegenerate_iff_strictMono]
   rfl
+
+lemma isoNerve_hom_app_obj {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
+    ((isoNerve p q).hom.app _ x).obj = ULift.up ∘ objEquiv x := rfl
+
+lemma range_isoNerve_hom_app_obj {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) :
+    Set.range ((isoNerve p q).hom.app _ x).obj = ULift.down ⁻¹' Set.range (objEquiv x) := by
+  rw [isoNerve_hom_app_obj]
+  refine (Equiv.ulift.eq_preimage_iff_image_eq ..).2 ?_
+  simp [Set.range_comp, ← Set.image_comp]
+
+lemma ofSimplex_le_ofSimplex_iff
+    {n m : ℕ} (s : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (t : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋m⦌) :
+    Subcomplex.ofSimplex s ≤ Subcomplex.ofSimplex t ↔
+      Set.range (objEquiv s) ⊆ Set.range (objEquiv t) := by
+  simp only [← Subcomplex.image_le_image_iff (isoNerve p q).hom,
+    Subcomplex.image_ofSimplex, PartialOrder.nerve_ofSimplex_le_ofSimplex_iff,
+    range_isoNerve_hom_app_obj]
+  exact ⟨Set.preimage_mono (f := ULift.up), Set.preimage_mono⟩
 
 /-- Given a `n`-simplex `x` in `Δ[p] ⊗ Δ[q]`, this is the order preserving
 map `Fin (n + 1) →o Fin (m + 1)` (with `p + q = m`) which corresponds to the
@@ -181,7 +199,6 @@ lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).n
     z₁ = z₂ :=
   (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma exists_nonDegenerate_max_dim_aux {d : ℕ}
     (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate d) (hd : d < p + q) :
     ∃ (y : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate (d + 1)),
