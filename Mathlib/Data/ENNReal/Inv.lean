@@ -750,11 +750,8 @@ theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) 
     apply pow_right_mono₀ hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.natCast_add, Int.ofNat_one] using! h
 
-theorem zpow_monotone {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ → ℝ≥0∞) := fun _ _ h =>
+theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ → ℝ≥0∞) := fun _ _ h =>
   zpow_le_of_le hx h
-
-@[deprecated (since := "2026-08-10")]
-alias monotone_zpow := zpow_monotone
 
 protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m n : ℤ) :
     x ^ (m + n) = x ^ m * x ^ n := by

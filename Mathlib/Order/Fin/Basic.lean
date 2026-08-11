@@ -130,20 +130,14 @@ variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 lemma strictMono_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : StrictMono f) :
     StrictMono (fun a => pred (f a) (hf a)) := fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
 
-lemma pred_comp_monotone (hf : ∀ a, f a ≠ 0) (hf₂ : Monotone f) :
+lemma monotone_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : Monotone f) :
     Monotone (fun a => pred (f a) (hf a)) := fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
-
-@[deprecated (since := "2026-08-10")]
-alias monotone_pred_comp := pred_comp_monotone
 
 lemma strictMono_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : StrictMono f) :
     StrictMono (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
 
-lemma castPred_comp_monotone (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) :
+lemma monotone_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) :
     Monotone (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
-
-@[deprecated (since := "2026-08-10")]
-alias monotone_castPred_comp := castPred_comp_monotone
 
 end ToFin
 
