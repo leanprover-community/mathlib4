@@ -479,7 +479,6 @@ theorem MDifferentiableOn.prodMap (hf : MDiff[s] f) (hg : MDiff[r] g) :
 theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace% p.1 →L[𝕜] TangentSpace% (f p.1)}
     (hf : HasMFDerivAt[Prod.fst '' s] f p.1 df)
@@ -890,7 +889,7 @@ theorem mfderivWithin_neg (hs : UniqueMDiffAt[s] x) :
   simp_rw [mfderivWithin]
   by_cases hf : MDiffAt[s] f x
   · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
-  · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
+  · rw [ite_eq_right hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [ite_eq_right hf, neg_zero]
 
 theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
   rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
