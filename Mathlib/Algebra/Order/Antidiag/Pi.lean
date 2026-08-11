@@ -148,6 +148,9 @@ lemma finset_congr_piAntidiag_eq_antidiag (n : μ) :
     ← Equiv.eq_symm_apply]
   simp [add_comm]
 
+@[deprecated (since := "2026-08-11")]
+alias finsetCongr_piAntidiag_eq_antidiag := finset_congr_piAntidiag_eq_antidiag
+
 end AddCommMonoid
 
 section AddCancelCommMonoid

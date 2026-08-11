@@ -763,14 +763,20 @@ protected def congr (e : α ≃ β) : Finset α ≃ Finset β where
 theorem congr_apply (e : α ≃ β) (s : Finset α) : Equiv.Finset.congr e s = s.map e.toEmbedding :=
   rfl
 
+@[deprecated (since := "2026-08-11")] alias finsetCongr_apply := congr_apply
+
 @[simp]
 theorem congr_refl : Equiv.Finset.congr (Equiv.refl α) = Equiv.refl _ := by
   ext
   simp
 
+@[deprecated (since := "2026-08-11")] alias finsetCongr_refl := congr_refl
+
 @[simp]
 theorem congr_symm (e : α ≃ β) : (Equiv.Finset.congr e).symm = Equiv.Finset.congr e.symm :=
   rfl
+
+@[deprecated (since := "2026-08-11")] alias finsetCongr_symm := congr_symm
 
 @[simp]
 theorem congr_trans (e : α ≃ β) (e' : β ≃ γ) :
@@ -778,9 +784,13 @@ theorem congr_trans (e : α ≃ β) (e' : β ≃ γ) :
   ext
   simp [-Finset.mem_map, -Equiv.trans_toEmbedding]
 
+@[deprecated (since := "2026-08-11")] alias finsetCongr_trans := congr_trans
+
 theorem congr_toEmbedding (e : α ≃ β) :
     (Equiv.Finset.congr e).toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
+
+@[deprecated (since := "2026-08-11")] alias finsetCongr_toEmbedding := congr_toEmbedding
 
 end Finset
 
