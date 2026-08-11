@@ -44,9 +44,9 @@ theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : 
   Set.ext fun _ => inv_mem_iff
 
 @[to_additive]
-theorem InvMemClass.isInvClosed [InvolutiveInv G] [SetLike S G] [InvMemClass S G] (H : S) :
+theorem InvMemClass.isInvClosed [SetLike S G] [InvMemClass S G] (H : S) :
     (H : Set G).IsInvClosed :=
-  Set.isInvClosed_iff_inv_eq_self.mpr inv_coe_set
+  fun _ => inv_mem
 
 @[to_additive (attr := simp)]
 lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
