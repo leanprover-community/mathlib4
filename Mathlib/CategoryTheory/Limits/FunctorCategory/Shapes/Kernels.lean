@@ -43,7 +43,7 @@ lemma hasCokernel_of_hasCokernel_app [∀ j, HasCokernel (f.app j)] : HasCokerne
       (parallelPair.ext (Iso.refl _) (Iso.refl _))
   functorCategoryHasColimit _
 
-lemma evaluation_preservesKernel_of_hasKernel_app [∀ j, HasKernel (f.app j)] (j : J) :
+lemma evaluation_preservesLimit_of_hasKernel_app [∀ j, HasKernel (f.app j)] (j : J) :
     PreservesLimit (parallelPair f 0) ((evaluation _ _).obj j) :=
   have (j : J) : HasLimit ((parallelPair f 0).flip.obj j) :=
     hasLimit_of_iso (F := parallelPair (f.app j) 0)
@@ -53,7 +53,7 @@ lemma evaluation_preservesKernel_of_hasKernel_app [∀ j, HasKernel (f.app j)] (
       (fun j ↦ getLimitCone ((parallelPair f 0).flip.obj j)))
     (limit.isLimit _)
 
-lemma evaluation_preservesCokernel_of_hasCokernel_app [∀ j, HasCokernel (f.app j)] (j : J) :
+lemma evaluation_preservesColimit_of_hasCokernel_app [∀ j, HasCokernel (f.app j)] (j : J) :
     PreservesColimit (parallelPair f 0) ((evaluation _ _).obj j) :=
   have (j : J) : HasColimit ((parallelPair f 0).flip.obj j) :=
     hasColimit_of_iso (F := parallelPair (f.app j) 0)

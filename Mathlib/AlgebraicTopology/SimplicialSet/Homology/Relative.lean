@@ -157,12 +157,12 @@ noncomputable def isColimitCokernelCoforkChainComplexFunctorLeftToRight :
 instance (R : C) :
     PreservesColimit (parallelPair (chainComplexFunctorLeftToRight.{w} C) 0)
       ((evaluation ..).obj R) :=
-  evaluation_preservesCokernel_of_hasCokernel_app ..
+  evaluation_preservesColimit_of_hasCokernel_app ..
 
 instance (R : C) (P : SSetPair.{w}) :
     PreservesColimit (parallelPair ((chainComplexFunctorLeftToRight.{w} C).app R) 0)
       ((evaluation ..).obj P) :=
-  evaluation_preservesCokernel_of_hasCokernel_app ..
+  evaluation_preservesColimit_of_hasCokernel_app ..
 
 set_option backward.defeqAttrib.useBackward true in
 instance (R : C) (P : SSetPair.{w}) :
@@ -175,7 +175,7 @@ instance (R : C) (P : SSetPair.{w}) :
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     PreservesColimit (parallelPair (((chainComplexFunctorLeftToRight.{w} C).app R).app P) 0)
       (HomologicalComplex.eval _ _ n) :=
-  HomologicalComplex.eval_preservesCokernel_of_hasCokernel_f ..
+  HomologicalComplex.eval_preservesColimit_of_hasCokernel_f ..
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
@@ -195,7 +195,7 @@ instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
 instance (R : C) (P : SSetPair.{w}) (n : ℕ) :
     PreservesColimit (parallelPair (SSet.chainComplexMap P.hom R) 0)
       (HomologicalComplex.eval C _ n) :=
-  HomologicalComplex.eval_preservesCokernel_of_hasCokernel_f ..
+  HomologicalComplex.eval_preservesColimit_of_hasCokernel_f ..
 
 variable {C} (P P' P'' : SSetPair.{w}) (f : P ⟶ P') (g : P' ⟶ P'') (R : C)
 
