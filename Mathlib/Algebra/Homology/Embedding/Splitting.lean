@@ -42,6 +42,6 @@ lemma splittingExtend_apply {i₁ : ι₁} {i₂ : ι₂} (h : e.f i₁ = i₂) 
       .ofIso (σ _) (S.mapNatIso (e.extendFunctorCompEvalIso C h).symm) := by
   have : ∃ i₁, e.f i₁ = i₂ := ⟨_, h⟩
   obtain rfl := e.injective_f (this.choose_spec.trans h.symm)
-  apply dif_pos
+  apply dite_eq_left
 
 end ComplexShape.Embedding
