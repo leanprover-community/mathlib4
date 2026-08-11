@@ -108,48 +108,31 @@ theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even
     exact two_le_chromaticNumber_of_adj hadj
 
 /-- Tricoloring of a cycle graph -/
-def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
-    (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by lia⟩) <| by
-    intro u v hadj
+def cycleGraph.tricoloring (n : ℕ) : Coloring (cycleGraph n) (Fin 3) :=
+  .mk (fun u ↦ if u = n - 1 then 2 else ⟨u % 2, by lia⟩) fun {u v} hadj ↦ by
     match n with
     | 0 => exact u.elim0
-    | 1 => simp at h
+    | 1 => exact absurd hadj cycleGraph_one_adj
     | n + 2 =>
-      simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
-      · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val (?_))).symm
-        exact v.val.mod_lt Nat.zero_lt_two
-      · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val ?_))
-        exact u.val.mod_lt Nat.zero_lt_two
-      · simp only [ne_eq, Fin.ext_iff]
+      · exact .symm <| Fin.ne_of_lt <| Fin.mk_lt_of_lt_val (v.val.mod_lt Nat.zero_lt_two :)
+      · exact Fin.ne_of_lt <| Fin.mk_lt_of_lt_val (u.val.mod_lt Nat.zero_lt_two :)
+      · have h2 (x y : ℕ) : x % 2 = y % 2 ↔ (x % 2 = 0 ↔ y % 2 = 0) := by lia
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
-        cases hadj with
-        | inl huv | inr huv =>
+        cases hadj with | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
-          simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; lia,
-            Nat.even_add]
-          simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
-          exact id
+          simp [h2, ← Nat.even_iff, Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu',
+            Nat.even_add, -Nat.not_even_iff_odd]
 
 theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
-  have hc := (cycleGraph.tricoloring n h).colorable
-  apply le_antisymm
-  · apply hc.chromaticNumber_le
-  · have hn3 : n - 3 + 3 = n := by
-      refine Nat.sub_add_cancel (Nat.succ_le_of_lt (Nat.lt_of_le_of_ne h ?_))
-      intro h2
-      rw [← h2] at hOdd
-      exact (Nat.not_odd_iff.mpr rfl) hOdd
-    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph.cycle (n - 3)
-    have hOdd' : Odd w.length := by
-      rw [cycleGraph.length_cycle, hn3]
-      exact hOdd
-    rw [← hn3]
-    exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
+  apply cycleGraph.tricoloring n |>.colorable.chromaticNumber_le.antisymm
+  have hn3 : n - 3 + 3 = n := by grind
+  rw [Fintype.card_fin, Nat.cast_ofNat, ← hn3]
+  apply cycleGraph.cycle (n - 3) |>.three_le_chromaticNumber_of_odd_loop
+  rwa [cycleGraph.length_cycle, hn3]
 
 section CompleteEquipartiteGraph
 
