@@ -12,6 +12,7 @@ public import Mathlib.Probability.Distributions.SetBernoulli
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.Order.Interval.Set.Nat
 import Mathlib.Probability.Notation
+import Mathlib.RingTheory.Polynomial.Bernstein
 
 /-!
 # Binomial random variables
@@ -202,5 +203,34 @@ theorem integral_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) : P[X] = p.
       rw [mul_assoc, Finset.mul_sum (a := (n : ℝ) + 1)]
       group
     _ = p * (n + 1) := by grind [add_pow p.val (1 - p) n, one_pow]
+
+/-- **Variance of a binomial random variable**.
+
+The variance of a binomial random variable with parameters `n` and `p` is `p(1 - p)n`. -/
+theorem variance_of_hasLaw_binomial (hX : HasLaw X Bin(ℝ, n, p) P) :
+    Var[X; P] = p * (1 - p) * n := by
+  have h₁ : ∫ x, x ∂Bin(ℝ, n, p) = p * n := by
+    simpa using integral_of_hasLaw_binomial (P := Bin(ℝ, n, p)) .id
+  have h₂ : ∫ x, x * (x - 1) ∂Bin(ℝ, n, p) = n * (n - 1) * p ^ 2 := by
+    convert congr(Polynomial.aeval ((p : ℝ)) $(bernsteinPolynomial.sum_mul_smul ℝ n)) using 1
+    · rw [integral_map_cast_binomial, ← Nat.range_succ_eq_Iic, _root_.map_sum]
+      refine Finset.sum_congr rfl fun k _ ↦ ?_
+      cases k with
+      | zero => simp [bernsteinPolynomial]
+      | succ k => simp [bernsteinPolynomial, mul_comm, mul_assoc, mul_left_comm]
+    · cases n <;> simp
+  have hsq : (id ^ 2 : ℝ → ℝ) = fun x ↦ x * (x - 1) + x := by
+    funext x
+    simp only [Pi.pow_apply, id_eq]
+    ring
+  have hmem : MemLp id 2 Bin(ℝ, n, p) :=
+    (memLp_two_iff_integrable_sq aestronglyMeasurable_id).2 (integrable_map_cast_binomial _)
+  calc Var[X; P]
+      = Bin(ℝ, n, p)[id ^ 2] - Bin(ℝ, n, p)[id] ^ 2 := by rw [hX.variance_eq, variance_eq_sub hmem]
+    _ = (∫ x, (x * (x - 1) + x) ∂Bin(ℝ, n, p)) - (p * n) ^ 2 := by
+        rw [hsq, integral_of_hasLaw_binomial .id]
+    _ = (n * (n - 1) * p ^ 2 + p * n) - (p * n) ^ 2 := by
+        rw [integral_add (integrable_map_cast_binomial _) (integrable_map_cast_binomial _), h₁, h₂]
+    _ = p * (1 - p) * n := by ring
 
 end ProbabilityTheory
