@@ -124,6 +124,7 @@ theorem zero_isRadical_iff [MonoidWithZero R] : IsRadical (0 : R) ↔ IsReduced 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsReduced R ↔ ∀ x : R, x ^ k = 0 → x = 0 := by
   simp_rw [← zero_isRadical_iff, isRadical_iff_pow_one_lt k hk, zero_dvd_iff]
+  exact forall_comm
 
 theorem IsRadical.of_dvd [CommMonoidWithZero R] [IsCancelMulZero R] {x y : R} (hy : IsRadical y)
     (h0 : y ≠ 0) (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
@@ -222,15 +223,9 @@ variable [CommSemiring R] {x y : R}
 
 /-- In a commutative semiring, two elements whose sum is zero have equal squares. -/
 theorem sq_eq_sq_of_add_eq_zero (h : x + y = 0) : x ^ 2 = y ^ 2 := by
-  calc
-    x ^ 2 = x * x := pow_two x
-    _ = x * x + 0 := (add_zero _).symm
-    _ = x * x + (x + y) * y := by rw [h, zero_mul]
-    _ = (x * x + x * y) + y * y := by rw [add_mul, ← add_assoc]
-    _ = x * (x + y) + y * y := by rw [mul_add]
-    _ = 0 + y * y := by rw [h, mul_zero]
-    _ = y * y := zero_add _
-    _ = y ^ 2 := (pow_two y).symm
+  transitivity x * x + x * y + y * y
+  · rw [pow_two, add_assoc, ← add_mul, h, zero_mul, add_zero]
+  · rw [← mul_add, h, mul_zero, zero_add, pow_two]
 
 /-- If two elements of a commutative semiring sum to zero and the right one is nilpotent,
 then so is the left one. -/
