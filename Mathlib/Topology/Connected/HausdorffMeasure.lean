@@ -125,7 +125,11 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   by_cases! hse : s = ∅
   · simp_all
   refine EMetric.totallyBounded_iff.2 fun ε hε => ?_
-  by_contra! hcov
+  contrapose! hle with hcov
+  refine top_le_iff.mpr <| ENNReal.eq_top_of_forall_nnreal_le fun r => ?_
+  have : ε / 2 ≠ 0 := by simp [hε.ne.symm]
+  obtain ⟨N, hN⟩ := ENNReal.exists_nat_mul_gt this (ENNReal.coe_ne_top (r := r))
+  apply hN.le.trans
   have hgreedy (t : Finset X) : ∃ y, y ∈ s ∧ ∀ x ∈ t, ε ≤ edist x y := by
     obtain ⟨z, hz, hznotin⟩ := not_subset.1 (hcov t t.finite_toSet)
     refine ⟨z, hz, fun x hx => ?_⟩
@@ -134,40 +138,27 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
   obtain ⟨f, hf1, hf2⟩ :=
     exists_seq_of_forall_finset_exists (· ∈ s) (fun x y => ε ≤ edist x y) (fun t _ => hgreedy t)
   -- Adding up the disjoint contributions gives `N * (ε / 2) ≤ μH[1] s` for every `N`.
-  have hbound (N : ℕ) : N * (ε / 2) ≤ μH[1] s := by
-    calc
-      N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp
-      _ ≤ ∑ n ∈ Finset.range N, μH[1] (s ∩ eball (f n) (ε / 2)) := by
-          refine Finset.sum_le_sum fun n _ => ?_
-          apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
-          grw [ENNReal.half_le_self, hf2 n (n + 1) n.lt_add_one]
-      _ ≤ ∑ n ∈ Finset.range N, μH[1] ((toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
-          refine Finset.sum_le_sum fun n _ => measure_mono ?_
-          grw [subset_toMeasurable _ s]
-      _ = μH[1] (⋃ n ∈ Finset.range N, (toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
-          refine (measure_biUnion_finset (fun i hi j hj hij => ?_) fun i _ => ?_).symm
-          · simp only [Function.onFun]
-            suffices h : Disjoint (eball (f i) (ε / 2)) (eball (f j) (ε / 2)) from
-              h.mono inter_subset_right inter_subset_right
-            wlog hijlt : i < j generalizing i j
-            · exact (this j hj i hi hij.symm (by grind)).symm
-            · apply disjoint_left.2 fun z hzm hzn => ?_
-              rw [mem_eball] at hzm hzn
-              refine (not_le.2 ?_) (hf2 i j hijlt)
-              calc
-                edist (f i) (f j) ≤ edist (f i) z + edist z (f j) := edist_triangle _ _ _
-                _ < ε / 2 + ε / 2 := by rw [edist_comm (f i) z]; gcongr
-                _ = ε := by simp
-          · measurability
-      _ ≤ μH[1] (toMeasurable μH[1] s) := measure_mono (iUnion₂_subset fun i _ => inter_subset_left)
-      _ = μH[1] s := by simp
-  have : ε / 2 ≠ 0 := by simp [hε.ne.symm]
-  obtain ⟨N, hN⟩ := ENNReal.exists_nat_gt (ENNReal.div_ne_top hle.ne this)
-  refine (not_le.2 ((ENNReal.div_lt_iff (Or.inl this) (Or.inl ?_)).mp hN)) (hbound N)
-  refine ENNReal.div_ne_top (fun heq => ?_) two_ne_zero
-  obtain ⟨a, ha⟩ := hse
-  refine hcov {a} (finite_singleton a) fun b hb => ?_
-  simpa [heq] using (hs.edist_ne_top hb ha).lt_top
+  calc
+    N * (ε / 2) = ∑ _n ∈ Finset.range N, (ε / 2) := by simp
+    _ ≤ ∑ n ∈ Finset.range N, μH[1] (s ∩ eball (f n) (ε / 2)) := by
+        refine Finset.sum_le_sum fun n _ => ?_
+        apply hs.le_hausdorffMeasure_of_le_edist (hf1 n) (hf1 (n + 1))
+        grw [ENNReal.half_le_self, hf2 n (n + 1) n.lt_add_one]
+    _ ≤ ∑ n ∈ Finset.range N, μH[1] ((toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
+        refine Finset.sum_le_sum fun n _ => measure_mono ?_
+        grw [subset_toMeasurable _ s]
+    _ = μH[1] (⋃ n ∈ Finset.range N, (toMeasurable μH[1] s) ∩ eball (f n) (ε / 2)) := by
+        refine (measure_biUnion_finset (fun i hi j hj hij => ?_) fun i _ => ?_).symm
+        · simp only [Function.onFun]
+          suffices h : Disjoint (eball (f i) (ε / 2)) (eball (f j) (ε / 2)) from
+            h.mono inter_subset_right inter_subset_right
+          wlog hijlt : i < j generalizing i j
+          · exact (this j hj i hi hij.symm (by grind)).symm
+          · apply eball_disjoint
+            simpa using hf2 i j hijlt
+        · measurability
+    _ ≤ μH[1] (toMeasurable μH[1] s) := measure_mono (iUnion₂_subset fun i _ => inter_subset_left)
+    _ = μH[1] s := by simp
 
 theorem IsPreconnected.isCompact_of_hausdorffMeasure_lt_top_isComplete (hs : IsPreconnected s)
     (hle : μH[1] s < ∞) (hc : IsComplete s) : IsCompact s :=
