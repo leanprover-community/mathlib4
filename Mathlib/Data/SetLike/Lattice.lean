@@ -9,39 +9,32 @@ public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.SetNotation
 
 /-!
-# Concrete lattice operations on set-like types
-
-This file provides typeclasses saying that lattice operations on a `SetLike` type are inherited
-from the corresponding operations on sets.
-
-These are analogous to `SetLike.IsConcreteLE`: they give a common API for subobjects whose
-membership in `⊓`, `⊔`, `sInf`, or `sSup` has the same meaning as membership in the corresponding
-set operation.
+TODO
 -/
 
 @[expose] public section
 
 /-- A class to indicate that infimum on a `SetLike` type is intersection. -/
 class IsConcreteMin (A : Type*) (B : outParam Type*) [SetLike A B] [Min A] where
-  /-- The coercion from a `SetLike` type preserves infimum. -/
+  /-- The coercion from a `SetLike` type preserves infima. -/
   protected coe_inf' {S T : A} :
     SetLike.coe (S ⊓ T) = SetLike.coe S ⊓ SetLike.coe T
 
 /-- A class to indicate that supremum on a `SetLike` type is union. -/
 class IsConcreteMax (A : Type*) (B : outParam Type*) [SetLike A B] [Max A] where
-  /-- The coercion from a `SetLike` type preserves supremum. -/
+  /-- The coercion from a `SetLike` type preserves suprema. -/
   protected coe_sup' {S T : A} :
     SetLike.coe (S ⊔ T) = SetLike.coe S ⊔ SetLike.coe T
 
 /-- A class to indicate that set infimum on a `SetLike` type is intersection. -/
 class IsConcreteSInf (A : Type*) (B : outParam Type*) [SetLike A B] [InfSet A] where
-  /-- The coercion from a `SetLike` type preserves set infimum. -/
+  /-- The coercion from a `SetLike` type preserves arbitrary infima. -/
   protected coe_sInf' {S : Set A} :
     SetLike.coe (sInf S) = sInf (SetLike.coe '' S)
 
 /-- A class to indicate that set supremum on a `SetLike` type is union. -/
 class IsConcreteSSup (A : Type*) (B : outParam Type*) [SetLike A B] [SupSet A] where
-  /-- The coercion from a `SetLike` type preserves set supremum. -/
+  /-- The coercion from a `SetLike` type preserves arbitrary suprema. -/
   protected coe_sSup' {S : Set A} :
     SetLike.coe (sSup S) = sSup (SetLike.coe '' S)
 
