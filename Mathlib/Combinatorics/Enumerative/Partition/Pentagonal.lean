@@ -22,7 +22,7 @@ open PowerSeries PowerSeries.WithPiTopology Finset
 theorem hasProd_powerSeriesMk_card_evenCountDistincts_sub_card_oddCountDistincts'
     [TopologicalSpace R] [T2Space R] :
     HasProd (fun i ↦ 1 - X ^ (i + 1))
-    (PowerSeries.mk fun n ↦ (#(evenCountDistincts n) - #(oddCountDistincts n) : R)) := by
+      (PowerSeries.mk fun n ↦ (#(evenCountDistincts n) - #(oddCountDistincts n) : R)) := by
   nontriviality R using Subsingleton.eq_one
   convert! ← hasProd_genFun (fun i c ↦ if c = 1 then (-1 : R) else 0) using 1
   · ext1 i
@@ -67,7 +67,7 @@ $\prod_{n=1}^{\infty} (1 - x^n)$. -/
 public theorem hasProd_powerSeriesMk_card_evenCountDistincts_sub_card_oddCountDistincts
     [TopologicalSpace R] :
     HasProd (fun i ↦ 1 - X ^ (i + 1))
-    (PowerSeries.mk fun n ↦ (#(evenCountDistincts n) - #(oddCountDistincts n) : R)) := by
+      (PowerSeries.mk fun n ↦ (#(evenCountDistincts n) - #(oddCountDistincts n) : R)) := by
   simp_rw [card_evenCountDistincts_sub_card_oddCountDistincts]
   convert hasProd_one_sub_X_pow R
   ext n
