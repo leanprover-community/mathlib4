@@ -121,10 +121,9 @@ def cycleGraph.tricoloring (n : ℕ) : Coloring (cycleGraph n) (Fin 3) :=
       · have h2 (x y : ℕ) : x % 2 = y % 2 ↔ (x % 2 = 0 ↔ y % 2 = 0) := by lia
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
-        cases hadj with | inl huv | inr huv =>
-          rw [← add_eq_of_eq_sub' huv.symm]
-          simp [h2, ← Nat.even_iff, Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu',
-            Nat.even_add, -Nat.not_even_iff_odd]
+        rcases hadj with huv | huv
+        all_goals simp [← add_eq_of_eq_sub' huv.symm, h2, ← Nat.even_iff, Nat.even_add,
+          Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', -Nat.not_even_iff_odd]
 
 theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
