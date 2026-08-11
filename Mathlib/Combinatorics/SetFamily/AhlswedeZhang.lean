@@ -131,9 +131,9 @@ def truncatedSup (s : Finset α) (a : α) : α :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma truncatedSup_of_mem (h : a ∈ lowerClosure s) :
-    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dif_pos h
+    truncatedSup s a = {b ∈ s | a ≤ b}.sup' (sup_aux h) id := dite_eq_left h
 
-lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dif_neg h
+lemma truncatedSup_of_notMem (h : a ∉ lowerClosure s) : truncatedSup s a = ⊤ := dite_eq_right h
 
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_notMem (by simp)
 
@@ -206,9 +206,9 @@ def truncatedInf (s : Finset α) (a : α) : α :=
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma truncatedInf_of_mem (h : a ∈ upperClosure s) :
-    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dif_pos h
+    truncatedInf s a = {b ∈ s | b ≤ a}.inf' (inf_aux h) id := dite_eq_left h
 
-lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dif_neg h
+lemma truncatedInf_of_notMem (h : a ∉ upperClosure s) : truncatedInf s a = ⊥ := dite_eq_right h
 
 lemma truncatedInf_le : truncatedInf s a ≤ a := by
   unfold truncatedInf
