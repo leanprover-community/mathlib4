@@ -21,11 +21,11 @@ universe v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RigidCategory C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [RightRigidCategory C]
 
 /-- A pivotal category is spherical when its left and right traces agree. -/
 class SphericalCategory (C : Type u) [Category.{v} C] [MonoidalCategory C]
-    [RigidCategory C] [PivotalCategory C] : Prop where
+    [RightRigidCategory C] [PivotalCategory C] : Prop where
   leftTrace_eq_rightTrace {X : C} (f : X ⟶ X) : leftTrace f = rightTrace f
 
 /-- The trace in a spherical category. -/
