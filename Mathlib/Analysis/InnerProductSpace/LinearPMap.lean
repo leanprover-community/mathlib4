@@ -90,11 +90,11 @@ This definition is needed to construct the adjoint operator and the preferred ve
 def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
-    rw [Set.mem_setOf_eq, LinearMap.map_zero, LinearMap.zero_comp]
+    rw [Set.mem_ofPred_eq, LinearMap.map_zero, LinearMap.zero_comp]
     exact continuous_zero
-  add_mem' hx hy := by rw [Set.mem_setOf_eq, LinearMap.map_add] at *; exact hx.add hy
+  add_mem' hx hy := by rw [Set.mem_ofPred_eq, LinearMap.map_add] at *; exact hx.add hy
   smul_mem' a x hx := by
-    rw [Set.mem_setOf_eq, LinearMap.map_smulₛₗ] at *
+    rw [Set.mem_ofPred_eq, LinearMap.map_smulₛₗ] at *
     exact hx.const_smul (conj a)
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
@@ -173,12 +173,12 @@ set_option backward.isDefEq.respectTransparency false in
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
+  simp only [hT, not_false_iff, dite_eq_right, LinearMap.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
   classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
-  simp only [hT, dif_pos]
+  simp only [hT, dite_eq_left]
 
 include hT in
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :

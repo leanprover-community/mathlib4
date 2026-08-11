@@ -279,7 +279,7 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
     [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
     quasispectrum R (φ a) ⊆ quasispectrum R a := by
   refine Set.compl_subset_compl.mp fun x ↦ ?_
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not,
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_ofPred_eq, not_forall, not_not,
     forall_exists_index]
   refine fun hx this ↦ ⟨hx, ?_⟩
   rw [Units.smul_def, ← smul_one_smul S] at this ⊢
@@ -304,7 +304,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
     [Ring A] [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {r : R | ¬ IsUnit r} := by
   ext r
   rw [quasispectrum]
-  simp only [Set.mem_setOf_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
+  simp only [Set.mem_ofPred_eq, Set.mem_union, ← imp_iff_or_not, spectrum.mem_iff]
   congr! 1 with hr
   rw [not_iff_not, isQuasiregular_iff_isUnit, ← sub_eq_add_neg, Algebra.algebraMap_eq_smul_one]
   exact (IsUnit.smul_sub_iff_sub_inv_smul hr.unit a).symm
@@ -382,7 +382,7 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
     ← Set.inter_union_compl (quasispectrum R (b * a)) {r | IsUnit r}]
   congr! 1
   · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
-      Unitization.inr_mul] using spectrum.setOf_isUnit_inter_mul_comm _ _
+      Unitization.inr_mul] using spectrum.setOfPred_isUnit_inter_mul_comm _ _
   · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
     all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
 

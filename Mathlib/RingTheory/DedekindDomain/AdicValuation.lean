@@ -85,16 +85,16 @@ def intValuationDef (r : R) : ℤᵐ⁰ :=
     exp (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
-  if_pos hr
+  ite_eq_left hr
 
 @[simp]
 theorem intValuationDef_zero : v.intValuationDef 0 = 0 :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
     v.intValuationDef r = exp
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
-  if_neg hr
+  ite_eq_right hr
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
@@ -111,10 +111,10 @@ theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos rfl, zero_mul]
+  · rw [hx, zero_mul, ite_eq_left rfl, zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos rfl, mul_zero]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← exp_add,
+    · rw [hy, mul_zero, ite_eq_left rfl, mul_zero]
+    · rw [ite_eq_right hx, ite_eq_right hy, ite_eq_right (mul_ne_zero hx hy), ← exp_add,
         ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (Associates.mk_ne_zero'.mpr hx) (Associates.mk_ne_zero'.mpr hy)
           v.associates_irreducible,
@@ -138,7 +138,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
     · rw [hy, add_zero]
       order
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le
+      · rw [intValuationDef, ite_eq_left hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
@@ -189,7 +189,7 @@ theorem intValuation_eq_exp_neg_multiplicity {r : R} (hr : r ≠ 0) :
   have hsr : Ideal.span {r} ≠ 0 := Submodule.span_singleton_eq_bot.mp.mt hr
   have hfm : FiniteMultiplicity v.asIdeal (Ideal.span {r}) :=
     FiniteMultiplicity.of_prime_left v.prime hsr
-  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.coe_inj,
+  rw [v.intValuation_if_neg hr, exp_inj, neg_inj, Int.natCast_inj, ← ENat.natCast_inj,
     ← FiniteMultiplicity.emultiplicity_eq_multiplicity hfm,
     UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors (irreducible v) hsr,
     normalize_eq, Ideal.count_associates_factors_eq hsr v.isPrime v.ne_bot]
@@ -260,9 +260,9 @@ theorem intValuation_le_exp_iff_le_emultiplicity {r : R} {n : ℕ} :
 
 theorem exp_le_intValuation_iff_emultiplicity_le {r : R} {n : ℕ} :
     exp (-(n : ℤ)) ≤ v.intValuation r ↔ emultiplicity v.asIdeal (Ideal.span {r}) ≤ n := by
-  rw [← ENat.lt_coe_add_one_iff, ← ENat.coe_one, ← ENat.coe_add, emultiplicity_lt_iff_not_dvd,
-    ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one, neg_add, exp_add,
-    exp_neg 1, mul_inv_lt_iff₀ (by simp)]
+  rw [← ENat.lt_natCast_add_one_iff, ← ENat.natCast_one, ← ENat.natCast_add,
+    emultiplicity_lt_iff_not_dvd, ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one,
+    neg_add, exp_add, exp_neg 1, mul_inv_lt_iff₀ (by simp)]
   by_cases hv : v.intValuation r = 0
   · simp [hv]
   · rw [lt_mul_exp_iff_le hv]
@@ -713,13 +713,13 @@ noncomputable instance : Valued (adicCompletion K v) ℤᵐ⁰ where
     refine ⟨fun ⟨t, ht, hts⟩ ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
     · obtain ⟨δ, hδ⟩ := Valued.mem_nhds_zero.1 ht
       refine ⟨Units.mapEquiv (valueGroupOrderIso K v).symm.toMulEquiv δ, fun x hx ↦ hts (hδ ?_)⟩
-      rw [Set.mem_setOf_eq] at hx ⊢
+      rw [Set.mem_ofPred_eq] at hx ⊢
       simpa [← map_lt_map_iff (valueGroupOrderIso K v), valueGroupOrderIso_restrict] using hx
     · refine ⟨{y | Valued.v.restrict y < ↑(Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ)},
         ?_, fun x hx ↦ hγ ?_⟩
       · rw [Valued.mem_nhds_zero]
         exact ⟨Units.mapEquiv (valueGroupOrderIso K v).toMulEquiv γ, subset_rfl⟩
-      · rw [Set.mem_setOf_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
+      · rw [Set.mem_ofPred_eq, ← map_lt_map_iff (valueGroupOrderIso K v),
           valueGroupOrderIso_restrict]
         simpa using hx
 

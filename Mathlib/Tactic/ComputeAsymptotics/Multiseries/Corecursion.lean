@@ -85,15 +85,14 @@ local instance : CompleteSpace (Stream' α) :=
 
 set_option backward.isDefEq.respectTransparency false in
 local instance : CompleteSpace (Seq α) := by
-  suffices IsClosed (X := Stream' (Option α))
-      (fun x ↦ ∀ {n : ℕ}, x n = none → x (n + 1) = none) by
-    apply IsClosed.completeSpace_coe
+  suffices IsClosed (X := Stream' (Option α)) {x | ∀ {n : ℕ}, x n = none → x (n + 1) = none} by
+    exact this.completeSpace_coe
   rw [isClosed_iff_clusterPt]
   intro s hs n hn
   rw [clusterPt_principal_iff] at hs
   obtain ⟨t, hts, ht⟩ := hs (Metric.ball s ((1 / 2 : ℝ) ^ (n + 1)))
     (Metric.ball_mem_nhds _ (by positivity))
-  simp only [Metric.ball, Set.mem_setOf_eq] at hts
+  simp only [Metric.ball, Set.mem_ofPred_eq] at hts
   rw [← PiNat.apply_eq_of_dist_lt hts (by simp)] at hn
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn

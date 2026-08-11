@@ -176,10 +176,12 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
   rw [← coe_inj, coe_toFinset, coe_univ]
 
 @[simp]
-theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
+theorem toFinset_ofPred [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
     Set.toFinset {x | p x} = Finset.univ.filter p := by
   ext
   simp
+
+@[deprecated (since := "2026-07-09")] alias toFinset_setOf := toFinset_ofPred
 
 theorem toFinset_ssubset_univ [Fintype α] {s : Set α} [Fintype s] :
     s.toFinset ⊂ Finset.univ ↔ s ⊂ univ := by simp

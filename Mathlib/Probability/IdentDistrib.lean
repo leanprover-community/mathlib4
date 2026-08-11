@@ -205,8 +205,8 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentD
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
-  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, if_true,
-      if_false]
+  · simp only [h_top, eLpNorm, eLpNormEssSup, ENNReal.top_ne_zero, ite_true,
+      ite_false]
     apply essSup_eq
     exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
   simp only [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm', one_div]
@@ -320,7 +320,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α 
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
     intro k
     ext x
-    simp only [Set.indicator, Set.mem_setOf_eq]; norm_cast
+    simp only [Set.indicator, Set.mem_ofPred_eq]; norm_cast
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 

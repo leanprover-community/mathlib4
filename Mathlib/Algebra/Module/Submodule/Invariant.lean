@@ -38,7 +38,7 @@ def invtSubmodule : Sublattice (Submodule R M) where
     ⟨le_trans hp <| Submodule.comap_mono le_sup_left,
     le_trans hq <| Submodule.comap_mono le_sup_right⟩
   infClosed' p hp q hq := by
-    simp only [Set.mem_setOf_eq, Submodule.comap_inf, le_inf_iff]
+    simp only [Set.mem_ofPred_eq, Submodule.comap_inf, le_inf_iff]
     exact ⟨inf_le_of_left_le hp, inf_le_of_right_le hq⟩
 
 lemma mem_invtSubmodule {p : Submodule R M} :

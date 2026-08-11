@@ -145,7 +145,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, ite_eq_left (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -240,7 +240,7 @@ variable {e : ι → M} {ε : ι → Dual R M}
 def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
-  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_ofPred_eq]
 
 @[simp]
 theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=

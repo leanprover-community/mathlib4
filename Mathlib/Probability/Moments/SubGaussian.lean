@@ -353,7 +353,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
     ∀ᵐ ω' ∂ν, (κ ω') {ω | 0 < X ω} = 0 := by
   have hs : {ω | 0 < X ω} = ⋃ ε : {ε : ℚ // 0 < ε}, {ω | ε ≤ X ω} := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
+    simp only [Set.mem_ofPred_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
     constructor
     · intro hp
       obtain ⟨q, h1, h2⟩ := exists_rat_btwn hp
@@ -882,8 +882,8 @@ lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
     (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :
     HasSubgaussianMGF (X + Y) (cX + cY) μ := by
   suffices HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (cX + cY)
-      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) by
-    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := rfl
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) Function.diag μ) by
+    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ Function.diag := rfl
     rw [h_eq]
     refine HasSubgaussianMGF.of_map ?_ this
     exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _

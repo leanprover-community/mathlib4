@@ -66,12 +66,11 @@ variable (F G)
 of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
-deriving AddCommGroup
-
-instance : Module R (Cochain F G n) :=
-  inferInstanceAs <| Module R (∀ _, _)
 
 namespace Cochain
+
+-- The `SMul` instance exists to avoid a zsmul diamond.
+deriving instance SMul R, AddCommGroup, Module R for Cochain F G n
 
 variable {F G n}
 
@@ -579,10 +578,6 @@ def cocycle : AddSubgroup (Cochain F G n) :=
 /-- The type of `n`-cocycles, as a subtype of `Cochain F G n`. -/
 def Cocycle : Type v := cocycle F G n
 
-instance : AddCommGroup (Cocycle F G n) := by
-  dsimp only [Cocycle]
-  infer_instance
-
 namespace Cocycle
 
 variable {F G}
@@ -606,6 +601,9 @@ instance : SMul R (Cocycle F G n) where
     simp only [δ_smul, hz, smul_zero]⟩
 
 variable (F G n)
+
+instance : AddCommGroup (Cocycle F G n) :=
+  inferInstanceAs <| AddCommGroup (cocycle F G n)
 
 @[simp]
 lemma coe_zero : (↑(0 : Cocycle F G n) : Cochain F G n) = 0 := by rfl
@@ -790,14 +788,14 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
     { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by lia))
+      zero := fun i j (hij : j + 1 ≠ i) => dite_eq_right (fun _ => hij (by lia))
       comm := fun p => by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp
         simp only [δ_neg_one_cochain, Cochain.ofHom_v, ComplexShape.up_Rel, Cochain.add_v,
           Homotopy.nullHomotopicMap'_f h₁ h₂] at eq
-        rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dif_pos, dif_pos] }
+        rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dite_eq_left, dite_eq_left] }
   left_inv := fun ho => by
     ext i j
     dsimp
@@ -807,7 +805,7 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   right_inv := fun z => by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
-    rw [dif_pos hpq]
+    rw [dite_eq_left hpq]
 
 @[simp]
 lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
@@ -831,14 +829,14 @@ set_option backward.defeqAttrib.useBackward true in
 lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
     (single f n).v p q hpq = f := by
   dsimp [single]
-  rw [if_pos, id_comp, comp_id]
+  rw [ite_eq_left, id_comp, comp_id]
   tauto
 
 lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
     (hp' : p' ≠ p) :
     (single f n).v p' q' hpq' = 0 := by
   dsimp [single]
-  rw [dif_neg]
+  rw [dite_eq_right]
   intro h
   exact hp' (by lia)
 

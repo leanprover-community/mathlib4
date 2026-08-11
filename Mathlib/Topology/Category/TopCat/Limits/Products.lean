@@ -284,23 +284,23 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
         by_cases h : x ∈ Set.range c.inl
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
-          · rw [continuousOn_iff_continuous_restrict]
+          · rw [continuousOn_iff_continuous_domRestrict]
             convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
-              exact dif_pos hx
+              exact dite_eq_left hx
             fun_prop
           · exact h₁.isOpen_range
         · revert h x
           simp only [← mem_compl_iff]
           apply (IsOpen.continuousOn_iff _).mp
-          · rw [continuousOn_iff_continuous_restrict]
+          · rw [continuousOn_iff_continuous_domRestrict]
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
               rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to! Continuous
                 (g ∘ h₂.isEmbedding.toHomeomorph.symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
-              exact dif_neg hx
+              exact dite_eq_right hx
             apply Continuous.comp
             · exact g.hom.continuous_toFun
             · apply Continuous.comp (by fun_prop)
@@ -315,7 +315,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        rw [dif_neg]
+        rw [dite_eq_right]
         · exact congr_arg g (Equiv.ofInjective_symm_apply _ _)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
