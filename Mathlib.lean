@@ -631,6 +631,7 @@ public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.HomologicalComplexKernels
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.Algebra.Homology.HomologySequence
@@ -1599,6 +1600,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.MapHomologicalComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Nondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
@@ -4601,6 +4603,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
