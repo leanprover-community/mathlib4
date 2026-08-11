@@ -267,8 +267,6 @@ alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_def
 
 grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 
-@[deprecated (since := "2026-01-07")] alias GCongr.mem_of_le_of_mem := _root_.mem_of_le_of_mem
-
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simpa [← coe_subset_coe] using! Set.not_subset
 

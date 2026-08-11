@@ -73,7 +73,7 @@ theorem contractLeft_assoc_coevaluation :
   rw [TensorProduct.tmul_sum, map_sum]; simp only [assoc_symm_tmul]
   rw [map_sum]; simp only [LinearMap.rTensor_tmul, contractLeft_apply]
   simp only [Basis.coe_dualBasis, Basis.coord_apply, Basis.repr_self_apply, TensorProduct.ite_tmul]
-  rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, if_true]
+  rw [Finset.sum_ite_eq']; simp only [Finset.mem_univ, ite_true]
 
 /-- This lemma corresponds to one of the coherence laws for duals in rigid categories, see
   `CategoryTheory.Monoidal.Rigid`. -/
@@ -91,6 +91,6 @@ theorem contractLeft_assoc_coevaluation' :
   rw [TensorProduct.sum_tmul, map_sum]; simp only [assoc_tmul]
   rw [map_sum]; simp only [LinearMap.lTensor_tmul, contractLeft_apply]
   simp only [Basis.coord_apply, Basis.repr_self_apply, TensorProduct.tmul_ite]
-  rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, if_true]
+  rw [Finset.sum_ite_eq]; simp only [Finset.mem_univ, ite_true]
 
 end coevaluation
