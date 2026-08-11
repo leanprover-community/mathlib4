@@ -46,10 +46,8 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C] [SymmetricCategory C
   [RightRigidCategory C]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Drinfeld isomorphism is monoidal in a symmetric monoidal category.
-
-The symmetry assumption is deliberate: in a merely braided category, this requires additional
-compatible twist or ribbon structure. -/
+/-- The Drinfeld isomorphism is monoidal in a symmetric monoidal category. This does not hold for a
+general braided category. -/
 public instance drinfeldIso_isMonoidal :
     NatTrans.IsMonoidal (drinfeldIso (C := C)).hom where
   unit := by
