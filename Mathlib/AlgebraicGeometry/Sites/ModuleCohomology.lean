@@ -46,7 +46,12 @@ namespace AlgebraicGeometry.Scheme.Modules
 variable {X : Scheme.{u}} (F : X.Modules)
 
 /--
-The cohomology of a sheaf of modules in degree `n`
+The cohomology of a sheaf of modules in degree `n`.
+
+This is the cohomology of the *abelian sheaf* underlying `F`, that is, `Ext` taken in
+`Sheaf J AddCommGrpCat` rather than in `X.Modules`. The two agree, but mathlib does not yet have
+the comparison isomorphism, which amounts to injective `𝒪_X`-modules being acyclic for abelian
+sheaf cohomology.
 -/
 abbrev H := ((SheafOfModules.toSheaf _).obj F).H
 
@@ -80,6 +85,9 @@ lemma cohomologyModule_smul_def (n : ℕ) (r : R) (x : F.H n) :
 /--
 For a morphism `f : X ⟶ Spec R` and a sheaf of modules `F : X.Modules`, `F.h f n` gives the finrank
 of the `n`th cohomology group of `F` as an `R`-module.
+
+Note that `Module.finrank` takes the junk value `0` when the module is not finite, so `F.h f n = 0`
+does not on its own say that the cohomology in degree `n` vanishes.
 -/
 noncomputable def h (n : ℕ) :=
   letI := F.cohomologyModule f n
