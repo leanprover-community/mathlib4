@@ -42,7 +42,7 @@ geometric distribution
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set
 
 namespace ProbabilityTheory
 

@@ -30,7 +30,7 @@ continuously on the factors.
 
 @[expose] public section
 
-open MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open MeasureTheory Metric Filter Set ENNReal NNReal
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
