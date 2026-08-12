@@ -229,13 +229,7 @@ def dlmfIdFn : ParserFn := fun c s =>
   else if s.pos == i then
     ParserState.mkError s "dlmf id"
   else
-    if !(c.extract i s.pos).toList.all
-      (fun c => c.isLower || c.isDigit || c == '.' || c == '_') then
-      ParserState.mkUnexpectedError s
-        "DLMF ids must consist only of letters, digits, periods, and underscores."
-    else
       mkNodeToken dlmfIdKind i true c s
-
 
 @[inherit_doc dlmfIdFn]
 def dlmfIdNoAntiquot : Parser := {
@@ -393,8 +387,6 @@ initialize Lean.registerBuiltinAttribute {
 /-- The `dlmf` attribute.
 Use it as `@[dlmf 5.4.E1 "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [DLMF](https://dlmf.nist.gov) item.
-
-
 -/
 syntax (name := dlmfTag) "dlmf" dlmfIdParser (ppSpace str)? : attr
 
