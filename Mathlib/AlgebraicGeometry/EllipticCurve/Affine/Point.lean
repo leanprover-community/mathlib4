@@ -259,7 +259,7 @@ some `y(X)` in `R[X]` and at some `x` in `R` provided that `W(x, y(x)) = 0`. -/
 noncomputable def quotientXYIdealEquiv {x : R} {y : R[X]} (h : (W'.polynomial.eval y).eval x = 0) :
     (W'.CoordinateRing ⧸ XYIdeal W' x y) ≃ₐ[R] R :=
   ((quotientEquivAlgOfEq R <| by
-      simp only [XYIdeal, XClass, YClass, ← Set.image_pair, ← map_span]; rfl).trans <|
+      simp [XYIdeal, XClass, YClass, ← map_span]).trans <|
         DoubleQuot.quotQuotEquivQuotOfLEₐ R <| (span_singleton_le_iff_mem _).mpr <|
           mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero.mpr h).trans
     quotientSpanCXSubCXSubCAlgEquiv
