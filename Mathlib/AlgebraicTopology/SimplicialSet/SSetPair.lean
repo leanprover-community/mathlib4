@@ -11,6 +11,8 @@ public import Mathlib.CategoryTheory.MorphismProperty.Comma
 /-!
 # Pairs of simplicial sets
 
+In this file, we define the category `SSetPair` of pairs of simplicial
+sets, which consist of monomorphisms `i : X ⟶ Y` of simplicial sets.
 
 -/
 
