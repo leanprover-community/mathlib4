@@ -94,18 +94,18 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
   let rows := A.size
   let cols := (A.getD 0 #[]).size
   let getEntry (M : Array (Array V)) (i j : Nat) : V := (M.getD i #[]).getD j ops.zero
-  let eliminate (piv f prev : V) (row pivotRow : Array V) : Array V :=
-    Array.zipWith (fun a b => ops.divExact (ops.sub (ops.mul piv a) (ops.mul f b)) prev)
+  let eliminate (pivot coef prev : V) (row pivotRow : Array V) : Array V :=
+    Array.zipWith (fun a b => ops.divExact (ops.sub (ops.mul pivot a) (ops.mul coef b)) prev)
       row pivotRow
   let mut W := A
   let mut L : Array (Array V) :=
     (Array.range rows).map fun i =>
       (Array.range rows).map fun j => if i == j then ops.one else ops.zero
   let mut swaps : Array (Nat × Nat) := #[]
-  let mut pivot : Array Nat := #[]
+  let mut pivotCols : Array Nat := #[]
   let mut r : Nat := 0
-  -- the pivot of the previous round: the exact divisor of the elimination step
-  let mut prev : V := ops.one
+  -- the exact divisor of the elimination step
+  let mut prevPivot : V := ops.one
   /- TODO: if we're handling larger matrices (beyond 10⁴ entries), add a checkSystem call
   per column to honor user interruption. At current realistic sizes this computation is
   almost instant. -/
@@ -126,17 +126,17 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
         -- row vanishes at both columns
         L := (L.modify r (·.swapIfInBounds r p)).modify p (·.swapIfInBounds r p)
         swaps := swaps.push (r, p)
-      pivot := pivot.push c
-      let piv := getEntry W r c
+      pivotCols := pivotCols.push c
+      let pivot := getEntry W r c
       let wRow := W.getD r #[]
       let lRow := L.getD r #[]
       for i in [r+1:rows] do
-        let f := getEntry W i c
-        W := W.set! i (eliminate piv f prev (W.getD i #[]) wRow)
-        L := L.set! i (eliminate piv f prev (L.getD i #[]) lRow)
-      prev := piv
+        let coef := getEntry W i c
+        W := W.set! i (eliminate pivot coef prevPivot (W.getD i #[]) wRow)
+        L := L.set! i (eliminate pivot coef prevPivot (L.getD i #[]) lRow)
+      prevPivot := pivot
       r := r + 1
-  return { L, swaps, pivot }
+  return { L, swaps, pivot := pivotCols }
 
 /-- Assemble a producer from a computation model's parts.
 `ops` describes the ring operation structure;
