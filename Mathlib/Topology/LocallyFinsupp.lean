@@ -385,13 +385,16 @@ instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
+/--
+Simplifier lemma: Support does not change when replacing a function with locally finite support by
+its negative.
+-/
 @[simp] lemma support_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (-D).support = D.support := by rw [support, coe_neg, Function.support_neg]
 
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
-
 
 variable (Y) in
 /--
@@ -427,27 +430,6 @@ lemma support_single_subset [Zero Y] (y : Y) : (single p y).support ⊆ {p} := b
   simp only [single_apply, coe_add, Pi.add_apply]
   split_ifs <;> simp
 
-@[simp] lemma single_neg [AddGroup Y] (y : Y) : single p (-y) = -single p y := by
-  ext x
-  simp only [single_apply, coe_neg, Pi.neg_apply]
-  split_ifs <;> simp
-
-@[simp] lemma single_sub [AddGroup Y] (y z : Y) :
-    single p (y - z) = single p y - single p z := by
-  simp [sub_eq_add_neg]
-
-@[simp] lemma nsmul_single [AddMonoid Y] (n : ℕ) (y : Y) :
-    n • single p y = single p (n • y) := by
-  ext x
-  simp only [single_apply, coe_nsmul, Pi.smul_apply]
-  split_ifs <;> simp
-
-@[simp] lemma zsmul_single [AddGroup Y] (n : ℤ) (y : Y) :
-    n • single p y = single p (n • y) := by
-  ext x
-  simp only [single_apply, coe_zsmul, Pi.smul_apply]
-  split_ifs <;> simp
-
 /--
 `single p` as an additive monoid homomorphism.
 -/
@@ -455,6 +437,21 @@ lemma support_single_subset [Zero Y] (y : Y) : (single p y).support ⊆ {p} := b
   toFun := single p
   map_zero' := single_zero
   map_add' := single_add p
+
+@[simp] lemma single_neg [AddGroup Y] (y : Y) : single p (-y) = -single p y :=
+  map_neg (singleAddHom p) y
+
+@[simp] lemma single_sub [AddGroup Y] (y z : Y) :
+    single p (y - z) = single p y - single p z :=
+  map_sub (singleAddHom p) y z
+
+@[simp] lemma nsmul_single [AddMonoid Y] (n : ℕ) (y : Y) :
+    n • single p y = single p (n • y) :=
+  (map_nsmul (singleAddHom p) n y).symm
+
+@[simp] lemma zsmul_single [AddGroup Y] (n : ℤ) (y : Y) :
+    n • single p y = single p (n • y) :=
+  (map_zsmul (singleAddHom p) n y).symm
 
 /--
 Adding `single p y` with `p ∈ s` to a function supported in `s` keeps the support in `s`.

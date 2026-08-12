@@ -118,10 +118,16 @@ variable [AddMonoid Y]
 
 /-- On a compact space, functions with locally finite support are additively equivalent to the
 finitely supported functions. -/
-@[simps!] noncomputable def addEquivFinsupp [CompactSpace X] :
+noncomputable def addEquivFinsupp [CompactSpace X] :
     locallyFinsupp X Y ≃+ (X →₀ Y) where
   __ := equivFinsupp
   map_add' _ _ := by ext; rfl
+
+@[simp] lemma addEquivFinsupp_apply [CompactSpace X] (D : locallyFinsupp X Y) :
+    addEquivFinsupp D = D.toFinsupp isCompact_univ := rfl
+
+@[simp] lemma addEquivFinsupp_symm_apply [CompactSpace X] (f : X →₀ Y) :
+    addEquivFinsupp.symm f = ofFinsupp f := rfl
 
 end OfFinsuppAdd
 
@@ -174,12 +180,9 @@ lemma mem_closure_singleSet_iff [DecidableEq X] [CompactSpace X] [AddGroup Y] {G
       (AddSubgroup.closure {g : X →₀ Y | ∃ p ∈ s, ∃ y ∈ G, g = Finsupp.single p y}).map
         (addEquivFinsupp.symm : (X →₀ Y) ≃+ locallyFinsupp X Y).toAddMonoidHom := by
     rw [AddMonoidHom.map_closure, ← image_ofFinsupp_setOf_single s]
-    rfl
-  rw [himg, AddSubgroup.mem_map_equiv]
-  simp only [AddEquiv.symm_symm]
-  rw [Finsupp.mem_closure_setOf_single_iff hG,
-    show (addEquivFinsupp D : X →₀ Y) = D.toFinsupp isCompact_univ from rfl,
-    coe_support_toFinsupp]
+    simp
+  rw [himg, AddSubgroup.mem_map_equiv, AddEquiv.symm_symm,
+    Finsupp.mem_closure_setOf_single_iff hG, addEquivFinsupp_apply, coe_support_toFinsupp]
 
 variable (s) in
 /-- On a compact space, the functions supported in `s` are exactly the additive subgroup generated
@@ -211,7 +214,9 @@ theorem induction_add_sub_single_one [DecidableEq X] [CompactSpace X]
     (p := fun E _ ↦ ∀ h : E.support ⊆ s, motive E h) (fun _ ↦ zero) ?_ ?_ (hmem.2 hD) hD
   · rintro E hE _ ⟨p, hp, g, rfl : g = 1, rfl⟩ ih
     exact fun _ ↦ add_single E (hmem.1 hE) (ih _) p hp
-  · rintro E hE _ ⟨p, hp, g, rfl : g = 1, rfl⟩ ih
+  · -- `to_additive` renders the third premise of `AddSubgroup.closure_induction_right` as
+    -- `E + -single p 1`, so the goal has to be turned back into a subtraction.
+    rintro E hE _ ⟨p, hp, g, rfl : g = 1, rfl⟩ ih
     rw [← sub_eq_add_neg]
     exact fun _ ↦ sub_single E (hmem.1 hE) (ih _) p hp
 
