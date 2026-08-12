@@ -700,10 +700,10 @@ theorem exists_subgroup_card_pow_prime_le_le {p : ℕ} (hp : p.Prime) {n : ℕ}
     ∃ K : Subgroup G, Nat.card K = p ^ n ∧ H ≤ K ∧ K ≤ L := by
   obtain ⟨k, hkn, hH⟩ := (Nat.dvd_prime_pow hp).mp hH
   have : Fact p.Prime := ⟨hp⟩
-  have hcardeq := Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv.symm ▸ hH
+  have hcardeq := (Nat.card_congr (Subgroup.subgroupOfEquivOfLe hHL).toEquiv).trans hH
   obtain ⟨K, hcard, hHK⟩ := exists_subgroup_card_pow_prime_le p hL (H.subgroupOf L) hcardeq hkn
   refine ⟨K.map L.subtype, ?_, ?_, map_subtype_le K⟩
-  · rw [Subgroup.card_map_of_injective L.subtype_injective, hcard]
+  · rwa [Subgroup.card_map_of_injective L.subtype_injective]
   · rw [← Subgroup.map_subgroupOf_eq_of_le hHL]
     exact Subgroup.map_mono hHK
 
@@ -720,16 +720,15 @@ of subgroups whose orders divide `p ^ n` can be completed to a tower of subgroup
 `p ^ 0, …, p ^ n`. -/
 theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
     (hdvd : p ^ n ∣ Nat.card G) {s : Set (Subgroup G)} (hchain : IsChain (· ≤ ·) s)
-    (hpgroup : ∀ g ∈ s, IsPGroup p g) (hcard : ∀ g ∈ s, Nat.card g ∣ p ^ n) :
+    (hcard : ∀ g ∈ s, Nat.card g ∣ p ^ n) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧ ∀ k, Nat.card (f k) = p ^ k.val := by
   suffices ∀ (n : ℕ) (H : Subgroup G) (hdvd : p ^ n ∣ Nat.card H) (s : Set (Subgroup G))
-      (hchain : IsChain (· ≤ ·) s) (hpgroup : ∀ t ∈ s, IsPGroup p t)
-      (hcard : ∀ t ∈ s, Nat.card t ∣ p ^ n) (hle : ∀ t ∈ s, t ≤ H),
+      (hchain : IsChain (· ≤ ·) s) (hcard : ∀ t ∈ s, Nat.card t ∣ p ^ n) (hle : ∀ t ∈ s, t ≤ H),
       ∃ f : Fin (n + 1) ↪o Subgroup G, s ⊆ Set.range f ∧
         ∀ k, Nat.card (f k) = p ^ k.val ∧ f k ≤ H by
-    obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hpgroup hcard (by simp)
+    obtain ⟨f, hf⟩ := this n ⊤ (by simpa) s hchain hcard (by simp)
     grind
-  intro n H hdvd s hchain hpgroup hcard hle
+  intro n H hdvd s hchain hcard hle
   classical
   have : Fact p.Prime := ⟨hp⟩
   induction n generalizing H s with
@@ -756,16 +755,14 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
         exact (Finset.univ : Finset s).le_max' ⟨g, hg⟩ (Finset.mem_univ _)
     have hdvd' : p ^ n ∣ Nat.card t := by simp [htcard, pow_add]
     have hchain' : IsChain (· ≤ ·) (s \ {t}) := hchain.mono Set.sdiff_subset
-    have hpgroup' (g : Subgroup G) (hg : g ∈ s \ {t}) : IsPGroup p g :=
-      hpgroup g (Set.mem_of_mem_sdiff hg)
     have hcard' (g : Subgroup G) (hg : g ∈ s \ {t}) : Nat.card g ∣ p ^ n := by
-      obtain ⟨m, hm⟩ := (hpgroup g (Set.mem_of_mem_sdiff hg)).exists_card_eq
+      obtain ⟨m, hmn, hm⟩ := (Nat.dvd_prime_pow hp).mp <| hcard g <| Set.mem_of_mem_sdiff hg
       rw [hm, Nat.pow_dvd_pow_iff_le_right hp.one_lt, ← Nat.lt_add_one_iff,
         ← pow_lt_pow_iff_right₀ hp.one_lt, ← hm, ← htcard]
       refine card_lt_of_lt <| lt_of_le_of_ne (hst g (Set.mem_of_mem_sdiff hg)) ?_
       simpa using Set.notMem_of_mem_sdiff hg
     have hle' (g : Subgroup G) (hg : g ∈ s \ {t}) : g ≤ t := hst g (Set.mem_of_mem_sdiff hg)
-    obtain ⟨f', hsf', hf'⟩ := ih t hdvd' (s \ {t}) hchain' hpgroup' hcard' hle'
+    obtain ⟨f', hsf', hf'⟩ := ih t hdvd' (s \ {t}) hchain' hcard' hle'
     let f := fun x ↦ if hx : x = Fin.last (n + 1) then t else f' (x.castPred hx)
     have hf : StrictMono f := fun x y h ↦ by
       by_cases hy : y = Fin.last (n + 1)
@@ -789,7 +786,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
 there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
 theorem exists_orderEmbedding [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
-  obtain ⟨f, _, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp) (by simp)
+  obtain ⟨f, _, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp)
   exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`
