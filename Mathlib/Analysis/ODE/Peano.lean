@@ -538,12 +538,10 @@ theorem exists_eq_forall_mem_Icc_eq_integral
     exists_eq_forall_mem_Icc_eq_integral_backward hf
   let α : ℝ → E := fun t ↦ if t₀ ≤ t then α₁ t else α₂ t
   have hα_eq_α₁ : EqOn α α₁ (Icc t₀ tmax) := by
-    unfold EqOn
     intro t ht
     unfold α
     rw [ite_eq_left ht.1]
   have hα_eq_α₂ : EqOn α α₂ (Icc tmin t₀) := by
-    unfold EqOn
     intro t ht
     unfold α
     by_cases ht_t₀ : t = t₀.val
@@ -578,7 +576,6 @@ theorem exists_eq_forall_mem_Icc_eq_integral
       rw [hα_eq_α₁ ht_interval, hα₁_eq t ht_interval]
       simp only [add_right_inj]
       rw [intervalIntegral.integral_congr]
-      unfold Set.EqOn
       intro s hs
       simp only
       rw [hα_eq_α₁]
@@ -593,7 +590,6 @@ theorem exists_eq_forall_mem_Icc_eq_integral
       rw [hα_eq_α₂ ht_interval, hα₂_eq t ht_interval]
       simp only [add_right_inj]
       rw [intervalIntegral.integral_congr]
-      unfold Set.EqOn
       intro s hs
       simp only
       rw [hα_eq_α₂]
