@@ -269,11 +269,6 @@ lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
 
-lemma _root_.Disjoint.powersetCard_powersetCard {s t : Finset α}
-    (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
-    Disjoint (powersetCard n s) (powersetCard m t) := by
-  grind [disjoint_left]
-
 theorem powersetCard_eq_filter {n} {s : Finset α} :
     powersetCard n s = (powerset s).filter fun x => x.card = n := by
   ext
@@ -300,6 +295,11 @@ theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by
   · exact fun ⟨hs, hc⟩ => eq_of_subset_of_card_le hs hc.ge
   · rintro rfl
     simp
+
+lemma Disjoint.powersetCard_powersetCard {s t : Finset α}
+    (h : Disjoint s t) {n : ℕ} (hn : n ≠ 0) (m : ℕ) :
+    Disjoint (powersetCard n s) (powersetCard m t) := by
+  grind [disjoint_left]
 
 lemma disjoint_powersetCard_of_ne {m n : ℕ} (h : m ≠ n) (s t : Finset α) :
     Disjoint (powersetCard m s) (powersetCard n t) := by
