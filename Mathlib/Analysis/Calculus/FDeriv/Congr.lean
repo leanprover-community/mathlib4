@@ -268,9 +268,9 @@ theorem Filter.EventuallyEq.codiscreteWithin_fderivWithin'
     fderivWithin 𝕜 f₁ t =ᶠ[codiscreteWithin s] fderivWithin 𝕜 f t := by
   filter_upwards [h, self_mem_codiscreteWithin s] with x hx hxs
   have hsx : f₁ =ᶠ[𝓝[s] x] f := by
-    rw [← sdiff_union_of_subset (show {x} ⊆ s by simpa), nhdsWithin_union, EventuallyEq,
-      eventually_sup, nhdsWithin_singleton, eventually_pure]
-    exact ⟨eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin.1 h x hxs, hx⟩
+    rw [← insert_sdiff_self_of_mem hxs, nhdsWithin_insert, EventuallyEq,
+      eventually_sup, eventually_pure]
+    exact ⟨hx, eventuallyEq_codiscreteWithin_iff_forall_eventuallyEq_nhdsWithin.1 h x hxs⟩
   exact (hsx.filter_mono <| nhdsWithin_mono x ht).fderivWithin_eq hx
 
 /-- If two functions agree on a codiscrete subset of `s`, then so do their derivatives
