@@ -56,7 +56,7 @@ variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
 local notation3 "k" => Subring.center D
 
-open Polynomial LinearMap LieAlgebra
+open LinearMap LieAlgebra
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D`, there exists a natural number `n`

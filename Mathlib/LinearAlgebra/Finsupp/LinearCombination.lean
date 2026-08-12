@@ -323,7 +323,7 @@ theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R v f = 
 theorem Fintype.linearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
     Fintype.linearCombination R v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.linearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
-  rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
+  rw [Finset.sum_ite_eq', ite_eq_left (Finset.mem_univ _)]
 
 theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α → R) :
     linearCombination R v ((Finsupp.linearEquivFunOnFinite R R α).symm x) =
