@@ -60,6 +60,7 @@ end FloorSemiring
 
 variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
 
+section
 -- TODO: move to `Mathlib/Order/Filter/AtTopBot/Floor.lean`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
@@ -76,6 +77,7 @@ theorem tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
   ceil_mono.tendsto_atBot_atBot fun b =>
     ⟨(b - 1 : ℤ), by rw [ceil_intCast]; exact (sub_one_lt _).le⟩
 
+end
 
 variable [TopologicalSpace α]
 
