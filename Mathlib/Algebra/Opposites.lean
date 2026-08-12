@@ -73,12 +73,14 @@ postfix:max "ᵃᵒᵖ" => AddOpposite
 namespace MulOpposite
 
 /-- The element of `MulOpposite α` that represents `x : α`. -/
-@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/]
+-- implicit-reducible so that `op_star` can be `rfl`
+@[to_additive /-- The element of `αᵃᵒᵖ` that represents `x : α`. -/, implicit_reducible]
 def op : α → αᵐᵒᵖ :=
   PreOpposite.op'
 
 /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
-@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/]
+@[to_additive (attr := pp_nodot) /-- The element of `α` represented by `x : αᵃᵒᵖ`. -/,
+  implicit_reducible] -- implicit-reducible so that `op_star` can be `rfl`
 def unop : αᵐᵒᵖ → α :=
   PreOpposite.unop'
 

@@ -262,6 +262,7 @@ theorem accepts_reindex (g : σ ≃ σ') : (reindex g M).accepts = M.accepts := 
   ext x
   simp [mem_accepts]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
     (reindex g M).comap f = reindex g (M.comap f) := by
   simp [comap, reindex]
@@ -306,7 +307,7 @@ theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : �
   ext x
   simp only [acceptsFrom]
   rw [Language.add_def, Set.mem_union]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, union_step, ih]
@@ -335,7 +336,7 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom, Language.mem_inf]
-  simp_rw [↑Set.mem_setOf]
+  simp_rw [↑Set.mem_ofPred]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
