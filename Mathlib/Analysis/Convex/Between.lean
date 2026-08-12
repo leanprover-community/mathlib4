@@ -1105,7 +1105,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
   contrapose hT
-  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
+  simp [Set.range_comp_subset_range hT.symm.collinear]
 
 variable (R)
 

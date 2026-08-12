@@ -194,7 +194,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
     canonicalizer; a minimization would help. The original proof was:
     `grind [Set.image_insert_eq, Set.image_singleton]` -/
-    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
+    simpa using Cospherical.subtype_val h_cospherical'
   have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
     rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
