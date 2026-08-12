@@ -9,7 +9,7 @@ public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 
 /-!
-# Poles and polars.
+# Poles and polars
 
 This file defines poles and polars for spheres in Euclidean spaces.
 

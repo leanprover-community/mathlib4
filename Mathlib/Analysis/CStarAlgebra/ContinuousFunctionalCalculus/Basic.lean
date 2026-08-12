@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.CStarAlgebra.Unitization
@@ -63,14 +64,6 @@ variable {A : Type*}
 namespace StarAlgebra.elemental
 
 variable [CStarAlgebra A]
-
-instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
-    [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
-    NormedCommRing (elemental R a) :=
-  { SubringClass.toNormedRing (elemental R a) with
-    mul_comm := mul_comm }
-
-noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
 
 variable (a : A) [IsStarNormal a]
 
